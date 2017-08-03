@@ -1,0 +1,3 @@
+[submodule "Common_RT_Utilities"]
+	path = Common_RT_Utilities
+	url = https://stash.lsstcorp.org/scm/ts/common_rt_utilities.git
