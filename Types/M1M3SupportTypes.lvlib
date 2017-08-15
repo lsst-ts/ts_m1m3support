@@ -4,10 +4,24 @@
 	<Property Name="NI.Lib.SourceVersion" Type="Int">369131520</Property>
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">false</Property>
+	<Item Name="Settings" Type="Folder">
+		<Item Name="Base" Type="Folder">
+			<Item Name="BaseHPSettings.ctl" Type="VI" URL="../Settings/Base/BaseHPSettings.ctl"/>
+			<Item Name="BaseILCIdentitySettings.ctl" Type="VI" URL="../Settings/Base/BaseILCIdentitySettings.ctl"/>
+			<Item Name="RecommendedSettings.ctl" Type="VI" URL="../Settings/Base/RecommendedSettings.ctl"/>
+			<Item Name="SettingAlias.ctl" Type="VI" URL="../Settings/Base/SettingAlias.ctl"/>
+			<Item Name="SettingAliases.ctl" Type="VI" URL="../Settings/Base/SettingAliases.ctl"/>
+		</Item>
+		<Item Name="Set" Type="Folder">
+			<Item Name="HPSettings.ctl" Type="VI" URL="../Settings/Set/HPSettings.ctl"/>
+		</Item>
+	</Item>
+	<Item Name="BaseILCSettings.ctl" Type="VI" URL="../Settings/Base/BaseILCSettings.ctl"/>
 	<Item Name="DetailedStates.ctl" Type="VI" URL="../DetailedStates.ctl"/>
+	<Item Name="ILCMap.ctl" Type="VI" URL="../ILCMap.ctl"/>
+	<Item Name="ILCTypes.ctl" Type="VI" URL="../ILCTypes.ctl"/>
 	<Item Name="ProcessCommandEvent.ctl" Type="VI" URL="../ProcessCommandEvent.ctl"/>
 	<Item Name="ShutdownEvent.ctl" Type="VI" URL="../ShutdownEvent.ctl"/>
-	<Item Name="StateChangedEvent.ctl" Type="VI" URL="../StateChangedEvent.ctl"/>
 	<Item Name="SummaryStates.ctl" Type="VI" URL="../SummaryStates.ctl"/>
 	<Item Name="Timestamp.ctl" Type="VI" URL="../Timestamp.ctl"/>
 	<Item Name="UserEvents.ctl" Type="VI" URL="../UserEvents.ctl"/>

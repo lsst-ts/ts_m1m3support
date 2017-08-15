@@ -5,4 +5,6 @@
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">false</Property>
 	<Item Name="ApplicationControlView.vi" Type="VI" URL="../ApplicationControlView.vi"/>
+	<Item Name="ApplicationStatusView.vi" Type="VI" URL="../ApplicationStatusView.vi"/>
+	<Item Name="MainView.vi" Type="VI" URL="../MainView.vi"/>
 </Library>
