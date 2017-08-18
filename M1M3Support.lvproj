@@ -109,7 +109,10 @@ AddOutputFilter chunkFilter
 			<Item Name="Command.lvclass" Type="LVClass" URL="../Commands/Command/Command.lvclass"/>
 			<Item Name="DisableCommand.lvclass" Type="LVClass" URL="../Commands/DisableCommand/DisableCommand.lvclass"/>
 			<Item Name="EnableCommand.lvclass" Type="LVClass" URL="../Commands/EnableCommand/EnableCommand.lvclass"/>
+			<Item Name="EnterMaintenanceCommand.lvclass" Type="LVClass" URL="../Commands/EnterMaintenanceCommand/EnterMaintenanceCommand.lvclass"/>
 			<Item Name="ExitCommand.lvclass" Type="LVClass" URL="../Commands/ExitCommand/ExitCommand.lvclass"/>
+			<Item Name="ExitMaintenanceCommand.lvclass" Type="LVClass" URL="../Commands/ExitMaintenanceCommand/ExitMaintenanceCommand.lvclass"/>
+			<Item Name="MoveHardpointActuatorsCommand.lvclass" Type="LVClass" URL="../Commands/MoveHardpointActuatorsCommand/MoveHardpointActuatorsCommand.lvclass"/>
 			<Item Name="StandbyCommand.lvclass" Type="LVClass" URL="../Commands/StandbyCommand/StandbyCommand.lvclass"/>
 			<Item Name="StartCommand.lvclass" Type="LVClass" URL="../Commands/StartCommand/StartCommand.lvclass"/>
 			<Item Name="UpdateCommand.lvclass" Type="LVClass" URL="../Commands/UpdateCommand/UpdateCommand.lvclass"/>
@@ -125,7 +128,7 @@ AddOutputFilter chunkFilter
 			<Item Name="RTUtilities.lvlib" Type="Library" URL="../Common_RT_Utilities/RTUtilities.lvlib"/>
 		</Item>
 		<Item Name="Context" Type="Folder">
-			<Item Name="Context.lvclass" Type="LVClass" URL="../Context/Context/Context.lvclass"/>
+			<Item Name="Context.lvclass" Type="LVClass" URL="../Context/Context.lvclass"/>
 		</Item>
 		<Item Name="Controller" Type="Folder">
 			<Item Name="Controller.lvclass" Type="LVClass" URL="../Controller/Controller.lvclass"/>
@@ -148,9 +151,9 @@ AddOutputFilter chunkFilter
 			<Item Name="FPGA.lvclass" Type="LVClass" URL="../Resources/FPGA/FPGA.lvclass"/>
 		</Item>
 		<Item Name="Model" Type="Folder">
-			<Item Name="ILCCommunications.lvclass" Type="LVClass" URL="../Subnet/ILCCommunications.lvclass"/>
+			<Item Name="ILCCommunications.lvclass" Type="LVClass" URL="../ILCCommunications/ILCCommunications.lvclass"/>
 			<Item Name="Model.lvclass" Type="LVClass" URL="../Model/Model.lvclass"/>
-			<Item Name="Telemetry.lvclass" Type="LVClass" URL="../Telemetry/Telemetry.lvclass"/>
+			<Item Name="Publisher.lvclass" Type="LVClass" URL="../Publisher/Publisher.lvclass"/>
 		</Item>
 		<Item Name="Settings" Type="Folder">
 			<Item Name="M1M3Settings.lvclass" Type="LVClass" URL="../Settings/M1M3SupportSettings/M1M3Settings.lvclass"/>
@@ -158,18 +161,18 @@ AddOutputFilter chunkFilter
 			<Item Name="Setting.lvclass" Type="LVClass" URL="../Settings/Settings/Setting.lvclass"/>
 		</Item>
 		<Item Name="States" Type="Folder">
+			<Item Name="ActiveMaintenanceState.lvclass" Type="LVClass" URL="../States/ActiveMaintenanceState/ActiveMaintenanceState.lvclass"/>
 			<Item Name="DisabledState.lvclass" Type="LVClass" URL="../States/DisabledState/DisabledState.lvclass"/>
 			<Item Name="EnabledState.lvclass" Type="LVClass" URL="../States/EnabledState/EnabledState.lvclass"/>
 			<Item Name="FaultState.lvclass" Type="LVClass" URL="../States/FaultState/FaultState.lvclass"/>
 			<Item Name="InitialState.lvclass" Type="LVClass" URL="../States/InitialState/InitialState.lvclass"/>
+			<Item Name="MaintenanceState.lvclass" Type="LVClass" URL="../States/MaintenanceState/MaintenanceState.lvclass"/>
 			<Item Name="OfflineState.lvclass" Type="LVClass" URL="../States/OfflineState/OfflineState.lvclass"/>
+			<Item Name="ParkedMaintenanceState.lvclass" Type="LVClass" URL="../States/ParkedMaintenanceState/ParkedMaintenanceState.lvclass"/>
+			<Item Name="ParkedState.lvclass" Type="LVClass" URL="../States/ParkedState/ParkedState.lvclass"/>
 			<Item Name="StandbyState.lvclass" Type="LVClass" URL="../States/StandbyState/StandbyState.lvclass"/>
 			<Item Name="State.lvclass" Type="LVClass" URL="../States/State/State.lvclass"/>
 			<Item Name="StateFactory.lvclass" Type="LVClass" URL="../States/StateFactory/StateFactory.lvclass"/>
-		</Item>
-		<Item Name="Support" Type="Folder">
-			<Item Name="OuterLoopClock.vi" Type="VI" URL="../Support/OuterLoopClock.vi"/>
-			<Item Name="TimestampUpdate.vi" Type="VI" URL="../Support/TimestampUpdate.vi"/>
 		</Item>
 		<Item Name="UserEvents" Type="Folder">
 			<Item Name="UserEvents.lvclass" Type="LVClass" URL="../UserEvents/UserEvents.lvclass"/>
@@ -2990,8 +2993,10 @@ AddOutputFilter chunkFilter
 			</Item>
 		</Item>
 		<Item Name="ControllerView.vi" Type="VI" URL="../ControllerView.vi"/>
-		<Item Name="M1M3Communicator.lvlib" Type="Library" URL="../Communicator/M1M3Communicator.lvlib"/>
-		<Item Name="M1M3SupportTypes.lvlib" Type="Library" URL="../Types/M1M3SupportTypes.lvlib"/>
+		<Item Name="M1M3SupportCommunicator.lvlib" Type="Library" URL="../Communicator/M1M3SupportCommunicator.lvlib"/>
+		<Item Name="M1M3SupportGeneral.lvlib" Type="Library" URL="../DataTypes/General/M1M3SupportGeneral.lvlib"/>
+		<Item Name="M1M3SupportSettings.lvlib" Type="Library" URL="../DataTypes/Settings/M1M3SupportSettings.lvlib"/>
+		<Item Name="M1M3SupportTopics.lvlib" Type="Library" URL="../DataTypes/Topics/M1M3SupportTopics.lvlib"/>
 		<Item Name="M1M3SupportViews.lvlib" Type="Library" URL="../Views/M1M3SupportViews.lvlib"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
