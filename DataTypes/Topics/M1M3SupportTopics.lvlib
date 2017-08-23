@@ -20,7 +20,14 @@
 	<Item Name="CommandStart.ctl" Type="VI" URL="../CommandStart.ctl"/>
 	<Item Name="EventHardpointActuatorInfo.ctl" Type="VI" URL="../EventHardpointActuatorInfo.ctl"/>
 	<Item Name="EventSummaryState.ctl" Type="VI" URL="../EventSummaryState.ctl"/>
+	<Item Name="TelemetryAirData.ctl" Type="VI" URL="../TelemetryAirData.ctl"/>
+	<Item Name="TelemetryDynamicData.ctl" Type="VI" URL="../TelemetryDynamicData.ctl"/>
+	<Item Name="TelemetryElevationData.ctl" Type="VI" URL="../TelemetryElevationData.ctl"/>
+	<Item Name="TelemetryForceActuatorData.ctl" Type="VI" URL="../TelemetryForceActuatorData.ctl"/>
+	<Item Name="TelemetryForceActuatorStatus.ctl" Type="VI" URL="../TelemetryForceActuatorStatus.ctl"/>
 	<Item Name="TelemetryFPGAData.ctl" Type="VI" URL="../TelemetryFPGAData.ctl"/>
 	<Item Name="TelemetryHardpointData.ctl" Type="VI" URL="../TelemetryHardpointData.ctl"/>
 	<Item Name="TelemetryHardpointStatus.ctl" Type="VI" URL="../TelemetryHardpointStatus.ctl"/>
+	<Item Name="TelemetryIMSData.ctl" Type="VI" URL="../TelemetryIMSData.ctl"/>
+	<Item Name="TelemetryMirrorForceData.ctl" Type="VI" URL="../TelemetryMirrorForceData.ctl"/>
 </Library>
