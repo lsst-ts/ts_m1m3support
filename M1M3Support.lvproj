@@ -47,10 +47,10 @@
 		<Property Name="target.IsRemotePanelSupported" Type="Bool">true</Property>
 		<Property Name="target.RTCPULoadMonitoringEnabled" Type="Bool">true</Property>
 		<Property Name="target.RTDebugWebServerHTTPPort" Type="Int">8001</Property>
-		<Property Name="target.RTTarget.ApplicationPath" Type="Path">/home/lvuser/natinst/bin/M1M3SupportSoftware.rtexe</Property>
+		<Property Name="target.RTTarget.ApplicationPath" Type="Path">/home/lvuser/natinst/bin/TestSAL.rtexe</Property>
 		<Property Name="target.RTTarget.EnableFileSharing" Type="Bool">true</Property>
 		<Property Name="target.RTTarget.IPAccess" Type="Str">+*</Property>
-		<Property Name="target.RTTarget.LaunchAppAtBoot" Type="Bool">true</Property>
+		<Property Name="target.RTTarget.LaunchAppAtBoot" Type="Bool">false</Property>
 		<Property Name="target.RTTarget.VIPath" Type="Path">/home/lvuser/natinst/bin</Property>
 		<Property Name="target.server.app.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="target.server.control.propertiesEnabled" Type="Bool">true</Property>
@@ -173,6 +173,9 @@ AddOutputFilter chunkFilter
 			<Item Name="StandbyState.lvclass" Type="LVClass" URL="../States/StandbyState/StandbyState.lvclass"/>
 			<Item Name="State.lvclass" Type="LVClass" URL="../States/State/State.lvclass"/>
 			<Item Name="StateFactory.lvclass" Type="LVClass" URL="../States/StateFactory/StateFactory.lvclass"/>
+		</Item>
+		<Item Name="Testing" Type="Folder">
+			<Item Name="TestM1M3SALTelemetry.vi" Type="VI" URL="../Testing/TestM1M3SALTelemetry.vi"/>
 		</Item>
 		<Item Name="UserEvents" Type="Folder">
 			<Item Name="UserEvents.lvclass" Type="LVClass" URL="../UserEvents/UserEvents.lvclass"/>
@@ -3066,6 +3069,47 @@ AddOutputFilter chunkFilter
 				<Property Name="TgtF_productName" Type="Str">M1M3SupportSoftware</Property>
 				<Property Name="TgtF_targetfileGUID" Type="Str">{AB27ECF8-9C53-4DF6-A835-278ABBE0873C}</Property>
 				<Property Name="TgtF_targetfileName" Type="Str">M1M3SupportSoftware.rtexe</Property>
+			</Item>
+			<Item Name="TestSAL" Type="{69A947D5-514E-4E75-818E-69657C0547D8}">
+				<Property Name="App_copyErrors" Type="Bool">true</Property>
+				<Property Name="App_INI_aliasGUID" Type="Str">{2B70E7FA-2D2C-453A-A471-4928D1EC3A53}</Property>
+				<Property Name="App_INI_GUID" Type="Str">{CFBA8245-9EA9-4165-B90A-162148FC2AC2}</Property>
+				<Property Name="App_serverConfig.httpPort" Type="Int">8002</Property>
+				<Property Name="Bld_autoIncrement" Type="Bool">true</Property>
+				<Property Name="Bld_buildCacheID" Type="Str">{7A447E95-3B48-4E36-A6EC-B52D42F8B80D}</Property>
+				<Property Name="Bld_buildSpecName" Type="Str">TestSAL</Property>
+				<Property Name="Bld_excludeInlineSubVIs" Type="Bool">true</Property>
+				<Property Name="Bld_excludeLibraryItems" Type="Bool">true</Property>
+				<Property Name="Bld_excludePolymorphicVIs" Type="Bool">true</Property>
+				<Property Name="Bld_localDestDir" Type="Path">../builds/NI_AB_PROJECTNAME/NI_AB_TARGETNAME/TestSAL</Property>
+				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
+				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
+				<Property Name="Bld_previewCacheID" Type="Str">{43FA9F10-07E9-4132-B758-721AE9E9A364}</Property>
+				<Property Name="Bld_targetDestDir" Type="Path">/home/lvuser/natinst/bin</Property>
+				<Property Name="Bld_version.build" Type="Int">1</Property>
+				<Property Name="Bld_version.major" Type="Int">1</Property>
+				<Property Name="Destination[0].destName" Type="Str">TestSAL.rtexe</Property>
+				<Property Name="Destination[0].path" Type="Path">/home/lvuser/natinst/bin/TestSAL.rtexe</Property>
+				<Property Name="Destination[0].path.type" Type="Str">&lt;none&gt;</Property>
+				<Property Name="Destination[0].preserveHierarchy" Type="Bool">true</Property>
+				<Property Name="Destination[0].type" Type="Str">App</Property>
+				<Property Name="Destination[1].destName" Type="Str">Support Directory</Property>
+				<Property Name="Destination[1].path" Type="Path">/home/lvuser/natinst/bin/data</Property>
+				<Property Name="Destination[1].path.type" Type="Str">&lt;none&gt;</Property>
+				<Property Name="DestinationCount" Type="Int">2</Property>
+				<Property Name="Source[0].itemID" Type="Str">{892ACEE2-10CF-4822-B1C1-25DEE3DE9882}</Property>
+				<Property Name="Source[0].type" Type="Str">Container</Property>
+				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
+				<Property Name="Source[1].itemID" Type="Ref">/RT CompactRIO Target/Dependencies/Items in Memory/TestSAL.vi</Property>
+				<Property Name="Source[1].sourceInclusion" Type="Str">TopLevel</Property>
+				<Property Name="Source[1].type" Type="Str">VI</Property>
+				<Property Name="SourceCount" Type="Int">2</Property>
+				<Property Name="TgtF_fileDescription" Type="Str">TestSAL</Property>
+				<Property Name="TgtF_internalName" Type="Str">TestSAL</Property>
+				<Property Name="TgtF_legalCopyright" Type="Str">Copyright © 2017 </Property>
+				<Property Name="TgtF_productName" Type="Str">TestSAL</Property>
+				<Property Name="TgtF_targetfileGUID" Type="Str">{FCF05D5E-ABC2-4224-AE0A-77827FB40574}</Property>
+				<Property Name="TgtF_targetfileName" Type="Str">TestSAL.rtexe</Property>
 			</Item>
 		</Item>
 	</Item>

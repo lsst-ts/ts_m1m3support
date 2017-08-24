@@ -117,7 +117,7 @@ typedef unsigned char bool_t;
 #define POLL_TIMEOUT 0
 
 #define HEADER_BUFFER_SIZE 6
-#define DATA_BUFFER_SIZE 1024
+#define DATA_BUFFER_SIZE 1048576
 
 #pragma pack(push, 1)
 typedef struct MessageHeader {
@@ -381,9 +381,31 @@ void processPutSampleForceActuatorDataClientRequest() {
     printf("ForceActuatorData\n");
     if (enabledTopics[MESSAGE_TOPIC_ForceActuatorData]) {
         bufferIndex = 0;
-        telemetryForceActuatorDataData.Timestamp = getDBL(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.SlewFlagCommanded[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.XSetpointCommanded[i] = getDBL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.YSetpointCommanded[i] = getDBL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.ZSetpointCommanded[i] = getDBL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.XForce[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.YForce[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.ZForce[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.ILCFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.DCAFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.BroadcastCounter[i] = getU8(buffer, &bufferIndex); }
+        telemetryForceActuatorDataData.Timestamp = getDBL(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.SlewFlagCommanded[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.XSetpointCommanded[i] = getDBL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.YSetpointCommanded[i] = getDBL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.ZSetpointCommanded[i] = getDBL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.XForce[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.YForce[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.ZForce[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.ILCFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.DCAFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorDataData.BroadcastCounter[i] = getU8(buffer, &bufferIndex); }
+
         m1m3SAL.putSample_ForceActuatorData(&telemetryForceActuatorDataData);
-        
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -392,9 +414,23 @@ void processPutSampleMirrorForceDataClientRequest() {
     printf("MirrorForceData\n");
     if (enabledTopics[MESSAGE_TOPIC_MirrorForceData]) {
         bufferIndex = 0;
-        telemetryMirrorForceDataData.Timestamp = getDBL(buffer, &bufferIndex);telemetryMirrorForceDataData.Fx = getDBL(buffer, &bufferIndex);telemetryMirrorForceDataData.Fy = getDBL(buffer, &bufferIndex);telemetryMirrorForceDataData.Fz = getDBL(buffer, &bufferIndex);telemetryMirrorForceDataData.Mx = getDBL(buffer, &bufferIndex);telemetryMirrorForceDataData.My = getDBL(buffer, &bufferIndex);telemetryMirrorForceDataData.Mz = getDBL(buffer, &bufferIndex);
+        telemetryMirrorForceDataData.Timestamp = getDBL(buffer, &bufferIndex);
+        telemetryMirrorForceDataData.Fx = getDBL(buffer, &bufferIndex);
+        telemetryMirrorForceDataData.Fy = getDBL(buffer, &bufferIndex);
+        telemetryMirrorForceDataData.Fz = getDBL(buffer, &bufferIndex);
+        telemetryMirrorForceDataData.Mx = getDBL(buffer, &bufferIndex);
+        telemetryMirrorForceDataData.My = getDBL(buffer, &bufferIndex);
+        telemetryMirrorForceDataData.Mz = getDBL(buffer, &bufferIndex);
+
         m1m3SAL.putSample_MirrorForceData(&telemetryMirrorForceDataData);
-        
+
+
+
+
+
+
+
+
     }
 }
 
@@ -403,9 +439,25 @@ void processPutSampleHardpointDataClientRequest() {
     printf("HardpointData\n");
     if (enabledTopics[MESSAGE_TOPIC_HardpointData]) {
         bufferIndex = 0;
-        telemetryHardpointDataData.Timestamp = getDBL(buffer, &bufferIndex);for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.StepsCommanded[i] = getI16(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.Force[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.Encoder[i] = getI32(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.ILCFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.CWLimitOperated[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.CCWLimitOperated[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.BroadcastCounter[i] = getU8(buffer, &bufferIndex); }
+        telemetryHardpointDataData.Timestamp = getDBL(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.StepsCommanded[i] = getI16(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.Force[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.Encoder[i] = getI32(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.ILCFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.CWLimitOperated[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.CCWLimitOperated[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointDataData.BroadcastCounter[i] = getU8(buffer, &bufferIndex); }
+
         m1m3SAL.putSample_HardpointData(&telemetryHardpointDataData);
-        
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -414,9 +466,15 @@ void processPutSampleAirDataClientRequest() {
     printf("AirData\n");
     if (enabledTopics[MESSAGE_TOPIC_AirData]) {
         bufferIndex = 0;
-        telemetryAirDataData.Timestamp = getDBL(buffer, &bufferIndex);telemetryAirDataData.CellAirPressure = getSGL(buffer, &bufferIndex);telemetryAirDataData.HardpointAirPressure = getSGL(buffer, &bufferIndex);
+        telemetryAirDataData.Timestamp = getDBL(buffer, &bufferIndex);
+        telemetryAirDataData.CellAirPressure = getSGL(buffer, &bufferIndex);
+        telemetryAirDataData.HardpointAirPressure = getSGL(buffer, &bufferIndex);
+
         m1m3SAL.putSample_AirData(&telemetryAirDataData);
-        
+
+
+
+
     }
 }
 
@@ -425,9 +483,19 @@ void processPutSampleDynamicDataClientRequest() {
     printf("DynamicData\n");
     if (enabledTopics[MESSAGE_TOPIC_DynamicData]) {
         bufferIndex = 0;
-        telemetryDynamicDataData.Timestamp = getDBL(buffer, &bufferIndex);telemetryDynamicDataData.AzimuthVelocity = getDBL(buffer, &bufferIndex);telemetryDynamicDataData.ElevationVelocity = getDBL(buffer, &bufferIndex);telemetryDynamicDataData.AzimuthAcceleration = getDBL(buffer, &bufferIndex);telemetryDynamicDataData.ElevationAcceleration = getDBL(buffer, &bufferIndex);
+        telemetryDynamicDataData.Timestamp = getDBL(buffer, &bufferIndex);
+        telemetryDynamicDataData.AzimuthVelocity = getDBL(buffer, &bufferIndex);
+        telemetryDynamicDataData.ElevationVelocity = getDBL(buffer, &bufferIndex);
+        telemetryDynamicDataData.AzimuthAcceleration = getDBL(buffer, &bufferIndex);
+        telemetryDynamicDataData.ElevationAcceleration = getDBL(buffer, &bufferIndex);
+
         m1m3SAL.putSample_DynamicData(&telemetryDynamicDataData);
-        
+
+
+
+
+
+
     }
 }
 
@@ -436,9 +504,113 @@ void processPutSampleFPGADataClientRequest() {
     printf("FPGAData\n");
     if (enabledTopics[MESSAGE_TOPIC_FPGAData]) {
         bufferIndex = 0;
-        telemetryFPGADataData.Timestamp = getDBL(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetATxInternalFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetAInvalidInstruction = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetAWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetAStartBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetAStopBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetARxDataFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetATxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetATxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetARxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetARxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBTxInternalFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBInvalidInstruction = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBStartBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBStopBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBRxDataFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBTxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBTxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBRxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetBRxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCTxInternalFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCInvalidInstruction = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCStartBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCStopBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCRxDataFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCTxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCTxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCRxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetCRxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDTxInternalFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDInvalidInstruction = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDStartBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDStopBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDRxDataFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDTxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDTxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDRxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetDRxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetETxInternalFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetEInvalidInstruction = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetEWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetEStartBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetEStopBitError = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetERxDataFIFOOverflow = getU8(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetETxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetETxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetERxByteCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.ModbusSubnetERxFrameCount = getU32(buffer, &bufferIndex);telemetryFPGADataData.FPGATime = getDBL(buffer, &bufferIndex);
+        telemetryFPGADataData.Timestamp = getDBL(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetATxInternalFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetAInvalidInstruction = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetAWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetAStartBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetAStopBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetARxDataFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetATxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetATxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetARxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetARxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBTxInternalFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBInvalidInstruction = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBStartBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBStopBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBRxDataFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBTxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBTxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBRxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetBRxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCTxInternalFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCInvalidInstruction = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCStartBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCStopBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCRxDataFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCTxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCTxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCRxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetCRxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDTxInternalFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDInvalidInstruction = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDStartBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDStopBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDRxDataFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDTxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDTxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDRxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetDRxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetETxInternalFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetEInvalidInstruction = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetEWaitForRxFrameTimeout = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetEStartBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetEStopBitError = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetERxDataFIFOOverflow = getU8(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetETxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetETxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetERxByteCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.ModbusSubnetERxFrameCount = getU32(buffer, &bufferIndex);
+        telemetryFPGADataData.FPGATime = getDBL(buffer, &bufferIndex);
+
         m1m3SAL.putSample_FPGAData(&telemetryFPGADataData);
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -447,9 +619,23 @@ void processPutSampleIMSDataClientRequest() {
     printf("IMSData\n");
     if (enabledTopics[MESSAGE_TOPIC_IMSData]) {
         bufferIndex = 0;
-        telemetryIMSDataData.Timestamp = getDBL(buffer, &bufferIndex);telemetryIMSDataData.XPosition = getDBL(buffer, &bufferIndex);telemetryIMSDataData.YPosition = getDBL(buffer, &bufferIndex);telemetryIMSDataData.ZPosition = getDBL(buffer, &bufferIndex);telemetryIMSDataData.XRotation = getDBL(buffer, &bufferIndex);telemetryIMSDataData.YRotation = getDBL(buffer, &bufferIndex);telemetryIMSDataData.ZRotation = getDBL(buffer, &bufferIndex);
+        telemetryIMSDataData.Timestamp = getDBL(buffer, &bufferIndex);
+        telemetryIMSDataData.XPosition = getDBL(buffer, &bufferIndex);
+        telemetryIMSDataData.YPosition = getDBL(buffer, &bufferIndex);
+        telemetryIMSDataData.ZPosition = getDBL(buffer, &bufferIndex);
+        telemetryIMSDataData.XRotation = getDBL(buffer, &bufferIndex);
+        telemetryIMSDataData.YRotation = getDBL(buffer, &bufferIndex);
+        telemetryIMSDataData.ZRotation = getDBL(buffer, &bufferIndex);
+
         m1m3SAL.putSample_IMSData(&telemetryIMSDataData);
-        
+
+
+
+
+
+
+
+
     }
 }
 
@@ -458,9 +644,45 @@ void processPutSampleForceActuatorStatusClientRequest() {
     printf("ForceActuatorStatus\n");
     if (enabledTopics[MESSAGE_TOPIC_ForceActuatorStatus]) {
         bufferIndex = 0;
-        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.Timestamp[i] = getDBL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.Mode[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.MajorFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.MinorFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.FaultOverridden[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.WatchdogReset[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.BrownoutDetected[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.EventTrapReset[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.SSRPowerFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.AUXPowerFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.SMCPowerFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAOutputsEnabled[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAPowerFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAAmplifierAFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAAmplifierBFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAEventTrapReset[i] = getU8(buffer, &bufferIndex); }
+        telemetryForceActuatorStatusData.Timestamp = getDBL(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.Mode[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.MajorFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.MinorFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.FaultOverridden[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.WatchdogReset[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.BrownoutDetected[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.EventTrapReset[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.MotorPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.SSRPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.AUXPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.SMCPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAOutputsEnabled[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAAmplifierAFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAAmplifierBFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { telemetryForceActuatorStatusData.DCAEventTrapReset[i] = getU8(buffer, &bufferIndex); }
+
         m1m3SAL.putSample_ForceActuatorStatus(&telemetryForceActuatorStatusData);
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -469,9 +691,15 @@ void processPutSampleElevationDataClientRequest() {
     printf("ElevationData\n");
     if (enabledTopics[MESSAGE_TOPIC_ElevationData]) {
         bufferIndex = 0;
-        telemetryElevationDataData.Timestamp = getDBL(buffer, &bufferIndex);telemetryElevationDataData.InclinometerElevation = getDBL(buffer, &bufferIndex);telemetryElevationDataData.MeasuredElevation = getDBL(buffer, &bufferIndex);
+        telemetryElevationDataData.Timestamp = getDBL(buffer, &bufferIndex);
+        telemetryElevationDataData.InclinometerElevation = getDBL(buffer, &bufferIndex);
+        telemetryElevationDataData.MeasuredElevation = getDBL(buffer, &bufferIndex);
+
         m1m3SAL.putSample_ElevationData(&telemetryElevationDataData);
-        
+
+
+
+
     }
 }
 
@@ -480,9 +708,33 @@ void processPutSampleHardpointStatusClientRequest() {
     printf("HardpointStatus\n");
     if (enabledTopics[MESSAGE_TOPIC_HardpointStatus]) {
         bufferIndex = 0;
-        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.Timestamp[i] = getDBL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.Mode[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.MajorFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.MinorFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.FaultOverridden[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.WatchdogReset[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.BrownoutDetected[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.EventTrapReset[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.SSRPowerFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.AUXPowerFault[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.SMCPowerFault[i] = getU8(buffer, &bufferIndex); }
+        telemetryHardpointStatusData.Timestamp = getDBL(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.Mode[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.MajorFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.MinorFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.FaultOverridden[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.WatchdogReset[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.BrownoutDetected[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.EventTrapReset[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.MotorPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.SSRPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.AUXPowerFault[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { telemetryHardpointStatusData.SMCPowerFault[i] = getU8(buffer, &bufferIndex); }
+
         m1m3SAL.putSample_HardpointStatus(&telemetryHardpointStatusData);
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -522,10 +774,16 @@ void processLogEventHardpointActuatorChaseClientRequest() {
     printf("HardpointActuatorChase\n");
     if (enabledTopics[MESSAGE_TOPIC_HardpointActuatorChase]) {
         bufferIndex = 0;
-        eventHardpointActuatorChaseData.Timestamp = getDBL(buffer, &bufferIndex);eventHardpointActuatorChaseData.ActuatorId = getI32(buffer, &bufferIndex);eventHardpointActuatorChaseData.Chasing = getU8(buffer, &bufferIndex);
+        eventHardpointActuatorChaseData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventHardpointActuatorChaseData.ActuatorId = getI32(buffer, &bufferIndex);
+        eventHardpointActuatorChaseData.Chasing = getU8(buffer, &bufferIndex);
+
         eventHardpointActuatorChaseData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_HardpointActuatorChase(&eventHardpointActuatorChaseData, eventHardpointActuatorChaseData.priority);
-        
+
+
+
+
     }
 }
 
@@ -534,10 +792,20 @@ void processLogEventAirStatusClientRequest() {
     printf("AirStatus\n");
     if (enabledTopics[MESSAGE_TOPIC_AirStatus]) {
         bufferIndex = 0;
-        eventAirStatusData.Timestamp = getDBL(buffer, &bufferIndex);eventAirStatusData.AirCommandedOn = getU8(buffer, &bufferIndex);eventAirStatusData.AirOn = getU8(buffer, &bufferIndex);eventAirStatusData.AirPressureOk = getU8(buffer, &bufferIndex);eventAirStatusData.HardpointAirPressureOk = getU8(buffer, &bufferIndex);
+        eventAirStatusData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventAirStatusData.AirCommandedOn = getU8(buffer, &bufferIndex);
+        eventAirStatusData.AirOn = getU8(buffer, &bufferIndex);
+        eventAirStatusData.AirPressureOk = getU8(buffer, &bufferIndex);
+        eventAirStatusData.HardpointAirPressureOk = getU8(buffer, &bufferIndex);
+
         eventAirStatusData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_AirStatus(&eventAirStatusData, eventAirStatusData.priority);
-        
+
+
+
+
+
+
     }
 }
 
@@ -546,10 +814,56 @@ void processLogEventForceActuatorSafetyChecksClientRequest() {
     printf("ForceActuatorSafetyChecks\n");
     if (enabledTopics[MESSAGE_TOPIC_ForceActuatorSafetyChecks]) {
         bufferIndex = 0;
-        eventForceActuatorSafetyChecksData.Timestamp = getDBL(buffer, &bufferIndex);eventForceActuatorSafetyChecksData.AllInSafetyLimit = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.SafetyLimitOk[i] = getU8(buffer, &bufferIndex); }eventForceActuatorSafetyChecksData.MirrorWeightOk = getU8(buffer, &bufferIndex);eventForceActuatorSafetyChecksData.XMomentOk = getU8(buffer, &bufferIndex);eventForceActuatorSafetyChecksData.YMomentOk = getU8(buffer, &bufferIndex);eventForceActuatorSafetyChecksData.AllNeighborsOk = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.NeighborsOk[i] = getU8(buffer, &bufferIndex); }eventForceActuatorSafetyChecksData.MagnitudeOK = getU8(buffer, &bufferIndex);eventForceActuatorSafetyChecksData.AllGlobalBendingOk = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.GlobalBendingOk[i] = getU8(buffer, &bufferIndex); }eventForceActuatorSafetyChecksData.FollowingErrorOk = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.AxialFollowingErrorOk[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.LateralFollowingErrorOk[i] = getU8(buffer, &bufferIndex); }eventForceActuatorSafetyChecksData.AOSNetForceOk = getU8(buffer, &bufferIndex);eventForceActuatorSafetyChecksData.AllElevationForcesOk = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.ElevationForcesOk[i] = getU8(buffer, &bufferIndex); }eventForceActuatorSafetyChecksData.AllAzimuthForcesOk = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.AzimuthForcesOk[i] = getU8(buffer, &bufferIndex); }eventForceActuatorSafetyChecksData.AllThermalForcesOk = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.ThermalForcesOk[i] = getU8(buffer, &bufferIndex); }eventForceActuatorSafetyChecksData.AllAOSForcesOk = getU8(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.AOSForcesOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventForceActuatorSafetyChecksData.AllInSafetyLimit = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.SafetyLimitOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.MirrorWeightOk = getU8(buffer, &bufferIndex);
+        eventForceActuatorSafetyChecksData.XMomentOk = getU8(buffer, &bufferIndex);
+        eventForceActuatorSafetyChecksData.YMomentOk = getU8(buffer, &bufferIndex);
+        eventForceActuatorSafetyChecksData.AllNeighborsOk = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.NeighborsOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.MagnitudeOK = getU8(buffer, &bufferIndex);
+        eventForceActuatorSafetyChecksData.AllGlobalBendingOk = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.GlobalBendingOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.FollowingErrorOk = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.AxialFollowingErrorOk[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.LateralFollowingErrorOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.AOSNetForceOk = getU8(buffer, &bufferIndex);
+        eventForceActuatorSafetyChecksData.AllElevationForcesOk = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.ElevationForcesOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.AllAzimuthForcesOk = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.AzimuthForcesOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.AllThermalForcesOk = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.ThermalForcesOk[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorSafetyChecksData.AllAOSForcesOk = getU8(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorSafetyChecksData.AOSForcesOk[i] = getU8(buffer, &bufferIndex); }
+
         eventForceActuatorSafetyChecksData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ForceActuatorSafetyChecks(&eventForceActuatorSafetyChecksData, eventForceActuatorSafetyChecksData.priority);
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -558,10 +872,16 @@ void processLogEventForceActuatorTestClientRequest() {
     printf("ForceActuatorTest\n");
     if (enabledTopics[MESSAGE_TOPIC_ForceActuatorTest]) {
         bufferIndex = 0;
-        eventForceActuatorTestData.Timestamp = getDBL(buffer, &bufferIndex);eventForceActuatorTestData.ActuatorId = getI32(buffer, &bufferIndex);eventForceActuatorTestData.TestStatus = getI32(buffer, &bufferIndex);
+        eventForceActuatorTestData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventForceActuatorTestData.ActuatorId = getI32(buffer, &bufferIndex);
+        eventForceActuatorTestData.TestStatus = getI32(buffer, &bufferIndex);
+
         eventForceActuatorTestData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ForceActuatorTest(&eventForceActuatorTestData, eventForceActuatorTestData.priority);
-        
+
+
+
+
     }
 }
 
@@ -570,10 +890,16 @@ void processLogEventActuatorBroadcastCounterClientRequest() {
     printf("ActuatorBroadcastCounter\n");
     if (enabledTopics[MESSAGE_TOPIC_ActuatorBroadcastCounter]) {
         bufferIndex = 0;
-        eventActuatorBroadcastCounterData.Timestamp = getDBL(buffer, &bufferIndex);eventActuatorBroadcastCounterData.ActuatorId = getI32(buffer, &bufferIndex);eventActuatorBroadcastCounterData.CounterOk = getU8(buffer, &bufferIndex);
+        eventActuatorBroadcastCounterData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventActuatorBroadcastCounterData.ActuatorId = getI32(buffer, &bufferIndex);
+        eventActuatorBroadcastCounterData.CounterOk = getU8(buffer, &bufferIndex);
+
         eventActuatorBroadcastCounterData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ActuatorBroadcastCounter(&eventActuatorBroadcastCounterData, eventActuatorBroadcastCounterData.priority);
-        
+
+
+
+
     }
 }
 
@@ -582,10 +908,20 @@ void processLogEventStatusChecksClientRequest() {
     printf("StatusChecks\n");
     if (enabledTopics[MESSAGE_TOPIC_StatusChecks]) {
         bufferIndex = 0;
-        eventStatusChecksData.Timestamp = getDBL(buffer, &bufferIndex);eventStatusChecksData.ILCResetOk = getU8(buffer, &bufferIndex);eventStatusChecksData.DCAResetOk = getU8(buffer, &bufferIndex);eventStatusChecksData.ILCPowerOk = getU8(buffer, &bufferIndex);eventStatusChecksData.DCAPowerOk = getU8(buffer, &bufferIndex);
+        eventStatusChecksData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventStatusChecksData.ILCResetOk = getU8(buffer, &bufferIndex);
+        eventStatusChecksData.DCAResetOk = getU8(buffer, &bufferIndex);
+        eventStatusChecksData.ILCPowerOk = getU8(buffer, &bufferIndex);
+        eventStatusChecksData.DCAPowerOk = getU8(buffer, &bufferIndex);
+
         eventStatusChecksData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_StatusChecks(&eventStatusChecksData, eventStatusChecksData.priority);
-        
+
+
+
+
+
+
     }
 }
 
@@ -594,10 +930,14 @@ void processLogEventCellChecksClientRequest() {
     printf("CellChecks\n");
     if (enabledTopics[MESSAGE_TOPIC_CellChecks]) {
         bufferIndex = 0;
-        eventCellChecksData.Timestamp = getDBL(buffer, &bufferIndex);eventCellChecksData.MirrorDoorClosed = getU8(buffer, &bufferIndex);
+        eventCellChecksData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventCellChecksData.MirrorDoorClosed = getU8(buffer, &bufferIndex);
+
         eventCellChecksData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_CellChecks(&eventCellChecksData, eventCellChecksData.priority);
-        
+
+
+
     }
 }
 
@@ -606,10 +946,16 @@ void processLogEventHardpointActuatorBreakawayClientRequest() {
     printf("HardpointActuatorBreakaway\n");
     if (enabledTopics[MESSAGE_TOPIC_HardpointActuatorBreakaway]) {
         bufferIndex = 0;
-        eventHardpointActuatorBreakawayData.Timestamp = getDBL(buffer, &bufferIndex);eventHardpointActuatorBreakawayData.ActuatorId = getI32(buffer, &bufferIndex);eventHardpointActuatorBreakawayData.ForceOk = getU8(buffer, &bufferIndex);
+        eventHardpointActuatorBreakawayData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventHardpointActuatorBreakawayData.ActuatorId = getI32(buffer, &bufferIndex);
+        eventHardpointActuatorBreakawayData.ForceOk = getU8(buffer, &bufferIndex);
+
         eventHardpointActuatorBreakawayData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_HardpointActuatorBreakaway(&eventHardpointActuatorBreakawayData, eventHardpointActuatorBreakawayData.priority);
-        
+
+
+
+
     }
 }
 
@@ -618,10 +964,14 @@ void processLogEventRaiseMirrorCompleteClientRequest() {
     printf("RaiseMirrorComplete\n");
     if (enabledTopics[MESSAGE_TOPIC_RaiseMirrorComplete]) {
         bufferIndex = 0;
-        eventRaiseMirrorCompleteData.Timestamp = getDBL(buffer, &bufferIndex);eventRaiseMirrorCompleteData.Successful = getU8(buffer, &bufferIndex);
+        eventRaiseMirrorCompleteData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventRaiseMirrorCompleteData.Successful = getU8(buffer, &bufferIndex);
+
         eventRaiseMirrorCompleteData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_RaiseMirrorComplete(&eventRaiseMirrorCompleteData, eventRaiseMirrorCompleteData.priority);
-        
+
+
+
     }
 }
 
@@ -630,10 +980,16 @@ void processLogEventILCCommunicationClientRequest() {
     printf("ILCCommunication\n");
     if (enabledTopics[MESSAGE_TOPIC_ILCCommunication]) {
         bufferIndex = 0;
-        eventILCCommunicationData.Timestamp = getDBL(buffer, &bufferIndex);eventILCCommunicationData.ActuatorId = getI32(buffer, &bufferIndex);eventILCCommunicationData.CommunicationOk = getU8(buffer, &bufferIndex);
+        eventILCCommunicationData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventILCCommunicationData.ActuatorId = getI32(buffer, &bufferIndex);
+        eventILCCommunicationData.CommunicationOk = getU8(buffer, &bufferIndex);
+
         eventILCCommunicationData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ILCCommunication(&eventILCCommunicationData, eventILCCommunicationData.priority);
-        
+
+
+
+
     }
 }
 
@@ -642,10 +998,18 @@ void processLogEventElevationAngleChecksClientRequest() {
     printf("ElevationAngleChecks\n");
     if (enabledTopics[MESSAGE_TOPIC_ElevationAngleChecks]) {
         bufferIndex = 0;
-        eventElevationAngleChecksData.Timestamp = getDBL(buffer, &bufferIndex);eventElevationAngleChecksData.MatchesTMA = getU8(buffer, &bufferIndex);eventElevationAngleChecksData.MatchesInclinometer = getU8(buffer, &bufferIndex);eventElevationAngleChecksData.MatchesMeasured = getU8(buffer, &bufferIndex);
+        eventElevationAngleChecksData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventElevationAngleChecksData.MatchesTMA = getU8(buffer, &bufferIndex);
+        eventElevationAngleChecksData.MatchesInclinometer = getU8(buffer, &bufferIndex);
+        eventElevationAngleChecksData.MatchesMeasured = getU8(buffer, &bufferIndex);
+
         eventElevationAngleChecksData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ElevationAngleChecks(&eventElevationAngleChecksData, eventElevationAngleChecksData.priority);
-        
+
+
+
+
+
     }
 }
 
@@ -654,10 +1018,14 @@ void processLogEventDetailedStateClientRequest() {
     printf("DetailedState\n");
     if (enabledTopics[MESSAGE_TOPIC_DetailedState]) {
         bufferIndex = 0;
-        eventDetailedStateData.Timestamp = getDBL(buffer, &bufferIndex);eventDetailedStateData.DetailedState = getI32(buffer, &bufferIndex);
+        eventDetailedStateData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventDetailedStateData.DetailedState = getI32(buffer, &bufferIndex);
+
         eventDetailedStateData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_DetailedState(&eventDetailedStateData, eventDetailedStateData.priority);
-        
+
+
+
     }
 }
 
@@ -666,10 +1034,18 @@ void processLogEventServoLoopsClientRequest() {
     printf("ServoLoops\n");
     if (enabledTopics[MESSAGE_TOPIC_ServoLoops]) {
         bufferIndex = 0;
-        eventServoLoopsData.Timestamp = getDBL(buffer, &bufferIndex);eventServoLoopsData.HardpointChase = getU8(buffer, &bufferIndex);eventServoLoopsData.HardpointOffloading = getU8(buffer, &bufferIndex);eventServoLoopsData.OuterLoopTimeOk = getU8(buffer, &bufferIndex);
+        eventServoLoopsData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventServoLoopsData.HardpointChase = getU8(buffer, &bufferIndex);
+        eventServoLoopsData.HardpointOffloading = getU8(buffer, &bufferIndex);
+        eventServoLoopsData.OuterLoopTimeOk = getU8(buffer, &bufferIndex);
+
         eventServoLoopsData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ServoLoops(&eventServoLoopsData, eventServoLoopsData.priority);
-        
+
+
+
+
+
     }
 }
 
@@ -678,10 +1054,112 @@ void processLogEventForceActuatorInfoClientRequest() {
     printf("ForceActuatorInfo\n");
     if (enabledTopics[MESSAGE_TOPIC_ForceActuatorInfo]) {
         bufferIndex = 0;
-        eventForceActuatorInfoData.Timestamp = getDBL(buffer, &bufferIndex);for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ReferenceId[i] = getI32(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.XPosition[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.YPosition[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ZPosition[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ILCUniqueId[i] = getI64(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ILCApplicationType[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.NetworkNodeType[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ILCSelectedOptions[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.NetworkNodeOptions[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MajorRevision[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MinorRevision[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ADCScanRate[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainAxialLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainLateralLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainAxialLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainLateralLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupAxialLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupLateralLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupAxialLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupLateralLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAAxialGain[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCALateralGain[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAUniqueId[i] = getI64(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAFirmwareType[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAMajorRevision[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAMinorRevision[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainCalibrationError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupCalibrationError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAFirmwareUpdate[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.UniqueIdCRCError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ApplicationTypeMismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ApplicationMissing[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ApplicationCRCMismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.OneWireMissing[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.OneWire1Mismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.OneWire2Mismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAUniqueIdCRCError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAMainCalibrationError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCABackupCalibrationError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAApplicationMissing[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAApplicationCRCMismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCABootloaderActive[i] = getU8(buffer, &bufferIndex); }
+        eventForceActuatorInfoData.Timestamp = getDBL(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ReferenceId[i] = getI32(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.XPosition[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.YPosition[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ZPosition[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ILCUniqueId[i] = getI64(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ILCApplicationType[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.NetworkNodeType[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ILCSelectedOptions[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.NetworkNodeOptions[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MajorRevision[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MinorRevision[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ADCScanRate[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainAxialLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainLateralLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainAxialLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainLateralLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupAxialLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupLateralLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupAxialLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupLateralLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAAxialGain[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCALateralGain[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAUniqueId[i] = getI64(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAFirmwareType[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAMajorRevision[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAMinorRevision[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.MainCalibrationError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.BackupCalibrationError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAFirmwareUpdate[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.UniqueIdCRCError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ApplicationTypeMismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ApplicationMissing[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.ApplicationCRCMismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.OneWireMissing[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.OneWire1Mismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.OneWire2Mismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAUniqueIdCRCError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAMainCalibrationError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCABackupCalibrationError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAApplicationMissing[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCAApplicationCRCMismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 156; i++) { eventForceActuatorInfoData.DCABootloaderActive[i] = getU8(buffer, &bufferIndex); }
+
         eventForceActuatorInfoData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ForceActuatorInfo(&eventForceActuatorInfoData, eventForceActuatorInfoData.priority);
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -690,10 +1168,14 @@ void processLogEventLowerMirrorCompleteClientRequest() {
     printf("LowerMirrorComplete\n");
     if (enabledTopics[MESSAGE_TOPIC_LowerMirrorComplete]) {
         bufferIndex = 0;
-        eventLowerMirrorCompleteData.Timestamp = getDBL(buffer, &bufferIndex);eventLowerMirrorCompleteData.Successful = getU8(buffer, &bufferIndex);
+        eventLowerMirrorCompleteData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventLowerMirrorCompleteData.Successful = getU8(buffer, &bufferIndex);
+
         eventLowerMirrorCompleteData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_LowerMirrorComplete(&eventLowerMirrorCompleteData, eventLowerMirrorCompleteData.priority);
-        
+
+
+
     }
 }
 
@@ -702,10 +1184,80 @@ void processLogEventHardpointActuatorInfoClientRequest() {
     printf("HardpointActuatorInfo\n");
     if (enabledTopics[MESSAGE_TOPIC_HardpointActuatorInfo]) {
         bufferIndex = 0;
-        eventHardpointActuatorInfoData.Timestamp = getDBL(buffer, &bufferIndex);for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ReferenceId[i] = getI32(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ReferencePosition[i] = getI32(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.XPosition[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.YPosition[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ZPosition[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ILCUniqueId[i] = getI64(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ILCApplicationType[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.NetworkNodeType[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ILCSelectedOptions[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.NetworkNodeOptions[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MajorRevision[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MinorRevision[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ADCScanRate[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainCalibrationError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupCalibrationError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.UniqueIdCRCError[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ApplicationTypeMismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ApplicationMissing[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ApplicationCRCMismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.OneWireMissing[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.OneWire1Mismatch[i] = getU8(buffer, &bufferIndex); }for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.OneWire2Mismatch[i] = getU8(buffer, &bufferIndex); }
+        eventHardpointActuatorInfoData.Timestamp = getDBL(buffer, &bufferIndex);
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ReferenceId[i] = getI32(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ReferencePosition[i] = getI32(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.XPosition[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.YPosition[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ZPosition[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ILCUniqueId[i] = getI64(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ILCApplicationType[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.NetworkNodeType[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ILCSelectedOptions[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.NetworkNodeOptions[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MajorRevision[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MinorRevision[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ADCScanRate[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK1[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK2[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK3[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupADCCalibrationK4[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupLoadCellOffset[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupLoadCellSensitivity[i] = getSGL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.MainCalibrationError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.BackupCalibrationError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.UniqueIdCRCError[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ApplicationTypeMismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ApplicationMissing[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.ApplicationCRCMismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.OneWireMissing[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.OneWire1Mismatch[i] = getU8(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 6; i++) { eventHardpointActuatorInfoData.OneWire2Mismatch[i] = getU8(buffer, &bufferIndex); }
+
         eventHardpointActuatorInfoData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_HardpointActuatorInfo(&eventHardpointActuatorInfoData, eventHardpointActuatorInfoData.priority);
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
@@ -714,10 +1266,14 @@ void processLogEventSettingsAppliedClientRequest() {
     printf("SettingsApplied\n");
     if (enabledTopics[MESSAGE_TOPIC_SettingsApplied]) {
         bufferIndex = 0;
-        eventSettingsAppliedData.Timestamp = getDBL(buffer, &bufferIndex);std::string* tmp_Settings = getString(buffer, &bufferIndex); eventSettingsAppliedData.Settings = *tmp_Settings;
+        eventSettingsAppliedData.Timestamp = getDBL(buffer, &bufferIndex);
+        std::string* tmp_Settings = getString(buffer, &bufferIndex); eventSettingsAppliedData.Settings = *tmp_Settings;
+
         eventSettingsAppliedData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_SettingsApplied(&eventSettingsAppliedData, eventSettingsAppliedData.priority);
+
         eventSettingsAppliedData.Settings = ""; delete tmp_Settings;
+
     }
 }
 
@@ -726,10 +1282,14 @@ void processLogEventErrorCodeClientRequest() {
     printf("ErrorCode\n");
     if (enabledTopics[MESSAGE_TOPIC_ErrorCode]) {
         bufferIndex = 0;
-        eventErrorCodeData.Timestamp = getDBL(buffer, &bufferIndex);eventErrorCodeData.ErrorCode = getI32(buffer, &bufferIndex);
+        eventErrorCodeData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventErrorCodeData.ErrorCode = getI32(buffer, &bufferIndex);
+
         eventErrorCodeData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ErrorCode(&eventErrorCodeData, eventErrorCodeData.priority);
-        
+
+
+
     }
 }
 
@@ -738,10 +1298,24 @@ void processLogEventStartupChecksClientRequest() {
     printf("StartupChecks\n");
     if (enabledTopics[MESSAGE_TOPIC_StartupChecks]) {
         bufferIndex = 0;
-        eventStartupChecksData.Timestamp = getDBL(buffer, &bufferIndex);eventStartupChecksData.ILCVersionsOk = getU8(buffer, &bufferIndex);eventStartupChecksData.DCAVersionsOk = getU8(buffer, &bufferIndex);eventStartupChecksData.ILCFirmwareOk = getU8(buffer, &bufferIndex);eventStartupChecksData.DCAFirmwareOk = getU8(buffer, &bufferIndex);eventStartupChecksData.ILCStatusOk = getU8(buffer, &bufferIndex);eventStartupChecksData.DCAStatusOk = getU8(buffer, &bufferIndex);
+        eventStartupChecksData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventStartupChecksData.ILCVersionsOk = getU8(buffer, &bufferIndex);
+        eventStartupChecksData.DCAVersionsOk = getU8(buffer, &bufferIndex);
+        eventStartupChecksData.ILCFirmwareOk = getU8(buffer, &bufferIndex);
+        eventStartupChecksData.DCAFirmwareOk = getU8(buffer, &bufferIndex);
+        eventStartupChecksData.ILCStatusOk = getU8(buffer, &bufferIndex);
+        eventStartupChecksData.DCAStatusOk = getU8(buffer, &bufferIndex);
+
         eventStartupChecksData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_StartupChecks(&eventStartupChecksData, eventStartupChecksData.priority);
-        
+
+
+
+
+
+
+
+
     }
 }
 
@@ -750,10 +1324,14 @@ void processLogEventSummaryStateClientRequest() {
     printf("SummaryState\n");
     if (enabledTopics[MESSAGE_TOPIC_SummaryState]) {
         bufferIndex = 0;
-        eventSummaryStateData.Timestamp = getDBL(buffer, &bufferIndex);eventSummaryStateData.SummaryState = getI32(buffer, &bufferIndex);
+        eventSummaryStateData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventSummaryStateData.SummaryState = getI32(buffer, &bufferIndex);
+
         eventSummaryStateData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_SummaryState(&eventSummaryStateData, eventSummaryStateData.priority);
-        
+
+
+
     }
 }
 
@@ -762,10 +1340,14 @@ void processLogEventSettingVersionsClientRequest() {
     printf("SettingVersions\n");
     if (enabledTopics[MESSAGE_TOPIC_SettingVersions]) {
         bufferIndex = 0;
-        eventSettingVersionsData.Timestamp = getDBL(buffer, &bufferIndex);std::string* tmp_RecommendedSettingsVersion = getString(buffer, &bufferIndex); eventSettingVersionsData.RecommendedSettingsVersion = *tmp_RecommendedSettingsVersion;
+        eventSettingVersionsData.Timestamp = getDBL(buffer, &bufferIndex);
+        std::string* tmp_RecommendedSettingsVersion = getString(buffer, &bufferIndex); eventSettingVersionsData.RecommendedSettingsVersion = *tmp_RecommendedSettingsVersion;
+
         eventSettingVersionsData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_SettingVersions(&eventSettingVersionsData, eventSettingVersionsData.priority);
+
         eventSettingVersionsData.RecommendedSettingsVersion = ""; delete tmp_RecommendedSettingsVersion;
+
     }
 }
 
@@ -774,10 +1356,14 @@ void processLogEventActuatorTestStatusClientRequest() {
     printf("ActuatorTestStatus\n");
     if (enabledTopics[MESSAGE_TOPIC_ActuatorTestStatus]) {
         bufferIndex = 0;
-        eventActuatorTestStatusData.Timestamp = getDBL(buffer, &bufferIndex);eventActuatorTestStatusData.AllTestsRan = getU8(buffer, &bufferIndex);
+        eventActuatorTestStatusData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventActuatorTestStatusData.AllTestsRan = getU8(buffer, &bufferIndex);
+
         eventActuatorTestStatusData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_ActuatorTestStatus(&eventActuatorTestStatusData, eventActuatorTestStatusData.priority);
-        
+
+
+
     }
 }
 
@@ -786,10 +1372,14 @@ void processLogEventAppliedSettingsMatchStartClientRequest() {
     printf("AppliedSettingsMatchStart\n");
     if (enabledTopics[MESSAGE_TOPIC_AppliedSettingsMatchStart]) {
         bufferIndex = 0;
-        eventAppliedSettingsMatchStartData.Timestamp = getDBL(buffer, &bufferIndex);eventAppliedSettingsMatchStartData.AppliedSettingsMatchStart = getU8(buffer, &bufferIndex);
+        eventAppliedSettingsMatchStartData.Timestamp = getDBL(buffer, &bufferIndex);
+        eventAppliedSettingsMatchStartData.AppliedSettingsMatchStart = getU8(buffer, &bufferIndex);
+
         eventAppliedSettingsMatchStartData.priority = getI32(buffer, &bufferIndex);
         m1m3SAL.logEvent_AppliedSettingsMatchStart(&eventAppliedSettingsMatchStartData, eventAppliedSettingsMatchStartData.priority);
-        
+
+
+
     }
 }
 
@@ -851,8 +1441,10 @@ void processIssueCommandEnableClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_Enable]) {
         bufferIndex = 0;
         commandEnableData.Enable = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_Enable(&commandEnableData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_Enable);
     }
 }
@@ -863,8 +1455,10 @@ void processIssueCommandEnterMaintenanceClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_EnterMaintenance]) {
         bufferIndex = 0;
         commandEnterMaintenanceData.EnterMaintenance = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_EnterMaintenance(&commandEnterMaintenanceData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_EnterMaintenance);
     }
 }
@@ -875,8 +1469,10 @@ void processIssueCommandStandbyClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_Standby]) {
         bufferIndex = 0;
         commandStandbyData.Standby = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_Standby(&commandStandbyData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_Standby);
     }
 }
@@ -887,8 +1483,10 @@ void processIssueCommandAbortLowerM1M3ClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_AbortLowerM1M3]) {
         bufferIndex = 0;
         commandAbortLowerM1M3Data.AbortLowerM1M3 = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_AbortLowerM1M3(&commandAbortLowerM1M3Data);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_AbortLowerM1M3);
     }
 }
@@ -899,8 +1497,10 @@ void processIssueCommandApplyAberrationByForcesClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByForces]) {
         bufferIndex = 0;
         for(int32_t i = 0; i < 156; i++) { commandApplyAberrationByForcesData.ZForces[i] = getDBL(buffer, &bufferIndex); }
+
         commandId = m1m3SAL.issueCommand_ApplyAberrationByForces(&commandApplyAberrationByForcesData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_ApplyAberrationByForces);
     }
 }
@@ -911,8 +1511,10 @@ void processIssueCommandApplyAOSCorrectionByBendingModesClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_ApplyAOSCorrectionByBendingModes]) {
         bufferIndex = 0;
         for(int32_t i = 0; i < 22; i++) { commandApplyAOSCorrectionByBendingModesData.Coefficients[i] = getDBL(buffer, &bufferIndex); }
+
         commandId = m1m3SAL.issueCommand_ApplyAOSCorrectionByBendingModes(&commandApplyAOSCorrectionByBendingModesData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_ApplyAOSCorrectionByBendingModes);
     }
 }
@@ -923,8 +1525,10 @@ void processIssueCommandClearAOSCorrectionClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_ClearAOSCorrection]) {
         bufferIndex = 0;
         commandClearAOSCorrectionData.ClearAOSCorrection = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_ClearAOSCorrection(&commandClearAOSCorrectionData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_ClearAOSCorrection);
     }
 }
@@ -934,9 +1538,13 @@ void processIssueCommandStartClientRequest() {
     printf("Start\n");
     if (enabledTopics[MESSAGE_TOPIC_Start]) {
         bufferIndex = 0;
-        commandStartData.Start = getU8(buffer, &bufferIndex);std::string* tmp_SettingsToApply = getString(buffer, &bufferIndex); commandStartData.SettingsToApply = *tmp_SettingsToApply;
+        commandStartData.Start = getU8(buffer, &bufferIndex);
+        std::string* tmp_SettingsToApply = getString(buffer, &bufferIndex); commandStartData.SettingsToApply = *tmp_SettingsToApply;
+
         commandId = m1m3SAL.issueCommand_Start(&commandStartData);
+
         commandStartData.SettingsToApply = ""; delete tmp_SettingsToApply;
+
         sendCommandId(MESSAGE_TOPIC_Start);
     }
 }
@@ -947,8 +1555,10 @@ void processIssueCommandRaiseM1M3ClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_RaiseM1M3]) {
         bufferIndex = 0;
         commandRaiseM1M3Data.RaiseM1M3 = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_RaiseM1M3(&commandRaiseM1M3Data);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_RaiseM1M3);
     }
 }
@@ -959,8 +1569,10 @@ void processIssueCommandTestForceActuatorClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_TestForceActuator]) {
         bufferIndex = 0;
         commandTestForceActuatorData.ActuatorId = getI32(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_TestForceActuator(&commandTestForceActuatorData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_TestForceActuator);
     }
 }
@@ -971,8 +1583,10 @@ void processIssueCommandLowerM1M3ClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_LowerM1M3]) {
         bufferIndex = 0;
         commandLowerM1M3Data.LowerM1M3 = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_LowerM1M3(&commandLowerM1M3Data);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_LowerM1M3);
     }
 }
@@ -983,8 +1597,10 @@ void processIssueCommandApplyAOSCorrectionByForcesClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_ApplyAOSCorrectionByForces]) {
         bufferIndex = 0;
         for(int32_t i = 0; i < 156; i++) { commandApplyAOSCorrectionByForcesData.ZForces[i] = getDBL(buffer, &bufferIndex); }
+
         commandId = m1m3SAL.issueCommand_ApplyAOSCorrectionByForces(&commandApplyAOSCorrectionByForcesData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_ApplyAOSCorrectionByForces);
     }
 }
@@ -995,8 +1611,10 @@ void processIssueCommandDisableClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_Disable]) {
         bufferIndex = 0;
         commandDisableData.Disable = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_Disable(&commandDisableData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_Disable);
     }
 }
@@ -1007,8 +1625,10 @@ void processIssueCommandApplyAberrationByBendingModeClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByBendingMode]) {
         bufferIndex = 0;
         for(int32_t i = 0; i < 22; i++) { commandApplyAberrationByBendingModeData.Coefficients[i] = getDBL(buffer, &bufferIndex); }
+
         commandId = m1m3SAL.issueCommand_ApplyAberrationByBendingMode(&commandApplyAberrationByBendingModeData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_ApplyAberrationByBendingMode);
     }
 }
@@ -1019,8 +1639,10 @@ void processIssueCommandTestHardpointClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_TestHardpoint]) {
         bufferIndex = 0;
         commandTestHardpointData.ActuatorId = getI32(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_TestHardpoint(&commandTestHardpointData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_TestHardpoint);
     }
 }
@@ -1030,9 +1652,21 @@ void processIssueCommandManipulateM1M3ClientRequest() {
     printf("ManipulateM1M3\n");
     if (enabledTopics[MESSAGE_TOPIC_ManipulateM1M3]) {
         bufferIndex = 0;
-        commandManipulateM1M3Data.XTranslation = getDBL(buffer, &bufferIndex);commandManipulateM1M3Data.YTranslation = getDBL(buffer, &bufferIndex);commandManipulateM1M3Data.ZTranslation = getDBL(buffer, &bufferIndex);commandManipulateM1M3Data.XRotation = getDBL(buffer, &bufferIndex);commandManipulateM1M3Data.YRotation = getDBL(buffer, &bufferIndex);commandManipulateM1M3Data.ZRotation = getDBL(buffer, &bufferIndex);
+        commandManipulateM1M3Data.XTranslation = getDBL(buffer, &bufferIndex);
+        commandManipulateM1M3Data.YTranslation = getDBL(buffer, &bufferIndex);
+        commandManipulateM1M3Data.ZTranslation = getDBL(buffer, &bufferIndex);
+        commandManipulateM1M3Data.XRotation = getDBL(buffer, &bufferIndex);
+        commandManipulateM1M3Data.YRotation = getDBL(buffer, &bufferIndex);
+        commandManipulateM1M3Data.ZRotation = getDBL(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_ManipulateM1M3(&commandManipulateM1M3Data);
-        
+
+
+
+
+
+
+
         sendCommandId(MESSAGE_TOPIC_ManipulateM1M3);
     }
 }
@@ -1043,8 +1677,10 @@ void processIssueCommandClearAberrationClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_ClearAberration]) {
         bufferIndex = 0;
         commandClearAberrationData.ClearAberration = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_ClearAberration(&commandClearAberrationData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_ClearAberration);
     }
 }
@@ -1055,8 +1691,10 @@ void processIssueCommandExitClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_Exit]) {
         bufferIndex = 0;
         commandExitData.Exit = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_Exit(&commandExitData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_Exit);
     }
 }
@@ -1067,8 +1705,10 @@ void processIssueCommandTestAirClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_TestAir]) {
         bufferIndex = 0;
         commandTestAirData.TestAir = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_TestAir(&commandTestAirData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_TestAir);
     }
 }
@@ -1079,8 +1719,10 @@ void processIssueCommandAbortRaiseM1M3ClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_AbortRaiseM1M3]) {
         bufferIndex = 0;
         commandAbortRaiseM1M3Data.AbortRaiseM1M3 = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_AbortRaiseM1M3(&commandAbortRaiseM1M3Data);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_AbortRaiseM1M3);
     }
 }
@@ -1091,8 +1733,10 @@ void processIssueCommandMoveHardpointActuatorsClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_MoveHardpointActuators]) {
         bufferIndex = 0;
         for(int32_t i = 0; i < 6; i++) { commandMoveHardpointActuatorsData.Steps[i] = getU8(buffer, &bufferIndex); }
+
         commandId = m1m3SAL.issueCommand_MoveHardpointActuators(&commandMoveHardpointActuatorsData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_MoveHardpointActuators);
     }
 }
@@ -1103,8 +1747,10 @@ void processIssueCommandExitMaintenanceClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_ExitMaintenance]) {
         bufferIndex = 0;
         commandExitMaintenanceData.ExitMaintenance = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_ExitMaintenance(&commandExitMaintenanceData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_ExitMaintenance);
     }
 }
@@ -1115,8 +1761,10 @@ void processIssueCommandShutdownClientRequest() {
     if (enabledTopics[MESSAGE_TOPIC_Shutdown]) {
         bufferIndex = 0;
         commandShutdownData.Shutdown = getU8(buffer, &bufferIndex);
+
         commandId = m1m3SAL.issueCommand_Shutdown(&commandShutdownData);
-        
+
+
         sendCommandId(MESSAGE_TOPIC_Shutdown);
     }
 }
@@ -1240,7 +1888,18 @@ void processGetNextSampleForceActuatorDataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE ForceActuatorData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.Timestamp);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.SlewFlagCommanded[i]); }for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.XSetpointCommanded[i]); }for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.YSetpointCommanded[i]); }for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.ZSetpointCommanded[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, telemetryForceActuatorDataData.XForce[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, telemetryForceActuatorDataData.YForce[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, telemetryForceActuatorDataData.ZForce[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.ILCFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.DCAFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.BroadcastCounter[i]); }
+        setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.Timestamp);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.SlewFlagCommanded[i]); }
+        for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.XSetpointCommanded[i]); }
+        for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.YSetpointCommanded[i]); }
+        for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, telemetryForceActuatorDataData.ZSetpointCommanded[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, telemetryForceActuatorDataData.XForce[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, telemetryForceActuatorDataData.YForce[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, telemetryForceActuatorDataData.ZForce[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.ILCFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.DCAFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorDataData.BroadcastCounter[i]); }
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_ForceActuatorData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1253,7 +1912,14 @@ void processGetNextSampleMirrorForceDataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE MirrorForceData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Timestamp);setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Fx);setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Fy);setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Fz);setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Mx);setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.My);setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Mz);
+        setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Timestamp);
+        setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Fx);
+        setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Fy);
+        setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Fz);
+        setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Mx);
+        setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.My);
+        setDBL(buffer, &bufferIndex, telemetryMirrorForceDataData.Mz);
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_MirrorForceData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1266,7 +1932,15 @@ void processGetNextSampleHardpointDataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE HardpointData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryHardpointDataData.Timestamp);for(int32_t i = 0; i < 6; i++) { setI16(buffer, &bufferIndex, telemetryHardpointDataData.StepsCommanded[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, telemetryHardpointDataData.Force[i]); }for(int32_t i = 0; i < 6; i++) { setI32(buffer, &bufferIndex, telemetryHardpointDataData.Encoder[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.ILCFault[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.CWLimitOperated[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.CCWLimitOperated[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.BroadcastCounter[i]); }
+        setDBL(buffer, &bufferIndex, telemetryHardpointDataData.Timestamp);
+        for(int32_t i = 0; i < 6; i++) { setI16(buffer, &bufferIndex, telemetryHardpointDataData.StepsCommanded[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, telemetryHardpointDataData.Force[i]); }
+        for(int32_t i = 0; i < 6; i++) { setI32(buffer, &bufferIndex, telemetryHardpointDataData.Encoder[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.ILCFault[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.CWLimitOperated[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.CCWLimitOperated[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointDataData.BroadcastCounter[i]); }
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_HardpointData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1279,7 +1953,10 @@ void processGetNextSampleAirDataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE AirData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryAirDataData.Timestamp);setSGL(buffer, &bufferIndex, telemetryAirDataData.CellAirPressure);setSGL(buffer, &bufferIndex, telemetryAirDataData.HardpointAirPressure);
+        setDBL(buffer, &bufferIndex, telemetryAirDataData.Timestamp);
+        setSGL(buffer, &bufferIndex, telemetryAirDataData.CellAirPressure);
+        setSGL(buffer, &bufferIndex, telemetryAirDataData.HardpointAirPressure);
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_AirData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1292,7 +1969,12 @@ void processGetNextSampleDynamicDataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE DynamicData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryDynamicDataData.Timestamp);setDBL(buffer, &bufferIndex, telemetryDynamicDataData.AzimuthVelocity);setDBL(buffer, &bufferIndex, telemetryDynamicDataData.ElevationVelocity);setDBL(buffer, &bufferIndex, telemetryDynamicDataData.AzimuthAcceleration);setDBL(buffer, &bufferIndex, telemetryDynamicDataData.ElevationAcceleration);
+        setDBL(buffer, &bufferIndex, telemetryDynamicDataData.Timestamp);
+        setDBL(buffer, &bufferIndex, telemetryDynamicDataData.AzimuthVelocity);
+        setDBL(buffer, &bufferIndex, telemetryDynamicDataData.ElevationVelocity);
+        setDBL(buffer, &bufferIndex, telemetryDynamicDataData.AzimuthAcceleration);
+        setDBL(buffer, &bufferIndex, telemetryDynamicDataData.ElevationAcceleration);
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_DynamicData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1305,7 +1987,59 @@ void processGetNextSampleFPGADataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE FPGAData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryFPGADataData.Timestamp);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetATxInternalFIFOOverflow);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAInvalidInstruction);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAWaitForRxFrameTimeout);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAStartBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAStopBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetARxDataFIFOOverflow);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetATxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetATxFrameCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetARxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetARxFrameCount);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBTxInternalFIFOOverflow);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBInvalidInstruction);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBWaitForRxFrameTimeout);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBStartBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBStopBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBRxDataFIFOOverflow);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBTxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBTxFrameCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBRxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBRxFrameCount);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCTxInternalFIFOOverflow);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCInvalidInstruction);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCWaitForRxFrameTimeout);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCStartBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCStopBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCRxDataFIFOOverflow);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCTxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCTxFrameCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCRxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCRxFrameCount);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDTxInternalFIFOOverflow);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDInvalidInstruction);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDWaitForRxFrameTimeout);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDStartBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDStopBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDRxDataFIFOOverflow);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDTxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDTxFrameCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDRxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDRxFrameCount);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetETxInternalFIFOOverflow);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEInvalidInstruction);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEWaitForRxFrameTimeout);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEStartBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEStopBitError);setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetERxDataFIFOOverflow);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetETxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetETxFrameCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetERxByteCount);setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetERxFrameCount);setDBL(buffer, &bufferIndex, telemetryFPGADataData.FPGATime);
+        setDBL(buffer, &bufferIndex, telemetryFPGADataData.Timestamp);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetATxInternalFIFOOverflow);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAInvalidInstruction);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAWaitForRxFrameTimeout);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAStartBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetAStopBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetARxDataFIFOOverflow);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetATxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetATxFrameCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetARxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetARxFrameCount);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBTxInternalFIFOOverflow);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBInvalidInstruction);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBWaitForRxFrameTimeout);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBStartBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBStopBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBRxDataFIFOOverflow);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBTxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBTxFrameCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBRxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetBRxFrameCount);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCTxInternalFIFOOverflow);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCInvalidInstruction);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCWaitForRxFrameTimeout);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCStartBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCStopBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCRxDataFIFOOverflow);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCTxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCTxFrameCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCRxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetCRxFrameCount);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDTxInternalFIFOOverflow);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDInvalidInstruction);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDWaitForRxFrameTimeout);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDStartBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDStopBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDRxDataFIFOOverflow);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDTxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDTxFrameCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDRxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetDRxFrameCount);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetETxInternalFIFOOverflow);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEInvalidInstruction);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEWaitForRxFrameTimeout);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEStartBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetEStopBitError);
+        setU8(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetERxDataFIFOOverflow);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetETxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetETxFrameCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetERxByteCount);
+        setU32(buffer, &bufferIndex, telemetryFPGADataData.ModbusSubnetERxFrameCount);
+        setDBL(buffer, &bufferIndex, telemetryFPGADataData.FPGATime);
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_FPGAData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1318,7 +2052,14 @@ void processGetNextSampleIMSDataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE IMSData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryIMSDataData.Timestamp);setDBL(buffer, &bufferIndex, telemetryIMSDataData.XPosition);setDBL(buffer, &bufferIndex, telemetryIMSDataData.YPosition);setDBL(buffer, &bufferIndex, telemetryIMSDataData.ZPosition);setDBL(buffer, &bufferIndex, telemetryIMSDataData.XRotation);setDBL(buffer, &bufferIndex, telemetryIMSDataData.YRotation);setDBL(buffer, &bufferIndex, telemetryIMSDataData.ZRotation);
+        setDBL(buffer, &bufferIndex, telemetryIMSDataData.Timestamp);
+        setDBL(buffer, &bufferIndex, telemetryIMSDataData.XPosition);
+        setDBL(buffer, &bufferIndex, telemetryIMSDataData.YPosition);
+        setDBL(buffer, &bufferIndex, telemetryIMSDataData.ZPosition);
+        setDBL(buffer, &bufferIndex, telemetryIMSDataData.XRotation);
+        setDBL(buffer, &bufferIndex, telemetryIMSDataData.YRotation);
+        setDBL(buffer, &bufferIndex, telemetryIMSDataData.ZRotation);
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_IMSData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1331,7 +2072,25 @@ void processGetNextSampleForceActuatorStatusSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE ForceActuatorStatus\n");
             bufferIndex = 0;
-            for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, telemetryForceActuatorStatusData.Timestamp[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.Mode[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.MajorFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.MinorFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.FaultOverridden[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.WatchdogReset[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.BrownoutDetected[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.EventTrapReset[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.SSRPowerFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.AUXPowerFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.SMCPowerFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAOutputsEnabled[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAPowerFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAAmplifierAFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAAmplifierBFault[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAEventTrapReset[i]); }
+        setDBL(buffer, &bufferIndex, telemetryForceActuatorStatusData.Timestamp);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.Mode[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.MajorFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.MinorFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.FaultOverridden[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.WatchdogReset[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.BrownoutDetected[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.EventTrapReset[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.MotorPowerFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.SSRPowerFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.AUXPowerFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.SMCPowerFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAOutputsEnabled[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAPowerFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAAmplifierAFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAAmplifierBFault[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, telemetryForceActuatorStatusData.DCAEventTrapReset[i]); }
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_ForceActuatorStatus, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1344,7 +2103,10 @@ void processGetNextSampleElevationDataSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE ElevationData\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, telemetryElevationDataData.Timestamp);setDBL(buffer, &bufferIndex, telemetryElevationDataData.InclinometerElevation);setDBL(buffer, &bufferIndex, telemetryElevationDataData.MeasuredElevation);
+        setDBL(buffer, &bufferIndex, telemetryElevationDataData.Timestamp);
+        setDBL(buffer, &bufferIndex, telemetryElevationDataData.InclinometerElevation);
+        setDBL(buffer, &bufferIndex, telemetryElevationDataData.MeasuredElevation);
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_ElevationData, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1357,7 +2119,19 @@ void processGetNextSampleHardpointStatusSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_NEXT_SAMPLE HardpointStatus\n");
             bufferIndex = 0;
-            for(int32_t i = 0; i < 6; i++) { setDBL(buffer, &bufferIndex, telemetryHardpointStatusData.Timestamp[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.Mode[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.MajorFault[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.MinorFault[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.FaultOverridden[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.WatchdogReset[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.BrownoutDetected[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.EventTrapReset[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.SSRPowerFault[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.AUXPowerFault[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.SMCPowerFault[i]); }
+        setDBL(buffer, &bufferIndex, telemetryHardpointStatusData.Timestamp);
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.Mode[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.MajorFault[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.MinorFault[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.FaultOverridden[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.WatchdogReset[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.BrownoutDetected[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.EventTrapReset[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.MotorPowerFault[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.SSRPowerFault[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.AUXPowerFault[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, telemetryHardpointStatusData.SMCPowerFault[i]); }
+
             writeClientHeader(MESSAGE_TYPE_GET_NEXT_SAMPLE, MESSAGE_TOPIC_HardpointStatus, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1386,7 +2160,10 @@ void processGetEventHardpointActuatorChaseSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT HardpointActuatorChase\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventHardpointActuatorChaseData.Timestamp);setI32(buffer, &bufferIndex, eventHardpointActuatorChaseData.ActuatorId);setU8(buffer, &bufferIndex, eventHardpointActuatorChaseData.Chasing);
+        setDBL(buffer, &bufferIndex, eventHardpointActuatorChaseData.Timestamp);
+        setI32(buffer, &bufferIndex, eventHardpointActuatorChaseData.ActuatorId);
+        setU8(buffer, &bufferIndex, eventHardpointActuatorChaseData.Chasing);
+
             setI32(buffer, &bufferIndex, eventHardpointActuatorChaseData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_HardpointActuatorChase, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1400,7 +2177,12 @@ void processGetEventAirStatusSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT AirStatus\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventAirStatusData.Timestamp);setU8(buffer, &bufferIndex, eventAirStatusData.AirCommandedOn);setU8(buffer, &bufferIndex, eventAirStatusData.AirOn);setU8(buffer, &bufferIndex, eventAirStatusData.AirPressureOk);setU8(buffer, &bufferIndex, eventAirStatusData.HardpointAirPressureOk);
+        setDBL(buffer, &bufferIndex, eventAirStatusData.Timestamp);
+        setU8(buffer, &bufferIndex, eventAirStatusData.AirCommandedOn);
+        setU8(buffer, &bufferIndex, eventAirStatusData.AirOn);
+        setU8(buffer, &bufferIndex, eventAirStatusData.AirPressureOk);
+        setU8(buffer, &bufferIndex, eventAirStatusData.HardpointAirPressureOk);
+
             setI32(buffer, &bufferIndex, eventAirStatusData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_AirStatus, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1414,7 +2196,30 @@ void processGetEventForceActuatorSafetyChecksSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ForceActuatorSafetyChecks\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.Timestamp);setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllInSafetyLimit);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.SafetyLimitOk[i]); }setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.MirrorWeightOk);setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.XMomentOk);setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.YMomentOk);setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllNeighborsOk);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.NeighborsOk[i]); }setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.MagnitudeOK);setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllGlobalBendingOk);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.GlobalBendingOk[i]); }setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.FollowingErrorOk);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AxialFollowingErrorOk[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.LateralFollowingErrorOk[i]); }setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AOSNetForceOk);setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllElevationForcesOk);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.ElevationForcesOk[i]); }setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllAzimuthForcesOk);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AzimuthForcesOk[i]); }setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllThermalForcesOk);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.ThermalForcesOk[i]); }setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllAOSForcesOk);for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AOSForcesOk[i]); }
+        setDBL(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.Timestamp);
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllInSafetyLimit);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.SafetyLimitOk[i]); }
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.MirrorWeightOk);
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.XMomentOk);
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.YMomentOk);
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllNeighborsOk);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.NeighborsOk[i]); }
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.MagnitudeOK);
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllGlobalBendingOk);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.GlobalBendingOk[i]); }
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.FollowingErrorOk);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AxialFollowingErrorOk[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.LateralFollowingErrorOk[i]); }
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AOSNetForceOk);
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllElevationForcesOk);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.ElevationForcesOk[i]); }
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllAzimuthForcesOk);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AzimuthForcesOk[i]); }
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllThermalForcesOk);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.ThermalForcesOk[i]); }
+        setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AllAOSForcesOk);
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.AOSForcesOk[i]); }
+
             setI32(buffer, &bufferIndex, eventForceActuatorSafetyChecksData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ForceActuatorSafetyChecks, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1428,7 +2233,10 @@ void processGetEventForceActuatorTestSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ForceActuatorTest\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventForceActuatorTestData.Timestamp);setI32(buffer, &bufferIndex, eventForceActuatorTestData.ActuatorId);setI32(buffer, &bufferIndex, eventForceActuatorTestData.TestStatus);
+        setDBL(buffer, &bufferIndex, eventForceActuatorTestData.Timestamp);
+        setI32(buffer, &bufferIndex, eventForceActuatorTestData.ActuatorId);
+        setI32(buffer, &bufferIndex, eventForceActuatorTestData.TestStatus);
+
             setI32(buffer, &bufferIndex, eventForceActuatorTestData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ForceActuatorTest, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1442,7 +2250,10 @@ void processGetEventActuatorBroadcastCounterSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ActuatorBroadcastCounter\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventActuatorBroadcastCounterData.Timestamp);setI32(buffer, &bufferIndex, eventActuatorBroadcastCounterData.ActuatorId);setU8(buffer, &bufferIndex, eventActuatorBroadcastCounterData.CounterOk);
+        setDBL(buffer, &bufferIndex, eventActuatorBroadcastCounterData.Timestamp);
+        setI32(buffer, &bufferIndex, eventActuatorBroadcastCounterData.ActuatorId);
+        setU8(buffer, &bufferIndex, eventActuatorBroadcastCounterData.CounterOk);
+
             setI32(buffer, &bufferIndex, eventActuatorBroadcastCounterData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ActuatorBroadcastCounter, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1456,7 +2267,12 @@ void processGetEventStatusChecksSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT StatusChecks\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventStatusChecksData.Timestamp);setU8(buffer, &bufferIndex, eventStatusChecksData.ILCResetOk);setU8(buffer, &bufferIndex, eventStatusChecksData.DCAResetOk);setU8(buffer, &bufferIndex, eventStatusChecksData.ILCPowerOk);setU8(buffer, &bufferIndex, eventStatusChecksData.DCAPowerOk);
+        setDBL(buffer, &bufferIndex, eventStatusChecksData.Timestamp);
+        setU8(buffer, &bufferIndex, eventStatusChecksData.ILCResetOk);
+        setU8(buffer, &bufferIndex, eventStatusChecksData.DCAResetOk);
+        setU8(buffer, &bufferIndex, eventStatusChecksData.ILCPowerOk);
+        setU8(buffer, &bufferIndex, eventStatusChecksData.DCAPowerOk);
+
             setI32(buffer, &bufferIndex, eventStatusChecksData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_StatusChecks, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1470,7 +2286,9 @@ void processGetEventCellChecksSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT CellChecks\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventCellChecksData.Timestamp);setU8(buffer, &bufferIndex, eventCellChecksData.MirrorDoorClosed);
+        setDBL(buffer, &bufferIndex, eventCellChecksData.Timestamp);
+        setU8(buffer, &bufferIndex, eventCellChecksData.MirrorDoorClosed);
+
             setI32(buffer, &bufferIndex, eventCellChecksData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_CellChecks, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1484,7 +2302,10 @@ void processGetEventHardpointActuatorBreakawaySALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT HardpointActuatorBreakaway\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventHardpointActuatorBreakawayData.Timestamp);setI32(buffer, &bufferIndex, eventHardpointActuatorBreakawayData.ActuatorId);setU8(buffer, &bufferIndex, eventHardpointActuatorBreakawayData.ForceOk);
+        setDBL(buffer, &bufferIndex, eventHardpointActuatorBreakawayData.Timestamp);
+        setI32(buffer, &bufferIndex, eventHardpointActuatorBreakawayData.ActuatorId);
+        setU8(buffer, &bufferIndex, eventHardpointActuatorBreakawayData.ForceOk);
+
             setI32(buffer, &bufferIndex, eventHardpointActuatorBreakawayData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_HardpointActuatorBreakaway, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1498,7 +2319,9 @@ void processGetEventRaiseMirrorCompleteSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT RaiseMirrorComplete\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventRaiseMirrorCompleteData.Timestamp);setU8(buffer, &bufferIndex, eventRaiseMirrorCompleteData.Successful);
+        setDBL(buffer, &bufferIndex, eventRaiseMirrorCompleteData.Timestamp);
+        setU8(buffer, &bufferIndex, eventRaiseMirrorCompleteData.Successful);
+
             setI32(buffer, &bufferIndex, eventRaiseMirrorCompleteData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_RaiseMirrorComplete, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1512,7 +2335,10 @@ void processGetEventILCCommunicationSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ILCCommunication\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventILCCommunicationData.Timestamp);setI32(buffer, &bufferIndex, eventILCCommunicationData.ActuatorId);setU8(buffer, &bufferIndex, eventILCCommunicationData.CommunicationOk);
+        setDBL(buffer, &bufferIndex, eventILCCommunicationData.Timestamp);
+        setI32(buffer, &bufferIndex, eventILCCommunicationData.ActuatorId);
+        setU8(buffer, &bufferIndex, eventILCCommunicationData.CommunicationOk);
+
             setI32(buffer, &bufferIndex, eventILCCommunicationData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ILCCommunication, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1526,7 +2352,11 @@ void processGetEventElevationAngleChecksSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ElevationAngleChecks\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventElevationAngleChecksData.Timestamp);setU8(buffer, &bufferIndex, eventElevationAngleChecksData.MatchesTMA);setU8(buffer, &bufferIndex, eventElevationAngleChecksData.MatchesInclinometer);setU8(buffer, &bufferIndex, eventElevationAngleChecksData.MatchesMeasured);
+        setDBL(buffer, &bufferIndex, eventElevationAngleChecksData.Timestamp);
+        setU8(buffer, &bufferIndex, eventElevationAngleChecksData.MatchesTMA);
+        setU8(buffer, &bufferIndex, eventElevationAngleChecksData.MatchesInclinometer);
+        setU8(buffer, &bufferIndex, eventElevationAngleChecksData.MatchesMeasured);
+
             setI32(buffer, &bufferIndex, eventElevationAngleChecksData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ElevationAngleChecks, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1540,7 +2370,9 @@ void processGetEventDetailedStateSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT DetailedState\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventDetailedStateData.Timestamp);setI32(buffer, &bufferIndex, eventDetailedStateData.DetailedState);
+        setDBL(buffer, &bufferIndex, eventDetailedStateData.Timestamp);
+        setI32(buffer, &bufferIndex, eventDetailedStateData.DetailedState);
+
             setI32(buffer, &bufferIndex, eventDetailedStateData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_DetailedState, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1554,7 +2386,11 @@ void processGetEventServoLoopsSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ServoLoops\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventServoLoopsData.Timestamp);setU8(buffer, &bufferIndex, eventServoLoopsData.HardpointChase);setU8(buffer, &bufferIndex, eventServoLoopsData.HardpointOffloading);setU8(buffer, &bufferIndex, eventServoLoopsData.OuterLoopTimeOk);
+        setDBL(buffer, &bufferIndex, eventServoLoopsData.Timestamp);
+        setU8(buffer, &bufferIndex, eventServoLoopsData.HardpointChase);
+        setU8(buffer, &bufferIndex, eventServoLoopsData.HardpointOffloading);
+        setU8(buffer, &bufferIndex, eventServoLoopsData.OuterLoopTimeOk);
+
             setI32(buffer, &bufferIndex, eventServoLoopsData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ServoLoops, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1568,7 +2404,58 @@ void processGetEventForceActuatorInfoSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ForceActuatorInfo\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventForceActuatorInfoData.Timestamp);for(int32_t i = 0; i < 156; i++) { setI32(buffer, &bufferIndex, eventForceActuatorInfoData.ReferenceId[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.XPosition[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.YPosition[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.ZPosition[i]); }for(int32_t i = 0; i < 156; i++) { setI64(buffer, &bufferIndex, eventForceActuatorInfoData.ILCUniqueId[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ILCApplicationType[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.NetworkNodeType[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ILCSelectedOptions[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.NetworkNodeOptions[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.MajorRevision[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.MinorRevision[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ADCScanRate[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK1[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK2[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK3[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK4[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainAxialLoadCellOffset[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainLateralLoadCellOffset[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainAxialLoadCellSensitivity[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainLateralLoadCellSensitivity[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK1[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK2[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK3[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK4[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupAxialLoadCellOffset[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupLateralLoadCellOffset[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupAxialLoadCellSensitivity[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupLateralLoadCellSensitivity[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.DCAAxialGain[i]); }for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.DCALateralGain[i]); }for(int32_t i = 0; i < 156; i++) { setI64(buffer, &bufferIndex, eventForceActuatorInfoData.DCAUniqueId[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAFirmwareType[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAMajorRevision[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAMinorRevision[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.MainCalibrationError[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.BackupCalibrationError[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAFirmwareUpdate[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.UniqueIdCRCError[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ApplicationTypeMismatch[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ApplicationMissing[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ApplicationCRCMismatch[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.OneWireMissing[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.OneWire1Mismatch[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.OneWire2Mismatch[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAUniqueIdCRCError[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAMainCalibrationError[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCABackupCalibrationError[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAApplicationMissing[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAApplicationCRCMismatch[i]); }for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCABootloaderActive[i]); }
+        setDBL(buffer, &bufferIndex, eventForceActuatorInfoData.Timestamp);
+        for(int32_t i = 0; i < 156; i++) { setI32(buffer, &bufferIndex, eventForceActuatorInfoData.ReferenceId[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.XPosition[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.YPosition[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.ZPosition[i]); }
+        for(int32_t i = 0; i < 156; i++) { setI64(buffer, &bufferIndex, eventForceActuatorInfoData.ILCUniqueId[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ILCApplicationType[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.NetworkNodeType[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ILCSelectedOptions[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.NetworkNodeOptions[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.MajorRevision[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.MinorRevision[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ADCScanRate[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK1[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK2[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK3[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainADCCalibrationK4[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainAxialLoadCellOffset[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainLateralLoadCellOffset[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainAxialLoadCellSensitivity[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.MainLateralLoadCellSensitivity[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK1[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK2[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK3[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupADCCalibrationK4[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupAxialLoadCellOffset[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupLateralLoadCellOffset[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupAxialLoadCellSensitivity[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.BackupLateralLoadCellSensitivity[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.DCAAxialGain[i]); }
+        for(int32_t i = 0; i < 156; i++) { setSGL(buffer, &bufferIndex, eventForceActuatorInfoData.DCALateralGain[i]); }
+        for(int32_t i = 0; i < 156; i++) { setI64(buffer, &bufferIndex, eventForceActuatorInfoData.DCAUniqueId[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAFirmwareType[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAMajorRevision[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAMinorRevision[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.MainCalibrationError[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.BackupCalibrationError[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAFirmwareUpdate[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.UniqueIdCRCError[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ApplicationTypeMismatch[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ApplicationMissing[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.ApplicationCRCMismatch[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.OneWireMissing[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.OneWire1Mismatch[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.OneWire2Mismatch[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAUniqueIdCRCError[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAMainCalibrationError[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCABackupCalibrationError[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAApplicationMissing[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCAApplicationCRCMismatch[i]); }
+        for(int32_t i = 0; i < 156; i++) { setU8(buffer, &bufferIndex, eventForceActuatorInfoData.DCABootloaderActive[i]); }
+
             setI32(buffer, &bufferIndex, eventForceActuatorInfoData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ForceActuatorInfo, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1582,7 +2469,9 @@ void processGetEventLowerMirrorCompleteSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT LowerMirrorComplete\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventLowerMirrorCompleteData.Timestamp);setU8(buffer, &bufferIndex, eventLowerMirrorCompleteData.Successful);
+        setDBL(buffer, &bufferIndex, eventLowerMirrorCompleteData.Timestamp);
+        setU8(buffer, &bufferIndex, eventLowerMirrorCompleteData.Successful);
+
             setI32(buffer, &bufferIndex, eventLowerMirrorCompleteData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_LowerMirrorComplete, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1596,7 +2485,42 @@ void processGetEventHardpointActuatorInfoSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT HardpointActuatorInfo\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventHardpointActuatorInfoData.Timestamp);for(int32_t i = 0; i < 6; i++) { setI32(buffer, &bufferIndex, eventHardpointActuatorInfoData.ReferenceId[i]); }for(int32_t i = 0; i < 6; i++) { setI32(buffer, &bufferIndex, eventHardpointActuatorInfoData.ReferencePosition[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.XPosition[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.YPosition[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.ZPosition[i]); }for(int32_t i = 0; i < 6; i++) { setI64(buffer, &bufferIndex, eventHardpointActuatorInfoData.ILCUniqueId[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ILCApplicationType[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.NetworkNodeType[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ILCSelectedOptions[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.NetworkNodeOptions[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.MajorRevision[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.MinorRevision[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ADCScanRate[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK1[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK2[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK3[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK4[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainLoadCellOffset[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainLoadCellSensitivity[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK1[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK2[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK3[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK4[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupLoadCellOffset[i]); }for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupLoadCellSensitivity[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainCalibrationError[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupCalibrationError[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.UniqueIdCRCError[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ApplicationTypeMismatch[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ApplicationMissing[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ApplicationCRCMismatch[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.OneWireMissing[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.OneWire1Mismatch[i]); }for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.OneWire2Mismatch[i]); }
+        setDBL(buffer, &bufferIndex, eventHardpointActuatorInfoData.Timestamp);
+        for(int32_t i = 0; i < 6; i++) { setI32(buffer, &bufferIndex, eventHardpointActuatorInfoData.ReferenceId[i]); }
+        for(int32_t i = 0; i < 6; i++) { setI32(buffer, &bufferIndex, eventHardpointActuatorInfoData.ReferencePosition[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.XPosition[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.YPosition[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.ZPosition[i]); }
+        for(int32_t i = 0; i < 6; i++) { setI64(buffer, &bufferIndex, eventHardpointActuatorInfoData.ILCUniqueId[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ILCApplicationType[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.NetworkNodeType[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ILCSelectedOptions[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.NetworkNodeOptions[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.MajorRevision[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.MinorRevision[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ADCScanRate[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK1[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK2[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK3[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainADCCalibrationK4[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainLoadCellOffset[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainLoadCellSensitivity[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK1[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK2[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK3[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupADCCalibrationK4[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupLoadCellOffset[i]); }
+        for(int32_t i = 0; i < 6; i++) { setSGL(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupLoadCellSensitivity[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.MainCalibrationError[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.BackupCalibrationError[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.UniqueIdCRCError[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ApplicationTypeMismatch[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ApplicationMissing[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.ApplicationCRCMismatch[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.OneWireMissing[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.OneWire1Mismatch[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, eventHardpointActuatorInfoData.OneWire2Mismatch[i]); }
+
             setI32(buffer, &bufferIndex, eventHardpointActuatorInfoData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_HardpointActuatorInfo, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1610,7 +2534,9 @@ void processGetEventSettingsAppliedSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT SettingsApplied\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventSettingsAppliedData.Timestamp);setString(buffer, &bufferIndex, &eventSettingsAppliedData.Settings);
+        setDBL(buffer, &bufferIndex, eventSettingsAppliedData.Timestamp);
+        setString(buffer, &bufferIndex, &eventSettingsAppliedData.Settings);
+
             setI32(buffer, &bufferIndex, eventSettingsAppliedData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_SettingsApplied, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1624,7 +2550,9 @@ void processGetEventErrorCodeSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ErrorCode\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventErrorCodeData.Timestamp);setI32(buffer, &bufferIndex, eventErrorCodeData.ErrorCode);
+        setDBL(buffer, &bufferIndex, eventErrorCodeData.Timestamp);
+        setI32(buffer, &bufferIndex, eventErrorCodeData.ErrorCode);
+
             setI32(buffer, &bufferIndex, eventErrorCodeData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ErrorCode, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1638,7 +2566,14 @@ void processGetEventStartupChecksSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT StartupChecks\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventStartupChecksData.Timestamp);setU8(buffer, &bufferIndex, eventStartupChecksData.ILCVersionsOk);setU8(buffer, &bufferIndex, eventStartupChecksData.DCAVersionsOk);setU8(buffer, &bufferIndex, eventStartupChecksData.ILCFirmwareOk);setU8(buffer, &bufferIndex, eventStartupChecksData.DCAFirmwareOk);setU8(buffer, &bufferIndex, eventStartupChecksData.ILCStatusOk);setU8(buffer, &bufferIndex, eventStartupChecksData.DCAStatusOk);
+        setDBL(buffer, &bufferIndex, eventStartupChecksData.Timestamp);
+        setU8(buffer, &bufferIndex, eventStartupChecksData.ILCVersionsOk);
+        setU8(buffer, &bufferIndex, eventStartupChecksData.DCAVersionsOk);
+        setU8(buffer, &bufferIndex, eventStartupChecksData.ILCFirmwareOk);
+        setU8(buffer, &bufferIndex, eventStartupChecksData.DCAFirmwareOk);
+        setU8(buffer, &bufferIndex, eventStartupChecksData.ILCStatusOk);
+        setU8(buffer, &bufferIndex, eventStartupChecksData.DCAStatusOk);
+
             setI32(buffer, &bufferIndex, eventStartupChecksData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_StartupChecks, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1652,7 +2587,9 @@ void processGetEventSummaryStateSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT SummaryState\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventSummaryStateData.Timestamp);setI32(buffer, &bufferIndex, eventSummaryStateData.SummaryState);
+        setDBL(buffer, &bufferIndex, eventSummaryStateData.Timestamp);
+        setI32(buffer, &bufferIndex, eventSummaryStateData.SummaryState);
+
             setI32(buffer, &bufferIndex, eventSummaryStateData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_SummaryState, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1666,7 +2603,9 @@ void processGetEventSettingVersionsSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT SettingVersions\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventSettingVersionsData.Timestamp);setString(buffer, &bufferIndex, &eventSettingVersionsData.RecommendedSettingsVersion);
+        setDBL(buffer, &bufferIndex, eventSettingVersionsData.Timestamp);
+        setString(buffer, &bufferIndex, &eventSettingVersionsData.RecommendedSettingsVersion);
+
             setI32(buffer, &bufferIndex, eventSettingVersionsData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_SettingVersions, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1680,7 +2619,9 @@ void processGetEventActuatorTestStatusSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT ActuatorTestStatus\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventActuatorTestStatusData.Timestamp);setU8(buffer, &bufferIndex, eventActuatorTestStatusData.AllTestsRan);
+        setDBL(buffer, &bufferIndex, eventActuatorTestStatusData.Timestamp);
+        setU8(buffer, &bufferIndex, eventActuatorTestStatusData.AllTestsRan);
+
             setI32(buffer, &bufferIndex, eventActuatorTestStatusData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_ActuatorTestStatus, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1694,7 +2635,9 @@ void processGetEventAppliedSettingsMatchStartSALRequest() {
         if (rc == SAL__OK) {
             printf("GET_EVENT AppliedSettingsMatchStart\n");
             bufferIndex = 0;
-            setDBL(buffer, &bufferIndex, eventAppliedSettingsMatchStartData.Timestamp);setU8(buffer, &bufferIndex, eventAppliedSettingsMatchStartData.AppliedSettingsMatchStart);
+        setDBL(buffer, &bufferIndex, eventAppliedSettingsMatchStartData.Timestamp);
+        setU8(buffer, &bufferIndex, eventAppliedSettingsMatchStartData.AppliedSettingsMatchStart);
+
             setI32(buffer, &bufferIndex, eventAppliedSettingsMatchStartData.priority);
             writeClientHeader(MESSAGE_TYPE_GET_EVENT, MESSAGE_TOPIC_AppliedSettingsMatchStart, bufferIndex);
             writeBuffer(buffer, bufferIndex);
@@ -1738,7 +2681,8 @@ void processAcceptCommandEnableSALRequest() {
             printf("ACCEPT_COMMAND Enable\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandEnableData.Enable);
+        setU8(buffer, &bufferIndex, commandEnableData.Enable);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_Enable, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1752,7 +2696,8 @@ void processAcceptCommandEnterMaintenanceSALRequest() {
             printf("ACCEPT_COMMAND EnterMaintenance\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandEnterMaintenanceData.EnterMaintenance);
+        setU8(buffer, &bufferIndex, commandEnterMaintenanceData.EnterMaintenance);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_EnterMaintenance, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1766,7 +2711,8 @@ void processAcceptCommandStandbySALRequest() {
             printf("ACCEPT_COMMAND Standby\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandStandbyData.Standby);
+        setU8(buffer, &bufferIndex, commandStandbyData.Standby);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_Standby, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1780,7 +2726,8 @@ void processAcceptCommandAbortLowerM1M3SALRequest() {
             printf("ACCEPT_COMMAND AbortLowerM1M3\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandAbortLowerM1M3Data.AbortLowerM1M3);
+        setU8(buffer, &bufferIndex, commandAbortLowerM1M3Data.AbortLowerM1M3);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_AbortLowerM1M3, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1794,7 +2741,8 @@ void processAcceptCommandApplyAberrationByForcesSALRequest() {
             printf("ACCEPT_COMMAND ApplyAberrationByForces\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, commandApplyAberrationByForcesData.ZForces[i]); }
+        for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, commandApplyAberrationByForcesData.ZForces[i]); }
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ApplyAberrationByForces, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1808,7 +2756,8 @@ void processAcceptCommandApplyAOSCorrectionByBendingModesSALRequest() {
             printf("ACCEPT_COMMAND ApplyAOSCorrectionByBendingModes\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            for(int32_t i = 0; i < 22; i++) { setDBL(buffer, &bufferIndex, commandApplyAOSCorrectionByBendingModesData.Coefficients[i]); }
+        for(int32_t i = 0; i < 22; i++) { setDBL(buffer, &bufferIndex, commandApplyAOSCorrectionByBendingModesData.Coefficients[i]); }
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ApplyAOSCorrectionByBendingModes, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1822,7 +2771,8 @@ void processAcceptCommandClearAOSCorrectionSALRequest() {
             printf("ACCEPT_COMMAND ClearAOSCorrection\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandClearAOSCorrectionData.ClearAOSCorrection);
+        setU8(buffer, &bufferIndex, commandClearAOSCorrectionData.ClearAOSCorrection);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ClearAOSCorrection, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1836,7 +2786,9 @@ void processAcceptCommandStartSALRequest() {
             printf("ACCEPT_COMMAND Start\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandStartData.Start);setString(buffer, &bufferIndex, &commandStartData.SettingsToApply);
+        setU8(buffer, &bufferIndex, commandStartData.Start);
+        setString(buffer, &bufferIndex, &commandStartData.SettingsToApply);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_Start, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1850,7 +2802,8 @@ void processAcceptCommandRaiseM1M3SALRequest() {
             printf("ACCEPT_COMMAND RaiseM1M3\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandRaiseM1M3Data.RaiseM1M3);
+        setU8(buffer, &bufferIndex, commandRaiseM1M3Data.RaiseM1M3);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_RaiseM1M3, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1864,7 +2817,8 @@ void processAcceptCommandTestForceActuatorSALRequest() {
             printf("ACCEPT_COMMAND TestForceActuator\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setI32(buffer, &bufferIndex, commandTestForceActuatorData.ActuatorId);
+        setI32(buffer, &bufferIndex, commandTestForceActuatorData.ActuatorId);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_TestForceActuator, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1878,7 +2832,8 @@ void processAcceptCommandLowerM1M3SALRequest() {
             printf("ACCEPT_COMMAND LowerM1M3\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandLowerM1M3Data.LowerM1M3);
+        setU8(buffer, &bufferIndex, commandLowerM1M3Data.LowerM1M3);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_LowerM1M3, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1892,7 +2847,8 @@ void processAcceptCommandApplyAOSCorrectionByForcesSALRequest() {
             printf("ACCEPT_COMMAND ApplyAOSCorrectionByForces\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, commandApplyAOSCorrectionByForcesData.ZForces[i]); }
+        for(int32_t i = 0; i < 156; i++) { setDBL(buffer, &bufferIndex, commandApplyAOSCorrectionByForcesData.ZForces[i]); }
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ApplyAOSCorrectionByForces, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1906,7 +2862,8 @@ void processAcceptCommandDisableSALRequest() {
             printf("ACCEPT_COMMAND Disable\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandDisableData.Disable);
+        setU8(buffer, &bufferIndex, commandDisableData.Disable);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_Disable, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1920,7 +2877,8 @@ void processAcceptCommandApplyAberrationByBendingModeSALRequest() {
             printf("ACCEPT_COMMAND ApplyAberrationByBendingMode\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            for(int32_t i = 0; i < 22; i++) { setDBL(buffer, &bufferIndex, commandApplyAberrationByBendingModeData.Coefficients[i]); }
+        for(int32_t i = 0; i < 22; i++) { setDBL(buffer, &bufferIndex, commandApplyAberrationByBendingModeData.Coefficients[i]); }
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ApplyAberrationByBendingMode, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1934,7 +2892,8 @@ void processAcceptCommandTestHardpointSALRequest() {
             printf("ACCEPT_COMMAND TestHardpoint\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setI32(buffer, &bufferIndex, commandTestHardpointData.ActuatorId);
+        setI32(buffer, &bufferIndex, commandTestHardpointData.ActuatorId);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_TestHardpoint, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1948,7 +2907,13 @@ void processAcceptCommandManipulateM1M3SALRequest() {
             printf("ACCEPT_COMMAND ManipulateM1M3\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.XTranslation);setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.YTranslation);setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.ZTranslation);setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.XRotation);setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.YRotation);setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.ZRotation);
+        setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.XTranslation);
+        setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.YTranslation);
+        setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.ZTranslation);
+        setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.XRotation);
+        setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.YRotation);
+        setDBL(buffer, &bufferIndex, commandManipulateM1M3Data.ZRotation);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ManipulateM1M3, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1962,7 +2927,8 @@ void processAcceptCommandClearAberrationSALRequest() {
             printf("ACCEPT_COMMAND ClearAberration\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandClearAberrationData.ClearAberration);
+        setU8(buffer, &bufferIndex, commandClearAberrationData.ClearAberration);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ClearAberration, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1976,7 +2942,8 @@ void processAcceptCommandExitSALRequest() {
             printf("ACCEPT_COMMAND Exit\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandExitData.Exit);
+        setU8(buffer, &bufferIndex, commandExitData.Exit);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_Exit, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -1990,7 +2957,8 @@ void processAcceptCommandTestAirSALRequest() {
             printf("ACCEPT_COMMAND TestAir\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandTestAirData.TestAir);
+        setU8(buffer, &bufferIndex, commandTestAirData.TestAir);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_TestAir, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -2004,7 +2972,8 @@ void processAcceptCommandAbortRaiseM1M3SALRequest() {
             printf("ACCEPT_COMMAND AbortRaiseM1M3\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandAbortRaiseM1M3Data.AbortRaiseM1M3);
+        setU8(buffer, &bufferIndex, commandAbortRaiseM1M3Data.AbortRaiseM1M3);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_AbortRaiseM1M3, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -2018,7 +2987,8 @@ void processAcceptCommandMoveHardpointActuatorsSALRequest() {
             printf("ACCEPT_COMMAND MoveHardpointActuators\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, commandMoveHardpointActuatorsData.Steps[i]); }
+        for(int32_t i = 0; i < 6; i++) { setU8(buffer, &bufferIndex, commandMoveHardpointActuatorsData.Steps[i]); }
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_MoveHardpointActuators, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -2032,7 +3002,8 @@ void processAcceptCommandExitMaintenanceSALRequest() {
             printf("ACCEPT_COMMAND ExitMaintenance\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandExitMaintenanceData.ExitMaintenance);
+        setU8(buffer, &bufferIndex, commandExitMaintenanceData.ExitMaintenance);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ExitMaintenance, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -2046,7 +3017,8 @@ void processAcceptCommandShutdownSALRequest() {
             printf("ACCEPT_COMMAND Shutdown\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-            setU8(buffer, &bufferIndex, commandShutdownData.Shutdown);
+        setU8(buffer, &bufferIndex, commandShutdownData.Shutdown);
+
             writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_Shutdown, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
@@ -2159,16 +3131,16 @@ int main(int argumentCount, char *argumentValues[]) {
     
     // Initialize Telemetry
     printf("Telemetry ");
-    if (enabledTopics[MESSAGE_TOPIC_ForceActuatorData]) { m1m3SAL.salTelemetrySub("m1m3_ForceActuatorData"); }
-    if (enabledTopics[MESSAGE_TOPIC_MirrorForceData]) { m1m3SAL.salTelemetrySub("m1m3_MirrorForceData"); }
-    if (enabledTopics[MESSAGE_TOPIC_HardpointData]) { m1m3SAL.salTelemetrySub("m1m3_HardpointData"); }
-    if (enabledTopics[MESSAGE_TOPIC_AirData]) { m1m3SAL.salTelemetrySub("m1m3_AirData"); }
-    if (enabledTopics[MESSAGE_TOPIC_DynamicData]) { m1m3SAL.salTelemetrySub("m1m3_DynamicData"); }
-    if (enabledTopics[MESSAGE_TOPIC_FPGAData]) { m1m3SAL.salTelemetrySub("m1m3_FPGAData"); }
-    if (enabledTopics[MESSAGE_TOPIC_IMSData]) { m1m3SAL.salTelemetrySub("m1m3_IMSData"); }
-    if (enabledTopics[MESSAGE_TOPIC_ForceActuatorStatus]) { m1m3SAL.salTelemetrySub("m1m3_ForceActuatorStatus"); }
-    if (enabledTopics[MESSAGE_TOPIC_ElevationData]) { m1m3SAL.salTelemetrySub("m1m3_ElevationData"); }
-    if (enabledTopics[MESSAGE_TOPIC_HardpointStatus]) { m1m3SAL.salTelemetrySub("m1m3_HardpointStatus"); }
+    if (enabledTopics[MESSAGE_TOPIC_ForceActuatorData]) { m1m3SAL.salTelemetryPub("m1m3_ForceActuatorData"); m1m3SAL.salTelemetrySub("m1m3_ForceActuatorData"); }
+    if (enabledTopics[MESSAGE_TOPIC_MirrorForceData]) { m1m3SAL.salTelemetryPub("m1m3_MirrorForceData"); m1m3SAL.salTelemetrySub("m1m3_MirrorForceData"); }
+    if (enabledTopics[MESSAGE_TOPIC_HardpointData]) { m1m3SAL.salTelemetryPub("m1m3_HardpointData"); m1m3SAL.salTelemetrySub("m1m3_HardpointData"); }
+    if (enabledTopics[MESSAGE_TOPIC_AirData]) { m1m3SAL.salTelemetryPub("m1m3_AirData"); m1m3SAL.salTelemetrySub("m1m3_AirData"); }
+    if (enabledTopics[MESSAGE_TOPIC_DynamicData]) { m1m3SAL.salTelemetryPub("m1m3_DynamicData"); m1m3SAL.salTelemetrySub("m1m3_DynamicData"); }
+    if (enabledTopics[MESSAGE_TOPIC_FPGAData]) { m1m3SAL.salTelemetryPub("m1m3_FPGAData"); m1m3SAL.salTelemetrySub("m1m3_FPGAData"); }
+    if (enabledTopics[MESSAGE_TOPIC_IMSData]) { m1m3SAL.salTelemetryPub("m1m3_IMSData"); m1m3SAL.salTelemetrySub("m1m3_IMSData"); }
+    if (enabledTopics[MESSAGE_TOPIC_ForceActuatorStatus]) { m1m3SAL.salTelemetryPub("m1m3_ForceActuatorStatus"); m1m3SAL.salTelemetrySub("m1m3_ForceActuatorStatus"); }
+    if (enabledTopics[MESSAGE_TOPIC_ElevationData]) { m1m3SAL.salTelemetryPub("m1m3_ElevationData"); m1m3SAL.salTelemetrySub("m1m3_ElevationData"); }
+    if (enabledTopics[MESSAGE_TOPIC_HardpointStatus]) { m1m3SAL.salTelemetryPub("m1m3_HardpointStatus"); m1m3SAL.salTelemetrySub("m1m3_HardpointStatus"); }
 
     
     // Initialize Events
