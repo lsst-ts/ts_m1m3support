@@ -105,16 +105,31 @@ AddOutputFilter chunkFilter
 			<Item Name="Boot.lvclass" Type="LVClass" URL="../Boot/Boot.lvclass"/>
 		</Item>
 		<Item Name="Commands" Type="Folder">
+			<Item Name="AbortLowerM1M3Command.lvclass" Type="LVClass" URL="../Commands/AbortLowerM1M3Command/AbortLowerM1M3Command.lvclass"/>
+			<Item Name="AbortRaiseM1M3Command.lvclass" Type="LVClass" URL="../Commands/AbortRaiseM1M3Command/AbortRaiseM1M3Command.lvclass"/>
+			<Item Name="ApplyAberrationByBendingModesCommand.lvclass" Type="LVClass" URL="../Commands/ApplyAberrationByBendingModesCommand/ApplyAberrationByBendingModesCommand.lvclass"/>
+			<Item Name="ApplyAberrationByForcesCommand.lvclass" Type="LVClass" URL="../Commands/ApplyAberrationByForcesCommand/ApplyAberrationByForcesCommand.lvclass"/>
+			<Item Name="ApplyAOSCorrectionByBendingModesCommand.lvclass" Type="LVClass" URL="../Commands/ApplyAOSCorrectionByBendingModesCommand/ApplyAOSCorrectionByBendingModesCommand.lvclass"/>
+			<Item Name="ApplyAOSCorrectionByForcesCommand.lvclass" Type="LVClass" URL="../Commands/ApplyAOSCorrectionByForcesCommand/ApplyAOSCorrectionByForcesCommand.lvclass"/>
 			<Item Name="BootCommand.lvclass" Type="LVClass" URL="../Commands/BootCommand/BootCommand.lvclass"/>
+			<Item Name="ClearAberrationCommand.lvclass" Type="LVClass" URL="../Commands/ClearAberrationCommand/ClearAberrationCommand.lvclass"/>
+			<Item Name="ClearAOSCorrectionCommand.lvclass" Type="LVClass" URL="../Commands/ClearAOSCorrectionCommand/ClearAOSCorrectionCommand.lvclass"/>
 			<Item Name="Command.lvclass" Type="LVClass" URL="../Commands/Command/Command.lvclass"/>
 			<Item Name="DisableCommand.lvclass" Type="LVClass" URL="../Commands/DisableCommand/DisableCommand.lvclass"/>
 			<Item Name="EnableCommand.lvclass" Type="LVClass" URL="../Commands/EnableCommand/EnableCommand.lvclass"/>
 			<Item Name="EnterMaintenanceCommand.lvclass" Type="LVClass" URL="../Commands/EnterMaintenanceCommand/EnterMaintenanceCommand.lvclass"/>
 			<Item Name="ExitCommand.lvclass" Type="LVClass" URL="../Commands/ExitCommand/ExitCommand.lvclass"/>
 			<Item Name="ExitMaintenanceCommand.lvclass" Type="LVClass" URL="../Commands/ExitMaintenanceCommand/ExitMaintenanceCommand.lvclass"/>
+			<Item Name="LowerM1M3Command.lvclass" Type="LVClass" URL="../Commands/LowerM1M3Command/LowerM1M3Command.lvclass"/>
+			<Item Name="ManipulateM1M3Command.lvclass" Type="LVClass" URL="../Commands/ManipulateM1M3Command/ManipulateM1M3Command.lvclass"/>
 			<Item Name="MoveHardpointActuatorsCommand.lvclass" Type="LVClass" URL="../Commands/MoveHardpointActuatorsCommand/MoveHardpointActuatorsCommand.lvclass"/>
+			<Item Name="RaiseM1M3Command.lvclass" Type="LVClass" URL="../Commands/RaiseM1M3Command/RaiseM1M3Command.lvclass"/>
+			<Item Name="ShutdownCommand.lvclass" Type="LVClass" URL="../Commands/ShutdownCommand/ShutdownCommand.lvclass"/>
 			<Item Name="StandbyCommand.lvclass" Type="LVClass" URL="../Commands/StandbyCommand/StandbyCommand.lvclass"/>
 			<Item Name="StartCommand.lvclass" Type="LVClass" URL="../Commands/StartCommand/StartCommand.lvclass"/>
+			<Item Name="TestAirCommand.lvclass" Type="LVClass" URL="../Commands/TestAirCommand/TestAirCommand.lvclass"/>
+			<Item Name="TestForceActuatorCommand.lvclass" Type="LVClass" URL="../Commands/TestForceActuatorCommand/TestForceActuatorCommand.lvclass"/>
+			<Item Name="TestHardpointCommand.lvclass" Type="LVClass" URL="../Commands/TestHardpointCommand/TestHardpointCommand.lvclass"/>
 			<Item Name="UpdateCommand.lvclass" Type="LVClass" URL="../Commands/UpdateCommand/UpdateCommand.lvclass"/>
 		</Item>
 		<Item Name="Common" Type="Folder">

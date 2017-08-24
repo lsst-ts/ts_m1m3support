@@ -4,30 +4,51 @@
 	<Property Name="NI.Lib.SourceVersion" Type="Int">369131520</Property>
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">false</Property>
+	<Item Name="Commands" Type="Folder">
+		<Item Name="CommandAbortLowerM1M3.ctl" Type="VI" URL="../CommandAbortLowerM1M3.ctl"/>
+		<Item Name="CommandAbortRaiseM1M3.ctl" Type="VI" URL="../CommandAbortRaiseM1M3.ctl"/>
+		<Item Name="CommandApplyAberrationByBendingModes.ctl" Type="VI" URL="../CommandApplyAberrationByBendingModes.ctl"/>
+		<Item Name="CommandApplyAberrationByForces.ctl" Type="VI" URL="../CommandApplyAberrationByForces.ctl"/>
+		<Item Name="CommandApplyAOSCorrectionByBendingModes.ctl" Type="VI" URL="../CommandApplyAOSCorrectionByBendingModes.ctl"/>
+		<Item Name="CommandApplyAOSCorrectionByForces.ctl" Type="VI" URL="../CommandApplyAOSCorrectionByForces.ctl"/>
+		<Item Name="CommandClearAberration.ctl" Type="VI" URL="../CommandClearAberration.ctl"/>
+		<Item Name="CommandClearAOSCorrection.ctl" Type="VI" URL="../CommandClearAOSCorrection.ctl"/>
+		<Item Name="CommandDisable.ctl" Type="VI" URL="../CommandDisable.ctl"/>
+		<Item Name="CommandEnable.ctl" Type="VI" URL="../CommandEnable.ctl"/>
+		<Item Name="CommandEnterMaintenance.ctl" Type="VI" URL="../CommandEnterMaintenance.ctl"/>
+		<Item Name="CommandExit.ctl" Type="VI" URL="../CommandExit.ctl"/>
+		<Item Name="CommandExitMaintenance.ctl" Type="VI" URL="../CommandExitMaintenance.ctl"/>
+		<Item Name="CommandLowerM1M3.ctl" Type="VI" URL="../CommandLowerM1M3.ctl"/>
+		<Item Name="CommandManipulateM1M3.ctl" Type="VI" URL="../CommandManipulateM1M3.ctl"/>
+		<Item Name="CommandMoveHardpointActuators.ctl" Type="VI" URL="../CommandMoveHardpointActuators.ctl"/>
+		<Item Name="CommandRaiseM1M3.ctl" Type="VI" URL="../CommandRaiseM1M3.ctl"/>
+		<Item Name="CommandShutdown.ctl" Type="VI" URL="../CommandShutdown.ctl"/>
+		<Item Name="CommandStandby.ctl" Type="VI" URL="../CommandStandby.ctl"/>
+		<Item Name="CommandStart.ctl" Type="VI" URL="../CommandStart.ctl"/>
+		<Item Name="CommandTestAir.ctl" Type="VI" URL="../CommandTestAir.ctl"/>
+		<Item Name="CommandTestForceActuator.ctl" Type="VI" URL="../CommandTestForceActuator.ctl"/>
+		<Item Name="CommandTestHardpoint.ctl" Type="VI" URL="../CommandTestHardpoint.ctl"/>
+	</Item>
 	<Item Name="DataTypes" Type="Folder">
 		<Item Name="CommandId.ctl" Type="VI" URL="../Parts/CommandId.ctl"/>
 		<Item Name="DetailedStates.ctl" Type="VI" URL="../Parts/DetailedStates.ctl"/>
 		<Item Name="SummaryStates.ctl" Type="VI" URL="../Parts/SummaryStates.ctl"/>
 		<Item Name="Timestamp.ctl" Type="VI" URL="../Parts/Timestamp.ctl"/>
 	</Item>
-	<Item Name="CommandDisable.ctl" Type="VI" URL="../CommandDisable.ctl"/>
-	<Item Name="CommandEnable.ctl" Type="VI" URL="../CommandEnable.ctl"/>
-	<Item Name="CommandEnterMaintenance.ctl" Type="VI" URL="../CommandEnterMaintenance.ctl"/>
-	<Item Name="CommandExit.ctl" Type="VI" URL="../CommandExit.ctl"/>
-	<Item Name="CommandExitMaintenance.ctl" Type="VI" URL="../CommandExitMaintenance.ctl"/>
-	<Item Name="CommandMoveHardpointActuators.ctl" Type="VI" URL="../CommandMoveHardpointActuators.ctl"/>
-	<Item Name="CommandStandby.ctl" Type="VI" URL="../CommandStandby.ctl"/>
-	<Item Name="CommandStart.ctl" Type="VI" URL="../CommandStart.ctl"/>
-	<Item Name="EventHardpointActuatorInfo.ctl" Type="VI" URL="../EventHardpointActuatorInfo.ctl"/>
-	<Item Name="EventSummaryState.ctl" Type="VI" URL="../EventSummaryState.ctl"/>
-	<Item Name="TelemetryAirData.ctl" Type="VI" URL="../TelemetryAirData.ctl"/>
-	<Item Name="TelemetryDynamicData.ctl" Type="VI" URL="../TelemetryDynamicData.ctl"/>
-	<Item Name="TelemetryElevationData.ctl" Type="VI" URL="../TelemetryElevationData.ctl"/>
-	<Item Name="TelemetryForceActuatorData.ctl" Type="VI" URL="../TelemetryForceActuatorData.ctl"/>
-	<Item Name="TelemetryForceActuatorStatus.ctl" Type="VI" URL="../TelemetryForceActuatorStatus.ctl"/>
-	<Item Name="TelemetryFPGAData.ctl" Type="VI" URL="../TelemetryFPGAData.ctl"/>
-	<Item Name="TelemetryHardpointData.ctl" Type="VI" URL="../TelemetryHardpointData.ctl"/>
-	<Item Name="TelemetryHardpointStatus.ctl" Type="VI" URL="../TelemetryHardpointStatus.ctl"/>
-	<Item Name="TelemetryIMSData.ctl" Type="VI" URL="../TelemetryIMSData.ctl"/>
-	<Item Name="TelemetryMirrorForceData.ctl" Type="VI" URL="../TelemetryMirrorForceData.ctl"/>
+	<Item Name="Events" Type="Folder">
+		<Item Name="EventHardpointActuatorInfo.ctl" Type="VI" URL="../EventHardpointActuatorInfo.ctl"/>
+		<Item Name="EventSummaryState.ctl" Type="VI" URL="../EventSummaryState.ctl"/>
+	</Item>
+	<Item Name="Telemetry" Type="Folder">
+		<Item Name="TelemetryAirData.ctl" Type="VI" URL="../TelemetryAirData.ctl"/>
+		<Item Name="TelemetryDynamicData.ctl" Type="VI" URL="../TelemetryDynamicData.ctl"/>
+		<Item Name="TelemetryElevationData.ctl" Type="VI" URL="../TelemetryElevationData.ctl"/>
+		<Item Name="TelemetryForceActuatorData.ctl" Type="VI" URL="../TelemetryForceActuatorData.ctl"/>
+		<Item Name="TelemetryForceActuatorStatus.ctl" Type="VI" URL="../TelemetryForceActuatorStatus.ctl"/>
+		<Item Name="TelemetryFPGAData.ctl" Type="VI" URL="../TelemetryFPGAData.ctl"/>
+		<Item Name="TelemetryHardpointData.ctl" Type="VI" URL="../TelemetryHardpointData.ctl"/>
+		<Item Name="TelemetryHardpointStatus.ctl" Type="VI" URL="../TelemetryHardpointStatus.ctl"/>
+		<Item Name="TelemetryIMSData.ctl" Type="VI" URL="../TelemetryIMSData.ctl"/>
+		<Item Name="TelemetryMirrorForceData.ctl" Type="VI" URL="../TelemetryMirrorForceData.ctl"/>
+	</Item>
 </Library>

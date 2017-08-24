@@ -100,7 +100,7 @@ typedef unsigned char bool_t;
 #define MESSAGE_TOPIC_LowerM1M3 44
 #define MESSAGE_TOPIC_ApplyAOSCorrectionByForces 45
 #define MESSAGE_TOPIC_Disable 46
-#define MESSAGE_TOPIC_ApplyAberrationByBendingMode 47
+#define MESSAGE_TOPIC_ApplyAberrationByBendingModes 47
 #define MESSAGE_TOPIC_TestHardpoint 48
 #define MESSAGE_TOPIC_ManipulateM1M3 49
 #define MESSAGE_TOPIC_ClearAberration 50
@@ -190,7 +190,7 @@ m1m3_command_TestForceActuatorC commandTestForceActuatorData;
 m1m3_command_LowerM1M3C commandLowerM1M3Data;
 m1m3_command_ApplyAOSCorrectionByForcesC commandApplyAOSCorrectionByForcesData;
 m1m3_command_DisableC commandDisableData;
-m1m3_command_ApplyAberrationByBendingModeC commandApplyAberrationByBendingModeData;
+m1m3_command_ApplyAberrationByBendingModesC commandApplyAberrationByBendingModesData;
 m1m3_command_TestHardpointC commandTestHardpointData;
 m1m3_command_ManipulateM1M3C commandManipulateM1M3Data;
 m1m3_command_ClearAberrationC commandClearAberrationData;
@@ -1620,16 +1620,16 @@ void processIssueCommandDisableClientRequest() {
 }
 
 
-void processIssueCommandApplyAberrationByBendingModeClientRequest() {
-    printf("ApplyAberrationByBendingMode\n");
-    if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByBendingMode]) {
+void processIssueCommandApplyAberrationByBendingModesClientRequest() {
+    printf("ApplyAberrationByBendingModes\n");
+    if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByBendingModes]) {
         bufferIndex = 0;
-        for(int32_t i = 0; i < 22; i++) { commandApplyAberrationByBendingModeData.Coefficients[i] = getDBL(buffer, &bufferIndex); }
+        for(int32_t i = 0; i < 22; i++) { commandApplyAberrationByBendingModesData.Coefficients[i] = getDBL(buffer, &bufferIndex); }
 
-        commandId = m1m3SAL.issueCommand_ApplyAberrationByBendingMode(&commandApplyAberrationByBendingModeData);
+        commandId = m1m3SAL.issueCommand_ApplyAberrationByBendingModes(&commandApplyAberrationByBendingModesData);
 
 
-        sendCommandId(MESSAGE_TOPIC_ApplyAberrationByBendingMode);
+        sendCommandId(MESSAGE_TOPIC_ApplyAberrationByBendingModes);
     }
 }
 
@@ -1787,7 +1787,7 @@ void processIssueCommandClientRequest() {
         case MESSAGE_TOPIC_LowerM1M3: processIssueCommandLowerM1M3ClientRequest(); break;
         case MESSAGE_TOPIC_ApplyAOSCorrectionByForces: processIssueCommandApplyAOSCorrectionByForcesClientRequest(); break;
         case MESSAGE_TOPIC_Disable: processIssueCommandDisableClientRequest(); break;
-        case MESSAGE_TOPIC_ApplyAberrationByBendingMode: processIssueCommandApplyAberrationByBendingModeClientRequest(); break;
+        case MESSAGE_TOPIC_ApplyAberrationByBendingModes: processIssueCommandApplyAberrationByBendingModesClientRequest(); break;
         case MESSAGE_TOPIC_TestHardpoint: processIssueCommandTestHardpointClientRequest(); break;
         case MESSAGE_TOPIC_ManipulateM1M3: processIssueCommandManipulateM1M3ClientRequest(); break;
         case MESSAGE_TOPIC_ClearAberration: processIssueCommandClearAberrationClientRequest(); break;
@@ -2870,16 +2870,16 @@ void processAcceptCommandDisableSALRequest() {
     }
 }
 
-void processAcceptCommandApplyAberrationByBendingModeSALRequest() {
-    if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByBendingMode]) {
-        commandId = m1m3SAL.acceptCommand_ApplyAberrationByBendingMode(&commandApplyAberrationByBendingModeData);
+void processAcceptCommandApplyAberrationByBendingModesSALRequest() {
+    if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByBendingModes]) {
+        commandId = m1m3SAL.acceptCommand_ApplyAberrationByBendingModes(&commandApplyAberrationByBendingModesData);
         if (commandId > 0) {
-            printf("ACCEPT_COMMAND ApplyAberrationByBendingMode\n");
+            printf("ACCEPT_COMMAND ApplyAberrationByBendingModes\n");
             bufferIndex = 0;
             setI32(buffer, &bufferIndex, commandId);
-        for(int32_t i = 0; i < 22; i++) { setDBL(buffer, &bufferIndex, commandApplyAberrationByBendingModeData.Coefficients[i]); }
+        for(int32_t i = 0; i < 22; i++) { setDBL(buffer, &bufferIndex, commandApplyAberrationByBendingModesData.Coefficients[i]); }
 
-            writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ApplyAberrationByBendingMode, bufferIndex);
+            writeClientHeader(MESSAGE_TYPE_ACCEPT_COMMAND, MESSAGE_TOPIC_ApplyAberrationByBendingModes, bufferIndex);
             writeBuffer(buffer, bufferIndex);
         }
     }
@@ -3040,7 +3040,7 @@ void processAcceptCommandSALRequest() {
     processAcceptCommandLowerM1M3SALRequest();
     processAcceptCommandApplyAOSCorrectionByForcesSALRequest();
     processAcceptCommandDisableSALRequest();
-    processAcceptCommandApplyAberrationByBendingModeSALRequest();
+    processAcceptCommandApplyAberrationByBendingModesSALRequest();
     processAcceptCommandTestHardpointSALRequest();
     processAcceptCommandManipulateM1M3SALRequest();
     processAcceptCommandClearAberrationSALRequest();
@@ -3185,7 +3185,7 @@ int main(int argumentCount, char *argumentValues[]) {
     if (enabledTopics[MESSAGE_TOPIC_LowerM1M3]) { m1m3SAL.salCommand("m1m3_command_LowerM1M3"); m1m3SAL.salProcessor("m1m3_command_LowerM1M3"); }
     if (enabledTopics[MESSAGE_TOPIC_ApplyAOSCorrectionByForces]) { m1m3SAL.salCommand("m1m3_command_ApplyAOSCorrectionByForces"); m1m3SAL.salProcessor("m1m3_command_ApplyAOSCorrectionByForces"); }
     if (enabledTopics[MESSAGE_TOPIC_Disable]) { m1m3SAL.salCommand("m1m3_command_Disable"); m1m3SAL.salProcessor("m1m3_command_Disable"); }
-    if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByBendingMode]) { m1m3SAL.salCommand("m1m3_command_ApplyAberrationByBendingMode"); m1m3SAL.salProcessor("m1m3_command_ApplyAberrationByBendingMode"); }
+    if (enabledTopics[MESSAGE_TOPIC_ApplyAberrationByBendingModes]) { m1m3SAL.salCommand("m1m3_command_ApplyAberrationByBendingModes"); m1m3SAL.salProcessor("m1m3_command_ApplyAberrationByBendingModes"); }
     if (enabledTopics[MESSAGE_TOPIC_TestHardpoint]) { m1m3SAL.salCommand("m1m3_command_TestHardpoint"); m1m3SAL.salProcessor("m1m3_command_TestHardpoint"); }
     if (enabledTopics[MESSAGE_TOPIC_ManipulateM1M3]) { m1m3SAL.salCommand("m1m3_command_ManipulateM1M3"); m1m3SAL.salProcessor("m1m3_command_ManipulateM1M3"); }
     if (enabledTopics[MESSAGE_TOPIC_ClearAberration]) { m1m3SAL.salCommand("m1m3_command_ClearAberration"); m1m3SAL.salProcessor("m1m3_command_ClearAberration"); }
