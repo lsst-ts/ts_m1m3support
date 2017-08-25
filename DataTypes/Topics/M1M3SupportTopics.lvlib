@@ -33,6 +33,7 @@
 		<Item Name="CommandId.ctl" Type="VI" URL="../Parts/CommandId.ctl"/>
 		<Item Name="DetailedStates.ctl" Type="VI" URL="../Parts/DetailedStates.ctl"/>
 		<Item Name="SummaryStates.ctl" Type="VI" URL="../Parts/SummaryStates.ctl"/>
+		<Item Name="TestStatus.ctl" Type="VI" URL="../Parts/TestStatus.ctl"/>
 		<Item Name="Timestamp.ctl" Type="VI" URL="../Parts/Timestamp.ctl"/>
 	</Item>
 	<Item Name="Events" Type="Folder">
@@ -51,4 +52,25 @@
 		<Item Name="TelemetryIMSData.ctl" Type="VI" URL="../TelemetryIMSData.ctl"/>
 		<Item Name="TelemetryMirrorForceData.ctl" Type="VI" URL="../TelemetryMirrorForceData.ctl"/>
 	</Item>
+	<Item Name="EventActuatorBroadcastCounter.ctl" Type="VI" URL="../EventActuatorBroadcastCounter.ctl"/>
+	<Item Name="EventActuatorTestStatus.ctl" Type="VI" URL="../EventActuatorTestStatus.ctl"/>
+	<Item Name="EventAirStatus.ctl" Type="VI" URL="../EventAirStatus.ctl"/>
+	<Item Name="EventAppliedSettingsMatchStart.ctl" Type="VI" URL="../EventAppliedSettingsMatchStart.ctl"/>
+	<Item Name="EventCellChecks.ctl" Type="VI" URL="../EventCellChecks.ctl"/>
+	<Item Name="EventDetailedState.ctl" Type="VI" URL="../EventDetailedState.ctl"/>
+	<Item Name="EventElevationAngleChecks.ctl" Type="VI" URL="../EventElevationAngleChecks.ctl"/>
+	<Item Name="EventErrorCode.ctl" Type="VI" URL="../EventErrorCode.ctl"/>
+	<Item Name="EventForceActuatorInfo.ctl" Type="VI" URL="../EventForceActuatorInfo.ctl"/>
+	<Item Name="EventForceActuatorSafetyChecks.ctl" Type="VI" URL="../EventForceActuatorSafetyChecks.ctl"/>
+	<Item Name="EventForceActuatorTest.ctl" Type="VI" URL="../EventForceActuatorTest.ctl"/>
+	<Item Name="EventHardpointActuatorBreakaway.ctl" Type="VI" URL="../EventHardpointActuatorBreakaway.ctl"/>
+	<Item Name="EventHardpointActuatorChase.ctl" Type="VI" URL="../EventHardpointActuatorChase.ctl"/>
+	<Item Name="EventILCCommunication.ctl" Type="VI" URL="../EventILCCommunication.ctl"/>
+	<Item Name="EventLowerMirrorComplete.ctl" Type="VI" URL="../EventLowerMirrorComplete.ctl"/>
+	<Item Name="EventRaiseMirrorComplete.ctl" Type="VI" URL="../EventRaiseMirrorComplete.ctl"/>
+	<Item Name="EventServoLoops.ctl" Type="VI" URL="../EventServoLoops.ctl"/>
+	<Item Name="EventSettingsApplied.ctl" Type="VI" URL="../EventSettingsApplied.ctl"/>
+	<Item Name="EventSettingVersions.ctl" Type="VI" URL="../EventSettingVersions.ctl"/>
+	<Item Name="EventStartupChecks.ctl" Type="VI" URL="../EventStartupChecks.ctl"/>
+	<Item Name="EventStatusChecks.ctl" Type="VI" URL="../EventStatusChecks.ctl"/>
 </Library>
