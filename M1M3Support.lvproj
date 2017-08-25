@@ -190,6 +190,7 @@ AddOutputFilter chunkFilter
 			<Item Name="StateFactory.lvclass" Type="LVClass" URL="../States/StateFactory/StateFactory.lvclass"/>
 		</Item>
 		<Item Name="Testing" Type="Folder">
+			<Item Name="TestM1M3SALCommands.vi" Type="VI" URL="../Testing/TestM1M3SALCommands.vi"/>
 			<Item Name="TestM1M3SALTelemetry.vi" Type="VI" URL="../Testing/TestM1M3SALTelemetry.vi"/>
 		</Item>
 		<Item Name="UserEvents" Type="Folder">
@@ -3029,6 +3030,8 @@ AddOutputFilter chunkFilter
 				<Item Name="FindEmptyElement.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/xml.llb/FindEmptyElement.vi"/>
 				<Item Name="FindFirstTag.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/xml.llb/FindFirstTag.vi"/>
 				<Item Name="FindMatchingCloseTag.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/xml.llb/FindMatchingCloseTag.vi"/>
+				<Item Name="Get LV Class Name.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/LVClass/Get LV Class Name.vi"/>
+				<Item Name="High Resolution Relative Seconds.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/High Resolution Relative Seconds.vi"/>
 				<Item Name="Open_Create_Replace File.vi" Type="VI" URL="/&lt;vilib&gt;/_oldvers/_oldvers.llb/Open_Create_Replace File.vi"/>
 				<Item Name="ParseXMLFragments.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/xml.llb/ParseXMLFragments.vi"/>
 				<Item Name="Read From XML File(array).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/xml.llb/Read From XML File(array).vi"/>
