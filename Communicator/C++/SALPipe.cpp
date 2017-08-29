@@ -281,7 +281,6 @@ void setI64(uint8_t *b, int32_t *i, int64_t data) {
     b[(*i)++] = (data >> 48) & 0xFF;
     b[(*i)++] = (data >> 40) & 0xFF;
     b[(*i)++] = (data >> 32) & 0xFF;
-    b[(*i)++] = (data >> 40) & 0xFF;
     b[(*i)++] = (data >> 24) & 0xFF;
     b[(*i)++] = (data >> 16) & 0xFF;
     b[(*i)++] = (data >> 8) & 0xFF;
@@ -309,7 +308,6 @@ void setU64(uint8_t *b, int32_t *i, uint64_t data) {
     b[(*i)++] = (data >> 48) & 0xFF;
     b[(*i)++] = (data >> 40) & 0xFF;
     b[(*i)++] = (data >> 32) & 0xFF;
-    b[(*i)++] = (data >> 40) & 0xFF;
     b[(*i)++] = (data >> 24) & 0xFF;
     b[(*i)++] = (data >> 16) & 0xFF;
     b[(*i)++] = (data >> 8) & 0xFF;
@@ -346,7 +344,14 @@ bool_t readClientHeader() {
 }
 
 bool_t readClientData() {
-    return read(connectionHandle, buffer, messageHeader.size) == messageHeader.size;
+    uint8_t *bufferCopy = buffer;
+    int32_t remaining = messageHeader.size;
+    while(remaining > 0) {
+        int32_t got = read(connectionHandle, bufferCopy, remaining);
+        bufferCopy += got;
+        remaining -= got;
+    }
+    return true;
 }
 
 bool_t writeBuffer(uint8_t *buffer, int32_t count) {

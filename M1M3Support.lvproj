@@ -191,6 +191,7 @@ AddOutputFilter chunkFilter
 		</Item>
 		<Item Name="Testing" Type="Folder">
 			<Item Name="TestM1M3SALCommands.vi" Type="VI" URL="../Testing/TestM1M3SALCommands.vi"/>
+			<Item Name="TestM1M3SALEvents.vi" Type="VI" URL="../Testing/TestM1M3SALEvents.vi"/>
 			<Item Name="TestM1M3SALTelemetry.vi" Type="VI" URL="../Testing/TestM1M3SALTelemetry.vi"/>
 		</Item>
 		<Item Name="UserEvents" Type="Folder">
