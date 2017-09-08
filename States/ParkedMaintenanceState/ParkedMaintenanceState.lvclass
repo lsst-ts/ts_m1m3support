@@ -36,5 +36,14 @@
 			<Property Name="NI.ClassItem.Priority" Type="Int">1</Property>
 			<Property Name="NI.ClassItem.State" Type="Int">1350574608</Property>
 		</Item>
+		<Item Name="moveHardpointActuators.vi" Type="VI" URL="../moveHardpointActuators.vi">
+			<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">&amp;A#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!*(!!!!$Q!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!"!!!!#*!=!!?!!!0$5VP:'6M,GRW9WRB=X-!#5VP:'6M)'^V&gt;!"'1(!!(A!!)"Z198*L:72.97FO&gt;'6O97ZD:6.U982F,GRW9WRB=X-!!"J198*L:72.97FO&gt;'6O97ZD:6.U982F)'^V&gt;!!!)%"1!!-!!!!"!!)4:8*S&lt;X)A;7YA+'ZP)'6S=G^S+1""!0(6J1*W!!!!!B&gt;.-5UT5X6Q='^S&gt;&amp;2P='FD=SZM&gt;GRJ9AV$&lt;WVN97ZE371O9X2M!".!!Q!*1W^N&lt;7&amp;O:%FE!!V!!1!(4H6N:8*J9Q!31%!!!@````]!#164&gt;'6Q=Q"=!0(6R-FL!!!!!B&gt;.-5UT5X6Q='^S&gt;&amp;2P='FD=SZM&gt;GRJ9C&amp;$&lt;WVN97ZE47^W:5BB=G2Q&lt;WFO&gt;%&amp;D&gt;(6B&gt;'^S=SZD&gt;'Q!'E"1!!)!#!!+#F"B=G&amp;N:82F=H-!!#*!=!!?!!!0$5VP:'6M,GRW9WRB=X-!#%VP:'6M)'FO!!"%1(!!(A!!)"Z198*L:72.97FO&gt;'6O97ZD:6.U982F,GRW9WRB=X-!!"F198*L:72.97FO&gt;'6O97ZD:6.U982F)'FO!&amp;1!]!!-!!-!"!!&amp;!!9!"!!%!!1!"!!(!!M!$!!.!Q!!?!!!$1A!!!!!!!!*!!!!D1M!!!!!!!!!!!!!!!!!!!!!!!!)!!!!#!!!!!A!!!#1!!!!!!%!$A!!!!!</Property>
+			<Property Name="NI.ClassItem.ExecutionSystem" Type="Int">-1</Property>
+			<Property Name="NI.ClassItem.Flags" Type="Int">0</Property>
+			<Property Name="NI.ClassItem.IsStaticMethod" Type="Bool">false</Property>
+			<Property Name="NI.ClassItem.MethodScope" Type="UInt">1</Property>
+			<Property Name="NI.ClassItem.Priority" Type="Int">1</Property>
+			<Property Name="NI.ClassItem.State" Type="Int">1107821072</Property>
+		</Item>
 	</Item>
 </LVClass>

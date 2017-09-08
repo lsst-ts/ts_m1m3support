@@ -131,6 +131,7 @@ bool_t enabledTopics[TOPIC_COUNT];
 os_time delay_10ms = { 0, 10000000 };
 char *endptr; 
 int16_t port;
+bool_t stayAlive = false;
 int32_t listenerHandle;
 sockaddr_in listenerAddress;
 bool_t keepRunning = true;
@@ -333,11 +334,21 @@ void setString(uint8_t *b, int32_t *i, std::string* data) {
 }
 
 bool_t readClientHeader() {
-    if (read(connectionHandle, buffer, sizeof(MessageHeader)) == sizeof(MessageHeader)) {
+    uint8_t *bufferCopy = buffer;
+    int32_t remaining = 6;
+    if (read(connectionHandle, bufferCopy, 1) == 1) {
+        bufferCopy += 1;
+        remaining -= 1;
+        while(remaining > 0) {
+            int32_t got = read(connectionHandle, bufferCopy, remaining);
+            bufferCopy += got;
+            remaining -= got;
+        }
         bufferIndex = 0;
         messageHeader.type = getU8(buffer, &bufferIndex);
         messageHeader.topic = getU8(buffer, &bufferIndex);
         messageHeader.size = getI32(buffer, &bufferIndex);
+        printf("GOT %d %d %d\n", messageHeader.type, messageHeader.topic, messageHeader.size);
         return true;
     }
     return false;
@@ -3069,15 +3080,21 @@ int main(int argumentCount, char *argumentValues[]) {
 	memset(&messageHeader, 0, sizeof(MessageHeader));
 
     // Process arguments for port number
-    if ( argumentCount >= 3 ) {
+    if ( argumentCount >= 4 ) {
         port = strtol(argumentValues[1], &endptr, 0);
         if ( *endptr ) {
-            fprintf(stderr, "ECHOSERV: Invalid port number.\n");
+            fprintf(stderr, "SALPIPE: Invalid port number.\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        stayAlive = strtol(argumentValues[2], &endptr, 0);
+        if (*endptr) {
+            fprintf(stderr, "SALPIPE: Invalid stay alive.\n");
             exit(EXIT_FAILURE);
         }
         
         int enabledTopic = 0;
-        for(int i = 2; i < argumentCount; i++) {
+        for(int i = 3; i < argumentCount; i++) {
             enabledTopic = strtol(argumentValues[i], &endptr, 0);
             if (*endptr) {
                 fprintf(stderr, "Invalid enabled topic.\n");
@@ -3097,13 +3114,13 @@ int main(int argumentCount, char *argumentValues[]) {
         port = ECHO_PORT;
     }
     else {
-        fprintf(stderr, "ECHOSERV: Invalid arguments.\n");
+        fprintf(stderr, "SALPIPE: Invalid arguments.\n");
         exit(EXIT_FAILURE);
     }
 
     // Create listener handle
     if ((listenerHandle = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
-        fprintf(stderr, "ECHOSERV: Error creating listening socket.\n");
+        fprintf(stderr, "SALPIPE: Error creating listening socket.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -3114,20 +3131,27 @@ int main(int argumentCount, char *argumentValues[]) {
 
     // Bind listener
     if ( bind(listenerHandle, (struct sockaddr *) &listenerAddress, sizeof(listenerAddress)) < 0 ) {
-        fprintf(stderr, "ECHOSERV: Error calling bind()\n");
+        fprintf(stderr, "SALPIPE: Error calling bind()\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    // Set socket reuse option
+    int one = 1;
+    if (setsockopt(listenerHandle, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int)) < 0) {
+        fprintf(stderr, "SALPIPE: setsockopt(SO_REUSEADDR) failed");
         exit(EXIT_FAILURE);
     }
     
     // Start listener
     if ( listen(listenerHandle, LISTENQ) < 0 ) {
-        fprintf(stderr, "ECHOSERV: Error calling listen()\n");
+        fprintf(stderr, "SALPIPE: Error calling listen()\n");
         exit(EXIT_FAILURE);
     }
     
     // Wait for a client to connect
     printf("Waiting for client\n");
     if ((connectionHandle = accept(listenerHandle, NULL, NULL) ) < 0 ) {
-        fprintf(stderr, "ECHOSERV: Error calling accept()\n");
+        fprintf(stderr, "SALPIPE: Error calling accept()\n");
         exit(EXIT_FAILURE);
     }
 
@@ -3202,39 +3226,51 @@ int main(int argumentCount, char *argumentValues[]) {
     if (enabledTopics[MESSAGE_TOPIC_Shutdown]) { m1m3SAL.salCommand("m1m3_command_Shutdown"); m1m3SAL.salProcessor("m1m3_command_Shutdown"); }
 
 
-    // Initialization Done
-    printf("Done\n");
-    headerBuffer[0] = 0xFF;
-    writeBuffer(headerBuffer, 1);
-    
-    // Setup polling
-    memset(&pollHandle, 0, sizeof(pollfd));
-    pollHandle.fd = connectionHandle;
-    pollHandle.events = POLLIN;
-    
-    int flag = 1;
-    rc = setsockopt(connectionHandle, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(int));
-    if (rc < 0) {
-        printf("Problem with TCP_NODELAY\n");
-    }
+    do {
+        // Initialization Done
+        printf("Done\n");
+        keepRunning = true;
+        headerBuffer[0] = 0xFF;
+        writeBuffer(headerBuffer, 1);
+        
+        // Setup polling
+        memset(&pollHandle, 0, sizeof(pollfd));
+        pollHandle.fd = connectionHandle;
+        pollHandle.events = POLLIN;
+        
+        int flag = 1;
+        rc = setsockopt(connectionHandle, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(int));
+        if (rc < 0) {
+            printf("SALPIPE: Problem with TCP_NODELAY\n");
+        }
 
-    while (keepRunning) {
-        // Execute service loop
-        sleep(0);
+        while (keepRunning) {
+            // Execute service loop
+            sleep(0);
+            
+            // Check SAL clients
+            processSALRequest();
+            
+            // Read data from client
+            processClientRequest();
+        }
         
-        // Check SAL clients
-        processSALRequest();
+        // Close client
+        printf("Closing client connection\n");
+        if (close(connectionHandle) < 0) {
+            fprintf(stderr, "SALPIPE: Error calling close()\n");
+            exit(EXIT_FAILURE);
+        }
         
-        // Read data from client
-        processClientRequest();
-    }
-    
-    // Close client
-    printf("Closing client connection\n");
-    if (close(connectionHandle) < 0) {
-        fprintf(stderr, "Error calling close()\n");
-        exit(EXIT_FAILURE);
-    }
+        if (stayAlive) {
+            // Wait for a client to connect
+            printf("Waiting for client\n");
+            if ((connectionHandle = accept(listenerHandle, NULL, NULL) ) < 0 ) {
+                fprintf(stderr, "SALPIPE: Error calling accept()\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    } while(stayAlive);
 
     // Close SAL
     printf("Shutting down SAL\n");
