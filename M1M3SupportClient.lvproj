@@ -72,6 +72,7 @@
 			<Item Name="InitialState.lvclass" Type="LVClass" URL="../States/InitialState/InitialState.lvclass"/>
 			<Item Name="LowerM1M3Command.lvclass" Type="LVClass" URL="../Commands/LowerM1M3Command/LowerM1M3Command.lvclass"/>
 			<Item Name="M1M3Settings.lvclass" Type="LVClass" URL="../Settings/M1M3SupportSettings/M1M3Settings.lvclass"/>
+			<Item Name="M1M3Support.lvbitx" Type="Document" URL="../FPGA Bitfiles/M1M3Support.lvbitx"/>
 			<Item Name="M1M3SupportCommunicator.lvlib" Type="Library" URL="../Communicator/M1M3SupportCommunicator.lvlib"/>
 			<Item Name="M1M3SupportGeneral.lvlib" Type="Library" URL="../DataTypes/General/M1M3SupportGeneral.lvlib"/>
 			<Item Name="M1M3SupportSettings.lvlib" Type="Library" URL="../DataTypes/Settings/M1M3SupportSettings.lvlib"/>
