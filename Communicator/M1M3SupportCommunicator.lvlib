@@ -11,6 +11,5 @@
 		<Item Name="MessageTopics.ctl" Type="VI" URL="../DataTypes/MessageTopics.ctl"/>
 		<Item Name="MessageTypes.ctl" Type="VI" URL="../DataTypes/MessageTypes.ctl"/>
 	</Item>
-	<Item Name="Communicator.lvclass" Type="LVClass" URL="../Communicator/Communicator.lvclass"/>
 	<Item Name="M1M3SAL.lvclass" Type="LVClass" URL="../M1M3SAL/M1M3SAL.lvclass"/>
 </Library>

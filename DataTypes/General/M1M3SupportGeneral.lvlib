@@ -5,6 +5,7 @@
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">false</Property>
 	<Item Name="ILC" Type="Folder">
+		<Property Name="NI.SortType" Type="Int">0</Property>
 		<Item Name="ILCMap.ctl" Type="VI" URL="../ILCMap.ctl"/>
 		<Item Name="ILCModes.ctl" Type="VI" URL="../ILCModes.ctl"/>
 		<Item Name="ILCTypes.ctl" Type="VI" URL="../ILCTypes.ctl"/>

@@ -6,8 +6,10 @@
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">false</Property>
 	<Item Name="Base" Type="Folder">
 		<Item Name="Parts" Type="Folder">
+			<Item Name="BaseFAIdentitySettings.ctl" Type="VI" URL="../Base/Parts/BaseFAIdentitySettings.ctl"/>
 			<Item Name="BaseILCIdentitySettings.ctl" Type="VI" URL="../Base/Parts/BaseILCIdentitySettings.ctl"/>
 		</Item>
+		<Item Name="BaseFASettings.ctl" Type="VI" URL="../Base/BaseFASettings.ctl"/>
 		<Item Name="BaseHPSettings.ctl" Type="VI" URL="../Base/BaseHPSettings.ctl"/>
 		<Item Name="BaseILCSettings.ctl" Type="VI" URL="../Base/BaseILCSettings.ctl"/>
 		<Item Name="BaseSALSettings.ctl" Type="VI" URL="../Base/BaseSALSettings.ctl"/>
