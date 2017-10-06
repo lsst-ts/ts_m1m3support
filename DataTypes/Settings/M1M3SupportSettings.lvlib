@@ -13,6 +13,7 @@
 		<Item Name="BaseHPSettings.ctl" Type="VI" URL="../Base/BaseHPSettings.ctl"/>
 		<Item Name="BaseILCSettings.ctl" Type="VI" URL="../Base/BaseILCSettings.ctl"/>
 		<Item Name="BaseSALSettings.ctl" Type="VI" URL="../Base/BaseSALSettings.ctl"/>
+		<Item Name="BaseT7InclinometerSettings.ctl" Type="VI" URL="../Base/BaseT7InclinometerSettings.ctl"/>
 		<Item Name="RecommendedSettings.ctl" Type="VI" URL="../Base/RecommendedSettings.ctl"/>
 		<Item Name="SettingAlias.ctl" Type="VI" URL="../Base/SettingAlias.ctl"/>
 		<Item Name="SettingAliases.ctl" Type="VI" URL="../Base/SettingAliases.ctl"/>
