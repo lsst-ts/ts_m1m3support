@@ -1,18 +1,18 @@
-[submodule "Common_FPGA_Timestamp"]
+[submodule "FPGA/Common_FPGA_Timestamp"]
 	path = FPGA/Common_FPGA_Timestamp
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_timestamp.git
-[submodule "Common_FPGA_Modbus"]
+[submodule "FPGA/Common_FPGA_Modbus"]
 	path = FPGA/Common_FPGA_Modbus
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_modbus.git
-[submodule "Common_FPGA_HealthAndStatus"]
+[submodule "FPGA/Common_FPGA_HealthAndStatus"]
 	path = FPGA/Common_FPGA_HealthAndStatus
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_healthandstatus.git
-[submodule "Common_FPGA_FIFO"]
+[submodule "FPGA/Common_FPGA_FIFO"]
 	path = FPGA/Common_FPGA_FIFO
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_fifo.git
-[submodule "Common_FPGA_T7Inclinometer"]
+[submodule "FPGA/Common_FPGA_T7Inclinometer"]
 	path = FPGA/Common_FPGA_T7Inclinometer
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_t7inclinometer.git
-[submodule "Common_FPGA_SerialASCII"]
+[submodule "FPGA/Common_FPGA_SerialASCII"]
 	path = FPGA/Common_FPGA_SerialASCII
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_serialascii.git
