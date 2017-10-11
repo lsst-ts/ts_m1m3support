@@ -1,42 +1,18 @@
-[submodule "Common_RT_Utilities"]
-	path = Common_RT_Utilities
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_utilities.git
-[submodule "Common_RT_FPGA"]
-	path = Common_RT_FPGA
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_fpga.git
-[submodule "Common_RT_ILC"]
-	path = Common_RT_ILC
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_ilc.git
-[submodule "Common_RT_HPILC"]
-	path = Common_RT_HPILC
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_hpilc.git
-[submodule "Common_RT_HealthAndStatus"]
-	path = Common_RT_HealthAndStatus
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_healthandstatus.git
-[submodule "Common_RT_Modbus"]
-	path = Common_RT_Modbus
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_modbus.git
-[submodule "Common_RT_Timestamp"]
-	path = Common_RT_Timestamp
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_timestamp.git
 [submodule "Common_FPGA_Timestamp"]
-	path = Common_FPGA_Timestamp
+	path = FPGA/Common_FPGA_Timestamp
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_timestamp.git
 [submodule "Common_FPGA_Modbus"]
-	path = Common_FPGA_Modbus
+	path = FPGA/Common_FPGA_Modbus
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_modbus.git
 [submodule "Common_FPGA_HealthAndStatus"]
-	path = Common_FPGA_HealthAndStatus
+	path = FPGA/Common_FPGA_HealthAndStatus
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_healthandstatus.git
 [submodule "Common_FPGA_FIFO"]
-	path = Common_FPGA_FIFO
+	path = FPGA/Common_FPGA_FIFO
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_fifo.git
-[submodule "Common_RT_FAILC"]
-	path = Common_RT_FAILC
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_failc.git
 [submodule "Common_FPGA_T7Inclinometer"]
-	path = Common_FPGA_T7Inclinometer
+	path = FPGA/Common_FPGA_T7Inclinometer
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_t7inclinometer.git
-[submodule "Common_RT_T7Inclinometer"]
-	path = Common_RT_T7Inclinometer
-	url = https://stash.lsstcorp.org/scm/ts/common_rt_t7inclinometer.git
+[submodule "Common_FPGA_SerialASCII"]
+	path = FPGA/Common_FPGA_SerialASCII
+	url = https://stash.lsstcorp.org/scm/ts/common_fpga_serialascii.git
