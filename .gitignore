@@ -25,3 +25,6 @@
 # Metadata
 *.aliases
 *.lvlps
+
+# Other
+*.stackdump
