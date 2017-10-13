@@ -20,6 +20,8 @@ class IPublisher {
 public:
 	virtual ~IPublisher();
 
+	virtual double getTimestamp();
+
 	virtual void putInclinometerData(m1m3_InclinometerDataC* data);
 	virtual void putIMSData(m1m3_IMSDataC* data);
 

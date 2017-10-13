@@ -30,7 +30,7 @@ States::Type DisabledState::enable(EnableCommand* command, IModel* model) {
 States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
 	States::Type newState = States::StandbyState;
 	model->getILC()->writeSetModeStandbyBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->publishStateChange(newState);
@@ -44,9 +44,10 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getRS232()->writeDisplacementRequest();
 	//model->getRS232()->writeInclinometerRequest();
 	//model->getILC()->waitForAllSubnets(5000);
-	//usleep(50000);
+	usleep(50000);
 	//model->getILC()->readAll();
-	model->getRS232()->read(1);
+	model->getRS232()->readDisplacementResponse();
+	//model->getRS232()->readInclinometerResponse();
 	//model->getRS232()->read(2);
 	//model->publishFPGAData();
 	return States::Ignore;

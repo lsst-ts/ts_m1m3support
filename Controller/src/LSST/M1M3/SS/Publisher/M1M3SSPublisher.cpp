@@ -8,6 +8,7 @@
 #include <M1M3SSPublisher.h>
 #include <SAL_m1m3.h>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -24,6 +25,10 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_DisplacementSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_ILCWarning");
+}
+
+double M1M3SSPublisher::getTimestamp() {
+	return this->m1m3SAL->getCurrentTime();
 }
 
 void M1M3SSPublisher::putInclinometerData(m1m3_InclinometerDataC* data) {

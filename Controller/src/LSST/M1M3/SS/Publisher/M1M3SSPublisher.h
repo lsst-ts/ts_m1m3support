@@ -23,6 +23,8 @@ private:
 public:
 	M1M3SSPublisher(SAL_m1m3* m1m3SAL);
 
+	double getTimestamp();
+
 	void putInclinometerData(m1m3_InclinometerDataC* data);
 	void putIMSData(m1m3_IMSDataC* data);
 

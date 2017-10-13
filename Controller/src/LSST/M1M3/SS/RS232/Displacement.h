@@ -23,7 +23,7 @@ private:
 	IPublisher* publisher;
 	IFPGA* fpga;
 
-	uint8_t txBuffer[7];
+	uint16_t txBuffer[32];
 	uint8_t rxBuffer[128];
 
 	m1m3_logevent_DisplacementSensorWarningC displacementWarning;
@@ -33,7 +33,7 @@ public:
 	Displacement(IPublisher* publisher, IFPGA* fpga);
 
 	void writeDataRequest();
-	void readDataResponse(uint8_t* buffer, int32_t* index);
+	void readDataResponse();
 
 private:
 	void createTxBuffer();

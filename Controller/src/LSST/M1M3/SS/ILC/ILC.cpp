@@ -11,6 +11,8 @@
 #include <DataTypes.h>
 #include <iostream>
 #include <unistd.h>
+#include <FPGAAddresses.h>
+#include <Timestamp.h>
 
 using namespace std;
 
@@ -121,59 +123,59 @@ ILC::ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings ilcApplicati
 ILC::~ILC() { }
 
 void ILC::writeCalibrationDataBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferSetADCChannelOffsetAndSensitivity.getBuffer(), this->bufferSetADCChannelOffsetAndSensitivity.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferSetADCChannelOffsetAndSensitivity.getBuffer(), this->bufferSetADCChannelOffsetAndSensitivity.getLength(), 0);
 }
 
 void ILC::writeSetADCScanRateBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferSetADCScanRate.getBuffer(), this->bufferSetADCScanRate.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferSetADCScanRate.getBuffer(), this->bufferSetADCScanRate.getLength(), 0);
 }
 
 void ILC::writeSetBoostValveDCAGainBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferSetBoostValveDCAGains.getBuffer(), this->bufferSetBoostValveDCAGains.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferSetBoostValveDCAGains.getBuffer(), this->bufferSetBoostValveDCAGains.getLength(), 0);
 }
 
 void ILC::writeResetBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReset.getBuffer(), this->bufferReset.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReset.getBuffer(), this->bufferReset.getLength(), 0);
 }
 
 void ILC::writeReportServerIDBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReportServerID.getBuffer(), this->bufferReportServerID.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReportServerID.getBuffer(), this->bufferReportServerID.getLength(), 0);
 }
 
 void ILC::writeReportServerStatusBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReportServerStatus.getBuffer(), this->bufferReportServerStatus.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReportServerStatus.getBuffer(), this->bufferReportServerStatus.getLength(), 0);
 }
 
 void ILC::writeReportADCScanRateBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReportADCScanRate.getBuffer(), this->bufferReportADCScanRate.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReportADCScanRate.getBuffer(), this->bufferReportADCScanRate.getLength(), 0);
 }
 
 void ILC::writeReadCalibrationDataBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReadCalibration.getBuffer(), this->bufferReadCalibration.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReadCalibration.getBuffer(), this->bufferReadCalibration.getLength(), 0);
 }
 
 void ILC::writeReadBoostValveDCAGainBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReadBoostValveDCAGains.getBuffer(), this->bufferReadBoostValveDCAGains.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReadBoostValveDCAGains.getBuffer(), this->bufferReadBoostValveDCAGains.getLength(), 0);
 }
 
 void ILC::writeReportDCAIDBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReportDCAID.getBuffer(), this->bufferReportDCAID.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReportDCAID.getBuffer(), this->bufferReportDCAID.getLength(), 0);
 }
 
 void ILC::writeReportDCAStatusBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferReportDCAStatus.getBuffer(), this->bufferReportDCAStatus.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferReportDCAStatus.getBuffer(), this->bufferReportDCAStatus.getLength(), 0);
 }
 
 void ILC::writeSetModeDisableBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferChangeILCModeDisabled.getBuffer(), this->bufferChangeILCModeDisabled.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferChangeILCModeDisabled.getBuffer(), this->bufferChangeILCModeDisabled.getLength(), 0);
 }
 
 void ILC::writeSetModeEnableBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferChangeILCModeEnabled.getBuffer(), this->bufferChangeILCModeEnabled.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferChangeILCModeEnabled.getBuffer(), this->bufferChangeILCModeEnabled.getLength(), 0);
 }
 
 void ILC::writeSetModeStandbyBuffer() {
-	this->fpga->writeModbusTxFIFO(this->bufferChangeILCModeStandby.getBuffer(), this->bufferChangeILCModeStandby.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferChangeILCModeStandby.getBuffer(), this->bufferChangeILCModeStandby.getLength(), 0);
 }
 
 void ILC::writeFreezeSensorListBuffer() {
@@ -188,7 +190,11 @@ void ILC::writeFreezeSensorListBuffer() {
 	}
 	this->incBroadcastCounter();
 	this->incFAStatusIndex();
-	this->fpga->writeModbusTxFIFO(this->bufferFreezeSensorList.buffer.getBuffer(), this->bufferFreezeSensorList.buffer.getLength(), 0);
+	this->fpga->writeCommandFIFO(this->bufferFreezeSensorList.buffer.getBuffer(), this->bufferFreezeSensorList.buffer.getLength(), 0);
+}
+
+void ILC::triggerModbus() {
+	this->fpga->writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
 }
 
 void ILC::waitForSubnet(int32_t subnet, int32_t timeout) {
@@ -207,17 +213,17 @@ void ILC::waitForAllSubnets(int32_t timeout) {
 void ILC::read(uint8_t subnet) {
 	// TODO: The expectation is if someone asks to read something they expect something to be there
 	// so if something isn't there should be a warning (timeout on responses)
-	this->fpga->writeModbusRxCommandFIFO(subnet, 0);
+	this->u16Buffer[0] = this->subnetToRxAddress(subnet);
+	this->fpga->writeRequestFIFO(this->u16Buffer, 1, 0);
 	this->rxBuffer.setIndex(0);
-	this->fpga->readModbusRxFIFO(this->rxBuffer.getBuffer(), 2, 1);
-	uint8_t reportedSubnet = this->rxBuffer.readSubnet();
+	this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
 	uint16_t reportedLength = this->rxBuffer.readLength();
-	cout << "Available " << (int32_t)reportedLength << endl;
+	cout << "Subnet " << (int32_t)subnet << " Available " << (int32_t)reportedLength << endl;
 	if (reportedLength > 0) {
 		this->rxBuffer.setIndex(0);
-		this->fpga->readModbusRxFIFO(this->rxBuffer.getBuffer(), reportedLength, 10);
+		this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10);
 		this->rxBuffer.setLength(reportedLength);
-		this->parse(&this->rxBuffer, reportedSubnet);
+		this->parse(&this->rxBuffer, subnet);
 	}
 }
 
@@ -229,8 +235,31 @@ void ILC::readAll() {
 	this->read(5);
 }
 
+uint8_t ILC::subnetToTxAddress(uint8_t subnet) {
+	switch(subnet + 1) {
+	case 1: return FPGAAddresses::ModbusSubnetATx;
+	case 2: return FPGAAddresses::ModbusSubnetBTx;
+	case 3: return FPGAAddresses::ModbusSubnetCTx;
+	case 4: return FPGAAddresses::ModbusSubnetDTx;
+	case 5: return FPGAAddresses::ModbusSubnetETx;
+	default: return 0;
+	}
+}
+
+uint8_t ILC::subnetToRxAddress(uint8_t subnet) {
+	switch(subnet) {
+	case 1: return FPGAAddresses::ModbusSubnetARx;
+	case 2: return FPGAAddresses::ModbusSubnetBRx;
+	case 3: return FPGAAddresses::ModbusSubnetCRx;
+	case 4: return FPGAAddresses::ModbusSubnetDRx;
+	case 5: return FPGAAddresses::ModbusSubnetERx;
+	default: return 0;
+	}
+}
+
 void ILC::startSubnet(ModbusBuffer* buffer, uint8_t subnet) {
-	buffer->writeSubnet(subnet + 1);
+	subnet = this->subnetToTxAddress(subnet);
+	buffer->writeSubnet(subnet);
 	this->subnetStartIndex = buffer->getIndex();
 	buffer->writeLength(0);
 	buffer->writeSoftwareTrigger();
@@ -625,15 +654,19 @@ void ILC::reportDCAStatus(ModbusBuffer* buffer, uint8_t address) {
 }
 
 void ILC::parse(ModbusBuffer* buffer, uint8_t subnet) {
+	uint64_t a = buffer->readLength();
+	uint64_t b = buffer->readLength();
+	uint64_t c = buffer->readLength();
+	uint64_t d = buffer->readLength();
+	double globalTimestamp = Timestamp::fromRaw((a << 48) | (b << 32) | (c << 16) | d);
+	cout << "Global Timestamp " << globalTimestamp << endl;
 	while(!buffer->endOfBuffer()) {
 		uint16_t length = 0;
 		double timestamp = 0;
-		uint8_t address = buffer->getBuffer()[buffer->getIndex() + 10];
-		uint8_t function = buffer->getBuffer()[buffer->getIndex() + 11];
 		if (this->validateCRC(buffer, &length, &timestamp)) {
 			if(subnet >= 1 && subnet <= 5) {
-				address = buffer->readU8();
-				function = buffer->readU8();
+				uint8_t address = buffer->readU8();
+				uint8_t function = buffer->readU8();
 				ILCMap map = this->subnetData[subnet - 1].ILCDataFromAddress[address];
 				int32_t dataIndex = map.DataIndex;
 				switch(map.Type) {
@@ -701,7 +734,6 @@ void ILC::parse(ModbusBuffer* buffer, uint8_t subnet) {
 			}
 		}
 		else {
-			cout << "Timestamp " << timestamp << " Subnet " << subnet << " Address " << address << " Function " << function << endl;
 			this->warnInvalidCRC(timestamp);
 		}
 	}
@@ -751,16 +783,6 @@ void ILC::parseReportHPServerIDResponse(ModbusBuffer* buffer, int32_t dataIndex)
 	this->hardpointInfo.MinorRevision[dataIndex] = buffer->readU8();
 	buffer->incIndex(length - 12);
 	buffer->skipToNextFrame();
-
-	cout << "DataIndex " << dataIndex
-	     << " UniqueID " << (int64_t)this->hardpointInfo.ILCUniqueId[dataIndex]
-	     << " ILCApplicationType " << (int64_t)this->hardpointInfo.ILCApplicationType[dataIndex]
-	     << " NetworkNodeType " << (int64_t)this->hardpointInfo.NetworkNodeType[dataIndex]
-         << " ILCSelectedOptions " << (int64_t)this->hardpointInfo.ILCSelectedOptions[dataIndex]
-         << " NetworkNodeOptions " << (int64_t)this->hardpointInfo.NetworkNodeOptions[dataIndex]
-         << " MajorRevision " << (int64_t)this->hardpointInfo.MajorRevision[dataIndex]
-         << " Minor Revision " << (int64_t)this->hardpointInfo.MinorRevision[dataIndex]
-         << endl;
 }
 
 void ILC::parseReportFAServerIDResponse(ModbusBuffer* buffer, int32_t dataIndex) {
@@ -774,7 +796,6 @@ void ILC::parseReportFAServerIDResponse(ModbusBuffer* buffer, int32_t dataIndex)
 	this->forceInfo.MinorRevision[dataIndex] = buffer->readU8();
 	buffer->incIndex(length - 12);
 	buffer->skipToNextFrame();
-
 }
 
 void ILC::parseReportHPServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
@@ -859,6 +880,7 @@ void ILC::parseChangeHPILCModeResponse(ModbusBuffer* buffer, int32_t dataIndex) 
 	this->hardpointStatus.Mode[dataIndex] = buffer->readU8();
 	buffer->readU8();
 	buffer->skipToNextFrame();
+	cout << "Mode[" << dataIndex << "] = " << (int32_t)(this->hardpointStatus.Mode[dataIndex]) << endl;
 }
 
 void ILC::parseChangeFAILCModeResponse(ModbusBuffer* buffer, int32_t dataIndex) {

@@ -156,24 +156,24 @@ uint64_t ModbusBuffer::readU64() {
 }
 
 float ModbusBuffer::readSGL() {
-	this->floatPointBuffer[0] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[1] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[2] = this->readInstructionByte(this->buffer[this->index++]);
 	this->floatPointBuffer[3] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[2] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[1] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[0] = this->readInstructionByte(this->buffer[this->index++]);
 	float data;
 	memcpy(&data, this->floatPointBuffer, sizeof(float));
 	return data;
 }
 
 double ModbusBuffer::readDBL() {
-	this->floatPointBuffer[0] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[1] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[2] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[3] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[4] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[5] = this->readInstructionByte(this->buffer[this->index++]);
-	this->floatPointBuffer[6] = this->readInstructionByte(this->buffer[this->index++]);
 	this->floatPointBuffer[7] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[6] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[5] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[4] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[3] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[2] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[1] = this->readInstructionByte(this->buffer[this->index++]);
+	this->floatPointBuffer[0] = this->readInstructionByte(this->buffer[this->index++]);
 	double data;
 	memcpy(&data, this->floatPointBuffer, sizeof(double));
 	return data;
@@ -286,22 +286,22 @@ void ModbusBuffer::writeU64(uint64_t data) {
 
 void ModbusBuffer::writeSGL(float data) {
 	memcpy(this->floatPointBuffer, &data, sizeof(float));
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[0]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[1]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[2]);
 	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[3]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[2]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[1]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[0]);
 }
 
 void ModbusBuffer::writeDBL(double data) {
 	memcpy(this->floatPointBuffer, &data, sizeof(double));
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[0]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[1]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[2]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[3]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[4]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[5]);
-	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[6]);
 	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[7]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[6]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[5]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[4]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[3]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[2]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[1]);
+	this->buffer[this->index++] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[0]);
 }
 
 void ModbusBuffer::writeCRC(int32_t length) {

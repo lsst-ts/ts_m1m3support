@@ -24,53 +24,27 @@
 /**
  * The signature of the FPGA bitfile.
  */
-static const char* const NiFpga_M1M3Support_Signature = "57AF066C9A9D034967B1A7653C1A0AA2";
+static const char* const NiFpga_M1M3Support_Signature = "CED2C0DB1A2EF91D9C7D3987E4FBD322";
 
 typedef enum
 {
-   NiFpga_M1M3Support_IndicatorU64_Data = 0x18000,
-} NiFpga_M1M3Support_IndicatorU64;
-
-typedef enum
-{
-   NiFpga_M1M3Support_ControlBool_ModbusTrigger = 0x18006,
-} NiFpga_M1M3Support_ControlBool;
-
-typedef enum
-{
-   NiFpga_M1M3Support_TargetToHostFifoU8_GPResponseFIFO = 10,
-   NiFpga_M1M3Support_TargetToHostFifoU8_RS232RxFIFO = 2,
+   NiFpga_M1M3Support_TargetToHostFifoU8_U8ResponseFIFO = 0,
 } NiFpga_M1M3Support_TargetToHostFifoU8;
 
 typedef enum
 {
-   NiFpga_M1M3Support_TargetToHostFifoU16_ModbusRxDataFIFO = 6,
+   NiFpga_M1M3Support_TargetToHostFifoU16_U16ResponseFIFO = 1,
 } NiFpga_M1M3Support_TargetToHostFifoU16;
 
 typedef enum
 {
-   NiFpga_M1M3Support_TargetToHostFifoU64_HealthAndStatusDataFIFO = 8,
-   NiFpga_M1M3Support_TargetToHostFifoU64_ModbusTxTimestampFIFO = 4,
-} NiFpga_M1M3Support_TargetToHostFifoU64;
+   NiFpga_M1M3Support_TargetToHostFifoSgl_SGLResponseFIFO = 2,
+} NiFpga_M1M3Support_TargetToHostFifoSgl;
 
 typedef enum
 {
-   NiFpga_M1M3Support_HostToTargetFifoU8_GPCommandFIFO = 12,
-   NiFpga_M1M3Support_HostToTargetFifoU8_GPRequestFIFO = 11,
-   NiFpga_M1M3Support_HostToTargetFifoU8_ModbusRxCommandFIFO = 7,
-   NiFpga_M1M3Support_HostToTargetFifoU8_RS232RxCommandFIFO = 3,
-   NiFpga_M1M3Support_HostToTargetFifoU8_RS232TxFIFO = 1,
-} NiFpga_M1M3Support_HostToTargetFifoU8;
-
-typedef enum
-{
-   NiFpga_M1M3Support_HostToTargetFifoU16_ModbusTxDataFIFO = 5,
+   NiFpga_M1M3Support_HostToTargetFifoU16_CommandFIFO = 4,
+   NiFpga_M1M3Support_HostToTargetFifoU16_RequestFIFO = 3,
 } NiFpga_M1M3Support_HostToTargetFifoU16;
-
-typedef enum
-{
-   NiFpga_M1M3Support_HostToTargetFifoU64_HealthAndStatusControlFIFO = 9,
-   NiFpga_M1M3Support_HostToTargetFifoU64_TimestampControlFIFO = 0,
-} NiFpga_M1M3Support_HostToTargetFifoU64;
 
 #endif

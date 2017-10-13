@@ -8,8 +8,6 @@
 #ifndef IRS232_H_
 #define IRS232_H_
 
-#include <DataTypes.h>
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -21,7 +19,8 @@ public:
 	virtual void writeDisplacementRequest();
 	virtual void writeInclinometerRequest();
 
-	virtual void read(int32_t port);
+	virtual void readDisplacementResponse();
+	virtual void readInclinometerResponse();
 };
 
 } /* namespace SS */

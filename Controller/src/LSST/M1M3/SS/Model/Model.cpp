@@ -12,8 +12,10 @@
 #include <ILC.h>
 #include <Timestamp.h>
 #include <ILCApplicationSettings.h>
+#include <U16ArrayUtilities.h>
 #include <iostream>
 #include <IFPGA.h>
+#include <FPGAAddresses.h>
 
 using namespace std;
 
@@ -78,19 +80,17 @@ void Model::loadSettings(std::string settingsToApply) {
 }
 
 void Model::queryFPGAData() {
-	uint64_t buffer[] = { 2, 0 };
-	this->fpga->writeHealthAndStatusFIFO(buffer, 2, 0);
+
 }
 
 void Model::publishFPGAData() {
-	int32_t available = this->fpga->readHealthAndStatusFIFOAvailable();
-	if (available > 0) {
-		uint64_t buffer[available];
-		this->fpga->readHealthAndStatusFIFO(buffer, available, 0);
+	uint16_t response[512];
+	this->fpga->writeRequestFIFO(FPGAAddresses::HealthAndStatus, 0);
+	this->fpga->readU16ResponseFIFO(response, 64*4, 20);
+	for(int i = 0; i < 25; i++) {
+		cout << U16ArrayUtilities::u64(response, i * 4) << " ";
 	}
-	else {
-		cout << "No FPGA Data Available" << endl;
-	}
+	cout << endl;
 }
 
 void Model::publishStateChange(States::Type newState) {

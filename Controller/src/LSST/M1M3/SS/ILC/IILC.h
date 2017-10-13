@@ -87,6 +87,11 @@ public:
 	virtual void writeFreezeSensorListBuffer();
 
 	/*!
+	 * Sends a software trigger to the modbus subnets.
+	 */
+	virtual void triggerModbus();
+
+	/*!
 	 * Wait for a subnet to complete the execution of its instruction buffer.
 	 * @param[in] subnet The subnet to read.
 	 * @param[in] timeout The timeout in ms. -1 is infinite.

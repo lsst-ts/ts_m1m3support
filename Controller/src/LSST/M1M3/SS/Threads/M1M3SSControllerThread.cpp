@@ -8,7 +8,6 @@
 #include <M1M3SSControllerThread.h>
 #include <IController.h>
 #include <unistd.h>
-#include <iostream>
 
 namespace LSST {
 namespace M1M3 {
@@ -24,7 +23,6 @@ M1M3SSControllerThread::~M1M3SSControllerThread() {
 }
 
 void M1M3SSControllerThread::run() {
-	std::cout << "M1M3SSControllerThread::run" << std::endl;
 	while(this->keepRunning) {
 		this->controller->lock();
 		ICommand* command = this->controller->dequeue();

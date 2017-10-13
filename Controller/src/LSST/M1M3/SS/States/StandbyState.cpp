@@ -27,19 +27,19 @@ States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	model->loadSettings(command->getData()->SettingsToApply);
 	/*cout << "Write Calibration Data" << endl;
 	model->getILC()->writeCalibrationDataBuffer();
-	model->getFPGA()->triggerModbus(); // TODO: This is strange, I should trigger it through IILC
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
+	model->getILC()->readAll();*/
 	cout << "Set ADC Scan Rate" << endl;
 	model->getILC()->writeSetADCScanRateBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	cout << "Set Boost Valve DCA Gains" << endl;
 	model->getILC()->writeSetBoostValveDCAGainBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
+	model->getILC()->readAll();/*
 	cout << "Reset" << endl;
 	model->getILC()->writeResetBuffer();
 	model->getFPGA()->triggerModbus();
@@ -47,46 +47,49 @@ States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	model->getILC()->readAll();*/
 	cout << "Report Server ID" << endl;
 	model->getILC()->writeReportServerIDBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
-	/*cout << "Report Server Status" << endl;
+	cout << "Report Server Status" << endl;
 	model->getILC()->writeReportServerStatusBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	cout << "Report ADC Scan Rate" << endl;
 	model->getILC()->writeReportADCScanRateBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
-	cout << "Read Calibration" << endl;
+	/*cout << "Read Calibration" << endl;
 	model->getILC()->writeReadCalibrationDataBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
+	model->getILC()->readAll();*/
 	cout << "Read Boost Valve DCA Gains" << endl;
 	model->getILC()->writeReadBoostValveDCAGainBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	cout << "Report DCA ID" << endl;
 	model->getILC()->writeReportDCAIDBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();*/
-	/*cout << "Report DCA Status" << endl;
+	model->getILC()->readAll();
+	cout << "Report DCA Status" << endl;
 	model->getILC()->writeReportDCAStatusBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	cout << "Set Mode Disabled" << endl;
 	model->getILC()->writeSetModeDisableBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();*/
+	model->getILC()->readAll();
+	usleep(50000);
+	model->queryFPGAData();
+	usleep(10000);
+	model->publishFPGAData();
 	model->publishStateChange(newState);
-	newState = States::Ignore;
 	return newState;
 }
 
@@ -98,9 +101,9 @@ States::Type StandbyState::shutdown(ShutdownCommand* command, IModel* model) {
 }
 
 States::Type StandbyState::update(UpdateCommand* command, IModel* model) {
-	model->queryFPGAData();
-	usleep(10000);
-	model->publishFPGAData();
+	//model->queryFPGAData();
+	//usleep(10000);
+	//model->publishFPGAData();
 	return States::Ignore;
 }
 

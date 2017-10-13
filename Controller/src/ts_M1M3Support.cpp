@@ -23,7 +23,7 @@
 #include <SettingReader.h>
 #include <SAL_m1m3.h>
 #include <Timestamp.h>
-#include <FPGASignals.h>
+#include <FPGAAddresses.h>
 
 using namespace std;
 using namespace LSST::M1M3::SS;

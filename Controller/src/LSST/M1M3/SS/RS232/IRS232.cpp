@@ -17,7 +17,9 @@ void IRS232::writeDisplacementRequest() { }
 
 void IRS232::writeInclinometerRequest() { }
 
-void IRS232::read(int32_t port) { }
+void IRS232::readDisplacementResponse() { }
+
+void IRS232::readInclinometerResponse() { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

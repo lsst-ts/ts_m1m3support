@@ -61,6 +61,7 @@ private:
 	int8_t hpStepCommand[6];
 	int32_t hpSteps[6];
 
+	uint16_t u16Buffer[1];
 	ModbusBuffer rxBuffer;
 
 	m1m3_logevent_HardpointActuatorInfoC hardpointInfo;
@@ -74,6 +75,39 @@ private:
 	m1m3_logevent_ILCWarningC ilcWarning;
 
 	int subnetStartIndex;
+
+
+public:
+	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings ilcApplicationSettings, ForceActuatorApplicationSettings forceActuatorApplicationSettings, HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings);
+	virtual ~ILC();
+
+	void writeCalibrationDataBuffer();
+	void writeSetADCScanRateBuffer();
+	void writeSetBoostValveDCAGainBuffer();
+	void writeResetBuffer();
+	void writeReportServerIDBuffer();
+	void writeReportServerStatusBuffer();
+	void writeReportADCScanRateBuffer();
+	void writeReadCalibrationDataBuffer();
+	void writeReadBoostValveDCAGainBuffer();
+	void writeReportDCAIDBuffer();
+	void writeReportDCAStatusBuffer();
+	void writeSetModeDisableBuffer();
+	void writeSetModeEnableBuffer();
+	void writeSetModeStandbyBuffer();
+	void writeFreezeSensorListBuffer();
+
+	void triggerModbus();
+
+	void waitForSubnet(int32_t subnet, int32_t timeout);
+	void waitForAllSubnets(int32_t timeout);
+
+	void read(uint8_t subnet);
+	void readAll();
+
+private:
+	uint8_t subnetToTxAddress(uint8_t subnet);
+	uint8_t subnetToRxAddress(uint8_t subnet);
 	void startSubnet(ModbusBuffer* buffer, uint8_t subnet);
 	void endSubnet(ModbusBuffer* buffer);
 	void createSetADCChannelOffsetAndSensitivityBuffer(ModbusBuffer* buffer);
@@ -157,32 +191,6 @@ private:
 	void warnUnknownAddress(double timestamp, int32_t actuatorId);
 	void warnUnknownFunction(double timestamp, int32_t actuatorId);
 	void warnUnknownProblem(double timestamp, int32_t actuatorId);
-
-public:
-	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings ilcApplicationSettings, ForceActuatorApplicationSettings forceActuatorApplicationSettings, HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings);
-	virtual ~ILC();
-
-	void writeCalibrationDataBuffer();
-	void writeSetADCScanRateBuffer();
-	void writeSetBoostValveDCAGainBuffer();
-	void writeResetBuffer();
-	void writeReportServerIDBuffer();
-	void writeReportServerStatusBuffer();
-	void writeReportADCScanRateBuffer();
-	void writeReadCalibrationDataBuffer();
-	void writeReadBoostValveDCAGainBuffer();
-	void writeReportDCAIDBuffer();
-	void writeReportDCAStatusBuffer();
-	void writeSetModeDisableBuffer();
-	void writeSetModeEnableBuffer();
-	void writeSetModeStandbyBuffer();
-	void writeFreezeSensorListBuffer();
-
-	void waitForSubnet(int32_t subnet, int32_t timeout);
-	void waitForAllSubnets(int32_t timeout);
-
-	void read(uint8_t subnet);
-	void readAll();
 };
 
 } /* namespace SS */

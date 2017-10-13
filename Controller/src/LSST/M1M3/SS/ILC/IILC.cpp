@@ -43,6 +43,8 @@ void IILC::writeSetModeEnableBuffer() { }
 
 void IILC::writeFreezeSensorListBuffer() { }
 
+void IILC::triggerModbus() { }
+
 void IILC::waitForSubnet(int32_t subnet, int32_t timeout) { }
 
 void IILC::waitForAllSubnets(int32_t timeout) { }

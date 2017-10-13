@@ -23,15 +23,23 @@ private:
 	IPublisher* publisher;
 	IFPGA* fpga;
 
-	uint8_t txBuffer[11];
+	uint16_t txBuffer[32];
+	uint8_t rxBuffer[32];
 
 	m1m3_logevent_InclinometerSensorWarningC inclinometerWarning;
-
 	m1m3_InclinometerDataC inclinometerData;
 
+public:
+	Inclinometer(IPublisher* publisher, IFPGA* fpga);
+
+	void writeDataRequest();
+	void readDataResponse();
+
+private:
 	void createTxBuffer();
 
 	void clearWarning(double timestamp);
+	void warnResponseTimeout(double timestamp);
 	void warnInvalidCRC(double timestamp);
 	void warnUnknownAddress(double timestamp);
 	void warnUnknownFunction(double timestamp);
@@ -39,13 +47,6 @@ private:
 	void warnInvalidRegister(double timestamp);
 	void warnInvalidFunction(double timestamp);
 	void warnUnknownProblem(double timestamp);
-
-public:
-	Inclinometer();
-	Inclinometer(IFPGA* fpga, IPublisher* publisher);
-
-	void writeDataRequest();
-	void readDataResponse(uint8_t* buffer, int32_t* index);
 };
 
 } /* namespace SS */
