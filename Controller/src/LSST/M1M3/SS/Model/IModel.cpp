@@ -23,6 +23,8 @@ IRS232* IModel::getRS232() { return 0; }
 
 IILC* IModel::getILC() { return 0; }
 
+IAirController* IModel::getAirController() { return 0; }
+
 void IModel::loadSettings(std::string settingsToApply) { }
 
 void IModel::queryFPGAData() { }

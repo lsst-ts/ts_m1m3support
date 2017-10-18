@@ -17,7 +17,7 @@ namespace SS {
 
 class ModbusBuffer {
 private:
-	uint16_t buffer[4096];
+	uint16_t buffer[5120];
 	uint8_t floatPointBuffer[8];
 	uint8_t stringBuffer[256];
 	int32_t index;

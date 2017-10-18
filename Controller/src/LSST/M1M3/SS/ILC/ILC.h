@@ -34,26 +34,36 @@ private:
 	ILCApplicationSettings ilcApplicationSettings;
 	ILCSubnetData subnetData[5];
 
-	ModbusBuffer bufferSetADCChannelOffsetAndSensitivity;
-	ModbusBuffer bufferSetADCScanRate;
-	ModbusBuffer bufferSetBoostValveDCAGains;
-	ModbusBuffer bufferReset;
-	ModbusBuffer bufferReportServerID;
-	ModbusBuffer bufferReportServerStatus;
-	ModbusBuffer bufferReportADCScanRate;
-	ModbusBuffer bufferReadCalibration;
-	ModbusBuffer bufferReadBoostValveDCAGains;
-	ModbusBuffer bufferReportDCAID;
-	ModbusBuffer bufferReportDCAStatus;
-	ModbusBuffer bufferChangeILCModeDisabled;
-	ModbusBuffer bufferChangeILCModeEnabled;
-	ModbusBuffer bufferChangeILCModeStandby;
-	struct FreezeSensorListBuffer {
+	struct StaticBusList {
+		ModbusBuffer buffer;
+		int32_t expectedFAResponses[156];
+		int32_t expectedHPResponses[6];
+	};
+	StaticBusList busListSetADCChannelOffsetAndSensitivity;
+	StaticBusList busListSetADCScanRate;
+	StaticBusList busListSetBoostValveDCAGains;
+	StaticBusList busListReset;
+	StaticBusList busListReportServerID;
+	StaticBusList busListReportServerStatus;
+	StaticBusList busListReportADCScanRate;
+	StaticBusList busListReadCalibration;
+	StaticBusList busListReadBoostValveDCAGains;
+	StaticBusList busListReportDCAID;
+	StaticBusList busListReportDCAStatus;
+	StaticBusList busListChangeILCModeDisabled;
+	StaticBusList busListChangeILCModeEnabled;
+	StaticBusList busListChangeILCModeStandby;
+	struct FreezeSensorBusList {
 		ModbusBuffer buffer;
 		int32_t freezeSensorCommandIndex[5];
 		int32_t faStatusCommandIndex[5];
+		int32_t expectedFAResponses[156];
+		int32_t expectedHPResponses[6];
 	};
-	FreezeSensorListBuffer bufferFreezeSensorList;
+	FreezeSensorBusList busListFreezeSensor;
+
+	int32_t faExpectedResponses[156];
+	int32_t hpExpectedResponses[6];
 
 	uint8_t broadcastCounter;
 	int32_t faStatusIndex[5];
@@ -105,23 +115,32 @@ public:
 	void read(uint8_t subnet);
 	void readAll();
 
+	void verifyResponses();
+
+	void publishForceActuatorStatus();
+	void publishForceActuatorData();
+	void publishHardpointStatus();
+	void publishHardpointData();
+
+	void foo();
+
 private:
 	uint8_t subnetToTxAddress(uint8_t subnet);
 	uint8_t subnetToRxAddress(uint8_t subnet);
 	void startSubnet(ModbusBuffer* buffer, uint8_t subnet);
 	void endSubnet(ModbusBuffer* buffer);
-	void createSetADCChannelOffsetAndSensitivityBuffer(ModbusBuffer* buffer);
-	void createSetADCScanRateBuffer(ModbusBuffer* buffer);
-	void createSetBoostValveDCAGains(ModbusBuffer* buffer);
-	void createResetBuffer(ModbusBuffer* buffer);
-	void createReportServerIDBuffer(ModbusBuffer* buffer);
-	void createReportServerStatusBuffer(ModbusBuffer* buffer);
-	void createReportADCScanRateBuffer(ModbusBuffer* buffer);
-	void createReadCalibrationBuffer(ModbusBuffer* buffer);
-	void createReadBoostValveDCAGainsBuffer(ModbusBuffer* buffer);
-	void createReportDCAIDBuffer(ModbusBuffer* buffer);
-	void createReportDCAStatusBuffer(ModbusBuffer* buffer);
-	void createChangeILCModeBuffer(ModbusBuffer* buffer, ILCModes::Type mode);
+	void createSetADCChannelOffsetAndSensitivityBusList();
+	void createSetADCScanRateBuffer();
+	void createSetBoostValveDCAGains();
+	void createResetBuffer();
+	void createReportServerIDBuffer();
+	void createReportServerStatusBuffer();
+	void createReportADCScanRateBuffer();
+	void createReadCalibrationBuffer();
+	void createReadBoostValveDCAGainsBuffer();
+	void createReportDCAIDBuffer();
+	void createReportDCAStatusBuffer();
+	void createChangeILCModeBuffer(StaticBusList* busList, ILCModes::Type mode);
 	void createFreezeSensorListBuffer();
 
 	void reportServerID(ModbusBuffer* buffer, uint8_t address);
@@ -178,6 +197,8 @@ private:
 	void parseReportDCAIDResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReportDCAStatusResponse(ModbusBuffer* buffer, int32_t dataIndex);
 
+	void writeStaticBusList(StaticBusList* busList);
+	void incExpectedResponses(int32_t* fa, int32_t* hp);
 	void incBroadcastCounter();
 	void incFAStatusIndex();
 	void updateHPSteps();

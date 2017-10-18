@@ -112,6 +112,33 @@ public:
 	 * Read the Rx data from all subnets.
 	 */
 	virtual void readAll();
+
+	/*!
+	 * Checks for ILCs that haven't responded.
+	 */
+	virtual void verifyResponses();
+
+	/*!
+	 * Publishes force actuator status.
+	 */
+	virtual void publishForceActuatorStatus();
+
+	/*!
+	 * Publishes force actuator data.
+	 */
+	virtual void publishForceActuatorData();
+
+	/*!
+	 * Publishes hardpoint status.
+	 */
+	virtual void publishHardpointStatus();
+
+	/*!
+	 * Publishes hardpoint data.
+	 */
+	virtual void publishHardpointData();
+
+	virtual void foo();
 };
 
 } /* namespace SS */

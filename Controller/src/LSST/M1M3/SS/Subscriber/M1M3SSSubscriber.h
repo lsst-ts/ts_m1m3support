@@ -28,15 +28,19 @@ private:
 	m1m3_command_DisableC disableData;
 	m1m3_command_StandbyC standbyData;
 	m1m3_command_ShutdownC shutdownData;
+	m1m3_command_TurnAirOnC turnAirOnData;
+	m1m3_command_TurnAirOffC turnAirOffData;
 
 public:
 	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFactory);
 
-	virtual ICommand* tryAcceptCommandStart();
-	virtual ICommand* tryAcceptCommandEnable();
-	virtual ICommand* tryAcceptCommandDisable();
-	virtual ICommand* tryAcceptCommandStandby();
-	virtual ICommand* tryAcceptCommandShutdown();
+	ICommand* tryAcceptCommandStart();
+	ICommand* tryAcceptCommandEnable();
+	ICommand* tryAcceptCommandDisable();
+	ICommand* tryAcceptCommandStandby();
+	ICommand* tryAcceptCommandShutdown();
+	ICommand* tryAcceptCommandTurnAirOn();
+	ICommand* tryAcceptCommandTurnAirOff();
 };
 
 } /* namespace SS */

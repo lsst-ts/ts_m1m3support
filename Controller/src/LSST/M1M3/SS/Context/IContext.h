@@ -19,6 +19,8 @@ class DisableCommand;
 class StandbyCommand;
 class ShutdownCommand;
 class UpdateCommand;
+class TurnAirOnCommand;
+class TurnAirOffCommand;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -62,6 +64,16 @@ public:
 	 * @param[in] command The update command to execute.
 	 */
 	virtual void update(UpdateCommand* command);
+	/*!
+	 * Executes the command to turn air on.
+	 * @param[in] command The turn on air command to execute.
+	 */
+	virtual void turnAirOn(TurnAirOnCommand* command);
+	/*!
+	 * Executes the command to turn air off.
+	 * @param[in] command The turn off air command to execute.
+	 */
+	virtual void turnAirOff(TurnAirOffCommand* command);
 };
 
 } /* namespace SS */

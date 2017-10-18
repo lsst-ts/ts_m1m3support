@@ -30,6 +30,18 @@ void IPublisher::logDisplacementSensorWarning(m1m3_logevent_DisplacementSensorWa
 
 void IPublisher::logILCWarning(m1m3_logevent_ILCWarningC* data) { }
 
+void IPublisher::logAirSupplyStatus(m1m3_logevent_AirSupplyStatusC* data) { }
+
+void IPublisher::logAirSupplyWarning(m1m3_logevent_AirSupplyWarningC* data) { }
+
+void IPublisher::putForceActuatorStatus(m1m3_ForceActuatorStatusC* data) { }
+
+void IPublisher::putForceActuatorData(m1m3_ForceActuatorDataC* data) { }
+
+void IPublisher::putHardpointStatus(m1m3_HardpointStatusC* data) { }
+
+void IPublisher::putHardpointData(m1m3_HardpointDataC* data) { }
+
 void IPublisher::ackCommandStart(int32_t commandID, int32_t ackCode, std::string description) { }
 
 void IPublisher::ackCommandEnable(int32_t commandID, int32_t ackCode, std::string description) { }
@@ -39,6 +51,10 @@ void IPublisher::ackCommandDisable(int32_t commandID, int32_t ackCode, std::stri
 void IPublisher::ackCommandStandby(int32_t commandID, int32_t ackCode, std::string description) { }
 
 void IPublisher::ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description) { }
+
+void IPublisher::ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description) { }
+
+void IPublisher::ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

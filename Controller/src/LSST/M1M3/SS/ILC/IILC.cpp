@@ -53,6 +53,18 @@ void IILC::read(uint8_t subnet) { }
 
 void IILC::readAll() { }
 
+void IILC::verifyResponses() { }
+
+void IILC::publishForceActuatorStatus() { }
+
+void IILC::publishForceActuatorData() { }
+
+void IILC::publishHardpointStatus() { }
+
+void IILC::publishHardpointData() { }
+
+void IILC::foo() { }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

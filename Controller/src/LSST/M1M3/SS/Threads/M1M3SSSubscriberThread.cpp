@@ -36,6 +36,8 @@ void M1M3SSSubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandDisable());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandStandby());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandShutdown());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnAirOn());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnAirOff());
 		usleep(100);
 	}
 }

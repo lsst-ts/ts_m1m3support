@@ -36,11 +36,21 @@ public:
 
 	void logILCWarning(m1m3_logevent_ILCWarningC* data);
 
+	void logAirSupplyStatus(m1m3_logevent_AirSupplyStatusC* data);
+	void logAirSupplyWarning(m1m3_logevent_AirSupplyWarningC* data);
+
+	void putForceActuatorStatus(m1m3_ForceActuatorStatusC* data);
+	void putForceActuatorData(m1m3_ForceActuatorDataC* data);
+	void putHardpointStatus(m1m3_HardpointStatusC* data);
+	void putHardpointData(m1m3_HardpointDataC* data);
+
 	void ackCommandStart(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandEnable(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandDisable(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandStandby(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

@@ -25,6 +25,12 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_DisplacementSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_ILCWarning");
+	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyStatus");
+	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyWarning");
+	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorStatus");
+	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorData");
+	this->m1m3SAL->salTelemetryPub("m1m3_HardpointStatus");
+	this->m1m3SAL->salTelemetryPub("m1m3_HardpointData");
 }
 
 double M1M3SSPublisher::getTimestamp() {
@@ -59,6 +65,30 @@ void M1M3SSPublisher::logILCWarning(m1m3_logevent_ILCWarningC* data) {
 	this->m1m3SAL->logEvent_ILCWarning(data, 0);
 }
 
+void M1M3SSPublisher::logAirSupplyStatus(m1m3_logevent_AirSupplyStatusC* data) {
+	this->m1m3SAL->logEvent_AirSupplyStatus(data, 0);
+}
+
+void M1M3SSPublisher::logAirSupplyWarning(m1m3_logevent_AirSupplyWarningC* data) {
+	this->m1m3SAL->logEvent_AirSupplyWarning(data, 0);
+}
+
+void M1M3SSPublisher::putForceActuatorStatus(m1m3_ForceActuatorStatusC* data) {
+	this->m1m3SAL->putSample_ForceActuatorStatus(data);
+}
+
+void M1M3SSPublisher::putForceActuatorData(m1m3_ForceActuatorDataC* data) {
+	this->m1m3SAL->putSample_ForceActuatorData(data);
+}
+
+void M1M3SSPublisher::putHardpointStatus(m1m3_HardpointStatusC* data) {
+	this->m1m3SAL->putSample_HardpointStatus(data);
+}
+
+void M1M3SSPublisher::putHardpointData(m1m3_HardpointDataC* data) {
+	this->m1m3SAL->putSample_HardpointData(data);
+}
+
 void M1M3SSPublisher::ackCommandStart(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_Start(commandID, ackCode, 0, (char*)description.c_str());
 }
@@ -77,6 +107,14 @@ void M1M3SSPublisher::ackCommandStandby(int32_t commandID, int32_t ackCode, std:
 
 void M1M3SSPublisher::ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_Shutdown(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TurnAirOn(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TurnAirOff(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

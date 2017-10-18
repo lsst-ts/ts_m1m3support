@@ -62,6 +62,18 @@ void Context::update(UpdateCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::turnAirOn(TurnAirOnCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->turnAirOn(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::turnAirOff(TurnAirOffCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->turnAirOff(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::Ignore) {
 		this->currentState = potentialNewState;

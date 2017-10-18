@@ -32,11 +32,21 @@ public:
 	virtual void logDisplacementSensorWarning(m1m3_logevent_DisplacementSensorWarningC* data);
 	virtual void logILCWarning(m1m3_logevent_ILCWarningC* data);
 
+	virtual void logAirSupplyStatus(m1m3_logevent_AirSupplyStatusC* data);
+	virtual void logAirSupplyWarning(m1m3_logevent_AirSupplyWarningC* data);
+
+	virtual void putForceActuatorStatus(m1m3_ForceActuatorStatusC* data);
+	virtual void putForceActuatorData(m1m3_ForceActuatorDataC* data);
+	virtual void putHardpointStatus(m1m3_HardpointStatusC* data);
+	virtual void putHardpointData(m1m3_HardpointDataC* data);
+
 	virtual void ackCommandStart(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandEnable(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandDisable(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandStandby(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

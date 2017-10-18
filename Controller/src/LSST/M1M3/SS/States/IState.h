@@ -22,6 +22,8 @@ class DisableCommand;
 class StandbyCommand;
 class ShutdownCommand;
 class UpdateCommand;
+class TurnAirOnCommand;
+class TurnAirOffCommand;
 
 class IState {
 public:
@@ -34,6 +36,8 @@ public:
 	virtual States::Type standby(StandbyCommand* command, IModel* model);
 	virtual States::Type shutdown(ShutdownCommand* command, IModel* model);
 	virtual States::Type update(UpdateCommand* command, IModel* model);
+	virtual States::Type turnAirOn(TurnAirOnCommand* command, IModel* model);
+	virtual States::Type turnAirOff(TurnAirOffCommand* command, IModel* model);
 };
 
 } /* namespace SS */

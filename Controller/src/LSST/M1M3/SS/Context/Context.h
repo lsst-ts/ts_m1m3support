@@ -42,6 +42,8 @@ public:
 	void standby(StandbyCommand* command);
 	void shutdown(ShutdownCommand* command);
 	void update(UpdateCommand* command);
+	void turnAirOn(TurnAirOnCommand* command);
+	void turnAirOff(TurnAirOffCommand* command);
 };
 
 } /* namespace SS */

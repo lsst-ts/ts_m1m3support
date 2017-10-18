@@ -11,29 +11,21 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ISubscriber::~ISubscriber() {
-	// TODO Auto-generated destructor stub
-}
+ISubscriber::~ISubscriber() { }
 
-ICommand* ISubscriber::tryAcceptCommandStart() {
-	return 0;
-}
+ICommand* ISubscriber::tryAcceptCommandStart() { return 0; }
 
-ICommand* ISubscriber::tryAcceptCommandEnable() {
-	return 0;
-}
+ICommand* ISubscriber::tryAcceptCommandEnable() { return 0; }
 
-ICommand* ISubscriber::tryAcceptCommandDisable() {
-	return 0;
-}
+ICommand* ISubscriber::tryAcceptCommandDisable() { return 0; }
 
-ICommand* ISubscriber::tryAcceptCommandStandby() {
-	return 0;
-}
+ICommand* ISubscriber::tryAcceptCommandStandby() { return 0; }
 
-ICommand* ISubscriber::tryAcceptCommandShutdown() {
-	return 0;
-}
+ICommand* ISubscriber::tryAcceptCommandShutdown() { return 0; }
+
+ICommand* ISubscriber::tryAcceptCommandTurnAirOn() { return 0; }
+
+ICommand* ISubscriber::tryAcceptCommandTurnAirOff() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

@@ -16,9 +16,9 @@ namespace SS {
 
 class DisabledState: public State {
 public:
-	virtual States::Type enable(EnableCommand* command, IModel* model);
-	virtual States::Type standby(StandbyCommand* command, IModel* model);
-	virtual States::Type update(UpdateCommand* command, IModel* model);
+	States::Type enable(EnableCommand* command, IModel* model);
+	States::Type standby(StandbyCommand* command, IModel* model);
+	States::Type update(UpdateCommand* command, IModel* model);
 };
 
 } /* namespace SS */

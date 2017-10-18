@@ -20,6 +20,7 @@ class IPublisher;
 class IFPGA;
 class IRS232;
 class IILC;
+class IAirController;
 
 class IModel {
 public:
@@ -30,6 +31,7 @@ public:
 	virtual IFPGA* getFPGA();
 	virtual IRS232* getRS232();
 	virtual IILC* getILC();
+	virtual IAirController* getAirController();
 
 	virtual void loadSettings(std::string settingsToApply);
 

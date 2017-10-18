@@ -38,7 +38,12 @@ void ModbusBuffer::incIndex(int32_t inc) {
 }
 
 void ModbusBuffer::skipToNextFrame() {
-	this->index += 11;
+	// Scan for the end of frame marker
+	while(!this->endOfFrame() && !this->endOfBuffer()) {
+		this->index++;
+	}
+	// Increment to the address of the next message in the buffer
+	this->index++;
 }
 
 uint16_t* ModbusBuffer::getBuffer() {

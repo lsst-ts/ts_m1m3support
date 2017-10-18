@@ -13,6 +13,8 @@
 #include <StandbyCommand.h>
 #include <UpdateCommand.h>
 #include <ShutdownCommand.h>
+#include <TurnAirOnCommand.h>
+#include <TurnAirOffCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -33,6 +35,8 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	case Commands::StandbyCommand: return new StandbyCommand(this->context, this->publisher, commandID, (m1m3_command_StandbyC*)data);
 	case Commands::UpdateCommand: return new UpdateCommand(this->context, (pthread_mutex_t*)data);
 	case Commands::ShutdownCommand: return new ShutdownCommand(this->context, this->publisher, commandID, (m1m3_command_ShutdownC*)data);
+	case Commands::TurnAirOnCommand: return new TurnAirOnCommand(this->context, this->publisher, commandID, (m1m3_command_TurnAirOnC*)data);
+	case Commands::TurnAirOffCommand: return new TurnAirOffCommand(this->context, this->publisher, commandID, (m1m3_command_TurnAirOffC*)data);
 	}
 	return 0;
 }

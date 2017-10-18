@@ -25,11 +25,11 @@ namespace SS {
 States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	States::Type newState = States::DisabledState;
 	model->loadSettings(command->getData()->SettingsToApply);
-	/*cout << "Write Calibration Data" << endl;
+	cout << "Write Calibration Data" << endl;
 	model->getILC()->writeCalibrationDataBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();*/
+	model->getILC()->readAll();
 	cout << "Set ADC Scan Rate" << endl;
 	model->getILC()->writeSetADCScanRateBuffer();
 	model->getILC()->triggerModbus();
@@ -39,12 +39,12 @@ States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	model->getILC()->writeSetBoostValveDCAGainBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();/*
+	model->getILC()->readAll();
 	cout << "Reset" << endl;
 	model->getILC()->writeResetBuffer();
-	model->getFPGA()->triggerModbus();
+	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();*/
+	model->getILC()->readAll();
 	cout << "Report Server ID" << endl;
 	model->getILC()->writeReportServerIDBuffer();
 	model->getILC()->triggerModbus();
@@ -60,11 +60,11 @@ States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
-	/*cout << "Read Calibration" << endl;
+	cout << "Read Calibration" << endl;
 	model->getILC()->writeReadCalibrationDataBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();*/
+	model->getILC()->readAll();
 	cout << "Read Boost Valve DCA Gains" << endl;
 	model->getILC()->writeReadBoostValveDCAGainBuffer();
 	model->getILC()->triggerModbus();
@@ -85,6 +85,8 @@ States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
+	model->getILC()->verifyResponses();
+	model->getILC()->foo();
 	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);

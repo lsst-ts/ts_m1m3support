@@ -23,6 +23,8 @@ public:
 	virtual ICommand* tryAcceptCommandDisable();
 	virtual ICommand* tryAcceptCommandStandby();
 	virtual ICommand* tryAcceptCommandShutdown();
+	virtual ICommand* tryAcceptCommandTurnAirOn();
+	virtual ICommand* tryAcceptCommandTurnAirOff();
 };
 
 } /* namespace SS */

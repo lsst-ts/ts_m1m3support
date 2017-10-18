@@ -14,6 +14,7 @@ struct States {
 		StandbyState = 1,
 		DisabledState = 2,
 		EnabledState = 3,
+		ParkedEngineeringState = 4,
 		Ignore = 999
 	};
 };

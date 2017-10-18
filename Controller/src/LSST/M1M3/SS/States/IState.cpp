@@ -27,6 +27,10 @@ States::Type IState::shutdown(ShutdownCommand* command, IModel* model) { return 
 
 States::Type IState::update(UpdateCommand* command, IModel* model) { return States::Ignore; }
 
+States::Type IState::turnAirOn(TurnAirOnCommand* command, IModel* model) { return States::Ignore; }
+
+States::Type IState::turnAirOff(TurnAirOffCommand* command, IModel* model) { return States::Ignore; }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

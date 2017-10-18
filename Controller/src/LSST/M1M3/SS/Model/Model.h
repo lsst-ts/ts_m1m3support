@@ -9,6 +9,7 @@
 #define MODEL_H_
 
 #include <IModel.h>
+#include <AirController.h>
 #include <pthread.h>
 #include <string>
 
@@ -25,6 +26,7 @@ private:
 	IFPGA* fpga;
 	IRS232* rs232;
 	IILC* ilc;
+	IAirController* airController;
 
 	pthread_mutex_t mutex;
 
@@ -32,11 +34,12 @@ public:
 	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga);
 	virtual ~Model();
 
-	virtual ISettingReader* getSettingReader();
-	virtual IPublisher* getPublisher();
-	virtual IFPGA* getFPGA();
-	virtual IRS232* getRS232();
-	virtual IILC* getILC();
+	ISettingReader* getSettingReader() { return this->settingReader; }
+	IPublisher* getPublisher() { return this->publisher; }
+	IFPGA* getFPGA() { return this->fpga; }
+	IRS232* getRS232() { return this->rs232; }
+	IILC* getILC() { return this->ilc; }
+	IAirController* getAirController() { return this->airController; }
 
 	virtual void loadSettings(std::string settingsToApply);
 

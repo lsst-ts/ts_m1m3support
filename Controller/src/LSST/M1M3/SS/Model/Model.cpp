@@ -29,6 +29,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->fpga = fpga;
 	this->rs232 = 0;
 	this->ilc = 0;
+	this->airController = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
 }
@@ -42,26 +43,9 @@ Model::~Model() {
 	if (this->ilc) {
 		delete this->ilc;
 	}
-}
-
-ISettingReader* Model::getSettingReader() {
-	return this->settingReader;
-}
-
-IPublisher* Model::getPublisher() {
-	return this->publisher;
-}
-
-IFPGA* Model::getFPGA() {
-	return this->fpga;
-}
-
-IRS232* Model::getRS232() {
-	return this->rs232;
-}
-
-IILC* Model::getILC() {
-	return this->ilc;
+	if (this->airController) {
+		delete this->airController;
+	}
 }
 
 void Model::loadSettings(std::string settingsToApply) {
@@ -77,6 +61,10 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->ilc;
 	}
 	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, hardpointActuatorApplicationSettings);
+	if (this->airController) {
+		delete this->airController;
+	}
+	this->airController = new AirController(this->publisher, this->fpga);
 }
 
 void Model::queryFPGAData() {

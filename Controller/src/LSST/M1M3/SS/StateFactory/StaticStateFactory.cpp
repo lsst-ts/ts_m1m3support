@@ -6,10 +6,6 @@
  */
 
 #include <StaticStateFactory.h>
-#include <OfflineState.h>
-#include <StandbyState.h>
-#include <DisabledState.h>
-#include <EnabledState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -21,6 +17,7 @@ IState* StaticStateFactory::create(States::Type state) {
 	case States::StandbyState: return &this->standbyState;
 	case States::DisabledState: return &this->disabledState;
 	case States::EnabledState: return &this->enabledState;
+	case States::ParkedEngineeringState: return &this->parkedEngineeringState;
 	default: return 0;
 	}
 }

@@ -21,6 +21,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFa
 	this->m1m3SAL->salProcessor("m1m3_command_Disable");
 	this->m1m3SAL->salProcessor("m1m3_command_Standby");
 	this->m1m3SAL->salProcessor("m1m3_command_Shutdown");
+	this->m1m3SAL->salProcessor("m1m3_command_TurnAirOn");
+	this->m1m3SAL->salProcessor("m1m3_command_TurnAirOff");
 }
 
 ICommand* M1M3SSSubscriber::tryAcceptCommandStart() {
@@ -59,6 +61,22 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandShutdown() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_Shutdown(&this->shutdownData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::ShutdownCommand, &this->shutdownData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandTurnAirOn() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_TurnAirOn(&this->turnAirOnData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::TurnAirOnCommand, &this->turnAirOnData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandTurnAirOff() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_TurnAirOff(&this->turnAirOffData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::TurnAirOffCommand, &this->turnAirOffData, commandID);
 	}
 	return 0;
 }

@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <FPGAAddresses.h>
 #include <Timestamp.h>
+#include <cstring>
 
 using namespace std;
 
@@ -104,93 +105,99 @@ ILC::ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings ilcApplicati
 	this->ilcWarning.UnknownAddress = false;
 	this->ilcWarning.UnknownFunction = false;
 	this->ilcWarning.UnknownProblem = false;
-	this->createSetADCChannelOffsetAndSensitivityBuffer(&this->bufferSetADCChannelOffsetAndSensitivity);
-	this->createSetADCScanRateBuffer(&this->bufferSetADCScanRate);
-	this->createSetBoostValveDCAGains(&this->bufferSetBoostValveDCAGains);
-	this->createResetBuffer(&this->bufferReset);
-	this->createReportServerIDBuffer(&this->bufferReportServerID);
-	this->createReportServerStatusBuffer(&this->bufferReportServerStatus);
-	this->createReportADCScanRateBuffer(&this->bufferReportADCScanRate);
-	this->createReadCalibrationBuffer(&this->bufferReadCalibration);
-	this->createReadBoostValveDCAGainsBuffer(&this->bufferReadBoostValveDCAGains);
-	this->createReportDCAIDBuffer(&this->bufferReportDCAID);
-	this->createReportDCAStatusBuffer(&this->bufferReportDCAStatus);
-	this->createChangeILCModeBuffer(&this->bufferChangeILCModeDisabled, ILCModes::Disabled);
-	this->createChangeILCModeBuffer(&this->bufferChangeILCModeEnabled, ILCModes::Enabled);
-	this->createChangeILCModeBuffer(&this->bufferChangeILCModeStandby, ILCModes::Standby);
+	this->createSetADCChannelOffsetAndSensitivityBusList();
+	this->createSetADCScanRateBuffer();
+	this->createSetBoostValveDCAGains();
+	this->createResetBuffer();
+	this->createReportServerIDBuffer();
+	this->createReportServerStatusBuffer();
+	this->createReportADCScanRateBuffer();
+	this->createReadCalibrationBuffer();
+	this->createReadBoostValveDCAGainsBuffer();
+	this->createReportDCAIDBuffer();
+	this->createReportDCAStatusBuffer();
+	memset(&this->busListChangeILCModeDisabled, 0, sizeof(this->busListChangeILCModeDisabled));
+	this->createChangeILCModeBuffer(&this->busListChangeILCModeDisabled, ILCModes::Disabled);
+	memset(&this->busListChangeILCModeEnabled, 0, sizeof(this->busListChangeILCModeEnabled));
+	this->createChangeILCModeBuffer(&this->busListChangeILCModeEnabled, ILCModes::Enabled);
+	memset(&this->busListChangeILCModeStandby, 0, sizeof(this->busListChangeILCModeStandby));
+	this->createChangeILCModeBuffer(&this->busListChangeILCModeStandby, ILCModes::Standby);
+	this->createFreezeSensorListBuffer();
 }
 
 ILC::~ILC() { }
 
 void ILC::writeCalibrationDataBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferSetADCChannelOffsetAndSensitivity.getBuffer(), this->bufferSetADCChannelOffsetAndSensitivity.getLength(), 0);
+	this->writeStaticBusList(&this->busListSetADCChannelOffsetAndSensitivity);
 }
 
 void ILC::writeSetADCScanRateBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferSetADCScanRate.getBuffer(), this->bufferSetADCScanRate.getLength(), 0);
+	this->writeStaticBusList(&this->busListSetADCScanRate);
 }
 
 void ILC::writeSetBoostValveDCAGainBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferSetBoostValveDCAGains.getBuffer(), this->bufferSetBoostValveDCAGains.getLength(), 0);
+	this->writeStaticBusList(&this->busListSetBoostValveDCAGains);
 }
 
 void ILC::writeResetBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReset.getBuffer(), this->bufferReset.getLength(), 0);
+	this->writeStaticBusList(&this->busListReset);
 }
 
 void ILC::writeReportServerIDBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReportServerID.getBuffer(), this->bufferReportServerID.getLength(), 0);
+	this->writeStaticBusList(&this->busListReportServerID);
 }
 
 void ILC::writeReportServerStatusBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReportServerStatus.getBuffer(), this->bufferReportServerStatus.getLength(), 0);
+	this->writeStaticBusList(&this->busListReportServerStatus);
 }
 
 void ILC::writeReportADCScanRateBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReportADCScanRate.getBuffer(), this->bufferReportADCScanRate.getLength(), 0);
+	this->writeStaticBusList(&this->busListReportADCScanRate);
 }
 
 void ILC::writeReadCalibrationDataBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReadCalibration.getBuffer(), this->bufferReadCalibration.getLength(), 0);
+	this->writeStaticBusList(&this->busListReadCalibration);
 }
 
 void ILC::writeReadBoostValveDCAGainBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReadBoostValveDCAGains.getBuffer(), this->bufferReadBoostValveDCAGains.getLength(), 0);
+	this->writeStaticBusList(&this->busListReadBoostValveDCAGains);
 }
 
 void ILC::writeReportDCAIDBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReportDCAID.getBuffer(), this->bufferReportDCAID.getLength(), 0);
+	this->writeStaticBusList(&this->busListReportDCAID);
 }
 
 void ILC::writeReportDCAStatusBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferReportDCAStatus.getBuffer(), this->bufferReportDCAStatus.getLength(), 0);
+	this->writeStaticBusList(&this->busListReportDCAStatus);
 }
 
 void ILC::writeSetModeDisableBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferChangeILCModeDisabled.getBuffer(), this->bufferChangeILCModeDisabled.getLength(), 0);
+	this->writeStaticBusList(&this->busListChangeILCModeDisabled);
 }
 
 void ILC::writeSetModeEnableBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferChangeILCModeEnabled.getBuffer(), this->bufferChangeILCModeEnabled.getLength(), 0);
+	this->writeStaticBusList(&this->busListChangeILCModeEnabled);
 }
 
 void ILC::writeSetModeStandbyBuffer() {
-	this->fpga->writeCommandFIFO(this->bufferChangeILCModeStandby.getBuffer(), this->bufferChangeILCModeStandby.getLength(), 0);
+	this->writeStaticBusList(&this->busListChangeILCModeStandby);
 }
 
 void ILC::writeFreezeSensorListBuffer() {
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->bufferFreezeSensorList.buffer.setIndex(this->bufferFreezeSensorList.freezeSensorCommandIndex[i]);
-		this->broadcastFreezeSensorValues(&this->bufferFreezeSensorList.buffer, this->broadcastCounter);
-		int32_t faStatusCommandIndex = this->bufferFreezeSensorList.faStatusCommandIndex[i];
+		this->busListFreezeSensor.buffer.setIndex(this->busListFreezeSensor.freezeSensorCommandIndex[i]);
+		this->broadcastFreezeSensorValues(&this->busListFreezeSensor.buffer, this->broadcastCounter);
+		int32_t faStatusCommandIndex = this->busListFreezeSensor.faStatusCommandIndex[i];
 		if(faStatusCommandIndex != -1) {
-			this->bufferFreezeSensorList.buffer.setIndex(faStatusCommandIndex);
-			this->reportServerStatus(&this->bufferFreezeSensorList.buffer, this->subnetData[i].FAAddress[this->faStatusIndex[i]]);
+			this->busListFreezeSensor.buffer.setIndex(faStatusCommandIndex);
+			this->reportServerStatus(&this->busListFreezeSensor.buffer, this->subnetData[i].FAAddress[this->faStatusIndex[i]]);
+			this->faExpectedResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[this->faStatusIndex[i]]].DataIndex] += 1;
 		}
 	}
 	this->incBroadcastCounter();
 	this->incFAStatusIndex();
-	this->fpga->writeCommandFIFO(this->bufferFreezeSensorList.buffer.getBuffer(), this->bufferFreezeSensorList.buffer.getLength(), 0);
+	this->incExpectedResponses(this->busListFreezeSensor.expectedFAResponses, this->busListFreezeSensor.expectedHPResponses);
+	this->fpga->writeCommandFIFO(this->busListFreezeSensor.buffer.getBuffer(), this->busListFreezeSensor.buffer.getLength(), 0);
 }
 
 void ILC::triggerModbus() {
@@ -218,7 +225,6 @@ void ILC::read(uint8_t subnet) {
 	this->rxBuffer.setIndex(0);
 	this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
 	uint16_t reportedLength = this->rxBuffer.readLength();
-	cout << "Subnet " << (int32_t)subnet << " Available " << (int32_t)reportedLength << endl;
 	if (reportedLength > 0) {
 		this->rxBuffer.setIndex(0);
 		this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10);
@@ -233,6 +239,53 @@ void ILC::readAll() {
 	this->read(3);
 	this->read(4);
 	this->read(5);
+}
+
+void ILC::verifyResponses() {
+	double timestamp = this->publisher->getTimestamp();
+	for(int i = 0; i < FA_COUNT; i++) {
+		if (this->faExpectedResponses[i] != 0) {
+			this->warnResponseTimeout(timestamp, this->forceInfo.ReferenceId[i]);
+			this->faExpectedResponses[i] = 0;
+		}
+	}
+	for(int i = 0; i < HP_COUNT; i++) {
+		if (this->hpExpectedResponses[i] != 0) {
+			this->warnResponseTimeout(timestamp, this->hardpointInfo.ReferenceId[i]);
+			this->hpExpectedResponses[i] = 0;
+		}
+	}
+}
+
+void ILC::publishForceActuatorStatus() {
+	this->publisher->putForceActuatorStatus(&this->forceStatus);
+}
+
+void ILC::publishForceActuatorData() {
+	this->publisher->putForceActuatorData(&this->forceData);
+}
+
+void ILC::publishHardpointStatus() {
+	this->publisher->putHardpointStatus(&this->hardpointStatus);
+}
+
+void ILC::publishHardpointData() {
+	this->publisher->putHardpointData(&this->hardpointData);
+}
+
+void ILC::foo() {
+	int count = 0;
+	for(int i = 0; i < FA_COUNT; i++) {
+		cout << this->faExpectedResponses[i] << " ";
+		count += this->faExpectedResponses[i];
+	}
+	cout << endl;
+	for(int i = 0; i < HP_COUNT; i++) {
+		cout << this->hpExpectedResponses[i] << " ";
+		count += this->hpExpectedResponses[i];
+	}
+	cout << endl;
+	cout << "TOTAL: " << count << endl;
 }
 
 uint8_t ILC::subnetToTxAddress(uint8_t subnet) {
@@ -270,192 +323,226 @@ void ILC::endSubnet(ModbusBuffer* buffer) {
 	buffer->set(this->subnetStartIndex, buffer->getIndex() - this->subnetStartIndex - 1);
 }
 
-void ILC::createSetADCChannelOffsetAndSensitivityBuffer(ModbusBuffer* buffer) {
+void ILC::createSetADCChannelOffsetAndSensitivityBusList() {
+	memset(&this->busListSetADCChannelOffsetAndSensitivity, 0, sizeof(this->busListSetADCChannelOffsetAndSensitivity));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListSetADCChannelOffsetAndSensitivity.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->setADCChannelOffsetAndSensitivity(buffer, this->subnetData[i].FAAddress[j], 1, this->forceInfo.PrimaryAxisSensorOffset[j], this->forceInfo.PrimaryAxisSensorSensitivity[j]);
-			this->setADCChannelOffsetAndSensitivity(buffer, this->subnetData[i].FAAddress[j], 2, this->forceInfo.SecondaryAxisSensorOffset[j], this->forceInfo.SecondaryAxisSensorSensitivity[j]);
+			this->setADCChannelOffsetAndSensitivity(&this->busListSetADCChannelOffsetAndSensitivity.buffer, this->subnetData[i].FAAddress[j], 1, this->forceInfo.PrimaryAxisSensorOffset[j], this->forceInfo.PrimaryAxisSensorSensitivity[j]);
+			this->setADCChannelOffsetAndSensitivity(&this->busListSetADCChannelOffsetAndSensitivity.buffer, this->subnetData[i].FAAddress[j], 2, this->forceInfo.SecondaryAxisSensorOffset[j], this->forceInfo.SecondaryAxisSensorSensitivity[j]);
+			this->busListSetADCChannelOffsetAndSensitivity.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 2;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->setADCChannelOffsetAndSensitivity(buffer, this->subnetData[i].HPAddress[j], 1, this->hardpointInfo.SensorOffset[j], this->hardpointInfo.SensorSensitivity[j]);
+			this->setADCChannelOffsetAndSensitivity(&this->busListSetADCChannelOffsetAndSensitivity.buffer, this->subnetData[i].HPAddress[j], 1, this->hardpointInfo.SensorOffset[j], this->hardpointInfo.SensorSensitivity[j]);
+			this->busListSetADCChannelOffsetAndSensitivity.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListSetADCChannelOffsetAndSensitivity.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListSetADCChannelOffsetAndSensitivity.buffer.setLength(this->busListSetADCChannelOffsetAndSensitivity.buffer.getIndex());
 }
 
-void ILC::createSetADCScanRateBuffer(ModbusBuffer* buffer) {
+void ILC::createSetADCScanRateBuffer() {
+	memset(&this->busListSetADCScanRate, 0, sizeof(this->busListSetADCScanRate));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListSetADCScanRate.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->setADCScanRate(buffer, this->subnetData[i].FAAddress[j], this->forceInfo.ADCScanRate[j]);
+			this->setADCScanRate(&this->busListSetADCScanRate.buffer, this->subnetData[i].FAAddress[j], this->forceInfo.ADCScanRate[j]);
+			this->busListSetADCScanRate.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->setADCScanRate(buffer, this->subnetData[i].HPAddress[j], this->hardpointInfo.ADCScanRate[j]);
+			this->setADCScanRate(&this->busListSetADCScanRate.buffer, this->subnetData[i].HPAddress[j], this->hardpointInfo.ADCScanRate[j]);
+			this->busListSetADCScanRate.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListSetADCScanRate.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListSetADCScanRate.buffer.setLength(this->busListSetADCScanRate.buffer.getIndex());
 }
 
-void ILC::createSetBoostValveDCAGains(ModbusBuffer* buffer) {
+void ILC::createSetBoostValveDCAGains() {
+	memset(&this->busListSetBoostValveDCAGains, 0, sizeof(this->busListSetBoostValveDCAGains));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListSetBoostValveDCAGains.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->setBoostValveDCAGains(buffer, this->subnetData[i].FAAddress[j], this->forceInfo.DCAAxialGain[j], this->forceInfo.DCALateralGain[j]);
+			this->setBoostValveDCAGains(&this->busListSetBoostValveDCAGains.buffer, this->subnetData[i].FAAddress[j], this->forceInfo.DCAAxialGain[j], this->forceInfo.DCALateralGain[j]);
+			this->busListSetBoostValveDCAGains.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListSetBoostValveDCAGains.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListSetBoostValveDCAGains.buffer.setLength(this->busListSetBoostValveDCAGains.buffer.getIndex());
 }
 
-void ILC::createResetBuffer(ModbusBuffer* buffer) {
+void ILC::createResetBuffer() {
+	memset(&this->busListReset, 0, sizeof(this->busListReset));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReset.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->reset(buffer, this->subnetData[i].FAAddress[j]);
+			this->reset(&this->busListReset.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReset.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->reset(buffer, this->subnetData[i].HPAddress[j]);
+			this->reset(&this->busListReset.buffer, this->subnetData[i].HPAddress[j]);
+			this->busListReset.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReset.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReset.buffer.setLength(this->busListReset.buffer.getIndex());
 }
 
-void ILC::createReportServerIDBuffer(ModbusBuffer* buffer) {
+void ILC::createReportServerIDBuffer() {
+	memset(&this->busListReportServerID, 0, sizeof(this->busListReportServerID));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReportServerID.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->reportServerID(buffer, this->subnetData[i].FAAddress[j]);
+			this->reportServerID(&this->busListReportServerID.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReportServerID.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->reportServerID(buffer, this->subnetData[i].HPAddress[j]);
+			this->reportServerID(&this->busListReportServerID.buffer, this->subnetData[i].HPAddress[j]);
+			this->busListReportServerID.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReportServerID.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReportServerID.buffer.setLength(this->busListReportServerID.buffer.getIndex());
 }
 
-void ILC::createReportServerStatusBuffer(ModbusBuffer* buffer) {
+void ILC::createReportServerStatusBuffer() {
+	memset(&this->busListReportServerStatus, 0, sizeof(this->busListReportServerStatus));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReportServerStatus.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->reportServerStatus(buffer, this->subnetData[i].FAAddress[j]);
+			this->reportServerStatus(&this->busListReportServerStatus.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReportServerStatus.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->reportServerStatus(buffer, this->subnetData[i].HPAddress[j]);
+			this->reportServerStatus(&this->busListReportServerStatus.buffer, this->subnetData[i].HPAddress[j]);
+			this->busListReportServerStatus.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReportServerStatus.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReportServerStatus.buffer.setLength(this->busListReportServerStatus.buffer.getIndex());
 }
 
-void ILC::createReportADCScanRateBuffer(ModbusBuffer* buffer) {
+void ILC::createReportADCScanRateBuffer() {
+	memset(&this->busListReportADCScanRate, 0, sizeof(this->busListReportADCScanRate));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReportADCScanRate.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->reportADCScanRate(buffer, this->subnetData[i].FAAddress[j]);
+			this->reportADCScanRate(&this->busListReportADCScanRate.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReportADCScanRate.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->reportADCScanRate(buffer, this->subnetData[i].HPAddress[j]);
+			this->reportADCScanRate(&this->busListReportADCScanRate.buffer, this->subnetData[i].HPAddress[j]);
+			this->busListReportADCScanRate.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReportADCScanRate.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReportADCScanRate.buffer.setLength(this->busListReportADCScanRate.buffer.getIndex());
 }
 
-void ILC::createReadCalibrationBuffer(ModbusBuffer* buffer) {
+void ILC::createReadCalibrationBuffer() {
+	memset(&this->busListReadCalibration, 0, sizeof(this->busListReadCalibration));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReadCalibration.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->readCalibration(buffer, this->subnetData[i].FAAddress[j]);
+			this->readCalibration(&this->busListReadCalibration.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReadCalibration.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->readCalibration(buffer, this->subnetData[i].HPAddress[j]);
+			this->readCalibration(&this->busListReadCalibration.buffer, this->subnetData[i].HPAddress[j]);
+			this->busListReadCalibration.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReadCalibration.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReadCalibration.buffer.setLength(this->busListReadCalibration.buffer.getIndex());
 }
 
-void ILC::createReadBoostValveDCAGainsBuffer(ModbusBuffer* buffer) {
+void ILC::createReadBoostValveDCAGainsBuffer() {
+	memset(&this->busListReadBoostValveDCAGains, 0, sizeof(this->busListReadBoostValveDCAGains));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReadBoostValveDCAGains.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->readBoostValveDCAGains(buffer, this->subnetData[i].FAAddress[j]);
+			this->readBoostValveDCAGains(&this->busListReadBoostValveDCAGains.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReadBoostValveDCAGains.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReadBoostValveDCAGains.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReadBoostValveDCAGains.buffer.setLength(this->busListReadBoostValveDCAGains.buffer.getIndex());
 }
 
-void ILC::createReportDCAIDBuffer(ModbusBuffer* buffer) {
+void ILC::createReportDCAIDBuffer() {
+	memset(&this->busListReportDCAID, 0, sizeof(this->busListReportDCAID));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReportDCAID.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->reportDCAID(buffer, this->subnetData[i].FAAddress[j]);
+			this->reportDCAID(&this->busListReportDCAID.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReportDCAID.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReportDCAID.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReportDCAID.buffer.setLength(this->busListReportDCAID.buffer.getIndex());
 }
 
-void ILC::createReportDCAStatusBuffer(ModbusBuffer* buffer) {
+void ILC::createReportDCAStatusBuffer() {
+	memset(&this->busListReportDCAStatus, 0, sizeof(this->busListReportDCAStatus));
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&this->busListReportDCAStatus.buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->reportDCAStatus(buffer, this->subnetData[i].FAAddress[j]);
+			this->reportDCAStatus(&this->busListReportDCAStatus.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListReportDCAStatus.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&this->busListReportDCAStatus.buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	this->busListReportDCAStatus.buffer.setLength(this->busListReportDCAStatus.buffer.getIndex());
 }
 
-void ILC::createChangeILCModeBuffer(ModbusBuffer* buffer, ILCModes::Type mode) {
+void ILC::createChangeILCModeBuffer(StaticBusList* busList, ILCModes::Type mode) {
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(buffer, i);
+		this->startSubnet(&busList->buffer, i);
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->changeILCMode(buffer, this->subnetData[i].FAAddress[j], mode);
+			this->changeILCMode(&busList->buffer, this->subnetData[i].FAAddress[j], mode);
+			busList->expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->changeILCMode(buffer, this->subnetData[i].HPAddress[j], mode);
+			this->changeILCMode(&busList->buffer, this->subnetData[i].HPAddress[j], mode);
+			busList->expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 1;
 		}
-		this->endSubnet(buffer);
+		this->endSubnet(&busList->buffer);
 	}
-	buffer->setLength(buffer->getIndex());
+	busList->buffer.setLength(busList->buffer.getIndex());
 }
 
 void ILC::createFreezeSensorListBuffer() {
-	this->bufferFreezeSensorList.freezeSensorCommandIndex[0] = -1;
-	this->bufferFreezeSensorList.freezeSensorCommandIndex[1] = -1;
-	this->bufferFreezeSensorList.freezeSensorCommandIndex[2] = -1;
-	this->bufferFreezeSensorList.freezeSensorCommandIndex[3] = -1;
-	this->bufferFreezeSensorList.freezeSensorCommandIndex[4] = -1;
-	this->bufferFreezeSensorList.faStatusCommandIndex[0] = -1;
-	this->bufferFreezeSensorList.faStatusCommandIndex[1] = -1;
-	this->bufferFreezeSensorList.faStatusCommandIndex[2] = -1;
-	this->bufferFreezeSensorList.faStatusCommandIndex[3] = -1;
-	this->bufferFreezeSensorList.faStatusCommandIndex[4] = -1;
+	this->busListFreezeSensor.freezeSensorCommandIndex[0] = -1;
+	this->busListFreezeSensor.freezeSensorCommandIndex[1] = -1;
+	this->busListFreezeSensor.freezeSensorCommandIndex[2] = -1;
+	this->busListFreezeSensor.freezeSensorCommandIndex[3] = -1;
+	this->busListFreezeSensor.freezeSensorCommandIndex[4] = -1;
+	this->busListFreezeSensor.faStatusCommandIndex[0] = -1;
+	this->busListFreezeSensor.faStatusCommandIndex[1] = -1;
+	this->busListFreezeSensor.faStatusCommandIndex[2] = -1;
+	this->busListFreezeSensor.faStatusCommandIndex[3] = -1;
+	this->busListFreezeSensor.faStatusCommandIndex[4] = -1;
 	for(int i = 0; i < SUBNET_COUNT; i++) {
-		this->startSubnet(&this->bufferFreezeSensorList.buffer, i);
-		this->bufferFreezeSensorList.freezeSensorCommandIndex[i] = this->bufferFreezeSensorList.buffer.getIndex();
-		this->broadcastFreezeSensorValues(&this->bufferFreezeSensorList.buffer, this->broadcastCounter);
+		this->startSubnet(&this->busListFreezeSensor.buffer, i);
+		this->busListFreezeSensor.freezeSensorCommandIndex[i] = this->busListFreezeSensor.buffer.getIndex();
+		this->broadcastFreezeSensorValues(&this->busListFreezeSensor.buffer, this->broadcastCounter);
+		this->busListFreezeSensor.buffer.writeTimestamp();
 		for(int j = 0; j < FA_COUNT && this->subnetData[i].FAAddress[j] != 255; j++) {
-			this->pneumaticForceStatus(&this->bufferFreezeSensorList.buffer, this->subnetData[i].FAAddress[j]);
+			this->pneumaticForceStatus(&this->busListFreezeSensor.buffer, this->subnetData[i].FAAddress[j]);
+			this->busListFreezeSensor.expectedFAResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].FAAddress[j]].DataIndex] = 1;
 		}
 		if (this->subnetData[i].FAAddress[0] != 255) {
-			this->bufferFreezeSensorList.faStatusCommandIndex[i] = this->bufferFreezeSensorList.buffer.getIndex();
-			this->reportServerStatus(&this->bufferFreezeSensorList.buffer, this->subnetData[i].FAAddress[0]);
+			this->busListFreezeSensor.faStatusCommandIndex[i] = this->busListFreezeSensor.buffer.getIndex();
+			this->reportServerStatus(&this->busListFreezeSensor.buffer, this->subnetData[i].FAAddress[0]);
 		}
 		for(int j = 0; j < HP_COUNT && this->subnetData[i].HPAddress[j] != 255; j++) {
-			this->electromechanicalForceAndStatus(&this->bufferFreezeSensorList.buffer, this->subnetData[i].HPAddress[j]);
-			this->reportServerStatus(&this->bufferFreezeSensorList.buffer, this->subnetData[i].HPAddress[j]);
+			this->electromechanicalForceAndStatus(&this->busListFreezeSensor.buffer, this->subnetData[i].HPAddress[j]);
+			this->reportServerStatus(&this->busListFreezeSensor.buffer, this->subnetData[i].HPAddress[j]);
+			this->busListFreezeSensor.expectedHPResponses[this->subnetData[i].ILCDataFromAddress[this->subnetData[i].HPAddress[j]].DataIndex] = 2;
 		}
-		this->endSubnet(&this->bufferFreezeSensorList.buffer);
+		this->endSubnet(&this->busListFreezeSensor.buffer);
 	}
-	this->bufferFreezeSensorList.buffer.setLength(this->bufferFreezeSensorList.buffer.getIndex());
+	this->busListFreezeSensor.buffer.setLength(this->busListFreezeSensor.buffer.getIndex());
 }
 
 void ILC::reportServerID(ModbusBuffer* buffer, uint8_t address) {
@@ -659,7 +746,10 @@ void ILC::parse(ModbusBuffer* buffer, uint8_t subnet) {
 	uint64_t c = buffer->readLength();
 	uint64_t d = buffer->readLength();
 	double globalTimestamp = Timestamp::fromRaw((a << 48) | (b << 32) | (c << 16) | d);
-	cout << "Global Timestamp " << globalTimestamp << endl;
+	this->forceStatus.Timestamp = globalTimestamp;
+	this->forceData.Timestamp = globalTimestamp;
+	this->hardpointStatus.Timestamp = globalTimestamp;
+	this->hardpointData.Timestamp = globalTimestamp;
 	while(!buffer->endOfBuffer()) {
 		uint16_t length = 0;
 		double timestamp = 0;
@@ -671,6 +761,7 @@ void ILC::parse(ModbusBuffer* buffer, uint8_t subnet) {
 				int32_t dataIndex = map.DataIndex;
 				switch(map.Type) {
 				case ILCTypes::FA:
+					this->faExpectedResponses[dataIndex]--;
 					switch(function) {
 					case 17: this->parseReportFAServerIDResponse(buffer, dataIndex); break;
 					case 18: this->parseReportFAServerStatusResponse(buffer, dataIndex); break;
@@ -704,6 +795,7 @@ void ILC::parse(ModbusBuffer* buffer, uint8_t subnet) {
 					}
 					break;
 				case ILCTypes::HP:
+					this->hpExpectedResponses[dataIndex]--;
 					switch(function) {
 					case 17: this->parseReportHPServerIDResponse(buffer, dataIndex); break;
 					case 18: this->parseReportHPServerStatusResponse(buffer, dataIndex); break;
@@ -880,7 +972,6 @@ void ILC::parseChangeHPILCModeResponse(ModbusBuffer* buffer, int32_t dataIndex) 
 	this->hardpointStatus.Mode[dataIndex] = buffer->readU8();
 	buffer->readU8();
 	buffer->skipToNextFrame();
-	cout << "Mode[" << dataIndex << "] = " << (int32_t)(this->hardpointStatus.Mode[dataIndex]) << endl;
 }
 
 void ILC::parseChangeFAILCModeResponse(ModbusBuffer* buffer, int32_t dataIndex) {
@@ -1111,6 +1202,20 @@ void ILC::parseReportDCAStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) 
 	// 0x4000 is reserved
 	this->forceInfo.DCABootloaderActive[dataIndex] = status & 0x8000;
 	buffer->skipToNextFrame();
+}
+
+void ILC::writeStaticBusList(StaticBusList* busList) {
+	this->fpga->writeCommandFIFO(busList->buffer.getBuffer(), busList->buffer.getLength(), 0);
+	this->incExpectedResponses(busList->expectedFAResponses, busList->expectedHPResponses);
+}
+
+void ILC::incExpectedResponses(int32_t* fa, int32_t* hp) {
+	for(int i = 0; i < FA_COUNT; i++) {
+		this->faExpectedResponses[i] += fa[i];
+	}
+	for (int i = 0; i < HP_COUNT; i++) {
+		this->hpExpectedResponses[i] += hp[i];
+	}
 }
 
 void ILC::incBroadcastCounter() {

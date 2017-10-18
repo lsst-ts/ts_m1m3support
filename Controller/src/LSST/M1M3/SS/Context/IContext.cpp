@@ -27,6 +27,10 @@ void IContext::shutdown(ShutdownCommand* command) { }
 
 void IContext::update(UpdateCommand* command) { }
 
+void IContext::turnAirOn(TurnAirOnCommand* command) { }
+
+void IContext::turnAirOff(TurnAirOffCommand* command) { }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
