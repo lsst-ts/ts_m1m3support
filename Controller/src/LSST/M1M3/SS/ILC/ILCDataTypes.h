@@ -9,7 +9,12 @@
 #define ILCDATATYPES_H_
 
 #include <DataTypes.h>
+#include <vector>
 #include <string>
+
+#define FA_COUNT 156
+#define HP_COUNT 6
+#define SUBNET_COUNT 5
 
 namespace LSST {
 namespace M1M3 {
@@ -23,16 +28,15 @@ struct ILCTypes {
 	};
 };
 
-struct ILCMap {
+struct ILCAddressDataIndexMap {
+	uint8_t Address;
+	int32_t DataIndex;
+};
+
+struct ILCAddressDataMap {
 	ILCTypes::Type Type;
 	int32_t DataIndex;
 	int32_t ActuatorId;
-};
-
-struct ILCSubnetData {
-	uint8_t HPAddress[6];
-	uint8_t FAAddress[156];
-	ILCMap ILCDataFromAddress[256];
 };
 
 struct HPSettings {

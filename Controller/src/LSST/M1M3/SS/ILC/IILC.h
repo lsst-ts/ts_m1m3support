@@ -85,7 +85,14 @@ public:
 	 * Pneumatic ILCs will have their server status queried in a round robin.
 	 */
 	virtual void writeFreezeSensorListBuffer();
-
+	/*!
+	 * Sends the raised list to all ILCs.
+	 * This sends the broadcast force demand / broadcast step command and
+	 * then queries the force and status of all ILCs.
+	 * Electromechanical ILCs will have their server status queried.
+	 * Pneumatic ILCs will have their server status queried in a round robin.
+	 */
+	virtual void writeRaisedListBuffer();
 	/*!
 	 * Sends a software trigger to the modbus subnets.
 	 */

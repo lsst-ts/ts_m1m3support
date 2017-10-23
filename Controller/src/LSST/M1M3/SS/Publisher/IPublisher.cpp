@@ -14,6 +14,8 @@ namespace SS {
 
 IPublisher::~IPublisher() { }
 
+m1m3_OuterLoopDataC* IPublisher::getOuterLoopData() { return 0; }
+
 double IPublisher::getTimestamp() { return 0; }
 
 void IPublisher::putInclinometerData(m1m3_InclinometerDataC* data) { }
