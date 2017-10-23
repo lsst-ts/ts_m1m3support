@@ -10,6 +10,7 @@
 
 #include <DataTypes.h>
 #include <string>
+#include <vector>
 
 namespace LSST {
 namespace M1M3 {
@@ -48,10 +49,41 @@ struct ForceActuatorTableRow {
 	float SecondaryAxisSensorSensitivity;
 };
 
-struct ForceActuatorApplicationSettings {
+class ForceActuatorApplicationSettings {
+public:
 	ForceActuatorTableRow Table[156];
+	std::vector<double> StaticForces;
+	std::vector<double> ElevationXAxisCoefficients;
+	std::vector<double> ElevationYAxisCoefficients;
+	std::vector<double> ElevationZAxisCoefficients;
+	std::vector<double> AzimuthXAxisCoefficients;
+	std::vector<double> AzimuthYAxisCoefficients;
+	std::vector<double> AzimuthZAxisCoefficients;
+	std::vector<double> TemperatureXAxisCoefficients;
+	std::vector<double> TemperatureYAxisCoefficients;
+	std::vector<double> TemperatureZAxisCoefficients;
+	std::vector<double> BendingModeMatrix;
+	std::vector<double> HardpointForceMomentMatrix;
+	std::vector<double> DynamicAccelerationXMatrix;
+	std::vector<double> DynamicAccelerationYMatrix;
+	std::vector<double> DynamicAccelerationZMatrix;
+	std::vector<double> DynamicVelocityXMatrix;
+	std::vector<double> DynamicVelocityYMatrix;
+	std::vector<double> DynamicVelocityZMatrix;
+	std::vector<double> DynamicVelocityXZMatrix;
+	std::vector<double> DynamicVelocityYZMatrix;
+	std::vector<double> ForceDistributionXMatrix;
+	std::vector<double> ForceDistributionYMatrix;
+	std::vector<double> ForceDistributionZMatrix;
+	std::vector<double> MomentDistributionXMatrix;
+	std::vector<double> MomentDistributionYMatrix;
+	std::vector<double> MomentDistributionZMatrix;
 
 	void load(const std::string &filename);
+
+private:
+	void loadForceActuatorTable(const std::string &filename);
+	void loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<double>* data, const std::string &filename);
 };
 
 } /* namespace SS */

@@ -20,8 +20,12 @@ class M1M3SSPublisher : public IPublisher {
 private:
 	SAL_m1m3* m1m3SAL;
 
+	m1m3_OuterLoopDataC outerLoopData;
+
 public:
 	M1M3SSPublisher(SAL_m1m3* m1m3SAL);
+
+	m1m3_OuterLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
 
 	double getTimestamp();
 

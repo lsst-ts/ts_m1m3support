@@ -10,11 +10,27 @@
 
 #include <IILC.h>
 #include <ILCDataTypes.h>
+#include <ILCSubnetData.h>
 #include <ModbusBuffer.h>
 #include <SAL_m1m3C.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
+#include <ILCMessageFactory.h>
+#include <SetADCChanneOffsetAndSensitivityBusList.h>
+#include <ChangeILCModeBusList.h>
+#include <ReadBoostValveDCAGainBusList.h>
+#include <ReadCalibrationBusList.h>
+#include <ReportADCScanRateBusList.h>
+#include <ReportDCAIDBusList.h>
+#include <ReportDCAStatusBusList.h>
+#include <ReportServerIDBusList.h>
+#include <ReportServerStatusBusList.h>
+#include <ResetBustList.h>
+#include <SetADCScanRateBusList.h>
+#include <SetBoostValveDCAGainBusList.h>
+#include <FreezeSensorBusList.h>
+#include <RaisedBusList.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -22,6 +38,7 @@ namespace SS {
 
 class IPublisher;
 class IFPGA;
+class IBusList;
 
 /*!
  * The ILC class used to communicate with the M1M3's 5 subnets.
@@ -32,35 +49,26 @@ private:
 	IFPGA* fpga;
 
 	ILCApplicationSettings ilcApplicationSettings;
-	ILCSubnetData subnetData[5];
 
-	struct StaticBusList {
-		ModbusBuffer buffer;
-		int32_t expectedFAResponses[156];
-		int32_t expectedHPResponses[6];
-	};
-	StaticBusList busListSetADCChannelOffsetAndSensitivity;
-	StaticBusList busListSetADCScanRate;
-	StaticBusList busListSetBoostValveDCAGains;
-	StaticBusList busListReset;
-	StaticBusList busListReportServerID;
-	StaticBusList busListReportServerStatus;
-	StaticBusList busListReportADCScanRate;
-	StaticBusList busListReadCalibration;
-	StaticBusList busListReadBoostValveDCAGains;
-	StaticBusList busListReportDCAID;
-	StaticBusList busListReportDCAStatus;
-	StaticBusList busListChangeILCModeDisabled;
-	StaticBusList busListChangeILCModeEnabled;
-	StaticBusList busListChangeILCModeStandby;
-	struct FreezeSensorBusList {
-		ModbusBuffer buffer;
-		int32_t freezeSensorCommandIndex[5];
-		int32_t faStatusCommandIndex[5];
-		int32_t expectedFAResponses[156];
-		int32_t expectedHPResponses[6];
-	};
+	ILCSubnetData subnetData;
+	ILCMessageFactory ilcMessageFactory;
+
+	SetADCChanneOffsetAndSensitivityBusList busListSetADCChannelOffsetAndSensitivity;
+	SetADCScanRateBusList busListSetADCScanRate;
+	SetBoostValveDCAGainBusList busListSetBoostValveDCAGains;
+	ResetBustList busListReset;
+	ReportServerIDBusList busListReportServerID;
+	ReportServerStatusBusList busListReportServerStatus;
+	ReportADCScanRateBusList busListReportADCScanRate;
+	ReadCalibrationBusList busListReadCalibration;
+	ReadBoostValveDCAGainBusList busListReadBoostValveDCAGains;
+	ReportDCAIDBusList busListReportDCAID;
+	ReportDCAStatusBusList busListReportDCAStatus;
+	ChangeILCModeBusList busListChangeILCModeDisabled;
+	ChangeILCModeBusList busListChangeILCModeEnabled;
+	ChangeILCModeBusList busListChangeILCModeStandby;
 	FreezeSensorBusList busListFreezeSensor;
+	RaisedBusList busListRaised;
 
 	int32_t faExpectedResponses[156];
 	int32_t hpExpectedResponses[6];
@@ -106,6 +114,7 @@ public:
 	void writeSetModeEnableBuffer();
 	void writeSetModeStandbyBuffer();
 	void writeFreezeSensorListBuffer();
+	void writeRaisedListBuffer();
 
 	void triggerModbus();
 
@@ -125,46 +134,9 @@ public:
 	void foo();
 
 private:
-	uint8_t subnetToTxAddress(uint8_t subnet);
 	uint8_t subnetToRxAddress(uint8_t subnet);
-	void startSubnet(ModbusBuffer* buffer, uint8_t subnet);
-	void endSubnet(ModbusBuffer* buffer);
-	void createSetADCChannelOffsetAndSensitivityBusList();
-	void createSetADCScanRateBuffer();
-	void createSetBoostValveDCAGains();
-	void createResetBuffer();
-	void createReportServerIDBuffer();
-	void createReportServerStatusBuffer();
-	void createReportADCScanRateBuffer();
-	void createReadCalibrationBuffer();
-	void createReadBoostValveDCAGainsBuffer();
-	void createReportDCAIDBuffer();
-	void createReportDCAStatusBuffer();
-	void createChangeILCModeBuffer(StaticBusList* busList, ILCModes::Type mode);
-	void createFreezeSensorListBuffer();
 
-	void reportServerID(ModbusBuffer* buffer, uint8_t address);
-	void reportServerStatus(ModbusBuffer* buffer, uint8_t address);
-	void changeILCMode(ModbusBuffer* buffer, uint8_t address, uint16_t mode);
-	void reportILCMode(ModbusBuffer* buffer, uint8_t address);
-	void broadcastStepMotor(ModbusBuffer* buffer, uint8_t broadcastCounter, int32_t count, int8_t* steps);
-	void unicastStepMotor(ModbusBuffer* buffer, uint8_t address, int8_t steps);
-	void electromechanicalForceAndStatus(ModbusBuffer* buffer, uint8_t address);
-	void broadcastFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter);
-	void setBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address, float primaryGain, float secondaryGain);
-	void readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address);
-	void broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, bool slewFlag, int32_t saaCount, int32_t* saaPrimarySetpoint, int32_t daaCount, int32_t* daaPrimarySetpoint, int32_t* daaSecondarySetpoint);
-	void unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint);
-	void unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint, int32_t secondarySetpoint);
-	void pneumaticForceStatus(ModbusBuffer* buffer, uint8_t address);
-	void setADCScanRate(ModbusBuffer* buffer, uint8_t address, uint8_t rate);
-	void reportADCScanRate(ModbusBuffer* buffer, uint8_t address);
-	void setADCChannelOffsetAndSensitivity(ModbusBuffer* buffer, uint8_t address, uint8_t channel, float offset, float sensitivity);
-	void reset(ModbusBuffer* buffer, uint8_t address);
-	void readCalibration(ModbusBuffer* buffer, uint8_t address);
-	void readDCAPressureValues(ModbusBuffer* buffer, uint8_t address);
-	void reportDCAID(ModbusBuffer* buffer, uint8_t address);
-	void reportDCAStatus(ModbusBuffer* buffer, uint8_t address);
+	void writeBusList(IBusList* busList);
 
 	void parse(ModbusBuffer* buffer, uint8_t subnet);
 	bool validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
@@ -197,7 +169,6 @@ private:
 	void parseReportDCAIDResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReportDCAStatusResponse(ModbusBuffer* buffer, int32_t dataIndex);
 
-	void writeStaticBusList(StaticBusList* busList);
 	void incExpectedResponses(int32_t* fa, int32_t* hp);
 	void incBroadcastCounter();
 	void incFAStatusIndex();

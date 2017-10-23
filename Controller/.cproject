@@ -41,7 +41,9 @@
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/AirController}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/BusLists}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/CommandFactory}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Calculators}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Commands}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Context}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Controller}&quot;"/>

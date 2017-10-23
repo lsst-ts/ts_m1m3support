@@ -49,21 +49,31 @@ Model::~Model() {
 }
 
 void Model::loadSettings(std::string settingsToApply) {
+	cout << "Configure" << endl;
 	this->settingReader->configure(settingsToApply);
+	cout << "Delete RS232" << endl;
 	if (this->rs232) {
 		delete this->rs232;
 	}
+	cout << "Creating RS232" << endl;
 	this->rs232 = new RS232(this->fpga, this->publisher);
+	cout << "ILCAppSettings" << endl;
 	ILCApplicationSettings ilcApplicationSettings = this->settingReader->loadILCApplicationSettings();
+	cout << "FASettings" << endl;
 	ForceActuatorApplicationSettings forceActuatorApplicationSettings = this->settingReader->loadForceActuatorApplicationSettings();
+	cout << "HPSettings" << endl;
 	HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings = this->settingReader->loadHardpointActuatorApplicationSettings();
+	cout << "ILC DELETE" << endl;
 	if (this->ilc) {
 		delete this->ilc;
 	}
+	cout << "ILC CREATE" << endl;
 	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, hardpointActuatorApplicationSettings);
+	cout << "Air Controller Delete" << endl;
 	if (this->airController) {
 		delete this->airController;
 	}
+	cout << "Air Controller Create" << endl;
 	this->airController = new AirController(this->publisher, this->fpga);
 }
 
