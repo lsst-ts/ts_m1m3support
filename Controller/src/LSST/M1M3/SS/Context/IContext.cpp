@@ -31,6 +31,10 @@ void IContext::turnAirOn(TurnAirOnCommand* command) { }
 
 void IContext::turnAirOff(TurnAirOffCommand* command) { }
 
+void IContext::applyOffsetForces(ApplyOffsetForcesCommand* command) { }
+
+void IContext::clearOffsetForces(ClearOffsetForcesCommand* command) { }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

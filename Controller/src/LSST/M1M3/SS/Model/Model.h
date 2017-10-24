@@ -42,19 +42,18 @@ public:
 	IRS232* getRS232() { return this->rs232; }
 	IILC* getILC() { return this->ilc; }
 	IAirController* getAirController() { return this->airController; }
+	ForceCalculator* getForceCalculator() { return this->forceCalculator; }
 
-	virtual void loadSettings(std::string settingsToApply);
+	void loadSettings(std::string settingsToApply);
 
-	virtual void calculateForces();
+	void queryFPGAData();
+	void publishFPGAData();
 
-	virtual void queryFPGAData();
-	virtual void publishFPGAData();
+	void publishStateChange(States::Type newState);
+	void publishRecommendedSettings();
 
-	virtual void publishStateChange(States::Type newState);
-	virtual void publishRecommendedSettings();
-
-	virtual void shutdown();
-	virtual void waitForShutdown();
+	void shutdown();
+	void waitForShutdown();
 };
 
 } /* namespace SS */

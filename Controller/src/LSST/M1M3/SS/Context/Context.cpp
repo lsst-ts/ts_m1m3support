@@ -74,6 +74,18 @@ void Context::turnAirOff(TurnAirOffCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::applyOffsetForces(ApplyOffsetForcesCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->applyOffsetForces(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::clearOffsetForces(ClearOffsetForcesCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->clearOffsetForces(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::Ignore) {
 		this->currentState = potentialNewState;

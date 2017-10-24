@@ -73,10 +73,6 @@ void Model::loadSettings(std::string settingsToApply) {
 	this->forceCalculator = new ForceCalculator(forceActuatorApplicationSettings, this->publisher->getEventForceActuatorInfo(), this->publisher->getInclinometerData(), this->publisher->getForceActuatorData());
 }
 
-void Model::calculateForces() {
-	this->forceCalculator->calculate();
-}
-
 void Model::queryFPGAData() {
 
 }

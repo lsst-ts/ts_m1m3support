@@ -27,6 +27,10 @@ ICommand* ISubscriber::tryAcceptCommandTurnAirOn() { return 0; }
 
 ICommand* ISubscriber::tryAcceptCommandTurnAirOff() { return 0; }
 
+ICommand* ISubscriber::tryAcceptCommandApplyOffsetForces() { return 0; }
+
+ICommand* ISubscriber::tryAcceptCommandClearOffsetForces() { return 0; }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

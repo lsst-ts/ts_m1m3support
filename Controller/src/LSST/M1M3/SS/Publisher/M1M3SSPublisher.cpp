@@ -81,6 +81,14 @@ void M1M3SSPublisher::ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, s
 	this->m1m3SAL->ackCommand_TurnAirOff(commandID, ackCode, 0, (char*)description.c_str());
 }
 
+void M1M3SSPublisher::ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ApplyOffsetForces(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ClearOffsetForces(commandID, ackCode, 0, (char*)description.c_str());
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

@@ -21,6 +21,8 @@ class ShutdownCommand;
 class UpdateCommand;
 class TurnAirOnCommand;
 class TurnAirOffCommand;
+class ApplyOffsetForcesCommand;
+class ClearOffsetForcesCommand;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -74,6 +76,16 @@ public:
 	 * @param[in] command The turn off air command to execute.
 	 */
 	virtual void turnAirOff(TurnAirOffCommand* command);
+	/*!
+	 * Executes the command to apply offset forces.
+	 * @param[in] command The apply offset forces command to execute.
+	 */
+	virtual void applyOffsetForces(ApplyOffsetForcesCommand* command);
+	/*!
+	 * Executes the command to clear offset forces.
+	 * @param[in] command The clear offset forces command to execute.
+	 */
+	virtual void clearOffsetForces(ClearOffsetForcesCommand* command);
 };
 
 } /* namespace SS */

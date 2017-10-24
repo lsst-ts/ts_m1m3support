@@ -25,6 +25,8 @@ public:
 	virtual ICommand* tryAcceptCommandShutdown();
 	virtual ICommand* tryAcceptCommandTurnAirOn();
 	virtual ICommand* tryAcceptCommandTurnAirOff();
+	virtual ICommand* tryAcceptCommandApplyOffsetForces();
+	virtual ICommand* tryAcceptCommandClearOffsetForces();
 };
 
 } /* namespace SS */

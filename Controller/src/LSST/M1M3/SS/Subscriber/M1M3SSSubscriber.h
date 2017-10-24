@@ -30,6 +30,8 @@ private:
 	m1m3_command_ShutdownC shutdownData;
 	m1m3_command_TurnAirOnC turnAirOnData;
 	m1m3_command_TurnAirOffC turnAirOffData;
+	m1m3_command_ApplyOffsetForcesC applyOffsetForcesData;
+	m1m3_command_ClearOffsetForcesC clearOffsetForcesData;
 
 public:
 	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFactory);
@@ -41,6 +43,8 @@ public:
 	ICommand* tryAcceptCommandShutdown();
 	ICommand* tryAcceptCommandTurnAirOn();
 	ICommand* tryAcceptCommandTurnAirOff();
+	ICommand* tryAcceptCommandApplyOffsetForces();
+	ICommand* tryAcceptCommandClearOffsetForces();
 };
 
 } /* namespace SS */

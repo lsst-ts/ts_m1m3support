@@ -23,6 +23,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFa
 	this->m1m3SAL->salProcessor("m1m3_command_Shutdown");
 	this->m1m3SAL->salProcessor("m1m3_command_TurnAirOn");
 	this->m1m3SAL->salProcessor("m1m3_command_TurnAirOff");
+	this->m1m3SAL->salProcessor("m1m3_command_ApplyOffsetForces");
+	this->m1m3SAL->salProcessor("m1m3_command_ClearOffsetForces");
 }
 
 ICommand* M1M3SSSubscriber::tryAcceptCommandStart() {
@@ -77,6 +79,22 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandTurnAirOff() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_TurnAirOff(&this->turnAirOffData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::TurnAirOffCommand, &this->turnAirOffData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandApplyOffsetForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyOffsetForces(&this->applyOffsetForcesData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ApplyOffsetForcesCommand, &this->applyOffsetForcesData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandClearOffsetForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ClearOffsetForces(&this->clearOffsetForcesData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ClearOffsetForcesCommand, &this->clearOffsetForcesData, commandID);
 	}
 	return 0;
 }

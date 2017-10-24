@@ -11,6 +11,8 @@
 #include <IRS232.h>
 #include <IILC.h>
 #include <unistd.h>
+#include <ForceCalculator.h>
+#include <ApplyOffsetForcesCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -41,7 +43,7 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* mode
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
-	model->calculateForces();
+	model->getForceCalculator()->processAppliedForces();
 	return States::Ignore;
 }
 
@@ -52,6 +54,16 @@ States::Type ParkedEngineeringState::turnAirOn(TurnAirOnCommand* command, IModel
 
 States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, IModel* model) {
 	model->getAirController()->turnAirOff();
+	return States::Ignore;
+}
+
+States::Type ParkedEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model) {
+	model->getForceCalculator()->applyOffsetForces(command->getData()->XForces, command->getData()->YForces, command->getData()->ZForces);
+	return States::Ignore;
+}
+
+States::Type ParkedEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model) {
+	model->getForceCalculator()->zeroOffsetForces();
 	return States::Ignore;
 }
 

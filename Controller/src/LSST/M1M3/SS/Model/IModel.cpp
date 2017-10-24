@@ -25,9 +25,9 @@ IILC* IModel::getILC() { return 0; }
 
 IAirController* IModel::getAirController() { return 0; }
 
-void IModel::loadSettings(std::string settingsToApply) { }
+ForceCalculator* IModel::getForceCalculator() { return 0; }
 
-void IModel::calculateForces() { }
+void IModel::loadSettings(std::string settingsToApply) { }
 
 void IModel::queryFPGAData() { }
 

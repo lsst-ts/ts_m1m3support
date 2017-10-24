@@ -20,15 +20,69 @@ ForceCalculator::ForceCalculator(ForceActuatorApplicationSettings* forceActuator
 	this->forceInfo = forceInfo;
 	this->inclinometerData = inclinometerData;
 	this->forceData = forceData;
+	this->applyingStaticForces = false;
+	this->applyingOffsetForces = false;
+	this->applyingElevationForces = false;
 }
 
-void ForceCalculator::calculate() {
-	this->calculateElevationForces();
-	this->calculateForces();
-	this->calculateSetpoints();
+void ForceCalculator::processAppliedForces() {
+	if (this->applyingElevationForces) {
+		this->updateElevationForces();
+	}
+	this->sumAllForces();
+	this->convertForcesToSetpoints();
 }
 
-void ForceCalculator::calculateElevationForces() {
+void ForceCalculator::applyStaticForces() {
+	this->applyingStaticForces = true;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->staticXSetpoint[i] = this->forceInfo->StaticXSetpoint[i];
+		this->staticYSetpoint[i] = this->forceInfo->StaticYSetpoint[i];
+		this->staticZSetpoint[i] = this->forceInfo->StaticZSetpoint[i];
+	}
+}
+
+void ForceCalculator::zeroStaticForces() {
+	this->applyingStaticForces = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->staticXSetpoint[i] = 0;
+		this->staticYSetpoint[i] = 0;
+		this->staticZSetpoint[i] = 0;
+	}
+}
+
+void ForceCalculator::applyOffsetForces(double* x, double* y, double* z) {
+	this->applyingOffsetForces = true;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->OffsetXSetpoint[i] = x[i];
+		this->forceData->OffsetYSetpoint[i] = y[i];
+		this->forceData->OffsetZSetpoint[i] = z[i];
+	}
+}
+
+void ForceCalculator::zeroOffsetForces() {
+	this->applyingOffsetForces = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->OffsetXSetpoint[i] = 0;
+		this->forceData->OffsetYSetpoint[i] = 0;
+		this->forceData->OffsetZSetpoint[i] = 0;
+	}
+}
+
+void ForceCalculator::applyElevationForces() {
+	this->applyingElevationForces = true;
+}
+
+void ForceCalculator::zeroElevationForces() {
+	this->applyingElevationForces = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->ElevationXSetpoint[i] = 0;
+		this->forceData->ElevationYSetpoint[i] = 0;
+		this->forceData->ElevationZSetpoint[i] = 0;
+	}
+}
+
+void ForceCalculator::updateElevationForces() {
 	double elevationAngle = this->inclinometerData->InclinometerAngle;
 	double elevationMatrix[] = { std::pow(elevationAngle, 5.0), std::pow(elevationAngle, 4.0), std::pow(elevationAngle, 3.0), std::pow(elevationAngle, 2.0), elevationAngle, 1 };
 	for(int i = 0; i < FA_COUNT; ++i) {
@@ -57,15 +111,24 @@ void ForceCalculator::calculateElevationForces() {
 	}
 }
 
-void ForceCalculator::calculateForces() {
+void ForceCalculator::sumAllForces() {
 	for(int i = 0; i < FA_COUNT; ++i) {
-		this->forceData->XSetpoint[i] = this->forceData->ElevationXSetpoint[i];
-		this->forceData->YSetpoint[i] = this->forceData->ElevationYSetpoint[i];
-		this->forceData->ZSetpoint[i] = this->forceData->ElevationZSetpoint[i];
+		this->forceData->XSetpoint[i] =
+				this->staticXSetpoint[i] +
+				this->forceData->OffsetXSetpoint[i] +
+				this->forceData->ElevationXSetpoint[i];
+		this->forceData->YSetpoint[i] =
+				this->staticYSetpoint[i] +
+				this->forceData->OffsetYSetpoint[i] +
+				this->forceData->ElevationYSetpoint[i];
+		this->forceData->ZSetpoint[i] =
+				this->staticZSetpoint[i] +
+				this->forceData->OffsetZSetpoint[i] +
+				this->forceData->ElevationZSetpoint[i];
 	}
 }
 
-void ForceCalculator::calculateSetpoints() {
+void ForceCalculator::convertForcesToSetpoints() {
 	for(int i = 0; i < FA_COUNT; i++) {
 		switch(this->forceInfo->ActuatorOrientation[i]) {
 		case ForceActuatorOrientations::PositiveY:

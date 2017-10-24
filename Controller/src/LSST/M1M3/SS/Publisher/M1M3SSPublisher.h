@@ -87,6 +87,8 @@ public:
 	void ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

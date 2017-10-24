@@ -29,6 +29,10 @@ States::Type State::turnAirOn(TurnAirOnCommand* command, IModel* model) { return
 
 States::Type State::turnAirOff(TurnAirOffCommand* command, IModel* model) { return States::Ignore; }
 
+States::Type State::applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model) { return States::Ignore; }
+
+States::Type State::clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model) { return States::Ignore; }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

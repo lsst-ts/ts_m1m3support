@@ -20,6 +20,8 @@ public:
 	States::Type update(UpdateCommand* command, IModel* model);
 	States::Type turnAirOn(TurnAirOnCommand* command, IModel* model);
 	States::Type turnAirOff(TurnAirOffCommand* command, IModel* model);
+	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model);
+	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
 };
 
 } /* namespace SS */

@@ -25,7 +25,9 @@ struct Commands {
 		UpdateCommand = 5,
 		ShutdownCommand = 6,
 		TurnAirOnCommand = 7,
-		TurnAirOffCommand = 8
+		TurnAirOffCommand = 8,
+		ApplyOffsetForcesCommand = 9,
+		ClearOffsetForcesCommand = 10,
 	};
 };
 

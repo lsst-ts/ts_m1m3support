@@ -82,6 +82,8 @@ public:
 	virtual void ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

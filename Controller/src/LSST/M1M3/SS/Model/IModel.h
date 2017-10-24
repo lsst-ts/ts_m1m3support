@@ -21,6 +21,7 @@ class IFPGA;
 class IRS232;
 class IILC;
 class IAirController;
+class ForceCalculator;
 
 class IModel {
 public:
@@ -32,10 +33,9 @@ public:
 	virtual IRS232* getRS232();
 	virtual IILC* getILC();
 	virtual IAirController* getAirController();
+	virtual ForceCalculator* getForceCalculator();
 
 	virtual void loadSettings(std::string settingsToApply);
-
-	virtual void calculateForces();
 
 	virtual void queryFPGAData();
 	virtual void publishFPGAData();

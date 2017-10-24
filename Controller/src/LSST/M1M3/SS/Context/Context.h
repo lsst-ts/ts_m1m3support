@@ -44,6 +44,8 @@ public:
 	void update(UpdateCommand* command);
 	void turnAirOn(TurnAirOnCommand* command);
 	void turnAirOff(TurnAirOffCommand* command);
+	void applyOffsetForces(ApplyOffsetForcesCommand* command);
+	void clearOffsetForces(ClearOffsetForcesCommand* command);
 };
 
 } /* namespace SS */
