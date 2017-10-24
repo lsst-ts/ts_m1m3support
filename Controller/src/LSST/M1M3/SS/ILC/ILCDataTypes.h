@@ -12,10 +12,6 @@
 #include <vector>
 #include <string>
 
-#define FA_COUNT 156
-#define HP_COUNT 6
-#define SUBNET_COUNT 5
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {

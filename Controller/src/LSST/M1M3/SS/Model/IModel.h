@@ -35,6 +35,8 @@ public:
 
 	virtual void loadSettings(std::string settingsToApply);
 
+	virtual void calculateForces();
+
 	virtual void queryFPGAData();
 	virtual void publishFPGAData();
 

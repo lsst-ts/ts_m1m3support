@@ -26,7 +26,7 @@ void ForceActuatorApplicationSettings::load(const std::string &filename) {
 	xml_document doc;
 	xml_parse_result result = doc.load_file(filename.c_str());
 	this->loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &StaticForces, doc.select_node("//ForceActuatorApplicationSettings/StaticForceTablePath").node().child_value());
+	this->loadStaticForceTable(doc.select_node("//ForceActuatorApplicationSettings/StaticForceTablePath").node().child_value());
 	this->loadTable(1, 1, 6, &ElevationXAxisCoefficients, doc.select_node("//ForceActuatorApplicationSettings/ElevationXAxisCoefficientTablePath").node().child_value());
 	this->loadTable(1, 1, 6, &ElevationYAxisCoefficients, doc.select_node("//ForceActuatorApplicationSettings/ElevationYAxisCoefficientTablePath").node().child_value());
 	this->loadTable(1, 1, 6, &ElevationZAxisCoefficients, doc.select_node("//ForceActuatorApplicationSettings/ElevationZAxisCoefficientTablePath").node().child_value());
@@ -105,6 +105,30 @@ void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string 
 	inputStream.close();
 }
 
+void ForceActuatorApplicationSettings::loadStaticForceTable(const std::string &filename) {
+	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
+	std::ifstream inputStream(filename.c_str());
+	std::string lineText;
+	int32_t lineNumber = 0;
+	while(std::getline(inputStream, lineText)) {
+		boost::trim_right(lineText);
+		if (lineNumber >= 1 && !lineText.empty()) {
+			// Line Format:
+			//     ActuatorID,X,Y,Z
+			tokenizer tok(lineText);
+			tokenizer::iterator i = tok.begin();
+			++i;
+			StaticForces.X.push_back(boost::lexical_cast<double>(*i));
+			++i;
+			StaticForces.Y.push_back(boost::lexical_cast<double>(*i));
+			++i;
+			StaticForces.Z.push_back(boost::lexical_cast<double>(*i));
+		}
+		lineNumber++;
+	}
+	inputStream.close();
+}
+
 void ForceActuatorApplicationSettings::loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<double>* data, const std::string &filename) {
 	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
 	std::ifstream inputStream(filename.c_str());
@@ -113,8 +137,6 @@ void ForceActuatorApplicationSettings::loadTable(int rowsToSkip, int columnsToSk
 	while(std::getline(inputStream, lineText)) {
 		boost::trim_right(lineText);
 		if (lineNumber >= rowsToSkip && !lineText.empty()) {
-			// Line Format:
-			//     ActuatorID,X,Y,Z
 			tokenizer tok(lineText);
 			tokenizer::iterator i = tok.begin();
 			for(int j = 0; j < columnsToSkip; j++) {
@@ -128,6 +150,12 @@ void ForceActuatorApplicationSettings::loadTable(int rowsToSkip, int columnsToSk
 		lineNumber++;
 	}
 	inputStream.close();
+}
+
+void ForceActuatorApplicationSettings::zeroTable(int items, std::vector<double>* data) {
+	for(int i = 0; i < items; i++) {
+		data->push_back(0);
+	}
 }
 
 } /* namespace SS */

@@ -10,6 +10,7 @@
 #include <IPublisher.h>
 #include <U16ArrayUtilities.h>
 #include <U8ArrayUtilities.h>
+#include <SAL_m1m3C.h>
 #include <Timestamp.h>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
@@ -27,8 +28,13 @@ namespace SS {
 Displacement::Displacement(IPublisher* publisher, IFPGA* fpga) {
 	this->publisher = publisher;
 	this->fpga = fpga;
+	this->imsData = this->publisher->getIMSData();
+	this->displacementWarning = this->publisher->getEventDisplacementSensorWarning();
+
+	memset(this->imsData, 0, sizeof(m1m3_IMSDataC));
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+
 	this->createTxBuffer();
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
 }
 
 void Displacement::writeDataRequest() {
@@ -47,21 +53,21 @@ void Displacement::readDataResponse() {
 		tokenizer tokenize(response);
 		tokenizer::iterator token = tokenize.begin();
 		if ((*token) == "M0") {
-			this->imsData.Timestamp = timestamp;
+			this->imsData->Timestamp = timestamp;
 			++token;
-			this->imsData.RawSensorData[0] = boost::lexical_cast<double>(*token);
+			this->imsData->RawSensorData[0] = boost::lexical_cast<double>(*token);
 			++token;
-			this->imsData.RawSensorData[1] = boost::lexical_cast<double>(*token);
+			this->imsData->RawSensorData[1] = boost::lexical_cast<double>(*token);
 			++token;
-			this->imsData.RawSensorData[2] = boost::lexical_cast<double>(*token);
+			this->imsData->RawSensorData[2] = boost::lexical_cast<double>(*token);
 			++token;
-			this->imsData.RawSensorData[3] = boost::lexical_cast<double>(*token);
+			this->imsData->RawSensorData[3] = boost::lexical_cast<double>(*token);
 			++token;
-			this->imsData.RawSensorData[4] = boost::lexical_cast<double>(*token);
+			this->imsData->RawSensorData[4] = boost::lexical_cast<double>(*token);
 			++token;
-			this->imsData.RawSensorData[5] = boost::lexical_cast<double>(*token);
+			this->imsData->RawSensorData[5] = boost::lexical_cast<double>(*token);
 			this->clearWarning(timestamp);
-			this->publisher->putIMSData(&this->imsData);
+			this->publisher->putIMSData();
 		}
 		else if ((*token) == "ER") {
 			++token;
@@ -98,101 +104,114 @@ void Displacement::createTxBuffer() {
 }
 
 void Displacement::clearWarning(double timestamp) {
-	if (this->displacementWarning.AnyWarning) {
-		memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-		this->displacementWarning.Timestamp = timestamp;
+	if (this->displacementWarning->AnyWarning) {
+		memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+		this->displacementWarning->Timestamp = timestamp;
+		this->publisher->logDisplacementSensorWarning();
 	}
 }
 
 void Displacement::warnSensorReportsInvalidCommand(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsInvalidCommand = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsInvalidCommand = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsCommunicationTimeoutError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsCommunicationTimeoutError = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsCommunicationTimeoutError = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsDataLengthError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsDataLengthError = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsDataLengthError = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsNumberOfParametersError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsNumberOfParametersError = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsNumberOfParametersError = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsParameterError(double timestamp) {
 	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsParameterError = true;
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsParameterError = true;
 }
 
 void Displacement::warnSensorReportsCommunicationError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsCommunicationError = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsCommunicationError = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsIDNumberError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsIDNumberError = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsIDNumberError = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsExpansionLineError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsExpansionLineError = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsExpansionLineError = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsWriteControlError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.SensorReportsWriteControlError = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->SensorReportsWriteControlError = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnResponseTimeoutError(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.ResponseTimeout = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->ResponseTimeout = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnInvalidLength(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.InvalidLength = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->InvalidLength = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnUnknownCommand(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.UnknownCommand = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->UnknownCommand = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnUnknownProblem(double timestamp) {
-	memset(&this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
-	this->displacementWarning.Timestamp = timestamp;
-	this->displacementWarning.AnyWarning = true;
-	this->displacementWarning.UnknownProblem = true;
+	memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
+	this->displacementWarning->Timestamp = timestamp;
+	this->displacementWarning->AnyWarning = true;
+	this->displacementWarning->UnknownProblem = true;
+	this->publisher->logDisplacementSensorWarning();
 }
 
 } /* namespace SS */

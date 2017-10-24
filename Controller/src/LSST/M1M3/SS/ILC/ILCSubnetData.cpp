@@ -11,13 +11,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings forceActuatorApplicationSettings, HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings) {
+ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings) {
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->subnetData[subnetIndex].FACount = 0;
 		this->subnetData[subnetIndex].HPCount = 0;
 	}
 	for(int i = 0; i < FA_COUNT; i++) {
-		ForceActuatorTableRow row = forceActuatorApplicationSettings.Table[i];
+		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
 		int32_t subnetIndex = row.Subnet - 1;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;
@@ -29,7 +29,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings forceActuatorAppli
 		this->subnetData[subnetIndex].FACount += 1;
 	}
 	for(int i = 0; i < HP_COUNT; i++) {
-		HardpointActuatorTableRow row = hardpointActuatorApplicationSettings.Table[i];
+		HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
 		int32_t subnetIndex = row.Subnet - 1;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;

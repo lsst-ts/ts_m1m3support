@@ -25,15 +25,21 @@ private:
 	std::string getBasePath(std::string file);
 	std::string getSetPath(std::string file);
 
+	AliasApplicationSettings aliasApplicationSettings;
+	RecommendedApplicationSettings recommendedApplicationSettings;
+	ILCApplicationSettings ilcApplicationSettings;
+	ForceActuatorApplicationSettings forceActuatorApplicationSettings;
+	HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
+
 public:
 	SettingReader(std::string basePath, std::string setsPath);
 
 	virtual void configure(std::string settingsToApply);
-	virtual AliasApplicationSettings loadAliasApplicationSettings();
-	virtual RecommendedApplicationSettings loadRecommendedApplicationSettings();
-	virtual ILCApplicationSettings loadILCApplicationSettings();
-	virtual ForceActuatorApplicationSettings loadForceActuatorApplicationSettings();
-	virtual HardpointActuatorApplicationSettings loadHardpointActuatorApplicationSettings();
+	virtual AliasApplicationSettings* loadAliasApplicationSettings();
+	virtual RecommendedApplicationSettings* loadRecommendedApplicationSettings();
+	virtual ILCApplicationSettings* loadILCApplicationSettings();
+	virtual ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
+	virtual HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
 };
 
 } /* namespace SS */

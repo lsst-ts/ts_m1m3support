@@ -8,6 +8,9 @@
 #include <ParkedEngineeringState.h>
 #include <IModel.h>
 #include <IAirController.h>
+#include <IRS232.h>
+#include <IILC.h>
+#include <unistd.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -20,7 +23,25 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* mo
 }
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
+	model->getILC()->writeRaisedListBuffer();
+	model->getILC()->triggerModbus();
+	model->getRS232()->writeDisplacementRequest();
+	model->getRS232()->writeInclinometerRequest();
 	model->getAirController()->checkStatus();
+	model->getILC()->waitForAllSubnets(5000);
+	model->getILC()->readAll();
+	model->getRS232()->readDisplacementResponse();
+	model->getRS232()->readInclinometerResponse();
+	model->getILC()->verifyResponses();
+	usleep(50000);
+	model->queryFPGAData();
+	usleep(10000);
+	model->publishFPGAData();
+	model->getILC()->publishForceActuatorStatus();
+	model->getILC()->publishForceActuatorData();
+	model->getILC()->publishHardpointStatus();
+	model->getILC()->publishHardpointData();
+	model->calculateForces();
 	return States::Ignore;
 }
 

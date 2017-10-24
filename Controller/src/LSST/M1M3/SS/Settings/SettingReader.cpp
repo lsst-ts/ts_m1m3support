@@ -29,9 +29,9 @@ void SettingReader::configure(std::string settingsToApply) {
 		this->currentVersion = *token;
 	}
 	else {
-		AliasApplicationSettings aliasApplicationSettings = this->loadAliasApplicationSettings();
-		for(uint32_t i = 0; i != aliasApplicationSettings.Aliases.size(); ++i) {
-			Alias alias = aliasApplicationSettings.Aliases[i];
+		AliasApplicationSettings* aliasApplicationSettings = this->loadAliasApplicationSettings();
+		for(uint32_t i = 0; i != aliasApplicationSettings->Aliases.size(); ++i) {
+			Alias alias = aliasApplicationSettings->Aliases[i];
 			if (alias.Name.compare(settingsToApply) == 0) {
 				this->currentSet = alias.Set;
 				this->currentVersion = alias.Version;
@@ -41,34 +41,29 @@ void SettingReader::configure(std::string settingsToApply) {
 	}
 }
 
-AliasApplicationSettings SettingReader::loadAliasApplicationSettings() {
-	AliasApplicationSettings aliasApplicationSettings;
-	aliasApplicationSettings.load(this->getBasePath("AliasApplicationSettings.xml").c_str());
-	return aliasApplicationSettings;
+AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
+	this->aliasApplicationSettings.load(this->getBasePath("AliasApplicationSettings.xml").c_str());
+	return &this->aliasApplicationSettings;
 }
 
-RecommendedApplicationSettings SettingReader::loadRecommendedApplicationSettings() {
-	RecommendedApplicationSettings recommendedApplicationSettings;
-	recommendedApplicationSettings.load(this->getBasePath("RecommendedApplicationSettings.xml").c_str());
-	return recommendedApplicationSettings;
+RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
+	this->recommendedApplicationSettings.load(this->getBasePath("RecommendedApplicationSettings.xml").c_str());
+	return &this->recommendedApplicationSettings;
 }
 
-ILCApplicationSettings SettingReader::loadILCApplicationSettings() {
-	ILCApplicationSettings ilcApplicationSettings;
-	ilcApplicationSettings.load(this->getBasePath("ILCApplicationSettings.xml").c_str());
-	return ilcApplicationSettings;
+ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
+	this->ilcApplicationSettings.load(this->getBasePath("ILCApplicationSettings.xml").c_str());
+	return &this->ilcApplicationSettings;
 }
 
-ForceActuatorApplicationSettings SettingReader::loadForceActuatorApplicationSettings() {
-	ForceActuatorApplicationSettings forceActuatorApplicationSettings;
-	forceActuatorApplicationSettings.load(this->getBasePath("ForceActuatorApplicationSettings.xml").c_str());
-	return forceActuatorApplicationSettings;
+ForceActuatorApplicationSettings* SettingReader::loadForceActuatorApplicationSettings() {
+	this->forceActuatorApplicationSettings.load(this->getBasePath("ForceActuatorApplicationSettings.xml").c_str());
+	return &this->forceActuatorApplicationSettings;
 }
 
-HardpointActuatorApplicationSettings SettingReader::loadHardpointActuatorApplicationSettings() {
-	HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
-	hardpointActuatorApplicationSettings.load(this->getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
-	return hardpointActuatorApplicationSettings;
+HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
+	this->hardpointActuatorApplicationSettings.load(this->getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
+	return &this->hardpointActuatorApplicationSettings;
 }
 
 std::string SettingReader::getBasePath(std::string file) {

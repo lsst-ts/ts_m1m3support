@@ -27,6 +27,8 @@ IAirController* IModel::getAirController() { return 0; }
 
 void IModel::loadSettings(std::string settingsToApply) { }
 
+void IModel::calculateForces() { }
+
 void IModel::queryFPGAData() { }
 
 void IModel::publishFPGAData() { }

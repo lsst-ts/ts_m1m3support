@@ -12,7 +12,6 @@
 #include <ILCDataTypes.h>
 #include <ILCSubnetData.h>
 #include <ModbusBuffer.h>
-#include <SAL_m1m3C.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
@@ -32,6 +31,16 @@
 #include <FreezeSensorBusList.h>
 #include <RaisedBusList.h>
 
+struct m1m3_logevent_HardpointActuatorInfoC;
+struct m1m3_HardpointStatusC;
+struct m1m3_HardpointDataC;
+
+struct m1m3_logevent_ForceActuatorInfoC;
+struct m1m3_ForceActuatorStatusC;
+struct m1m3_ForceActuatorDataC;
+
+struct m1m3_logevent_ILCWarningC;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -48,7 +57,7 @@ private:
 	IPublisher* publisher;
 	IFPGA* fpga;
 
-	ILCApplicationSettings ilcApplicationSettings;
+	ILCApplicationSettings* ilcApplicationSettings;
 
 	ILCSubnetData subnetData;
 	ILCMessageFactory ilcMessageFactory;
@@ -82,21 +91,21 @@ private:
 	uint16_t u16Buffer[1];
 	ModbusBuffer rxBuffer;
 
-	m1m3_logevent_HardpointActuatorInfoC hardpointInfo;
-	m1m3_HardpointStatusC hardpointStatus;
-	m1m3_HardpointDataC hardpointData;
+	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo;
+	m1m3_HardpointStatusC* hardpointStatus;
+	m1m3_HardpointDataC* hardpointData;
 
-	m1m3_logevent_ForceActuatorInfoC forceInfo;
-	m1m3_ForceActuatorStatusC forceStatus;
-	m1m3_ForceActuatorDataC forceData;
+	m1m3_logevent_ForceActuatorInfoC* forceInfo;
+	m1m3_ForceActuatorStatusC* forceStatus;
+	m1m3_ForceActuatorDataC* forceData;
 
-	m1m3_logevent_ILCWarningC ilcWarning;
+	m1m3_logevent_ILCWarningC* ilcWarning;
 
 	int subnetStartIndex;
 
 
 public:
-	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings ilcApplicationSettings, ForceActuatorApplicationSettings forceActuatorApplicationSettings, HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings);
+	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings);
 	virtual ~ILC();
 
 	void writeCalibrationDataBuffer();

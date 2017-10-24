@@ -9,7 +9,9 @@
 #define DISPLACEMENT_H_
 
 #include <DataTypes.h>
-#include <SAL_m1m3C.h>
+
+struct m1m3_IMSDataC;
+struct m1m3_logevent_DisplacementSensorWarningC;
 
 namespace LSST {
 namespace M1M3 {
@@ -22,12 +24,11 @@ class Displacement {
 private:
 	IPublisher* publisher;
 	IFPGA* fpga;
+	m1m3_IMSDataC* imsData;
+	m1m3_logevent_DisplacementSensorWarningC* displacementWarning;
 
 	uint16_t txBuffer[32];
 	uint8_t rxBuffer[128];
-
-	m1m3_logevent_DisplacementSensorWarningC displacementWarning;
-	m1m3_IMSDataC imsData;
 
 public:
 	Displacement(IPublisher* publisher, IFPGA* fpga);

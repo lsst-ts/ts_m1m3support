@@ -23,11 +23,11 @@ public:
 	virtual ~ISettingReader();
 
 	virtual void configure(std::string settingsToApply);
-	virtual AliasApplicationSettings loadAliasApplicationSettings();
-	virtual RecommendedApplicationSettings loadRecommendedApplicationSettings();
-	virtual ILCApplicationSettings loadILCApplicationSettings();
-	virtual ForceActuatorApplicationSettings loadForceActuatorApplicationSettings();
-	virtual HardpointActuatorApplicationSettings loadHardpointActuatorApplicationSettings();
+	virtual AliasApplicationSettings* loadAliasApplicationSettings();
+	virtual RecommendedApplicationSettings* loadRecommendedApplicationSettings();
+	virtual ILCApplicationSettings* loadILCApplicationSettings();
+	virtual ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
+	virtual HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
 };
 
 } /* namespace SS */

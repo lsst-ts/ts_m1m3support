@@ -49,7 +49,6 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getRS232()->readDisplacementResponse();
 	model->getRS232()->readInclinometerResponse();
 	model->getILC()->verifyResponses();
-	model->getILC()->foo();
 	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);

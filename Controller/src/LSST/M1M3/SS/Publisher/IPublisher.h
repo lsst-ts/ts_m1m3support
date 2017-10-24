@@ -9,8 +9,25 @@
 #define IPUBLISHER_H_
 
 #include <DataTypes.h>
-#include <SAL_m1m3C.h>
 #include <string>
+
+struct m1m3_ForceActuatorDataC;
+struct m1m3_ForceActuatorStatusC;
+struct m1m3_HardpointDataC;
+struct m1m3_HardpointStatusC;
+struct m1m3_IMSDataC;
+struct m1m3_InclinometerDataC;
+struct m1m3_OuterLoopDataC;
+
+struct m1m3_logevent_AirSupplyStatusC;
+struct m1m3_logevent_AirSupplyWarningC;
+struct m1m3_logevent_DisplacementSensorWarningC;
+struct m1m3_logevent_ForceActuatorInfoC;
+struct m1m3_logevent_HardpointActuatorInfoC;
+struct m1m3_logevent_ILCWarningC;
+struct m1m3_logevent_InclinometerSensorWarningC;
+struct m1m3_logevent_SettingVersionsC;
+struct m1m3_logevent_SummaryStateC;
 
 namespace LSST {
 namespace M1M3 {
@@ -20,27 +37,43 @@ class IPublisher {
 public:
 	virtual ~IPublisher();
 
+	virtual m1m3_ForceActuatorDataC* getForceActuatorData();
+	virtual m1m3_ForceActuatorStatusC* getForceActuatorStatus();
+	virtual m1m3_HardpointDataC* getHardpointData();
+	virtual m1m3_HardpointStatusC* getHardpointStatus();
+	virtual m1m3_IMSDataC* getIMSData();
+	virtual m1m3_InclinometerDataC* getInclinometerData();
 	virtual m1m3_OuterLoopDataC* getOuterLoopData();
+
+	virtual m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus();
+	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
+	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
+	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
+	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpoingActuatorInfo();
+	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
+	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
+	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();
+	virtual m1m3_logevent_SummaryStateC* getEventSummaryState();
 
 	virtual double getTimestamp();
 
-	virtual void putInclinometerData(m1m3_InclinometerDataC* data);
-	virtual void putIMSData(m1m3_IMSDataC* data);
+	virtual void putForceActuatorData();
+	virtual void putForceActuatorStatus();
+	virtual void putHardpointData();
+	virtual void putHardpointStatus();
+	virtual void putIMSData();
+	virtual void putInclinometerData();
+	virtual void putOuterLoopData();
 
-	virtual void logStateChange(m1m3_logevent_SummaryStateC* data);
-	virtual void logSettingVersions(m1m3_logevent_SettingVersionsC* data);
-
-	virtual void logInclinometerSensorWarning(m1m3_logevent_InclinometerSensorWarningC* data);
-	virtual void logDisplacementSensorWarning(m1m3_logevent_DisplacementSensorWarningC* data);
-	virtual void logILCWarning(m1m3_logevent_ILCWarningC* data);
-
-	virtual void logAirSupplyStatus(m1m3_logevent_AirSupplyStatusC* data);
-	virtual void logAirSupplyWarning(m1m3_logevent_AirSupplyWarningC* data);
-
-	virtual void putForceActuatorStatus(m1m3_ForceActuatorStatusC* data);
-	virtual void putForceActuatorData(m1m3_ForceActuatorDataC* data);
-	virtual void putHardpointStatus(m1m3_HardpointStatusC* data);
-	virtual void putHardpointData(m1m3_HardpointDataC* data);
+	virtual void logAirSupplyStatus();
+	virtual void logAirSupplyWarning();
+	virtual void logDisplacementSensorWarning();
+	virtual void logForceActuatorInfo();
+	virtual void logHardpointActuatorInfo();
+	virtual void logILCWarning();
+	virtual void logInclinometerSensorWarning();
+	virtual void logSettingVersions();
+	virtual void logSummaryState();
 
 	virtual void ackCommandStart(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandEnable(int32_t commandID, int32_t ackCode, std::string description);

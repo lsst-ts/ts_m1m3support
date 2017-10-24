@@ -18,6 +18,7 @@ namespace M1M3 {
 namespace SS {
 
 class ISettingReader;
+class ForceCalculator;
 
 class Model : public IModel {
 private:
@@ -27,6 +28,7 @@ private:
 	IRS232* rs232;
 	IILC* ilc;
 	IAirController* airController;
+	ForceCalculator* forceCalculator;
 
 	pthread_mutex_t mutex;
 
@@ -42,6 +44,8 @@ public:
 	IAirController* getAirController() { return this->airController; }
 
 	virtual void loadSettings(std::string settingsToApply);
+
+	virtual void calculateForces();
 
 	virtual void queryFPGAData();
 	virtual void publishFPGAData();
