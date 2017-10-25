@@ -49,7 +49,7 @@ public:
 	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
-	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpoingActuatorInfo();
+	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
 	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
 	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
 	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();

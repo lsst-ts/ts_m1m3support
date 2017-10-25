@@ -1,12 +1,13 @@
 /*
- * ForceCalculator.cpp
+ * ForceController.cpp
  *
  *  Created on: Oct 23, 2017
  *      Author: ccontaxis
  */
 
-#include <ForceCalculator.h>
-#include <ForceActuatorApplicationSettings.h>
+#include <ForceController.h>
+#include <ForceActuatorOrientations.h>
+#include <ForceActuatorSettings.h>
 #include <SAL_m1m3C.h>
 #include <cmath>
 #include <vector>
@@ -15,7 +16,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ForceCalculator::ForceCalculator(ForceActuatorApplicationSettings* forceActuatorSettings, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_InclinometerDataC* inclinometerData, m1m3_ForceActuatorDataC* forceData) {
+ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_InclinometerDataC* inclinometerData, m1m3_ForceActuatorDataC* forceData) {
+	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceInfo = forceInfo;
 	this->inclinometerData = inclinometerData;
@@ -28,18 +30,18 @@ ForceCalculator::ForceCalculator(ForceActuatorApplicationSettings* forceActuator
 	this->zeroElevationForces();
 }
 
-void ForceCalculator::updateAppliedForces() {
+void ForceController::updateAppliedForces() {
 	if (this->applyingElevationForces) {
 		this->updateElevationForces();
 	}
 }
 
-void ForceCalculator::processAppliedForces() {
+void ForceController::processAppliedForces() {
 	this->sumAllForces();
 	this->convertForcesToSetpoints();
 }
 
-void ForceCalculator::applyStaticForces() {
+void ForceController::applyStaticForces() {
 	this->applyingStaticForces = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->staticXSetpoint[i] = this->forceInfo->StaticXSetpoint[i];
@@ -48,7 +50,7 @@ void ForceCalculator::applyStaticForces() {
 	}
 }
 
-void ForceCalculator::zeroStaticForces() {
+void ForceController::zeroStaticForces() {
 	this->applyingStaticForces = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->staticXSetpoint[i] = 0;
@@ -57,7 +59,7 @@ void ForceCalculator::zeroStaticForces() {
 	}
 }
 
-void ForceCalculator::applyOffsetForces(double* x, double* y, double* z) {
+void ForceController::applyOffsetForces(double* x, double* y, double* z) {
 	this->applyingOffsetForces = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->OffsetXSetpoint[i] = x[i];
@@ -66,7 +68,7 @@ void ForceCalculator::applyOffsetForces(double* x, double* y, double* z) {
 	}
 }
 
-void ForceCalculator::zeroOffsetForces() {
+void ForceController::zeroOffsetForces() {
 	this->applyingOffsetForces = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->OffsetXSetpoint[i] = 0;
@@ -75,11 +77,11 @@ void ForceCalculator::zeroOffsetForces() {
 	}
 }
 
-void ForceCalculator::applyElevationForces() {
+void ForceController::applyElevationForces() {
 	this->applyingElevationForces = true;
 }
 
-void ForceCalculator::zeroElevationForces() {
+void ForceController::zeroElevationForces() {
 	this->applyingElevationForces = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->ElevationXSetpoint[i] = 0;
@@ -88,7 +90,7 @@ void ForceCalculator::zeroElevationForces() {
 	}
 }
 
-void ForceCalculator::updateElevationForces() {
+void ForceController::updateElevationForces() {
 	double elevationAngle = this->inclinometerData->InclinometerAngle;
 	double elevationMatrix[] = { std::pow(elevationAngle, 5.0), std::pow(elevationAngle, 4.0), std::pow(elevationAngle, 3.0), std::pow(elevationAngle, 2.0), elevationAngle, 1 };
 	for(int i = 0; i < FA_COUNT; ++i) {
@@ -117,7 +119,7 @@ void ForceCalculator::updateElevationForces() {
 	}
 }
 
-void ForceCalculator::sumAllForces() {
+void ForceController::sumAllForces() {
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->XSetpoint[i] =
 				this->staticXSetpoint[i] +
@@ -134,7 +136,7 @@ void ForceCalculator::sumAllForces() {
 	}
 }
 
-void ForceCalculator::convertForcesToSetpoints() {
+void ForceController::convertForcesToSetpoints() {
 	for(int i = 0; i < FA_COUNT; i++) {
 		switch(this->forceInfo->ActuatorOrientation[i]) {
 		case ForceActuatorOrientations::PositiveY:
@@ -157,7 +159,6 @@ void ForceCalculator::convertForcesToSetpoints() {
 			this->forceData->SecondaryCylinderSetpointCommanded[i] = toInt24(-this->forceData->YSetpoint[i] * sqrt2);
 			break;
 		}
-		this->forceData->SecondaryCylinderSetpointCommanded[i] = toInt24(this->forceData->XSetpoint[i] + this->forceData->YSetpoint[i]);
 	}
 }
 

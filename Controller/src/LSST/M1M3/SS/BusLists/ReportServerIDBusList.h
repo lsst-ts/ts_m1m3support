@@ -16,7 +16,6 @@ namespace SS {
 
 class ReportServerIDBusList : public BusList {
 public:
-	ReportServerIDBusList();
 	ReportServerIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

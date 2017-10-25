@@ -14,12 +14,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SetADCScanRateBusList::SetADCScanRateBusList()
- : BusList() {
-	this->forceInfo = 0;
-	this->hardpointInfo = 0;
-}
-
 SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_HardpointActuatorInfoC* hardpointInfo)
  : BusList(subnetData, ilcMessageFactory) {
 	this->forceInfo = forceInfo;

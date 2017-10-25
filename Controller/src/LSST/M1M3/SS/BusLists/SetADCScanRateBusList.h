@@ -23,7 +23,6 @@ private:
 	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo;
 
 public:
-	SetADCScanRateBusList();
 	SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_HardpointActuatorInfoC* hardpointInfo);
 };
 

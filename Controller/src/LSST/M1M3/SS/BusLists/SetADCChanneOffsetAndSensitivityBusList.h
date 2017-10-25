@@ -25,7 +25,6 @@ private:
 	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo;
 
 public:
-	SetADCChanneOffsetAndSensitivityBusList();
 	SetADCChanneOffsetAndSensitivityBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_HardpointActuatorInfoC* hardpointInfo);
 };
 

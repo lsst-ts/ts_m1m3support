@@ -1,13 +1,14 @@
 /*
- * ForceCalculator.h
+ * ForceController.h
  *
  *  Created on: Oct 23, 2017
  *      Author: ccontaxis
  */
 
-#ifndef FORCECALCULATOR_H_
-#define FORCECALCULATOR_H_
+#ifndef FORCECONTROLLER_H_
+#define FORCECONTROLLER_H_
 
+#include <IForceController.h>
 #include <DataTypes.h>
 
 struct m1m3_logevent_ForceActuatorInfoC;
@@ -19,13 +20,15 @@ namespace M1M3 {
 namespace SS {
 
 class ForceActuatorApplicationSettings;
+class ForceActuatorSettings;
 
-class ForceCalculator {
+class ForceController: public IForceController {
 private:
 	static double const sqrt2 = 1.4142135623730950488016887242097;
 	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
-	ForceActuatorApplicationSettings* forceActuatorSettings;
+	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+	ForceActuatorSettings* forceActuatorSettings;
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
 	m1m3_ForceActuatorDataC* forceData;
 	m1m3_InclinometerDataC* inclinometerData;
@@ -41,7 +44,7 @@ private:
 	static int32_t toInt24(double force) { return (int32_t)(force * 1000.0); }
 
 public:
-	ForceCalculator(ForceActuatorApplicationSettings* forceActuatorSettings, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_InclinometerDataC* inclinometerData, m1m3_ForceActuatorDataC* forceData);
+	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_InclinometerDataC* inclinometerData, m1m3_ForceActuatorDataC* forceData);
 
 	void updateAppliedForces();
 	void processAppliedForces();
@@ -72,4 +75,4 @@ private:
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* FORCECALCULATOR_H_ */
+#endif /* FORCECONTROLLER_H_ */

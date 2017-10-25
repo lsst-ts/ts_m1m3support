@@ -8,10 +8,11 @@
 #include <ParkedEngineeringState.h>
 #include <IModel.h>
 #include <IAirController.h>
-#include <IRS232.h>
+#include <IDisplacement.h>
+#include <IInclinometer.h>
 #include <IILC.h>
 #include <unistd.h>
-#include <ForceCalculator.h>
+#include <IForceController.h>
 #include <ApplyOffsetForcesCommand.h>
 
 namespace LSST {
@@ -27,13 +28,13 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* mo
 States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
-	model->getRS232()->writeDisplacementRequest();
-	model->getRS232()->writeInclinometerRequest();
+	model->getDisplacement()->writeDataRequest();
+	model->getInclinometer()->writeDataRequest();
 	model->getAirController()->checkStatus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
-	model->getRS232()->readDisplacementResponse();
-	model->getRS232()->readInclinometerResponse();
+	model->getDisplacement()->readDataResponse();
+	model->getInclinometer()->readDataResponse();
 	model->getILC()->verifyResponses();
 	usleep(50000);
 	model->queryFPGAData();
@@ -58,7 +59,7 @@ States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, IMod
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
 	States::Type newState = States::ActiveEngineeringState;
-	model->getForceCalculator()->applyElevationForces();
+	model->getForceController()->applyElevationForces();
 	model->publishStateChange(newState);
 	return newState;
 }

@@ -16,14 +16,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisedBusList::RaisedBusList()
- : BusList() {
-	this->outerLoopData = 0;
-	this->forceData = 0;
-	this->hardpointData = 0;
-	this->forceInfo = 0;
-}
-
 RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceData, m1m3_HardpointDataC* hardpointData, m1m3_logevent_ForceActuatorInfoC* forceInfo)
  : BusList(subnetData, ilcMessageFactory) {
 	this->outerLoopData = outerLoopData;
@@ -103,13 +95,6 @@ void RaisedBusList::update() {
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 				int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-				switch(this->forceInfo->ActuatorOrientation[dataIndex]) {
-				case ForceActuatorOrientations::PositiveX: ForceConverter::daaPositiveXToCylinder(this->forceData->XSetpoint[dataIndex], this->forceData->YSetpoint[dataIndex], this->forceData->ZSetpoint[dataIndex], this->forceData->PrimaryCylinderSetpointCommanded + dataIndex, this->forceData->SecondaryCylinderSetpointCommanded + dataIndex); break;
-				case ForceActuatorOrientations::NegativeX: ForceConverter::daaNegativeXToCylinder(this->forceData->XSetpoint[dataIndex], this->forceData->YSetpoint[dataIndex], this->forceData->ZSetpoint[dataIndex], this->forceData->PrimaryCylinderSetpointCommanded + dataIndex, this->forceData->SecondaryCylinderSetpointCommanded + dataIndex); break;
-				case ForceActuatorOrientations::PositiveY: ForceConverter::daaPositiveYToCylinder(this->forceData->XSetpoint[dataIndex], this->forceData->YSetpoint[dataIndex], this->forceData->ZSetpoint[dataIndex], this->forceData->PrimaryCylinderSetpointCommanded + dataIndex, this->forceData->SecondaryCylinderSetpointCommanded + dataIndex); break;
-				case ForceActuatorOrientations::NegativeY: ForceConverter::daaNegativeYToCylinder(this->forceData->XSetpoint[dataIndex], this->forceData->YSetpoint[dataIndex], this->forceData->ZSetpoint[dataIndex], this->forceData->PrimaryCylinderSetpointCommanded + dataIndex, this->forceData->SecondaryCylinderSetpointCommanded + dataIndex); break;
-				case ForceActuatorOrientations::NA: ForceConverter::saaToCylinder(this->forceData->XSetpoint[dataIndex], this->forceData->YSetpoint[dataIndex], this->forceData->ZSetpoint[dataIndex], this->forceData->PrimaryCylinderSetpointCommanded + dataIndex, this->forceData->SecondaryCylinderSetpointCommanded + dataIndex); break;
-				}
 				if (address <= 16) {
 					saaPrimary[address - 1] = this->forceData->PrimaryCylinderSetpointCommanded[dataIndex];
 				}

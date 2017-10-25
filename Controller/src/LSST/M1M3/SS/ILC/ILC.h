@@ -12,9 +12,6 @@
 #include <ILCDataTypes.h>
 #include <ILCSubnetData.h>
 #include <ModbusBuffer.h>
-#include <ILCApplicationSettings.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <HardpointActuatorApplicationSettings.h>
 #include <ILCMessageFactory.h>
 #include <SetADCChanneOffsetAndSensitivityBusList.h>
 #include <ChangeILCModeBusList.h>
@@ -49,6 +46,11 @@ namespace SS {
 class IPublisher;
 class IFPGA;
 class IBusList;
+class ILCApplicationSettings;
+class ForceActuatorApplicationSettings;
+class ForceActuatorSettings;
+class HardpointActuatorApplicationSettings;
+class HardpointActuatorSettings;
 
 /*!
  * The ILC class used to communicate with the M1M3's 5 subnets.
@@ -57,11 +59,9 @@ class ILC: public IILC {
 private:
 	IPublisher* publisher;
 	IFPGA* fpga;
-
-	ILCApplicationSettings* ilcApplicationSettings;
-
 	ILCSubnetData subnetData;
 	ILCMessageFactory ilcMessageFactory;
+	ILCResponseParser responseParser;
 
 	SetADCChanneOffsetAndSensitivityBusList busListSetADCChannelOffsetAndSensitivity;
 	SetADCScanRateBusList busListSetADCScanRate;
@@ -86,14 +86,8 @@ private:
 	uint16_t u16Buffer[1];
 	ModbusBuffer rxBuffer;
 
-	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo;
-	m1m3_logevent_ForceActuatorInfoC* forceInfo;
-
-	ILCResponseParser responseParser;
-
-
 public:
-	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings);
+	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings);
 	virtual ~ILC();
 
 	void writeCalibrationDataBuffer();

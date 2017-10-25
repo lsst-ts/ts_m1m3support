@@ -19,16 +19,21 @@ namespace SS {
 
 class ISettingReader;
 class ForceCalculator;
+class ForceActuatorApplicationSettings;
+class ForceActuatorSettings;
+class HardpointActuatorApplicationSettings;
+class HardpointActuatorSettings;
 
 class Model : public IModel {
 private:
 	ISettingReader* settingReader;
 	IPublisher* publisher;
 	IFPGA* fpga;
-	IRS232* rs232;
+	IDisplacement* displacement;
+	IInclinometer* inclinometer;
 	IILC* ilc;
 	IAirController* airController;
-	ForceCalculator* forceCalculator;
+	IForceController* forceController;
 
 	pthread_mutex_t mutex;
 
@@ -39,10 +44,11 @@ public:
 	ISettingReader* getSettingReader() { return this->settingReader; }
 	IPublisher* getPublisher() { return this->publisher; }
 	IFPGA* getFPGA() { return this->fpga; }
-	IRS232* getRS232() { return this->rs232; }
+	IDisplacement* getDisplacement() { return this->displacement; }
+	IInclinometer* getInclinometer() { return this->inclinometer; }
 	IILC* getILC() { return this->ilc; }
 	IAirController* getAirController() { return this->airController; }
-	ForceCalculator* getForceCalculator() { return this->forceCalculator; }
+	IForceController* getForceController() { return this->forceController; }
 
 	void loadSettings(std::string settingsToApply);
 
@@ -54,6 +60,10 @@ public:
 
 	void shutdown();
 	void waitForShutdown();
+
+private:
+	void populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+	void populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings);
 };
 
 } /* namespace SS */

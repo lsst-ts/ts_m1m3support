@@ -8,6 +8,7 @@
 #ifndef DISPLACEMENT_H_
 #define DISPLACEMENT_H_
 
+#include <IDisplacement.h>
 #include <DataTypes.h>
 
 struct m1m3_IMSDataC;
@@ -20,7 +21,7 @@ namespace SS {
 class IPublisher;
 class IFPGA;
 
-class Displacement {
+class Displacement: public IDisplacement {
 private:
 	IPublisher* publisher;
 	IFPGA* fpga;

@@ -30,7 +30,6 @@ protected:
 	int32_t subnetStartIndex;
 
 public:
-	BusList();
 	BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
 	int32_t getLength() { return this->buffer.getLength(); }

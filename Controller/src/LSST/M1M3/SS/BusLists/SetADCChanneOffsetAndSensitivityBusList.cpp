@@ -17,13 +17,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList() : BusList() {
-	this->forceInfo = 0;
-	this->hardpointInfo = 0;
-}
-
 SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_HardpointActuatorInfoC* hardpointInfo)
-: BusList(subnetData, ilcMessageFactory) {
+ : BusList(subnetData, ilcMessageFactory) {
 	this->forceInfo = forceInfo;
 	this->hardpointInfo = hardpointInfo;
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; ++subnetIndex) {

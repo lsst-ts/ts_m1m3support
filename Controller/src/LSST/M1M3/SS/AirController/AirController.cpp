@@ -7,9 +7,9 @@
 
 #include <AirController.h>
 #include <IPublisher.h>
-#include <SAL_m1m3C.h>
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
+#include <SAL_m1m3C.h>
 #include <cstring>
 
 namespace LSST {

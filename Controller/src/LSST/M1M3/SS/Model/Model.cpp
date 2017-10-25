@@ -8,7 +8,8 @@
 #include <Model.h>
 #include <ISettingReader.h>
 #include <IPublisher.h>
-#include <RS232.h>
+#include <Displacement.h>
+#include <Inclinometer.h>
 #include <ILC.h>
 #include <Timestamp.h>
 #include <ILCApplicationSettings.h>
@@ -16,7 +17,9 @@
 #include <iostream>
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
-#include <ForceCalculator.h>
+#include <ForceController.h>
+#include <RecommendedApplicationSettings.h>
+#include <ForceActuatorSettings.h>
 
 using namespace std;
 
@@ -28,10 +31,11 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->settingReader = settingReader;
 	this->publisher = publisher;
 	this->fpga = fpga;
-	this->rs232 = 0;
+	this->displacement = 0;
+	this->inclinometer = 0;
 	this->ilc = 0;
 	this->airController = 0;
-	this->forceCalculator = 0;
+	this->forceController = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
 }
@@ -39,8 +43,11 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 Model::~Model() {
 	pthread_mutex_unlock(&this->mutex);
 	pthread_mutex_destroy(&this->mutex);
-	if (this->rs232) {
-		delete this->rs232;
+	if (this->displacement) {
+		delete this->displacement;
+	}
+	if (this->inclinometer) {
+		delete this->inclinometer;
 	}
 	if (this->ilc) {
 		delete this->ilc;
@@ -48,29 +55,48 @@ Model::~Model() {
 	if (this->airController) {
 		delete this->airController;
 	}
-	if (this->forceCalculator) {
-		delete this->forceCalculator;
+	if (this->forceController) {
+		delete this->forceController;
 	}
 }
 
 void Model::loadSettings(std::string settingsToApply) {
 	this->settingReader->configure(settingsToApply);
-	if (this->rs232) {
-		delete this->rs232;
-	}
-	this->rs232 = new RS232(this->fpga, this->publisher);
+
 	ILCApplicationSettings* ilcApplicationSettings = this->settingReader->loadILCApplicationSettings();
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings = this->settingReader->loadForceActuatorApplicationSettings();
+	ForceActuatorSettings* forceActuatorSettings = this->settingReader->loadForceActuatorSettings();
 	HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings = this->settingReader->loadHardpointActuatorApplicationSettings();
+	HardpointActuatorSettings* hardpointActuatorSettings = this->settingReader->loadHardpointActuatorSettings();
+
+	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
+	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
+
+	if (this->displacement) {
+		delete this->displacement;
+	}
+	this->displacement = new Displacement(this->publisher, this->fpga);
+
+	if (this->inclinometer) {
+		delete this->inclinometer;
+	}
+	this->inclinometer = new Inclinometer(this->publisher, this->fpga);
+
 	if (this->ilc) {
 		delete this->ilc;
 	}
-	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, hardpointActuatorApplicationSettings);
+	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings);
+
+	if (this->forceController) {
+		delete this->forceController;
+	}
+	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher->getEventForceActuatorInfo(), this->publisher->getInclinometerData(), this->publisher->getForceActuatorData());
+
 	if (this->airController) {
 		delete this->airController;
 	}
 	this->airController = new AirController(this->publisher, this->fpga);
-	this->forceCalculator = new ForceCalculator(forceActuatorApplicationSettings, this->publisher->getEventForceActuatorInfo(), this->publisher->getInclinometerData(), this->publisher->getForceActuatorData());
+
 }
 
 void Model::queryFPGAData() {
@@ -112,6 +138,43 @@ void Model::shutdown() {
 void Model::waitForShutdown() {
 	pthread_mutex_lock(&this->mutex);
 	pthread_mutex_unlock(&this->mutex);
+}
+
+void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings) {
+	m1m3_logevent_ForceActuatorInfoC* forceInfo = this->publisher->getEventForceActuatorInfo();
+	for(int i = 0; i < FA_COUNT; i++) {
+		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
+		forceInfo->ReferenceId[row.Index] = row.ActuatorID;
+		forceInfo->ModbusSubnet[row.Index] = row.Subnet;
+		forceInfo->ModbusAddress[row.Index] = row.Address;
+		forceInfo->ActuatorType[row.Index] = row.Type;
+		forceInfo->ActuatorOrientation[row.Index] = row.Orientation;
+		forceInfo->XPosition[row.Index] = row.XPosition;
+		forceInfo->YPosition[row.Index] = row.YPosition;
+		forceInfo->ZPosition[row.Index] = row.ZPosition;
+		forceInfo->PrimaryCylinderSensorOffset[row.Index] = row.PrimaryAxisSensorOffset;
+		forceInfo->PrimaryCylinderSensorSensitivity[row.Index] = row.PrimaryAxisSensorSensitivity;
+		forceInfo->SecondaryCylinderSensorOffset[row.Index] = row.SecondaryAxisSensorOffset;
+		forceInfo->SecondaryCylinderSensorSensitivity[row.Index] = row.SecondaryAxisSensorSensitivity;
+		forceInfo->StaticXSetpoint[row.Index] = forceActuatorSettings->StaticXForces[row.Index];
+		forceInfo->StaticYSetpoint[row.Index] = forceActuatorSettings->StaticYForces[row.Index];
+		forceInfo->StaticZSetpoint[row.Index] = forceActuatorSettings->StaticZForces[row.Index];
+	}
+}
+
+void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings) {
+	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
+	for(int i = 0; i < HP_COUNT; i++) {
+		HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
+		hardpointInfo->ReferenceId[row.Index] = row.ActuatorID;
+		hardpointInfo->ModbusSubnet[row.Index] = row.Subnet;
+		hardpointInfo->ModbusAddress[row.Index] = row.Address;
+		hardpointInfo->XPosition[row.Index] = row.XPosition;
+		hardpointInfo->YPosition[row.Index] = row.YPosition;
+		hardpointInfo->ZPosition[row.Index] = row.ZPosition;
+		hardpointInfo->SensorOffset[row.Index] = row.SensorOffset;
+		hardpointInfo->SensorSensitivity[row.Index] = row.SensorSensitivity;
+	}
 }
 
 } /* namespace SS */

@@ -34,7 +34,7 @@ ILCResponseParser::ILCResponseParser() {
 ILCResponseParser::ILCResponseParser(IPublisher* publisher, ILCSubnetData* subnetData) {
 	this->publisher = publisher;
 	this->subnetData = subnetData;
-	this->hardpointInfo = this->publisher->getEventHardpoingActuatorInfo();
+	this->hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
 	this->hardpointStatus = this->publisher->getHardpointStatus();
 	this->hardpointData = this->publisher->getHardpointData();
 	this->forceInfo = this->publisher->getEventForceActuatorInfo();

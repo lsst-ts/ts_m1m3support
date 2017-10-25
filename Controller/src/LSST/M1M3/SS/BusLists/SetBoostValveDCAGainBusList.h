@@ -21,7 +21,6 @@ private:
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
 
 public:
-	SetBoostValveDCAGainBusList();
 	SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo);
 };
 

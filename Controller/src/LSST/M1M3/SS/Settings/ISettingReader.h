@@ -8,15 +8,19 @@
 #ifndef ISETTINGREADER_H_
 #define ISETTINGREADER_H_
 
-#include <AliasApplicationSettings.h>
-#include <RecommendedApplicationSettings.h>
-#include <ILCApplicationSettings.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <HardpointActuatorApplicationSettings.h>
+#include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+
+class AliasApplicationSettings;
+class RecommendedApplicationSettings;
+class ILCApplicationSettings;
+class ForceActuatorApplicationSettings;
+class ForceActuatorSettings;
+class HardpointActuatorApplicationSettings;
+class HardpointActuatorSettings;
 
 class ISettingReader {
 public:
@@ -24,10 +28,12 @@ public:
 
 	virtual void configure(std::string settingsToApply);
 	virtual AliasApplicationSettings* loadAliasApplicationSettings();
-	virtual RecommendedApplicationSettings* loadRecommendedApplicationSettings();
-	virtual ILCApplicationSettings* loadILCApplicationSettings();
 	virtual ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
+	virtual ForceActuatorSettings* loadForceActuatorSettings();
 	virtual HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
+	virtual HardpointActuatorSettings* loadHardpointActuatorSettings();
+	virtual ILCApplicationSettings* loadILCApplicationSettings();
+	virtual RecommendedApplicationSettings* loadRecommendedApplicationSettings();
 };
 
 } /* namespace SS */
