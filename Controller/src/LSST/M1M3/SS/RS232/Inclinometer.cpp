@@ -12,6 +12,7 @@
 #include <U8ArrayUtilities.h>
 #include <CRC.h>
 #include <Timestamp.h>
+#include <SAL_m1m3C.h>
 #include <FPGAAddresses.h>
 #include <cstring>
 #include <iostream>
@@ -25,9 +26,13 @@ namespace SS {
 Inclinometer::Inclinometer(IPublisher* publisher, IFPGA* fpga) {
 	this->fpga = fpga;
 	this->publisher = publisher;
+	this->inclinometerData = this->publisher->getInclinometerData();
+	this->inclinometerWarning = this->publisher->getEventInclinometerSensorWarning();
+
+	memset(this->inclinometerData, 0, sizeof(m1m3_InclinometerDataC));
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+
 	this->createTxBuffer();
-	memset(&this->inclinometerData, 0, sizeof(m1m3_InclinometerDataC));
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
 }
 
 void Inclinometer::writeDataRequest() {
@@ -57,9 +62,9 @@ void Inclinometer::readDataResponse() {
 								((uint32_t)this->rxBuffer[12]) |
 								((uint32_t)this->rxBuffer[13] << 24) |
 								((uint32_t)this->rxBuffer[14] << 16);
-						this->inclinometerData.Timestamp = timestamp;
-						this->inclinometerData.InclinometerAngle = angle / 1000.0;
-						this->publisher->putInclinometerData(&this->inclinometerData);
+						this->inclinometerData->Timestamp = timestamp;
+						this->inclinometerData->InclinometerAngle = angle / 1000.0;
+						this->publisher->putInclinometerData();
 						this->clearWarning(timestamp);
 					}
 					else {
@@ -104,75 +109,75 @@ void Inclinometer::createTxBuffer() {
 }
 
 void Inclinometer::clearWarning(double timestamp) {
-	if (this->inclinometerWarning.AnyWarning) {
-		memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-		this->inclinometerWarning.Timestamp = timestamp;
-		this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	if (this->inclinometerWarning->AnyWarning) {
+		memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+		this->inclinometerWarning->Timestamp = timestamp;
+		this->publisher->logInclinometerSensorWarning();
 	}
 }
 
 void Inclinometer::warnResponseTimeout(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.ResponseTimeout = true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->ResponseTimeout = true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 void Inclinometer::warnInvalidCRC(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.InvalidCRC = true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->InvalidCRC = true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 void Inclinometer::warnUnknownAddress(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.UnknownAddress = true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->UnknownAddress = true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 void Inclinometer::warnUnknownFunction(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.UnknownFunction= true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->UnknownFunction= true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 void Inclinometer::warnInvalidLength(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.InvalidLength = true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->InvalidLength = true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 void Inclinometer::warnInvalidRegister(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.SensorReportsIllegalDataAddress = true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->SensorReportsIllegalDataAddress = true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 void Inclinometer::warnInvalidFunction(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.SensorReportsIllegalFunction = true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->SensorReportsIllegalFunction = true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 void Inclinometer::warnUnknownProblem(double timestamp) {
-	memset(&this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
-	this->inclinometerWarning.Timestamp = timestamp;
-	this->inclinometerWarning.AnyWarning = true;
-	this->inclinometerWarning.UnknownProblem = true;
-	this->publisher->logInclinometerSensorWarning(&this->inclinometerWarning);
+	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
+	this->inclinometerWarning->Timestamp = timestamp;
+	this->inclinometerWarning->AnyWarning = true;
+	this->inclinometerWarning->UnknownProblem = true;
+	this->publisher->logInclinometerSensorWarning();
 }
 
 } /* namespace SS */

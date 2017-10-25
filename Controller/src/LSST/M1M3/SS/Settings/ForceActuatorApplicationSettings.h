@@ -49,10 +49,16 @@ struct ForceActuatorTableRow {
 	float SecondaryAxisSensorSensitivity;
 };
 
+struct ForceMatrix {
+	std::vector<double> X;
+	std::vector<double> Y;
+	std::vector<double> Z;
+};
+
 class ForceActuatorApplicationSettings {
 public:
 	ForceActuatorTableRow Table[156];
-	std::vector<double> StaticForces;
+	ForceMatrix StaticForces;
 	std::vector<double> ElevationXAxisCoefficients;
 	std::vector<double> ElevationYAxisCoefficients;
 	std::vector<double> ElevationZAxisCoefficients;
@@ -83,7 +89,10 @@ public:
 
 private:
 	void loadForceActuatorTable(const std::string &filename);
+	void loadStaticForceTable(const std::string &filename);
 	void loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<double>* data, const std::string &filename);
+
+	void zeroTable(int items, std::vector<double>* data);
 };
 
 } /* namespace SS */

@@ -14,6 +14,7 @@
 #include <DisabledState.h>
 #include <EnabledState.h>
 #include <ParkedEngineeringState.h>
+#include <ActiveEngineeringState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -26,6 +27,7 @@ private:
 	DisabledState disabledState;
 	EnabledState enabledState;
 	ParkedEngineeringState parkedEngineeringState;
+	ActiveEngineeringState activeEngineeringState;
 
 public:
 	virtual IState* create(States::Type state);

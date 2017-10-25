@@ -10,7 +10,9 @@
 
 #include <IAirController.h>
 #include <DataTypes.h>
-#include <SAL_m1m3C.h>
+
+struct m1m3_logevent_AirSupplyStatusC;
+struct m1m3_logevent_AirSupplyWarningC;
 
 namespace LSST {
 namespace M1M3 {
@@ -31,8 +33,8 @@ private:
 	uint16_t turnAirOffBuffer[2];
 	uint16_t statusBuffer[1];
 
-	m1m3_logevent_AirSupplyStatusC airSupplyStatus;
-	m1m3_logevent_AirSupplyWarningC airSupplyWarning;
+	m1m3_logevent_AirSupplyStatusC* airSupplyStatus;
+	m1m3_logevent_AirSupplyWarningC* airSupplyWarning;
 
 	bool airCommandedOnChanged;
 	bool forcePublishAirSupplyWarning;
@@ -40,17 +42,9 @@ private:
 public:
 	AirController(IPublisher* publisher, IFPGA* fpga);
 
-	/*!
-	 * Turns the air on in the cell.
-	 */
 	void turnAirOn();
-	/*!
-	 * Turns the air off in the cell.
-	 */
 	void turnAirOff();
-	/*!
-	 * Checks the air status.
-	 */
+
 	void checkStatus();
 
 private:

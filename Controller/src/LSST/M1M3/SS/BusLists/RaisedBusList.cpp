@@ -121,17 +121,17 @@ void RaisedBusList::update() {
 			this->buffer.setIndex(this->setForceCommandIndex[subnetIndex]);
 			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->BroadcastCounter, this->outerLoopData->SlewFlag, saaPrimary, daaPrimary, daaSecondary);
 
-			int32_t roundRobinFAIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
-			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, roundRobinFAIndex).DataIndex;
+			int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
 			this->expectedFAResponses[dataIndex] = 1;
-			this->roundRobinFAReportServerStatusIndex[subnetIndex] = RoundRobin::Inc(roundRobinFAIndex, this->subnetData->getFACount(subnetIndex));
-			roundRobinFAIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
-			uint8_t address = this->subnetData->getFAIndex(subnetIndex, roundRobinFAIndex).DataIndex;
-			dataIndex = this->subnetData->getFAIndex(subnetIndex, roundRobinFAIndex).DataIndex;
-			this->expectedFAResponses[dataIndex] = 2;
+			this->roundRobinFAReportServerStatusIndex[subnetIndex] = RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
+			statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+			uint8_t address = this->subnetData->getFAIndex(subnetIndex, statusIndex).Address;
+			dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
 
 			this->buffer.setIndex(this->faStatusCommandIndex[subnetIndex]);
 			this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
+			this->expectedFAResponses[dataIndex] = 2;
 		}
 		if (this->subnetData->getHPCount(subnetIndex) > 0) {
 			int8_t steps[78];

@@ -11,6 +11,9 @@
 #include <DataTypes.h>
 #include <SAL_m1m3C.h>
 
+struct m1m3_InclinometerDataC;
+struct m1m3_logevent_InclinometerSensorWarningC;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -22,12 +25,11 @@ class Inclinometer {
 private:
 	IPublisher* publisher;
 	IFPGA* fpga;
+	m1m3_InclinometerDataC* inclinometerData;
+	m1m3_logevent_InclinometerSensorWarningC* inclinometerWarning;
 
 	uint16_t txBuffer[32];
 	uint8_t rxBuffer[32];
-
-	m1m3_logevent_InclinometerSensorWarningC inclinometerWarning;
-	m1m3_InclinometerDataC inclinometerData;
 
 public:
 	Inclinometer(IPublisher* publisher, IFPGA* fpga);

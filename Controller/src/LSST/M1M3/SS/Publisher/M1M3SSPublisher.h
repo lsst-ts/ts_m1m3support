@@ -9,6 +9,7 @@
 #define M1M3SSPUBLISHER_H_
 
 #include <IPublisher.h>
+#include <SAL_m1m3C.h>
 
 class SAL_m1m3;
 
@@ -20,33 +21,64 @@ class M1M3SSPublisher : public IPublisher {
 private:
 	SAL_m1m3* m1m3SAL;
 
+	m1m3_ForceActuatorDataC forceActuatorData;
+	m1m3_ForceActuatorStatusC forceActuatorStatus;
+	m1m3_HardpointDataC hardpointData;
+	m1m3_HardpointStatusC hardpointStatus;
+	m1m3_IMSDataC imsData;
+	m1m3_InclinometerDataC inclinometerData;
 	m1m3_OuterLoopDataC outerLoopData;
+
+	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
+	m1m3_logevent_AirSupplyWarningC eventAirSupplyWarning;
+	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
+	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
+	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
+	m1m3_logevent_ILCWarningC eventILCWarning;
+	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
+	m1m3_logevent_SettingVersionsC eventSettingVersions;
+	m1m3_logevent_SummaryStateC eventSummaryState;
 
 public:
 	M1M3SSPublisher(SAL_m1m3* m1m3SAL);
 
+	m1m3_ForceActuatorDataC* getForceActuatorData() { return &this->forceActuatorData; }
+	m1m3_ForceActuatorStatusC* getForceActuatorStatus() { return &this->forceActuatorStatus; }
+	m1m3_HardpointDataC* getHardpointData() { return &this->hardpointData; }
+	m1m3_HardpointStatusC* getHardpointStatus() { return &this->hardpointStatus; }
+	m1m3_IMSDataC* getIMSData() { return &this->imsData; }
+	m1m3_InclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
 	m1m3_OuterLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
+
+	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
+	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
+	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
+	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
+	m1m3_logevent_HardpointActuatorInfoC* getEventHardpoingActuatorInfo() { return &this->eventHardpointActuatorInfo; }
+	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
+	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
+	m1m3_logevent_SettingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
+	m1m3_logevent_SummaryStateC* getEventSummaryState() { return &this->eventSummaryState; }
 
 	double getTimestamp();
 
-	void putInclinometerData(m1m3_InclinometerDataC* data);
-	void putIMSData(m1m3_IMSDataC* data);
+	void putForceActuatorData();
+	void putForceActuatorStatus();
+	void putHardpointData();
+	void putHardpointStatus();
+	void putIMSData();
+	void putInclinometerData();
+	void putOuterLoopData();
 
-	void logStateChange(m1m3_logevent_SummaryStateC* data);
-	void logSettingVersions(m1m3_logevent_SettingVersionsC* data);
-
-	void logInclinometerSensorWarning(m1m3_logevent_InclinometerSensorWarningC* data);
-	void logDisplacementSensorWarning(m1m3_logevent_DisplacementSensorWarningC* data);
-
-	void logILCWarning(m1m3_logevent_ILCWarningC* data);
-
-	void logAirSupplyStatus(m1m3_logevent_AirSupplyStatusC* data);
-	void logAirSupplyWarning(m1m3_logevent_AirSupplyWarningC* data);
-
-	void putForceActuatorStatus(m1m3_ForceActuatorStatusC* data);
-	void putForceActuatorData(m1m3_ForceActuatorDataC* data);
-	void putHardpointStatus(m1m3_HardpointStatusC* data);
-	void putHardpointData(m1m3_HardpointDataC* data);
+	void logAirSupplyStatus();
+	void logAirSupplyWarning();
+	void logDisplacementSensorWarning();
+	void logForceActuatorInfo();
+	void logHardpointActuatorInfo();
+	void logILCWarning();
+	void logInclinometerSensorWarning();
+	void logSettingVersions();
+	void logSummaryState();
 
 	void ackCommandStart(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandEnable(int32_t commandID, int32_t ackCode, std::string description);
@@ -55,6 +87,10 @@ public:
 	void ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

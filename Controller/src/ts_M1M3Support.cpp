@@ -24,6 +24,7 @@
 #include <SAL_m1m3.h>
 #include <Timestamp.h>
 #include <FPGAAddresses.h>
+#include <cstring>
 
 using namespace std;
 using namespace LSST::M1M3::SS;

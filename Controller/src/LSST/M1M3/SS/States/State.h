@@ -25,6 +25,10 @@ public:
 	virtual States::Type update(UpdateCommand* command, IModel* model);
 	virtual States::Type turnAirOn(TurnAirOnCommand* command, IModel* model);
 	virtual States::Type turnAirOff(TurnAirOffCommand* command, IModel* model);
+	virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model);
+	virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
+	virtual States::Type raiseM1M3(RaiseM1M3Command* command, IModel* model);
+	virtual States::Type lowerM1M3(LowerM1M3Command* command, IModel* model);
 };
 
 } /* namespace SS */

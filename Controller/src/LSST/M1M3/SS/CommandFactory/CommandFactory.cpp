@@ -15,6 +15,10 @@
 #include <ShutdownCommand.h>
 #include <TurnAirOnCommand.h>
 #include <TurnAirOffCommand.h>
+#include <ApplyOffsetForcesCommand.h>
+#include <ClearOffsetForcesCommand.h>
+#include <RaiseM1M3Command.h>
+#include <LowerM1M3Command.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -37,6 +41,10 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	case Commands::ShutdownCommand: return new ShutdownCommand(this->context, this->publisher, commandID, (m1m3_command_ShutdownC*)data);
 	case Commands::TurnAirOnCommand: return new TurnAirOnCommand(this->context, this->publisher, commandID, (m1m3_command_TurnAirOnC*)data);
 	case Commands::TurnAirOffCommand: return new TurnAirOffCommand(this->context, this->publisher, commandID, (m1m3_command_TurnAirOffC*)data);
+	case Commands::ApplyOffsetForcesCommand: return new ApplyOffsetForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyOffsetForcesC*)data);
+	case Commands::ClearOffsetForcesCommand: return new ClearOffsetForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ClearOffsetForcesC*)data);
+	case Commands::RaiseM1M3Command: return new RaiseM1M3Command(this->context, this->publisher, commandID, (m1m3_command_RaiseM1M3C*)data);
+	case Commands::LowerM1M3Command: return new LowerM1M3Command(this->context, this->publisher, commandID, (m1m3_command_LowerM1M3C*)data);
 	}
 	return 0;
 }
