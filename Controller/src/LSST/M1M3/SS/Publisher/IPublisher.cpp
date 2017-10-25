@@ -60,6 +60,8 @@ void IPublisher::ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::st
 void IPublisher::ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

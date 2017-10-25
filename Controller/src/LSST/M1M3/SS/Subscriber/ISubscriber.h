@@ -27,6 +27,8 @@ public:
 	virtual ICommand* tryAcceptCommandTurnAirOff();
 	virtual ICommand* tryAcceptCommandApplyOffsetForces();
 	virtual ICommand* tryAcceptCommandClearOffsetForces();
+	virtual ICommand* tryAcceptCommandRaiseM1M3();
+	virtual ICommand* tryAcceptCommandLowerM1M3();
 };
 
 } /* namespace SS */

@@ -40,6 +40,8 @@ void M1M3SSSubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnAirOff());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyOffsetForces());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearOffsetForces());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandRaiseM1M3());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandLowerM1M3());
 		usleep(100);
 	}
 }

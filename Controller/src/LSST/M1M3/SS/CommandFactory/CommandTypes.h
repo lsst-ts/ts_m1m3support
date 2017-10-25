@@ -28,6 +28,8 @@ struct Commands {
 		TurnAirOffCommand = 8,
 		ApplyOffsetForcesCommand = 9,
 		ClearOffsetForcesCommand = 10,
+		RaiseM1M3Command = 11,
+		LowerM1M3Command = 12,
 	};
 };
 

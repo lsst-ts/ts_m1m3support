@@ -43,6 +43,7 @@ private:
 public:
 	ForceCalculator(ForceActuatorApplicationSettings* forceActuatorSettings, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_InclinometerDataC* inclinometerData, m1m3_ForceActuatorDataC* forceData);
 
+	void updateAppliedForces();
 	void processAppliedForces();
 
 	void applyStaticForces();

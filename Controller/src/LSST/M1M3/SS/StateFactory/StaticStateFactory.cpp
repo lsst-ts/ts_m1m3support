@@ -18,6 +18,7 @@ IState* StaticStateFactory::create(States::Type state) {
 	case States::DisabledState: return &this->disabledState;
 	case States::EnabledState: return &this->enabledState;
 	case States::ParkedEngineeringState: return &this->parkedEngineeringState;
+	case States::ActiveEngineeringState: return &this->activeEngineeringState;
 	default: return 0;
 	}
 }

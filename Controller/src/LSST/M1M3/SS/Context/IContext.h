@@ -23,6 +23,8 @@ class TurnAirOnCommand;
 class TurnAirOffCommand;
 class ApplyOffsetForcesCommand;
 class ClearOffsetForcesCommand;
+class RaiseM1M3Command;
+class LowerM1M3Command;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -86,6 +88,16 @@ public:
 	 * @param[in] command The clear offset forces command to execute.
 	 */
 	virtual void clearOffsetForces(ClearOffsetForcesCommand* command);
+	/*!
+	 * Executes the command to raise M1M3.
+	 * @param[in] command The raise M1M3 command to execute.
+	 */
+	virtual void raiseM1M3(RaiseM1M3Command* command);
+	/*!
+	 * Executes the command to lower M1M3.
+	 * @param[in] command The lower M1M3 command to execute.
+	 */
+	virtual void lowerM1M3(LowerM1M3Command* command);
 };
 
 } /* namespace SS */

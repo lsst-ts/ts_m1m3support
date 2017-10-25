@@ -25,6 +25,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFa
 	this->m1m3SAL->salProcessor("m1m3_command_TurnAirOff");
 	this->m1m3SAL->salProcessor("m1m3_command_ApplyOffsetForces");
 	this->m1m3SAL->salProcessor("m1m3_command_ClearOffsetForces");
+	this->m1m3SAL->salProcessor("m1m3_command_RaiseM1M3");
+	this->m1m3SAL->salProcessor("m1m3_command_LowerM1M3");
 }
 
 ICommand* M1M3SSSubscriber::tryAcceptCommandStart() {
@@ -95,6 +97,22 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandClearOffsetForces() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_ClearOffsetForces(&this->clearOffsetForcesData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::ClearOffsetForcesCommand, &this->clearOffsetForcesData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandRaiseM1M3() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_RaiseM1M3(&this->raiseM1M3Data);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::RaiseM1M3Command, &this->raiseM1M3Data, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandLowerM1M3() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_LowerM1M3(&this->lowerM1M3Data);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::LowerM1M3Command, &this->lowerM1M3Data, commandID);
 	}
 	return 0;
 }

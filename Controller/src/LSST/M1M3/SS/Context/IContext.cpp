@@ -14,26 +14,18 @@ namespace SS {
 IContext::~IContext() { }
 
 void IContext::boot(BootCommand* command) { }
-
 void IContext::start(StartCommand* command) { }
-
 void IContext::enable(EnableCommand* command) { }
-
 void IContext::disable(DisableCommand* command) { }
-
 void IContext::standby(StandbyCommand* command) { }
-
 void IContext::shutdown(ShutdownCommand* command) { }
-
 void IContext::update(UpdateCommand* command) { }
-
 void IContext::turnAirOn(TurnAirOnCommand* command) { }
-
 void IContext::turnAirOff(TurnAirOffCommand* command) { }
-
 void IContext::applyOffsetForces(ApplyOffsetForcesCommand* command) { }
-
 void IContext::clearOffsetForces(ClearOffsetForcesCommand* command) { }
+void IContext::raiseM1M3(RaiseM1M3Command* command) { }
+void IContext::lowerM1M3(LowerM1M3Command* command) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

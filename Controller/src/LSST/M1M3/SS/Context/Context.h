@@ -46,6 +46,8 @@ public:
 	void turnAirOff(TurnAirOffCommand* command);
 	void applyOffsetForces(ApplyOffsetForcesCommand* command);
 	void clearOffsetForces(ClearOffsetForcesCommand* command);
+	void raiseM1M3(RaiseM1M3Command* command);
+	void lowerM1M3(LowerM1M3Command* command);
 };
 
 } /* namespace SS */

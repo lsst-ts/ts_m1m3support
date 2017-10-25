@@ -89,6 +89,8 @@ public:
 	void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

@@ -23,12 +23,18 @@ ForceCalculator::ForceCalculator(ForceActuatorApplicationSettings* forceActuator
 	this->applyingStaticForces = false;
 	this->applyingOffsetForces = false;
 	this->applyingElevationForces = false;
+	this->zeroStaticForces();
+	this->zeroOffsetForces();
+	this->zeroElevationForces();
 }
 
-void ForceCalculator::processAppliedForces() {
+void ForceCalculator::updateAppliedForces() {
 	if (this->applyingElevationForces) {
 		this->updateElevationForces();
 	}
+}
+
+void ForceCalculator::processAppliedForces() {
 	this->sumAllForces();
 	this->convertForcesToSetpoints();
 }

@@ -26,6 +26,8 @@ class TurnAirOnCommand;
 class TurnAirOffCommand;
 class ApplyOffsetForcesCommand;
 class ClearOffsetForcesCommand;
+class RaiseM1M3Command;
+class LowerM1M3Command;
 
 class IState {
 public:
@@ -42,6 +44,8 @@ public:
 	virtual States::Type turnAirOff(TurnAirOffCommand* command, IModel* model);
 	virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model);
 	virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
+	virtual States::Type raiseM1M3(RaiseM1M3Command* command, IModel* model);
+	virtual States::Type lowerM1M3(LowerM1M3Command* command, IModel* model);
 };
 
 } /* namespace SS */

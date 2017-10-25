@@ -25,7 +25,7 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* mo
 }
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
-	model->getILC()->writeRaisedListBuffer();
+	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
 	model->getRS232()->writeDisplacementRequest();
 	model->getRS232()->writeInclinometerRequest();
@@ -43,7 +43,6 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* mode
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
-	model->getForceCalculator()->processAppliedForces();
 	return States::Ignore;
 }
 
@@ -57,14 +56,11 @@ States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, IMod
 	return States::Ignore;
 }
 
-States::Type ParkedEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model) {
-	model->getForceCalculator()->applyOffsetForces(command->getData()->XForces, command->getData()->YForces, command->getData()->ZForces);
-	return States::Ignore;
-}
-
-States::Type ParkedEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model) {
-	model->getForceCalculator()->zeroOffsetForces();
-	return States::Ignore;
+States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
+	States::Type newState = States::ActiveEngineeringState;
+	model->getForceCalculator()->applyElevationForces();
+	model->publishStateChange(newState);
+	return newState;
 }
 
 } /* namespace SS */
