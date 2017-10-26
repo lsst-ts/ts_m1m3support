@@ -8,7 +8,8 @@
 #include <DisabledState.h>
 #include <SAL_m1m3C.h>
 #include <IModel.h>
-#include <IRS232.h>
+#include <IDisplacement.h>
+#include <IInclinometer.h>
 #include <unistd.h>
 #include <IPublisher.h>
 #include <IILC.h>
@@ -42,12 +43,12 @@ States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
 States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
-	model->getRS232()->writeDisplacementRequest();
-	model->getRS232()->writeInclinometerRequest();
+	model->getDisplacement()->writeDataRequest();
+	model->getInclinometer()->writeDataRequest();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
-	model->getRS232()->readDisplacementResponse();
-	model->getRS232()->readInclinometerResponse();
+	model->getDisplacement()->readDataResponse();
+	model->getInclinometer()->readDataResponse();
 	model->getILC()->verifyResponses();
 	usleep(50000);
 	model->queryFPGAData();

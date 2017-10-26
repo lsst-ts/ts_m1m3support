@@ -9,6 +9,9 @@
 #include <IPublisher.h>
 #include <IFPGA.h>
 #include <DataTypes.h>
+#include <ILCApplicationSettings.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <HardpointActuatorApplicationSettings.h>
 #include <iostream>
 #include <unistd.h>
 #include <FPGAAddresses.h>
@@ -29,59 +32,28 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILC::ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings)
+ILC::ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings)
  : subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings),
-   ilcMessageFactory(ilcApplicationSettings) {
+   ilcMessageFactory(ilcApplicationSettings),
+   responseParser(publisher, &this->subnetData),
+   busListSetADCChannelOffsetAndSensitivity(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
+   busListSetADCScanRate(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
+   busListSetBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo()),
+   busListReset(&this->subnetData, &this->ilcMessageFactory),
+   busListReportServerID(&this->subnetData, &this->ilcMessageFactory),
+   busListReportServerStatus(&this->subnetData, &this->ilcMessageFactory),
+   busListReportADCScanRate(&this->subnetData, &this->ilcMessageFactory),
+   busListReadCalibration(&this->subnetData, &this->ilcMessageFactory),
+   busListReadBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory),
+   busListReportDCAID(&this->subnetData, &this->ilcMessageFactory),
+   busListReportDCAStatus(&this->subnetData, &this->ilcMessageFactory),
+   busListChangeILCModeDisabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Disabled),
+   busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled),
+   busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
+   busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
+   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointData(), publisher->getEventForceActuatorInfo()) {
 	this->publisher = publisher;
 	this->fpga = fpga;
-	this->hardpointInfo = this->publisher->getEventHardpoingActuatorInfo();
-	this->forceInfo = this->publisher->getEventForceActuatorInfo();
-
-	this->ilcApplicationSettings = ilcApplicationSettings;
-
-	for(int i = 0; i < FA_COUNT; i++) {
-		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
-		this->forceInfo->ReferenceId[row.Index] = row.ActuatorID;
-		this->forceInfo->ModbusSubnet[row.Index] = row.Subnet;
-		this->forceInfo->ModbusAddress[row.Index] = row.Address;
-		this->forceInfo->ActuatorType[row.Index] = row.Type;
-		this->forceInfo->ActuatorOrientation[row.Index] = row.Orientation;
-		this->forceInfo->XPosition[row.Index] = row.XPosition;
-		this->forceInfo->YPosition[row.Index] = row.YPosition;
-		this->forceInfo->ZPosition[row.Index] = row.ZPosition;
-		this->forceInfo->PrimaryCylinderSensorOffset[row.Index] = row.PrimaryAxisSensorOffset;
-		this->forceInfo->PrimaryCylinderSensorSensitivity[row.Index] = row.PrimaryAxisSensorSensitivity;
-		this->forceInfo->SecondaryCylinderSensorOffset[row.Index] = row.SecondaryAxisSensorOffset;
-		this->forceInfo->SecondaryCylinderSensorSensitivity[row.Index] = row.SecondaryAxisSensorSensitivity;
-	}
-	for(int i = 0; i < HP_COUNT; i++) {
-		HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
-		this->hardpointInfo->ReferenceId[row.Index] = row.ActuatorID;
-		this->hardpointInfo->ModbusSubnet[row.Index] = row.Subnet;
-		this->hardpointInfo->ModbusAddress[row.Index] = row.Address;
-		this->hardpointInfo->XPosition[row.Index] = row.XPosition;
-		this->hardpointInfo->YPosition[row.Index] = row.YPosition;
-		this->hardpointInfo->ZPosition[row.Index] = row.ZPosition;
-		this->hardpointInfo->SensorOffset[row.Index] = row.SensorOffset;
-		this->hardpointInfo->SensorSensitivity[row.Index] = row.SensorSensitivity;
-	}
-	this->responseParser = ILCResponseParser(this->publisher, &this->subnetData);
-	this->busListSetADCChannelOffsetAndSensitivity = SetADCChanneOffsetAndSensitivityBusList(&this->subnetData, &this->ilcMessageFactory, this->forceInfo, this->hardpointInfo);
-	this->busListSetADCScanRate = SetADCScanRateBusList(&this->subnetData, &this->ilcMessageFactory, this->forceInfo, this->hardpointInfo);
-	this->busListSetBoostValveDCAGains = SetBoostValveDCAGainBusList(&this->subnetData, &this->ilcMessageFactory, this->forceInfo);
-	this->busListReset = ResetBustList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListReportServerID = ReportServerIDBusList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListReportServerStatus = ReportServerStatusBusList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListReportADCScanRate = ReportADCScanRateBusList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListReadCalibration = ReadCalibrationBusList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListReadBoostValveDCAGains = ReadBoostValveDCAGainBusList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListReportDCAID = ReportDCAIDBusList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListReportDCAStatus = ReportDCAStatusBusList(&this->subnetData, &this->ilcMessageFactory);
-	this->busListChangeILCModeDisabled = ChangeILCModeBusList(&this->subnetData, &this->ilcMessageFactory, ILCModes::Disabled);
-	this->busListChangeILCModeEnabled = ChangeILCModeBusList(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled);
-	this->busListChangeILCModeStandby = ChangeILCModeBusList(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby);
-	this->busListFreezeSensor = FreezeSensorBusList(&this->subnetData, &this->ilcMessageFactory, this->publisher->getOuterLoopData());
-	this->busListRaised = RaisedBusList(&this->subnetData, &this->ilcMessageFactory, this->publisher->getOuterLoopData(), this->publisher->getForceActuatorData(), this->publisher->getHardpointData(), this->forceInfo);
 }
 
 ILC::~ILC() { }

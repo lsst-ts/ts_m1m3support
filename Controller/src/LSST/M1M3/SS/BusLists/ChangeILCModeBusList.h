@@ -18,7 +18,6 @@ namespace SS {
 
 class ChangeILCModeBusList: public BusList {
 public:
-	ChangeILCModeBusList();
 	ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode);
 };
 

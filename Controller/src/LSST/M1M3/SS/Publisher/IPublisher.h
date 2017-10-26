@@ -49,7 +49,7 @@ public:
 	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
-	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpoingActuatorInfo();
+	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
 	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
 	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
 	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();
@@ -86,6 +86,12 @@ public:
 	virtual void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAOSCorrectionByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAOSCorrectionByForces(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandClearAOSCorrection(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

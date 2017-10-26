@@ -1,11 +1,11 @@
 /*
- * M1M3SSSubscriberThread.cpp
+ * SubscriberThread.cpp
  *
  *  Created on: Sep 28, 2017
  *      Author: ccontaxis
  */
 
-#include <M1M3SSSubscriberThread.h>
+#include <SubscriberThread.h>
 #include <ISubscriber.h>
 #include <IController.h>
 #include <IPublisher.h>
@@ -17,7 +17,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSSubscriberThread::M1M3SSSubscriberThread(ISubscriber* subscriber, IController* controller, IPublisher* publisher, ICommandFactory* commandFactory) {
+SubscriberThread::SubscriberThread(ISubscriber* subscriber, IController* controller, IPublisher* publisher, ICommandFactory* commandFactory) {
 	this->subscriber = subscriber;
 	this->controller = controller;
 	this->publisher = publisher;
@@ -25,11 +25,7 @@ M1M3SSSubscriberThread::M1M3SSSubscriberThread(ISubscriber* subscriber, IControl
 	this->keepRunning = true;
 }
 
-M1M3SSSubscriberThread::~M1M3SSSubscriberThread() {
-	// TODO Auto-generated destructor stub
-}
-
-void M1M3SSSubscriberThread::run() {
+void SubscriberThread::run() {
 	while(this->keepRunning) {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandStart());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandEnable());
@@ -42,15 +38,21 @@ void M1M3SSSubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearOffsetForces());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandRaiseM1M3());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandLowerM1M3());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAberrationByBendingModes());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAberrationByForces());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearAberration());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAOSCorrectionByBendingModes());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAOSCorrectionByForces());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearAOSCorrection());
 		usleep(100);
 	}
 }
 
-void M1M3SSSubscriberThread::stop() {
+void SubscriberThread::stop() {
 	this->keepRunning = false;
 }
 
-void M1M3SSSubscriberThread::enqueueCommandIfAvailable(ICommand* command) {
+void SubscriberThread::enqueueCommandIfAvailable(ICommand* command) {
 	if (command) {
 		if(command->validate()) {
 			this->controller->lock();

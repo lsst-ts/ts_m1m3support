@@ -14,9 +14,7 @@ namespace SS {
 IAirController::~IAirController() { }
 
 void IAirController::turnAirOn() { }
-
 void IAirController::turnAirOff() { }
-
 void IAirController::checkStatus() { }
 
 } /* namespace SS */

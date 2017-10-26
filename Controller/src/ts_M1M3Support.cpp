@@ -15,8 +15,8 @@
 #include <Model.h>
 #include <Context.h>
 #include <Controller.h>
-#include <M1M3SSSubscriberThread.h>
-#include <M1M3SSControllerThread.h>
+#include <SubscriberThread.h>
+#include <ControllerThread.h>
 #include <OuterLoopClockThread.h>
 #include <FPGA.h>
 #include <CommandTypes.h>
@@ -65,9 +65,9 @@ int main() {
 	cout << "Creating controller" << endl;
 	Controller controller = Controller(&commandFactory);
 	cout << "Creating subscriber thread" << endl;
-	M1M3SSSubscriberThread subscriberThread = M1M3SSSubscriberThread(&subscriber, &controller, &publisher, &commandFactory);
+	SubscriberThread subscriberThread = SubscriberThread(&subscriber, &controller, &publisher, &commandFactory);
 	cout << "Creating controller thread" << endl;
-	M1M3SSControllerThread controllerThread = M1M3SSControllerThread(&controller);
+	ControllerThread controllerThread = ControllerThread(&controller);
 	cout << "Creating outer loop clock thread" << endl;
 	OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, &fpga);
 	cout << "Queuing boot command" << endl;

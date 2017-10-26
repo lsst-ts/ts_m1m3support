@@ -9,6 +9,13 @@
 #define SETTINGREADER_H_
 
 #include <ISettingReader.h>
+#include <AliasApplicationSettings.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <HardpointActuatorApplicationSettings.h>
+#include <HardpointActuatorSettings.h>
+#include <ILCApplicationSettings.h>
+#include <RecommendedApplicationSettings.h>
 #include <string>
 
 namespace LSST {
@@ -17,29 +24,34 @@ namespace SS {
 
 class SettingReader: public ISettingReader {
 private:
+	AliasApplicationSettings aliasApplicationSettings;
+	ForceActuatorApplicationSettings forceActuatorApplicationSettings;
+	ForceActuatorSettings forceActuatorSettings;
+	HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
+	HardpointActuatorSettings hardpointActuatorSettings;
+	ILCApplicationSettings ilcApplicationSettings;
+	RecommendedApplicationSettings recommendedApplicationSettings;
+
 	std::string basePath;
 	std::string setsPath;
 	std::string currentSet;
 	std::string currentVersion;
 
-	std::string getBasePath(std::string file);
-	std::string getSetPath(std::string file);
-
-	AliasApplicationSettings aliasApplicationSettings;
-	RecommendedApplicationSettings recommendedApplicationSettings;
-	ILCApplicationSettings ilcApplicationSettings;
-	ForceActuatorApplicationSettings forceActuatorApplicationSettings;
-	HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
-
 public:
 	SettingReader(std::string basePath, std::string setsPath);
 
-	virtual void configure(std::string settingsToApply);
-	virtual AliasApplicationSettings* loadAliasApplicationSettings();
-	virtual RecommendedApplicationSettings* loadRecommendedApplicationSettings();
-	virtual ILCApplicationSettings* loadILCApplicationSettings();
-	virtual ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
-	virtual HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
+	void configure(std::string settingsToApply);
+	AliasApplicationSettings* loadAliasApplicationSettings();
+	ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
+	ForceActuatorSettings* loadForceActuatorSettings();
+	HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
+	HardpointActuatorSettings* loadHardpointActuatorSettings();
+	ILCApplicationSettings* loadILCApplicationSettings();
+	RecommendedApplicationSettings* loadRecommendedApplicationSettings();
+
+private:
+	std::string getBasePath(std::string file);
+	std::string getSetPath(std::string file);
 };
 
 } /* namespace SS */

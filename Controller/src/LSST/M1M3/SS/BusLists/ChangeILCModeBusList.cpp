@@ -13,9 +13,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ChangeILCModeBusList::ChangeILCModeBusList()
- : BusList() { }
-
 ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode)
  : BusList(subnetData, ilcMessageFactory) {
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {

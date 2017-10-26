@@ -13,9 +13,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ReportServerIDBusList::ReportServerIDBusList()
- : BusList() { }
-
 ReportServerIDBusList::ReportServerIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
  : BusList(subnetData, ilcMessageFactory) {
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {

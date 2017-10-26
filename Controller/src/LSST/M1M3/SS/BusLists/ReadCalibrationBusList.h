@@ -16,7 +16,6 @@ namespace SS {
 
 class ReadCalibrationBusList: public BusList {
 public:
-	ReadCalibrationBusList();
 	ReadCalibrationBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

@@ -16,7 +16,6 @@ namespace SS {
 
 class ReportADCScanRateBusList: public BusList {
 public:
-	ReportADCScanRateBusList();
 	ReportADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

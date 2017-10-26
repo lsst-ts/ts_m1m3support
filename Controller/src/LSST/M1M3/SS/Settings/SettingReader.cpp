@@ -46,9 +46,23 @@ AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
 	return &this->aliasApplicationSettings;
 }
 
-RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
-	this->recommendedApplicationSettings.load(this->getBasePath("RecommendedApplicationSettings.xml").c_str());
-	return &this->recommendedApplicationSettings;
+ForceActuatorApplicationSettings* SettingReader::loadForceActuatorApplicationSettings() {
+	this->forceActuatorApplicationSettings.load(this->getBasePath("ForceActuatorApplicationSettings.xml").c_str());
+	return &this->forceActuatorApplicationSettings;
+}
+
+ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
+	this->forceActuatorSettings.load(this->getSetPath("ForceActuatorSettings.xml").c_str());
+	return &this->forceActuatorSettings;
+}
+
+HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
+	this->hardpointActuatorApplicationSettings.load(this->getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
+	return &this->hardpointActuatorApplicationSettings;
+}
+
+HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
+	return &this->hardpointActuatorSettings;
 }
 
 ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
@@ -56,14 +70,9 @@ ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
 	return &this->ilcApplicationSettings;
 }
 
-ForceActuatorApplicationSettings* SettingReader::loadForceActuatorApplicationSettings() {
-	this->forceActuatorApplicationSettings.load(this->getBasePath("ForceActuatorApplicationSettings.xml").c_str());
-	return &this->forceActuatorApplicationSettings;
-}
-
-HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
-	this->hardpointActuatorApplicationSettings.load(this->getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
-	return &this->hardpointActuatorApplicationSettings;
+RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
+	this->recommendedApplicationSettings.load(this->getBasePath("RecommendedApplicationSettings.xml").c_str());
+	return &this->recommendedApplicationSettings;
 }
 
 std::string SettingReader::getBasePath(std::string file) {

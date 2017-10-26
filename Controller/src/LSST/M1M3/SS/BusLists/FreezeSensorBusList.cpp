@@ -15,11 +15,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FreezeSensorBusList::FreezeSensorBusList()
- : BusList() {
-	this->outerLoopData = 0;
-}
-
 FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData)
  : BusList(subnetData, ilcMessageFactory) {
 	this->outerLoopData = outerLoopData;

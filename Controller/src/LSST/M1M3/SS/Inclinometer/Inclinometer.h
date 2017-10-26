@@ -8,6 +8,7 @@
 #ifndef INCLINOMETER_H_
 #define INCLINOMETER_H_
 
+#include <IInclinometer.h>
 #include <DataTypes.h>
 #include <SAL_m1m3C.h>
 
@@ -21,7 +22,7 @@ namespace SS {
 class IFPGA;
 class IPublisher;
 
-class Inclinometer {
+class Inclinometer: public IInclinometer {
 private:
 	IPublisher* publisher;
 	IFPGA* fpga;

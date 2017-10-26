@@ -25,7 +25,6 @@ private:
 	int32_t roundRobinFAReportServerStatusIndex[5];
 
 public:
-	FreezeSensorBusList();
 	FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData);
 
 	void update();

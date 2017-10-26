@@ -25,7 +25,7 @@ m1m3_logevent_AirSupplyStatusC* IPublisher::getEventAirSupplyStatus() { return 0
 m1m3_logevent_AirSupplyWarningC* IPublisher::getEventAirSupplyWarning() { return 0; }
 m1m3_logevent_DisplacementSensorWarningC* IPublisher::getEventDisplacementSensorWarning() { return 0; }
 m1m3_logevent_ForceActuatorInfoC* IPublisher::getEventForceActuatorInfo() { return 0; }
-m1m3_logevent_HardpointActuatorInfoC* IPublisher::getEventHardpoingActuatorInfo() { return 0; }
+m1m3_logevent_HardpointActuatorInfoC* IPublisher::getEventHardpointActuatorInfo() { return 0; }
 m1m3_logevent_ILCWarningC* IPublisher::getEventILCWarning() { return 0; }
 m1m3_logevent_InclinometerSensorWarningC* IPublisher::getEventInclinometerSensorWarning() { return 0; }
 m1m3_logevent_SettingVersionsC* IPublisher::getEventSettingVersions() { return 0; }
@@ -62,6 +62,12 @@ void IPublisher::ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode,
 void IPublisher::ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAOSCorrectionByBendingModes(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAOSCorrectionByForces(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandClearAOSCorrection(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

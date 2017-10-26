@@ -48,6 +48,12 @@ public:
 	void clearOffsetForces(ClearOffsetForcesCommand* command);
 	void raiseM1M3(RaiseM1M3Command* command);
 	void lowerM1M3(LowerM1M3Command* command);
+	void applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command);
+	void applyAberrationByForces(ApplyAberrationByForcesCommand* command);
+	void clearAberration(ClearAberrationCommand* command);
+	void applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command);
+	void applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command);
+	void clearAOSCorrection(ClearAOSCorrectionCommand* command);
 };
 
 } /* namespace SS */

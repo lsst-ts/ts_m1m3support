@@ -28,6 +28,12 @@ class ApplyOffsetForcesCommand;
 class ClearOffsetForcesCommand;
 class RaiseM1M3Command;
 class LowerM1M3Command;
+class ApplyAberrationByBendingModesCommand;
+class ApplyAberrationByForcesCommand;
+class ClearAberrationCommand;
+class ApplyAOSCorrectionByBendingModesCommand;
+class ApplyAOSCorrectionByForcesCommand;
+class ClearAOSCorrectionCommand;
 
 class IState {
 public:
@@ -46,6 +52,12 @@ public:
 	virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
 	virtual States::Type raiseM1M3(RaiseM1M3Command* command, IModel* model);
 	virtual States::Type lowerM1M3(LowerM1M3Command* command, IModel* model);
+	virtual States::Type applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, IModel* model);
+	virtual States::Type applyAberrationByForces(ApplyAberrationByForcesCommand* command, IModel* model);
+	virtual States::Type clearAberration(ClearAberrationCommand* command, IModel* model);
+	virtual States::Type applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model);
+	virtual States::Type applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model);
+	virtual States::Type clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model);
 };
 
 } /* namespace SS */

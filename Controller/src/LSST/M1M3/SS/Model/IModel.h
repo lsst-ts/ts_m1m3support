@@ -18,10 +18,11 @@ namespace SS {
 class ISettingReader;
 class IPublisher;
 class IFPGA;
-class IRS232;
+class IDisplacement;
+class IInclinometer;
 class IILC;
 class IAirController;
-class ForceCalculator;
+class IForceController;
 
 class IModel {
 public:
@@ -30,10 +31,11 @@ public:
 	virtual ISettingReader* getSettingReader();
 	virtual IPublisher* getPublisher();
 	virtual IFPGA* getFPGA();
-	virtual IRS232* getRS232();
+	virtual IDisplacement* getDisplacement();
+	virtual IInclinometer* getInclinometer();
 	virtual IILC* getILC();
 	virtual IAirController* getAirController();
-	virtual ForceCalculator* getForceCalculator();
+	virtual IForceController* getForceController();
 
 	virtual void loadSettings(std::string settingsToApply);
 

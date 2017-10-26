@@ -20,34 +20,7 @@ private:
 	static double const sqrt2 = 1.4142135623730950488016887242097;
 	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
-	static int32_t toInt24(double force) { return (int32_t)(force * 1000.0); }
-
 public:
-	static void daaPositiveXToCylinder(double xForce, double yForce, double zForce, int32_t* primaryCylinder, int32_t* secondaryCylinder) {
-		*primaryCylinder = toInt24(zForce - xForce);
-		*secondaryCylinder = toInt24(xForce * sqrt2);
-	}
-
-	static void daaNegativeXToCylinder(double xForce, double yForce, double zForce, int32_t* primaryCylinder, int32_t* secondaryCylinder) {
-		*primaryCylinder = toInt24(zForce - -xForce);
-		*secondaryCylinder = toInt24(-xForce * sqrt2);
-	}
-
-	static void daaPositiveYToCylinder(double xForce, double yForce, double zForce, int32_t* primaryCylinder, int32_t* secondaryCylinder) {
-		*primaryCylinder = toInt24(zForce - yForce);
-		*secondaryCylinder = toInt24(yForce * sqrt2);
-	}
-
-	static void daaNegativeYToCylinder(double xForce, double yForce, double zForce, int32_t* primaryCylinder, int32_t* secondaryCylinder) {
-		*primaryCylinder = toInt24(zForce - -yForce);
-		*secondaryCylinder = toInt24(-yForce * sqrt2);
-	}
-
-	static void saaToCylinder(double xForce, double yForce, double zForce, int32_t* primaryCylinder, int32_t* secondaryCylinder) {
-		*primaryCylinder = toInt24(zForce);
-		*secondaryCylinder = 0;
-	}
-
 	static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, double* xForce, double* yForce, double* zForce) {
 		*xForce = secondaryCylinder * reciprocalSqrt2;
 		*yForce = 0;

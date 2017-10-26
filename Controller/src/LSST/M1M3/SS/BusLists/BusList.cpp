@@ -13,12 +13,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-BusList::BusList() {
-	this->subnetData =0;
-	this->ilcMessageFactory =  0;
-	this->subnetStartIndex = 0;
-}
-
 BusList::BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory) {
 	this->subnetData = subnetData;
 	this->ilcMessageFactory = ilcMessageFactory;

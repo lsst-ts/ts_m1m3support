@@ -14,18 +14,13 @@ namespace SS {
 IModel::~IModel() { }
 
 ISettingReader* IModel::getSettingReader() { return 0; }
-
 IPublisher* IModel::getPublisher() { return 0; }
-
 IFPGA* IModel::getFPGA() { return 0; }
-
-IRS232* IModel::getRS232() { return 0; }
-
+IDisplacement* IModel::getDisplacement() { return 0; }
+IInclinometer* IModel::getInclinometer() { return 0; }
 IILC* IModel::getILC() { return 0; }
-
 IAirController* IModel::getAirController() { return 0; }
-
-ForceCalculator* IModel::getForceCalculator() { return 0; }
+IForceController* IModel::getForceController() { return 0; }
 
 void IModel::loadSettings(std::string settingsToApply) { }
 

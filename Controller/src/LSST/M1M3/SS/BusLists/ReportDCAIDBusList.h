@@ -16,7 +16,6 @@ namespace SS {
 
 class ReportDCAIDBusList: public BusList {
 public:
-	ReportDCAIDBusList();
 	ReportDCAIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

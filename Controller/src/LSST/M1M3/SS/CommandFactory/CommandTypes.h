@@ -30,6 +30,12 @@ struct Commands {
 		ClearOffsetForcesCommand = 10,
 		RaiseM1M3Command = 11,
 		LowerM1M3Command = 12,
+		ApplyAberrationByBendingModesCommand = 13,
+		ApplyAberrationByForcesCommand = 14,
+		ClearAberrationCommand = 15,
+		ApplyAOSCorrectionByBendingModesCommand = 16,
+		ApplyAOSCorrectionByForcesCommand = 17,
+		ClearAOSCorrectionCommand = 18
 	};
 };
 

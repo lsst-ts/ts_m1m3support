@@ -9,7 +9,6 @@
 #include <SAL_m1m3C.h>
 #include <IModel.h>
 #include <IPublisher.h>
-#include <IRS232.h>
 #include <IFPGA.h>
 #include <StartCommand.h>
 #include <IILC.h>

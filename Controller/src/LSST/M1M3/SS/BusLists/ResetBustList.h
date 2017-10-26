@@ -16,7 +16,6 @@ namespace SS {
 
 class ResetBustList: public BusList {
 public:
-	ResetBustList();
 	ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

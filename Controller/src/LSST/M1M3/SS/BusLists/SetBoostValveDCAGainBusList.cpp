@@ -14,11 +14,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList()
- : BusList() {
-	this->forceInfo = 0;
-}
-
 SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo)
  : BusList(subnetData, ilcMessageFactory) {
 	this->forceInfo = forceInfo;

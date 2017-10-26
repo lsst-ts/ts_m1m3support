@@ -32,7 +32,6 @@ private:
 	int32_t roundRobinFAReportServerStatusIndex[5];
 
 public:
-	RaisedBusList();
 	RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceData, m1m3_HardpointDataC* hardpointData, m1m3_logevent_ForceActuatorInfoC* forceInfo);
 
 	void update();

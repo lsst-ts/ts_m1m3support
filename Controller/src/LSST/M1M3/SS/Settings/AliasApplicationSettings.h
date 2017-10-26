@@ -8,18 +8,13 @@
 #ifndef ALIASAPPLICATIONSETTINGS_H_
 #define ALIASAPPLICATIONSETTINGS_H_
 
+#include <Alias.h>
 #include <string>
 #include <vector>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-
-struct Alias {
-	std::string Name;
-	std::string Set;
-	std::string Version;
-};
 
 struct AliasApplicationSettings {
 	std::vector<Alias> Aliases;

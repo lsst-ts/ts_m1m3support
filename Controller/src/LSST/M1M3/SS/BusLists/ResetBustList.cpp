@@ -13,9 +13,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ResetBustList::ResetBustList()
- : BusList() { }
-
 ResetBustList::ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
  : BusList(subnetData, ilcMessageFactory) {
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {

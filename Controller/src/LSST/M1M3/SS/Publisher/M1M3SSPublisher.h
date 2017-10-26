@@ -54,7 +54,7 @@ public:
 	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
-	m1m3_logevent_HardpointActuatorInfoC* getEventHardpoingActuatorInfo() { return &this->eventHardpointActuatorInfo; }
+	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
 	m1m3_logevent_SettingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
@@ -89,8 +89,14 @@ public:
 	void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
-	virtual void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
-	virtual void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandApplyAOSCorrectionByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandApplyAOSCorrectionByForces(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandClearAOSCorrection(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */
