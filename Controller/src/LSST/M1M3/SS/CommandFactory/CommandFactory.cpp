@@ -19,6 +19,12 @@
 #include <ClearOffsetForcesCommand.h>
 #include <RaiseM1M3Command.h>
 #include <LowerM1M3Command.h>
+#include <ApplyAberrationByBendingModesCommand.h>
+#include <ApplyAberrationByForcesCommand.h>
+#include <ClearAberrationCommand.h>
+#include <ApplyAOSCorrectionByBendingModesCommand.h>
+#include <ApplyAOSCorrectionByForcesCommand.h>
+#include <ClearAOSCorrectionCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -45,6 +51,12 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	case Commands::ClearOffsetForcesCommand: return new ClearOffsetForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ClearOffsetForcesC*)data);
 	case Commands::RaiseM1M3Command: return new RaiseM1M3Command(this->context, this->publisher, commandID, (m1m3_command_RaiseM1M3C*)data);
 	case Commands::LowerM1M3Command: return new LowerM1M3Command(this->context, this->publisher, commandID, (m1m3_command_LowerM1M3C*)data);
+	case Commands::ApplyAberrationByBendingModesCommand: return new ApplyAberrationByBendingModesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAberrationByBendingModesC*)data);
+	case Commands::ApplyAberrationByForcesCommand: return new ApplyAberrationByForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAberrationByForcesC*)data);
+	case Commands::ClearAberrationCommand: return new ClearAberrationCommand(this->context, this->publisher, commandID, (m1m3_command_ClearAberrationC*)data);
+	case Commands::ApplyAOSCorrectionByBendingModesCommand: return  new ApplyAOSCorrectionByBendingModesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAOSCorrectionByBendingModesC*)data);
+	case Commands::ApplyAOSCorrectionByForcesCommand: return new ApplyAOSCorrectionByForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAOSCorrectionByForcesC*)data);
+	case Commands::ClearAOSCorrectionCommand: return new ClearAOSCorrectionCommand(this->context, this->publisher, commandID, (m1m3_command_ClearAOSCorrectionC*)data);
 	}
 	return 0;
 }

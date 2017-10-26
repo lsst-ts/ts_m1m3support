@@ -22,6 +22,14 @@ void IForceController::zeroStaticForces() { }
 void IForceController::applyOffsetForces(double* x, double* y, double* z) { }
 void IForceController::zeroOffsetForces() { }
 
+void IForceController::applyAOSCorrectionByBendingModes(double* coefficients) { }
+void IForceController::applyAOSCorrectionByForces(double* z) { }
+void IForceController::zeroAOSCorrection() { }
+
+void IForceController::applyAberrationByBendingModes(double* coefficients) { }
+void IForceController::applyAberrationByForces(double* z) { }
+void IForceController::zeroAberration() { }
+
 void IForceController::applyElevationForces() { }
 void IForceController::zeroElevationForces() { }
 

@@ -16,8 +16,6 @@ namespace SS {
 
 class Timestamp {
 public:
-	virtual ~Timestamp();
-
 	static double fromRaw(uint64_t raw) { return ((raw & 0xFFFFFFFFFFF00000) >> 20) + ((raw & 0xFFFFF) / 1000000.0); }
 	static double currentTime() { return 0; }
 };

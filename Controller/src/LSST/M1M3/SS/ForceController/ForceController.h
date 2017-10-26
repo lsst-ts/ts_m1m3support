@@ -35,6 +35,8 @@ private:
 
 	bool applyingStaticForces;
 	bool applyingOffsetForces;
+	bool applyingAOSCorrection;
+	bool applyingAberration;
 	bool applyingElevationForces;
 
 	double staticXSetpoint[156];
@@ -54,6 +56,14 @@ public:
 
 	void applyOffsetForces(double* x, double* y, double* z);
 	void zeroOffsetForces();
+
+	void applyAOSCorrectionByBendingModes(double* coefficients);
+	void applyAOSCorrectionByForces(double* z);
+	void zeroAOSCorrection();
+
+	void applyAberrationByBendingModes(double* coefficients);
+	void applyAberrationByForces(double* z);
+	void zeroAberration();
 
 	void applyElevationForces();
 	void zeroElevationForces();

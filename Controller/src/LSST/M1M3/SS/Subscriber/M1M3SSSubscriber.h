@@ -34,6 +34,12 @@ private:
 	m1m3_command_ClearOffsetForcesC clearOffsetForcesData;
 	m1m3_command_RaiseM1M3C raiseM1M3Data;
 	m1m3_command_LowerM1M3C lowerM1M3Data;
+	m1m3_command_ApplyAberrationByBendingModesC applyAberrationByBendingModesData;
+	m1m3_command_ApplyAberrationByForcesC applyAberrationByForcesData;
+	m1m3_command_ClearAberrationC clearAberrationData;
+	m1m3_command_ApplyAOSCorrectionByBendingModesC applyAOSCorrectionByBendingModesData;
+	m1m3_command_ApplyAOSCorrectionByForcesC applyAOSCorrectionByForcesData;
+	m1m3_command_ClearAOSCorrectionC clearAOSCorrectionData;
 
 public:
 	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFactory);
@@ -49,6 +55,12 @@ public:
 	ICommand* tryAcceptCommandClearOffsetForces();
 	ICommand* tryAcceptCommandRaiseM1M3();
 	ICommand* tryAcceptCommandLowerM1M3();
+	ICommand* tryAcceptCommandApplyAberrationByBendingModes();
+	ICommand* tryAcceptCommandApplyAberrationByForces();
+	ICommand* tryAcceptCommandClearAberration();
+	ICommand* tryAcceptCommandApplyAOSCorrectionByBendingModes();
+	ICommand* tryAcceptCommandApplyAOSCorrectionByForces();
+	ICommand* tryAcceptCommandClearAOSCorrection();
 };
 
 } /* namespace SS */

@@ -16,8 +16,6 @@ namespace SS {
 
 class CRC {
 public:
-	virtual ~CRC();
-
 	static uint16_t modbus(uint8_t* buffer, int32_t startIndex, int32_t length);
 	static uint16_t modbus(uint16_t* buffer, int32_t startIndex, int32_t length);
 };

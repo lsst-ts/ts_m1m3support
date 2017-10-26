@@ -97,6 +97,30 @@ void M1M3SSPublisher::ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, st
 	this->m1m3SAL->ackCommand_LowerM1M3(commandID, ackCode, 0, (char*)description.c_str());
 }
 
+void M1M3SSPublisher::ackCommandApplyAOSCorrectionByBendingModes(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ApplyAOSCorrectionByBendingModes(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandApplyAOSCorrectionByForces(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ApplyAOSCorrectionByForces(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandClearAOSCorrection(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ClearAOSCorrection(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ApplyAberrationByBendingModes(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ApplyAberrationByForces(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ClearAberration(commandID, ackCode, 0, (char*)description.c_str());
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

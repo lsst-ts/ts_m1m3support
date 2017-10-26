@@ -11,10 +11,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-CRC::~CRC() {
-	// TODO Auto-generated destructor stub
-}
-
 uint16_t CRC::modbus(uint8_t* buffer, int32_t startIndex, int32_t length) {
 	uint16_t crc = 0xFFFF;
 	for(int i = startIndex; i < startIndex + length; i++) {

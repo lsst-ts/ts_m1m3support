@@ -86,6 +86,12 @@ public:
 	virtual void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAOSCorrectionByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAOSCorrectionByForces(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandClearAOSCorrection(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

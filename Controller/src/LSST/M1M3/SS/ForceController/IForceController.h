@@ -25,6 +25,14 @@ public:
 	virtual void applyOffsetForces(double* x, double* y, double* z);
 	virtual void zeroOffsetForces();
 
+	virtual void applyAOSCorrectionByBendingModes(double* coefficients);
+	virtual void applyAOSCorrectionByForces(double* z);
+	virtual void zeroAOSCorrection();
+
+	virtual void applyAberrationByBendingModes(double* coefficients);
+	virtual void applyAberrationByForces(double* z);
+	virtual void zeroAberration();
+
 	virtual void applyElevationForces();
 	virtual void zeroElevationForces();
 };

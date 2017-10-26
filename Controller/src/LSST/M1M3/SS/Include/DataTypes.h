@@ -12,9 +12,10 @@
 #define ACK_COMPLETE   303
 #define ACK_FAILED    -302
 
-#define SUBNET_COUNT 5
-#define FA_COUNT     156
-#define HP_COUNT     6
+#define SUBNET_COUNT  5
+#define FA_COUNT      156
+#define HP_COUNT      6
+#define BENDING_MODES 22
 
 typedef signed char        int8_t;
 typedef short int          int16_t;

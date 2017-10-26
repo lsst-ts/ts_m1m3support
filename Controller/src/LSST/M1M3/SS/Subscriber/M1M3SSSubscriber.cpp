@@ -117,6 +117,54 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandLowerM1M3() {
 	return 0;
 }
 
+ICommand* M1M3SSSubscriber::tryAcceptCommandApplyAberrationByBendingModes() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAberrationByBendingModes(&this->applyAberrationByBendingModesData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ApplyAberrationByBendingModesCommand, &this->applyAberrationByBendingModesData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandApplyAberrationByForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAberrationByForces(&this->applyAberrationByForcesData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ApplyAberrationByForcesCommand, &this->applyAberrationByForcesData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandClearAberration() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ClearAberration(&this->clearAberrationData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ClearAberrationCommand, &this->clearAberrationData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandApplyAOSCorrectionByBendingModes() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAOSCorrectionByBendingModes(&this->applyAOSCorrectionByBendingModesData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ApplyAOSCorrectionByBendingModesCommand, &this->applyAOSCorrectionByBendingModesData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandApplyAOSCorrectionByForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAOSCorrectionByForces(&this->applyAOSCorrectionByForcesData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ApplyAOSCorrectionByForcesCommand, &this->applyAOSCorrectionByForcesData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandClearAOSCorrection() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ClearAOSCorrection(&this->clearAOSCorrectionData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ClearAOSCorrectionCommand, &this->clearAOSCorrectionData, commandID);
+	}
+	return 0;
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

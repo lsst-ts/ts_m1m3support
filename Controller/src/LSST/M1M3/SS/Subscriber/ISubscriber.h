@@ -29,6 +29,12 @@ public:
 	virtual ICommand* tryAcceptCommandClearOffsetForces();
 	virtual ICommand* tryAcceptCommandRaiseM1M3();
 	virtual ICommand* tryAcceptCommandLowerM1M3();
+	virtual ICommand* tryAcceptCommandApplyAberrationByBendingModes();
+	virtual ICommand* tryAcceptCommandApplyAberrationByForces();
+	virtual ICommand* tryAcceptCommandClearAberration();
+	virtual ICommand* tryAcceptCommandApplyAOSCorrectionByBendingModes();
+	virtual ICommand* tryAcceptCommandApplyAOSCorrectionByForces();
+	virtual ICommand* tryAcceptCommandClearAOSCorrection();
 };
 
 } /* namespace SS */

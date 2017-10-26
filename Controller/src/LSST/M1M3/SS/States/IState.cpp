@@ -26,6 +26,12 @@ States::Type IState::applyOffsetForces(ApplyOffsetForcesCommand* command, IModel
 States::Type IState::clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model) { return States::Ignore; }
 States::Type IState::raiseM1M3(RaiseM1M3Command* command, IModel* model) { return States::Ignore; }
 States::Type IState::lowerM1M3(LowerM1M3Command* command, IModel* model) { return States::Ignore; }
+States::Type IState::applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::applyAberrationByForces(ApplyAberrationByForcesCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::clearAberration(ClearAberrationCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model) { return States::Ignore; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

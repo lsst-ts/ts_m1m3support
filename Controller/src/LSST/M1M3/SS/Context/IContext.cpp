@@ -26,6 +26,12 @@ void IContext::applyOffsetForces(ApplyOffsetForcesCommand* command) { }
 void IContext::clearOffsetForces(ClearOffsetForcesCommand* command) { }
 void IContext::raiseM1M3(RaiseM1M3Command* command) { }
 void IContext::lowerM1M3(LowerM1M3Command* command) { }
+void IContext::applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command) { }
+void IContext::applyAberrationByForces(ApplyAberrationByForcesCommand* command) { }
+void IContext::clearAberration(ClearAberrationCommand* command) { }
+void IContext::applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command) { }
+void IContext::applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command) { }
+void IContext::clearAOSCorrection(ClearAOSCorrectionCommand* command) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

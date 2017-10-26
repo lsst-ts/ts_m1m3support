@@ -59,7 +59,11 @@ States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, IMod
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
 	States::Type newState = States::ActiveEngineeringState;
+	model->getForceController()->applyStaticForces();
 	model->getForceController()->applyElevationForces();
+	model->getForceController()->zeroOffsetForces();
+	model->getForceController()->zeroAberration();
+	model->getForceController()->zeroAOSCorrection();
 	model->publishStateChange(newState);
 	return newState;
 }

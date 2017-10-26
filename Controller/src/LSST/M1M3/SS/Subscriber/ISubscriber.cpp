@@ -24,6 +24,12 @@ ICommand* ISubscriber::tryAcceptCommandApplyOffsetForces() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandClearOffsetForces() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandRaiseM1M3() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandLowerM1M3() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandApplyAberrationByBendingModes() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandApplyAberrationByForces() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandClearAberration() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandApplyAOSCorrectionByBendingModes() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandApplyAOSCorrectionByForces() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandClearAOSCorrection() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

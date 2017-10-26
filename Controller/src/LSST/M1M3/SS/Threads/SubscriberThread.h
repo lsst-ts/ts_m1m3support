@@ -1,12 +1,12 @@
 /*
- * M1M3SSSubscriberThread.h
+ * SubscriberThread.h
  *
  *  Created on: Sep 28, 2017
  *      Author: ccontaxis
  */
 
-#ifndef M1M3SSSUBSCRIBERTHREAD_H_
-#define M1M3SSSUBSCRIBERTHREAD_H_
+#ifndef SUBSCRIBERTHREAD_H_
+#define SUBSCRIBERTHREAD_H_
 
 #include <IThread.h>
 
@@ -20,7 +20,7 @@ class IPublisher;
 class ICommand;
 class ICommandFactory;
 
-class M1M3SSSubscriberThread: public IThread {
+class SubscriberThread: public IThread {
 private:
 	ISubscriber* subscriber;
 	IController* controller;
@@ -28,18 +28,18 @@ private:
 	ICommandFactory* commandFactory;
 	bool keepRunning;
 
-	void enqueueCommandIfAvailable(ICommand* command);
-
 public:
-	M1M3SSSubscriberThread(ISubscriber* subscriber, IController* controller, IPublisher* publisher, ICommandFactory* commandFactory);
-	virtual ~M1M3SSSubscriberThread();
+	SubscriberThread(ISubscriber* subscriber, IController* controller, IPublisher* publisher, ICommandFactory* commandFactory);
 
-	virtual void run();
-	virtual void stop();
+	void run();
+	void stop();
+
+private:
+	void enqueueCommandIfAvailable(ICommand* command);
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* M1M3SSSUBSCRIBERTHREAD_H_ */
+#endif /* SUBSCRIBERTHREAD_H_ */

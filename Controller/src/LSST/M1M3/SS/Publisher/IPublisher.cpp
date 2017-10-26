@@ -62,6 +62,12 @@ void IPublisher::ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode,
 void IPublisher::ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAOSCorrectionByBendingModes(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAOSCorrectionByForces(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandClearAOSCorrection(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

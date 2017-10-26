@@ -24,9 +24,13 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->forceData = forceData;
 	this->applyingStaticForces = false;
 	this->applyingOffsetForces = false;
+	this->applyingAOSCorrection = false;
+	this->applyingAberration = false;
 	this->applyingElevationForces = false;
 	this->zeroStaticForces();
 	this->zeroOffsetForces();
+	this->zeroAOSCorrection();
+	this->zeroAberration();
 	this->zeroElevationForces();
 }
 
@@ -74,6 +78,94 @@ void ForceController::zeroOffsetForces() {
 		this->forceData->OffsetXSetpoint[i] = 0;
 		this->forceData->OffsetYSetpoint[i] = 0;
 		this->forceData->OffsetZSetpoint[i] = 0;
+	}
+}
+
+void ForceController::applyAOSCorrectionByBendingModes(double* coefficients) {
+	this->applyingAOSCorrection = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		int mIndex = i * 22;
+		this->forceData->ActiveOpticsZSetpoint[i] =
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 0] * coefficients[0] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 1] * coefficients[1] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 2] * coefficients[2] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 3] * coefficients[3] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 4] * coefficients[4] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 5] * coefficients[5] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 6] * coefficients[6] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 7] * coefficients[7] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 8] * coefficients[8] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 9] * coefficients[9] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 10] * coefficients[10] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 11] * coefficients[11] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 12] * coefficients[12] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 13] * coefficients[13] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 14] * coefficients[14] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 15] * coefficients[15] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 16] * coefficients[16] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 17] * coefficients[17] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 18] * coefficients[18] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 19] * coefficients[19] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 20] * coefficients[20] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 21] * coefficients[21];
+	}
+}
+
+void ForceController::applyAOSCorrectionByForces(double* z) {
+	this->applyingAOSCorrection = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->ActiveOpticsZSetpoint[i] = z[i];
+	}
+}
+
+void ForceController::zeroAOSCorrection() {
+	this->applyingAOSCorrection = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->ActiveOpticsZSetpoint[i] = 0;
+	}
+}
+
+void ForceController::applyAberrationByBendingModes(double* coefficients) {
+	this->applyingAberration = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		int mIndex = i * 22;
+		this->forceData->AberationZSetpoint[i] =
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 0] * coefficients[0] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 1] * coefficients[1] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 2] * coefficients[2] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 3] * coefficients[3] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 4] * coefficients[4] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 5] * coefficients[5] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 6] * coefficients[6] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 7] * coefficients[7] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 8] * coefficients[8] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 9] * coefficients[9] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 10] * coefficients[10] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 11] * coefficients[11] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 12] * coefficients[12] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 13] * coefficients[13] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 14] * coefficients[14] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 15] * coefficients[15] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 16] * coefficients[16] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 17] * coefficients[17] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 18] * coefficients[18] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 19] * coefficients[19] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 20] * coefficients[20] +
+				this->forceActuatorSettings->BendingModeMatrix[mIndex + 21] * coefficients[21];
+	}
+}
+
+void ForceController::applyAberrationByForces(double* z) {
+	this->applyingAberration = true;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->AberationZSetpoint[i] = z[i];
+	}
+}
+
+void ForceController::zeroAberration() {
+	this->applyingAberration = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->AberationZSetpoint[i] = 0;
 	}
 }
 
@@ -132,6 +224,8 @@ void ForceController::sumAllForces() {
 		this->forceData->ZSetpoint[i] =
 				this->staticZSetpoint[i] +
 				this->forceData->OffsetZSetpoint[i] +
+				this->forceData->AberationZSetpoint[i] +
+				this->forceData->ActiveOpticsZSetpoint[i] +
 				this->forceData->ElevationZSetpoint[i];
 	}
 }

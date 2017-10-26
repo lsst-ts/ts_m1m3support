@@ -25,6 +25,12 @@ class ApplyOffsetForcesCommand;
 class ClearOffsetForcesCommand;
 class RaiseM1M3Command;
 class LowerM1M3Command;
+class ApplyAberrationByBendingModesCommand;
+class ApplyAberrationByForcesCommand;
+class ClearAberrationCommand;
+class ApplyAOSCorrectionByBendingModesCommand;
+class ApplyAOSCorrectionByForcesCommand;
+class ClearAOSCorrectionCommand;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -98,6 +104,36 @@ public:
 	 * @param[in] command The lower M1M3 command to execute.
 	 */
 	virtual void lowerM1M3(LowerM1M3Command* command);
+	/*!
+	 * Executes the command to apply an aberration by bending modes.
+	 * @param[in] command The apply aberration by bending modes command to execute.
+	 */
+	virtual void applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command);
+	/*!
+	 * Executes the command to apply an aberration by forces.
+	 * @param[in] command The apply aberration by forces command to execute.
+	 */
+	virtual void applyAberrationByForces(ApplyAberrationByForcesCommand* command);
+	/*!
+	 * Executes the command to clear an aberration.
+	 * @param[in] command The clear aberration command to execute.
+	 */
+	virtual void clearAberration(ClearAberrationCommand* command);
+	/*!
+	 * Executes the command to apply an AOS correction by bending modes.
+	 * @param[in] command The apply an AOS correction by bending modes command to execute.
+	 */
+	virtual void applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command);
+	/*!
+	 * Executes the command to apply an AOS correction by forces.
+	 * @param[in] command The apply an AOS correction by forces command to execute.
+	 */
+	virtual void applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command);
+	/*!
+	 * Executes the command to clear AOS corrections.
+	 * @param[in] command The clear AOS corrections command to execute.
+	 */
+	virtual void clearAOSCorrection(ClearAOSCorrectionCommand* command);
 };
 
 } /* namespace SS */
