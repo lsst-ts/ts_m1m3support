@@ -27,6 +27,12 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFa
 	this->m1m3SAL->salProcessor("m1m3_command_ClearOffsetForces");
 	this->m1m3SAL->salProcessor("m1m3_command_RaiseM1M3");
 	this->m1m3SAL->salProcessor("m1m3_command_LowerM1M3");
+	this->m1m3SAL->salProcessor("m1m3_command_ApplyAberrationByBendingModes");
+	this->m1m3SAL->salProcessor("m1m3_command_ApplyAberrationByForces");
+	this->m1m3SAL->salProcessor("m1m3_command_ClearAberration");
+	this->m1m3SAL->salProcessor("m1m3_command_ApplyAOSCorrectionByBendingModes");
+	this->m1m3SAL->salProcessor("m1m3_command_ApplyAOSCorrectionByForces");
+	this->m1m3SAL->salProcessor("m1m3_command_ClearAOSCorrection");
 }
 
 ICommand* M1M3SSSubscriber::tryAcceptCommandStart() {

@@ -19,12 +19,15 @@ namespace M1M3 {
 namespace SS {
 
 class IPublisher;
+class ISafetyController;
 class IFPGA;
 
 class Displacement: public IDisplacement {
 private:
 	IPublisher* publisher;
+	ISafetyController* safetyController;
 	IFPGA* fpga;
+
 	m1m3_IMSDataC* imsData;
 	m1m3_logevent_DisplacementSensorWarningC* displacementWarning;
 
@@ -32,7 +35,7 @@ private:
 	uint8_t rxBuffer[128];
 
 public:
-	Displacement(IPublisher* publisher, IFPGA* fpga);
+	Displacement(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
 
 	void writeDataRequest();
 	void readDataResponse();

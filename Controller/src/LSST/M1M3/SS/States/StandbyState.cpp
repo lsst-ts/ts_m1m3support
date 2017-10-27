@@ -10,6 +10,7 @@
 #include <IModel.h>
 #include <IPublisher.h>
 #include <IFPGA.h>
+#include <ISafetyController.h>
 #include <StartCommand.h>
 #include <IILC.h>
 #include <iostream>
@@ -77,22 +78,13 @@ States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	model->queryFPGAData();
 	usleep(10000);
 	model->publishFPGAData();
-	model->publishStateChange(newState);
-	return newState;
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type StandbyState::shutdown(ShutdownCommand* command, IModel* model) {
 	States::Type newState = States::OfflineState;
-	model->publishStateChange(newState);
 	model->shutdown();
 	return newState;
-}
-
-States::Type StandbyState::update(UpdateCommand* command, IModel* model) {
-	//model->queryFPGAData();
-	//usleep(10000);
-	//model->publishFPGAData();
-	return States::Ignore;
 }
 
 } /* namespace SS */

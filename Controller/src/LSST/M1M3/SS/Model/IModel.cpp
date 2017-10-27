@@ -21,6 +21,7 @@ IInclinometer* IModel::getInclinometer() { return 0; }
 IILC* IModel::getILC() { return 0; }
 IAirController* IModel::getAirController() { return 0; }
 IForceController* IModel::getForceController() { return 0; }
+ISafetyController* IModel::getSafetyController() { return 0; }
 
 void IModel::loadSettings(std::string settingsToApply) { }
 

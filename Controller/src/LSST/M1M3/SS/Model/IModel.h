@@ -23,6 +23,7 @@ class IInclinometer;
 class IILC;
 class IAirController;
 class IForceController;
+class ISafetyController;
 
 class IModel {
 public:
@@ -36,6 +37,7 @@ public:
 	virtual IILC* getILC();
 	virtual IAirController* getAirController();
 	virtual IForceController* getForceController();
+	virtual ISafetyController* getSafetyController();
 
 	virtual void loadSettings(std::string settingsToApply);
 

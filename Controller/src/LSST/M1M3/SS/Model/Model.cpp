@@ -20,6 +20,7 @@
 #include <ForceController.h>
 #include <RecommendedApplicationSettings.h>
 #include <ForceActuatorSettings.h>
+#include <SafetyController.h>
 
 using namespace std;
 
@@ -31,6 +32,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->settingReader = settingReader;
 	this->publisher = publisher;
 	this->fpga = fpga;
+	this->safetyController = 0;
 	this->displacement = 0;
 	this->inclinometer = 0;
 	this->ilc = 0;
@@ -43,6 +45,10 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 Model::~Model() {
 	pthread_mutex_unlock(&this->mutex);
 	pthread_mutex_destroy(&this->mutex);
+
+	if (this->safetyController) {
+		delete this->safetyController;
+	}
 	if (this->displacement) {
 		delete this->displacement;
 	}
@@ -52,11 +58,11 @@ Model::~Model() {
 	if (this->ilc) {
 		delete this->ilc;
 	}
-	if (this->airController) {
-		delete this->airController;
-	}
 	if (this->forceController) {
 		delete this->forceController;
+	}
+	if (this->airController) {
+		delete this->airController;
 	}
 }
 
@@ -68,19 +74,25 @@ void Model::loadSettings(std::string settingsToApply) {
 	ForceActuatorSettings* forceActuatorSettings = this->settingReader->loadForceActuatorSettings();
 	HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings = this->settingReader->loadHardpointActuatorApplicationSettings();
 	HardpointActuatorSettings* hardpointActuatorSettings = this->settingReader->loadHardpointActuatorSettings();
+	SafetyControllerSettings* safetyControllerSettings = this->settingReader->loadSafetyControllerSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
 
+	if (this->safetyController) {
+		delete this->safetyController;
+	}
+	this->safetyController = new SafetyController(this->publisher, safetyControllerSettings);
+
 	if (this->displacement) {
 		delete this->displacement;
 	}
-	this->displacement = new Displacement(this->publisher, this->fpga);
+	this->displacement = new Displacement(this->publisher, this->safetyController, this->fpga);
 
 	if (this->inclinometer) {
 		delete this->inclinometer;
 	}
-	this->inclinometer = new Inclinometer(this->publisher, this->fpga);
+	this->inclinometer = new Inclinometer(this->publisher, this->safetyController, this->fpga);
 
 	if (this->ilc) {
 		delete this->ilc;
@@ -95,7 +107,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->airController) {
 		delete this->airController;
 	}
-	this->airController = new AirController(this->publisher, this->fpga);
+	this->airController = new AirController(this->publisher, this->safetyController, this->fpga);
 
 }
 
@@ -115,7 +127,7 @@ void Model::publishFPGAData() {
 
 void Model::publishStateChange(States::Type newState) {
 	m1m3_logevent_SummaryStateC* data = this->publisher->getEventSummaryState();
-	data->Timestamp = Timestamp::currentTime();
+	data->Timestamp = this->publisher->getTimestamp();
 	data->SummaryState = newState;
 	this->publisher->logSummaryState();
 }

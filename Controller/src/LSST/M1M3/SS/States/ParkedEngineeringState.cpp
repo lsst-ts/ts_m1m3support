@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <IForceController.h>
 #include <ApplyOffsetForcesCommand.h>
+#include <ISafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -21,8 +22,7 @@ namespace SS {
 
 States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* model) {
 	States::Type newState = States::DisabledState;
-	model->publishStateChange(newState);
-	return newState;
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
@@ -44,17 +44,17 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* mode
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ParkedEngineeringState::turnAirOn(TurnAirOnCommand* command, IModel* model) {
 	model->getAirController()->turnAirOn();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, IModel* model) {
 	model->getAirController()->turnAirOff();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
@@ -64,8 +64,7 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->zeroAberration();
 	model->getForceController()->zeroAOSCorrection();
-	model->publishStateChange(newState);
-	return newState;
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 } /* namespace SS */

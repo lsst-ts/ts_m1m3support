@@ -7,6 +7,7 @@
 
 #include <AirController.h>
 #include <IPublisher.h>
+#include <ISafetyController.h>
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <SAL_m1m3C.h>
@@ -16,8 +17,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AirController::AirController(IPublisher* publisher, IFPGA* fpga) {
+AirController::AirController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
 	this->publisher = publisher;
+	this->safetyController = safetyController;
 	this->fpga = fpga;
 	this->airSupplyStatus = this->publisher->getEventAirSupplyStatus();
 	this->airSupplyWarning = this->publisher->getEventAirSupplyWarning();
@@ -104,6 +106,7 @@ bool AirController::checkForCommandOutputMismatch() {
 	bool commandOutputMismatch = this->airSupplyStatus->AirCommandedOn != this->airSupplyStatus->AirCommandOutputOn;
 	bool statusChanged = commandOutputMismatch != this->airSupplyWarning->CommandOutputMismatch;
 	this->airSupplyWarning->CommandOutputMismatch = commandOutputMismatch;
+	this->safetyController->airControllerNotifyCommandOutputMismatch(this->airSupplyWarning->CommandOutputMismatch);
 	return statusChanged;
 }
 
@@ -111,6 +114,7 @@ bool AirController::checkForCommandSensorMismatch() {
 	bool commandSensorMismatch = this->airSupplyStatus->AirCommandedOn != this->airSupplyStatus->AirValveOpened || this->airSupplyStatus->AirCommandedOn == this->airSupplyStatus->AirValveClosed;
 	bool statusChanged = commandSensorMismatch != this->airSupplyWarning->CommandSensorMismatch;
 	this->airSupplyWarning->CommandSensorMismatch = commandSensorMismatch;
+	this->safetyController->airControllerNotifyCommandSensorMismatch(this->airSupplyWarning->CommandSensorMismatch);
 	return statusChanged;
 }
 

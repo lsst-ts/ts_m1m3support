@@ -32,6 +32,7 @@ private:
 	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
 	m1m3_logevent_AirSupplyWarningC eventAirSupplyWarning;
 	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
+	m1m3_logevent_ErrorCodeC eventErrorCode;
 	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
 	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
 	m1m3_logevent_ILCWarningC eventILCWarning;
@@ -53,6 +54,7 @@ public:
 	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
 	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
+	m1m3_logevent_ErrorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
 	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
@@ -73,6 +75,7 @@ public:
 	void logAirSupplyStatus();
 	void logAirSupplyWarning();
 	void logDisplacementSensorWarning();
+	void logErrorCode();
 	void logForceActuatorInfo();
 	void logHardpointActuatorInfo();
 	void logILCWarning();

@@ -19,12 +19,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IFPGA;
 class IPublisher;
+class ISafetyController;
+class IFPGA;
 
 class Inclinometer: public IInclinometer {
 private:
 	IPublisher* publisher;
+	ISafetyController* safetyController;
 	IFPGA* fpga;
 	m1m3_InclinometerDataC* inclinometerData;
 	m1m3_logevent_InclinometerSensorWarningC* inclinometerWarning;
@@ -33,7 +35,7 @@ private:
 	uint8_t rxBuffer[32];
 
 public:
-	Inclinometer(IPublisher* publisher, IFPGA* fpga);
+	Inclinometer(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
 
 	void writeDataRequest();
 	void readDataResponse();

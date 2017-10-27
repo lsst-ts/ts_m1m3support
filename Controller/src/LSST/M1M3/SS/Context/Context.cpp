@@ -137,6 +137,7 @@ void Context::clearAOSCorrection(ClearAOSCorrectionCommand* command) {
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::Ignore) {
 		this->currentState = potentialNewState;
+		this->model->publishStateChange(potentialNewState);
 	}
 }
 

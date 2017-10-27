@@ -7,25 +7,25 @@
  */
 
 #include <Inclinometer.h>
-#include <IFPGA.h>
 #include <IPublisher.h>
+#include <ISafetyController.h>
+#include <IFPGA.h>
+#include <FPGAAddresses.h>
 #include <U8ArrayUtilities.h>
 #include <CRC.h>
 #include <Timestamp.h>
 #include <SAL_m1m3C.h>
-#include <FPGAAddresses.h>
 #include <cstring>
-#include <iostream>
-
-using namespace std;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Inclinometer::Inclinometer(IPublisher* publisher, IFPGA* fpga) {
-	this->fpga = fpga;
+Inclinometer::Inclinometer(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
 	this->publisher = publisher;
+	this->safetyController = safetyController;
+	this->fpga = fpga;
+
 	this->inclinometerData = this->publisher->getInclinometerData();
 	this->inclinometerWarning = this->publisher->getEventInclinometerSensorWarning();
 
@@ -112,6 +112,14 @@ void Inclinometer::clearWarning(double timestamp) {
 	if (this->inclinometerWarning->AnyWarning) {
 		memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
 		this->inclinometerWarning->Timestamp = timestamp;
+		this->safetyController->inclinometerNotifyResponseTimeout(this->inclinometerWarning->ResponseTimeout);
+		this->safetyController->inclinometerNotifyInvalidCRC(this->inclinometerWarning->InvalidCRC);
+		this->safetyController->inclinometerNotifyUnknownAddress(this->inclinometerWarning->UnknownAddress);
+		this->safetyController->inclinometerNotifyUnknownFunction(this->inclinometerWarning->UnknownFunction);
+		this->safetyController->inclinometerNotifyInvalidLength(this->inclinometerWarning->InvalidLength);
+		this->safetyController->inclinometerNotifySensorReportsIllegalDataAddress(this->inclinometerWarning->SensorReportsIllegalDataAddress);
+		this->safetyController->inclinometerNotifySensorReportsIllegalFunction(this->inclinometerWarning->SensorReportsIllegalFunction);
+		this->safetyController->inclinometerNotifyUnknownProblem(this->inclinometerWarning->UnknownProblem);
 		this->publisher->logInclinometerSensorWarning();
 	}
 }
@@ -121,6 +129,7 @@ void Inclinometer::warnResponseTimeout(double timestamp) {
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
 	this->inclinometerWarning->ResponseTimeout = true;
+	this->safetyController->inclinometerNotifyResponseTimeout(this->inclinometerWarning->ResponseTimeout);
 	this->publisher->logInclinometerSensorWarning();
 }
 
@@ -129,6 +138,7 @@ void Inclinometer::warnInvalidCRC(double timestamp) {
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
 	this->inclinometerWarning->InvalidCRC = true;
+	this->safetyController->inclinometerNotifyInvalidCRC(this->inclinometerWarning->InvalidCRC);
 	this->publisher->logInclinometerSensorWarning();
 }
 
@@ -137,6 +147,7 @@ void Inclinometer::warnUnknownAddress(double timestamp) {
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
 	this->inclinometerWarning->UnknownAddress = true;
+	this->safetyController->inclinometerNotifyUnknownAddress(this->inclinometerWarning->UnknownAddress);
 	this->publisher->logInclinometerSensorWarning();
 }
 
@@ -144,7 +155,8 @@ void Inclinometer::warnUnknownFunction(double timestamp) {
 	memset(this->inclinometerWarning, 0, sizeof(m1m3_logevent_InclinometerSensorWarningC));
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
-	this->inclinometerWarning->UnknownFunction= true;
+	this->inclinometerWarning->UnknownFunction = true;
+	this->safetyController->inclinometerNotifyUnknownFunction(this->inclinometerWarning->UnknownFunction);
 	this->publisher->logInclinometerSensorWarning();
 }
 
@@ -153,6 +165,7 @@ void Inclinometer::warnInvalidLength(double timestamp) {
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
 	this->inclinometerWarning->InvalidLength = true;
+	this->safetyController->inclinometerNotifyInvalidLength(this->inclinometerWarning->InvalidLength);
 	this->publisher->logInclinometerSensorWarning();
 }
 
@@ -161,6 +174,7 @@ void Inclinometer::warnInvalidRegister(double timestamp) {
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
 	this->inclinometerWarning->SensorReportsIllegalDataAddress = true;
+	this->safetyController->inclinometerNotifySensorReportsIllegalDataAddress(this->inclinometerWarning->SensorReportsIllegalDataAddress);
 	this->publisher->logInclinometerSensorWarning();
 }
 
@@ -169,6 +183,7 @@ void Inclinometer::warnInvalidFunction(double timestamp) {
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
 	this->inclinometerWarning->SensorReportsIllegalFunction = true;
+	this->safetyController->inclinometerNotifySensorReportsIllegalFunction(this->inclinometerWarning->SensorReportsIllegalFunction);
 	this->publisher->logInclinometerSensorWarning();
 }
 
@@ -177,6 +192,7 @@ void Inclinometer::warnUnknownProblem(double timestamp) {
 	this->inclinometerWarning->Timestamp = timestamp;
 	this->inclinometerWarning->AnyWarning = true;
 	this->inclinometerWarning->UnknownProblem = true;
+	this->safetyController->inclinometerNotifyUnknownProblem(this->inclinometerWarning->UnknownProblem);
 	this->publisher->logInclinometerSensorWarning();
 }
 

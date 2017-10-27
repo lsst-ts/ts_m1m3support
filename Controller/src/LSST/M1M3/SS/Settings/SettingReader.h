@@ -9,6 +9,7 @@
 #define SETTINGREADER_H_
 
 #include <ISettingReader.h>
+#include <SafetyControllerSettings.h>
 #include <AliasApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -31,6 +32,7 @@ private:
 	HardpointActuatorSettings hardpointActuatorSettings;
 	ILCApplicationSettings ilcApplicationSettings;
 	RecommendedApplicationSettings recommendedApplicationSettings;
+	SafetyControllerSettings safetyControllerSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -48,6 +50,7 @@ public:
 	HardpointActuatorSettings* loadHardpointActuatorSettings();
 	ILCApplicationSettings* loadILCApplicationSettings();
 	RecommendedApplicationSettings* loadRecommendedApplicationSettings();
+	SafetyControllerSettings* loadSafetyControllerSettings();
 
 private:
 	std::string getBasePath(std::string file);

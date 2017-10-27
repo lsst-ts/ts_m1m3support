@@ -21,6 +21,7 @@ HardpointActuatorApplicationSettings* ISettingReader::loadHardpointActuatorAppli
 HardpointActuatorSettings* ISettingReader::loadHardpointActuatorSettings() { return 0; }
 ILCApplicationSettings* ISettingReader::loadILCApplicationSettings() { return 0; }
 RecommendedApplicationSettings* ISettingReader::loadRecommendedApplicationSettings() { return 0; }
+SafetyControllerSettings* ISettingReader::loadSafetyControllerSettings() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

@@ -75,6 +75,11 @@ RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSetting
 	return &this->recommendedApplicationSettings;
 }
 
+SafetyControllerSettings* SettingReader::loadSafetyControllerSettings() {
+	this->safetyControllerSettings.load(this->getSetPath("SafetyControllerSettings.xml").c_str());
+	return &this->safetyControllerSettings;
+}
+
 std::string SettingReader::getBasePath(std::string file) {
 	return this->basePath + file;
 }

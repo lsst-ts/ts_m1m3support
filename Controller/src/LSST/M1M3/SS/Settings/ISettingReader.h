@@ -15,12 +15,13 @@ namespace M1M3 {
 namespace SS {
 
 class AliasApplicationSettings;
-class RecommendedApplicationSettings;
 class ILCApplicationSettings;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
+class RecommendedApplicationSettings;
+class SafetyControllerSettings;
 
 class ISettingReader {
 public:
@@ -34,6 +35,7 @@ public:
 	virtual HardpointActuatorSettings* loadHardpointActuatorSettings();
 	virtual ILCApplicationSettings* loadILCApplicationSettings();
 	virtual RecommendedApplicationSettings* loadRecommendedApplicationSettings();
+	virtual SafetyControllerSettings* loadSafetyControllerSettings();
 };
 
 } /* namespace SS */
