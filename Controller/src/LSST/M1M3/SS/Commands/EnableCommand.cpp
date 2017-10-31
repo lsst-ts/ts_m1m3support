@@ -20,6 +20,10 @@ EnableCommand::EnableCommand(IContext* context, IPublisher* publisher, int32_t c
 	this->data.Enable = data->Enable;
 }
 
+bool EnableCommand::validate() {
+	return this->data.Enable;
+}
+
 void EnableCommand::execute() {
 	this->context->enable(this);
 }

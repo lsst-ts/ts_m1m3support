@@ -80,6 +80,11 @@ SafetyControllerSettings* SettingReader::loadSafetyControllerSettings() {
 	return &this->safetyControllerSettings;
 }
 
+PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
+	this->positionControllerSettings.load(this->getSetPath("PositionControllerSettings.xml").c_str());
+	return &this->positionControllerSettings;
+}
+
 std::string SettingReader::getBasePath(std::string file) {
 	return this->basePath + file;
 }

@@ -35,6 +35,16 @@ public:
 	virtual States::Type applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model);
 	virtual States::Type applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model);
 	virtual States::Type clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model);
+	virtual States::Type enterEngineering(EnterEngineeringCommand* command, IModel* model);
+	virtual States::Type exitEngineering(ExitEngineeringCommand* command, IModel* model);
+	virtual States::Type testAir(TestAirCommand* command, IModel* model);
+	virtual States::Type testHardpoint(TestHardpointCommand* command, IModel* model);
+	virtual States::Type testForceActuator(TestForceActuatorCommand* command, IModel* model);
+	virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model);
+	virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command, IModel* model);
+	virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model);
+	virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, IModel* model);
+	virtual States::Type translateM1M3(TranslateM1M3Command* command, IModel* model);
 };
 
 } /* namespace SS */

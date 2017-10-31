@@ -95,6 +95,16 @@ public:
 	virtual void ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

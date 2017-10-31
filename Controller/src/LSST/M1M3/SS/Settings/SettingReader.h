@@ -17,6 +17,7 @@
 #include <HardpointActuatorSettings.h>
 #include <ILCApplicationSettings.h>
 #include <RecommendedApplicationSettings.h>
+#include <PositionControllerSettings.h>
 #include <string>
 
 namespace LSST {
@@ -33,6 +34,7 @@ private:
 	ILCApplicationSettings ilcApplicationSettings;
 	RecommendedApplicationSettings recommendedApplicationSettings;
 	SafetyControllerSettings safetyControllerSettings;
+	PositionControllerSettings positionControllerSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -51,6 +53,7 @@ public:
 	ILCApplicationSettings* loadILCApplicationSettings();
 	RecommendedApplicationSettings* loadRecommendedApplicationSettings();
 	SafetyControllerSettings* loadSafetyControllerSettings();
+	PositionControllerSettings* loadPositionControllerSettings();
 
 private:
 	std::string getBasePath(std::string file);

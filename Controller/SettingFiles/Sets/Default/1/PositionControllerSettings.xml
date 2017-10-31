@@ -1,0 +1,4 @@
+<PositionControllerSettings>
+<ForceToStepsCoefficient>0.125</ForceToStepsCoefficient>
+<MaxStepsPerLoop>40</MaxStepsPerLoop>
+</PositionControllerSettings>

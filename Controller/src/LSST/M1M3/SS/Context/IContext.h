@@ -31,6 +31,16 @@ class ClearAberrationCommand;
 class ApplyAOSCorrectionByBendingModesCommand;
 class ApplyAOSCorrectionByForcesCommand;
 class ClearAOSCorrectionCommand;
+class EnterEngineeringCommand;
+class ExitEngineeringCommand;
+class TestAirCommand;
+class TestHardpointCommand;
+class TestForceActuatorCommand;
+class MoveHardpointActuatorsCommand;
+class EnableHardpointChaseCommand;
+class DisableHardpointChaseCommand;
+class AbortRaiseM1M3Command;
+class TranslateM1M3Command;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -134,6 +144,56 @@ public:
 	 * @param[in] command The clear AOS corrections command to execute.
 	 */
 	virtual void clearAOSCorrection(ClearAOSCorrectionCommand* command);
+	/*!
+	 * Executes the command to enter engineering state.
+	 * @param[in] command The enter engineering command to execute.
+	 */
+	virtual void enterEngineering(EnterEngineeringCommand* command);
+	/*!
+	 * Executes the command to exit engineering state.
+	 * @param[in] command The exit engineering command to execute.
+	 */
+	virtual void exitEngineering(ExitEngineeringCommand* command);
+	/*!
+	 * Executes the command to test air.
+	 * @param[in] command The test air command to execute.
+	 */
+	virtual void testAir(TestAirCommand* command);
+	/*!
+	 * Executes the command to test hardpoints.
+	 * @param[in] command The test hardpoints command to execute.
+	 */
+	virtual void testHardpoint(TestHardpointCommand* command);
+	/*!
+	 * Executes the command to test force actuators.
+	 * @param[in] command The test force actuators command to execute.
+	 */
+	virtual void testForceActuator(TestForceActuatorCommand* command);
+	/*!
+	 * Executes the command to move hardpoint actuators.
+	 * @param[in] command The move hardpoint actuators command to execute.
+	 */
+	virtual void moveHardpointActuators(MoveHardpointActuatorsCommand* command);
+	/*!
+	 * Executes the command to enable hardpoint chase.
+	 * @param[in] command The enable hardpoint chase command to execute.
+	 */
+	virtual void enableHardpointChase(EnableHardpointChaseCommand* command);
+	/*!
+	 * Executes the command to disable hardpoint chase.
+	 * @param[in] command The disable hardpoint chase command to execute.
+	 */
+	virtual void disableHardpointChase(DisableHardpointChaseCommand* command);
+	/*!
+	 * Executes the command to abort raise M1M3.
+	 * @param[in] command The abort raise M1M3 command to execute.
+	 */
+	virtual void abortRaiseM1M3(AbortRaiseM1M3Command* command);
+	/*!
+	 * Executes the command to translate M1M3.
+	 * @param[in] command The translate M1M3 command to execute.
+	 */
+	virtual void translateM1M3(TranslateM1M3Command* command);
 };
 
 } /* namespace SS */

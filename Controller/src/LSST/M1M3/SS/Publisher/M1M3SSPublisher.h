@@ -100,6 +100,16 @@ public:
 	void ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

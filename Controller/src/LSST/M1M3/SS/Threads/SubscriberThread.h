@@ -20,6 +20,9 @@ class IPublisher;
 class ICommand;
 class ICommandFactory;
 
+/*!
+ * The subscriber thread is responsible for accepting commands.
+ */
 class SubscriberThread: public IThread {
 private:
 	ISubscriber* subscriber;

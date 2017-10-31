@@ -14,6 +14,11 @@ namespace SS {
 
 class ICommand;
 
+/*!
+ * Interface for getting commands to execute (for this subsystem) and telemetry from other subsystems.
+ * An example of a command might be the Start command.
+ * An example of another subsystems telemetry might be the ElevationAngle from TMA.
+ */
 class ISubscriber {
 public:
 	virtual ~ISubscriber();
@@ -35,6 +40,16 @@ public:
 	virtual ICommand* tryAcceptCommandApplyAOSCorrectionByBendingModes();
 	virtual ICommand* tryAcceptCommandApplyAOSCorrectionByForces();
 	virtual ICommand* tryAcceptCommandClearAOSCorrection();
+	virtual ICommand* tryAcceptCommandEnterEngineering();
+	virtual ICommand* tryAcceptCommandExitEngineering();
+	virtual ICommand* tryAcceptCommandTestAir();
+	virtual ICommand* tryAcceptCommandTestHardpoint();
+	virtual ICommand* tryAcceptCommandTestForceActuator();
+	virtual ICommand* tryAcceptCommandMoveHardpointActuators();
+	virtual ICommand* tryAcceptCommandEnableHardpointChase();
+	virtual ICommand* tryAcceptCommandDisableHardpointChase();
+	virtual ICommand* tryAcceptCommandAbortRaiseM1M3();
+	virtual ICommand* tryAcceptCommandTranslateM1M3();
 };
 
 } /* namespace SS */

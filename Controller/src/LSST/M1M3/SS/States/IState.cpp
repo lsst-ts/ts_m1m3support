@@ -32,6 +32,16 @@ States::Type IState::clearAberration(ClearAberrationCommand* command, IModel* mo
 States::Type IState::applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model) { return States::Ignore; }
 States::Type IState::applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model) { return States::Ignore; }
 States::Type IState::clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::enterEngineering(EnterEngineeringCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::exitEngineering(ExitEngineeringCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::testAir(TestAirCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::testHardpoint(TestHardpointCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::testForceActuator(TestForceActuatorCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::enableHardpointChase(EnableHardpointChaseCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model) { return States::Ignore; }
+States::Type IState::abortRaiseM1M3(AbortRaiseM1M3Command* command, IModel* model) { return States::Ignore; }
+States::Type IState::translateM1M3(TranslateM1M3Command* command, IModel* model) { return States::Ignore; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

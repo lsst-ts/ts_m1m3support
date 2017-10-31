@@ -21,6 +21,7 @@
 #include <RecommendedApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <SafetyController.h>
+#include <PositionController.h>
 
 using namespace std;
 
@@ -63,6 +64,9 @@ Model::~Model() {
 	}
 	if (this->airController) {
 		delete this->airController;
+	}
+	if (this->positionController) {
+		delete this->positionController;
 	}
 }
 
@@ -109,6 +113,10 @@ void Model::loadSettings(std::string settingsToApply) {
 	}
 	this->airController = new AirController(this->publisher, this->safetyController, this->fpga);
 
+	if (this->positionController) {
+		delete this->positionController;
+	}
+	this->positionController = new PositionController(this->publisher->getHardpointData());
 }
 
 void Model::queryFPGAData() {

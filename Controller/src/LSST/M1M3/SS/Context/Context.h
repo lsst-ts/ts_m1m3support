@@ -54,6 +54,16 @@ public:
 	void applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command);
 	void applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command);
 	void clearAOSCorrection(ClearAOSCorrectionCommand* command);
+	void enterEngineering(EnterEngineeringCommand* command);
+	void exitEngineering(ExitEngineeringCommand* command);
+	void testAir(TestAirCommand* command);
+	void testHardpoint(TestHardpointCommand* command);
+	void testForceActuator(TestForceActuatorCommand* command);
+	void moveHardpointActuators(MoveHardpointActuatorsCommand* command);
+	void enableHardpointChase(EnableHardpointChaseCommand* command);
+	void disableHardpointChase(DisableHardpointChaseCommand* command);
+	void abortRaiseM1M3(AbortRaiseM1M3Command* command);
+	void translateM1M3(TranslateM1M3Command* command);
 };
 
 } /* namespace SS */

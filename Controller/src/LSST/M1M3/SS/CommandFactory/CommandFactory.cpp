@@ -25,6 +25,16 @@
 #include <ApplyAOSCorrectionByBendingModesCommand.h>
 #include <ApplyAOSCorrectionByForcesCommand.h>
 #include <ClearAOSCorrectionCommand.h>
+#include <EnterEngineeringCommand.h>
+#include <ExitEngineeringCommand.h>
+#include <TestAirCommand.h>
+#include <TestHardpointCommand.h>
+#include <TestForceActuatorCommand.h>
+#include <MoveHardpointActuatorsCommand.h>
+#include <EnableHardpointChaseCommand.h>
+#include <DisableHardpointChaseCommand.h>
+#include <AbortRaiseM1M3Command.h>
+#include <TranslateM1M3Command.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -57,6 +67,16 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	case Commands::ApplyAOSCorrectionByBendingModesCommand: return  new ApplyAOSCorrectionByBendingModesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAOSCorrectionByBendingModesC*)data);
 	case Commands::ApplyAOSCorrectionByForcesCommand: return new ApplyAOSCorrectionByForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAOSCorrectionByForcesC*)data);
 	case Commands::ClearAOSCorrectionCommand: return new ClearAOSCorrectionCommand(this->context, this->publisher, commandID, (m1m3_command_ClearAOSCorrectionC*)data);
+	case Commands::EnterEngineeringCommand: return new EnterEngineeringCommand(this->context, this->publisher, commandID, (m1m3_command_EnterEngineeringC*)data);
+	case Commands::ExitEngineeringCommand: return new ExitEngineeringCommand(this->context, this->publisher, commandID, (m1m3_command_ExitEngineeringC*)data);
+	case Commands::TestAirCommand: return new TestAirCommand(this->context, this->publisher, commandID, (m1m3_command_TestAirC*)data);
+	case Commands::TestHardpointCommand: return new TestHardpointCommand(this->context, this->publisher, commandID, (m1m3_command_TestHardpointC*)data);
+	case Commands::TestForceActuatorCommand: return new TestForceActuatorCommand(this->context, this->publisher, commandID, (m1m3_command_TestForceActuatorC*)data);
+	case Commands::MoveHardpointActuatorsCommand: return new MoveHardpointActuatorsCommand(this->context, this->publisher, commandID, (m1m3_command_MoveHardpointActuatorsC*)data);
+	case Commands::EnableHardpointChaseCommand: return new EnableHardpointChaseCommand(this->context, this->publisher, commandID, (m1m3_command_EnableHardpointChaseC*)data);
+	case Commands::DisableHardpointChaseCommand: return new DisableHardpointChaseCommand(this->context, this->publisher, commandID, (m1m3_command_DisableHardpointChaseC*)data);
+	case Commands::AbortRaiseM1M3Command: return new AbortRaiseM1M3Command(this->context, this->publisher, commandID, (m1m3_command_AbortRaiseM1M3C*)data);
+	case Commands::TranslateM1M3Command: return new TranslateM1M3Command(this->context, this->publisher, commandID, (m1m3_command_TranslateM1M3C*)data);
 	}
 	return 0;
 }

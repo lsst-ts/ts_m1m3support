@@ -22,6 +22,7 @@ class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
 class RecommendedApplicationSettings;
 class SafetyControllerSettings;
+class PositionControllerSettings;
 
 class ISettingReader {
 public:
@@ -36,6 +37,7 @@ public:
 	virtual ILCApplicationSettings* loadILCApplicationSettings();
 	virtual RecommendedApplicationSettings* loadRecommendedApplicationSettings();
 	virtual SafetyControllerSettings* loadSafetyControllerSettings();
+	virtual PositionControllerSettings* loadPositionControllerSettings();
 };
 
 } /* namespace SS */

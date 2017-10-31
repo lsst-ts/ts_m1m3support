@@ -70,6 +70,16 @@ void IPublisher::ackCommandClearAOSCorrection(int32_t commandID, int32_t ackCode
 void IPublisher::ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

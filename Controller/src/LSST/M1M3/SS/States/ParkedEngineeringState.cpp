@@ -15,6 +15,7 @@
 #include <IForceController.h>
 #include <ApplyOffsetForcesCommand.h>
 #include <ISafetyController.h>
+#include <IPositionController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -26,7 +27,7 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* mo
 }
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
-	model->getILC()->writeFreezeSensorListBuffer();
+	model->getILC()->writeRaisedListBuffer();
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
 	model->getInclinometer()->writeDataRequest();
@@ -36,6 +37,7 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* mode
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
 	model->getILC()->verifyResponses();
+	model->getPositionController()->updateSteps();
 	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);
