@@ -34,6 +34,7 @@ public:
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_StandbyC* getData() { return &this->data; }
 
+	bool validate();
 	void execute();
 	void ackInProgress();
 	void ackComplete();

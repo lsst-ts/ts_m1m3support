@@ -19,6 +19,7 @@
 #include <ApplyAOSCorrectionByBendingModesCommand.h>
 #include <ApplyAOSCorrectionByForcesCommand.h>
 #include <ClearAOSCorrectionCommand.h>
+#include <ISafetyController.h>
 #include <unistd.h>
 
 namespace LSST {
@@ -46,19 +47,19 @@ States::Type ActiveEngineeringState::update(UpdateCommand* command, IModel* mode
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model) {
 	model->getForceController()->applyOffsetForces(command->getData()->XForces, command->getData()->YForces, command->getData()->ZForces);
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model) {
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, IModel* model) {
@@ -69,44 +70,43 @@ States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, IModel
 	model->getForceController()->zeroAberration();
 	model->getForceController()->zeroAOSCorrection();
 	model->getForceController()->processAppliedForces();
-	model->publishStateChange(newState);
-	return newState;
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type ActiveEngineeringState::applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, IModel* model) {
 	model->getForceController()->applyAberrationByBendingModes(command->getData()->Coefficients);
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::applyAberrationByForces(ApplyAberrationByForcesCommand* command, IModel* model) {
 	model->getForceController()->applyAberrationByForces(command->getData()->ZForces);
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::clearAberration(ClearAberrationCommand* command, IModel* model) {
 	model->getForceController()->zeroAberration();
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model) {
 	model->getForceController()->applyAOSCorrectionByBendingModes(command->getData()->Coefficients);
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model) {
 	model->getForceController()->applyAOSCorrectionByForces(command->getData()->ZForces);
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 States::Type ActiveEngineeringState::clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model) {
 	model->getForceController()->zeroAOSCorrection();
 	model->getForceController()->processAppliedForces();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 } /* namespace SS */

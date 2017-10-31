@@ -17,7 +17,6 @@ namespace SS {
 States::Type OfflineState::boot(BootCommand* command, IModel* model) {
 	States::Type newState = States::StandbyState;
 	model->publishRecommendedSettings();
-	model->publishStateChange(newState);
 	return newState;
 }
 

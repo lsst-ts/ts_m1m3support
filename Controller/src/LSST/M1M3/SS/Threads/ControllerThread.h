@@ -16,6 +16,9 @@ namespace SS {
 
 class IController;
 
+/*!
+ * The controller thread is responsible for executing commands.
+ */
 class ControllerThread: public IThread {
 private:
 	IController* controller;

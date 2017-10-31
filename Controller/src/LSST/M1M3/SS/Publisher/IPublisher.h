@@ -22,6 +22,7 @@ struct m1m3_OuterLoopDataC;
 struct m1m3_logevent_AirSupplyStatusC;
 struct m1m3_logevent_AirSupplyWarningC;
 struct m1m3_logevent_DisplacementSensorWarningC;
+struct m1m3_logevent_ErrorCodeC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_logevent_HardpointActuatorInfoC;
 struct m1m3_logevent_ILCWarningC;
@@ -48,6 +49,7 @@ public:
 	virtual m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus();
 	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
+	virtual m1m3_logevent_ErrorCodeC* getEventErrorCode();
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
 	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
 	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
@@ -68,6 +70,7 @@ public:
 	virtual void logAirSupplyStatus();
 	virtual void logAirSupplyWarning();
 	virtual void logDisplacementSensorWarning();
+	virtual void logErrorCode();
 	virtual void logForceActuatorInfo();
 	virtual void logHardpointActuatorInfo();
 	virtual void logILCWarning();
@@ -92,6 +95,17 @@ public:
 	virtual void ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

@@ -15,6 +15,7 @@
 #include <IILC.h>
 #include <IFPGA.h>
 #include <AirController.h>
+#include <ISafetyController.h>
 #include <iostream>
 
 using namespace std;
@@ -25,8 +26,7 @@ namespace SS {
 
 States::Type DisabledState::enable(EnableCommand* command, IModel* model) {
 	States::Type newState = States::ParkedEngineeringState;
-	model->publishStateChange(newState);
-	return newState;
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
@@ -36,8 +36,7 @@ States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
-	model->publishStateChange(newState);
-	return newState;
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
@@ -58,8 +57,7 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
-	//model->getAirController()->checkStatus();
-	return States::Ignore;
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 } /* namespace SS */

@@ -21,6 +21,10 @@ StartCommand::StartCommand(IContext* context, IPublisher* publisher, int32_t com
 	this->data.SettingsToApply = data->SettingsToApply;
 }
 
+bool StartCommand::validate() {
+	return this->data.Start;
+}
+
 void StartCommand::execute() {
 	this->context->start(this);
 }

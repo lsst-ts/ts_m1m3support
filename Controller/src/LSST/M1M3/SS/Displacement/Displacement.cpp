@@ -6,27 +6,25 @@
  */
 
 #include <Displacement.h>
-#include <IFPGA.h>
 #include <IPublisher.h>
-#include <U16ArrayUtilities.h>
+#include <ISafetyController.h>
+#include <IFPGA.h>
+#include <FPGAAddresses.h>
 #include <U8ArrayUtilities.h>
-#include <SAL_m1m3C.h>
 #include <Timestamp.h>
+#include <SAL_m1m3C.h>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <string>
-#include <iostream>
-#include <FPGAAddresses.h>
 #include <cstring>
-
-using namespace std;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Displacement::Displacement(IPublisher* publisher, IFPGA* fpga) {
+Displacement::Displacement(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
 	this->publisher = publisher;
+	this->safetyController = safetyController;
 	this->fpga = fpga;
 	this->imsData = this->publisher->getIMSData();
 	this->displacementWarning = this->publisher->getEventDisplacementSensorWarning();
@@ -107,6 +105,18 @@ void Displacement::clearWarning(double timestamp) {
 	if (this->displacementWarning->AnyWarning) {
 		memset(this->displacementWarning, 0, sizeof(m1m3_logevent_DisplacementSensorWarningC));
 		this->displacementWarning->Timestamp = timestamp;
+		this->safetyController->displacementNotifySensorReportsInvalidCommand(this->displacementWarning->SensorReportsInvalidCommand);
+		this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(this->displacementWarning->SensorReportsCommunicationTimeoutError);
+		this->safetyController->displacementNotifySensorReportsNumberOfParametersError(this->displacementWarning->SensorReportsNumberOfParametersError);
+		this->safetyController->displacementNotifySensorReportsParameterError(this->displacementWarning->SensorReportsParameterError);
+		this->safetyController->displacementNotifySensorReportsCommunicationError(this->displacementWarning->SensorReportsCommunicationError);
+		this->safetyController->displacementNotifySensorReportsIDNumberError(this->displacementWarning->SensorReportsIDNumberError);
+		this->safetyController->displacementNotifySensorReportsExpansionLineError(this->displacementWarning->SensorReportsExpansionLineError);
+		this->safetyController->displacementNotifySensorReportsWriteControlError(this->displacementWarning->SensorReportsWriteControlError);
+		this->safetyController->displacementNotifyResponseTimeoutError(this->displacementWarning->ResponseTimeout);
+		this->safetyController->displacementNotifyInvalidLength(this->displacementWarning->InvalidLength);
+		this->safetyController->displacementNotifyUnknownCommand(this->displacementWarning->UnknownCommand);
+		this->safetyController->displacementNotifyUnknownProblem(this->displacementWarning->UnknownProblem);
 		this->publisher->logDisplacementSensorWarning();
 	}
 }
@@ -116,6 +126,7 @@ void Displacement::warnSensorReportsInvalidCommand(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsInvalidCommand = true;
+	this->safetyController->displacementNotifySensorReportsInvalidCommand(this->displacementWarning->SensorReportsInvalidCommand);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -124,6 +135,7 @@ void Displacement::warnSensorReportsCommunicationTimeoutError(double timestamp) 
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsCommunicationTimeoutError = true;
+	this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(this->displacementWarning->SensorReportsCommunicationTimeoutError);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -132,6 +144,7 @@ void Displacement::warnSensorReportsDataLengthError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsDataLengthError = true;
+	this->safetyController->displacementNotifySensorReportsDataLengthError(this->displacementWarning->SensorReportsDataLengthError);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -140,6 +153,7 @@ void Displacement::warnSensorReportsNumberOfParametersError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsNumberOfParametersError = true;
+	this->safetyController->displacementNotifySensorReportsNumberOfParametersError(this->displacementWarning->SensorReportsNumberOfParametersError);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -148,6 +162,8 @@ void Displacement::warnSensorReportsParameterError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsParameterError = true;
+	this->safetyController->displacementNotifySensorReportsParameterError(this->displacementWarning->SensorReportsParameterError);
+	this->publisher->logDisplacementSensorWarning();
 }
 
 void Displacement::warnSensorReportsCommunicationError(double timestamp) {
@@ -155,6 +171,7 @@ void Displacement::warnSensorReportsCommunicationError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsCommunicationError = true;
+	this->safetyController->displacementNotifySensorReportsCommunicationError(this->displacementWarning->SensorReportsCommunicationError);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -163,6 +180,7 @@ void Displacement::warnSensorReportsIDNumberError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsIDNumberError = true;
+	this->safetyController->displacementNotifySensorReportsIDNumberError(this->displacementWarning->SensorReportsIDNumberError);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -171,6 +189,7 @@ void Displacement::warnSensorReportsExpansionLineError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsExpansionLineError = true;
+	this->safetyController->displacementNotifySensorReportsExpansionLineError(this->displacementWarning->SensorReportsExpansionLineError);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -179,6 +198,7 @@ void Displacement::warnSensorReportsWriteControlError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->SensorReportsWriteControlError = true;
+	this->safetyController->displacementNotifySensorReportsWriteControlError(this->displacementWarning->SensorReportsWriteControlError);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -187,6 +207,7 @@ void Displacement::warnResponseTimeoutError(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->ResponseTimeout = true;
+	this->safetyController->displacementNotifyResponseTimeoutError(this->displacementWarning->ResponseTimeout);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -195,6 +216,7 @@ void Displacement::warnInvalidLength(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->InvalidLength = true;
+	this->safetyController->displacementNotifyInvalidLength(this->displacementWarning->InvalidLength);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -203,6 +225,7 @@ void Displacement::warnUnknownCommand(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->UnknownCommand = true;
+	this->safetyController->displacementNotifyUnknownCommand(this->displacementWarning->UnknownCommand);
 	this->publisher->logDisplacementSensorWarning();
 }
 
@@ -211,6 +234,7 @@ void Displacement::warnUnknownProblem(double timestamp) {
 	this->displacementWarning->Timestamp = timestamp;
 	this->displacementWarning->AnyWarning = true;
 	this->displacementWarning->UnknownProblem = true;
+	this->safetyController->displacementNotifyUnknownProblem(this->displacementWarning->UnknownProblem);
 	this->publisher->logDisplacementSensorWarning();
 }
 

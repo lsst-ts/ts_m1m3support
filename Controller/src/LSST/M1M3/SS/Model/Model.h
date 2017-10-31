@@ -34,6 +34,8 @@ private:
 	IILC* ilc;
 	IAirController* airController;
 	IForceController* forceController;
+	ISafetyController* safetyController;
+	IPositionController* positionController;
 
 	pthread_mutex_t mutex;
 
@@ -49,6 +51,8 @@ public:
 	IILC* getILC() { return this->ilc; }
 	IAirController* getAirController() { return this->airController; }
 	IForceController* getForceController() { return this->forceController; }
+	ISafetyController* getSafetyController() { return this->safetyController; }
+	IPositionController* getPositionController() { return this->positionController; }
 
 	void loadSettings(std::string settingsToApply);
 

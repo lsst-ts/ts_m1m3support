@@ -32,6 +32,17 @@ void IContext::clearAberration(ClearAberrationCommand* command) { }
 void IContext::applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command) { }
 void IContext::applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command) { }
 void IContext::clearAOSCorrection(ClearAOSCorrectionCommand* command) { }
+void IContext::enterEngineering(EnterEngineeringCommand* command) { }
+void IContext::exitEngineering(ExitEngineeringCommand* command) { }
+void IContext::testAir(TestAirCommand* command) { }
+void IContext::testHardpoint(TestHardpointCommand* command) { }
+void IContext::testForceActuator(TestForceActuatorCommand* command) { }
+void IContext::moveHardpointActuators(MoveHardpointActuatorsCommand* command) { }
+void IContext::enableHardpointChase(EnableHardpointChaseCommand* command) { }
+void IContext::disableHardpointChase(DisableHardpointChaseCommand* command) { }
+void IContext::abortRaiseM1M3(AbortRaiseM1M3Command* command) { }
+void IContext::translateM1M3(TranslateM1M3Command* command) { }
+void IContext::stopHardpointMotion(StopHardpointMotionCommand* command) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

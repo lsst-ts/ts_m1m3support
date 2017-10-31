@@ -19,6 +19,9 @@ namespace SS {
 
 class ICommandFactory;
 
+/*!
+ * A subscriber that utilizes the SAL.
+ */
 class M1M3SSSubscriber: public ISubscriber {
 private:
 	SAL_m1m3* m1m3SAL;
@@ -40,6 +43,17 @@ private:
 	m1m3_command_ApplyAOSCorrectionByBendingModesC applyAOSCorrectionByBendingModesData;
 	m1m3_command_ApplyAOSCorrectionByForcesC applyAOSCorrectionByForcesData;
 	m1m3_command_ClearAOSCorrectionC clearAOSCorrectionData;
+	m1m3_command_EnterEngineeringC enterEngineeringData;
+	m1m3_command_ExitEngineeringC exitEngineeringData;
+	m1m3_command_TestAirC testAirData;
+	m1m3_command_TestHardpointC testHardpointData;
+	m1m3_command_TestForceActuatorC testForceActuatorData;
+	m1m3_command_MoveHardpointActuatorsC moveHardpointActuatorsData;
+	m1m3_command_EnableHardpointChaseC enableHardpointChaseData;
+	m1m3_command_DisableHardpointChaseC disableHardpointChaseData;
+	m1m3_command_AbortRaiseM1M3C abortRaiseM1M3Data;
+	m1m3_command_TranslateM1M3C translateM1M3Data;
+	m1m3_command_StopHardpointMotionC stopHardpointMotionData;
 
 public:
 	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFactory);
@@ -61,6 +75,17 @@ public:
 	ICommand* tryAcceptCommandApplyAOSCorrectionByBendingModes();
 	ICommand* tryAcceptCommandApplyAOSCorrectionByForces();
 	ICommand* tryAcceptCommandClearAOSCorrection();
+	ICommand* tryAcceptCommandEnterEngineering();
+	ICommand* tryAcceptCommandExitEngineering();
+	ICommand* tryAcceptCommandTestAir();
+	ICommand* tryAcceptCommandTestHardpoint();
+	ICommand* tryAcceptCommandTestForceActuator();
+	ICommand* tryAcceptCommandMoveHardpointActuators();
+	ICommand* tryAcceptCommandEnableHardpointChase();
+	ICommand* tryAcceptCommandDisableHardpointChase();
+	ICommand* tryAcceptCommandAbortRaiseM1M3();
+	ICommand* tryAcceptCommandTranslateM1M3();
+	ICommand* tryAcceptCommandStopHardpointMotion();
 };
 
 } /* namespace SS */

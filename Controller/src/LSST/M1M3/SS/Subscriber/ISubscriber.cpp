@@ -30,6 +30,17 @@ ICommand* ISubscriber::tryAcceptCommandClearAberration() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandApplyAOSCorrectionByBendingModes() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandApplyAOSCorrectionByForces() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandClearAOSCorrection() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandEnterEngineering() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandExitEngineering() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandTestAir() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandTestHardpoint() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandTestForceActuator() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandMoveHardpointActuators() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandEnableHardpointChase() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandDisableHardpointChase() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandAbortRaiseM1M3() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandTranslateM1M3() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandStopHardpointMotion() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

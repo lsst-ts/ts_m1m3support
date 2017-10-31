@@ -19,6 +19,10 @@ class ICommandFactory;
 class IController;
 class IFPGA;
 
+/*!
+ * The outer loop clock thread is responsible for controlling
+ * the outer loop execution timing.
+ */
 class OuterLoopClockThread: public IThread {
 private:
 	ICommandFactory* commandFactory;
@@ -29,10 +33,10 @@ private:
 
 public:
 	OuterLoopClockThread(ICommandFactory* commandFactory, IController* controller, IFPGA* fpga);
-	virtual ~OuterLoopClockThread();
+	~OuterLoopClockThread();
 
-	virtual void run();
-	virtual void stop();
+	void run();
+	void stop();
 };
 
 } /* namespace SS */

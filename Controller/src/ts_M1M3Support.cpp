@@ -24,6 +24,7 @@
 #include <SAL_m1m3.h>
 #include <Timestamp.h>
 #include <FPGAAddresses.h>
+#include <SafetyController.h>
 #include <cstring>
 
 using namespace std;
@@ -143,6 +144,8 @@ int main() {
 
 	cout << "Shutting down SAL" << endl;
 	m1m3SAL.salShutdown();
+
+	cout << "Shutdown complete" << endl;
 
 	return 0;
 }

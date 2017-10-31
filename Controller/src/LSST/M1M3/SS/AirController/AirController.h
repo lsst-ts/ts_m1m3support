@@ -20,6 +20,7 @@ namespace SS {
 
 class IPublisher;
 class IFPGA;
+class ISafetyController;
 
 /*!
  * Class used for controlling air supply.
@@ -27,6 +28,7 @@ class IFPGA;
 class AirController: public IAirController {
 private:
 	IPublisher* publisher;
+	ISafetyController* safetyController;
 	IFPGA* fpga;
 
 	uint16_t turnAirOnBuffer[2];
@@ -40,7 +42,7 @@ private:
 	bool forcePublishAirSupplyWarning;
 
 public:
-	AirController(IPublisher* publisher, IFPGA* fpga);
+	AirController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
 
 	void turnAirOn();
 	void turnAirOff();

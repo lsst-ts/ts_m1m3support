@@ -32,6 +32,7 @@ private:
 	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
 	m1m3_logevent_AirSupplyWarningC eventAirSupplyWarning;
 	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
+	m1m3_logevent_ErrorCodeC eventErrorCode;
 	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
 	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
 	m1m3_logevent_ILCWarningC eventILCWarning;
@@ -53,6 +54,7 @@ public:
 	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
 	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
+	m1m3_logevent_ErrorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
 	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
@@ -73,6 +75,7 @@ public:
 	void logAirSupplyStatus();
 	void logAirSupplyWarning();
 	void logDisplacementSensorWarning();
+	void logErrorCode();
 	void logForceActuatorInfo();
 	void logHardpointActuatorInfo();
 	void logILCWarning();
@@ -97,6 +100,17 @@ public:
 	void ackCommandApplyAberrationByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandApplyAberrationByForces(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

@@ -26,6 +26,8 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyStatus");
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_DisplacementSensorWarning");
+	this->m1m3SAL->salEvent("m1m3_logevent_ErrorCode");
+	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorInfo");
 	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorInfo");
 	this->m1m3SAL->salEvent("m1m3_logevent_ILCWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
@@ -46,6 +48,7 @@ void M1M3SSPublisher::putOuterLoopData() { this->m1m3SAL->putSample_OuterLoopDat
 void M1M3SSPublisher::logAirSupplyStatus() { this->m1m3SAL->logEvent_AirSupplyStatus(&this->eventAirSupplyStatus, 0); }
 void M1M3SSPublisher::logAirSupplyWarning() { this->m1m3SAL->logEvent_AirSupplyWarning(&this->eventAirSupplyWarning, 0); }
 void M1M3SSPublisher::logDisplacementSensorWarning() { this->m1m3SAL->logEvent_DisplacementSensorWarning(&this->eventDisplacementSensorWarning, 0); }
+void M1M3SSPublisher::logErrorCode() { this->m1m3SAL->logEvent_ErrorCode(&this->eventErrorCode, 0); }
 void M1M3SSPublisher::logForceActuatorInfo() { this->m1m3SAL->logEvent_ForceActuatorInfo(&this->eventForceActuatorInfo, 0); }
 void M1M3SSPublisher::logHardpointActuatorInfo() { this->m1m3SAL->logEvent_HardpointActuatorInfo(&this->eventHardpointActuatorInfo, 0); }
 void M1M3SSPublisher::logILCWarning() { this->m1m3SAL->logEvent_ILCWarning(&this->eventILCWarning, 0); }
@@ -119,6 +122,50 @@ void M1M3SSPublisher::ackCommandApplyAberrationByForces(int32_t commandID, int32
 
 void M1M3SSPublisher::ackCommandClearAberration(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_ClearAberration(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_EnterEngineering(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ExitEngineering(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TestAir(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TestHardpoint(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TestForceActuator(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_MoveHardpointActuators(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_EnableHardpointChase(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_DisableHardpointChase(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_AbortRaiseM1M3(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TranslateM1M3(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_StopHardpointMotion(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

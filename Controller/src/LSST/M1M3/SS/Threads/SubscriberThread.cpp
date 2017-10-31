@@ -44,6 +44,17 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAOSCorrectionByBendingModes());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAOSCorrectionByForces());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearAOSCorrection());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandEnterEngineering());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandExitEngineering());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTestAir());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTestHardpoint());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTestForceActuator());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandMoveHardpointActuators());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandEnableHardpointChase());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandDisableHardpointChase());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandAbortRaiseM1M3());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTranslateM1M3());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandStopHardpointMotion());
 		usleep(100);
 	}
 }

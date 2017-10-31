@@ -35,7 +35,18 @@ struct Commands {
 		ClearAberrationCommand = 15,
 		ApplyAOSCorrectionByBendingModesCommand = 16,
 		ApplyAOSCorrectionByForcesCommand = 17,
-		ClearAOSCorrectionCommand = 18
+		ClearAOSCorrectionCommand = 18,
+		EnterEngineeringCommand = 19,
+		ExitEngineeringCommand = 20,
+		TestAirCommand = 21,
+		TestHardpointCommand = 22,
+		TestForceActuatorCommand = 23,
+		MoveHardpointActuatorsCommand = 24,
+		EnableHardpointChaseCommand = 25,
+		DisableHardpointChaseCommand = 26,
+		AbortRaiseM1M3Command = 27,
+		TranslateM1M3Command = 28,
+		StopHardpointMotionCommand = 29
 	};
 };
 

@@ -134,9 +134,76 @@ void Context::clearAOSCorrection(ClearAOSCorrectionCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::enterEngineering(EnterEngineeringCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->enterEngineering(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::exitEngineering(ExitEngineeringCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->exitEngineering(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::testAir(TestAirCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->testAir(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::testHardpoint(TestHardpointCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->testHardpoint(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::testForceActuator(TestForceActuatorCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->testForceActuator(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->moveHardpointActuators(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::enableHardpointChase(EnableHardpointChaseCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->enableHardpointChase(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::disableHardpointChase(DisableHardpointChaseCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->disableHardpointChase(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->abortRaiseM1M3(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::translateM1M3(TranslateM1M3Command* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->translateM1M3(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::stopHardpointMotion(StopHardpointMotionCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->stopHardpointMotion(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::Ignore) {
 		this->currentState = potentialNewState;
+		this->model->publishStateChange(potentialNewState);
 	}
 }
 
