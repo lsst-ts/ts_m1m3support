@@ -29,7 +29,9 @@ public:
 	virtual void enableChaseAll();
 	virtual void disableChaseAll();
 
+	virtual void move(int32_t* steps);
 	virtual void translate(double x, double y, double z, double rX, double rY, double rZ);
+	virtual void stopMotion();
 
 	virtual void updateSteps();
 };

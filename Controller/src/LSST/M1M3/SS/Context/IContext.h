@@ -41,6 +41,7 @@ class EnableHardpointChaseCommand;
 class DisableHardpointChaseCommand;
 class AbortRaiseM1M3Command;
 class TranslateM1M3Command;
+class StopHardpointMotionCommand;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -194,6 +195,11 @@ public:
 	 * @param[in] command The translate M1M3 command to execute.
 	 */
 	virtual void translateM1M3(TranslateM1M3Command* command);
+	/*!
+	 * Executes the command to stop hardpoint motion.
+	 * @param[in] command The stop hardpoint motion command to execute.
+	 */
+	virtual void stopHardpointMotion(StopHardpointMotionCommand* command);
 };
 
 } /* namespace SS */

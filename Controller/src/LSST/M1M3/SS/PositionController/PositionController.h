@@ -24,6 +24,7 @@ private:
 	PositionControllerSettings* positionControllerSettings;
 
 	bool chasing[HP_COUNT];
+	int32_t steps[HP_COUNT];
 
 	m1m3_HardpointDataC* hardpointData;
 
@@ -35,7 +36,9 @@ public:
 	void enableChaseAll();
 	void disableChaseAll();
 
+	void move(int32_t* steps);
 	void translate(double x, double y, double z, double rX, double rY, double rZ);
+	void stopMotion();
 
 	void updateSteps();
 };

@@ -53,6 +53,7 @@ private:
 	m1m3_command_DisableHardpointChaseC disableHardpointChaseData;
 	m1m3_command_AbortRaiseM1M3C abortRaiseM1M3Data;
 	m1m3_command_TranslateM1M3C translateM1M3Data;
+	m1m3_command_StopHardpointMotionC stopHardpointMotionData;
 
 public:
 	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFactory);
@@ -84,6 +85,7 @@ public:
 	ICommand* tryAcceptCommandDisableHardpointChase();
 	ICommand* tryAcceptCommandAbortRaiseM1M3();
 	ICommand* tryAcceptCommandTranslateM1M3();
+	ICommand* tryAcceptCommandStopHardpointMotion();
 };
 
 } /* namespace SS */

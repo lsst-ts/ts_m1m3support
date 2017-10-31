@@ -18,7 +18,9 @@ void IPositionController::disableChase(int32_t actuatorIndex) { }
 void IPositionController::enableChaseAll() { }
 void IPositionController::disableChaseAll() { }
 
+void IPositionController::move(int32_t* steps) { }
 void IPositionController::translate(double x, double y, double z, double rX, double rY, double rZ) { }
+void IPositionController::stopMotion() { }
 
 void IPositionController::updateSteps() { }
 

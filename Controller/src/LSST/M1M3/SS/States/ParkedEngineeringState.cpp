@@ -27,6 +27,7 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* mo
 }
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
+	model->getPositionController()->updateSteps();
 	model->getILC()->writeRaisedListBuffer();
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
@@ -37,7 +38,6 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* mode
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
 	model->getILC()->verifyResponses();
-	model->getPositionController()->updateSteps();
 	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);
@@ -67,6 +67,16 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel
 	model->getForceController()->zeroAberration();
 	model->getForceController()->zeroAOSCorrection();
 	return model->getSafetyController()->checkSafety(newState);
+}
+
+States::Type ParkedEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model) {
+	model->getPositionController()->stopMotion();
+	return model->getSafetyController()->checkSafety(States::Ignore);
+}
+
+States::Type ParkedEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model) {
+	model->getPositionController()->move(command->getData()->Steps);
+	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 
 } /* namespace SS */

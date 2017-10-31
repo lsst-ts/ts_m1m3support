@@ -40,6 +40,7 @@ ICommand* ISubscriber::tryAcceptCommandEnableHardpointChase() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandDisableHardpointChase() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandAbortRaiseM1M3() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandTranslateM1M3() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandStopHardpointMotion() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

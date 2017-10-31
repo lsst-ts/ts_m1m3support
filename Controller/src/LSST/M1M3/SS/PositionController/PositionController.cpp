@@ -16,6 +16,7 @@ PositionController::PositionController(PositionControllerSettings* positionContr
 	this->positionControllerSettings = positionControllerSettings;
 	this->hardpointData = hardpointData;
 	this->disableChaseAll();
+	this->stopMotion();
 }
 
 void PositionController::enableChase(int32_t actuatorIndex) {
@@ -44,8 +45,20 @@ void PositionController::disableChaseAll() {
 	disableChase(5);
 }
 
+void PositionController::move(int32_t* steps) {
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->steps[i] = steps[i];
+	}
+}
+
 void PositionController::translate(double x, double y, double z, double rX, double rY, double rZ) {
 
+}
+
+void PositionController::stopMotion() {
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->steps[i] = 0;
+	}
 }
 
 void PositionController::updateSteps() {
@@ -59,6 +72,17 @@ void PositionController::updateSteps() {
 			else if (steps < -this->positionControllerSettings->MaxStepsPerLoop) {
 				steps = -this->positionControllerSettings->MaxStepsPerLoop;
 			}
+			this->hardpointData->StepsCommanded[i] = (int16_t)steps;
+		}
+		else if (this->steps[i] != 0) {
+			int32_t steps = this->steps[i];
+			if (steps > this->positionControllerSettings->MaxStepsPerLoop) {
+				steps = this->positionControllerSettings->MaxStepsPerLoop;
+			}
+			else if (steps < -this->positionControllerSettings->MaxStepsPerLoop) {
+				steps = -this->positionControllerSettings->MaxStepsPerLoop;
+			}
+			this->steps[i] -= steps;
 			this->hardpointData->StepsCommanded[i] = (int16_t)steps;
 		}
 	}

@@ -42,6 +42,7 @@ void IContext::enableHardpointChase(EnableHardpointChaseCommand* command) { }
 void IContext::disableHardpointChase(DisableHardpointChaseCommand* command) { }
 void IContext::abortRaiseM1M3(AbortRaiseM1M3Command* command) { }
 void IContext::translateM1M3(TranslateM1M3Command* command) { }
+void IContext::stopHardpointMotion(StopHardpointMotionCommand* command) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

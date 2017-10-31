@@ -45,7 +45,8 @@ struct Commands {
 		EnableHardpointChaseCommand = 25,
 		DisableHardpointChaseCommand = 26,
 		AbortRaiseM1M3Command = 27,
-		TranslateM1M3Command = 28
+		TranslateM1M3Command = 28,
+		StopHardpointMotionCommand = 29
 	};
 };
 

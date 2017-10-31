@@ -50,6 +50,7 @@ public:
 	virtual ICommand* tryAcceptCommandDisableHardpointChase();
 	virtual ICommand* tryAcceptCommandAbortRaiseM1M3();
 	virtual ICommand* tryAcceptCommandTranslateM1M3();
+	virtual ICommand* tryAcceptCommandStopHardpointMotion();
 };
 
 } /* namespace SS */

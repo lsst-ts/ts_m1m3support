@@ -44,6 +44,7 @@ class EnableHardpointChaseCommand;
 class DisableHardpointChaseCommand;
 class AbortRaiseM1M3Command;
 class TranslateM1M3Command;
+class StopHardpointMotionCommand;
 
 class IState {
 public:
@@ -78,6 +79,7 @@ public:
 	virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model);
 	virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, IModel* model);
 	virtual States::Type translateM1M3(TranslateM1M3Command* command, IModel* model);
+	virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model);
 };
 
 } /* namespace SS */

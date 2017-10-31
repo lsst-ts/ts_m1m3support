@@ -194,6 +194,12 @@ void Context::translateM1M3(TranslateM1M3Command* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::stopHardpointMotion(StopHardpointMotionCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->stopHardpointMotion(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::Ignore) {
 		this->currentState = potentialNewState;

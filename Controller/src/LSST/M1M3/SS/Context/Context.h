@@ -64,6 +64,7 @@ public:
 	void disableHardpointChase(DisableHardpointChaseCommand* command);
 	void abortRaiseM1M3(AbortRaiseM1M3Command* command);
 	void translateM1M3(TranslateM1M3Command* command);
+	void stopHardpointMotion(StopHardpointMotionCommand* command);
 };
 
 } /* namespace SS */

@@ -20,6 +20,10 @@ StandbyCommand::StandbyCommand(IContext* context, IPublisher* publisher, int32_t
 	this->data.Standby = data->Standby;
 }
 
+bool StandbyCommand::validate() {
+	return this->data.Standby;
+}
+
 void StandbyCommand::execute() {
 	this->context->standby(this);
 }

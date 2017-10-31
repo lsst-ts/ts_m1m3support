@@ -164,6 +164,10 @@ void M1M3SSPublisher::ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode
 
 }
 
+void M1M3SSPublisher::ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description) {
+
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

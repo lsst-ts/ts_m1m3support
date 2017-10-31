@@ -21,6 +21,8 @@ public:
 	States::Type turnAirOn(TurnAirOnCommand* command, IModel* model);
 	States::Type turnAirOff(TurnAirOffCommand* command, IModel* model);
 	States::Type raiseM1M3(RaiseM1M3Command* command, IModel* model);
+	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model);
+	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model);
 };
 
 } /* namespace SS */

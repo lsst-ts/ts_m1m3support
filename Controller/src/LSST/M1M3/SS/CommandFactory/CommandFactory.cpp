@@ -35,6 +35,7 @@
 #include <DisableHardpointChaseCommand.h>
 #include <AbortRaiseM1M3Command.h>
 #include <TranslateM1M3Command.h>
+#include <StopHardpointMotionCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -77,6 +78,7 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	case Commands::DisableHardpointChaseCommand: return new DisableHardpointChaseCommand(this->context, this->publisher, commandID, (m1m3_command_DisableHardpointChaseC*)data);
 	case Commands::AbortRaiseM1M3Command: return new AbortRaiseM1M3Command(this->context, this->publisher, commandID, (m1m3_command_AbortRaiseM1M3C*)data);
 	case Commands::TranslateM1M3Command: return new TranslateM1M3Command(this->context, this->publisher, commandID, (m1m3_command_TranslateM1M3C*)data);
+	case Commands::StopHardpointMotionCommand: return new StopHardpointMotionCommand(this->context, this->publisher, commandID, (m1m3_command_StopHardpointMotionC*)data);
 	}
 	return 0;
 }

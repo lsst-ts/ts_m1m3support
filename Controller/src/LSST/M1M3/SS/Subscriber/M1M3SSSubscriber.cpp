@@ -43,6 +43,7 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFa
 	this->m1m3SAL->salProcessor("m1m3_command_DisableHardpointChase");
 	this->m1m3SAL->salProcessor("m1m3_command_AbortRaiseM1M3");
 	this->m1m3SAL->salProcessor("m1m3_command_TranslateM1M3");
+	this->m1m3SAL->salProcessor("m1m3_command_StopHardpointMotion");
 }
 
 ICommand* M1M3SSSubscriber::tryAcceptCommandStart() {
@@ -257,6 +258,14 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandTranslateM1M3() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_TranslateM1M3(&this->translateM1M3Data);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::TranslateM1M3Command, &this->translateM1M3Data, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandStopHardpointMotion() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_StopHardpointMotion(&this->stopHardpointMotionData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::StopHardpointMotionCommand, &this->stopHardpointMotionData, commandID);
 	}
 	return 0;
 }

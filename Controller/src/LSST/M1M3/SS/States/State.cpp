@@ -40,6 +40,7 @@ States::Type State::enableHardpointChase(EnableHardpointChaseCommand* command, I
 States::Type State::disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model) { return States::Ignore; }
 States::Type State::abortRaiseM1M3(AbortRaiseM1M3Command* command, IModel* model) { return States::Ignore; }
 States::Type State::translateM1M3(TranslateM1M3Command* command, IModel* model) { return States::Ignore; }
+States::Type State::stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model) { return States::Ignore; }
 
 } /* namespace SS */
 } /* namespace M1M3 */
