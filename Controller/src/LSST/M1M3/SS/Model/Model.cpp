@@ -79,6 +79,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings = this->settingReader->loadHardpointActuatorApplicationSettings();
 	HardpointActuatorSettings* hardpointActuatorSettings = this->settingReader->loadHardpointActuatorSettings();
 	SafetyControllerSettings* safetyControllerSettings = this->settingReader->loadSafetyControllerSettings();
+	PositionControllerSettings* positionControllerSettings = this->settingReader->loadPositionControllerSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -116,7 +117,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->positionController) {
 		delete this->positionController;
 	}
-	this->positionController = new PositionController(this->publisher->getHardpointData());
+	this->positionController = new PositionController(positionControllerSettings, this->publisher->getHardpointData());
 }
 
 void Model::queryFPGAData() {

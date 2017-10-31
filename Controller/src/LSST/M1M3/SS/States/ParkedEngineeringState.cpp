@@ -16,6 +16,9 @@
 #include <ApplyOffsetForcesCommand.h>
 #include <ISafetyController.h>
 #include <IPositionController.h>
+#include <MoveHardpointActuatorsCommand.h>
+#include <EnableHardpointChaseCommand.h>
+#include <DisableHardpointChaseCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -76,6 +79,16 @@ States::Type ParkedEngineeringState::stopHardpointMotion(StopHardpointMotionComm
 
 States::Type ParkedEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model) {
 	model->getPositionController()->move(command->getData()->Steps);
+	return model->getSafetyController()->checkSafety(States::Ignore);
+}
+
+States::Type ParkedEngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, IModel* model) {
+	model->getPositionController()->enableChase(command->getData()->ActuatorId);
+	return model->getSafetyController()->checkSafety(States::Ignore);
+}
+
+States::Type ParkedEngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model) {
+	model->getPositionController()->disableChase(command->getData()->ActuatorId);
 	return model->getSafetyController()->checkSafety(States::Ignore);
 }
 

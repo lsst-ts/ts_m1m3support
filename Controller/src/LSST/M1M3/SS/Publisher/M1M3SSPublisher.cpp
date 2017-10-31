@@ -125,11 +125,11 @@ void M1M3SSPublisher::ackCommandClearAberration(int32_t commandID, int32_t ackCo
 }
 
 void M1M3SSPublisher::ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description) {
-
+	this->m1m3SAL->ackCommand_EnterEngineering(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 void M1M3SSPublisher::ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description) {
-
+	this->m1m3SAL->ackCommand_ExitEngineering(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 void M1M3SSPublisher::ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description) {
@@ -149,11 +149,11 @@ void M1M3SSPublisher::ackCommandMoveHardpointActuators(int32_t commandID, int32_
 }
 
 void M1M3SSPublisher::ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description) {
-
+	this->m1m3SAL->ackCommand_EnableHardpointChase(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 void M1M3SSPublisher::ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description) {
-
+	this->m1m3SAL->ackCommand_DisableHardpointChase(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 void M1M3SSPublisher::ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) {
@@ -161,11 +161,11 @@ void M1M3SSPublisher::ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCod
 }
 
 void M1M3SSPublisher::ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description) {
-
+	this->m1m3SAL->ackCommand_TranslateM1M3(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 void M1M3SSPublisher::ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description) {
-
+	this->m1m3SAL->ackCommand_StopHardpointMotion(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

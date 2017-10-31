@@ -6,6 +6,8 @@
  */
 
 #include <PositionController.h>
+#include <PositionControllerSettings.h>
+#include <Range.h>
 #include <SAL_m1m3C.h>
 
 namespace LSST {
@@ -20,29 +22,29 @@ PositionController::PositionController(PositionControllerSettings* positionContr
 }
 
 void PositionController::enableChase(int32_t actuatorIndex) {
-	this->chasing[actuatorIndex] = true;
+	this->chasing[actuatorIndex - 1] = true;
 }
 
 void PositionController::disableChase(int32_t actuatorIndex) {
-	this->chasing[actuatorIndex] = false;
+	this->chasing[actuatorIndex - 1] = false;
 }
 
 void PositionController::enableChaseAll() {
-	enableChase(0);
 	enableChase(1);
 	enableChase(2);
 	enableChase(3);
 	enableChase(4);
 	enableChase(5);
+	enableChase(6);
 }
 
 void PositionController::disableChaseAll() {
-	disableChase(0);
 	disableChase(1);
 	disableChase(2);
 	disableChase(3);
 	disableChase(4);
 	disableChase(5);
+	disableChase(6);
 }
 
 void PositionController::move(int32_t* steps) {
@@ -66,22 +68,11 @@ void PositionController::updateSteps() {
 		if (this->chasing[i]) {
 			float force = this->hardpointData->Force[i];
 			int32_t steps = (int32_t)(force * this->positionControllerSettings->ForceToStepsCoefficient);
-			if (steps > this->positionControllerSettings->MaxStepsPerLoop) {
-				steps = this->positionControllerSettings->MaxStepsPerLoop;
-			}
-			else if (steps < -this->positionControllerSettings->MaxStepsPerLoop) {
-				steps = -this->positionControllerSettings->MaxStepsPerLoop;
-			}
+			steps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, steps);
 			this->hardpointData->StepsCommanded[i] = (int16_t)steps;
 		}
-		else if (this->steps[i] != 0) {
-			int32_t steps = this->steps[i];
-			if (steps > this->positionControllerSettings->MaxStepsPerLoop) {
-				steps = this->positionControllerSettings->MaxStepsPerLoop;
-			}
-			else if (steps < -this->positionControllerSettings->MaxStepsPerLoop) {
-				steps = -this->positionControllerSettings->MaxStepsPerLoop;
-			}
+		else {
+			int32_t steps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, this->steps[i]);
 			this->steps[i] -= steps;
 			this->hardpointData->StepsCommanded[i] = (int16_t)steps;
 		}

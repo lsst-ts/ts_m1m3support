@@ -17,11 +17,16 @@ TranslateM1M3Command::TranslateM1M3Command(IContext* context, IPublisher* publis
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ActuatorId = data->ActuatorId;
+	this->data.XTranslation = data->XTranslation;
+	this->data.YTranslation = data->YTranslation;
+	this->data.ZTranslation = data->ZTranslation;
+	this->data.XRotation = data->XRotation;
+	this->data.YRotation = data->YRotation;
+	this->data.ZRotation = data->ZRotation;
 }
 
 bool TranslateM1M3Command::validate() {
-	return this->data.ActuatorId > 0 && this->data.ActuatorId <= 6;
+	return true;
 }
 
 void TranslateM1M3Command::execute() {

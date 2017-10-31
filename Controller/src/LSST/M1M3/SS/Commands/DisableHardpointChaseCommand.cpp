@@ -17,13 +17,11 @@ DisableHardpointChaseCommand::DisableHardpointChaseCommand(IContext* context, IP
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	for(int i = 0; i < 6; i++) {
-		this->data.Steps[i] = data->Steps[i];
-	}
+	this->data.ActuatorId = data->ActuatorId;
 }
 
 bool DisableHardpointChaseCommand::validate() {
-	return true;
+	return this->data.ActuatorId >= 1 && this->data.ActuatorId <= 6;
 }
 
 void DisableHardpointChaseCommand::execute() {

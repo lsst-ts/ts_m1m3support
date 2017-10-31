@@ -6,6 +6,8 @@
  */
 
 #include <StopHardpointMotionCommand.h>
+#include <IContext.h>
+#include <IPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -15,16 +17,15 @@ StopHardpointMotionCommand::StopHardpointMotionCommand(IContext* context, IPubli
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Start = data->Start;
-	this->data.SettingsToApply = data->SettingsToApply;
+	this->data.StopHardpointMotion = data->StopHardpointMotion;
 }
 
 bool StopHardpointMotionCommand::validate() {
-	return true;
+	return this->data.StopHardpointMotion;
 }
 
 void StopHardpointMotionCommand::execute() {
-	this->context->start(this);
+	this->context->stopHardpointMotion(this);
 }
 
 void StopHardpointMotionCommand::ackInProgress() {

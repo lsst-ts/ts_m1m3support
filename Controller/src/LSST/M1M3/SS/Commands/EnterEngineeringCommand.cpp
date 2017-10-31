@@ -17,11 +17,11 @@ EnterEngineeringCommand::EnterEngineeringCommand(IContext* context, IPublisher* 
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Enable = data->Enable;
+	this->data.EnterEngineering = data->EnterEngineering;
 }
 
 bool EnterEngineeringCommand::validate() {
-	return this->data.Enable;
+	return this->data.EnterEngineering;
 }
 
 void EnterEngineeringCommand::execute() {

@@ -17,11 +17,11 @@ ExitEngineeringCommand::ExitEngineeringCommand(IContext* context, IPublisher* pu
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Enable = data->Enable;
+	this->data.ExitEngineering = data->ExitEngineering;
 }
 
 bool ExitEngineeringCommand::validate() {
-	return this->data.Enable;
+	return this->data.ExitEngineering;
 }
 
 void ExitEngineeringCommand::execute() {
