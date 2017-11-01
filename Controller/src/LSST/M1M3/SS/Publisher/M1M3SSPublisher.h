@@ -31,10 +31,12 @@ private:
 
 	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
 	m1m3_logevent_AirSupplyWarningC eventAirSupplyWarning;
+	m1m3_logevent_AppliedForcesC eventAppliedForces;
 	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
 	m1m3_logevent_ErrorCodeC eventErrorCode;
 	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
 	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
+	m1m3_logevent_HardpointActuatorMotionStateC eventHardpointActuatorMotionState;
 	m1m3_logevent_ILCWarningC eventILCWarning;
 	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
 	m1m3_logevent_SettingVersionsC eventSettingVersions;
@@ -53,10 +55,12 @@ public:
 
 	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
 	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
+	m1m3_logevent_AppliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
 	m1m3_logevent_ErrorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
 	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
+	m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState() { return &this->eventHardpointActuatorMotionState; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
 	m1m3_logevent_SettingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
@@ -74,10 +78,12 @@ public:
 
 	void logAirSupplyStatus();
 	void logAirSupplyWarning();
+	void logAppliedForces();
 	void logDisplacementSensorWarning();
 	void logErrorCode();
 	void logForceActuatorInfo();
 	void logHardpointActuatorInfo();
+	void logHardpointActuatorMotionState();
 	void logILCWarning();
 	void logInclinometerSensorWarning();
 	void logSettingVersions();

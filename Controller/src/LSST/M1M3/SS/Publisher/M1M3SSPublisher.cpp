@@ -25,10 +25,12 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyStatus");
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyWarning");
+	this->m1m3SAL->salEvent("m1m3_logevent_AppliedForces");
 	this->m1m3SAL->salEvent("m1m3_logevent_DisplacementSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_ErrorCode");
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorInfo");
 	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorInfo");
+	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorMotionState");
 	this->m1m3SAL->salEvent("m1m3_logevent_ILCWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_SettingVersions");
@@ -47,10 +49,12 @@ void M1M3SSPublisher::putOuterLoopData() { this->m1m3SAL->putSample_OuterLoopDat
 
 void M1M3SSPublisher::logAirSupplyStatus() { this->m1m3SAL->logEvent_AirSupplyStatus(&this->eventAirSupplyStatus, 0); }
 void M1M3SSPublisher::logAirSupplyWarning() { this->m1m3SAL->logEvent_AirSupplyWarning(&this->eventAirSupplyWarning, 0); }
+void M1M3SSPublisher::logAppliedForces() { this->m1m3SAL->logEvent_AppliedForces(&this->eventAppliedForces, 0); }
 void M1M3SSPublisher::logDisplacementSensorWarning() { this->m1m3SAL->logEvent_DisplacementSensorWarning(&this->eventDisplacementSensorWarning, 0); }
 void M1M3SSPublisher::logErrorCode() { this->m1m3SAL->logEvent_ErrorCode(&this->eventErrorCode, 0); }
 void M1M3SSPublisher::logForceActuatorInfo() { this->m1m3SAL->logEvent_ForceActuatorInfo(&this->eventForceActuatorInfo, 0); }
 void M1M3SSPublisher::logHardpointActuatorInfo() { this->m1m3SAL->logEvent_HardpointActuatorInfo(&this->eventHardpointActuatorInfo, 0); }
+void M1M3SSPublisher::logHardpointActuatorMotionState() { this->m1m3SAL->logEvent_HardpointActuatorMotionState(&this->eventHardpointActuatorMotionState, 0); }
 void M1M3SSPublisher::logILCWarning() { this->m1m3SAL->logEvent_ILCWarning(&this->eventILCWarning, 0); }
 void M1M3SSPublisher::logInclinometerSensorWarning() { this->m1m3SAL->logEvent_InclinometerSensorWarning(&this->eventInclinometerSensorWarning, 0); }
 void M1M3SSPublisher::logSettingVersions() { this->m1m3SAL->logEvent_SettingVersions(&this->eventSettingVersions, 0); }

@@ -24,8 +24,8 @@ class IPositionController {
 public:
 	virtual ~IPositionController();
 
-	virtual void enableChase(int32_t actuatorIndex);
-	virtual void disableChase(int32_t actuatorIndex);
+	virtual void enableChase(int32_t actuatorID);
+	virtual void disableChase(int32_t actuatorID);
 	virtual void enableChaseAll();
 	virtual void disableChaseAll();
 

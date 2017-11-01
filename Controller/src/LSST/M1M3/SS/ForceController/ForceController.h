@@ -11,6 +11,7 @@
 #include <IForceController.h>
 #include <DataTypes.h>
 
+struct m1m3_logevent_AppliedForcesC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_ForceActuatorDataC;
 struct m1m3_InclinometerDataC;
@@ -21,6 +22,7 @@ namespace SS {
 
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
+class IPublisher;
 
 class ForceController: public IForceController {
 private:
@@ -29,15 +31,12 @@ private:
 
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
+	IPublisher* publisher;
+
+	m1m3_logevent_AppliedForcesC* appliedForces;
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
 	m1m3_ForceActuatorDataC* forceData;
 	m1m3_InclinometerDataC* inclinometerData;
-
-	bool applyingStaticForces;
-	bool applyingOffsetForces;
-	bool applyingAOSCorrection;
-	bool applyingAberration;
-	bool applyingElevationForces;
 
 	double staticXSetpoint[156];
 	double staticYSetpoint[156];
@@ -46,7 +45,7 @@ private:
 	static int32_t toInt24(double force) { return (int32_t)(force * 1000.0); }
 
 public:
-	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_InclinometerDataC* inclinometerData, m1m3_ForceActuatorDataC* forceData);
+	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, IPublisher* publisher);
 
 	void updateAppliedForces();
 	void processAppliedForces();

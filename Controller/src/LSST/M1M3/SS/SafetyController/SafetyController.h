@@ -46,6 +46,7 @@ public:
 	void displacementNotifyInvalidLength(bool conditionFlag);
 	void displacementNotifyUnknownCommand(bool conditionFlag);
 	void displacementNotifyUnknownProblem(bool conditionFlag);
+
 	void inclinometerNotifyResponseTimeout(bool conditionFlag);
 	void inclinometerNotifyInvalidCRC(bool conditionFlag);
 	void inclinometerNotifyUnknownAddress(bool conditionFlag);

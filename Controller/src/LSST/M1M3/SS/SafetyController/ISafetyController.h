@@ -34,6 +34,7 @@ public:
 	virtual void displacementNotifyInvalidLength(bool conditionFlag);
 	virtual void displacementNotifyUnknownCommand(bool conditionFlag);
 	virtual void displacementNotifyUnknownProblem(bool conditionFlag);
+
 	virtual void inclinometerNotifyResponseTimeout(bool conditionFlag);
 	virtual void inclinometerNotifyInvalidCRC(bool conditionFlag);
 	virtual void inclinometerNotifyUnknownAddress(bool conditionFlag);

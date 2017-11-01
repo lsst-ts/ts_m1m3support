@@ -39,6 +39,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->ilc = 0;
 	this->airController = 0;
 	this->forceController = 0;
+	this->positionController = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
 }
@@ -107,7 +108,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->forceController) {
 		delete this->forceController;
 	}
-	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher->getEventForceActuatorInfo(), this->publisher->getInclinometerData(), this->publisher->getForceActuatorData());
+	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher);
 
 	if (this->airController) {
 		delete this->airController;
@@ -117,7 +118,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->positionController) {
 		delete this->positionController;
 	}
-	this->positionController = new PositionController(positionControllerSettings, this->publisher->getHardpointData());
+	this->positionController = new PositionController(positionControllerSettings, this->publisher);
 }
 
 void Model::queryFPGAData() {

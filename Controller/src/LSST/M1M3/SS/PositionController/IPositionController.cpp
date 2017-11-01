@@ -13,8 +13,8 @@ namespace SS {
 
 IPositionController::~IPositionController() { }
 
-void IPositionController::enableChase(int32_t actuatorIndex) { }
-void IPositionController::disableChase(int32_t actuatorIndex) { }
+void IPositionController::enableChase(int32_t actuatorID) { }
+void IPositionController::disableChase(int32_t actuatorID) { }
 void IPositionController::enableChaseAll() { }
 void IPositionController::disableChaseAll() { }
 

@@ -8,6 +8,7 @@
 #include <ForceController.h>
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorSettings.h>
+#include <IPublisher.h>
 #include <SAL_m1m3C.h>
 #include <cmath>
 #include <vector>
@@ -16,26 +17,42 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_InclinometerDataC* inclinometerData, m1m3_ForceActuatorDataC* forceData) {
+ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, IPublisher* publisher) {
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
-	this->forceInfo = forceInfo;
-	this->inclinometerData = inclinometerData;
-	this->forceData = forceData;
-	this->applyingStaticForces = false;
-	this->applyingOffsetForces = false;
-	this->applyingAOSCorrection = false;
-	this->applyingAberration = false;
-	this->applyingElevationForces = false;
-	this->zeroStaticForces();
-	this->zeroOffsetForces();
-	this->zeroAOSCorrection();
-	this->zeroAberration();
-	this->zeroElevationForces();
+	this->publisher = publisher;
+	this->appliedForces = this->publisher->getEventAppliedForces();
+	this->forceInfo = this->publisher->getEventForceActuatorInfo();
+	this->inclinometerData = this->publisher->getInclinometerData();
+	this->forceData = this->publisher->getForceActuatorData();
+	this->appliedForces->Timestamp = this->publisher->getTimestamp();
+	this->appliedForces->StaticForcesApplied = false;
+	this->appliedForces->OffsetForcesApplied = false;
+	this->appliedForces->ElevationForcesApplied = false;
+	this->appliedForces->AzimuthForcesApplied = false;
+	this->appliedForces->TemperatureForcesApplied = false;
+	this->appliedForces->AOSCorrectionApplied = false;
+	this->appliedForces->AberrationApplied = false;
+	this->appliedForces->DynamicForcesApplied = false;
+	this->appliedForces->HardpointOffloadingForcesApplied = false;
+	this->publisher->logAppliedForces();
+	for(int i = 0; i < FA_COUNT; i++) {
+		this->staticXSetpoint[i] = 0;
+		this->staticYSetpoint[i] = 0;
+		this->staticZSetpoint[i] = 0;
+		this->forceData->OffsetXSetpoint[i] = 0;
+		this->forceData->OffsetYSetpoint[i] = 0;
+		this->forceData->OffsetZSetpoint[i] = 0;
+		this->forceData->ActiveOpticsZSetpoint[i] = 0;
+		this->forceData->AberationZSetpoint[i] = 0;
+		this->forceData->ElevationXSetpoint[i] = 0;
+		this->forceData->ElevationYSetpoint[i] = 0;
+		this->forceData->ElevationZSetpoint[i] = 0;
+	}
 }
 
 void ForceController::updateAppliedForces() {
-	if (this->applyingElevationForces) {
+	if (this->appliedForces->ElevationForcesApplied) {
 		this->updateElevationForces();
 	}
 }
@@ -46,43 +63,47 @@ void ForceController::processAppliedForces() {
 }
 
 void ForceController::applyStaticForces() {
-	this->applyingStaticForces = true;
+	this->appliedForces->StaticForcesApplied = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->staticXSetpoint[i] = this->forceInfo->StaticXSetpoint[i];
 		this->staticYSetpoint[i] = this->forceInfo->StaticYSetpoint[i];
 		this->staticZSetpoint[i] = this->forceInfo->StaticZSetpoint[i];
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::zeroStaticForces() {
-	this->applyingStaticForces = false;
+	this->appliedForces->StaticForcesApplied = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->staticXSetpoint[i] = 0;
 		this->staticYSetpoint[i] = 0;
 		this->staticZSetpoint[i] = 0;
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::applyOffsetForces(double* x, double* y, double* z) {
-	this->applyingOffsetForces = true;
+	this->appliedForces->OffsetForcesApplied = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->OffsetXSetpoint[i] = x[i];
 		this->forceData->OffsetYSetpoint[i] = y[i];
 		this->forceData->OffsetZSetpoint[i] = z[i];
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::zeroOffsetForces() {
-	this->applyingOffsetForces = false;
+	this->appliedForces->OffsetForcesApplied = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->OffsetXSetpoint[i] = 0;
 		this->forceData->OffsetYSetpoint[i] = 0;
 		this->forceData->OffsetZSetpoint[i] = 0;
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::applyAOSCorrectionByBendingModes(double* coefficients) {
-	this->applyingAOSCorrection = false;
+	this->appliedForces->AOSCorrectionApplied = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		int mIndex = i * 22;
 		this->forceData->ActiveOpticsZSetpoint[i] =
@@ -109,24 +130,27 @@ void ForceController::applyAOSCorrectionByBendingModes(double* coefficients) {
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 20] * coefficients[20] +
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 21] * coefficients[21];
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::applyAOSCorrectionByForces(double* z) {
-	this->applyingAOSCorrection = false;
+	this->appliedForces->AOSCorrectionApplied = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->ActiveOpticsZSetpoint[i] = z[i];
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::zeroAOSCorrection() {
-	this->applyingAOSCorrection = false;
+	this->appliedForces->AOSCorrectionApplied = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->ActiveOpticsZSetpoint[i] = 0;
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::applyAberrationByBendingModes(double* coefficients) {
-	this->applyingAberration = false;
+	this->appliedForces->AberrationApplied = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		int mIndex = i * 22;
 		this->forceData->AberationZSetpoint[i] =
@@ -153,33 +177,38 @@ void ForceController::applyAberrationByBendingModes(double* coefficients) {
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 20] * coefficients[20] +
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 21] * coefficients[21];
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::applyAberrationByForces(double* z) {
-	this->applyingAberration = true;
+	this->appliedForces->AberrationApplied = true;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->AberationZSetpoint[i] = z[i];
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::zeroAberration() {
-	this->applyingAberration = false;
+	this->appliedForces->AberrationApplied = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->AberationZSetpoint[i] = 0;
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::applyElevationForces() {
-	this->applyingElevationForces = true;
+	this->appliedForces->ElevationForcesApplied = true;
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::zeroElevationForces() {
-	this->applyingElevationForces = false;
+	this->appliedForces->ElevationForcesApplied = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->ElevationXSetpoint[i] = 0;
 		this->forceData->ElevationYSetpoint[i] = 0;
 		this->forceData->ElevationZSetpoint[i] = 0;
 	}
+	this->publisher->logAppliedForces();
 }
 
 void ForceController::updateElevationForces() {

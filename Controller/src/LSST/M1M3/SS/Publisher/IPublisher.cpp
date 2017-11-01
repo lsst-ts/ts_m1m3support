@@ -23,10 +23,12 @@ m1m3_OuterLoopDataC* IPublisher::getOuterLoopData() { return 0; }
 
 m1m3_logevent_AirSupplyStatusC* IPublisher::getEventAirSupplyStatus() { return 0; }
 m1m3_logevent_AirSupplyWarningC* IPublisher::getEventAirSupplyWarning() { return 0; }
+m1m3_logevent_AppliedForcesC* IPublisher::getEventAppliedForces() { return 0; }
 m1m3_logevent_DisplacementSensorWarningC* IPublisher::getEventDisplacementSensorWarning() { return 0; }
 m1m3_logevent_ErrorCodeC* IPublisher::getEventErrorCode() { return 0; }
 m1m3_logevent_ForceActuatorInfoC* IPublisher::getEventForceActuatorInfo() { return 0; }
 m1m3_logevent_HardpointActuatorInfoC* IPublisher::getEventHardpointActuatorInfo() { return 0; }
+m1m3_logevent_HardpointActuatorMotionStateC* IPublisher::getEventHardpointActuatorMotionState() { return 0; }
 m1m3_logevent_ILCWarningC* IPublisher::getEventILCWarning() { return 0; }
 m1m3_logevent_InclinometerSensorWarningC* IPublisher::getEventInclinometerSensorWarning() { return 0; }
 m1m3_logevent_SettingVersionsC* IPublisher::getEventSettingVersions() { return 0; }
@@ -44,10 +46,12 @@ void IPublisher::putOuterLoopData() { }
 
 void IPublisher::logAirSupplyStatus() { }
 void IPublisher::logAirSupplyWarning() { }
+void IPublisher::logAppliedForces() { }
 void IPublisher::logDisplacementSensorWarning() { }
 void IPublisher::logErrorCode() { }
 void IPublisher::logForceActuatorInfo() { }
 void IPublisher::logHardpointActuatorInfo() { }
+void IPublisher::logHardpointActuatorMotionState() { }
 void IPublisher::logILCWarning() { }
 void IPublisher::logInclinometerSensorWarning() { }
 void IPublisher::logSettingVersions() { }

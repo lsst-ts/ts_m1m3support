@@ -21,10 +21,12 @@ struct m1m3_OuterLoopDataC;
 
 struct m1m3_logevent_AirSupplyStatusC;
 struct m1m3_logevent_AirSupplyWarningC;
+struct m1m3_logevent_AppliedForcesC;
 struct m1m3_logevent_DisplacementSensorWarningC;
 struct m1m3_logevent_ErrorCodeC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_logevent_HardpointActuatorInfoC;
+struct m1m3_logevent_HardpointActuatorMotionStateC;
 struct m1m3_logevent_ILCWarningC;
 struct m1m3_logevent_InclinometerSensorWarningC;
 struct m1m3_logevent_SettingVersionsC;
@@ -48,10 +50,12 @@ public:
 
 	virtual m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus();
 	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
+	virtual m1m3_logevent_AppliedForcesC* getEventAppliedForces();
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
 	virtual m1m3_logevent_ErrorCodeC* getEventErrorCode();
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
 	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
+	virtual m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState();
 	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
 	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
 	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();
@@ -69,10 +73,12 @@ public:
 
 	virtual void logAirSupplyStatus();
 	virtual void logAirSupplyWarning();
+	virtual void logAppliedForces();
 	virtual void logDisplacementSensorWarning();
 	virtual void logErrorCode();
 	virtual void logForceActuatorInfo();
 	virtual void logHardpointActuatorInfo();
+	virtual void logHardpointActuatorMotionState();
 	virtual void logILCWarning();
 	virtual void logInclinometerSensorWarning();
 	virtual void logSettingVersions();
