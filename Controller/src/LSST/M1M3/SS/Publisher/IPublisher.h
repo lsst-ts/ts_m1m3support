@@ -29,6 +29,8 @@ struct m1m3_logevent_HardpointActuatorInfoC;
 struct m1m3_logevent_HardpointActuatorMotionStateC;
 struct m1m3_logevent_ILCWarningC;
 struct m1m3_logevent_InclinometerSensorWarningC;
+struct m1m3_logevent_InterlockStatusC;
+struct m1m3_logevent_InterlockWarningC;
 struct m1m3_logevent_SettingVersionsC;
 struct m1m3_logevent_SummaryStateC;
 
@@ -58,6 +60,8 @@ public:
 	virtual m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState();
 	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
 	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
+	virtual m1m3_logevent_InterlockStatusC* getEventInterlockStatus();
+	virtual m1m3_logevent_InterlockWarningC* getEventInterlockWarning();
 	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();
 	virtual m1m3_logevent_SummaryStateC* getEventSummaryState();
 
@@ -81,6 +85,8 @@ public:
 	virtual void logHardpointActuatorMotionState();
 	virtual void logILCWarning();
 	virtual void logInclinometerSensorWarning();
+	virtual void logInterlockStatus();
+	virtual void logInterlockWarning();
 	virtual void logSettingVersions();
 	virtual void logSummaryState();
 

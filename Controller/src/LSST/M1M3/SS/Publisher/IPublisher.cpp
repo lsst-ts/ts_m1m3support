@@ -31,6 +31,8 @@ m1m3_logevent_HardpointActuatorInfoC* IPublisher::getEventHardpointActuatorInfo(
 m1m3_logevent_HardpointActuatorMotionStateC* IPublisher::getEventHardpointActuatorMotionState() { return 0; }
 m1m3_logevent_ILCWarningC* IPublisher::getEventILCWarning() { return 0; }
 m1m3_logevent_InclinometerSensorWarningC* IPublisher::getEventInclinometerSensorWarning() { return 0; }
+m1m3_logevent_InterlockStatusC* IPublisher::getEventInterlockStatus() { return 0; }
+m1m3_logevent_InterlockWarningC* IPublisher::getEventInterlockWarning() { return 0; }
 m1m3_logevent_SettingVersionsC* IPublisher::getEventSettingVersions() { return 0; }
 m1m3_logevent_SummaryStateC* IPublisher::getEventSummaryState() { return 0; }
 
@@ -54,6 +56,8 @@ void IPublisher::logHardpointActuatorInfo() { }
 void IPublisher::logHardpointActuatorMotionState() { }
 void IPublisher::logILCWarning() { }
 void IPublisher::logInclinometerSensorWarning() { }
+void IPublisher::logInterlockStatus() { }
+void IPublisher::logInterlockWarning() { }
 void IPublisher::logSettingVersions() { }
 void IPublisher::logSummaryState() { }
 

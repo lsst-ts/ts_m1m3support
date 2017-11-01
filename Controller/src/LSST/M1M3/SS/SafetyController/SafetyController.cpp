@@ -50,6 +50,11 @@ void SafetyController::inclinometerNotifySensorReportsIllegalDataAddress(bool co
 void SafetyController::inclinometerNotifySensorReportsIllegalFunction(bool conditionFlag) { this->updateOverride(FaultCodes::InclinometerSensorReportsIllegalFunction, this->safetyControllerSettings->Inclinometer.FaultOnSensorReportsIllegalFunction, conditionFlag); }
 void SafetyController::inclinometerNotifyUnknownProblem(bool conditionFlag) { this->updateOverride(FaultCodes::InclinometerUnknownProblem, this->safetyControllerSettings->Inclinometer.FaultOnUnknownProblem, conditionFlag); }
 
+void SafetyController::interlockNotifyHeartbeatStateOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockHeartbeatStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnHeartbeatStateOutputMismatch, conditionFlag); }
+void SafetyController::interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag){ this->updateOverride(FaultCodes::InterlockCriticalFaultStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnCriticalFaultStateOutputMismatch, conditionFlag); }
+void SafetyController::interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockMirrorLoweringRaisingStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnMirrorLoweringRaisingStateOutputMismatch, conditionFlag); }
+void SafetyController::interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag){ this->updateOverride(FaultCodes::InterlockMirrorParkedStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnMirrorParkedStateOutputMismatch, conditionFlag); }
+
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {
 		this->publisher->logErrorCode();

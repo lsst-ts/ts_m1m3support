@@ -39,6 +39,8 @@ private:
 	m1m3_logevent_HardpointActuatorMotionStateC eventHardpointActuatorMotionState;
 	m1m3_logevent_ILCWarningC eventILCWarning;
 	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
+	m1m3_logevent_InterlockStatusC eventInterlockStatus;
+	m1m3_logevent_InterlockWarningC eventInterlockWarning;
 	m1m3_logevent_SettingVersionsC eventSettingVersions;
 	m1m3_logevent_SummaryStateC eventSummaryState;
 
@@ -63,6 +65,8 @@ public:
 	m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState() { return &this->eventHardpointActuatorMotionState; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
+	m1m3_logevent_InterlockStatusC* getEventInterlockStatus() { return &this->eventInterlockStatus; }
+	m1m3_logevent_InterlockWarningC* getEventInterlockWarning() { return &this->eventInterlockWarning; }
 	m1m3_logevent_SettingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
 	m1m3_logevent_SummaryStateC* getEventSummaryState() { return &this->eventSummaryState; }
 
@@ -86,6 +90,8 @@ public:
 	void logHardpointActuatorMotionState();
 	void logILCWarning();
 	void logInclinometerSensorWarning();
+	void logInterlockStatus();
+	void logInterlockWarning();
 	void logSettingVersions();
 	void logSummaryState();
 

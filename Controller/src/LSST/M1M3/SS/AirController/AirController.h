@@ -19,8 +19,8 @@ namespace M1M3 {
 namespace SS {
 
 class IPublisher;
-class IFPGA;
 class ISafetyController;
+class IFPGA;
 
 /*!
  * Class used for controlling air supply.

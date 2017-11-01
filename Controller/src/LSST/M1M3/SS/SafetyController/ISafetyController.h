@@ -44,6 +44,11 @@ public:
 	virtual void inclinometerNotifySensorReportsIllegalFunction(bool conditionFlag);
 	virtual void inclinometerNotifyUnknownProblem(bool conditionFlag);
 
+	virtual void interlockNotifyHeartbeatStateOutputMismatch(bool conditionFlag);
+	virtual void interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag);
+	virtual void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
+	virtual void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
+
 	virtual States::Type checkSafety(States::Type preferredNextState);
 };
 

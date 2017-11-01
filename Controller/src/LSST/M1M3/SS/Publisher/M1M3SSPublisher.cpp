@@ -33,6 +33,8 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorMotionState");
 	this->m1m3SAL->salEvent("m1m3_logevent_ILCWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
+	this->m1m3SAL->salEvent("m1m3_logevent_InterlockStatus");
+	this->m1m3SAL->salEvent("m1m3_logevent_InterlockWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_SettingVersions");
 	this->m1m3SAL->salEvent("m1m3_logevent_SummaryState");
 }
@@ -57,6 +59,8 @@ void M1M3SSPublisher::logHardpointActuatorInfo() { this->m1m3SAL->logEvent_Hardp
 void M1M3SSPublisher::logHardpointActuatorMotionState() { this->m1m3SAL->logEvent_HardpointActuatorMotionState(&this->eventHardpointActuatorMotionState, 0); }
 void M1M3SSPublisher::logILCWarning() { this->m1m3SAL->logEvent_ILCWarning(&this->eventILCWarning, 0); }
 void M1M3SSPublisher::logInclinometerSensorWarning() { this->m1m3SAL->logEvent_InclinometerSensorWarning(&this->eventInclinometerSensorWarning, 0); }
+void M1M3SSPublisher::logInterlockStatus() { this->m1m3SAL->logEvent_InterlockStatus(&this->eventInterlockStatus, 0); }
+void M1M3SSPublisher::logInterlockWarning() { this->m1m3SAL->logEvent_InterlockWarning(&this->eventInterlockWarning, 0); }
 void M1M3SSPublisher::logSettingVersions() { this->m1m3SAL->logEvent_SettingVersions(&this->eventSettingVersions, 0); }
 void M1M3SSPublisher::logSummaryState() { this->m1m3SAL->logEvent_SummaryState(&this->eventSummaryState, 0); }
 

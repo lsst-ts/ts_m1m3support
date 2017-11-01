@@ -23,6 +23,7 @@ IAirController* IModel::getAirController() { return 0; }
 IForceController* IModel::getForceController() { return 0; }
 ISafetyController* IModel::getSafetyController() { return 0; }
 IPositionController* IModel::getPositionController() { return 0; }
+IInterlockController* IModel::getInterlockController() { return 0; }
 
 void IModel::loadSettings(std::string settingsToApply) { }
 

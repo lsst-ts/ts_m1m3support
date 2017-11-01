@@ -22,6 +22,7 @@
 #include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <PositionController.h>
+#include <InterlockController.h>
 
 using namespace std;
 
@@ -40,6 +41,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->airController = 0;
 	this->forceController = 0;
 	this->positionController = 0;
+	this->interlockController = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
 }
@@ -68,6 +70,9 @@ Model::~Model() {
 	}
 	if (this->positionController) {
 		delete this->positionController;
+	}
+	if (this->interlockController) {
+		delete this->interlockController;
 	}
 }
 
@@ -119,6 +124,11 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->positionController;
 	}
 	this->positionController = new PositionController(positionControllerSettings, this->publisher);
+
+	if (this->interlockController) {
+		delete this->interlockController;
+	}
+	this->interlockController = new InterlockController(this->publisher, this->safetyController, this->fpga);
 }
 
 void Model::queryFPGAData() {

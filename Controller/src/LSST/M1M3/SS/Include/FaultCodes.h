@@ -34,7 +34,11 @@ struct FaultCodes {
 		InclinometerSensorReportsIllegalDataAddress        = 0x000017D700000006,
 		InclinometerSensorReportsIllegalFunction           = 0x000017D700000007,
 		InclinometerUnknownProblem                         = 0x000017D700000008,
-		UnknownFault                                       = 0x0000180600000000
+		InterlockHeartbeatStateOutputMismatch              = 0x000017D800000001,
+		InterlockCriticalFaultStateOutputMismatch          = 0x000017D800000002,
+		InterlockMirrorLoweringRaisingStateOutputMismatch  = 0x000017D800000003,
+		InterlockMirrorParkedStateOutputMismatch           = 0x000017D800000004,
+		UnknownFault                                       = 0x0000180600000001
 	};
 };
 

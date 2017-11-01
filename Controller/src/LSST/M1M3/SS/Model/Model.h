@@ -36,6 +36,7 @@ private:
 	IForceController* forceController;
 	ISafetyController* safetyController;
 	IPositionController* positionController;
+	IInterlockController* interlockController;
 
 	pthread_mutex_t mutex;
 
@@ -53,6 +54,7 @@ public:
 	IForceController* getForceController() { return this->forceController; }
 	ISafetyController* getSafetyController() { return this->safetyController; }
 	IPositionController* getPositionController() { return this->positionController; }
+	IInterlockController* getInterlockController() { return this->interlockController; }
 
 	void loadSettings(std::string settingsToApply);
 

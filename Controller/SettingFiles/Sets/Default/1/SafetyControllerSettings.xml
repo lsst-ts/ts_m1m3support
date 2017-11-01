@@ -28,4 +28,10 @@
 <FaultOnSensorReportsIllegalFunction>1</FaultOnSensorReportsIllegalFunction>
 <FaultOnUnknownProblem>1</FaultOnUnknownProblem>
 </InclinometerSettings>
+<InterlockSettings>
+<FaultOnHeartbeatStateOutputMismatch>1</FaultOnHeartbeatStateOutputMismatch>
+<FaultOnCriticalFaultStateOutputMismatch>1</FaultOnCriticalFaultStateOutputMismatch>
+<FaultOnMirrorLoweringRaisingStateOutputMismatch>1</FaultOnMirrorLoweringRaisingStateOutputMismatch>
+<FaultOnMirrorParkedStateOutputMismatch>1</FaultOnMirrorParkedStateOutputMismatch>
+</InterlockSettings>
 </SafetyControllerSettings>

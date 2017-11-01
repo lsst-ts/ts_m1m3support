@@ -11,6 +11,7 @@
 #include <AirControllerSafetySettings.h>
 #include <DisplacementSafetySettings.h>
 #include <InclinometerSafetySettings.h>
+#include <InterlockControllerSafetySettings.h>
 #include <string>
 
 namespace LSST {
@@ -22,6 +23,7 @@ public:
 	AirControllerSafetySettings AirController;
 	DisplacementSafetySettings Displacement;
 	InclinometerSafetySettings Inclinometer;
+	InterlockControllerSafetySettings Interlock;
 
 	void load(const std::string &filename);
 };

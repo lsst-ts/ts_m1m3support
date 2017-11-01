@@ -29,6 +29,7 @@ void ISafetyController::displacementNotifyResponseTimeoutError(bool conditionFla
 void ISafetyController::displacementNotifyInvalidLength(bool conditionFlag) { }
 void ISafetyController::displacementNotifyUnknownCommand(bool conditionFlag) { }
 void ISafetyController::displacementNotifyUnknownProblem(bool conditionFlag) { }
+
 void ISafetyController::inclinometerNotifyResponseTimeout(bool conditionFlag) { }
 void ISafetyController::inclinometerNotifyInvalidCRC(bool conditionFlag) { }
 void ISafetyController::inclinometerNotifyUnknownAddress(bool conditionFlag) { }
@@ -37,6 +38,11 @@ void ISafetyController::inclinometerNotifyInvalidLength(bool conditionFlag) { }
 void ISafetyController::inclinometerNotifySensorReportsIllegalDataAddress(bool conditionFlag) { }
 void ISafetyController::inclinometerNotifySensorReportsIllegalFunction(bool conditionFlag) { }
 void ISafetyController::inclinometerNotifyUnknownProblem(bool conditionFlag) { }
+
+void ISafetyController::interlockNotifyHeartbeatStateOutputMismatch(bool conditionFlag) { }
+void ISafetyController::interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag) { }
+void ISafetyController::interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag) { }
+void ISafetyController::interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag) { }
 
 States::Type ISafetyController::checkSafety(States::Type preferredNextState) { return preferredNextState; }
 
