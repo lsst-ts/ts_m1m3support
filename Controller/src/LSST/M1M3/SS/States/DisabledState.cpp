@@ -14,8 +14,9 @@
 #include <IPublisher.h>
 #include <IILC.h>
 #include <IFPGA.h>
-#include <AirController.h>
+#include <IAirController.h>
 #include <ISafetyController.h>
+#include <IAccelerometer.h>
 #include <iostream>
 
 using namespace std;
@@ -49,6 +50,7 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
 	model->getILC()->verifyResponses();
+	model->getAccelerometer()->sampleData();
 	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);

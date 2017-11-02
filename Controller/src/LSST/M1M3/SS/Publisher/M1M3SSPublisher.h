@@ -21,6 +21,7 @@ class M1M3SSPublisher : public IPublisher {
 private:
 	SAL_m1m3* m1m3SAL;
 
+	m1m3_AccelerometerDataC accelerometerData;
 	m1m3_ForceActuatorDataC forceActuatorData;
 	m1m3_ForceActuatorStatusC forceActuatorStatus;
 	m1m3_HardpointDataC hardpointData;
@@ -29,20 +30,26 @@ private:
 	m1m3_InclinometerDataC inclinometerData;
 	m1m3_OuterLoopDataC outerLoopData;
 
+	m1m3_logevent_AccelerometerWarningC eventAccelerometerWarning;
 	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
 	m1m3_logevent_AirSupplyWarningC eventAirSupplyWarning;
+	m1m3_logevent_AppliedForcesC eventAppliedForces;
 	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
 	m1m3_logevent_ErrorCodeC eventErrorCode;
 	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
 	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
+	m1m3_logevent_HardpointActuatorMotionStateC eventHardpointActuatorMotionState;
 	m1m3_logevent_ILCWarningC eventILCWarning;
 	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
+	m1m3_logevent_InterlockStatusC eventInterlockStatus;
+	m1m3_logevent_InterlockWarningC eventInterlockWarning;
 	m1m3_logevent_SettingVersionsC eventSettingVersions;
 	m1m3_logevent_SummaryStateC eventSummaryState;
 
 public:
 	M1M3SSPublisher(SAL_m1m3* m1m3SAL);
 
+	m1m3_AccelerometerDataC* getAccelerometerData() { return &this->accelerometerData; }
 	m1m3_ForceActuatorDataC* getForceActuatorData() { return &this->forceActuatorData; }
 	m1m3_ForceActuatorStatusC* getForceActuatorStatus() { return &this->forceActuatorStatus; }
 	m1m3_HardpointDataC* getHardpointData() { return &this->hardpointData; }
@@ -51,19 +58,25 @@ public:
 	m1m3_InclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
 	m1m3_OuterLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
 
+	m1m3_logevent_AccelerometerWarningC* getEventAccelerometerWarning() { return &this->eventAccelerometerWarning; }
 	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
 	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
+	m1m3_logevent_AppliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
 	m1m3_logevent_ErrorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
 	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
+	m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState() { return &this->eventHardpointActuatorMotionState; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
+	m1m3_logevent_InterlockStatusC* getEventInterlockStatus() { return &this->eventInterlockStatus; }
+	m1m3_logevent_InterlockWarningC* getEventInterlockWarning() { return &this->eventInterlockWarning; }
 	m1m3_logevent_SettingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
 	m1m3_logevent_SummaryStateC* getEventSummaryState() { return &this->eventSummaryState; }
 
 	double getTimestamp();
 
+	void putAccelerometerData();
 	void putForceActuatorData();
 	void putForceActuatorStatus();
 	void putHardpointData();
@@ -72,14 +85,19 @@ public:
 	void putInclinometerData();
 	void putOuterLoopData();
 
+	void logAccelerometerWarning();
 	void logAirSupplyStatus();
 	void logAirSupplyWarning();
+	void logAppliedForces();
 	void logDisplacementSensorWarning();
 	void logErrorCode();
 	void logForceActuatorInfo();
 	void logHardpointActuatorInfo();
+	void logHardpointActuatorMotionState();
 	void logILCWarning();
 	void logInclinometerSensorWarning();
+	void logInterlockStatus();
+	void logInterlockWarning();
 	void logSettingVersions();
 	void logSummaryState();
 

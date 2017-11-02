@@ -23,6 +23,7 @@ ILCApplicationSettings* ISettingReader::loadILCApplicationSettings() { return 0;
 RecommendedApplicationSettings* ISettingReader::loadRecommendedApplicationSettings() { return 0; }
 SafetyControllerSettings* ISettingReader::loadSafetyControllerSettings() { return 0; }
 PositionControllerSettings* ISettingReader::loadPositionControllerSettings() { return 0; }
+AccelerometerSettings* ISettingReader::loadAccelerometerSettings() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

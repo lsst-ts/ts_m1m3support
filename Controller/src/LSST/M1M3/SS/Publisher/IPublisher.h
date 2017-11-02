@@ -11,6 +11,7 @@
 #include <DataTypes.h>
 #include <string>
 
+struct m1m3_AccelerometerDataC;
 struct m1m3_ForceActuatorDataC;
 struct m1m3_ForceActuatorStatusC;
 struct m1m3_HardpointDataC;
@@ -19,14 +20,19 @@ struct m1m3_IMSDataC;
 struct m1m3_InclinometerDataC;
 struct m1m3_OuterLoopDataC;
 
+struct m1m3_logevent_AccelerometerWarningC;
 struct m1m3_logevent_AirSupplyStatusC;
 struct m1m3_logevent_AirSupplyWarningC;
+struct m1m3_logevent_AppliedForcesC;
 struct m1m3_logevent_DisplacementSensorWarningC;
 struct m1m3_logevent_ErrorCodeC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_logevent_HardpointActuatorInfoC;
+struct m1m3_logevent_HardpointActuatorMotionStateC;
 struct m1m3_logevent_ILCWarningC;
 struct m1m3_logevent_InclinometerSensorWarningC;
+struct m1m3_logevent_InterlockStatusC;
+struct m1m3_logevent_InterlockWarningC;
 struct m1m3_logevent_SettingVersionsC;
 struct m1m3_logevent_SummaryStateC;
 
@@ -38,6 +44,7 @@ class IPublisher {
 public:
 	virtual ~IPublisher();
 
+	virtual m1m3_AccelerometerDataC* getAccelerometerData();
 	virtual m1m3_ForceActuatorDataC* getForceActuatorData();
 	virtual m1m3_ForceActuatorStatusC* getForceActuatorStatus();
 	virtual m1m3_HardpointDataC* getHardpointData();
@@ -46,19 +53,25 @@ public:
 	virtual m1m3_InclinometerDataC* getInclinometerData();
 	virtual m1m3_OuterLoopDataC* getOuterLoopData();
 
+	virtual m1m3_logevent_AccelerometerWarningC* getEventAccelerometerWarning();
 	virtual m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus();
 	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
+	virtual m1m3_logevent_AppliedForcesC* getEventAppliedForces();
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
 	virtual m1m3_logevent_ErrorCodeC* getEventErrorCode();
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
 	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
+	virtual m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState();
 	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
 	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
+	virtual m1m3_logevent_InterlockStatusC* getEventInterlockStatus();
+	virtual m1m3_logevent_InterlockWarningC* getEventInterlockWarning();
 	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();
 	virtual m1m3_logevent_SummaryStateC* getEventSummaryState();
 
 	virtual double getTimestamp();
 
+	virtual void putAccelerometerData();
 	virtual void putForceActuatorData();
 	virtual void putForceActuatorStatus();
 	virtual void putHardpointData();
@@ -67,14 +80,19 @@ public:
 	virtual void putInclinometerData();
 	virtual void putOuterLoopData();
 
+	virtual void logAccelerometerWarning();
 	virtual void logAirSupplyStatus();
 	virtual void logAirSupplyWarning();
+	virtual void logAppliedForces();
 	virtual void logDisplacementSensorWarning();
 	virtual void logErrorCode();
 	virtual void logForceActuatorInfo();
 	virtual void logHardpointActuatorInfo();
+	virtual void logHardpointActuatorMotionState();
 	virtual void logILCWarning();
 	virtual void logInclinometerSensorWarning();
+	virtual void logInterlockStatus();
+	virtual void logInterlockWarning();
 	virtual void logSettingVersions();
 	virtual void logSummaryState();
 

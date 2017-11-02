@@ -19,6 +19,7 @@
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
+#include <IInterlockController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -64,6 +65,7 @@ States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, IMod
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
 	States::Type newState = States::ActiveEngineeringState;
+	model->getInterlockController()->setMirrorParked(false);
 	model->getForceController()->applyStaticForces();
 	model->getForceController()->applyElevationForces();
 	model->getForceController()->zeroOffsetForces();

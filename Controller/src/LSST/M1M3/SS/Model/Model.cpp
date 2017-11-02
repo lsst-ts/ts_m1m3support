@@ -22,6 +22,8 @@
 #include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <PositionController.h>
+#include <InterlockController.h>
+#include <Accelerometer.h>
 
 using namespace std;
 
@@ -39,6 +41,9 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->ilc = 0;
 	this->airController = 0;
 	this->forceController = 0;
+	this->positionController = 0;
+	this->interlockController = 0;
+	this->accelerometer = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
 }
@@ -68,6 +73,12 @@ Model::~Model() {
 	if (this->positionController) {
 		delete this->positionController;
 	}
+	if (this->interlockController) {
+		delete this->interlockController;
+	}
+	if (this->accelerometer) {
+		delete this->accelerometer;
+	}
 }
 
 void Model::loadSettings(std::string settingsToApply) {
@@ -80,6 +91,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	HardpointActuatorSettings* hardpointActuatorSettings = this->settingReader->loadHardpointActuatorSettings();
 	SafetyControllerSettings* safetyControllerSettings = this->settingReader->loadSafetyControllerSettings();
 	PositionControllerSettings* positionControllerSettings = this->settingReader->loadPositionControllerSettings();
+	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -107,7 +119,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->forceController) {
 		delete this->forceController;
 	}
-	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher->getEventForceActuatorInfo(), this->publisher->getInclinometerData(), this->publisher->getForceActuatorData());
+	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher);
 
 	if (this->airController) {
 		delete this->airController;
@@ -117,7 +129,17 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->positionController) {
 		delete this->positionController;
 	}
-	this->positionController = new PositionController(positionControllerSettings, this->publisher->getHardpointData());
+	this->positionController = new PositionController(positionControllerSettings, this->publisher);
+
+	if (this->interlockController) {
+		delete this->interlockController;
+	}
+	this->interlockController = new InterlockController(this->publisher, this->safetyController, this->fpga);
+
+	if (this->accelerometer) {
+		delete this->accelerometer;
+	}
+	this->accelerometer = new Accelerometer(this->publisher, this->fpga, accelerometerSettings);
 }
 
 void Model::queryFPGAData() {

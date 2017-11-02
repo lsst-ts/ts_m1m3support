@@ -46,6 +46,7 @@ public:
 	void displacementNotifyInvalidLength(bool conditionFlag);
 	void displacementNotifyUnknownCommand(bool conditionFlag);
 	void displacementNotifyUnknownProblem(bool conditionFlag);
+
 	void inclinometerNotifyResponseTimeout(bool conditionFlag);
 	void inclinometerNotifyInvalidCRC(bool conditionFlag);
 	void inclinometerNotifyUnknownAddress(bool conditionFlag);
@@ -54,6 +55,11 @@ public:
 	void inclinometerNotifySensorReportsIllegalDataAddress(bool conditionFlag);
 	void inclinometerNotifySensorReportsIllegalFunction(bool conditionFlag);
 	void inclinometerNotifyUnknownProblem(bool conditionFlag);
+
+	void interlockNotifyHeartbeatStateOutputMismatch(bool conditionFlag);
+	void interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag);
+	void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
+	void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
 
 	States::Type checkSafety(States::Type preferredNextState);
 

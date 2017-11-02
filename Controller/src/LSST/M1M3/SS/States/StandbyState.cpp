@@ -11,6 +11,7 @@
 #include <IPublisher.h>
 #include <IFPGA.h>
 #include <ISafetyController.h>
+#include <IInterlockController.h>
 #include <StartCommand.h>
 #include <IILC.h>
 #include <iostream>

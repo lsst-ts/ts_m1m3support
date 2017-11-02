@@ -7,6 +7,8 @@
 
 #include <PositionController.h>
 #include <PositionControllerSettings.h>
+#include <IPublisher.h>
+#include <HardpointActuatorMotionStates.h>
 #include <Range.h>
 #include <SAL_m1m3C.h>
 
@@ -14,43 +16,55 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PositionController::PositionController(PositionControllerSettings* positionControllerSettings, m1m3_HardpointDataC* hardpointData) {
+PositionController::PositionController(PositionControllerSettings* positionControllerSettings, IPublisher* publisher) {
 	this->positionControllerSettings = positionControllerSettings;
-	this->hardpointData = hardpointData;
-	this->disableChaseAll();
-	this->stopMotion();
+	this->publisher = publisher;
+	this->hardpointData = this->publisher->getHardpointData();
+	this->hardpointActuatorMotionState = this->publisher->getEventHardpointActuatorMotionState();
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+		this->hardpointData->StepsQueued[i] = 0;
+		this->hardpointData->StepsCommanded[i] = 0;
+	}
+	this->publisher->logHardpointActuatorMotionState();
 }
 
-void PositionController::enableChase(int32_t actuatorIndex) {
-	this->chasing[actuatorIndex - 1] = true;
+void PositionController::enableChase(int32_t actuatorID) {
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	this->hardpointActuatorMotionState->MotionState[actuatorID - 1] = HardpointActuatorMotionStates::Chasing;
+	this->publisher->logHardpointActuatorMotionState();
 }
 
-void PositionController::disableChase(int32_t actuatorIndex) {
-	this->chasing[actuatorIndex - 1] = false;
+void PositionController::disableChase(int32_t actuatorID) {
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	this->hardpointActuatorMotionState->MotionState[actuatorID - 1] = HardpointActuatorMotionStates::Standby;
+	this->publisher->logHardpointActuatorMotionState();
 }
 
 void PositionController::enableChaseAll() {
-	enableChase(1);
-	enableChase(2);
-	enableChase(3);
-	enableChase(4);
-	enableChase(5);
-	enableChase(6);
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Chasing;
+	}
+	this->publisher->logHardpointActuatorMotionState();
 }
 
 void PositionController::disableChaseAll() {
-	disableChase(1);
-	disableChase(2);
-	disableChase(3);
-	disableChase(4);
-	disableChase(5);
-	disableChase(6);
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+	}
+	this->publisher->logHardpointActuatorMotionState();
 }
 
 void PositionController::move(int32_t* steps) {
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
 	for(int i = 0; i < HP_COUNT; i++) {
-		this->steps[i] = steps[i];
+		this->hardpointData->StepsQueued[i] = steps[i];
+		this->hardpointActuatorMotionState->MotionState[i] = steps[i] != 0 ? HardpointActuatorMotionStates::Moving : HardpointActuatorMotionStates::Standby;
 	}
+	this->publisher->logHardpointActuatorMotionState();
 }
 
 void PositionController::translate(double x, double y, double z, double rX, double rY, double rZ) {
@@ -58,24 +72,46 @@ void PositionController::translate(double x, double y, double z, double rX, doub
 }
 
 void PositionController::stopMotion() {
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
 	for(int i = 0; i < HP_COUNT; i++) {
-		this->steps[i] = 0;
+		this->hardpointData->StepsQueued[i] = 0;
+		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
 	}
+	this->publisher->logHardpointActuatorMotionState();
 }
 
 void PositionController::updateSteps() {
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	bool publishState = false;
 	for(int i = 0; i < HP_COUNT; i++) {
-		if (this->chasing[i]) {
+		switch(this->hardpointActuatorMotionState->MotionState[i]) {
+		case HardpointActuatorMotionStates::Standby:
+			this->hardpointData->StepsCommanded[i] = 0;
+			this->hardpointData->StepsQueued[i] = 0;
+			break;
+		case HardpointActuatorMotionStates::Chasing:
+		{
 			float force = this->hardpointData->Force[i];
-			int32_t steps = (int32_t)(force * this->positionControllerSettings->ForceToStepsCoefficient);
-			steps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, steps);
-			this->hardpointData->StepsCommanded[i] = (int16_t)steps;
+			int32_t chaseSteps = (int32_t)(force * this->positionControllerSettings->ForceToStepsCoefficient);
+			chaseSteps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, chaseSteps);
+			this->hardpointData->StepsCommanded[i] = (int16_t)chaseSteps;
+			break;
 		}
-		else {
-			int32_t steps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, this->steps[i]);
-			this->steps[i] -= steps;
-			this->hardpointData->StepsCommanded[i] = (int16_t)steps;
+		case HardpointActuatorMotionStates::Moving:
+		{
+			int32_t moveSteps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, this->hardpointData->StepsQueued[i]);
+			this->hardpointData->StepsQueued[i] -= moveSteps;
+			this->hardpointData->StepsCommanded[i] = (int16_t)moveSteps;
+			if(this->hardpointData->StepsQueued[i] == 0 && this->hardpointData->StepsCommanded[i] == 0) {
+				publishState = true;
+				this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+			}
+			break;
 		}
+		}
+	}
+	if (publishState) {
+		this->publisher->logHardpointActuatorMotionState();
 	}
 }
 

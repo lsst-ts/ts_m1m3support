@@ -15,6 +15,7 @@ namespace SS {
 M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL = m1m3SAL;
 
+	this->m1m3SAL->salTelemetryPub("m1m3_AccelerometerData");
 	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorData");
 	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorStatus");
 	this->m1m3SAL->salTelemetryPub("m1m3_HardpointData");
@@ -23,20 +24,26 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salTelemetryPub("m1m3_InclinometerData");
 	this->m1m3SAL->salTelemetryPub("m1m3_OuterLoopData");
 
+	this->m1m3SAL->salEvent("m1m3_logevent_AccelerometerWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyStatus");
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyWarning");
+	this->m1m3SAL->salEvent("m1m3_logevent_AppliedForces");
 	this->m1m3SAL->salEvent("m1m3_logevent_DisplacementSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_ErrorCode");
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorInfo");
 	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorInfo");
+	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorMotionState");
 	this->m1m3SAL->salEvent("m1m3_logevent_ILCWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
+	this->m1m3SAL->salEvent("m1m3_logevent_InterlockStatus");
+	this->m1m3SAL->salEvent("m1m3_logevent_InterlockWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_SettingVersions");
 	this->m1m3SAL->salEvent("m1m3_logevent_SummaryState");
 }
 
 double M1M3SSPublisher::getTimestamp() { return this->m1m3SAL->getCurrentTime(); }
 
+void M1M3SSPublisher::putAccelerometerData() { this->m1m3SAL->putSample_AccelerometerData(&this->accelerometerData); }
 void M1M3SSPublisher::putForceActuatorData() { this->m1m3SAL->putSample_ForceActuatorData(&this->forceActuatorData); }
 void M1M3SSPublisher::putForceActuatorStatus() { this->m1m3SAL->putSample_ForceActuatorStatus(&this->forceActuatorStatus); }
 void M1M3SSPublisher::putHardpointData() { this->m1m3SAL->putSample_HardpointData(&this->hardpointData); }
@@ -45,14 +52,19 @@ void M1M3SSPublisher::putIMSData() { this->m1m3SAL->putSample_IMSData(&this->ims
 void M1M3SSPublisher::putInclinometerData() { this->m1m3SAL->putSample_InclinometerData(&this->inclinometerData); }
 void M1M3SSPublisher::putOuterLoopData() { this->m1m3SAL->putSample_OuterLoopData(&this->outerLoopData); }
 
+void M1M3SSPublisher::logAccelerometerWarning() { this->m1m3SAL->logEvent_AccelerometerWarning(&this->eventAccelerometerWarning, 0); }
 void M1M3SSPublisher::logAirSupplyStatus() { this->m1m3SAL->logEvent_AirSupplyStatus(&this->eventAirSupplyStatus, 0); }
 void M1M3SSPublisher::logAirSupplyWarning() { this->m1m3SAL->logEvent_AirSupplyWarning(&this->eventAirSupplyWarning, 0); }
+void M1M3SSPublisher::logAppliedForces() { this->m1m3SAL->logEvent_AppliedForces(&this->eventAppliedForces, 0); }
 void M1M3SSPublisher::logDisplacementSensorWarning() { this->m1m3SAL->logEvent_DisplacementSensorWarning(&this->eventDisplacementSensorWarning, 0); }
 void M1M3SSPublisher::logErrorCode() { this->m1m3SAL->logEvent_ErrorCode(&this->eventErrorCode, 0); }
 void M1M3SSPublisher::logForceActuatorInfo() { this->m1m3SAL->logEvent_ForceActuatorInfo(&this->eventForceActuatorInfo, 0); }
 void M1M3SSPublisher::logHardpointActuatorInfo() { this->m1m3SAL->logEvent_HardpointActuatorInfo(&this->eventHardpointActuatorInfo, 0); }
+void M1M3SSPublisher::logHardpointActuatorMotionState() { this->m1m3SAL->logEvent_HardpointActuatorMotionState(&this->eventHardpointActuatorMotionState, 0); }
 void M1M3SSPublisher::logILCWarning() { this->m1m3SAL->logEvent_ILCWarning(&this->eventILCWarning, 0); }
 void M1M3SSPublisher::logInclinometerSensorWarning() { this->m1m3SAL->logEvent_InclinometerSensorWarning(&this->eventInclinometerSensorWarning, 0); }
+void M1M3SSPublisher::logInterlockStatus() { this->m1m3SAL->logEvent_InterlockStatus(&this->eventInterlockStatus, 0); }
+void M1M3SSPublisher::logInterlockWarning() { this->m1m3SAL->logEvent_InterlockWarning(&this->eventInterlockWarning, 0); }
 void M1M3SSPublisher::logSettingVersions() { this->m1m3SAL->logEvent_SettingVersions(&this->eventSettingVersions, 0); }
 void M1M3SSPublisher::logSummaryState() { this->m1m3SAL->logEvent_SummaryState(&this->eventSummaryState, 0); }
 

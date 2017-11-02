@@ -12,27 +12,28 @@
 #include <DataTypes.h>
 
 struct m1m3_HardpointDataC;
+struct m1m3_logevent_HardpointActuatorMotionStateC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class PositionControllerSettings;
+class IPublisher;
 
 class PositionController: public IPositionController {
 private:
 	PositionControllerSettings* positionControllerSettings;
-
-	bool chasing[HP_COUNT];
-	int32_t steps[HP_COUNT];
+	IPublisher* publisher;
 
 	m1m3_HardpointDataC* hardpointData;
+	m1m3_logevent_HardpointActuatorMotionStateC* hardpointActuatorMotionState;
 
 public:
-	PositionController(PositionControllerSettings* positionControllerSettings, m1m3_HardpointDataC* hardpointData);
+	PositionController(PositionControllerSettings* positionControllerSettings, IPublisher* publisher);
 
-	void enableChase(int32_t actuatorIndex);
-	void disableChase(int32_t actuatorIndex);
+	void enableChase(int32_t actuatorID);
+	void disableChase(int32_t actuatorID);
 	void enableChaseAll();
 	void disableChaseAll();
 

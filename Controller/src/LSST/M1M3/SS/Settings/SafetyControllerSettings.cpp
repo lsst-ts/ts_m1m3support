@@ -42,6 +42,11 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->Inclinometer.FaultOnSensorReportsIllegalDataAddress = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InclinometerSettings/FaultOnSensorReportsIllegalDataAddress").node().child_value()) != 0;
 	this->Inclinometer.FaultOnSensorReportsIllegalFunction = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InclinometerSettings/FaultOnSensorReportsIllegalFunction").node().child_value()) != 0;
 	this->Inclinometer.FaultOnUnknownProblem = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InclinometerSettings/FaultOnUnknownProblem").node().child_value()) != 0;
+
+	this->Interlock.FaultOnHeartbeatStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnHeartbeatStateOutputMismatch").node().child_value()) != 0;
+	this->Interlock.FaultOnCriticalFaultStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnCriticalFaultStateOutputMismatch").node().child_value()) != 0;
+	this->Interlock.FaultOnMirrorLoweringRaisingStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnMirrorLoweringRaisingStateOutputMismatch").node().child_value()) != 0;
+	this->Interlock.FaultOnMirrorParkedStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnMirrorParkedStateOutputMismatch").node().child_value()) != 0;
 }
 
 } /* namespace SS */

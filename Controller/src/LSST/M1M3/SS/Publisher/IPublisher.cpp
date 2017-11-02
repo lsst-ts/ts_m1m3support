@@ -13,6 +13,7 @@ namespace SS {
 
 IPublisher::~IPublisher() { }
 
+m1m3_AccelerometerDataC* IPublisher::getAccelerometerData() { return 0; }
 m1m3_ForceActuatorDataC* IPublisher::getForceActuatorData() { return 0; }
 m1m3_ForceActuatorStatusC* IPublisher::getForceActuatorStatus() { return 0; }
 m1m3_HardpointDataC* IPublisher::getHardpointData() { return 0; }
@@ -21,19 +22,25 @@ m1m3_IMSDataC* IPublisher::getIMSData() { return 0; }
 m1m3_InclinometerDataC* IPublisher::getInclinometerData() { return 0; }
 m1m3_OuterLoopDataC* IPublisher::getOuterLoopData() { return 0; }
 
+m1m3_logevent_AccelerometerWarningC* IPublisher::getEventAccelerometerWarning() { return 0; }
 m1m3_logevent_AirSupplyStatusC* IPublisher::getEventAirSupplyStatus() { return 0; }
 m1m3_logevent_AirSupplyWarningC* IPublisher::getEventAirSupplyWarning() { return 0; }
+m1m3_logevent_AppliedForcesC* IPublisher::getEventAppliedForces() { return 0; }
 m1m3_logevent_DisplacementSensorWarningC* IPublisher::getEventDisplacementSensorWarning() { return 0; }
 m1m3_logevent_ErrorCodeC* IPublisher::getEventErrorCode() { return 0; }
 m1m3_logevent_ForceActuatorInfoC* IPublisher::getEventForceActuatorInfo() { return 0; }
 m1m3_logevent_HardpointActuatorInfoC* IPublisher::getEventHardpointActuatorInfo() { return 0; }
+m1m3_logevent_HardpointActuatorMotionStateC* IPublisher::getEventHardpointActuatorMotionState() { return 0; }
 m1m3_logevent_ILCWarningC* IPublisher::getEventILCWarning() { return 0; }
 m1m3_logevent_InclinometerSensorWarningC* IPublisher::getEventInclinometerSensorWarning() { return 0; }
+m1m3_logevent_InterlockStatusC* IPublisher::getEventInterlockStatus() { return 0; }
+m1m3_logevent_InterlockWarningC* IPublisher::getEventInterlockWarning() { return 0; }
 m1m3_logevent_SettingVersionsC* IPublisher::getEventSettingVersions() { return 0; }
 m1m3_logevent_SummaryStateC* IPublisher::getEventSummaryState() { return 0; }
 
 double IPublisher::getTimestamp() { return 0; }
 
+void IPublisher::putAccelerometerData() { }
 void IPublisher::putForceActuatorData() { }
 void IPublisher::putForceActuatorStatus() { }
 void IPublisher::putHardpointData() { }
@@ -42,14 +49,19 @@ void IPublisher::putIMSData() { }
 void IPublisher::putInclinometerData() { }
 void IPublisher::putOuterLoopData() { }
 
+void IPublisher::logAccelerometerWarning() { }
 void IPublisher::logAirSupplyStatus() { }
 void IPublisher::logAirSupplyWarning() { }
+void IPublisher::logAppliedForces() { }
 void IPublisher::logDisplacementSensorWarning() { }
 void IPublisher::logErrorCode() { }
 void IPublisher::logForceActuatorInfo() { }
 void IPublisher::logHardpointActuatorInfo() { }
+void IPublisher::logHardpointActuatorMotionState() { }
 void IPublisher::logILCWarning() { }
 void IPublisher::logInclinometerSensorWarning() { }
+void IPublisher::logInterlockStatus() { }
+void IPublisher::logInterlockWarning() { }
 void IPublisher::logSettingVersions() { }
 void IPublisher::logSummaryState() { }
 

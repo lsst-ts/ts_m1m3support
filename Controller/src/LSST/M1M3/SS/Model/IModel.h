@@ -25,6 +25,8 @@ class IAirController;
 class IForceController;
 class ISafetyController;
 class IPositionController;
+class IInterlockController;
+class IAccelerometer;
 
 class IModel {
 public:
@@ -40,6 +42,8 @@ public:
 	virtual IForceController* getForceController();
 	virtual ISafetyController* getSafetyController();
 	virtual IPositionController* getPositionController();
+	virtual IInterlockController* getInterlockController();
+	virtual IAccelerometer* getAccelerometer();
 
 	virtual void loadSettings(std::string settingsToApply);
 

@@ -20,6 +20,7 @@
 #include <ApplyAOSCorrectionByForcesCommand.h>
 #include <ClearAOSCorrectionCommand.h>
 #include <ISafetyController.h>
+#include <IInterlockController.h>
 #include <unistd.h>
 
 namespace LSST {
@@ -64,6 +65,7 @@ States::Type ActiveEngineeringState::clearOffsetForces(ClearOffsetForcesCommand*
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, IModel* model) {
 	States::Type newState = States::ParkedEngineeringState;
+	model->getInterlockController()->setMirrorParked(true);
 	model->getForceController()->zeroStaticForces();
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->zeroElevationForces();
