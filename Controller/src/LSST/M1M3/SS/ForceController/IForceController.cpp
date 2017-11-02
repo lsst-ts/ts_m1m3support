@@ -33,6 +33,15 @@ void IForceController::zeroAberration() { }
 void IForceController::applyElevationForces() { }
 void IForceController::zeroElevationForces() { }
 
+void IForceController::applyAzimuthForces() { }
+void IForceController::zeroAzimuthForces() { }
+
+void IForceController::applyTemperatureForces() { }
+void IForceController::zeroTemperatureForces() { }
+
+void IForceController::applyDynamicForces() { }
+void IForceController::zeroDynamicForces() { }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

@@ -85,6 +85,11 @@ PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
 	return &this->positionControllerSettings;
 }
 
+AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
+	this->accelerometerSettings.load(this->getSetPath("AccelerometerSettings.xml").c_str());
+	return &this->accelerometerSettings;
+}
+
 std::string SettingReader::getBasePath(std::string file) {
 	return this->basePath + file;
 }

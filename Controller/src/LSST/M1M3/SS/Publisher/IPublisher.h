@@ -11,6 +11,7 @@
 #include <DataTypes.h>
 #include <string>
 
+struct m1m3_AccelerometerDataC;
 struct m1m3_ForceActuatorDataC;
 struct m1m3_ForceActuatorStatusC;
 struct m1m3_HardpointDataC;
@@ -19,6 +20,7 @@ struct m1m3_IMSDataC;
 struct m1m3_InclinometerDataC;
 struct m1m3_OuterLoopDataC;
 
+struct m1m3_logevent_AccelerometerWarningC;
 struct m1m3_logevent_AirSupplyStatusC;
 struct m1m3_logevent_AirSupplyWarningC;
 struct m1m3_logevent_AppliedForcesC;
@@ -42,6 +44,7 @@ class IPublisher {
 public:
 	virtual ~IPublisher();
 
+	virtual m1m3_AccelerometerDataC* getAccelerometerData();
 	virtual m1m3_ForceActuatorDataC* getForceActuatorData();
 	virtual m1m3_ForceActuatorStatusC* getForceActuatorStatus();
 	virtual m1m3_HardpointDataC* getHardpointData();
@@ -50,6 +53,7 @@ public:
 	virtual m1m3_InclinometerDataC* getInclinometerData();
 	virtual m1m3_OuterLoopDataC* getOuterLoopData();
 
+	virtual m1m3_logevent_AccelerometerWarningC* getEventAccelerometerWarning();
 	virtual m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus();
 	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
 	virtual m1m3_logevent_AppliedForcesC* getEventAppliedForces();
@@ -67,6 +71,7 @@ public:
 
 	virtual double getTimestamp();
 
+	virtual void putAccelerometerData();
 	virtual void putForceActuatorData();
 	virtual void putForceActuatorStatus();
 	virtual void putHardpointData();
@@ -75,6 +80,7 @@ public:
 	virtual void putInclinometerData();
 	virtual void putOuterLoopData();
 
+	virtual void logAccelerometerWarning();
 	virtual void logAirSupplyStatus();
 	virtual void logAirSupplyWarning();
 	virtual void logAppliedForces();

@@ -18,6 +18,7 @@
 #include <ILCApplicationSettings.h>
 #include <RecommendedApplicationSettings.h>
 #include <PositionControllerSettings.h>
+#include <AccelerometerSettings.h>
 #include <string>
 
 namespace LSST {
@@ -35,6 +36,7 @@ private:
 	RecommendedApplicationSettings recommendedApplicationSettings;
 	SafetyControllerSettings safetyControllerSettings;
 	PositionControllerSettings positionControllerSettings;
+	AccelerometerSettings accelerometerSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -54,6 +56,7 @@ public:
 	RecommendedApplicationSettings* loadRecommendedApplicationSettings();
 	SafetyControllerSettings* loadSafetyControllerSettings();
 	PositionControllerSettings* loadPositionControllerSettings();
+	AccelerometerSettings* loadAccelerometerSettings();
 
 private:
 	std::string getBasePath(std::string file);

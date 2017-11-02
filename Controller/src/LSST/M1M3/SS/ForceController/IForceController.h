@@ -35,6 +35,15 @@ public:
 
 	virtual void applyElevationForces();
 	virtual void zeroElevationForces();
+
+	virtual void applyAzimuthForces();
+	virtual void zeroAzimuthForces();
+
+	virtual void applyTemperatureForces();
+	virtual void zeroTemperatureForces();
+
+	virtual void applyDynamicForces();
+	virtual void zeroDynamicForces();
 };
 
 } /* namespace SS */

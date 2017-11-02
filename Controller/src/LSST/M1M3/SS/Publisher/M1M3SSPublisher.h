@@ -21,6 +21,7 @@ class M1M3SSPublisher : public IPublisher {
 private:
 	SAL_m1m3* m1m3SAL;
 
+	m1m3_AccelerometerDataC accelerometerData;
 	m1m3_ForceActuatorDataC forceActuatorData;
 	m1m3_ForceActuatorStatusC forceActuatorStatus;
 	m1m3_HardpointDataC hardpointData;
@@ -29,6 +30,7 @@ private:
 	m1m3_InclinometerDataC inclinometerData;
 	m1m3_OuterLoopDataC outerLoopData;
 
+	m1m3_logevent_AccelerometerWarningC eventAccelerometerWarning;
 	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
 	m1m3_logevent_AirSupplyWarningC eventAirSupplyWarning;
 	m1m3_logevent_AppliedForcesC eventAppliedForces;
@@ -47,6 +49,7 @@ private:
 public:
 	M1M3SSPublisher(SAL_m1m3* m1m3SAL);
 
+	m1m3_AccelerometerDataC* getAccelerometerData() { return &this->accelerometerData; }
 	m1m3_ForceActuatorDataC* getForceActuatorData() { return &this->forceActuatorData; }
 	m1m3_ForceActuatorStatusC* getForceActuatorStatus() { return &this->forceActuatorStatus; }
 	m1m3_HardpointDataC* getHardpointData() { return &this->hardpointData; }
@@ -55,6 +58,7 @@ public:
 	m1m3_InclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
 	m1m3_OuterLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
 
+	m1m3_logevent_AccelerometerWarningC* getEventAccelerometerWarning() { return &this->eventAccelerometerWarning; }
 	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
 	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
 	m1m3_logevent_AppliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
@@ -72,6 +76,7 @@ public:
 
 	double getTimestamp();
 
+	void putAccelerometerData();
 	void putForceActuatorData();
 	void putForceActuatorStatus();
 	void putHardpointData();
@@ -80,6 +85,7 @@ public:
 	void putInclinometerData();
 	void putOuterLoopData();
 
+	void logAccelerometerWarning();
 	void logAirSupplyStatus();
 	void logAirSupplyWarning();
 	void logAppliedForces();

@@ -11,9 +11,9 @@
 struct FaultCodes {
 	enum Type {
 		NoFault                                            = 0x0000000000000000,
-		AirControllerCommandOutputMismatch                 = 0x000017D500000001,
+		AirControllerCommandOutputMismatch                 = 0x000017D500000001, // 6101
 		AirControllerCommandSensorMismatch                 = 0x000017D500000002,
-		DisplacementSensorReportsInvalidCommand            = 0x000017D600000001,
+		DisplacementSensorReportsInvalidCommand            = 0x000017D600000001, // 6102
 		DisplacementSensorReportsCommunicationTimeoutError = 0x000017D600000002,
 		DisplacementSensorReportsDataLengthError           = 0x000017D600000003,
 		DisplacementSensorReportsNumberOfParametersError   = 0x000017D600000004,
@@ -26,7 +26,7 @@ struct FaultCodes {
 		DisplacementInvalidLength                          = 0x000017D60000000C,
 		DisplacementUnknownCommand                         = 0x000017D60000000D,
 		DisplacementUnknownProblem                         = 0x000017D60000000E,
-		InclinometerResponseTimeout                        = 0x000017D700000001,
+		InclinometerResponseTimeout                        = 0x000017D700000001, // 6103
 		InclinometerInvalidCRC                             = 0x000017D700000002,
 		InclinometerUnknownAddress                         = 0x000017D700000003,
 		InclinometerUnknownFunction                        = 0x000017D700000004,
@@ -34,11 +34,11 @@ struct FaultCodes {
 		InclinometerSensorReportsIllegalDataAddress        = 0x000017D700000006,
 		InclinometerSensorReportsIllegalFunction           = 0x000017D700000007,
 		InclinometerUnknownProblem                         = 0x000017D700000008,
-		InterlockHeartbeatStateOutputMismatch              = 0x000017D800000001,
+		InterlockHeartbeatStateOutputMismatch              = 0x000017D800000001, // 6104
 		InterlockCriticalFaultStateOutputMismatch          = 0x000017D800000002,
 		InterlockMirrorLoweringRaisingStateOutputMismatch  = 0x000017D800000003,
 		InterlockMirrorParkedStateOutputMismatch           = 0x000017D800000004,
-		UnknownFault                                       = 0x0000180600000001
+		UnknownFault                                       = 0x0000180600000001  // 6150
 	};
 };
 
