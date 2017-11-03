@@ -28,8 +28,8 @@ public:
 	States::Type applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model);
 	States::Type applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model);
 	States::Type clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model);
-	States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model);
-	States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model);
+	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model);
+	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model);
 
 };
 

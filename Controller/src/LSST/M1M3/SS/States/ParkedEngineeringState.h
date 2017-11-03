@@ -27,6 +27,8 @@ public:
 	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model);
 	States::Type enableHardpointChase(EnableHardpointChaseCommand* command, IModel* model);
 	States::Type disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model);
+	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model);
+	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
 };
 
 } /* namespace SS */

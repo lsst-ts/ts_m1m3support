@@ -15,6 +15,9 @@ namespace M1M3 {
 namespace SS {
 
 class EnabledState: public State {
+public:
+	States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model);
+	States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model);
 };
 
 } /* namespace SS */

@@ -9,7 +9,7 @@
 #define TMAAZIMUTHSAMPLECOMMAND_H_
 
 #include <Command.h>
-//#include <SAL_MTMountC.h>
+#include <SAL_MTMountC.h>
 
 struct MTMount_AzC;
 
@@ -21,12 +21,12 @@ class TMAAzimuthSampleCommand: public Command {
 private:
 	IContext* context;
 
-	MTMount_AzC* data;
+	MTMount_AzC data;
 
 public:
 	TMAAzimuthSampleCommand(IContext* context, MTMount_AzC* data);
 
-	MTMount_AzC* getData() { return this->data; }
+	MTMount_AzC* getData() { return &this->data; }
 
 	void execute();
 };

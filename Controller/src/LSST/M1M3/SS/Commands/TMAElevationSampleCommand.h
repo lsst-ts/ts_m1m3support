@@ -9,7 +9,7 @@
 #define TMAELEVATIONSAMPLECOMMAND_H_
 
 #include <Command.h>
-//#include <SAL_MTMountC.h>
+#include <SAL_MTMountC.h>
 
 struct MTMount_AltC;
 
@@ -21,12 +21,12 @@ class TMAElevationSampleCommand: public Command {
 private:
 	IContext* context;
 
-	MTMount_AltC* data;
+	MTMount_AltC data;
 
 public:
 	TMAElevationSampleCommand(IContext* context, MTMount_AltC* data);
 
-	MTMount_AltC* getData() { return this->data; }
+	MTMount_AltC* getData() { return &this->data; }
 
 	void execute();
 };

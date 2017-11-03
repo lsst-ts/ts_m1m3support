@@ -15,7 +15,7 @@ namespace SS {
 
 TMAElevationSampleCommand::TMAElevationSampleCommand(IContext* context, MTMount_AltC* data) {
 	this->context = context;
-	//memcpy(&this->data, data, sizeof(MTMount_AltC));
+	memcpy(&this->data, data, sizeof(MTMount_AltC));
 }
 
 void TMAElevationSampleCommand::execute() {

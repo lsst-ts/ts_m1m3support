@@ -23,6 +23,8 @@
 #include <IInterlockController.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
+#include <MoveHardpointActuatorsCommand.h>
+#include <IPositionController.h>
 #include <unistd.h>
 
 namespace LSST {
@@ -120,13 +122,13 @@ States::Type ActiveEngineeringState::clearAOSCorrection(ClearAOSCorrectionComman
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model) {
-	model->getForceController()->updateTMAAzimuthData(command->getData());
+States::Type ActiveEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model) {
+	model->getPositionController()->stopMotion();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model) {
-	model->getForceController()->updateTMAElevationData(command->getData());
+States::Type ActiveEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model) {
+	model->getPositionController()->move(command->getData()->Steps);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

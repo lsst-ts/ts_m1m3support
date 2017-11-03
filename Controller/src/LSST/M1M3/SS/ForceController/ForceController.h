@@ -10,7 +10,7 @@
 
 #include <IForceController.h>
 #include <DataTypes.h>
-//#include <SAL_MTMountC.h>
+#include <SAL_MTMountC.h>
 
 struct m1m3_logevent_AppliedForcesC;
 struct m1m3_logevent_ForceActuatorInfoC;
@@ -42,8 +42,8 @@ private:
 	m1m3_ForceActuatorDataC* forceData;
 	m1m3_InclinometerDataC* inclinometerData;
 
-	//MTMount_AzC tmaAzimuthData;
-	//MTMount_AltC tmaElevationData;
+	MTMount_AzC tmaAzimuthData;
+	MTMount_AltC tmaElevationData;
 
 	double staticXSetpoint[156];
 	double staticYSetpoint[156];

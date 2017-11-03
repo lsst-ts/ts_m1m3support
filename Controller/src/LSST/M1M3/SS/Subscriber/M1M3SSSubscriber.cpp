@@ -7,7 +7,7 @@
 
 #include <M1M3SSSubscriber.h>
 #include <SAL_m1m3.h>
-//#include <SAL_MTMount.h>
+#include <SAL_MTMount.h>
 #include <ICommandFactory.h>
 
 namespace LSST {
@@ -46,8 +46,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, I
 	this->m1m3SAL->salProcessor("m1m3_command_AbortRaiseM1M3");
 	this->m1m3SAL->salProcessor("m1m3_command_TranslateM1M3");
 	this->m1m3SAL->salProcessor("m1m3_command_StopHardpointMotion");
-	//this->mtMountSAL->salTelemetrySub("MTMount_Az");
-	//this->mtMountSAL->salTelemetrySub("MTMount_Alt");
+	this->mtMountSAL->salTelemetrySub("MTMount_Az");
+	this->mtMountSAL->salTelemetrySub("MTMount_Alt");
 }
 
 ICommand* M1M3SSSubscriber::tryAcceptCommandStart() {
@@ -275,18 +275,18 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandStopHardpointMotion() {
 }
 
 ICommand* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
-	/*int32_t result = this->mtMountSAL->getSample_Az(&this->tmaAzimuth);
+	int32_t result = this->mtMountSAL->getSample_Az(&this->tmaAzimuth);
 	if (result == 0) {
 		return this->commandFactory->create(Commands::TMAAzimuthSampleCommand, &this->tmaAzimuth, 0);
-	}*/
+	}
 	return 0;
 }
 
 ICommand* M1M3SSSubscriber::tryGetSampleTMAElevation() {
-	/*int32_t result = this->mtMountSAL->getSample_Alt(&this->tmaElevation);
+	int32_t result = this->mtMountSAL->getSample_Alt(&this->tmaElevation);
 	if (result == 0) {
 		return this->commandFactory->create(Commands::TMAElevationSampleCommand, &this->tmaElevation, 0);
-	}*/
+	}
 	return 0;
 }
 

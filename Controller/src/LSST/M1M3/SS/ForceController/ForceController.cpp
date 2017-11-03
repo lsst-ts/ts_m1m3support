@@ -50,16 +50,16 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 		this->forceData->ElevationYSetpoint[i] = 0;
 		this->forceData->ElevationZSetpoint[i] = 0;
 	}
-	//memset(&this->tmaAzimuthData, 0, sizeof(MTMount_AzC));
-	//memset(&this->tmaElevationData, 0, sizeof(MTMount_AltC));
+	memset(&this->tmaAzimuthData, 0, sizeof(MTMount_AzC));
+	memset(&this->tmaElevationData, 0, sizeof(MTMount_AltC));
 }
 
 void ForceController::updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData) {
-	//memcpy(&this->tmaAzimuthData, tmaAzimuthData, sizeof(MTMount_AzC));
+	memcpy(&this->tmaAzimuthData, tmaAzimuthData, sizeof(MTMount_AzC));
 }
 
 void ForceController::updateTMAElevationData(MTMount_AltC* tmaElevationData) {
-	//memcpy(&this->tmaElevationData, tmaElevationData, sizeof(MTMount_AltC));
+	memcpy(&this->tmaElevationData, tmaElevationData, sizeof(MTMount_AltC));
 }
 
 void ForceController::updateAppliedForces() {
@@ -274,7 +274,7 @@ void ForceController::zeroDynamicForces() {
 }
 
 void ForceController::updateElevationForces() {
-	double elevationAngle = this->inclinometerData->InclinometerAngle;//this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->InclinometerAngle : this->tmaElevationData.Angle_Actual;
+	double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->InclinometerAngle : this->tmaElevationData.Angle_Actual;
 	double elevationMatrix[] = { std::pow(elevationAngle, 5.0), std::pow(elevationAngle, 4.0), std::pow(elevationAngle, 3.0), std::pow(elevationAngle, 2.0), elevationAngle, 1 };
 	for(int i = 0; i < FA_COUNT; ++i) {
 		int mIndex = i * 6;
@@ -303,7 +303,7 @@ void ForceController::updateElevationForces() {
 }
 
 void ForceController::updateAzimuthForces() {
-	double azimuthAngle = 0;//this->tmaAzimuthData.Angle_Actual;
+	double azimuthAngle = this->tmaAzimuthData.Angle_Actual;
 	double azimuthMatrix[] = { std::pow(azimuthAngle, 5.0), std::pow(azimuthAngle, 4.0), std::pow(azimuthAngle, 3.0), std::pow(azimuthAngle, 2.0), azimuthAngle, 1 };
 	for(int i = 0; i < FA_COUNT; ++i) {
 		int mIndex = i * 6;

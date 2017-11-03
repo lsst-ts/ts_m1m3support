@@ -101,6 +101,18 @@ States::Type ParkedEngineeringState::disableHardpointChase(DisableHardpointChase
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
+States::Type ParkedEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model) {
+	model->getForceController()->applyOffsetForces(command->getData()->XForces, command->getData()->YForces, command->getData()->ZForces);
+	model->getForceController()->processAppliedForces();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ParkedEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model) {
+	model->getForceController()->zeroOffsetForces();
+	model->getForceController()->processAppliedForces();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
