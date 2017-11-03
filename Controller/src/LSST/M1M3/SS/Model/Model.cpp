@@ -24,6 +24,7 @@
 #include <PositionController.h>
 #include <InterlockController.h>
 #include <Accelerometer.h>
+#include <AirController.h>
 
 using namespace std;
 

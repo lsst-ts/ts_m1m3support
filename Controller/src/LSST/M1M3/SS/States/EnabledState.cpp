@@ -15,11 +15,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type EnabledState::disable(DisableCommand* command, IModel* model) {
-	States::Type newState = States::DisabledState;
-	return model->getSafetyController()->checkSafety(newState);
-}
-
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

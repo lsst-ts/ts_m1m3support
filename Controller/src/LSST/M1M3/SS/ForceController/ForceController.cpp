@@ -11,6 +11,7 @@
 #include <IPublisher.h>
 #include <SAL_m1m3C.h>
 #include <cmath>
+#include <cstring>
 #include <vector>
 
 namespace LSST {
@@ -49,11 +50,27 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 		this->forceData->ElevationYSetpoint[i] = 0;
 		this->forceData->ElevationZSetpoint[i] = 0;
 	}
+	//memset(&this->tmaAzimuthData, 0, sizeof(MTMount_AzC));
+	//memset(&this->tmaElevationData, 0, sizeof(MTMount_AltC));
+}
+
+void ForceController::updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData) {
+	//memcpy(&this->tmaAzimuthData, tmaAzimuthData, sizeof(MTMount_AzC));
+}
+
+void ForceController::updateTMAElevationData(MTMount_AltC* tmaElevationData) {
+	//memcpy(&this->tmaElevationData, tmaElevationData, sizeof(MTMount_AltC));
 }
 
 void ForceController::updateAppliedForces() {
 	if (this->appliedForces->ElevationForcesApplied) {
 		this->updateElevationForces();
+	}
+	if (this->appliedForces->AzimuthForcesApplied) {
+		this->updateAzimuthForces();
+	}
+	if (this->appliedForces->TemperatureForcesApplied) {
+		this->updateTemperatureForces();
 	}
 }
 
@@ -69,7 +86,7 @@ void ForceController::applyStaticForces() {
 		this->staticYSetpoint[i] = this->forceInfo->StaticYSetpoint[i];
 		this->staticZSetpoint[i] = this->forceInfo->StaticZSetpoint[i];
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::zeroStaticForces() {
@@ -79,7 +96,7 @@ void ForceController::zeroStaticForces() {
 		this->staticYSetpoint[i] = 0;
 		this->staticZSetpoint[i] = 0;
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::applyOffsetForces(double* x, double* y, double* z) {
@@ -89,7 +106,7 @@ void ForceController::applyOffsetForces(double* x, double* y, double* z) {
 		this->forceData->OffsetYSetpoint[i] = y[i];
 		this->forceData->OffsetZSetpoint[i] = z[i];
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::zeroOffsetForces() {
@@ -99,7 +116,7 @@ void ForceController::zeroOffsetForces() {
 		this->forceData->OffsetYSetpoint[i] = 0;
 		this->forceData->OffsetZSetpoint[i] = 0;
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::applyAOSCorrectionByBendingModes(double* coefficients) {
@@ -130,7 +147,7 @@ void ForceController::applyAOSCorrectionByBendingModes(double* coefficients) {
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 20] * coefficients[20] +
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 21] * coefficients[21];
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::applyAOSCorrectionByForces(double* z) {
@@ -138,7 +155,7 @@ void ForceController::applyAOSCorrectionByForces(double* z) {
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->ActiveOpticsZSetpoint[i] = z[i];
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::zeroAOSCorrection() {
@@ -146,7 +163,7 @@ void ForceController::zeroAOSCorrection() {
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->ActiveOpticsZSetpoint[i] = 0;
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::applyAberrationByBendingModes(double* coefficients) {
@@ -177,7 +194,7 @@ void ForceController::applyAberrationByBendingModes(double* coefficients) {
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 20] * coefficients[20] +
 				this->forceActuatorSettings->BendingModeMatrix[mIndex + 21] * coefficients[21];
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::applyAberrationByForces(double* z) {
@@ -185,7 +202,7 @@ void ForceController::applyAberrationByForces(double* z) {
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->AberationZSetpoint[i] = z[i];
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::zeroAberration() {
@@ -193,12 +210,12 @@ void ForceController::zeroAberration() {
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceData->AberationZSetpoint[i] = 0;
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::applyElevationForces() {
 	this->appliedForces->ElevationForcesApplied = true;
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
 }
 
 void ForceController::zeroElevationForces() {
@@ -208,11 +225,56 @@ void ForceController::zeroElevationForces() {
 		this->forceData->ElevationYSetpoint[i] = 0;
 		this->forceData->ElevationZSetpoint[i] = 0;
 	}
-	this->publisher->logAppliedForces();
+	this->publishAppliedForces();
+}
+
+void ForceController::applyAzimuthForces() {
+	this->appliedForces->AzimuthForcesApplied = true;
+	this->publishAppliedForces();
+}
+
+void ForceController::zeroAzimuthForces() {
+	this->appliedForces->AzimuthForcesApplied = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->AzimuthXSetpoint[i] = 0;
+		this->forceData->AzimuthYSetpoint[i] = 0;
+		this->forceData->AzimuthZSetpoint[i] = 0;
+	}
+	this->publishAppliedForces();
+}
+
+void ForceController::applyTemperatureForces() {
+	this->appliedForces->TemperatureForcesApplied = true;
+	this->publishAppliedForces();
+}
+
+void ForceController::zeroTemperatureForces() {
+	this->appliedForces->TemperatureForcesApplied = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->TemperatureXSetpoint[i] = 0;
+		this->forceData->TemperatureYSetpoint[i] = 0;
+		this->forceData->TemperatureZSetpoint[i] = 0;
+	}
+	this->publishAppliedForces();
+}
+
+void ForceController::applyDynamicForces() {
+	this->appliedForces->DynamicForcesApplied = true;
+	this->publishAppliedForces();
+}
+
+void ForceController::zeroDynamicForces() {
+	this->appliedForces->DynamicForcesApplied = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceData->DynamicXSetpoint[i] = 0;
+		this->forceData->DynamicYSetpoint[i] = 0;
+		this->forceData->DynamicZSetpoint[i] = 0;
+	}
+	this->publishAppliedForces();
 }
 
 void ForceController::updateElevationForces() {
-	double elevationAngle = this->inclinometerData->InclinometerAngle;
+	double elevationAngle = this->inclinometerData->InclinometerAngle;//this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->InclinometerAngle : this->tmaElevationData.Angle_Actual;
 	double elevationMatrix[] = { std::pow(elevationAngle, 5.0), std::pow(elevationAngle, 4.0), std::pow(elevationAngle, 3.0), std::pow(elevationAngle, 2.0), elevationAngle, 1 };
 	for(int i = 0; i < FA_COUNT; ++i) {
 		int mIndex = i * 6;
@@ -238,6 +300,68 @@ void ForceController::updateElevationForces() {
 				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 4] * elevationMatrix[4] +
 				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 5];
 	}
+}
+
+void ForceController::updateAzimuthForces() {
+	double azimuthAngle = 0;//this->tmaAzimuthData.Angle_Actual;
+	double azimuthMatrix[] = { std::pow(azimuthAngle, 5.0), std::pow(azimuthAngle, 4.0), std::pow(azimuthAngle, 3.0), std::pow(azimuthAngle, 2.0), azimuthAngle, 1 };
+	for(int i = 0; i < FA_COUNT; ++i) {
+		int mIndex = i * 6;
+		this->forceData->AzimuthXSetpoint[i] =
+				this->forceActuatorSettings->AzimuthXAxisCoefficients[mIndex + 0] * azimuthMatrix[0] +
+				this->forceActuatorSettings->AzimuthXAxisCoefficients[mIndex + 1] * azimuthMatrix[1] +
+				this->forceActuatorSettings->AzimuthXAxisCoefficients[mIndex + 2] * azimuthMatrix[2] +
+				this->forceActuatorSettings->AzimuthXAxisCoefficients[mIndex + 3] * azimuthMatrix[3] +
+				this->forceActuatorSettings->AzimuthXAxisCoefficients[mIndex + 4] * azimuthMatrix[4] +
+				this->forceActuatorSettings->AzimuthXAxisCoefficients[mIndex + 5];
+		this->forceData->AzimuthYSetpoint[i] =
+				this->forceActuatorSettings->AzimuthYAxisCoefficients[mIndex + 0] * azimuthMatrix[0] +
+				this->forceActuatorSettings->AzimuthYAxisCoefficients[mIndex + 1] * azimuthMatrix[1] +
+				this->forceActuatorSettings->AzimuthYAxisCoefficients[mIndex + 2] * azimuthMatrix[2] +
+				this->forceActuatorSettings->AzimuthYAxisCoefficients[mIndex + 3] * azimuthMatrix[3] +
+				this->forceActuatorSettings->AzimuthYAxisCoefficients[mIndex + 4] * azimuthMatrix[4] +
+				this->forceActuatorSettings->AzimuthYAxisCoefficients[mIndex + 5];
+		this->forceData->AzimuthZSetpoint[i] =
+				this->forceActuatorSettings->AzimuthZAxisCoefficients[mIndex + 0] * azimuthMatrix[0] +
+				this->forceActuatorSettings->AzimuthZAxisCoefficients[mIndex + 1] * azimuthMatrix[1] +
+				this->forceActuatorSettings->AzimuthZAxisCoefficients[mIndex + 2] * azimuthMatrix[2] +
+				this->forceActuatorSettings->AzimuthZAxisCoefficients[mIndex + 3] * azimuthMatrix[3] +
+				this->forceActuatorSettings->AzimuthZAxisCoefficients[mIndex + 4] * azimuthMatrix[4] +
+				this->forceActuatorSettings->AzimuthZAxisCoefficients[mIndex + 5];
+	}
+}
+
+void ForceController::updateTemperatureForces() {
+	double temperature = 0; // TODO: Update
+	double temperatureMatrix[] = { std::pow(temperature, 5.0), std::pow(temperature, 4.0), std::pow(temperature, 3.0), std::pow(temperature, 2.0), temperature, 1 };
+	for(int i = 0; i < FA_COUNT; ++i) {
+		int mIndex = i * 6;
+		this->forceData->TemperatureXSetpoint[i] =
+				this->forceActuatorSettings->TemperatureXAxisCoefficients[mIndex + 0] * temperatureMatrix[0] +
+				this->forceActuatorSettings->TemperatureXAxisCoefficients[mIndex + 1] * temperatureMatrix[1] +
+				this->forceActuatorSettings->TemperatureXAxisCoefficients[mIndex + 2] * temperatureMatrix[2] +
+				this->forceActuatorSettings->TemperatureXAxisCoefficients[mIndex + 3] * temperatureMatrix[3] +
+				this->forceActuatorSettings->TemperatureXAxisCoefficients[mIndex + 4] * temperatureMatrix[4] +
+				this->forceActuatorSettings->TemperatureXAxisCoefficients[mIndex + 5];
+		this->forceData->TemperatureYSetpoint[i] =
+				this->forceActuatorSettings->TemperatureYAxisCoefficients[mIndex + 0] * temperatureMatrix[0] +
+				this->forceActuatorSettings->TemperatureYAxisCoefficients[mIndex + 1] * temperatureMatrix[1] +
+				this->forceActuatorSettings->TemperatureYAxisCoefficients[mIndex + 2] * temperatureMatrix[2] +
+				this->forceActuatorSettings->TemperatureYAxisCoefficients[mIndex + 3] * temperatureMatrix[3] +
+				this->forceActuatorSettings->TemperatureYAxisCoefficients[mIndex + 4] * temperatureMatrix[4] +
+				this->forceActuatorSettings->TemperatureYAxisCoefficients[mIndex + 5];
+		this->forceData->TemperatureZSetpoint[i] =
+				this->forceActuatorSettings->TemperatureZAxisCoefficients[mIndex + 0] * temperatureMatrix[0] +
+				this->forceActuatorSettings->TemperatureZAxisCoefficients[mIndex + 1] * temperatureMatrix[1] +
+				this->forceActuatorSettings->TemperatureZAxisCoefficients[mIndex + 2] * temperatureMatrix[2] +
+				this->forceActuatorSettings->TemperatureZAxisCoefficients[mIndex + 3] * temperatureMatrix[3] +
+				this->forceActuatorSettings->TemperatureZAxisCoefficients[mIndex + 4] * temperatureMatrix[4] +
+				this->forceActuatorSettings->TemperatureZAxisCoefficients[mIndex + 5];
+	}
+}
+
+void ForceController::updateDynamicForces() {
+
 }
 
 void ForceController::sumAllForces() {
@@ -283,6 +407,11 @@ void ForceController::convertForcesToSetpoints() {
 			break;
 		}
 	}
+}
+
+void ForceController::publishAppliedForces() {
+	this->appliedForces->Timestamp = this->publisher->getTimestamp();
+	this->publisher->logAppliedForces();
 }
 
 } /* namespace SS */

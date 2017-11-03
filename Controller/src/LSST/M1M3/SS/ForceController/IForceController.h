@@ -8,6 +8,9 @@
 #ifndef IFORCECONTROLLER_H_
 #define IFORCECONTROLLER_H_
 
+struct MTMount_AzC;
+struct MTMount_AltC;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -15,6 +18,9 @@ namespace SS {
 class IForceController {
 public:
 	virtual ~IForceController();
+
+	virtual void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
+	virtual void updateTMAElevationData(MTMount_AltC* tmaElevationData);
 
 	virtual void updateAppliedForces();
 	virtual void processAppliedForces();

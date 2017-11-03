@@ -10,11 +10,15 @@
 
 #include <IForceController.h>
 #include <DataTypes.h>
+//#include <SAL_MTMountC.h>
 
 struct m1m3_logevent_AppliedForcesC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_ForceActuatorDataC;
 struct m1m3_InclinometerDataC;
+
+struct MTMount_AzC;
+struct MTMount_AltC;
 
 namespace LSST {
 namespace M1M3 {
@@ -38,6 +42,9 @@ private:
 	m1m3_ForceActuatorDataC* forceData;
 	m1m3_InclinometerDataC* inclinometerData;
 
+	//MTMount_AzC tmaAzimuthData;
+	//MTMount_AltC tmaElevationData;
+
 	double staticXSetpoint[156];
 	double staticYSetpoint[156];
 	double staticZSetpoint[156];
@@ -46,6 +53,9 @@ private:
 
 public:
 	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, IPublisher* publisher);
+
+	void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
+	void updateTMAElevationData(MTMount_AltC* tmaElevationData);
 
 	void updateAppliedForces();
 	void processAppliedForces();
@@ -67,17 +77,24 @@ public:
 	void applyElevationForces();
 	void zeroElevationForces();
 
-	//void calculateAzimuthForces();
-	//void calculateTemperatureForces();
-	//void calculateHardpointForces();
-	//void calculateDynamicForces();
-	//void calculateAOSForces();
-	//void calculateAberationForces();
+	void applyAzimuthForces();
+	void zeroAzimuthForces();
+
+	void applyTemperatureForces();
+	void zeroTemperatureForces();
+
+	void applyDynamicForces();
+	void zeroDynamicForces();
 
 private:
 	void updateElevationForces();
+	void updateAzimuthForces();
+	void updateTemperatureForces();
+	void updateDynamicForces();
 	void sumAllForces();
 	void convertForcesToSetpoints();
+
+	void publishAppliedForces();
 };
 
 } /* namespace SS */

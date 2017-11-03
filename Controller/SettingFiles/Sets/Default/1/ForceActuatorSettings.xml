@@ -25,4 +25,5 @@
 <MomentDistributionXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/MomentDistributionXTable.csv</MomentDistributionXTablePath>
 <MomentDistributionYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/MomentDistributionYTable.csv</MomentDistributionYTablePath>
 <MomentDistributionZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/MomentDistributionZTable.csv</MomentDistributionZTablePath>
+<UseInclinometer>0</UseInclinometer>
 </ForceActuatorSettings>

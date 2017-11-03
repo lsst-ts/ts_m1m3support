@@ -45,6 +45,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
 	this->loadTable(1, 1, 3, &MomentDistributionXMatrix, doc.select_node("//ForceActuatorSettings/MomentDistributionXTablePath").node().child_value());
 	this->loadTable(1, 1, 3, &MomentDistributionYMatrix, doc.select_node("//ForceActuatorSettings/MomentDistributionYTablePath").node().child_value());
 	this->loadTable(1, 1, 3, &MomentDistributionZMatrix, doc.select_node("//ForceActuatorSettings/MomentDistributionZTablePath").node().child_value());
+	this->UseInclinometer = boost::lexical_cast<int32_t>(doc.select_node("//ForceActuatorSettings/UseInclinometer").node().child_value()) != 0;
 }
 
 void ForceActuatorSettings::loadStaticForceTable(const std::string &filename) {

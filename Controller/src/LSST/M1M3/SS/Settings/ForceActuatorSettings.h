@@ -45,6 +45,7 @@ public:
 	std::vector<double> MomentDistributionXMatrix;
 	std::vector<double> MomentDistributionYMatrix;
 	std::vector<double> MomentDistributionZMatrix;
+	bool UseInclinometer;
 
 	void load(const std::string &filename);
 

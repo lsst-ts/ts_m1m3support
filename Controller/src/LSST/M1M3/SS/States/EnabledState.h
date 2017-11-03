@@ -15,8 +15,6 @@ namespace M1M3 {
 namespace SS {
 
 class EnabledState: public State {
-public:
-	virtual States::Type disable(DisableCommand* command, IModel* model);
 };
 
 } /* namespace SS */

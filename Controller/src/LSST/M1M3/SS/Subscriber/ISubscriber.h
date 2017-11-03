@@ -51,6 +51,8 @@ public:
 	virtual ICommand* tryAcceptCommandAbortRaiseM1M3();
 	virtual ICommand* tryAcceptCommandTranslateM1M3();
 	virtual ICommand* tryAcceptCommandStopHardpointMotion();
+	virtual ICommand* tryGetSampleTMAAzimuth();
+	virtual ICommand* tryGetSampleTMAElevation();
 };
 
 } /* namespace SS */

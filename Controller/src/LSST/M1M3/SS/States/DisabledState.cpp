@@ -25,21 +25,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type DisabledState::enable(EnableCommand* command, IModel* model) {
-	States::Type newState = States::ParkedEngineeringState;
-	return model->getSafetyController()->checkSafety(newState);
-}
-
-States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
-	States::Type newState = States::StandbyState;
-	model->getILC()->writeSetModeStandbyBuffer();
-	model->getILC()->triggerModbus();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getILC()->verifyResponses();
-	return model->getSafetyController()->checkSafety(newState);
-}
-
 States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
@@ -59,7 +44,22 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
-	return model->getSafetyController()->checkSafety(States::Ignore);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type DisabledState::enable(EnableCommand* command, IModel* model) {
+	States::Type newState = States::ParkedState;
+	return model->getSafetyController()->checkSafety(newState);
+}
+
+States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
+	States::Type newState = States::StandbyState;
+	model->getILC()->writeSetModeStandbyBuffer();
+	model->getILC()->triggerModbus();
+	model->getILC()->waitForAllSubnets(5000);
+	model->getILC()->readAll();
+	model->getILC()->verifyResponses();
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 } /* namespace SS */
