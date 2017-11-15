@@ -22,6 +22,7 @@
 #include <CommandTypes.h>
 #include <SettingReader.h>
 #include <SAL_m1m3.h>
+#include <SAL_MTMount.h>
 #include <Timestamp.h>
 #include <FPGAAddresses.h>
 #include <SafetyController.h>
@@ -37,22 +38,71 @@ int main() {
 
 	cout << "Creating setting reader" << endl;
 	SettingReader settingReader = SettingReader("/usr/ts_M1M3Support/SettingFiles/Base/", "/usr/ts_M1M3Support/SettingFiles/Sets/");
-	cout << "Initializing SAL" << endl;
+	cout << "Initializing M1M3 SAL" << endl;
 	SAL_m1m3 m1m3SAL = SAL_m1m3();
+	m1m3SAL.setDebugLevel(0);
+	cout << "Initializing MTMount SAL" << endl;
+	SAL_MTMount mtMountSAL = SAL_MTMount();
 	cout << "Creating publisher" << endl;
 	M1M3SSPublisher publisher = M1M3SSPublisher(&m1m3SAL);
 	cout << "Creating fpga" << endl;
 	FPGA fpga = FPGA();
 	if (fpga.isErrorCode(fpga.initialize())) {
 		cout << "Error initializing FPGA" << endl;
+		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
 	}
 	if (fpga.isErrorCode(fpga.open())) {
 		cout << "Error opening FPGA" << endl;
+		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
 	}
+	/*uint16_t data[2];
+	data[0] = FPGAAddresses::HeartbeatToSafetyController;
+	data[1] = 1;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::CriticalFaultToSafetyController;
+	data[1] = 0;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::MirrorLoweringRaisingToSafetyController;
+	data[1] = 0;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::MirrorParkedToSafetyController;
+	data[1] = 1;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::AirSupplyValveControl;
+	data[1] = 1;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::MirrorCellLightControl;
+	data[1] = 0;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCAuxPowerNetworkAOn;
+	data[1] = 1;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCAuxPowerNetworkBOn;
+	data[1] = 0;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCAuxPowerNetworkCOn;
+	data[1] = 1;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCAuxPowerNetworkDOn;
+	data[1] = 0;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCPowerNetworkAOn;
+	data[1] = 1;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCPowerNetworkBOn;
+	data[1] = 0;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCPowerNetworkCOn;
+	data[1] = 0;
+	fpga.writeCommandFIFO(data, 2, 0);
+	data[0] = FPGAAddresses::DCPowerNetworkDOn;
+	data[1] = 1;
+	fpga.writeCommandFIFO(data, 2, 0);
+	while(true) { }*/
 	cout << "Creating state factory" << endl;
 	StaticStateFactory stateFactory = StaticStateFactory();
 	cout << "Creating model" << endl;
@@ -62,7 +112,7 @@ int main() {
 	cout << "Creating command factory" << endl;
 	CommandFactory commandFactory = CommandFactory(&publisher, &context);
 	cout << "Creating subscriber" << endl;
-	M1M3SSSubscriber subscriber = M1M3SSSubscriber(&m1m3SAL, &commandFactory);
+	M1M3SSSubscriber subscriber = M1M3SSSubscriber(&m1m3SAL, &mtMountSAL, &commandFactory);
 	cout << "Creating controller" << endl;
 	Controller controller = Controller(&commandFactory);
 	cout << "Creating subscriber thread" << endl;
@@ -142,7 +192,10 @@ int main() {
 		cout << "Error finalizing fpga" << endl;
 	}
 
-	cout << "Shutting down SAL" << endl;
+	cout << "Shutting down MTMount SAL" << endl;
+	mtMountSAL.salShutdown();
+
+	cout << "Shutting down M1M3 SAL" << endl;
 	m1m3SAL.salShutdown();
 
 	cout << "Shutdown complete" << endl;

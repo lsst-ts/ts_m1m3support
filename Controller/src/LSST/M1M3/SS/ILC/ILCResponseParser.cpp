@@ -350,8 +350,8 @@ void ILCResponseParser::parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer,
 }
 
 void ILCResponseParser::parseReadBoostValveDCAGainsResponse(ModbusBuffer* buffer, int32_t dataIndex) {
-	this->forceInfo->DCAAxialGain[dataIndex] = buffer->readSGL();
-	this->forceInfo->DCALateralGain[dataIndex] = buffer->readSGL();
+	this->forceInfo->DCAPrimaryCylinderGain[dataIndex] = buffer->readSGL();
+	this->forceInfo->DCASecondaryCylinderGain[dataIndex] = buffer->readSGL();
 	buffer->skipToNextFrame();
 }
 
@@ -493,24 +493,24 @@ void ILCResponseParser::parseReadFACalibrationResponse(ModbusBuffer* buffer, int
 	this->forceInfo->MainADCCalibrationK2[dataIndex] = buffer->readSGL();
 	this->forceInfo->MainADCCalibrationK3[dataIndex] = buffer->readSGL();
 	this->forceInfo->MainADCCalibrationK4[dataIndex] = buffer->readSGL();
-	this->forceInfo->MainAxialLoadCellOffset[dataIndex] = buffer->readSGL();
-	this->forceInfo->MainLateralLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceInfo->MainPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceInfo->MainSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
-	this->forceInfo->MainAxialLoadCellSensitivity[dataIndex] = buffer->readSGL();
-	this->forceInfo->MainLateralLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceInfo->MainPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceInfo->MainSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
 	this->forceInfo->BackupADCCalibrationK1[dataIndex] = buffer->readSGL();
 	this->forceInfo->BackupADCCalibrationK2[dataIndex] = buffer->readSGL();
 	this->forceInfo->BackupADCCalibrationK3[dataIndex] = buffer->readSGL();
 	this->forceInfo->BackupADCCalibrationK4[dataIndex] = buffer->readSGL();
-	this->forceInfo->BackupAxialLoadCellOffset[dataIndex] = buffer->readSGL();
-	this->forceInfo->BackupLateralLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceInfo->BackupPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceInfo->BackupSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
-	this->forceInfo->BackupAxialLoadCellSensitivity[dataIndex] = buffer->readSGL();
-	this->forceInfo->BackupLateralLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceInfo->BackupPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceInfo->BackupSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
 	buffer->skipToNextFrame();

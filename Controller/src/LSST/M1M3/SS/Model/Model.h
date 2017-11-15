@@ -9,7 +9,6 @@
 #define MODEL_H_
 
 #include <IModel.h>
-#include <AirController.h>
 #include <pthread.h>
 #include <string>
 

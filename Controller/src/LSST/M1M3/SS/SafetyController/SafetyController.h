@@ -61,6 +61,25 @@ public:
 	void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
 	void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
 
+	void forceControllerNotifySafetyLimit(bool conditionFlag);
+	void forceControllerNotifyXMomentLimit(bool conditionFlag);
+	void forceControllerNotifyYMomentLimit(bool conditionFlag);
+	void forceControllerNotifyZMomentLimit(bool conditionFlag);
+	void forceControllerNotifyNearNeighborCheck(bool conditionFlag);
+	void forceControllerNotifyMagnitudeLimit(bool conditionFlag);
+	void forceControllerNotifyFarNeighborCheck(bool conditionFlag);
+	void forceControllerNotifyElevationForceClipping(bool conditionFlag);
+	void forceControllerNotifyAzimuthForceClipping(bool conditionFlag);
+	void forceControllerNotifyTemperatureForceClipping(bool conditionFlag);
+	void forceControllerNotifyHardpointOffloadForceClipping(bool conditionFlag);
+	void forceControllerNotifyDynamicForceClipping(bool conditionFlag);
+	void forceControllerNotifyAOSNetForceCheck(bool conditionFlag);
+	void forceControllerNotifyAOSForceClipping(bool conditionFlag);
+	void forceControllerNotifyStaticForceClipping(bool conditionFlag);
+	void forceControllerNotifyAberrationNetForceCheck(bool conditionFlag);
+	void forceControllerNotifyAberrationForceClipping(bool conditionFlag);
+	void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
+
 	States::Type checkSafety(States::Type preferredNextState);
 
 private:

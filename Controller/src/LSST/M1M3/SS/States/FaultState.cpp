@@ -35,7 +35,7 @@ States::Type FaultState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
 	//model->getAirController()->checkStatus();
-	return States::Ignore;
+	return States::NoStateTransition;
 }
 
 States::Type FaultState::standby(StandbyCommand* command, IModel* model) {
@@ -45,6 +45,7 @@ States::Type FaultState::standby(StandbyCommand* command, IModel* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
+	// TODO: Need to clear the error code
 	return newState;
 }
 

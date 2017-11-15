@@ -8,24 +8,29 @@
 #ifndef ACTIVEENGINEERINGSTATE_H_
 #define ACTIVEENGINEERINGSTATE_H_
 
-#include <State.h>
+#include <EngineeringState.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ActiveEngineeringState: public State {
+class ActiveEngineeringState: public EngineeringState {
 public:
 	States::Type update(UpdateCommand* command, IModel* model);
+	States::Type lowerM1M3(LowerM1M3Command* command, IModel* model);
+	States::Type exitEngineering(ExitEngineeringCommand* command, IModel* model);
+
 	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model);
 	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
-	States::Type lowerM1M3(LowerM1M3Command* command, IModel* model);
 	States::Type applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, IModel* model);
 	States::Type applyAberrationByForces(ApplyAberrationByForcesCommand* command, IModel* model);
 	States::Type clearAberration(ClearAberrationCommand* command, IModel* model);
 	States::Type applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model);
 	States::Type applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model);
 	States::Type clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model);
+	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model);
+	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model);
+
 };
 
 } /* namespace SS */

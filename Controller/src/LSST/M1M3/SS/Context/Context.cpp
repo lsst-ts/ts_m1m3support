@@ -200,8 +200,20 @@ void Context::stopHardpointMotion(StopHardpointMotionCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->storeTMAAzimuthSample(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::storeTMAElevationSample(TMAElevationSampleCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->storeTMAElevationSample(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
-	if (potentialNewState != States::Ignore) {
+	if (potentialNewState != States::NoStateTransition) {
 		this->currentState = potentialNewState;
 		this->model->publishStateChange(potentialNewState);
 	}

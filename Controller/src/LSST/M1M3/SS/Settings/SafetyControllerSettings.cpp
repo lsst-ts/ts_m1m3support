@@ -47,6 +47,25 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->Interlock.FaultOnCriticalFaultStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnCriticalFaultStateOutputMismatch").node().child_value()) != 0;
 	this->Interlock.FaultOnMirrorLoweringRaisingStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnMirrorLoweringRaisingStateOutputMismatch").node().child_value()) != 0;
 	this->Interlock.FaultOnMirrorParkedStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnMirrorParkedStateOutputMismatch").node().child_value()) != 0;
+
+	this->ForceController.FaultOnSafetyLimit = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnSafetyLimit").node().child_value()) != 0;
+	this->ForceController.FaultOnXMomentLimit = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnXMomentLimit").node().child_value()) != 0;
+	this->ForceController.FaultOnYMomentLimit = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnYMomentLimit").node().child_value()) != 0;
+	this->ForceController.FaultOnZMomentLimit = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnZMomentLimit").node().child_value()) != 0;
+	this->ForceController.FaultOnNearNeighborCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnNearNeighborCheck").node().child_value()) != 0;
+	this->ForceController.FaultOnMagnitudeLimit = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnMagnitudeLimit").node().child_value()) != 0;
+	this->ForceController.FaultOnFarNeighborCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnFarNeighborCheck").node().child_value()) != 0;
+	this->ForceController.FaultOnElevationForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnElevationForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnAzimuthForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAzimuthForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnTemperatureForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnTemperatureForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnHardpointOffloadForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnHardpointOffloadForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnDynamicForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnDynamicForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnAOSNetForceCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAOSNetForceCheck").node().child_value()) != 0;
+	this->ForceController.FaultOnAOSForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAOSForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnStaticForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnStaticForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnAberrationNetForceCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAberrationNetForceCheck").node().child_value()) != 0;
+	this->ForceController.FaultOnAberrationForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAberrationForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnOffsetForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnOffsetForceClipping").node().child_value()) != 0;
 }
 
 } /* namespace SS */

@@ -10,11 +10,10 @@
 
 #include <IForceController.h>
 #include <DataTypes.h>
-
-struct m1m3_logevent_AppliedForcesC;
-struct m1m3_logevent_ForceActuatorInfoC;
-struct m1m3_ForceActuatorDataC;
-struct m1m3_InclinometerDataC;
+#include <ForceActuatorNeighbors.h>
+#include <SAL_m1m3C.h>
+#include <SAL_MTMountC.h>
+#include <vector>
 
 namespace LSST {
 namespace M1M3 {
@@ -23,6 +22,7 @@ namespace SS {
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 class IPublisher;
+class ISafetyController;
 
 class ForceController: public IForceController {
 private:
@@ -32,20 +32,27 @@ private:
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
 	IPublisher* publisher;
+	ISafetyController* safetyController;
 
 	m1m3_logevent_AppliedForcesC* appliedForces;
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
 	m1m3_ForceActuatorDataC* forceData;
+	m1m3_logevent_ForceActuatorDataRejectionC* forceSetpoint;
+	m1m3_logevent_ForceActuatorSetpointWarningC* forceSetpointWarning;
 	m1m3_InclinometerDataC* inclinometerData;
 
-	double staticXSetpoint[156];
-	double staticYSetpoint[156];
-	double staticZSetpoint[156];
+	MTMount_AzC tmaAzimuthData;
+	MTMount_AltC tmaElevationData;
+
+	std::vector<ForceActuatorNeighbors> neighbors;
 
 	static int32_t toInt24(double force) { return (int32_t)(force * 1000.0); }
 
 public:
-	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, IPublisher* publisher);
+	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, IPublisher* publisher, ISafetyController* safetyController);
+
+	void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
+	void updateTMAElevationData(MTMount_AltC* tmaElevationData);
 
 	void updateAppliedForces();
 	void processAppliedForces();
@@ -67,17 +74,31 @@ public:
 	void applyElevationForces();
 	void zeroElevationForces();
 
-	//void calculateAzimuthForces();
-	//void calculateTemperatureForces();
-	//void calculateHardpointForces();
-	//void calculateDynamicForces();
-	//void calculateAOSForces();
-	//void calculateAberationForces();
+	void applyAzimuthForces();
+	void zeroAzimuthForces();
+
+	void applyTemperatureForces();
+	void zeroTemperatureForces();
+
+	void applyDynamicForces();
+	void zeroDynamicForces();
 
 private:
 	void updateElevationForces();
+	void updateAzimuthForces();
+	void updateTemperatureForces();
+	void updateDynamicForces();
 	void sumAllForces();
 	void convertForcesToSetpoints();
+
+	bool checkMirrorMoments();
+	bool checkNearNeighbors();
+	bool checkMirrorWeight();
+	bool checkFarNeighbors();
+
+	void publishAppliedForces();
+	void publishForceSetpointWarning();
+	void publishForceDataRejection();
 };
 
 } /* namespace SS */

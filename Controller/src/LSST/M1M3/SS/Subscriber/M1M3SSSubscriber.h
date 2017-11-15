@@ -10,8 +10,10 @@
 
 #include <ISubscriber.h>
 #include <SAL_m1m3C.h>
+#include <SAL_MTMountC.h>
 
 class SAL_m1m3;
+class SAL_MTMount;
 
 namespace LSST {
 namespace M1M3 {
@@ -25,6 +27,7 @@ class ICommandFactory;
 class M1M3SSSubscriber: public ISubscriber {
 private:
 	SAL_m1m3* m1m3SAL;
+	SAL_MTMount* mtMountSAL;
 	ICommandFactory* commandFactory;
 	m1m3_command_StartC startData;
 	m1m3_command_EnableC enableData;
@@ -54,9 +57,12 @@ private:
 	m1m3_command_AbortRaiseM1M3C abortRaiseM1M3Data;
 	m1m3_command_TranslateM1M3C translateM1M3Data;
 	m1m3_command_StopHardpointMotionC stopHardpointMotionData;
+	MTMount_AzC tmaAzimuth;
+	MTMount_AltC tmaElevation;
+
 
 public:
-	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, ICommandFactory* commandFactory);
+	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, ICommandFactory* commandFactory);
 
 	ICommand* tryAcceptCommandStart();
 	ICommand* tryAcceptCommandEnable();
@@ -86,6 +92,8 @@ public:
 	ICommand* tryAcceptCommandAbortRaiseM1M3();
 	ICommand* tryAcceptCommandTranslateM1M3();
 	ICommand* tryAcceptCommandStopHardpointMotion();
+	ICommand* tryGetSampleTMAAzimuth();
+	ICommand* tryGetSampleTMAElevation();
 };
 
 } /* namespace SS */

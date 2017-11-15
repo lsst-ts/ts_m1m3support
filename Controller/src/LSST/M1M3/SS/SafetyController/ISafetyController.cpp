@@ -44,6 +44,25 @@ void ISafetyController::interlockNotifyCriticalFaultStateOutputMismatch(bool con
 void ISafetyController::interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag) { }
 void ISafetyController::interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag) { }
 
+void ISafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyMagnitudeLimit(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyFarNeighborCheck(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyElevationForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyAzimuthForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyTemperatureForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyHardpointOffloadForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyDynamicForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyAOSNetForceCheck(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyAOSForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyStaticForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyAberrationNetForceCheck(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyAberrationForceClipping(bool conditionFlag) { }
+void ISafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFlag) { }
+
 States::Type ISafetyController::checkSafety(States::Type preferredNextState) { return preferredNextState; }
 
 } /* namespace SS */

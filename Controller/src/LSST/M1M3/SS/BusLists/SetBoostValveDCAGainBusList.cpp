@@ -22,7 +22,7 @@ SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetDa
 		for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 			uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-			this->ilcMessageFactory->setBoostValveDCAGains(&this->buffer, address, this->forceInfo->DCAAxialGain[dataIndex], this->forceInfo->DCALateralGain[dataIndex]);
+			this->ilcMessageFactory->setBoostValveDCAGains(&this->buffer, address, this->forceInfo->DCAPrimaryCylinderGain[dataIndex], this->forceInfo->DCASecondaryCylinderGain[dataIndex]);
 			this->expectedFAResponses[dataIndex] = 1;
 		}
 		this->endSubnet();

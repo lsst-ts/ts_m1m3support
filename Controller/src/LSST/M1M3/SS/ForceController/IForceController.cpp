@@ -13,6 +13,11 @@ namespace SS {
 
 IForceController::~IForceController() { }
 
+void IForceController::checkForces() { }
+
+void IForceController::updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData) { }
+void IForceController::updateTMAElevationData(MTMount_AltC* tmaElevationData) { }
+
 void IForceController::updateAppliedForces() { }
 void IForceController::processAppliedForces() { }
 

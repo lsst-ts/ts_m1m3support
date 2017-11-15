@@ -36,6 +36,8 @@
 #include <AbortRaiseM1M3Command.h>
 #include <TranslateM1M3Command.h>
 #include <StopHardpointMotionCommand.h>
+#include <TMAAzimuthSampleCommand.h>
+#include <TMAElevationSampleCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -79,6 +81,8 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	case Commands::AbortRaiseM1M3Command: return new AbortRaiseM1M3Command(this->context, this->publisher, commandID, (m1m3_command_AbortRaiseM1M3C*)data);
 	case Commands::TranslateM1M3Command: return new TranslateM1M3Command(this->context, this->publisher, commandID, (m1m3_command_TranslateM1M3C*)data);
 	case Commands::StopHardpointMotionCommand: return new StopHardpointMotionCommand(this->context, this->publisher, commandID, (m1m3_command_StopHardpointMotionC*)data);
+	case Commands::TMAAzimuthSampleCommand: return new TMAAzimuthSampleCommand(this->context, (MTMount_AzC*)data);
+	case Commands::TMAElevationSampleCommand: return new TMAElevationSampleCommand(this->context, (MTMount_AltC*)data);
 	}
 	return 0;
 }

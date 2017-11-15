@@ -55,6 +55,25 @@ void SafetyController::interlockNotifyCriticalFaultStateOutputMismatch(bool cond
 void SafetyController::interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockMirrorLoweringRaisingStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnMirrorLoweringRaisingStateOutputMismatch, conditionFlag); }
 void SafetyController::interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag){ this->updateOverride(FaultCodes::InterlockMirrorParkedStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnMirrorParkedStateOutputMismatch, conditionFlag); }
 
+void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerSafetyLimit, this->safetyControllerSettings->ForceController.FaultOnSafetyLimit, conditionFlag); }
+void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerXMomentLimit, this->safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag); }
+void SafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerYMomentLimit, this->safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag); }
+void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerZMomentLimit, this->safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag); }
+void SafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerNearNeighborCheck, this->safetyControllerSettings->ForceController.FaultOnNearNeighborCheck, conditionFlag); }
+void SafetyController::forceControllerNotifyMagnitudeLimit(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerMagnitudeLimit, this->safetyControllerSettings->ForceController.FaultOnMagnitudeLimit, conditionFlag); }
+void SafetyController::forceControllerNotifyFarNeighborCheck(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerFarNeighborCheck, this->safetyControllerSettings->ForceController.FaultOnFarNeighborCheck, conditionFlag); }
+void SafetyController::forceControllerNotifyElevationForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerElevationForceClipping, this->safetyControllerSettings->ForceController.FaultOnElevationForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyAzimuthForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerAzimuthForceClipping, this->safetyControllerSettings->ForceController.FaultOnAzimuthForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyTemperatureForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerTemperatureForceClipping, this->safetyControllerSettings->ForceController.FaultOnTemperatureForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyHardpointOffloadForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerHardpointOffloadForceClipping, this->safetyControllerSettings->ForceController.FaultOnHardpointOffloadForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyDynamicForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerDynamicForceClipping, this->safetyControllerSettings->ForceController.FaultOnDynamicForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyAOSNetForceCheck(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerAOSNetForceCheck, this->safetyControllerSettings->ForceController.FaultOnAOSNetForceCheck, conditionFlag); }
+void SafetyController::forceControllerNotifyAOSForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerAOSForceClipping, this->safetyControllerSettings->ForceController.FaultOnAOSForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyStaticForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerStaticForceClipping, this->safetyControllerSettings->ForceController.FaultOnStaticForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyAberrationNetForceCheck(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerAberrationNetForceCheck, this->safetyControllerSettings->ForceController.FaultOnAberrationNetForceCheck, conditionFlag); }
+void SafetyController::forceControllerNotifyAberrationForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerAberrationForceClipping, this->safetyControllerSettings->ForceController.FaultOnAberrationForceClipping, conditionFlag); }
+void SafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerOffsetForceClipping, this->safetyControllerSettings->ForceController.FaultOnOffsetForceClipping, conditionFlag); }
+
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {
 		this->publisher->logErrorCode();
@@ -69,7 +88,7 @@ void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFl
 	bool faultConditionExists = enabledFlag && conditionFlag;
 	if (faultConditionExists && this->errorCodeData->DetailedErrorCode == FaultCodes::NoFault) {
 		this->errorCodeData->Timestamp = this->publisher->getTimestamp();
-		this->errorCodeData->DetailedErrorCode = (int64_t)faultCode;
+		this->errorCodeData->DetailedErrorCode = (int32_t)faultCode;
 		this->errorCodeData->ErrorCode = (int32_t)(((int64_t)faultCode) >> 32);
 	}
 }

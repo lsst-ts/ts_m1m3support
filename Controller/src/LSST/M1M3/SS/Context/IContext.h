@@ -42,6 +42,8 @@ class DisableHardpointChaseCommand;
 class AbortRaiseM1M3Command;
 class TranslateM1M3Command;
 class StopHardpointMotionCommand;
+class TMAAzimuthSampleCommand;
+class TMAElevationSampleCommand;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -200,6 +202,16 @@ public:
 	 * @param[in] command The stop hardpoint motion command to execute.
 	 */
 	virtual void stopHardpointMotion(StopHardpointMotionCommand* command);
+	/*!
+	 * Executes the command to store TMA azimuth data.
+	 * @param[in] command The TMA azimuth sample command to execute.
+	 */
+	virtual void storeTMAAzimuthSample(TMAAzimuthSampleCommand* command);
+	/*!
+	 * Executes the command to store TMA elevation data.
+	 * @param[in] command The TMA elevation sample command to execute.
+	 */
+	virtual void storeTMAElevationSample(TMAElevationSampleCommand* command);
 };
 
 } /* namespace SS */
