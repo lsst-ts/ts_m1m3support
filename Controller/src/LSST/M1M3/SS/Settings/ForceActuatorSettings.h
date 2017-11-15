@@ -8,6 +8,9 @@
 #ifndef FORCEACTUATORSETTINGS_H_
 #define FORCEACTUATORSETTINGS_H_
 
+#include <DataTypes.h>
+#include <ForceActuatorNeighbors.h>
+#include <ForceActuatorLimits.h>
 #include <string>
 #include <vector>
 
@@ -45,12 +48,31 @@ public:
 	std::vector<double> MomentDistributionXMatrix;
 	std::vector<double> MomentDistributionYMatrix;
 	std::vector<double> MomentDistributionZMatrix;
+	std::vector<ForceActuatorLimits> SetpointLimits;
+	std::vector<ForceActuatorNeighbors> Neighbors;
 	bool UseInclinometer;
+	double MirrorWeight;
+	double MirrorXMoment;
+	double MirrorYMoment;
+	double MirrorZMoment;
+	double SetpointXMomentLowLimitPercentage;
+	double SetpointXMomentHighLimitPercentage;
+	double SetpointYMomentLowLimitPercentage;
+	double SetpointYMomentHighLimitPercentage;
+	double SetpointZMomentLowLimitPercentage;
+	double SetpointZMomentHighLimitPercentage;
+	double SetpointNearNeighborLimitPercentage;
+	double SetpointMirrorWeightLimitPercentage;
+	double SetpointFarNeighborLimitPercentage;
+	double NetAOSForceTolerance;
+	double NetAberrationForceTolerance;
 
 	void load(const std::string &filename);
 
 private:
 	void loadStaticForceTable(const std::string &filename);
+	void loadLimitTable(const std::string &filename);
+	void loadNeighborsTable(const std::string &filename);
 	void loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<double>* data, const std::string &filename);
 };
 

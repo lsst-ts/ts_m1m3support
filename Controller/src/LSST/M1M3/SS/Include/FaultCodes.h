@@ -38,6 +38,24 @@ struct FaultCodes {
 		InterlockCriticalFaultStateOutputMismatch          = 0x000017D800000002,
 		InterlockMirrorLoweringRaisingStateOutputMismatch  = 0x000017D800000003,
 		InterlockMirrorParkedStateOutputMismatch           = 0x000017D800000004,
+		ForceControllerSafetyLimit                         = 0x000017D900000001, // 6105
+		ForceControllerXMomentLimit                        = 0x000017D900000002,
+		ForceControllerYMomentLimit                        = 0x000017D900000003,
+		ForceControllerZMomentLimit                        = 0x000017D900000004,
+		ForceControllerNearNeighborCheck                   = 0x000017D900000005,
+		ForceControllerMagnitudeLimit                      = 0x000017D900000006,
+		ForceControllerFarNeighborCheck                    = 0x000017D900000007,
+		ForceControllerElevationForceClipping              = 0x000017D900000008,
+		ForceControllerAzimuthForceClipping                = 0x000017D900000009,
+		ForceControllerTemperatureForceClipping            = 0x000017D90000000A,
+		ForceControllerHardpointOffloadForceClipping       = 0x000017D90000000B,
+		ForceControllerDynamicForceClipping                = 0x000017D90000000C,
+		ForceControllerAOSNetForceCheck                    = 0x000017D90000000D,
+		ForceControllerAOSForceClipping                    = 0x000017D90000000E,
+		ForceControllerStaticForceClipping                 = 0x000017D90000000F,
+		ForceControllerAberrationNetForceCheck             = 0x000017D900000010,
+		ForceControllerAberrationForceClipping             = 0x000017D900000011,
+		ForceControllerOffsetForceClipping                 = 0x000017D900000012,
 		UnknownFault                                       = 0x0000180600000001  // 6150
 	};
 };

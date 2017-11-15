@@ -120,7 +120,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->forceController) {
 		delete this->forceController;
 	}
-	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher);
+	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher, this->safetyController);
 
 	if (this->airController) {
 		delete this->airController;

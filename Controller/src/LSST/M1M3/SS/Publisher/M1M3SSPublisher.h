@@ -36,7 +36,9 @@ private:
 	m1m3_logevent_AppliedForcesC eventAppliedForces;
 	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
 	m1m3_logevent_ErrorCodeC eventErrorCode;
+	m1m3_logevent_ForceActuatorDataRejectionC eventForceActuatorDataRejection;
 	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
+	m1m3_logevent_ForceActuatorSetpointWarningC eventForceActuatorSetpointWarning;
 	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
 	m1m3_logevent_HardpointActuatorMotionStateC eventHardpointActuatorMotionState;
 	m1m3_logevent_ILCWarningC eventILCWarning;
@@ -64,7 +66,9 @@ public:
 	m1m3_logevent_AppliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
 	m1m3_logevent_ErrorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
+	m1m3_logevent_ForceActuatorDataRejectionC* getEventForceActuatorDataRejection() { return &this->eventForceActuatorDataRejection; }
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
+	m1m3_logevent_ForceActuatorSetpointWarningC* getEventForceActuatorSetpointWarning() { return &this->eventForceActuatorSetpointWarning; }
 	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
 	m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState() { return &this->eventHardpointActuatorMotionState; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
@@ -91,7 +95,9 @@ public:
 	void logAppliedForces();
 	void logDisplacementSensorWarning();
 	void logErrorCode();
+	void logForceActuatorDataRejection();
 	void logForceActuatorInfo();
+	void logForceActuatorSetpointWarning();
 	void logHardpointActuatorInfo();
 	void logHardpointActuatorMotionState();
 	void logILCWarning();

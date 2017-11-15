@@ -19,6 +19,8 @@ class IForceController {
 public:
 	virtual ~IForceController();
 
+	virtual void checkForces();
+
 	virtual void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
 	virtual void updateTMAElevationData(MTMount_AltC* tmaElevationData);
 
