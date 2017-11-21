@@ -6,12 +6,15 @@
  */
 
 #include <ILCSubnetData.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <HardpointActuatorApplicationSettings.h>
+#include <HardpointMonitorApplicationSettings.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings) {
+ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->subnetData[subnetIndex].FACount = 0;
 		this->subnetData[subnetIndex].HPCount = 0;
@@ -39,6 +42,18 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
 		map.DataIndex = row.Index;
 		this->subnetData[subnetIndex].HPIndex.push_back(map);
 		this->subnetData[subnetIndex].HPCount += 1;
+	}
+	for(int i = 0; i < HM_COUNT; i++) {
+		HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
+		int32_t subnetIndex = row.Subnet - 1;
+		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
+		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;
+		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::HM;
+		ILCAddressDataIndexMap map;
+		map.Address = row.Address;
+		map.DataIndex = row.Index;
+		this->subnetData[subnetIndex].HMIndex.push_back(map);
+		this->subnetData[subnetIndex].HMCount += 1;
 	}
 }
 

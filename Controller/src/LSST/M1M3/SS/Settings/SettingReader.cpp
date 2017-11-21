@@ -62,6 +62,7 @@ HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplic
 }
 
 HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
+	this->hardpointActuatorSettings.load(this->getSetPath("HardpointActuatorSettings.xml").c_str());
 	return &this->hardpointActuatorSettings;
 }
 
@@ -88,6 +89,16 @@ PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
 AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
 	this->accelerometerSettings.load(this->getSetPath("AccelerometerSettings.xml").c_str());
 	return &this->accelerometerSettings;
+}
+
+DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
+	this->displacementSensorSettings.load(this->getSetPath("DisplacementSensorSettings.xml").c_str());
+	return &this->displacementSensorSettings;
+}
+
+HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicationSettings() {
+	this->hardpointMonitorApplicationSettings.load(this->getBasePath("HardpointMonitorApplicationSettings.xml").c_str());
+	return &this->hardpointMonitorApplicationSettings;
 }
 
 std::string SettingReader::getBasePath(std::string file) {

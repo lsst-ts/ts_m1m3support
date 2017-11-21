@@ -43,4 +43,6 @@
 <SetpointFarNeighborLimitPercentage>0.5</SetpointFarNeighborLimitPercentage>
 <NetAOSForceTolerance>1</NetAOSForceTolerance>
 <NetAberrationForceTolerance>1</NetAberrationForceTolerance>
+<RaiseIncrementPercentage>0.002</RaiseIncrementPercentage>
+<LowerDecrementPercentage>0.002</LowerDecrementPercentage>
 </ForceActuatorSettings>

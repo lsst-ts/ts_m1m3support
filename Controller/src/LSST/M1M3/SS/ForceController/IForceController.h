@@ -19,10 +19,13 @@ class IForceController {
 public:
 	virtual ~IForceController();
 
-	virtual void checkForces();
-
 	virtual void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
 	virtual void updateTMAElevationData(MTMount_AltC* tmaElevationData);
+
+	virtual void incSupportPercentage();
+	virtual void decSupportPercentage();
+	virtual void zeroSupportPercentage();
+	virtual void fillSupportPercentage();
 
 	virtual void updateAppliedForces();
 	virtual void processAppliedForces();

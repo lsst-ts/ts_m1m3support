@@ -19,18 +19,20 @@ namespace M1M3 {
 namespace SS {
 
 class PositionControllerSettings;
+class HardpointActuatorSettings;
 class IPublisher;
 
 class PositionController: public IPositionController {
 private:
 	PositionControllerSettings* positionControllerSettings;
+	HardpointActuatorSettings* hardpointActuatorSettings;
 	IPublisher* publisher;
 
 	m1m3_HardpointDataC* hardpointData;
 	m1m3_logevent_HardpointActuatorMotionStateC* hardpointActuatorMotionState;
 
 public:
-	PositionController(PositionControllerSettings* positionControllerSettings, IPublisher* publisher);
+	PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher);
 
 	void enableChase(int32_t actuatorID);
 	void disableChase(int32_t actuatorID);

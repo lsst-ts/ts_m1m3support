@@ -20,7 +20,8 @@ struct ILCTypes {
 	enum Type {
 		Unknown = 0,
 		HP = 1,
-		FA = 2
+		FA = 2,
+		HM = 3
 	};
 };
 

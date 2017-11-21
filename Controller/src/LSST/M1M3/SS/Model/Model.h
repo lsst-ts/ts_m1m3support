@@ -22,6 +22,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
+class HardpointMonitorApplicationSettings;
 
 class Model : public IModel {
 private:
@@ -71,6 +72,7 @@ public:
 private:
 	void populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 	void populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings);
+	void populateHardpointMonitorInfo(HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 };
 
 } /* namespace SS */

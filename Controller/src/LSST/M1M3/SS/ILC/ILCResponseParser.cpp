@@ -6,6 +6,7 @@
  */
 
 #include <ILCResponseParser.h>
+#include <HardpointActuatorSettings.h>
 #include <IPublisher.h>
 #include <ModbusBuffer.h>
 #include <ForceConverter.h>
@@ -15,11 +16,15 @@
 #include <ILCSubnetData.h>
 #include <SAL_m1m3C.h>
 
+#include <iostream>
+using namespace std;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 ILCResponseParser::ILCResponseParser() {
+	this->hardpointActuatorSettings = 0;
 	this->publisher = 0;
 	this->subnetData = 0;
 	this->hardpointInfo = 0;
@@ -28,10 +33,13 @@ ILCResponseParser::ILCResponseParser() {
 	this->forceInfo = 0;
 	this->forceStatus = 0;
 	this->forceData = 0;
+	this->hardpointMonitorInfo = 0;
+	this->hardpointMonitorStatus = 0;
 	this->ilcWarning = 0;
 }
 
-ILCResponseParser::ILCResponseParser(IPublisher* publisher, ILCSubnetData* subnetData) {
+ILCResponseParser::ILCResponseParser(HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData) {
+	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->publisher = publisher;
 	this->subnetData = subnetData;
 	this->hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
@@ -40,6 +48,8 @@ ILCResponseParser::ILCResponseParser(IPublisher* publisher, ILCSubnetData* subne
 	this->forceInfo = this->publisher->getEventForceActuatorInfo();
 	this->forceStatus = this->publisher->getForceActuatorStatus();
 	this->forceData = this->publisher->getForceActuatorData();
+	this->hardpointMonitorInfo = this->publisher->getEventHardpointMonitorInfo();
+	this->hardpointMonitorStatus = this->publisher->getHardpointMonitorStatus();
 	this->ilcWarning = this->publisher->getEventILCWarning();
 
 	this->ilcWarning->Timestamp = 0;
@@ -130,6 +140,28 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 					case 209:
 					case 235:
 					case 238: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
+					default: this->warnUnknownFunction(timestamp, map.ActuatorId); break;
+					}
+					break;
+				case ILCTypes::HM:
+					this->hmExpectedResponses[dataIndex]--;
+					switch(function) {
+					case 17: this->parseReportHMServerIDResponse(buffer, dataIndex); break;
+					case 18: this->parseReportHMServerStatusResponse(buffer, dataIndex); break;
+					case 65: this->parseChangeHMILCModeResponse(buffer, dataIndex); break;
+					case 80: this->parseSetHMADCScanRateResponse(buffer, dataIndex); break;
+					case 81: this->parseSetHMADCChannelOffsetAndSensitivityResponse(buffer, dataIndex); break;
+					case 107: this->parseHMResetResponse(buffer, dataIndex); break;
+					case 110: this->parseReadHMCalibrationResponse(buffer, dataIndex); break;
+					case 122: this->parseReportLVDTResponse(buffer, dataIndex); break;
+					case 145:
+					case 146:
+					case 193:
+					case 208:
+					case 209:
+					case 235:
+					case 238:
+					case 250: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 					default: this->warnUnknownFunction(timestamp, map.ActuatorId); break;
 					}
 					break;
@@ -230,6 +262,19 @@ void ILCResponseParser::parseReportFAServerIDResponse(ModbusBuffer* buffer, int3
 	buffer->skipToNextFrame();
 }
 
+void ILCResponseParser::parseReportHMServerIDResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	uint8_t length = buffer->readU8();
+	this->hardpointMonitorInfo->ILCUniqueId[dataIndex] = buffer->readU48();
+	this->hardpointMonitorInfo->ILCApplicationType[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->NetworkNodeType[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->ILCSelectedOptions[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->NetworkNodeOptions[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->MajorRevision[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->MinorRevision[dataIndex] = buffer->readU8();
+	buffer->incIndex(length - 12);
+	buffer->skipToNextFrame();
+}
+
 void ILCResponseParser::parseReportHPServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	this->hardpointStatus->Mode[dataIndex] = buffer->readU8();
 	uint16_t ilcStatus = buffer->readU16();
@@ -308,6 +353,45 @@ void ILCResponseParser::parseReportFAServerStatusResponse(ModbusBuffer* buffer, 
 	buffer->skipToNextFrame();
 }
 
+void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	this->hardpointMonitorStatus->Mode[dataIndex] = buffer->readU8();
+	uint16_t ilcStatus = buffer->readU16();
+	this->hardpointMonitorStatus->MajorFault[dataIndex] = ilcStatus & 0x0001;
+	this->hardpointMonitorStatus->MinorFault[dataIndex] = ilcStatus & 0x0002;
+	// 0x0004 is reserved
+	this->hardpointMonitorStatus->FaultOverridden[dataIndex] = ilcStatus & 0x0008;
+	this->hardpointMonitorInfo->MainCalibrationError[dataIndex] = ilcStatus & 0x0010;
+	this->hardpointMonitorInfo->BackupCalibrationError[dataIndex] = ilcStatus & 0x0020;
+	// 0x0040 is reserved
+	// 0x0080 is reserved
+	// 0x0100 is limit switch (HP only)
+	// 0x0200 is limit switch (HP only)
+	// 0x0400 is reserved
+	// 0x0800 is reserved
+	// 0x1000 is reserved
+	// 0x2000 is DCA fault (FA only)
+	// 0x4000 is DCA firmware update (FA only)
+	// 0x8000 is reserved
+	uint16_t ilcFaults = buffer->readU16();
+	this->hardpointMonitorInfo->UniqueIdCRCError[dataIndex] = ilcFaults & 0x0001;
+	this->hardpointMonitorInfo->ApplicationTypeMismatch[dataIndex] = ilcFaults & 0x0002;
+	this->hardpointMonitorInfo->ApplicationMissing[dataIndex] = ilcFaults & 0x0004;
+	this->hardpointMonitorInfo->ApplicationCRCMismatch[dataIndex] = ilcFaults & 0x0008;
+	this->hardpointMonitorInfo->OneWireMissing[dataIndex] = ilcFaults & 0x0010;
+	this->hardpointMonitorInfo->OneWire1Mismatch[dataIndex] = ilcFaults & 0x0020;
+	this->hardpointMonitorInfo->OneWire2Mismatch[dataIndex] = ilcFaults & 0x0040;
+	// 0x0080 is reserved
+	this->hardpointMonitorStatus->WatchdogReset[dataIndex] = ilcFaults & 0x0100;
+	this->hardpointMonitorStatus->BrownoutDetected[dataIndex] = ilcFaults & 0x0200;
+	this->hardpointMonitorStatus->EventTrapReset[dataIndex] = ilcFaults & 0x0400;
+	this->hardpointMonitorStatus->MotorPowerFault[dataIndex] = ilcFaults & 0x0800;
+	this->hardpointMonitorStatus->SSRPowerFault[dataIndex] = ilcFaults & 0x1000;
+	this->hardpointMonitorStatus->AUXPowerFault[dataIndex] = ilcFaults & 0x2000;
+	this->hardpointMonitorStatus->SMCPowerFault[dataIndex] = ilcFaults & 0x4000;
+	// 0x8000 is reserved
+	buffer->skipToNextFrame();
+}
+
 void ILCResponseParser::parseChangeHPILCModeResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	this->hardpointStatus->Mode[dataIndex] = buffer->readU8();
 	buffer->readU8();
@@ -316,6 +400,12 @@ void ILCResponseParser::parseChangeHPILCModeResponse(ModbusBuffer* buffer, int32
 
 void ILCResponseParser::parseChangeFAILCModeResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	this->forceStatus->Mode[dataIndex] = buffer->readU8();
+	buffer->readU8();
+	buffer->skipToNextFrame();
+}
+
+void ILCResponseParser::parseChangeHMILCModeResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	this->hardpointMonitorStatus->Mode[dataIndex] = buffer->readU8();
 	buffer->readU8();
 	buffer->skipToNextFrame();
 }
@@ -330,7 +420,9 @@ void ILCResponseParser::parseStepMotorResponse(ModbusBuffer* buffer, int32_t dat
 	this->hardpointData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
 	this->hardpointData->Encoder[dataIndex] = buffer->readI32();
 	this->hardpointData->Force[dataIndex] = buffer->readSGL();
+	this->hardpointData->Displacement[dataIndex] = (this->hardpointData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
+	this->calculateHPPostion();
 }
 
 void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
@@ -342,7 +434,9 @@ void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffe
 	this->hardpointData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
 	this->hardpointData->Encoder[dataIndex] = buffer->readI32();
 	this->hardpointData->Force[dataIndex] = buffer->readSGL();
+	this->hardpointData->Displacement[dataIndex] = (this->hardpointData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
+	this->calculateHPPostion();
 }
 
 void ILCResponseParser::parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer, int32_t dataIndex) {
@@ -444,6 +538,11 @@ void ILCResponseParser::parseSetFAADCScanRateResponse(ModbusBuffer* buffer, int3
 	buffer->skipToNextFrame();
 }
 
+void ILCResponseParser::parseSetHMADCScanRateResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	this->hardpointMonitorInfo->ADCScanRate[dataIndex] = buffer->readU8();
+	buffer->skipToNextFrame();
+}
+
 void ILCResponseParser::parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->skipToNextFrame();
 }
@@ -452,11 +551,19 @@ void ILCResponseParser::parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusB
 	buffer->skipToNextFrame();
 }
 
+void ILCResponseParser::parseSetHMADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	buffer->skipToNextFrame();
+}
+
 void ILCResponseParser::parseHPResetResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseFAResetResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	buffer->skipToNextFrame();
+}
+
+void ILCResponseParser::parseHMResetResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->skipToNextFrame();
 }
 
@@ -516,6 +623,34 @@ void ILCResponseParser::parseReadFACalibrationResponse(ModbusBuffer* buffer, int
 	buffer->skipToNextFrame();
 }
 
+void ILCResponseParser::parseReadHMCalibrationResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	this->hardpointMonitorInfo->MainADCCalibrationK1[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorInfo->MainADCCalibrationK2[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorInfo->MainADCCalibrationK3[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorInfo->MainADCCalibrationK4[dataIndex] = buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	this->hardpointMonitorInfo->BackupADCCalibrationK1[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorInfo->BackupADCCalibrationK2[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorInfo->BackupADCCalibrationK3[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorInfo->BackupADCCalibrationK4[dataIndex] = buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->readSGL();
+	buffer->skipToNextFrame();
+}
+
 void ILCResponseParser::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->readSGL();
 	buffer->readSGL();
@@ -551,6 +686,57 @@ void ILCResponseParser::parseReportDCAStatusResponse(ModbusBuffer* buffer, int32
 	// 0x4000 is reserved
 	this->forceInfo->DCABootloaderActive[dataIndex] = status & 0x8000;
 	buffer->skipToNextFrame();
+}
+
+void ILCResponseParser::parseReportLVDTResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	this->hardpointData->BreakawayLVDT[dataIndex] = buffer->readSGL();
+	this->hardpointData->DisplacementLVDT[dataIndex] = buffer->readSGL();
+	buffer->skipToNextFrame();
+}
+
+void ILCResponseParser::calculateHPPostion() {
+	this->hardpointData->XPosition =
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * this->hardpointData->Displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * this->hardpointData->Displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[2] * this->hardpointData->Displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[3] * this->hardpointData->Displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[4] * this->hardpointData->Displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * this->hardpointData->Displacement[1];
+	this->hardpointData->YPosition =
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * this->hardpointData->Displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[7] * this->hardpointData->Displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[8] * this->hardpointData->Displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[9] * this->hardpointData->Displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[10] * this->hardpointData->Displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * this->hardpointData->Displacement[1];
+	this->hardpointData->ZPosition =
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * this->hardpointData->Displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[13] * this->hardpointData->Displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[14] * this->hardpointData->Displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[15] * this->hardpointData->Displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[16] * this->hardpointData->Displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * this->hardpointData->Displacement[1];
+	this->hardpointData->XRotation =
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * this->hardpointData->Displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[19] * this->hardpointData->Displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[20] * this->hardpointData->Displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[21] * this->hardpointData->Displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[22] * this->hardpointData->Displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * this->hardpointData->Displacement[1];
+	this->hardpointData->YRotation =
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * this->hardpointData->Displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[25] * this->hardpointData->Displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[26] * this->hardpointData->Displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[27] * this->hardpointData->Displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[28] * this->hardpointData->Displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * this->hardpointData->Displacement[1];
+	this->hardpointData->ZRotation =
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * this->hardpointData->Displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[31] * this->hardpointData->Displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[32] * this->hardpointData->Displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * this->hardpointData->Displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * this->hardpointData->Displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * this->hardpointData->Displacement[1];
 }
 
 void ILCResponseParser::warnResponseTimeout(double timestamp, int32_t actuatorId) {

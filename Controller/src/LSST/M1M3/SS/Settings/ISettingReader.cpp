@@ -24,6 +24,8 @@ RecommendedApplicationSettings* ISettingReader::loadRecommendedApplicationSettin
 SafetyControllerSettings* ISettingReader::loadSafetyControllerSettings() { return 0; }
 PositionControllerSettings* ISettingReader::loadPositionControllerSettings() { return 0; }
 AccelerometerSettings* ISettingReader::loadAccelerometerSettings() { return 0; }
+DisplacementSensorSettings* ISettingReader::loadDisplacementSensorSettings() { return 0; }
+HardpointMonitorApplicationSettings* ISettingReader::loadHardpointMonitorApplicationSettings() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

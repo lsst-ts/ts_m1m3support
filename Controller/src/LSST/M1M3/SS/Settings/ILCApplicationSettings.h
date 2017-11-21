@@ -36,6 +36,8 @@ struct ILCApplicationSettings {
 	uint32_t ReadDCAPressureValues;
 	uint32_t ReportDCAID;
 	uint32_t ReportDCAStatus;
+	uint32_t ReportDCAPressure;
+	uint32_t ReportLVDT;
 
 	void load(const std::string &filename);
 };

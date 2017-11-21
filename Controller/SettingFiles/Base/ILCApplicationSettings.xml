@@ -20,5 +20,7 @@
 <ReadDCAPressureValues>100000</ReadDCAPressureValues>
 <ReportDCAID>285</ReportDCAID>
 <ReportDCAStatus>155</ReportDCAStatus>
+<ReportDCAPressure>100</ReportDCAPressure>
+<ReportLVDT>100</ReportLVDT>
 </Timings>
 </ILCApplicationSettings>

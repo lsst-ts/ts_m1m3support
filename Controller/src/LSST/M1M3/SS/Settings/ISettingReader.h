@@ -24,6 +24,8 @@ class RecommendedApplicationSettings;
 class SafetyControllerSettings;
 class PositionControllerSettings;
 class AccelerometerSettings;
+class DisplacementSensorSettings;
+class HardpointMonitorApplicationSettings;
 
 class ISettingReader {
 public:
@@ -40,6 +42,8 @@ public:
 	virtual SafetyControllerSettings* loadSafetyControllerSettings();
 	virtual PositionControllerSettings* loadPositionControllerSettings();
 	virtual AccelerometerSettings* loadAccelerometerSettings();
+	virtual DisplacementSensorSettings* loadDisplacementSensorSettings();
+	virtual HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
 };
 
 } /* namespace SS */

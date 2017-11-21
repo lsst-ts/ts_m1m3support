@@ -30,13 +30,13 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
 	model->getInclinometer()->writeDataRequest();
+	usleep(50000);
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
 	model->getILC()->verifyResponses();
 	model->getAccelerometer()->sampleData();
-	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);
 	model->publishFPGAData();

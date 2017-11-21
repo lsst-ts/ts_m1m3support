@@ -24,14 +24,19 @@
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
+#include <TranslateM1M3Command.h>
 #include <IPositionController.h>
 #include <unistd.h>
+
+#include <iostream>
+using namespace std;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 States::Type ActiveEngineeringState::update(UpdateCommand* command, IModel* model) {
+	model->getPositionController()->updateSteps();
 	model->getILC()->writeRaisedListBuffer();
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
@@ -129,6 +134,12 @@ States::Type ActiveEngineeringState::stopHardpointMotion(StopHardpointMotionComm
 
 States::Type ActiveEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model) {
 	model->getPositionController()->move(command->getData()->Steps);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command, IModel* model) {
+	model->getPositionController()->translate(command->getData()->XTranslation, command->getData()->YTranslation, command->getData()->ZTranslation,
+			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

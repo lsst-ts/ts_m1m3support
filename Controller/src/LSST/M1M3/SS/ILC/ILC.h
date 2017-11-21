@@ -51,6 +51,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
+class HardpointMonitorApplicationSettings;
 
 /*!
  * The ILC class used to communicate with the M1M3's 5 subnets.
@@ -87,7 +88,7 @@ private:
 	ModbusBuffer rxBuffer;
 
 public:
-	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings);
+	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 	virtual ~ILC();
 
 	void writeCalibrationDataBuffer();

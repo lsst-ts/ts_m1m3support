@@ -75,6 +75,26 @@ void ForceController::updateTMAElevationData(MTMount_AltC* tmaElevationData) {
 	memcpy(&this->tmaElevationData, tmaElevationData, sizeof(MTMount_AltC));
 }
 
+void ForceController::incSupportPercentage() {
+	this->forceSetpoint->ElevationSetpointPercentage += this->forceActuatorSettings->RaiseIncrementPercentage;
+	this->forceData->ElevationSetpointPercentage = this->forceSetpoint->ElevationSetpointPercentage;
+}
+
+void ForceController::decSupportPercentage() {
+	this->forceSetpoint->ElevationSetpointPercentage -= this->forceActuatorSettings->LowerDecrementPercentage;
+	this->forceData->ElevationSetpointPercentage = this->forceSetpoint->ElevationSetpointPercentage;
+}
+
+void ForceController::zeroSupportPercentage() {
+	this->forceSetpoint->ElevationSetpointPercentage = 0.0;
+	this->forceData->ElevationSetpointPercentage = 0.0;
+}
+
+void ForceController::fillSupportPercentage() {
+	this->forceSetpoint->ElevationSetpointPercentage = 1.0;
+	this->forceData->ElevationSetpointPercentage = 1.0;
+}
+
 void ForceController::updateAppliedForces() {
 	if (this->appliedForces->ElevationForcesApplied) {
 		this->updateElevationForces();
@@ -571,26 +591,26 @@ void ForceController::updateElevationForces() {
 		// Stage Elevation Forces
 		int mIndex = i * 6;
 		this->forceSetpoint->ElevationXSetpoint[i] =
-				this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 0] * elevationMatrix[0] +
+				(this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 0] * elevationMatrix[0] +
 				this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 1] * elevationMatrix[1] +
 				this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 2] * elevationMatrix[2] +
 				this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 3] * elevationMatrix[3] +
 				this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 4] * elevationMatrix[4] +
-				this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 5];
+				this->forceActuatorSettings->ElevationXAxisCoefficients[mIndex + 5]) * this->forceSetpoint->ElevationSetpointPercentage;
 		this->forceSetpoint->ElevationYSetpoint[i] =
-				this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 0] * elevationMatrix[0] +
+				(this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 0] * elevationMatrix[0] +
 				this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 1] * elevationMatrix[1] +
 				this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 2] * elevationMatrix[2] +
 				this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 3] * elevationMatrix[3] +
 				this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 4] * elevationMatrix[4] +
-				this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 5];
+				this->forceActuatorSettings->ElevationYAxisCoefficients[mIndex + 5]) * this->forceSetpoint->ElevationSetpointPercentage;
 		this->forceSetpoint->ElevationZSetpoint[i] =
-				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 0] * elevationMatrix[0] +
+				(this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 0] * elevationMatrix[0] +
 				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 1] * elevationMatrix[1] +
 				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 2] * elevationMatrix[2] +
 				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 3] * elevationMatrix[3] +
 				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 4] * elevationMatrix[4] +
-				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 5];
+				this->forceActuatorSettings->ElevationZAxisCoefficients[mIndex + 5]) * this->forceSetpoint->ElevationSetpointPercentage;
 		// Check Elevation Forces
 		bool previousWarning = this->forceSetpointWarning->ElevationForceWarning[i];
 		this->forceSetpointWarning->ElevationForceWarning[i] =

@@ -28,6 +28,15 @@
 #include <SafetyController.h>
 #include <cstring>
 
+
+
+
+#include <U8ArrayUtilities.h>
+#include <Timestamp.h>
+
+
+
+
 using namespace std;
 using namespace LSST::M1M3::SS;
 
@@ -59,50 +68,6 @@ int main() {
 		m1m3SAL.salShutdown();
 		return -1;
 	}
-	/*uint16_t data[2];
-	data[0] = FPGAAddresses::HeartbeatToSafetyController;
-	data[1] = 1;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::CriticalFaultToSafetyController;
-	data[1] = 0;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::MirrorLoweringRaisingToSafetyController;
-	data[1] = 0;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::MirrorParkedToSafetyController;
-	data[1] = 1;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::AirSupplyValveControl;
-	data[1] = 1;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::MirrorCellLightControl;
-	data[1] = 0;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCAuxPowerNetworkAOn;
-	data[1] = 1;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCAuxPowerNetworkBOn;
-	data[1] = 0;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCAuxPowerNetworkCOn;
-	data[1] = 1;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCAuxPowerNetworkDOn;
-	data[1] = 0;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCPowerNetworkAOn;
-	data[1] = 1;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCPowerNetworkBOn;
-	data[1] = 0;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCPowerNetworkCOn;
-	data[1] = 0;
-	fpga.writeCommandFIFO(data, 2, 0);
-	data[0] = FPGAAddresses::DCPowerNetworkDOn;
-	data[1] = 1;
-	fpga.writeCommandFIFO(data, 2, 0);
-	while(true) { }*/
 	cout << "Creating state factory" << endl;
 	StaticStateFactory stateFactory = StaticStateFactory();
 	cout << "Creating model" << endl;

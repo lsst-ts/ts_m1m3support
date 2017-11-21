@@ -46,6 +46,8 @@ public:
 	void readDCAPressureValues(ModbusBuffer* buffer, uint8_t address);
 	void reportDCAID(ModbusBuffer* buffer, uint8_t address);
 	void reportDCAStatus(ModbusBuffer* buffer, uint8_t address);
+	void reportDCAPressure(ModbusBuffer* buffer, uint8_t address);
+	void reportLVDT(ModbusBuffer* buffer, uint8_t address);
 };
 
 } /* namespace SS */

@@ -54,6 +54,11 @@ public:
 	void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
 	void updateTMAElevationData(MTMount_AltC* tmaElevationData);
 
+	void incSupportPercentage();
+	void decSupportPercentage();
+	void zeroSupportPercentage();
+	void fillSupportPercentage();
+
 	void updateAppliedForces();
 	void processAppliedForces();
 

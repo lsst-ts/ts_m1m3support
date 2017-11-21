@@ -25,6 +25,9 @@
 #include <InterlockController.h>
 #include <Accelerometer.h>
 #include <AirController.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <HardpointActuatorApplicationSettings.h>
+#include <HardpointMonitorApplicationSettings.h>
 
 using namespace std;
 
@@ -93,9 +96,12 @@ void Model::loadSettings(std::string settingsToApply) {
 	SafetyControllerSettings* safetyControllerSettings = this->settingReader->loadSafetyControllerSettings();
 	PositionControllerSettings* positionControllerSettings = this->settingReader->loadPositionControllerSettings();
 	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
+	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
+	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
+	this->populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
 
 	if (this->safetyController) {
 		delete this->safetyController;
@@ -105,7 +111,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->displacement) {
 		delete this->displacement;
 	}
-	this->displacement = new Displacement(this->publisher, this->safetyController, this->fpga);
+	this->displacement = new Displacement(displacementSensorSettings, this->publisher, this->safetyController, this->fpga);
 
 	if (this->inclinometer) {
 		delete this->inclinometer;
@@ -115,7 +121,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->ilc) {
 		delete this->ilc;
 	}
-	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings);
+	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings, hardpointMonitorApplicationSettings);
 
 	if (this->forceController) {
 		delete this->forceController;
@@ -130,7 +136,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->positionController) {
 		delete this->positionController;
 	}
-	this->positionController = new PositionController(positionControllerSettings, this->publisher);
+	this->positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings, this->publisher);
 
 	if (this->interlockController) {
 		delete this->interlockController;
@@ -151,10 +157,10 @@ void Model::publishFPGAData() {
 	uint16_t response[512];
 	this->fpga->writeRequestFIFO(FPGAAddresses::HealthAndStatus, 0);
 	this->fpga->readU16ResponseFIFO(response, 64*4, 20);
-	for(int i = 0; i < 25; i++) {
+	/*for(int i = 0; i < 25; i++) {
 		cout << U16ArrayUtilities::u64(response, i * 4) << " ";
 	}
-	cout << endl;
+	cout << endl;*/
 }
 
 void Model::publishStateChange(States::Type newState) {
@@ -218,6 +224,16 @@ void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* 
 		hardpointInfo->ZPosition[row.Index] = row.ZPosition;
 		hardpointInfo->SensorOffset[row.Index] = row.SensorOffset;
 		hardpointInfo->SensorSensitivity[row.Index] = row.SensorSensitivity;
+	}
+}
+
+void Model::populateHardpointMonitorInfo(HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
+	m1m3_logevent_HardpointMonitorInfoC* hardpointMonitorInfo = this->publisher->getEventHardpointMonitorInfo();
+	for(int i = 0; i < HM_COUNT; i++) {
+		HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
+		hardpointMonitorInfo->ReferenceId[row.Index] = row.ActuatorID;
+		hardpointMonitorInfo->ModbusSubnet[row.Index] = row.Subnet;
+		hardpointMonitorInfo->ModbusAddress[row.Index] = row.Address;
 	}
 }
 

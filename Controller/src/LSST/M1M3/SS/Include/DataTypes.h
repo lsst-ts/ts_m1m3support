@@ -15,7 +15,11 @@
 #define SUBNET_COUNT  5
 #define FA_COUNT      156
 #define HP_COUNT      6
+#define HM_COUNT      6
 #define BENDING_MODES 22
+
+#define MILLIMETERS_PER_METER 1000.0
+#define MICROMETERS_PER_MILLIMETER 1000.0
 
 typedef signed char        int8_t;
 typedef short int          int16_t;

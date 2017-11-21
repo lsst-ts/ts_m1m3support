@@ -25,6 +25,7 @@ private:
 	m1m3_ForceActuatorDataC forceActuatorData;
 	m1m3_ForceActuatorStatusC forceActuatorStatus;
 	m1m3_HardpointDataC hardpointData;
+	m1m3_HardpointMonitorStatusC hardpointMonitorStatus;
 	m1m3_HardpointStatusC hardpointStatus;
 	m1m3_IMSDataC imsData;
 	m1m3_InclinometerDataC inclinometerData;
@@ -40,6 +41,7 @@ private:
 	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
 	m1m3_logevent_ForceActuatorSetpointWarningC eventForceActuatorSetpointWarning;
 	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
+	m1m3_logevent_HardpointMonitorInfoC eventHardpointMonitorInfo;
 	m1m3_logevent_HardpointActuatorMotionStateC eventHardpointActuatorMotionState;
 	m1m3_logevent_ILCWarningC eventILCWarning;
 	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
@@ -55,6 +57,7 @@ public:
 	m1m3_ForceActuatorDataC* getForceActuatorData() { return &this->forceActuatorData; }
 	m1m3_ForceActuatorStatusC* getForceActuatorStatus() { return &this->forceActuatorStatus; }
 	m1m3_HardpointDataC* getHardpointData() { return &this->hardpointData; }
+	m1m3_HardpointMonitorStatusC* getHardpointMonitorStatus() { return &this->hardpointMonitorStatus; }
 	m1m3_HardpointStatusC* getHardpointStatus() { return &this->hardpointStatus; }
 	m1m3_IMSDataC* getIMSData() { return &this->imsData; }
 	m1m3_InclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
@@ -70,6 +73,7 @@ public:
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
 	m1m3_logevent_ForceActuatorSetpointWarningC* getEventForceActuatorSetpointWarning() { return &this->eventForceActuatorSetpointWarning; }
 	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
+	m1m3_logevent_HardpointMonitorInfoC* getEventHardpointMonitorInfo() { return &this->eventHardpointMonitorInfo; }
 	m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState() { return &this->eventHardpointActuatorMotionState; }
 	m1m3_logevent_ILCWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
@@ -84,6 +88,7 @@ public:
 	void putForceActuatorData();
 	void putForceActuatorStatus();
 	void putHardpointData();
+	void putHardpointMonitorStatus();
 	void putHardpointStatus();
 	void putIMSData();
 	void putInclinometerData();
@@ -99,6 +104,7 @@ public:
 	void logForceActuatorInfo();
 	void logForceActuatorSetpointWarning();
 	void logHardpointActuatorInfo();
+	void logHardpointMonitorInfo();
 	void logHardpointActuatorMotionState();
 	void logILCWarning();
 	void logInclinometerSensorWarning();

@@ -66,6 +66,8 @@ public:
 	double SetpointFarNeighborLimitPercentage;
 	double NetAOSForceTolerance;
 	double NetAberrationForceTolerance;
+	double RaiseIncrementPercentage;
+	double LowerDecrementPercentage;
 
 	void load(const std::string &filename);
 

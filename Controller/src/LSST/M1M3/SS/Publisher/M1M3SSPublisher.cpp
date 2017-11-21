@@ -7,8 +7,6 @@
 
 #include <M1M3SSPublisher.h>
 #include <SAL_m1m3.h>
-#include <iostream>
-using namespace std;
 
 namespace LSST {
 namespace M1M3 {
@@ -21,6 +19,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorData");
 	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorStatus");
 	this->m1m3SAL->salTelemetryPub("m1m3_HardpointData");
+	this->m1m3SAL->salTelemetryPub("m1m3_HardpointMonitorStatus");
 	this->m1m3SAL->salTelemetryPub("m1m3_HardpointStatus");
 	this->m1m3SAL->salTelemetryPub("m1m3_IMSData");
 	this->m1m3SAL->salTelemetryPub("m1m3_InclinometerData");
@@ -36,6 +35,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorInfo");
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorSetpointWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorInfo");
+	this->m1m3SAL->salEvent("m1m3_logevent_HardpointMonitorInfo");
 	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorMotionState");
 	this->m1m3SAL->salEvent("m1m3_logevent_ILCWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
@@ -51,6 +51,7 @@ void M1M3SSPublisher::putAccelerometerData() { this->m1m3SAL->putSample_Accelero
 void M1M3SSPublisher::putForceActuatorData() { this->m1m3SAL->putSample_ForceActuatorData(&this->forceActuatorData); }
 void M1M3SSPublisher::putForceActuatorStatus() { this->m1m3SAL->putSample_ForceActuatorStatus(&this->forceActuatorStatus); }
 void M1M3SSPublisher::putHardpointData() { this->m1m3SAL->putSample_HardpointData(&this->hardpointData); }
+void M1M3SSPublisher::putHardpointMonitorStatus() { this->m1m3SAL->putSample_HardpointMonitorStatus(&this->hardpointMonitorStatus); }
 void M1M3SSPublisher::putHardpointStatus() { this->m1m3SAL->putSample_HardpointStatus(&this->hardpointStatus); }
 void M1M3SSPublisher::putIMSData() { this->m1m3SAL->putSample_IMSData(&this->imsData); }
 void M1M3SSPublisher::putInclinometerData() { this->m1m3SAL->putSample_InclinometerData(&this->inclinometerData); }
@@ -66,6 +67,7 @@ void M1M3SSPublisher::logForceActuatorDataRejection() { this->m1m3SAL->logEvent_
 void M1M3SSPublisher::logForceActuatorInfo() { this->m1m3SAL->logEvent_ForceActuatorInfo(&this->eventForceActuatorInfo, 0); }
 void M1M3SSPublisher::logForceActuatorSetpointWarning() { this->m1m3SAL->logEvent_ForceActuatorSetpointWarning(&this->eventForceActuatorSetpointWarning, 0); }
 void M1M3SSPublisher::logHardpointActuatorInfo() { this->m1m3SAL->logEvent_HardpointActuatorInfo(&this->eventHardpointActuatorInfo, 0); }
+void M1M3SSPublisher::logHardpointMonitorInfo() { this->m1m3SAL->logEvent_HardpointMonitorInfo(&this->eventHardpointMonitorInfo, 0); }
 void M1M3SSPublisher::logHardpointActuatorMotionState() { this->m1m3SAL->logEvent_HardpointActuatorMotionState(&this->eventHardpointActuatorMotionState, 0); }
 void M1M3SSPublisher::logILCWarning() { this->m1m3SAL->logEvent_ILCWarning(&this->eventILCWarning, 0); }
 void M1M3SSPublisher::logInclinometerSensorWarning() { this->m1m3SAL->logEvent_InclinometerSensorWarning(&this->eventInclinometerSensorWarning, 0); }

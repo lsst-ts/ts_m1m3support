@@ -17,6 +17,7 @@ m1m3_AccelerometerDataC* IPublisher::getAccelerometerData() { return 0; }
 m1m3_ForceActuatorDataC* IPublisher::getForceActuatorData() { return 0; }
 m1m3_ForceActuatorStatusC* IPublisher::getForceActuatorStatus() { return 0; }
 m1m3_HardpointDataC* IPublisher::getHardpointData() { return 0; }
+m1m3_HardpointMonitorStatusC* IPublisher::getHardpointMonitorStatus() { return 0; }
 m1m3_HardpointStatusC* IPublisher::getHardpointStatus() { return 0; }
 m1m3_IMSDataC* IPublisher::getIMSData() { return 0; }
 m1m3_InclinometerDataC* IPublisher::getInclinometerData() { return 0; }
@@ -32,6 +33,7 @@ m1m3_logevent_ForceActuatorDataRejectionC* IPublisher::getEventForceActuatorData
 m1m3_logevent_ForceActuatorInfoC* IPublisher::getEventForceActuatorInfo() { return 0; }
 m1m3_logevent_ForceActuatorSetpointWarningC* IPublisher::getEventForceActuatorSetpointWarning() { return 0; }
 m1m3_logevent_HardpointActuatorInfoC* IPublisher::getEventHardpointActuatorInfo() { return 0; }
+m1m3_logevent_HardpointMonitorInfoC* IPublisher::getEventHardpointMonitorInfo() { return 0; }
 m1m3_logevent_HardpointActuatorMotionStateC* IPublisher::getEventHardpointActuatorMotionState() { return 0; }
 m1m3_logevent_ILCWarningC* IPublisher::getEventILCWarning() { return 0; }
 m1m3_logevent_InclinometerSensorWarningC* IPublisher::getEventInclinometerSensorWarning() { return 0; }
@@ -46,6 +48,7 @@ void IPublisher::putAccelerometerData() { }
 void IPublisher::putForceActuatorData() { }
 void IPublisher::putForceActuatorStatus() { }
 void IPublisher::putHardpointData() { }
+void IPublisher::putHardpointMonitorStatus() { }
 void IPublisher::putHardpointStatus() { }
 void IPublisher::putIMSData() { }
 void IPublisher::putInclinometerData() { }
@@ -61,6 +64,7 @@ void IPublisher::logForceActuatorDataRejection() { }
 void IPublisher::logForceActuatorInfo() { }
 void IPublisher::logForceActuatorSetpointWarning() { }
 void IPublisher::logHardpointActuatorInfo() { }
+void IPublisher::logHardpointMonitorInfo() { }
 void IPublisher::logHardpointActuatorMotionState() { }
 void IPublisher::logILCWarning() { }
 void IPublisher::logInclinometerSensorWarning() { }

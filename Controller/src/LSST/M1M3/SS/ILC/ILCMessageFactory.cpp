@@ -213,6 +213,22 @@ void ILCMessageFactory::reportDCAStatus(ModbusBuffer* buffer, uint8_t address) {
 	buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAStatus);
 }
 
+void ILCMessageFactory::reportDCAPressure(ModbusBuffer* buffer, uint8_t address) {
+	buffer->writeU8(address);
+	buffer->writeU8(119);
+	buffer->writeCRC(2);
+	buffer->writeEndOfFrame();
+	buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAPressure);
+}
+
+void ILCMessageFactory::reportLVDT(ModbusBuffer* buffer, uint8_t address) {
+	buffer->writeU8(address);
+	buffer->writeU8(122);
+	buffer->writeCRC(2);
+	buffer->writeEndOfFrame();
+	buffer->writeWaitForRx(this->ilcApplicationSettings->ReportLVDT);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

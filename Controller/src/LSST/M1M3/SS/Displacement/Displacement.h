@@ -18,12 +18,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+class DisplacementSensorSettings;
 class IPublisher;
 class ISafetyController;
 class IFPGA;
 
 class Displacement: public IDisplacement {
 private:
+	DisplacementSensorSettings* displacementSensorSettings;
 	IPublisher* publisher;
 	ISafetyController* safetyController;
 	IFPGA* fpga;
@@ -32,16 +34,18 @@ private:
 	m1m3_logevent_DisplacementSensorWarningC* displacementWarning;
 
 	uint16_t txBuffer[32];
-	uint8_t rxBuffer[128];
+	uint8_t rxBuffer[256];
 
 public:
-	Displacement(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
+	Displacement(DisplacementSensorSettings* displacementSensorSettings, IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
 
 	void writeDataRequest();
 	void readDataResponse();
 
 private:
 	void createTxBuffer();
+
+	void convertRawData();
 
 	void clearWarning(double timestamp);
 	void warnSensorReportsInvalidCommand(double timestamp);

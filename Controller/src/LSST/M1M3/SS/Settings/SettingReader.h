@@ -19,6 +19,8 @@
 #include <RecommendedApplicationSettings.h>
 #include <PositionControllerSettings.h>
 #include <AccelerometerSettings.h>
+#include <DisplacementSensorSettings.h>
+#include <HardpointMonitorApplicationSettings.h>
 #include <string>
 
 namespace LSST {
@@ -37,6 +39,8 @@ private:
 	SafetyControllerSettings safetyControllerSettings;
 	PositionControllerSettings positionControllerSettings;
 	AccelerometerSettings accelerometerSettings;
+	DisplacementSensorSettings displacementSensorSettings;
+	HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -57,6 +61,8 @@ public:
 	SafetyControllerSettings* loadSafetyControllerSettings();
 	PositionControllerSettings* loadPositionControllerSettings();
 	AccelerometerSettings* loadAccelerometerSettings();
+	DisplacementSensorSettings* loadDisplacementSensorSettings();
+	HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
 
 private:
 	std::string getBasePath(std::string file);

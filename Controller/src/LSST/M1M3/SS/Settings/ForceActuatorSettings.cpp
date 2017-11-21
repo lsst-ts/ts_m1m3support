@@ -12,8 +12,6 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 
-#include <iostream>
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -65,6 +63,8 @@ void ForceActuatorSettings::load(const std::string &filename) {
 	this->SetpointFarNeighborLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointFarNeighborLimitPercentage").node().child_value());
 	this->NetAOSForceTolerance = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/NetAOSForceTolerance").node().child_value());
 	this->NetAberrationForceTolerance = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/NetAberrationForceTolerance").node().child_value());
+	this->RaiseIncrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/RaiseIncrementPercentage").node().child_value());
+	this->LowerDecrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());
 }
 
 void ForceActuatorSettings::loadStaticForceTable(const std::string &filename) {

@@ -19,6 +19,8 @@ class PositionControllerSettings {
 public:
 	double ForceToStepsCoefficient;
 	int32_t MaxStepsPerLoop;
+	double RaiseLowerForceLimitLow;
+	double RaiseLowerForceLimitHigh;
 
 	void load(const std::string &filename);
 };

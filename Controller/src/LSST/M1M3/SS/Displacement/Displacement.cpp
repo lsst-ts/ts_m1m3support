@@ -6,6 +6,7 @@
  */
 
 #include <Displacement.h>
+#include <DisplacementSensorSettings.h>
 #include <IPublisher.h>
 #include <ISafetyController.h>
 #include <IFPGA.h>
@@ -18,11 +19,15 @@
 #include <string>
 #include <cstring>
 
+#include <iostream>
+using namespace std;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Displacement::Displacement(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
+Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
+	this->displacementSensorSettings = displacementSensorSettings;
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 	this->fpga = fpga;
@@ -41,10 +46,10 @@ void Displacement::writeDataRequest() {
 
 void Displacement::readDataResponse() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::Displacement, 0);
-	this->fpga->readU8ResponseFIFO(this->rxBuffer, 2, 10);
+	this->fpga->readU8ResponseFIFO(this->rxBuffer, 2, 50);
 	uint16_t length = U8ArrayUtilities::u16(this->rxBuffer, 0);
 	if (length != 0) {
-		this->fpga->readU8ResponseFIFO(this->rxBuffer, length, 10);
+		this->fpga->readU8ResponseFIFO(this->rxBuffer, length, 50);
 		double timestamp = Timestamp::fromRaw(U8ArrayUtilities::u64(this->rxBuffer, 0));
 		std::string response = U8ArrayUtilities::toString(this->rxBuffer, 8, length - 10);
 		typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
@@ -64,7 +69,12 @@ void Displacement::readDataResponse() {
 			this->imsData->RawSensorData[4] = boost::lexical_cast<double>(*token);
 			++token;
 			this->imsData->RawSensorData[5] = boost::lexical_cast<double>(*token);
+			++token;
+			this->imsData->RawSensorData[6] = boost::lexical_cast<double>(*token);
+			++token;
+			this->imsData->RawSensorData[7] = boost::lexical_cast<double>(*token);
 			this->clearWarning(timestamp);
+			this->convertRawData();
 			this->publisher->putIMSData();
 		}
 		else if ((*token) == "ER") {
@@ -99,6 +109,78 @@ void Displacement::createTxBuffer() {
 	this->txBuffer[3] = (uint8_t)'0';
 	this->txBuffer[4] = (uint8_t)'\r';
 	this->txBuffer[5] = (uint8_t)'\n';
+}
+
+void Displacement::convertRawData() {
+	double displacements[8] = {
+			this->imsData->RawSensorData[this->displacementSensorSettings->N1Port],
+			this->imsData->RawSensorData[this->displacementSensorSettings->N2Port],
+			this->imsData->RawSensorData[this->displacementSensorSettings->N3Port],
+			this->imsData->RawSensorData[this->displacementSensorSettings->N4Port],
+			this->imsData->RawSensorData[this->displacementSensorSettings->N5Port],
+			this->imsData->RawSensorData[this->displacementSensorSettings->N6Port],
+			this->imsData->RawSensorData[this->displacementSensorSettings->N7Port],
+			this->imsData->RawSensorData[this->displacementSensorSettings->N8Port] };
+	this->imsData->XPosition =
+			(this->displacementSensorSettings->ConverterMatrix[0] * displacements[0] +
+			this->displacementSensorSettings->ConverterMatrix[1] * displacements[1] +
+			this->displacementSensorSettings->ConverterMatrix[2] * displacements[2] +
+			this->displacementSensorSettings->ConverterMatrix[3] * displacements[3] +
+			this->displacementSensorSettings->ConverterMatrix[4] * displacements[4] +
+			this->displacementSensorSettings->ConverterMatrix[5] * displacements[5] +
+			this->displacementSensorSettings->ConverterMatrix[6] * displacements[6] +
+			this->displacementSensorSettings->ConverterMatrix[7] * displacements[7]) /
+			MILLIMETERS_PER_METER;
+	this->imsData->YPosition =
+			(this->displacementSensorSettings->ConverterMatrix[8] * displacements[0] +
+			this->displacementSensorSettings->ConverterMatrix[9] * displacements[1] +
+			this->displacementSensorSettings->ConverterMatrix[10] * displacements[2] +
+			this->displacementSensorSettings->ConverterMatrix[11] * displacements[3] +
+			this->displacementSensorSettings->ConverterMatrix[12] * displacements[4] +
+			this->displacementSensorSettings->ConverterMatrix[13] * displacements[5] +
+			this->displacementSensorSettings->ConverterMatrix[14] * displacements[6] +
+			this->displacementSensorSettings->ConverterMatrix[15] * displacements[7]) /
+			MILLIMETERS_PER_METER;
+	this->imsData->ZPosition =
+			(this->displacementSensorSettings->ConverterMatrix[16] * displacements[0] +
+			this->displacementSensorSettings->ConverterMatrix[17] * displacements[1] +
+			this->displacementSensorSettings->ConverterMatrix[18] * displacements[2] +
+			this->displacementSensorSettings->ConverterMatrix[19] * displacements[3] +
+			this->displacementSensorSettings->ConverterMatrix[20] * displacements[4] +
+			this->displacementSensorSettings->ConverterMatrix[21] * displacements[5] +
+			this->displacementSensorSettings->ConverterMatrix[22] * displacements[6] +
+			this->displacementSensorSettings->ConverterMatrix[23] * displacements[7]) /
+			MILLIMETERS_PER_METER;
+	this->imsData->XRotation =
+			(this->displacementSensorSettings->ConverterMatrix[24] * displacements[0] +
+			this->displacementSensorSettings->ConverterMatrix[25] * displacements[1] +
+			this->displacementSensorSettings->ConverterMatrix[26] * displacements[2] +
+			this->displacementSensorSettings->ConverterMatrix[27] * displacements[3] +
+			this->displacementSensorSettings->ConverterMatrix[28] * displacements[4] +
+			this->displacementSensorSettings->ConverterMatrix[29] * displacements[5] +
+			this->displacementSensorSettings->ConverterMatrix[30] * displacements[6] +
+			this->displacementSensorSettings->ConverterMatrix[31] * displacements[7]) /
+			MILLIMETERS_PER_METER;
+	this->imsData->YRotation =
+			(this->displacementSensorSettings->ConverterMatrix[32] * displacements[0] +
+			this->displacementSensorSettings->ConverterMatrix[33] * displacements[1] +
+			this->displacementSensorSettings->ConverterMatrix[34] * displacements[2] +
+			this->displacementSensorSettings->ConverterMatrix[35] * displacements[3] +
+			this->displacementSensorSettings->ConverterMatrix[36] * displacements[4] +
+			this->displacementSensorSettings->ConverterMatrix[37] * displacements[5] +
+			this->displacementSensorSettings->ConverterMatrix[38] * displacements[6] +
+			this->displacementSensorSettings->ConverterMatrix[39] * displacements[7]) /
+			MILLIMETERS_PER_METER;
+	this->imsData->ZRotation =
+			(this->displacementSensorSettings->ConverterMatrix[40] * displacements[0] +
+			this->displacementSensorSettings->ConverterMatrix[41] * displacements[1] +
+			this->displacementSensorSettings->ConverterMatrix[42] * displacements[2] +
+			this->displacementSensorSettings->ConverterMatrix[43] * displacements[3] +
+			this->displacementSensorSettings->ConverterMatrix[44] * displacements[4] +
+			this->displacementSensorSettings->ConverterMatrix[45] * displacements[5] +
+			this->displacementSensorSettings->ConverterMatrix[46] * displacements[6] +
+			this->displacementSensorSettings->ConverterMatrix[47] * displacements[7]) /
+			MILLIMETERS_PER_METER;
 }
 
 void Displacement::clearWarning(double timestamp) {

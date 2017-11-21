@@ -15,6 +15,7 @@ struct m1m3_AccelerometerDataC;
 struct m1m3_ForceActuatorDataC;
 struct m1m3_ForceActuatorStatusC;
 struct m1m3_HardpointDataC;
+struct m1m3_HardpointMonitorStatusC;
 struct m1m3_HardpointStatusC;
 struct m1m3_IMSDataC;
 struct m1m3_InclinometerDataC;
@@ -30,6 +31,7 @@ struct m1m3_logevent_ForceActuatorDataRejectionC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_logevent_ForceActuatorSetpointWarningC;
 struct m1m3_logevent_HardpointActuatorInfoC;
+struct m1m3_logevent_HardpointMonitorInfoC;
 struct m1m3_logevent_HardpointActuatorMotionStateC;
 struct m1m3_logevent_ILCWarningC;
 struct m1m3_logevent_InclinometerSensorWarningC;
@@ -50,6 +52,7 @@ public:
 	virtual m1m3_ForceActuatorDataC* getForceActuatorData();
 	virtual m1m3_ForceActuatorStatusC* getForceActuatorStatus();
 	virtual m1m3_HardpointDataC* getHardpointData();
+	virtual m1m3_HardpointMonitorStatusC* getHardpointMonitorStatus();
 	virtual m1m3_HardpointStatusC* getHardpointStatus();
 	virtual m1m3_IMSDataC* getIMSData();
 	virtual m1m3_InclinometerDataC* getInclinometerData();
@@ -65,6 +68,7 @@ public:
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
 	virtual m1m3_logevent_ForceActuatorSetpointWarningC* getEventForceActuatorSetpointWarning();
 	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
+	virtual m1m3_logevent_HardpointMonitorInfoC* getEventHardpointMonitorInfo();
 	virtual m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState();
 	virtual m1m3_logevent_ILCWarningC* getEventILCWarning();
 	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
@@ -79,6 +83,7 @@ public:
 	virtual void putForceActuatorData();
 	virtual void putForceActuatorStatus();
 	virtual void putHardpointData();
+	virtual void putHardpointMonitorStatus();
 	virtual void putHardpointStatus();
 	virtual void putIMSData();
 	virtual void putInclinometerData();
@@ -94,6 +99,7 @@ public:
 	virtual void logForceActuatorInfo();
 	virtual void logForceActuatorSetpointWarning();
 	virtual void logHardpointActuatorInfo();
+	virtual void logHardpointMonitorInfo();
 	virtual void logHardpointActuatorMotionState();
 	virtual void logILCWarning();
 	virtual void logInclinometerSensorWarning();
