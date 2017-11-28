@@ -44,6 +44,7 @@ class TranslateM1M3Command;
 class StopHardpointMotionCommand;
 class TMAAzimuthSampleCommand;
 class TMAElevationSampleCommand;
+class PositionM1M3Command;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -212,6 +213,11 @@ public:
 	 * @param[in] command The TMA elevation sample command to execute.
 	 */
 	virtual void storeTMAElevationSample(TMAElevationSampleCommand* command);
+	/*!
+	 * Executes the command to position M1M3.
+	 * @param[in] command The position M1M3 command to execute.
+	 */
+	virtual void positionM1M3(PositionM1M3Command* command);
 };
 
 } /* namespace SS */

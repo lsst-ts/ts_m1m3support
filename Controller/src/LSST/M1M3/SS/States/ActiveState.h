@@ -19,6 +19,7 @@ public:
 	States::Type update(UpdateCommand* command, IModel* model);
 	States::Type enterEngineering(EnterEngineeringCommand* command, IModel* model);
 	States::Type lowerM1M3(LowerM1M3Command* command, IModel* model);
+	States::Type positionM1M3(PositionM1M3Command* command, IModel* model);
 };
 
 } /* namespace SS */

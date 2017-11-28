@@ -47,6 +47,7 @@ class TranslateM1M3Command;
 class StopHardpointMotionCommand;
 class TMAAzimuthSampleCommand;
 class TMAElevationSampleCommand;
+class PositionM1M3Command;
 
 class IState {
 public:
@@ -84,6 +85,7 @@ public:
 	virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model);
 	virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model);
 	virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model);
+	virtual States::Type positionM1M3(PositionM1M3Command* command, IModel* model);
 };
 
 } /* namespace SS */

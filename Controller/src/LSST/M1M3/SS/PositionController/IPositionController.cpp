@@ -19,6 +19,9 @@ void IPositionController::enableChaseAll() { }
 void IPositionController::disableChaseAll() { }
 
 void IPositionController::move(int32_t* steps) { }
+void IPositionController::moveToEncoder(int32_t* encoderValues) { }
+void IPositionController::moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ) { }
+void IPositionController::moveToReferencePosition() { }
 void IPositionController::translate(double x, double y, double z, double rX, double rY, double rZ) { }
 void IPositionController::stopMotion() { }
 

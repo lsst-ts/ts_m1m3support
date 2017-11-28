@@ -67,6 +67,7 @@ public:
 	void stopHardpointMotion(StopHardpointMotionCommand* command);
 	void storeTMAAzimuthSample(TMAAzimuthSampleCommand* command);
 	void storeTMAElevationSample(TMAElevationSampleCommand* command);
+	void positionM1M3(PositionM1M3Command* command);
 };
 
 } /* namespace SS */

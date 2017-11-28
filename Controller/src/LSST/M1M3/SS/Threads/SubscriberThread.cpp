@@ -55,6 +55,7 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandAbortRaiseM1M3());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTranslateM1M3());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandStopHardpointMotion());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandPositionM1M3());
 		this->enqueueCommandIfAvailable(this->subscriber->tryGetSampleTMAAzimuth());
 		this->enqueueCommandIfAvailable(this->subscriber->tryGetSampleTMAElevation());
 		usleep(100);

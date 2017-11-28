@@ -23,13 +23,16 @@ PositionController::PositionController(PositionControllerSettings* positionContr
 	this->publisher = publisher;
 	this->hardpointData = this->publisher->getHardpointData();
 	this->hardpointActuatorMotionState = this->publisher->getEventHardpointActuatorMotionState();
+	this->hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
 	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
 	for(int i = 0; i < HP_COUNT; i++) {
 		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
 		this->hardpointData->StepsQueued[i] = 0;
 		this->hardpointData->StepsCommanded[i] = 0;
+		this->scaledMaxStepsPerLoop[i] = this->positionControllerSettings->MaxStepsPerLoop;
 	}
 	this->publisher->logHardpointActuatorMotionState();
+
 }
 
 void PositionController::enableChase(int32_t actuatorID) {
@@ -62,17 +65,98 @@ void PositionController::disableChaseAll() {
 
 void PositionController::move(int32_t* steps) {
 	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	double loopCycles[6];
+	double maxLoopCycles = 0;
 	for(int i = 0; i < HP_COUNT; i++) {
 		this->hardpointData->StepsQueued[i] = steps[i];
 		this->hardpointActuatorMotionState->MotionState[i] = steps[i] != 0 ? HardpointActuatorMotionStates::Moving : HardpointActuatorMotionStates::Standby;
+		loopCycles[i] = this->abs(steps[i]) / (double)this->positionControllerSettings->MaxStepsPerLoop;
+		if (loopCycles[i] > maxLoopCycles) {
+			maxLoopCycles = loopCycles[i];
+		}
+	}
+	for(int i = 0; i < HP_COUNT; ++i) {
+		this->scaledMaxStepsPerLoop[i] = (int32_t)(this->positionControllerSettings->MaxStepsPerLoop/(maxLoopCycles/loopCycles[i]));
 	}
 	this->publisher->logHardpointActuatorMotionState();
 }
 
+void PositionController::moveToEncoder(int32_t* encoderValues) {
+	int32_t steps[6];
+	for(int i = 0; i < HP_COUNT; ++i) {
+		steps[i] = (int32_t)((encoderValues[i] - this->hardpointData->Encoder[i]) * (this->hardpointActuatorSettings->MicrometersPerEncoder /  this->hardpointActuatorSettings->MicrometersPerStep));
+	}
+	this->move(steps);
+}
+
+void PositionController::moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ) {
+	int32_t steps[6];
+	this->convertToSteps(steps, x, y, z, rX, rY, rZ);
+	int32_t encoderValues[6];
+	double stepsToEncoder = this->hardpointActuatorSettings->MicrometersPerStep / this->hardpointActuatorSettings->MicrometersPerEncoder;
+	for(int i = 0; i < HP_COUNT; ++i) {
+		encoderValues[i] = this->hardpointInfo->ReferencePosition[i] + steps[i] * stepsToEncoder;
+	}
+	this->moveToEncoder(encoderValues);
+}
+
+void PositionController::moveToReferencePosition() {
+	this->moveToEncoder(this->hardpointInfo->ReferencePosition);
+}
+
 void PositionController::translate(double x, double y, double z, double rX, double rY, double rZ) {
+	int32_t steps[6];
+	this->convertToSteps(steps, x, y, z, rX, rY, rZ);
+	this->move(steps);
+}
+
+void PositionController::stopMotion() {
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->hardpointData->StepsQueued[i] = 0;
+		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+	}
+	this->publisher->logHardpointActuatorMotionState();
+}
+
+void PositionController::updateSteps() {
+	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	bool publishState = false;
+	for(int i = 0; i < HP_COUNT; i++) {
+		switch(this->hardpointActuatorMotionState->MotionState[i]) {
+		case HardpointActuatorMotionStates::Standby:
+			this->hardpointData->StepsCommanded[i] = 0;
+			this->hardpointData->StepsQueued[i] = 0;
+			break;
+		case HardpointActuatorMotionStates::Chasing:
+		{
+			float force = this->hardpointData->Force[i];
+			int32_t chaseSteps = (int32_t)(force * this->positionControllerSettings->ForceToStepsCoefficient);
+			chaseSteps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, chaseSteps);
+			this->hardpointData->StepsCommanded[i] = (int16_t)chaseSteps;
+			break;
+		}
+		case HardpointActuatorMotionStates::Moving:
+		{
+			int32_t moveSteps = Range::CoerceIntoRange(-this->scaledMaxStepsPerLoop[i], this->scaledMaxStepsPerLoop[i], this->hardpointData->StepsQueued[i]);
+			this->hardpointData->StepsQueued[i] -= moveSteps;
+			this->hardpointData->StepsCommanded[i] = (int16_t)moveSteps;
+			if(this->hardpointData->StepsQueued[i] == 0 && this->hardpointData->StepsCommanded[i] == 0) {
+				publishState = true;
+				this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+			}
+			break;
+		}
+		}
+	}
+	if (publishState) {
+		this->publisher->logHardpointActuatorMotionState();
+	}
+}
+
+void PositionController::convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ) {
 	// The reason for defining HP 3 first (index 2) is due to the matrix. Review the MirrorPositionToHardpointDisplacementTable
 	// for a description of the matrix.
-	int32_t steps[6] = {0, 0, 0, 0, 0, 0};
 	steps[2] = (this->hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[0] * x +
 			this->hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[1] * y +
 			this->hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[2] * z +
@@ -115,51 +199,12 @@ void PositionController::translate(double x, double y, double z, double rX, doub
 			this->hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[34] * rY +
 			this->hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[35] * rZ) *
 			(MILLIMETERS_PER_METER * MICROMETERS_PER_MILLIMETER / this->hardpointActuatorSettings->MicrometersPerStep);
-	this->move(steps);
 }
 
-void PositionController::stopMotion() {
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
-	for(int i = 0; i < HP_COUNT; i++) {
-		this->hardpointData->StepsQueued[i] = 0;
-		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
-	}
-	this->publisher->logHardpointActuatorMotionState();
-}
-
-void PositionController::updateSteps() {
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
-	bool publishState = false;
-	for(int i = 0; i < HP_COUNT; i++) {
-		switch(this->hardpointActuatorMotionState->MotionState[i]) {
-		case HardpointActuatorMotionStates::Standby:
-			this->hardpointData->StepsCommanded[i] = 0;
-			this->hardpointData->StepsQueued[i] = 0;
-			break;
-		case HardpointActuatorMotionStates::Chasing:
-		{
-			float force = this->hardpointData->Force[i];
-			int32_t chaseSteps = (int32_t)(force * this->positionControllerSettings->ForceToStepsCoefficient);
-			chaseSteps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, chaseSteps);
-			this->hardpointData->StepsCommanded[i] = (int16_t)chaseSteps;
-			break;
-		}
-		case HardpointActuatorMotionStates::Moving:
-		{
-			int32_t moveSteps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, this->hardpointData->StepsQueued[i]);
-			this->hardpointData->StepsQueued[i] -= moveSteps;
-			this->hardpointData->StepsCommanded[i] = (int16_t)moveSteps;
-			if(this->hardpointData->StepsQueued[i] == 0 && this->hardpointData->StepsCommanded[i] == 0) {
-				publishState = true;
-				this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
-			}
-			break;
-		}
-		}
-	}
-	if (publishState) {
-		this->publisher->logHardpointActuatorMotionState();
-	}
+int32_t PositionController::abs(int32_t x) {
+	if (x < 0)
+		return x * -1;
+	return x;
 }
 
 } /* namespace SS */

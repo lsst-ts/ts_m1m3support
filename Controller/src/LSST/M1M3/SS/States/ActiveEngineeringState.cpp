@@ -26,6 +26,7 @@
 #include <MoveHardpointActuatorsCommand.h>
 #include <TranslateM1M3Command.h>
 #include <IPositionController.h>
+#include <PositionM1M3Command.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -139,6 +140,12 @@ States::Type ActiveEngineeringState::moveHardpointActuators(MoveHardpointActuato
 
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command, IModel* model) {
 	model->getPositionController()->translate(command->getData()->XTranslation, command->getData()->YTranslation, command->getData()->ZTranslation,
+			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, IModel* model) {
+	model->getPositionController()->moveToAbsolute(command->getData()->XPosition, command->getData()->YPosition, command->getData()->ZPosition,
 			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }

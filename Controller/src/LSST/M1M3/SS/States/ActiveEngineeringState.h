@@ -31,7 +31,7 @@ public:
 	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model);
 	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model);
 	States::Type translateM1M3(TranslateM1M3Command* command, IModel* model);
-
+	States::Type positionM1M3(PositionM1M3Command* command, IModel* model);
 };
 
 } /* namespace SS */

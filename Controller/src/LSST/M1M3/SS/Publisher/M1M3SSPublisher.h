@@ -141,6 +141,7 @@ public:
 	void ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

@@ -46,6 +46,7 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, I
 	this->m1m3SAL->salProcessor("m1m3_command_AbortRaiseM1M3");
 	this->m1m3SAL->salProcessor("m1m3_command_TranslateM1M3");
 	this->m1m3SAL->salProcessor("m1m3_command_StopHardpointMotion");
+	this->m1m3SAL->salProcessor("m1m3_command_PositionM1M3");
 	this->mtMountSAL->salTelemetrySub("MTMount_Az");
 	this->mtMountSAL->salTelemetrySub("MTMount_Alt");
 }
@@ -270,6 +271,14 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandStopHardpointMotion() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_StopHardpointMotion(&this->stopHardpointMotionData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::StopHardpointMotionCommand, &this->stopHardpointMotionData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandPositionM1M3() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_PositionM1M3(&this->positionM1M3Data);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::PositionM1M3Command, &this->positionM1M3Data, commandID);
 	}
 	return 0;
 }

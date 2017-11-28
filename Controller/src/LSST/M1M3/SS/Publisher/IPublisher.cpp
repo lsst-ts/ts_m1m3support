@@ -101,6 +101,7 @@ void IPublisher::ackCommandDisableHardpointChase(int32_t commandID, int32_t ackC
 void IPublisher::ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

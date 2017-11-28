@@ -8,6 +8,8 @@
 #include <ActiveState.h>
 #include <IModel.h>
 #include <ISafetyController.h>
+#include <PositionM1M3Command.h>
+#include <IPositionController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -25,6 +27,12 @@ States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command, IMo
 States::Type ActiveState::lowerM1M3(LowerM1M3Command* command, IModel* model) {
 	States::Type newState = States::LoweringState;
 	return model->getSafetyController()->checkSafety(newState);
+}
+
+States::Type ActiveState::positionM1M3(PositionM1M3Command* command, IModel* model) {
+	model->getPositionController()->moveToAbsolute(command->getData()->XPosition, command->getData()->YPosition, command->getData()->ZPosition,
+			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */
