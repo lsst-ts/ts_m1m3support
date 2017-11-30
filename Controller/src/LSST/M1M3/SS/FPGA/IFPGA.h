@@ -136,7 +136,7 @@ public:
 	 * @param[in] timeoutInMs The timeout in ms. -1 is infinite.
 	 * @return Status code.
 	 */
-	virtual int32_t readSGLFIFO(float* data, int32_t length, int32_t timeoutInMs);
+	virtual int32_t readSGLResponseFIFO(float* data, int32_t length, int32_t timeoutInMs);
 };
 
 } /* namespace SS */

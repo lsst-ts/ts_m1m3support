@@ -6,16 +6,17 @@
  */
 
 #include <ActiveState.h>
+#include <IInterlockController.h>
 #include <IModel.h>
+#include <IPublisher.h>
 #include <ISafetyController.h>
-#include <PositionM1M3Command.h>
-#include <IPositionController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 States::Type ActiveState::update(UpdateCommand* command, IModel* model) {
+	EnabledState::update(command, model);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -26,13 +27,9 @@ States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command, IMo
 
 States::Type ActiveState::lowerM1M3(LowerM1M3Command* command, IModel* model) {
 	States::Type newState = States::LoweringState;
+	model->getInterlockController()->setMirrorLoweringRaising(true);
+	model->setCachedTimestamp(model->getPublisher()->getTimestamp());
 	return model->getSafetyController()->checkSafety(newState);
-}
-
-States::Type ActiveState::positionM1M3(PositionM1M3Command* command, IModel* model) {
-	model->getPositionController()->moveToAbsolute(command->getData()->XPosition, command->getData()->YPosition, command->getData()->ZPosition,
-			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

@@ -10,18 +10,29 @@
 #include <ISafetyController.h>
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
+#include <InterlockSettings.h>
 #include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-InterlockController::InterlockController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
+InterlockController::InterlockController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga, InterlockSettings* interlockSettings) {
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 	this->fpga = fpga;
+	this->interlockSettings = interlockSettings;
 	this->interlockStatus = this->publisher->getEventInterlockStatus();
 	this->interlockWarning = this->publisher->getEventInterlockWarning();
+	this->lastToggleTimestamp = 0;
+}
+
+void InterlockController::tryToggleHeartbeat() {
+	double currentTimestamp = this->publisher->getTimestamp();
+	if (currentTimestamp >= (this->lastToggleTimestamp + this->interlockSettings->HeartbeatPeriodInSeconds)) {
+		this->setHeartbeat(!this->interlockStatus->HeartbeatCommandedState);
+		this->lastToggleTimestamp = currentTimestamp;
+	}
 }
 
 void InterlockController::setHeartbeat(bool state) {

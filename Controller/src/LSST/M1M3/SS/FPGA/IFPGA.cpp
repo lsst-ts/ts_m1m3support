@@ -43,7 +43,7 @@ int32_t IFPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeout
 
 int32_t IFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) { return 0; }
 
-int32_t IFPGA::readSGLFIFO(float* data, int32_t length, int32_t timeoutInMs) { return 0; }
+int32_t IFPGA::readSGLResponseFIFO(float* data, int32_t length, int32_t timeoutInMs) { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

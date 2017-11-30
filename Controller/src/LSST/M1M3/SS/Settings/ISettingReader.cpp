@@ -26,6 +26,7 @@ PositionControllerSettings* ISettingReader::loadPositionControllerSettings() { r
 AccelerometerSettings* ISettingReader::loadAccelerometerSettings() { return 0; }
 DisplacementSensorSettings* ISettingReader::loadDisplacementSensorSettings() { return 0; }
 HardpointMonitorApplicationSettings* ISettingReader::loadHardpointMonitorApplicationSettings() { return 0; }
+InterlockSettings* ISettingReader::loadInterlockSettings() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

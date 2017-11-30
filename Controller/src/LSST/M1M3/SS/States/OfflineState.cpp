@@ -6,9 +6,7 @@
  */
 
 #include <OfflineState.h>
-#include <SAL_m1m3C.h>
 #include <IModel.h>
-#include <IPublisher.h>
 
 namespace LSST {
 namespace M1M3 {

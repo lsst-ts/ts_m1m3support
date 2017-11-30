@@ -48,6 +48,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->positionController = 0;
 	this->interlockController = 0;
 	this->accelerometer = 0;
+	this->cachedTimestamp = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
 }
@@ -98,6 +99,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
 	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
 	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
+	InterlockSettings* interlockSettings = this->settingReader->loadInterlockSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -141,7 +143,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->interlockController) {
 		delete this->interlockController;
 	}
-	this->interlockController = new InterlockController(this->publisher, this->safetyController, this->fpga);
+	this->interlockController = new InterlockController(this->publisher, this->safetyController, this->fpga, interlockSettings);
 
 	if (this->accelerometer) {
 		delete this->accelerometer;

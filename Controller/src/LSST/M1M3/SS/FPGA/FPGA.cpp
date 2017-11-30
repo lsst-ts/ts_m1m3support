@@ -130,7 +130,7 @@ int32_t FPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeou
 	return NiFpga_ReadFifoU16(this->session, NiFpga_M1M3Support_TargetToHostFifoU16_U16ResponseFIFO, data, length, timeoutInMs, &this->remaining);
 }
 
-int32_t FPGA::readSGLFIFO(float* data, int32_t length, int32_t timeoutInMs) {
+int32_t FPGA::readSGLResponseFIFO(float* data, int32_t length, int32_t timeoutInMs) {
 	return NiFpga_ReadFifoSgl(this->session, NiFpga_M1M3Support_TargetToHostFifoSgl_SGLResponseFIFO, data, length, timeoutInMs, &this->remaining);
 }
 

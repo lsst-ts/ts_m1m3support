@@ -16,6 +16,8 @@ class IInterlockController {
 public:
 	virtual ~IInterlockController();
 
+	virtual void tryToggleHeartbeat();
+
 	virtual void setHeartbeat(bool state);
 	virtual void setCriticalFault(bool state);
 	virtual void setMirrorLoweringRaising(bool state);

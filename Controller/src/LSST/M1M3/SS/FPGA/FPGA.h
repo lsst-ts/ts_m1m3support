@@ -48,7 +48,7 @@ public:
 	int32_t writeRequestFIFO(uint16_t data, int32_t timeoutInMs);
 	int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs);
 	int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs);
-	int32_t readSGLFIFO(float* data, int32_t length, int32_t timeoutInMs);
+	int32_t readSGLResponseFIFO(float* data, int32_t length, int32_t timeoutInMs);
 };
 
 } /* namespace SS */

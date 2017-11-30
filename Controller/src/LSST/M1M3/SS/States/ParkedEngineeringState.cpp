@@ -20,37 +20,19 @@
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
 #include <IInterlockController.h>
+#include <IPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
-	model->getPositionController()->updateSteps();
-	model->getILC()->writeRaisedListBuffer();
-	model->getILC()->triggerModbus();
-	model->getDisplacement()->writeDataRequest();
-	model->getInclinometer()->writeDataRequest();
-	model->getAirController()->checkStatus();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getDisplacement()->readDataResponse();
-	model->getInclinometer()->readDataResponse();
-	model->getILC()->verifyResponses();
-	usleep(50000);
-	model->queryFPGAData();
-	usleep(10000);
-	model->publishFPGAData();
-	model->getILC()->publishForceActuatorStatus();
-	model->getILC()->publishForceActuatorData();
-	model->getILC()->publishHardpointStatus();
-	model->getILC()->publishHardpointData();
+	EnabledState::update(command, model);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
 	States::Type newState = States::RaisingEngineeringState;
-	model->getInterlockController()->setMirrorParked(false);
 	model->getForceController()->applyStaticForces();
 	model->getForceController()->applyElevationForces();
 	model->getForceController()->applyAzimuthForces();
@@ -58,6 +40,9 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->zeroAberration();
 	model->getForceController()->zeroAOSCorrection();
+	model->getInterlockController()->setMirrorParked(false);
+	model->getInterlockController()->setMirrorLoweringRaising(true);
+	model->setCachedTimestamp(model->getPublisher()->getTimestamp());
 	return model->getSafetyController()->checkSafety(newState);
 }
 
@@ -68,6 +53,19 @@ States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* com
 
 States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* model) {
 	States::Type newState = States::DisabledState;
+	// Make sure the air is off
+	model->getAirController()->turnAirOff();
+	// Stop any existing motion (chase and move commands)
+	model->getPositionController()->stopMotion();
+	// Clear any offset force
+	model->getForceController()->zeroOffsetForces();
+	model->getForceController()->processAppliedForces();
+	// Perform ILC state transition
+	model->getILC()->writeSetModeDisableBuffer();
+	model->getILC()->triggerModbus();
+	model->getILC()->waitForAllSubnets(5000);
+	model->getILC()->readAll();
+	model->getILC()->verifyResponses();
 	return model->getSafetyController()->checkSafety(newState);
 }
 

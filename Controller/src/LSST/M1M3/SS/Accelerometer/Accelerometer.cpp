@@ -29,7 +29,7 @@ Accelerometer::Accelerometer(IPublisher* publisher, IFPGA* fpga, AccelerometerSe
 void Accelerometer::sampleData() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::Accelerometers, 0);
 	this->fpga->readU16ResponseFIFO(this->timestampBuffer, 4, 20);
-	this->fpga->readSGLFIFO(this->dataBuffer, 8, 20);
+	this->fpga->readSGLResponseFIFO(this->dataBuffer, 8, 20);
 	this->accelerometerData->Timestamp = Timestamp::fromRaw(U16ArrayUtilities::u64(this->timestampBuffer, 0));
 	this->accelerometerData->RawAccelerometerX[0] = this->dataBuffer[0];
 	this->accelerometerData->RawAccelerometerZ[0] = this->dataBuffer[1];
