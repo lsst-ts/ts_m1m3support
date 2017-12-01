@@ -22,6 +22,8 @@ public:
 	virtual void setCriticalFault(bool state);
 	virtual void setMirrorLoweringRaising(bool state);
 	virtual void setMirrorParked(bool state);
+
+	virtual void setCellLightsOn(bool state);
 };
 
 } /* namespace SS */

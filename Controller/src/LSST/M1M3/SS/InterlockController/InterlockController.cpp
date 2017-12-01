@@ -22,6 +22,8 @@ InterlockController::InterlockController(IPublisher* publisher, ISafetyControlle
 	this->safetyController = safetyController;
 	this->fpga = fpga;
 	this->interlockSettings = interlockSettings;
+	this->cellLightStatus = this->publisher->getEventCellLightStatus();
+	this->cellLightWarning = this->publisher->getEventCellLightWarning();
 	this->interlockStatus = this->publisher->getEventInterlockStatus();
 	this->interlockWarning = this->publisher->getEventInterlockWarning();
 	this->lastToggleTimestamp = 0;
@@ -83,6 +85,19 @@ void InterlockController::setMirrorParked(bool state) {
 	}
 }
 
+void InterlockController::setCellLightsOn(bool state) {
+	this->cellLightStatus->CellLightsCommandedOn = state;
+	this->txBuffer[0] = FPGAAddresses::MirrorCellLightControl;
+	this->txBuffer[1] = this->cellLightStatus->CellLightsCommandedOn;
+	this->fpga->writeCommandFIFO(this->txBuffer, 2, 0);
+	this->checkCellLightOutputState();
+	this->checkCellLightState();
+	this->publishCellLightStatus();
+	if (this->checkForCellLightOutputMismatch() || this->checkForCellLightSensorMismatch()) {
+		this->publishCellLightWarning();
+	}
+}
+
 bool InterlockController::checkHeartbeatOutputState() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::HeartbeatToSafetyController, 0);
 	this->fpga->readU16ResponseFIFO(this->statusBuffer, 1, 10);
@@ -119,6 +134,24 @@ bool InterlockController::checkMirrorParkedOutputState() {
 	return statusChanged;
 }
 
+bool InterlockController::checkCellLightOutputState() {
+	this->fpga->writeRequestFIFO(FPGAAddresses::MirrorCellLightControl, 0);
+	this->fpga->readU16ResponseFIFO(this->statusBuffer, 1, 10);
+	bool mirrorCellLightControlState = this->statusBuffer[0] != 0;
+	bool statusChanged = mirrorCellLightControlState != this->cellLightStatus->CellLightsCommandedOn;
+	this->cellLightStatus->CellLightsOutputOn = mirrorCellLightControlState;
+	return statusChanged;
+}
+
+bool InterlockController::checkCellLightState() {
+	this->fpga->writeRequestFIFO(FPGAAddresses::MirrorCellLightsOn, 0);
+	this->fpga->readU16ResponseFIFO(this->statusBuffer, 1, 10);
+	bool mirrorCellLightState = this->statusBuffer[0] != 0;
+	bool statusChanged = mirrorCellLightState != this->cellLightStatus->CellLightsOn;
+	this->cellLightStatus->CellLightsOn = mirrorCellLightState;
+	return statusChanged;
+}
+
 bool InterlockController::checkForHeartbeatOutputStateMismatch() {
 	bool heartbeatStateOutputMismatch = this->interlockStatus->HeartbeatCommandedState != this->interlockStatus->HeartbeatOutputState;
 	bool statusChanged = heartbeatStateOutputMismatch != this->interlockWarning->HeartbeatStateOutputMismatch;
@@ -149,6 +182,35 @@ bool InterlockController::checkForMirrorParkedOutputStateMismatch() {
 	this->interlockWarning->MirrorParkedStateOutputMismatch = mirrorParkedStateOutputMismatch;
 	this->safetyController->interlockNotifyMirrorParkedStateOutputMismatch(this->interlockWarning->MirrorParkedStateOutputMismatch);
 	return statusChanged;
+}
+
+bool InterlockController::checkForCellLightOutputMismatch() {
+	bool cellLightOutputMismatch = this->cellLightStatus->CellLightsCommandedOn != this->cellLightStatus->CellLightsOutputOn;
+	bool statusChanged = cellLightOutputMismatch != this->cellLightWarning->CellLightsOutputMismatch;
+	this->cellLightWarning->CellLightsOutputMismatch = cellLightOutputMismatch;
+	this->safetyController->cellLightNotifyOutputMismatch(this->cellLightWarning->CellLightsOutputMismatch);
+	return statusChanged;
+}
+
+bool InterlockController::checkForCellLightSensorMismatch() {
+	bool cellLightSensorMismatch = this->cellLightStatus->CellLightsCommandedOn != this->cellLightStatus->CellLightsOn;
+	bool statusChanged = cellLightSensorMismatch != this->cellLightWarning->CellLightsSensorMismatch;
+	this->cellLightWarning->CellLightsSensorMismatch = cellLightSensorMismatch;
+	this->safetyController->cellLightNotifySensorMismatch(this->cellLightWarning->CellLightsSensorMismatch);
+	return statusChanged;
+}
+
+void InterlockController::publishCellLightStatus() {
+	this->cellLightStatus->Timestamp = this->publisher->getTimestamp();
+	this->publisher->logCellLightStatus();
+}
+
+void InterlockController::publishCellLightWarning() {
+	this->cellLightWarning->Timestamp = this->publisher->getTimestamp();
+	this->cellLightWarning->AnyWarning =
+			this->cellLightWarning->CellLightsOutputMismatch |
+			this->cellLightWarning->CellLightsSensorMismatch;
+	this->publisher->logCellLightWarning();
 }
 
 void InterlockController::publishInterlockStatus() {

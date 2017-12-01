@@ -29,6 +29,8 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyStatus");
 	this->m1m3SAL->salEvent("m1m3_logevent_AirSupplyWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_AppliedForces");
+	this->m1m3SAL->salEvent("m1m3_logevent_CellLightStatus");
+	this->m1m3SAL->salEvent("m1m3_logevent_CellLightWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_DisplacementSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_ErrorCode");
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorDataRejection");
@@ -61,6 +63,8 @@ void M1M3SSPublisher::logAccelerometerWarning() { this->m1m3SAL->logEvent_Accele
 void M1M3SSPublisher::logAirSupplyStatus() { this->m1m3SAL->logEvent_AirSupplyStatus(&this->eventAirSupplyStatus, 0); }
 void M1M3SSPublisher::logAirSupplyWarning() { this->m1m3SAL->logEvent_AirSupplyWarning(&this->eventAirSupplyWarning, 0); }
 void M1M3SSPublisher::logAppliedForces() { this->m1m3SAL->logEvent_AppliedForces(&this->eventAppliedForces, 0); }
+void M1M3SSPublisher::logCellLightStatus() { this->m1m3SAL->logEvent_CellLightStatus(&this->eventCellLightStatus, 0); }
+void M1M3SSPublisher::logCellLightWarning() { this->m1m3SAL->logEvent_CellLightWarning(&this->eventCellLightWarning, 0); }
 void M1M3SSPublisher::logDisplacementSensorWarning() { this->m1m3SAL->logEvent_DisplacementSensorWarning(&this->eventDisplacementSensorWarning, 0); }
 void M1M3SSPublisher::logErrorCode() { this->m1m3SAL->logEvent_ErrorCode(&this->eventErrorCode, 0); }
 void M1M3SSPublisher::logForceActuatorDataRejection() { this->m1m3SAL->logEvent_ForceActuatorDataRejection(&this->eventForceActuatorDataRejection, 0); }
@@ -190,6 +194,14 @@ void M1M3SSPublisher::ackCommandStopHardpointMotion(int32_t commandID, int32_t a
 
 void M1M3SSPublisher::ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_PositionM1M3(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TurnLightsOn(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TurnLightsOff(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

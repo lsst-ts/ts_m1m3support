@@ -19,6 +19,7 @@ void IInterlockController::setHeartbeat(bool state) { }
 void IInterlockController::setCriticalFault(bool state) { }
 void IInterlockController::setMirrorLoweringRaising(bool state) { }
 void IInterlockController::setMirrorParked(bool state) { }
+void IInterlockController::setCellLightsOn(bool state) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

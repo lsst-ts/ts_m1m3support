@@ -111,6 +111,16 @@ States::Type ParkedEngineeringState::clearOffsetForces(ClearOffsetForcesCommand*
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
+States::Type ParkedEngineeringState::turnLightsOn(TurnLightsOnCommand* command, IModel* model) {
+	model->getInterlockController()->setCellLightsOn(true);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ParkedEngineeringState::turnLightsOff(TurnLightsOffCommand* command, IModel* model) {
+	model->getInterlockController()->setCellLightsOn(false);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

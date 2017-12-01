@@ -11,6 +11,8 @@
 #include <IInterlockController.h>
 #include <DataTypes.h>
 
+struct m1m3_logevent_CellLightStatusC;
+struct m1m3_logevent_CellLightWarningC;
 struct m1m3_logevent_InterlockStatusC;
 struct m1m3_logevent_InterlockWarningC;
 
@@ -30,6 +32,8 @@ private:
 	IFPGA* fpga;
 	InterlockSettings* interlockSettings;
 
+	m1m3_logevent_CellLightStatusC* cellLightStatus;
+	m1m3_logevent_CellLightWarningC* cellLightWarning;
 	m1m3_logevent_InterlockStatusC* interlockStatus;
 	m1m3_logevent_InterlockWarningC* interlockWarning;
 
@@ -48,17 +52,25 @@ public:
 	void setMirrorLoweringRaising(bool state);
 	void setMirrorParked(bool state);
 
+	void setCellLightsOn(bool state);
+
 private:
 	bool checkHeartbeatOutputState();
 	bool checkCriticalFaultOutputState();
 	bool checkMirrorLoweringRaisingOutputState();
 	bool checkMirrorParkedOutputState();
+	bool checkCellLightOutputState();
+	bool checkCellLightState();
 
 	bool checkForHeartbeatOutputStateMismatch();
 	bool checkForCriticalFaultOutputStateMismatch();
 	bool checkForMirrorLoweringRaisingOutputStateMismatch();
 	bool checkForMirrorParkedOutputStateMismatch();
+	bool checkForCellLightOutputMismatch();
+	bool checkForCellLightSensorMismatch();
 
+	void publishCellLightStatus();
+	void publishCellLightWarning();
 	void publishInterlockStatus();
 	void publishInterlockWarning();
 };

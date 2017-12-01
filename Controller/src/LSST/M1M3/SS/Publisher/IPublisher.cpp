@@ -27,6 +27,8 @@ m1m3_logevent_AccelerometerWarningC* IPublisher::getEventAccelerometerWarning() 
 m1m3_logevent_AirSupplyStatusC* IPublisher::getEventAirSupplyStatus() { return 0; }
 m1m3_logevent_AirSupplyWarningC* IPublisher::getEventAirSupplyWarning() { return 0; }
 m1m3_logevent_AppliedForcesC* IPublisher::getEventAppliedForces() { return 0; }
+m1m3_logevent_CellLightStatusC* IPublisher::getEventCellLightStatus() { return 0; }
+m1m3_logevent_CellLightWarningC* IPublisher::getEventCellLightWarning() { return 0; }
 m1m3_logevent_DisplacementSensorWarningC* IPublisher::getEventDisplacementSensorWarning() { return 0; }
 m1m3_logevent_ErrorCodeC* IPublisher::getEventErrorCode() { return 0; }
 m1m3_logevent_ForceActuatorDataRejectionC* IPublisher::getEventForceActuatorDataRejection() { return 0; }
@@ -58,6 +60,8 @@ void IPublisher::logAccelerometerWarning() { }
 void IPublisher::logAirSupplyStatus() { }
 void IPublisher::logAirSupplyWarning() { }
 void IPublisher::logAppliedForces() { }
+void IPublisher::logCellLightStatus() { }
+void IPublisher::logCellLightWarning() { }
 void IPublisher::logDisplacementSensorWarning() { }
 void IPublisher::logErrorCode() { }
 void IPublisher::logForceActuatorDataRejection() { }
@@ -102,6 +106,8 @@ void IPublisher::ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, st
 void IPublisher::ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

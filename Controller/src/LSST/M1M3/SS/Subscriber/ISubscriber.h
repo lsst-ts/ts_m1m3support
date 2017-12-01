@@ -52,6 +52,8 @@ public:
 	virtual ICommand* tryAcceptCommandTranslateM1M3();
 	virtual ICommand* tryAcceptCommandStopHardpointMotion();
 	virtual ICommand* tryAcceptCommandPositionM1M3();
+	virtual ICommand* tryAcceptCommandTurnLightsOn();
+	virtual ICommand* tryAcceptCommandTurnLightsOff();
 	virtual ICommand* tryGetSampleTMAAzimuth();
 	virtual ICommand* tryGetSampleTMAElevation();
 };

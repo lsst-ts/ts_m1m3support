@@ -46,6 +46,8 @@ States::Type IState::stopHardpointMotion(StopHardpointMotionCommand* command, IM
 States::Type IState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model) { return States::NoStateTransition; }
 States::Type IState::storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model) { return States::NoStateTransition; }
 States::Type IState::positionM1M3(PositionM1M3Command* command, IModel* model) { return States::NoStateTransition; }
+States::Type IState::turnLightsOn(TurnLightsOnCommand* command, IModel* model) { return States::NoStateTransition; }
+States::Type IState::turnLightsOff(TurnLightsOffCommand* command, IModel* model) { return States::NoStateTransition; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

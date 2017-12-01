@@ -35,6 +35,8 @@ private:
 	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
 	m1m3_logevent_AirSupplyWarningC eventAirSupplyWarning;
 	m1m3_logevent_AppliedForcesC eventAppliedForces;
+	m1m3_logevent_CellLightStatusC eventCellLightStatus;
+	m1m3_logevent_CellLightWarningC eventCellLightWarning;
 	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
 	m1m3_logevent_ErrorCodeC eventErrorCode;
 	m1m3_logevent_ForceActuatorDataRejectionC eventForceActuatorDataRejection;
@@ -67,6 +69,8 @@ public:
 	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
 	m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning() { return &this->eventAirSupplyWarning; }
 	m1m3_logevent_AppliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
+	m1m3_logevent_CellLightStatusC* getEventCellLightStatus() { return &this->eventCellLightStatus; }
+	m1m3_logevent_CellLightWarningC* getEventCellLightWarning() { return &this->eventCellLightWarning; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
 	m1m3_logevent_ErrorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
 	m1m3_logevent_ForceActuatorDataRejectionC* getEventForceActuatorDataRejection() { return &this->eventForceActuatorDataRejection; }
@@ -98,6 +102,8 @@ public:
 	void logAirSupplyStatus();
 	void logAirSupplyWarning();
 	void logAppliedForces();
+	void logCellLightStatus();
+	void logCellLightWarning();
 	void logDisplacementSensorWarning();
 	void logErrorCode();
 	void logForceActuatorDataRejection();
@@ -142,6 +148,8 @@ public:
 	void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

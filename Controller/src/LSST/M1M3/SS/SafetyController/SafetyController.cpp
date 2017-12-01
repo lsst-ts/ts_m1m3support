@@ -74,6 +74,9 @@ void SafetyController::forceControllerNotifyAberrationNetForceCheck(bool conditi
 void SafetyController::forceControllerNotifyAberrationForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerAberrationForceClipping, this->safetyControllerSettings->ForceController.FaultOnAberrationForceClipping, conditionFlag); }
 void SafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerOffsetForceClipping, this->safetyControllerSettings->ForceController.FaultOnOffsetForceClipping, conditionFlag); }
 
+void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::CellLightOutputMismatch, this->safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag); }
+void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::CellLightSensorMismatch, this->safetyControllerSettings->CellLights.FaultOnSensorMismatch, conditionFlag); }
+
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {
 		this->publisher->logErrorCode();

@@ -49,7 +49,9 @@ struct Commands {
 		StopHardpointMotionCommand = 29,
 		TMAAzimuthSampleCommand = 30,
 		TMAElevationSampleCommand = 31,
-		PositionM1M3Command = 32
+		PositionM1M3Command = 32,
+		TurnLightsOnCommand = 33,
+		TurnLightsOffCommand = 34
 	};
 };
 

@@ -39,6 +39,8 @@
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <PositionM1M3Command.h>
+#include <TurnLightsOnCommand.h>
+#include <TurnLightsOffCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -85,6 +87,8 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	case Commands::TMAAzimuthSampleCommand: return new TMAAzimuthSampleCommand(this->context, (MTMount_AzC*)data);
 	case Commands::TMAElevationSampleCommand: return new TMAElevationSampleCommand(this->context, (MTMount_AltC*)data);
 	case Commands::PositionM1M3Command: return new PositionM1M3Command(this->context, this->publisher, commandID, (m1m3_command_PositionM1M3C*)data);
+	case Commands::TurnLightsOnCommand: return new TurnLightsOnCommand(this->context, this->publisher, commandID, (m1m3_command_TurnLightsOnC*)data);
+	case Commands::TurnLightsOffCommand: return new TurnLightsOffCommand(this->context, this->publisher, commandID, (m1m3_command_TurnLightsOffC*)data);
 	}
 	return 0;
 }

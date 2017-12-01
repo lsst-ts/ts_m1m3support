@@ -25,6 +25,8 @@ struct m1m3_logevent_AccelerometerWarningC;
 struct m1m3_logevent_AirSupplyStatusC;
 struct m1m3_logevent_AirSupplyWarningC;
 struct m1m3_logevent_AppliedForcesC;
+struct m1m3_logevent_CellLightStatusC;
+struct m1m3_logevent_CellLightWarningC;
 struct m1m3_logevent_DisplacementSensorWarningC;
 struct m1m3_logevent_ErrorCodeC;
 struct m1m3_logevent_ForceActuatorDataRejectionC;
@@ -62,6 +64,8 @@ public:
 	virtual m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus();
 	virtual m1m3_logevent_AirSupplyWarningC* getEventAirSupplyWarning();
 	virtual m1m3_logevent_AppliedForcesC* getEventAppliedForces();
+	virtual m1m3_logevent_CellLightStatusC* getEventCellLightStatus();
+	virtual m1m3_logevent_CellLightWarningC* getEventCellLightWarning();
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
 	virtual m1m3_logevent_ErrorCodeC* getEventErrorCode();
 	virtual m1m3_logevent_ForceActuatorDataRejectionC* getEventForceActuatorDataRejection();
@@ -93,6 +97,8 @@ public:
 	virtual void logAirSupplyStatus();
 	virtual void logAirSupplyWarning();
 	virtual void logAppliedForces();
+	virtual void logCellLightStatus();
+	virtual void logCellLightWarning();
 	virtual void logDisplacementSensorWarning();
 	virtual void logErrorCode();
 	virtual void logForceActuatorDataRejection();
@@ -137,6 +143,8 @@ public:
 	virtual void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */
