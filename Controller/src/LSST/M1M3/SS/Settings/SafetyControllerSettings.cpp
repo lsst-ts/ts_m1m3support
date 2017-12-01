@@ -66,6 +66,9 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->ForceController.FaultOnAberrationNetForceCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAberrationNetForceCheck").node().child_value()) != 0;
 	this->ForceController.FaultOnAberrationForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAberrationForceClipping").node().child_value()) != 0;
 	this->ForceController.FaultOnOffsetForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnOffsetForceClipping").node().child_value()) != 0;
+
+	this->CellLights.FaultOnOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/CellLightSettings/FaultOnOutputMismatch").node().child_value()) != 0;
+	this->CellLights.FaultOnSensorMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/CellLightSettings/FaultOnSensorMismatch").node().child_value()) != 0;
 }
 
 } /* namespace SS */

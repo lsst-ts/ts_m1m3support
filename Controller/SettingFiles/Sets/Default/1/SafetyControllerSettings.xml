@@ -54,4 +54,8 @@
 <FaultOnAberrationForceClipping>0</FaultOnAberrationForceClipping>
 <FaultOnOffsetForceClipping>0</FaultOnOffsetForceClipping>
 </ForceControllerSettings>
+<CellLightSettings>
+<FaultOnOutputMismatch>0</FaultOnOutputMismatch>
+<FaultOnSensorMismatch>0</FaultOnSensorMismatch>
+</CellLightSettings>
 </SafetyControllerSettings>

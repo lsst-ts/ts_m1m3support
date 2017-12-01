@@ -6,19 +6,16 @@
  */
 
 #include <DisabledState.h>
-#include <SAL_m1m3C.h>
-#include <IModel.h>
-#include <IDisplacement.h>
-#include <IInclinometer.h>
-#include <unistd.h>
-#include <IPublisher.h>
-#include <IILC.h>
-#include <IFPGA.h>
-#include <IAirController.h>
-#include <ISafetyController.h>
 #include <IAccelerometer.h>
-#include <iostream>
+#include <IAirController.h>
+#include <IDisplacement.h>
+#include <IILC.h>
+#include <IInclinometer.h>
+#include <IInterlockController.h>
+#include <IModel.h>
+#include <ISafetyController.h>
 
+#include <iostream>
 using namespace std;
 
 namespace LSST {
@@ -26,29 +23,34 @@ namespace M1M3 {
 namespace SS {
 
 States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
+	//this->startTimer();
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
 	model->getInclinometer()->writeDataRequest();
-	usleep(50000);
+	model->getAccelerometer()->sampleData();
 	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
+	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
-	model->getAccelerometer()->sampleData();
-	model->queryFPGAData();
-	usleep(10000);
-	model->publishFPGAData();
 	model->getILC()->publishForceActuatorStatus();
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
+	model->getInterlockController()->tryToggleHeartbeat();
+	//this->stopTimer();
+	//cout << "Time: " << this->getTimer() << endl;
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type DisabledState::enable(EnableCommand* command, IModel* model) {
 	States::Type newState = States::ParkedState;
+	model->getILC()->writeSetModeEnableBuffer();
+	model->getILC()->triggerModbus();
+	model->getILC()->waitForAllSubnets(5000);
+	model->getILC()->readAll();
+	model->getILC()->verifyResponses();
 	return model->getSafetyController()->checkSafety(newState);
 }
 

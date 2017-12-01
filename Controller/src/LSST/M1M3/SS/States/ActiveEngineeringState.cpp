@@ -26,6 +26,8 @@
 #include <MoveHardpointActuatorsCommand.h>
 #include <TranslateM1M3Command.h>
 #include <IPositionController.h>
+#include <PositionM1M3Command.h>
+#include <IPublisher.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -36,33 +38,12 @@ namespace M1M3 {
 namespace SS {
 
 States::Type ActiveEngineeringState::update(UpdateCommand* command, IModel* model) {
-	model->getPositionController()->updateSteps();
-	model->getILC()->writeRaisedListBuffer();
-	model->getILC()->triggerModbus();
-	model->getDisplacement()->writeDataRequest();
-	model->getInclinometer()->writeDataRequest();
-	model->getAirController()->checkStatus();
-	model->getForceController()->updateAppliedForces();
-	model->getForceController()->processAppliedForces();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getDisplacement()->readDataResponse();
-	model->getInclinometer()->readDataResponse();
-	model->getILC()->verifyResponses();
-	usleep(50000);
-	model->queryFPGAData();
-	usleep(10000);
-	model->publishFPGAData();
-	model->getILC()->publishForceActuatorStatus();
-	model->getILC()->publishForceActuatorData();
-	model->getILC()->publishHardpointStatus();
-	model->getILC()->publishHardpointData();
+	EnabledState::update(command, model);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, IModel* model) {
 	States::Type newState = States::LoweringEngineeringState;
-	model->getInterlockController()->setMirrorParked(true);
 	model->getForceController()->zeroStaticForces();
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->zeroElevationForces();
@@ -71,6 +52,8 @@ States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, IModel
 	model->getForceController()->zeroAberration();
 	model->getForceController()->zeroAOSCorrection();
 	model->getForceController()->processAppliedForces();
+	model->getInterlockController()->setMirrorLoweringRaising(true);
+	model->setCachedTimestamp(model->getPublisher()->getTimestamp());
 	return model->getSafetyController()->checkSafety(newState);
 }
 
@@ -140,6 +123,22 @@ States::Type ActiveEngineeringState::moveHardpointActuators(MoveHardpointActuato
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command, IModel* model) {
 	model->getPositionController()->translate(command->getData()->XTranslation, command->getData()->YTranslation, command->getData()->ZTranslation,
 			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, IModel* model) {
+	model->getPositionController()->moveToAbsolute(command->getData()->XPosition, command->getData()->YPosition, command->getData()->ZPosition,
+			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::turnLightsOn(TurnLightsOnCommand* command, IModel* model) {
+	model->getInterlockController()->setCellLightsOn(true);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::turnLightsOff(TurnLightsOffCommand* command, IModel* model) {
+	model->getInterlockController()->setCellLightsOn(false);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

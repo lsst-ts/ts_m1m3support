@@ -26,18 +26,18 @@ IPositionController* IModel::getPositionController() { return 0; }
 IInterlockController* IModel::getInterlockController() { return 0; }
 IAccelerometer* IModel::getAccelerometer() { return 0; }
 
+void IModel::setCachedTimestamp(double timestamp) { }
+double IModel::getCachedTimestamp() { return 0; }
+
 void IModel::loadSettings(std::string settingsToApply) { }
 
 void IModel::queryFPGAData() { }
-
 void IModel::publishFPGAData() { }
 
 void IModel::publishStateChange(States::Type newState) { }
-
 void IModel::publishRecommendedSettings() { }
 
 void IModel::shutdown() { }
-
 void IModel::waitForShutdown() { }
 
 } /* namespace SS */

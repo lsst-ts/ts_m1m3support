@@ -30,6 +30,9 @@ public:
 	virtual void disableChaseAll();
 
 	virtual void move(int32_t* steps);
+	virtual void moveToEncoder(int32_t* encoderValues);
+	virtual void moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
+	virtual void moveToReferencePosition();
 	virtual void translate(double x, double y, double z, double rX, double rY, double rZ);
 	virtual void stopMotion();
 

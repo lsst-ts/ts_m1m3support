@@ -56,6 +56,8 @@ struct FaultCodes {
 		ForceControllerAberrationNetForceCheck             = 0x000017D900000010,
 		ForceControllerAberrationForceClipping             = 0x000017D900000011,
 		ForceControllerOffsetForceClipping                 = 0x000017D900000012,
+		CellLightOutputMismatch                            = 0x000017DA00000001, // 6106
+		CellLightSensorMismatch                            = 0x000017DA00000002,
 		UnknownFault                                       = 0x0000180600000001  // 6150
 	};
 };

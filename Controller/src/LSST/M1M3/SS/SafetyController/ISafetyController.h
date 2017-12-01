@@ -68,6 +68,9 @@ public:
 	virtual void forceControllerNotifyAberrationForceClipping(bool conditionFlag);
 	virtual void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
 
+	virtual void cellLightNotifyOutputMismatch(bool conditionFlag);
+	virtual void cellLightNotifySensorMismatch(bool conditionFlag);
+
 	virtual States::Type checkSafety(States::Type preferredNextState);
 };
 

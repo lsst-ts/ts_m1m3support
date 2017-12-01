@@ -6,6 +6,7 @@
  */
 
 #include <FaultState.h>
+#include <IInterlockController.h>
 #include <IModel.h>
 #include <IILC.h>
 #include <IDisplacement.h>
@@ -35,6 +36,7 @@ States::Type FaultState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
 	//model->getAirController()->checkStatus();
+	model->getInterlockController()->tryToggleHeartbeat();
 	return States::NoStateTransition;
 }
 

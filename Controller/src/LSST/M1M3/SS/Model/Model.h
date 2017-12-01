@@ -41,6 +41,8 @@ private:
 
 	pthread_mutex_t mutex;
 
+	double cachedTimestamp;
+
 public:
 	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga);
 	virtual ~Model();
@@ -57,6 +59,9 @@ public:
 	IPositionController* getPositionController() { return this->positionController; }
 	IInterlockController* getInterlockController() { return this->interlockController; }
 	IAccelerometer* getAccelerometer() { return this->accelerometer; }
+
+	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
+	double getCachedTimestamp() { return this->cachedTimestamp; }
 
 	void loadSettings(std::string settingsToApply);
 

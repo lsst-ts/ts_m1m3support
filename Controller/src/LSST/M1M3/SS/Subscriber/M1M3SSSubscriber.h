@@ -57,6 +57,9 @@ private:
 	m1m3_command_AbortRaiseM1M3C abortRaiseM1M3Data;
 	m1m3_command_TranslateM1M3C translateM1M3Data;
 	m1m3_command_StopHardpointMotionC stopHardpointMotionData;
+	m1m3_command_PositionM1M3C positionM1M3Data;
+	m1m3_command_TurnLightsOnC turnLightsOnData;
+	m1m3_command_TurnLightsOffC turnLightsOffData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
@@ -92,6 +95,9 @@ public:
 	ICommand* tryAcceptCommandAbortRaiseM1M3();
 	ICommand* tryAcceptCommandTranslateM1M3();
 	ICommand* tryAcceptCommandStopHardpointMotion();
+	ICommand* tryAcceptCommandPositionM1M3();
+	ICommand* tryAcceptCommandTurnLightsOn();
+	ICommand* tryAcceptCommandTurnLightsOff();
 	ICommand* tryGetSampleTMAAzimuth();
 	ICommand* tryGetSampleTMAElevation();
 };

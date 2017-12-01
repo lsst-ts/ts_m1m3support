@@ -80,6 +80,9 @@ public:
 	void forceControllerNotifyAberrationForceClipping(bool conditionFlag);
 	void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
 
+	void cellLightNotifyOutputMismatch(bool conditionFlag);
+	void cellLightNotifySensorMismatch(bool conditionFlag);
+
 	States::Type checkSafety(States::Type preferredNextState);
 
 private:

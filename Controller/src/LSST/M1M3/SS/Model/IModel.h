@@ -45,6 +45,9 @@ public:
 	virtual IInterlockController* getInterlockController();
 	virtual IAccelerometer* getAccelerometer();
 
+	virtual void setCachedTimestamp(double timestamp);
+	virtual double getCachedTimestamp();
+
 	virtual void loadSettings(std::string settingsToApply);
 
 	virtual void queryFPGAData();

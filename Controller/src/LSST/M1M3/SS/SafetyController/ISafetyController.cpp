@@ -63,6 +63,9 @@ void ISafetyController::forceControllerNotifyAberrationNetForceCheck(bool condit
 void ISafetyController::forceControllerNotifyAberrationForceClipping(bool conditionFlag) { }
 void ISafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFlag) { }
 
+void ISafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) { }
+void ISafetyController::cellLightNotifySensorMismatch(bool conditionFlag) { }
+
 States::Type ISafetyController::checkSafety(States::Type preferredNextState) { return preferredNextState; }
 
 } /* namespace SS */

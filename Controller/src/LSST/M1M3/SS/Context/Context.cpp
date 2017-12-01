@@ -212,6 +212,24 @@ void Context::storeTMAElevationSample(TMAElevationSampleCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::positionM1M3(PositionM1M3Command* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->positionM1M3(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::turnLightsOn(TurnLightsOnCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->turnLightsOn(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::turnLightsOff(TurnLightsOffCommand* command) {
+	IState* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->turnLightsOff(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::NoStateTransition) {
 		this->currentState = potentialNewState;

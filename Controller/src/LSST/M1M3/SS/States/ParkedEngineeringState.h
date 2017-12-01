@@ -29,6 +29,8 @@ public:
 	States::Type disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model);
 	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model);
 	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
+	States::Type turnLightsOn(TurnLightsOnCommand* command, IModel* model);
+	States::Type turnLightsOff(TurnLightsOffCommand* command, IModel* model);
 };
 
 } /* namespace SS */

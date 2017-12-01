@@ -45,6 +45,9 @@ void IContext::translateM1M3(TranslateM1M3Command* command) { }
 void IContext::stopHardpointMotion(StopHardpointMotionCommand* command) { }
 void IContext::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) { }
 void IContext::storeTMAElevationSample(TMAElevationSampleCommand* command) { }
+void IContext::positionM1M3(PositionM1M3Command* command) { }
+void IContext::turnLightsOn(TurnLightsOnCommand* command) { }
+void IContext::turnLightsOff(TurnLightsOffCommand* command) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */
