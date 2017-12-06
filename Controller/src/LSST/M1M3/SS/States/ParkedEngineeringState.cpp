@@ -33,13 +33,16 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* mode
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
 	States::Type newState = States::RaisingEngineeringState;
-	model->getForceController()->applyStaticForces();
+	model->getPositionController()->enableChaseAll();
 	model->getForceController()->applyElevationForces();
-	model->getForceController()->applyAzimuthForces();
-	model->getForceController()->applyTemperatureForces();
+	model->getForceController()->zeroStaticForces();
+	model->getForceController()->zeroAzimuthForces();
+	model->getForceController()->zeroTemperatureForces();
+	model->getForceController()->zeroDynamicForces();
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->zeroAberration();
 	model->getForceController()->zeroAOSCorrection();
+	model->getForceController()->zeroSupportPercentage();
 	model->getInterlockController()->setMirrorParked(false);
 	model->getInterlockController()->setMirrorLoweringRaising(true);
 	model->setCachedTimestamp(model->getPublisher()->getTimestamp());

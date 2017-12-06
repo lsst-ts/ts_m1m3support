@@ -6,8 +6,10 @@
  */
 
 #include <RaisingEngineeringState.h>
+#include <IForceController.h>
 #include <IInterlockController.h>
 #include <IModel.h>
+#include <IPositionController.h>
 #include <IPublisher.h>
 #include <ISafetyController.h>
 
@@ -17,8 +19,34 @@ namespace SS {
 
 States::Type RaisingEngineeringState::update(UpdateCommand* command, IModel* model) {
 	States::Type newState = States::NoStateTransition;
+	if (!model->getForceController()->supportPercentageFilled()) {
+		// We are still in the process of transfering the support force from the static supports
+		// to the force actuators
+		if (model->getPositionController()->forcesInTolerance()) {
+			// The forces on the hardpoints are within tolerance, we can continue to transfer the
+			// support force from the static supports to the force actuators
+			model->getForceController()->incSupportPercentage();
+			if (model->getForceController()->supportPercentageFilled()) {
+				// All of the support force has been transfered from the static supports to the
+				// force actuators, stop the hardpoints from chasing and start moving to the
+				// reference position
+				model->getPositionController()->disableChaseAll();
+				model->getPositionController()->moveToReferencePosition();
+			}
+		}
+	}
+	// Execute the standard update cycle
 	EnabledState::update(command, model);
-	if (model->getPublisher()->getTimestamp() >= (model->getCachedTimestamp() + 5)) {
+	if ((model->getForceController()->supportPercentageFilled() && model->getPositionController()->motionComplete()) ||
+			model->getPublisher()->getTimestamp() >= (model->getCachedTimestamp() + model->getPositionController()->getRaiseLowerTimeout())) {
+		// Transition to the active engineering state if all of the support force has been transfered
+		// from the static supports to the force actuators and all hardpoints have completed their
+		// commanded motions or the operation has timed out
+		model->getForceController()->applyStaticForces();
+		model->getForceController()->applyAzimuthForces();
+		model->getForceController()->applyTemperatureForces();
+		model->getForceController()->applyDynamicForces();
+		model->getForceController()->fillSupportPercentage();
 		model->getInterlockController()->setMirrorLoweringRaising(false);
 		newState = States::ActiveEngineeringState;
 	}

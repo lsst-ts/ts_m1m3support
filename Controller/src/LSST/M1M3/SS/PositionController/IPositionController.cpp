@@ -13,10 +13,15 @@ namespace SS {
 
 IPositionController::~IPositionController() { }
 
+double IPositionController::getRaiseLowerTimeout() { return 0.0; }
+
 void IPositionController::enableChase(int32_t actuatorID) { }
 void IPositionController::disableChase(int32_t actuatorID) { }
 void IPositionController::enableChaseAll() { }
 void IPositionController::disableChaseAll() { }
+
+bool IPositionController::forcesInTolerance() { return false; }
+bool IPositionController::motionComplete() { return false; }
 
 void IPositionController::move(int32_t* steps) { }
 void IPositionController::moveToEncoder(int32_t* encoderValues) { }

@@ -26,6 +26,8 @@ public:
 	virtual void decSupportPercentage();
 	virtual void zeroSupportPercentage();
 	virtual void fillSupportPercentage();
+	virtual bool supportPercentageFilled();
+	virtual bool supportPercentageZeroed();
 
 	virtual void updateAppliedForces();
 	virtual void processAppliedForces();

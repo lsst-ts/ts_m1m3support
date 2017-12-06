@@ -38,10 +38,15 @@ private:
 public:
 	PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher);
 
+	double getRaiseLowerTimeout();
+
 	void enableChase(int32_t actuatorID);
 	void disableChase(int32_t actuatorID);
 	void enableChaseAll();
 	void disableChaseAll();
+
+	bool forcesInTolerance();
+	bool motionComplete();
 
 	void move(int32_t* steps);
 	void moveToEncoder(int32_t* encoderValues);

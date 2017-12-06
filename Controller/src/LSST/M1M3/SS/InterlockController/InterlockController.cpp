@@ -38,9 +38,10 @@ void InterlockController::tryToggleHeartbeat() {
 }
 
 void InterlockController::setHeartbeat(bool state) {
+	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->HeartbeatCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::HeartbeatToSafetyController;
-	this->txBuffer[1] = this->interlockStatus->HeartbeatCommandedState;
+	this->txBuffer[1] = !this->interlockStatus->HeartbeatCommandedState;
 	this->fpga->writeCommandFIFO(this->txBuffer, 2, 0);
 	this->checkHeartbeatOutputState();
 	this->publishInterlockStatus();
@@ -50,9 +51,10 @@ void InterlockController::setHeartbeat(bool state) {
 }
 
 void InterlockController::setCriticalFault(bool state) {
+	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->CriticalFaultCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::CriticalFaultToSafetyController;
-	this->txBuffer[1] = this->interlockStatus->CriticalFaultCommandedState;
+	this->txBuffer[1] = !this->interlockStatus->CriticalFaultCommandedState;
 	this->fpga->writeCommandFIFO(this->txBuffer, 2, 0);
 	this->checkCriticalFaultOutputState();
 	this->publishInterlockStatus();
@@ -62,9 +64,10 @@ void InterlockController::setCriticalFault(bool state) {
 }
 
 void InterlockController::setMirrorLoweringRaising(bool state) {
+	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->MirrorLoweringRaisingCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::MirrorLoweringRaisingToSafetyController;
-	this->txBuffer[1] = this->interlockStatus->MirrorLoweringRaisingCommandedState;
+	this->txBuffer[1] = !this->interlockStatus->MirrorLoweringRaisingCommandedState;
 	this->fpga->writeCommandFIFO(this->txBuffer, 2, 0);
 	this->checkMirrorLoweringRaisingOutputState();
 	this->publishInterlockStatus();
@@ -74,9 +77,10 @@ void InterlockController::setMirrorLoweringRaising(bool state) {
 }
 
 void InterlockController::setMirrorParked(bool state) {
+	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->MirrorParkedCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::MirrorParkedToSafetyController;
-	this->txBuffer[1] = this->interlockStatus->MirrorParkedCommandedState;
+	this->txBuffer[1] = !this->interlockStatus->MirrorParkedCommandedState;
 	this->fpga->writeCommandFIFO(this->txBuffer, 2, 0);
 	this->checkMirrorParkedOutputState();
 	this->publishInterlockStatus();
@@ -101,7 +105,8 @@ void InterlockController::setCellLightsOn(bool state) {
 bool InterlockController::checkHeartbeatOutputState() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::HeartbeatToSafetyController, 0);
 	this->fpga->readU16ResponseFIFO(this->statusBuffer, 1, 10);
-	bool heartbeatOutputState = this->statusBuffer[0] != 0;
+	// This signal is inverted (HIGH = OFF, LOW = ON)
+	bool heartbeatOutputState = this->statusBuffer[0] == 0;
 	bool statusChanged = heartbeatOutputState != this->interlockStatus->HeartbeatOutputState;
 	this->interlockStatus->HeartbeatOutputState = heartbeatOutputState;
 	return statusChanged;
@@ -110,7 +115,8 @@ bool InterlockController::checkHeartbeatOutputState() {
 bool InterlockController::checkCriticalFaultOutputState() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::CriticalFaultToSafetyController, 0);
 	this->fpga->readU16ResponseFIFO(this->statusBuffer, 1, 10);
-	bool criticalFaultOutputState = this->statusBuffer[0] != 0;
+	// This signal is inverted (HIGH = OFF, LOW = ON)
+	bool criticalFaultOutputState = this->statusBuffer[0] == 0;
 	bool statusChanged = criticalFaultOutputState != this->interlockStatus->CriticalFaultOutputState;
 	this->interlockStatus->CriticalFaultOutputState = criticalFaultOutputState;
 	return statusChanged;
@@ -119,7 +125,8 @@ bool InterlockController::checkCriticalFaultOutputState() {
 bool InterlockController::checkMirrorLoweringRaisingOutputState() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::MirrorLoweringRaisingToSafetyController, 0);
 	this->fpga->readU16ResponseFIFO(this->statusBuffer, 1, 10);
-	bool mirrorLoweringRaisingOutputState = this->statusBuffer[0] != 0;
+	// This signal is inverted (HIGH = OFF, LOW = ON)
+	bool mirrorLoweringRaisingOutputState = this->statusBuffer[0] == 0;
 	bool statusChanged = mirrorLoweringRaisingOutputState != this->interlockStatus->MirrorLoweringRaisingOutputState;
 	this->interlockStatus->MirrorLoweringRaisingOutputState = mirrorLoweringRaisingOutputState;
 	return statusChanged;
@@ -128,7 +135,8 @@ bool InterlockController::checkMirrorLoweringRaisingOutputState() {
 bool InterlockController::checkMirrorParkedOutputState() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::MirrorParkedToSafetyController, 0);
 	this->fpga->readU16ResponseFIFO(this->statusBuffer, 1, 10);
-	bool mirrorParkedOutputState = this->statusBuffer[0] != 0;
+	// This signal is inverted (HIGH = OFF, LOW = ON)
+	bool mirrorParkedOutputState = this->statusBuffer[0] == 0;
 	bool statusChanged = mirrorParkedOutputState != this->interlockStatus->MirrorParkedOutputState;
 	this->interlockStatus->MirrorParkedOutputState = mirrorParkedOutputState;
 	return statusChanged;
