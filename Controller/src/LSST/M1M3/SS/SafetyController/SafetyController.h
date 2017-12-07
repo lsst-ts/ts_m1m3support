@@ -83,6 +83,15 @@ public:
 	void cellLightNotifyOutputMismatch(bool conditionFlag);
 	void cellLightNotifySensorMismatch(bool conditionFlag);
 
+	void powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag);
+
 	States::Type checkSafety(States::Type preferredNextState);
 
 private:

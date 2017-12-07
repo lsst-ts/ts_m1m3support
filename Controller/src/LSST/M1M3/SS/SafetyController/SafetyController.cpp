@@ -77,6 +77,15 @@ void SafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFl
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::CellLightOutputMismatch, this->safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag); }
 void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::CellLightSensorMismatch, this->safetyControllerSettings->CellLights.FaultOnSensorMismatch, conditionFlag); }
 
+void SafetyController::powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkAOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkAOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkBOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkBOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkCOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkCOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkDOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkDOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkAOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkAOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkBOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkBOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkCOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkCOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkDOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkDOutputMismatch, conditionFlag); }
+
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {
 		this->publisher->logErrorCode();

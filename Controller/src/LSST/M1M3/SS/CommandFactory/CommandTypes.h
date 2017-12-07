@@ -51,7 +51,9 @@ struct Commands {
 		TMAElevationSampleCommand = 31,
 		PositionM1M3Command = 32,
 		TurnLightsOnCommand = 33,
-		TurnLightsOffCommand = 34
+		TurnLightsOffCommand = 34,
+		TurnPowerOnCommand = 35,
+		TurnPowerOffCommand = 36
 	};
 };
 

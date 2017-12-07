@@ -70,6 +70,8 @@ public:
 	void positionM1M3(PositionM1M3Command* command);
 	void turnLightsOn(TurnLightsOnCommand* command);
 	void turnLightsOff(TurnLightsOffCommand* command);
+	void turnPowerOn(TurnPowerOnCommand* command);
+	void turnPowerOff(TurnPowerOffCommand* command);
 };
 
 } /* namespace SS */

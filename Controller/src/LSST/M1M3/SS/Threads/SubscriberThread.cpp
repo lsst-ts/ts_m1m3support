@@ -58,6 +58,8 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandPositionM1M3());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnLightsOn());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnLightsOff());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnPowerOn());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnPowerOff());
 		this->enqueueCommandIfAvailable(this->subscriber->tryGetSampleTMAAzimuth());
 		this->enqueueCommandIfAvailable(this->subscriber->tryGetSampleTMAElevation());
 		usleep(100);

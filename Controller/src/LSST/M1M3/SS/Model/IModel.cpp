@@ -25,6 +25,7 @@ ISafetyController* IModel::getSafetyController() { return 0; }
 IPositionController* IModel::getPositionController() { return 0; }
 IInterlockController* IModel::getInterlockController() { return 0; }
 IAccelerometer* IModel::getAccelerometer() { return 0; }
+IPowerController* IModel::getPowerController() { return 0; }
 
 void IModel::setCachedTimestamp(double timestamp) { }
 double IModel::getCachedTimestamp() { return 0; }

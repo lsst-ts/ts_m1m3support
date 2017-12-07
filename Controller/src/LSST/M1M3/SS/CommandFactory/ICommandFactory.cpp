@@ -14,7 +14,6 @@ namespace SS {
 ICommandFactory::~ICommandFactory() { }
 
 ICommand* ICommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) { return 0; }
-
 void ICommandFactory::destroy(ICommand* command) { }
 
 } /* namespace SS */

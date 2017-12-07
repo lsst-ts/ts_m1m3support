@@ -37,11 +37,10 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command, IModel* mod
 	}
 	// Execute the standard update cycle
 	EnabledState::update(command, model);
-	if ((model->getForceController()->supportPercentageFilled() && model->getPositionController()->motionComplete()) ||
-			model->getPublisher()->getTimestamp() >= (model->getCachedTimestamp() + model->getPositionController()->getRaiseLowerTimeout())) {
+	if (model->getForceController()->supportPercentageFilled() && model->getPositionController()->motionComplete()) {
 		// Transition to the active engineering state if all of the support force has been transfered
 		// from the static supports to the force actuators and all hardpoints have completed their
-		// commanded motions or the operation has timed out
+		// commanded motions
 		model->getForceController()->applyStaticForces();
 		model->getForceController()->applyAzimuthForces();
 		model->getForceController()->applyTemperatureForces();
@@ -49,6 +48,9 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command, IModel* mod
 		model->getForceController()->fillSupportPercentage();
 		model->getInterlockController()->setMirrorLoweringRaising(false);
 		newState = States::ActiveEngineeringState;
+	}
+	else if (model->getPublisher()->getTimestamp() >= (model->getCachedTimestamp() + model->getPositionController()->getRaiseLowerTimeout())) {
+		// TODO: How should the system react if the operation times out?
 	}
 	return model->getSafetyController()->checkSafety(newState);
 }

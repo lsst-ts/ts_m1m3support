@@ -50,6 +50,8 @@ class TMAElevationSampleCommand;
 class PositionM1M3Command;
 class TurnLightsOnCommand;
 class TurnLightsOffCommand;
+class TurnPowerOnCommand;
+class TurnPowerOffCommand;
 
 class IState {
 public:
@@ -90,6 +92,8 @@ public:
 	virtual States::Type positionM1M3(PositionM1M3Command* command, IModel* model);
 	virtual States::Type turnLightsOn(TurnLightsOnCommand* command, IModel* model);
 	virtual States::Type turnLightsOff(TurnLightsOffCommand* command, IModel* model);
+	virtual States::Type turnPowerOn(TurnPowerOnCommand* command, IModel* model);
+	virtual States::Type turnPowerOff(TurnPowerOffCommand* command, IModel* model);
 };
 
 } /* namespace SS */

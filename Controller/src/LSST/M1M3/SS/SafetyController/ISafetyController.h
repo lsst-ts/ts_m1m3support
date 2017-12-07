@@ -71,6 +71,16 @@ public:
 	virtual void cellLightNotifyOutputMismatch(bool conditionFlag);
 	virtual void cellLightNotifySensorMismatch(bool conditionFlag);
 
+	virtual void powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag);
+
+
 	virtual States::Type checkSafety(States::Type preferredNextState);
 };
 

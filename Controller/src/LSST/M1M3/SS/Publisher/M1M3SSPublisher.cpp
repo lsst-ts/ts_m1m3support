@@ -43,6 +43,8 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_InclinometerSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_InterlockStatus");
 	this->m1m3SAL->salEvent("m1m3_logevent_InterlockWarning");
+	this->m1m3SAL->salEvent("m1m3_logevent_PowerStatus");
+	this->m1m3SAL->salEvent("m1m3_logevent_PowerWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_SettingVersions");
 	this->m1m3SAL->salEvent("m1m3_logevent_SummaryState");
 }
@@ -77,6 +79,8 @@ void M1M3SSPublisher::logILCWarning() { this->m1m3SAL->logEvent_ILCWarning(&this
 void M1M3SSPublisher::logInclinometerSensorWarning() { this->m1m3SAL->logEvent_InclinometerSensorWarning(&this->eventInclinometerSensorWarning, 0); }
 void M1M3SSPublisher::logInterlockStatus() { this->m1m3SAL->logEvent_InterlockStatus(&this->eventInterlockStatus, 0); }
 void M1M3SSPublisher::logInterlockWarning() { this->m1m3SAL->logEvent_InterlockWarning(&this->eventInterlockWarning, 0); }
+void M1M3SSPublisher::logPowerStatus() { this->m1m3SAL->logEvent_PowerStatus(&this->eventPowerStatus, 0); }
+void M1M3SSPublisher::logPowerWarning() { this->m1m3SAL->logEvent_PowerWarning(&this->eventPowerWarning, 0); }
 void M1M3SSPublisher::logSettingVersions() { this->m1m3SAL->logEvent_SettingVersions(&this->eventSettingVersions, 0); }
 void M1M3SSPublisher::logSummaryState() { this->m1m3SAL->logEvent_SummaryState(&this->eventSummaryState, 0); }
 
@@ -202,6 +206,14 @@ void M1M3SSPublisher::ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode,
 
 void M1M3SSPublisher::ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_TurnLightsOff(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTurnPowerOn(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TurnPowerOn(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_TurnPowerOff(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

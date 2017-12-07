@@ -14,6 +14,7 @@
 #include <InterlockControllerSafetySettings.h>
 #include <ForceControllerSafetySettings.h>
 #include <CellLightsSafetySettings.h>
+#include <PowerControllerSafetySettings.h>
 #include <string>
 
 namespace LSST {
@@ -28,6 +29,7 @@ public:
 	InterlockControllerSafetySettings Interlock;
 	ForceControllerSafetySettings ForceController;
 	CellLightsSafetySettings CellLights;
+	PowerControllerSafetySettings PowerController;
 
 	void load(const std::string &filename);
 };

@@ -28,6 +28,7 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
+#include <PowerController.h>
 
 using namespace std;
 
@@ -48,6 +49,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->positionController = 0;
 	this->interlockController = 0;
 	this->accelerometer = 0;
+	this->powerController = 0;
 	this->cachedTimestamp = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
@@ -83,6 +85,9 @@ Model::~Model() {
 	}
 	if (this->accelerometer) {
 		delete this->accelerometer;
+	}
+	if (this->powerController) {
+		delete this->powerController;
 	}
 }
 
@@ -149,6 +154,11 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->accelerometer;
 	}
 	this->accelerometer = new Accelerometer(this->publisher, this->fpga, accelerometerSettings);
+
+	if (this->powerController) {
+		delete this->positionController;
+	}
+	this->powerController = new PowerController(this->publisher, this->fpga, this->safetyController);
 }
 
 void Model::queryFPGAData() {

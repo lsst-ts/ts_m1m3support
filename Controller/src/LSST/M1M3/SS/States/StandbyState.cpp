@@ -10,6 +10,7 @@
 #include <IInterlockController.h>
 #include <IModel.h>
 #include <ISafetyController.h>
+#include <IPowerController.h>
 #include <StartCommand.h>
 
 namespace LSST {
@@ -19,6 +20,7 @@ namespace SS {
 States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	States::Type newState = States::DisabledState;
 	model->loadSettings(command->getData()->SettingsToApply);
+	model->getPowerController()->setAllPowerNetworks(true);
 //	model->getILC()->writeCalibrationDataBuffer();
 //	model->getILC()->triggerModbus();
 //	model->getILC()->waitForAllSubnets(5000);

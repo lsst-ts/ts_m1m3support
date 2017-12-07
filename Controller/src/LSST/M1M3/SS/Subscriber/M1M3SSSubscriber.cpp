@@ -49,6 +49,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, I
 	this->m1m3SAL->salProcessor("m1m3_command_PositionM1M3");
 	this->m1m3SAL->salProcessor("m1m3_command_TurnLightsOn");
 	this->m1m3SAL->salProcessor("m1m3_command_TurnLightsOff");
+	this->m1m3SAL->salProcessor("m1m3_command_TurnPowerOn");
+	this->m1m3SAL->salProcessor("m1m3_command_TurnPowerOff");
 	this->mtMountSAL->salTelemetrySub("MTMount_Az");
 	this->mtMountSAL->salTelemetrySub("MTMount_Alt");
 }
@@ -297,6 +299,22 @@ ICommand* M1M3SSSubscriber::tryAcceptCommandTurnLightsOff() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_TurnLightsOff(&this->turnLightsOffData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::TurnLightsOffCommand, &this->turnLightsOffData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandTurnPowerOn() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_TurnPowerOn(&this->turnPowerOnData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::TurnPowerOnCommand, &this->turnPowerOnData, commandID);
+	}
+	return 0;
+}
+
+ICommand* M1M3SSSubscriber::tryAcceptCommandTurnPowerOff() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_TurnPowerOff(&this->turnPowerOffData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::TurnPowerOffCommand, &this->turnPowerOffData, commandID);
 	}
 	return 0;
 }

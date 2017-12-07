@@ -21,6 +21,9 @@
 #include <DisableHardpointChaseCommand.h>
 #include <IInterlockController.h>
 #include <IPublisher.h>
+#include <IPowerController.h>
+#include <TurnPowerOnCommand.h>
+#include <TurnPowerOffCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -121,6 +124,62 @@ States::Type ParkedEngineeringState::turnLightsOn(TurnLightsOnCommand* command, 
 
 States::Type ParkedEngineeringState::turnLightsOff(TurnLightsOffCommand* command, IModel* model) {
 	model->getInterlockController()->setCellLightsOn(false);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ParkedEngineeringState::turnPowerOn(TurnPowerOnCommand* command, IModel* model) {
+	if (command->getData()->TurnPowerNetworkAOn) {
+		model->getPowerController()->setPowerNetworkA(true);
+	}
+	if (command->getData()->TurnPowerNetworkBOn) {
+		model->getPowerController()->setPowerNetworkB(true);
+	}
+	if (command->getData()->TurnPowerNetworkCOn) {
+		model->getPowerController()->setPowerNetworkC(true);
+	}
+	if (command->getData()->TurnPowerNetworkDOn) {
+		model->getPowerController()->setPowerNetworkD(true);
+	}
+	if (command->getData()->TurnAuxPowerNetworkAOn) {
+		model->getPowerController()->setAuxPowerNetworkA(true);
+	}
+	if (command->getData()->TurnAuxPowerNetworkBOn) {
+		model->getPowerController()->setAuxPowerNetworkB(true);
+	}
+	if (command->getData()->TurnAuxPowerNetworkCOn) {
+		model->getPowerController()->setAuxPowerNetworkC(true);
+	}
+	if (command->getData()->TurnAuxPowerNetworkDOn) {
+		model->getPowerController()->setAuxPowerNetworkD(true);
+	}
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ParkedEngineeringState::turnPowerOff(TurnPowerOffCommand* command, IModel* model) {
+	if (command->getData()->TurnPowerNetworkAOff) {
+		model->getPowerController()->setPowerNetworkA(false);
+	}
+	if (command->getData()->TurnPowerNetworkBOff) {
+		model->getPowerController()->setPowerNetworkB(false);
+	}
+	if (command->getData()->TurnPowerNetworkCOff) {
+		model->getPowerController()->setPowerNetworkC(false);
+	}
+	if (command->getData()->TurnPowerNetworkDOff) {
+		model->getPowerController()->setPowerNetworkD(false);
+	}
+	if (command->getData()->TurnAuxPowerNetworkAOff) {
+		model->getPowerController()->setAuxPowerNetworkA(false);
+	}
+	if (command->getData()->TurnAuxPowerNetworkBOff) {
+		model->getPowerController()->setAuxPowerNetworkB(false);
+	}
+	if (command->getData()->TurnAuxPowerNetworkCOff) {
+		model->getPowerController()->setAuxPowerNetworkC(false);
+	}
+	if (command->getData()->TurnAuxPowerNetworkDOff) {
+		model->getPowerController()->setAuxPowerNetworkD(false);
+	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

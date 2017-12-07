@@ -14,6 +14,7 @@
 #include <IInterlockController.h>
 #include <IModel.h>
 #include <ISafetyController.h>
+#include <IPowerController.h>
 
 #include <iostream>
 using namespace std;
@@ -61,6 +62,7 @@ States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
+	model->getPowerController()->setAllPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
 }
 

@@ -58,6 +58,14 @@ struct FaultCodes {
 		ForceControllerOffsetForceClipping                 = 0x000017D900000012,
 		CellLightOutputMismatch                            = 0x000017DA00000001, // 6106
 		CellLightSensorMismatch                            = 0x000017DA00000002,
+		PowerControllerPowerNetworkAOutputMismatch         = 0x000017DB00000001, // 6107
+		PowerControllerPowerNetworkBOutputMismatch         = 0x000017DB00000002,
+		PowerControllerPowerNetworkCOutputMismatch         = 0x000017DB00000003,
+		PowerControllerPowerNetworkDOutputMismatch         = 0x000017DB00000004,
+		PowerControllerAuxPowerNetworkAOutputMismatch      = 0x000017DB00000005,
+		PowerControllerAuxPowerNetworkBOutputMismatch      = 0x000017DB00000006,
+		PowerControllerAuxPowerNetworkCOutputMismatch      = 0x000017DB00000007,
+		PowerControllerAuxPowerNetworkDOutputMismatch      = 0x000017DB00000008,
 		UnknownFault                                       = 0x0000180600000001  // 6150
 	};
 };

@@ -44,6 +44,8 @@ ICommand* ISubscriber::tryAcceptCommandStopHardpointMotion() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandPositionM1M3() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandTurnLightsOn() { return 0; }
 ICommand* ISubscriber::tryAcceptCommandTurnLightsOff() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandTurnPowerOn() { return 0; }
+ICommand* ISubscriber::tryAcceptCommandTurnPowerOff() { return 0; }
 ICommand* ISubscriber::tryGetSampleTMAAzimuth() { return 0; }
 ICommand* ISubscriber::tryGetSampleTMAElevation() { return 0; }
 

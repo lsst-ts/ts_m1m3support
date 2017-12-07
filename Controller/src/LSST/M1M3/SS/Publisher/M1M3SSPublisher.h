@@ -49,6 +49,8 @@ private:
 	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
 	m1m3_logevent_InterlockStatusC eventInterlockStatus;
 	m1m3_logevent_InterlockWarningC eventInterlockWarning;
+	m1m3_logevent_PowerStatusC eventPowerStatus;
+	m1m3_logevent_PowerWarningC eventPowerWarning;
 	m1m3_logevent_SettingVersionsC eventSettingVersions;
 	m1m3_logevent_SummaryStateC eventSummaryState;
 
@@ -83,6 +85,8 @@ public:
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
 	m1m3_logevent_InterlockStatusC* getEventInterlockStatus() { return &this->eventInterlockStatus; }
 	m1m3_logevent_InterlockWarningC* getEventInterlockWarning() { return &this->eventInterlockWarning; }
+	m1m3_logevent_PowerStatusC* getEventPowerStatus() { return &this->eventPowerStatus; }
+	m1m3_logevent_PowerWarningC* getEventPowerWarning() { return &this->eventPowerWarning; }
 	m1m3_logevent_SettingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
 	m1m3_logevent_SummaryStateC* getEventSummaryState() { return &this->eventSummaryState; }
 
@@ -116,6 +120,8 @@ public:
 	void logInclinometerSensorWarning();
 	void logInterlockStatus();
 	void logInterlockWarning();
+	void logPowerStatus();
+	void logPowerWarning();
 	void logSettingVersions();
 	void logSummaryState();
 
@@ -150,6 +156,8 @@ public:
 	void ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTurnPowerOn(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

@@ -38,6 +38,7 @@ private:
 	IPositionController* positionController;
 	IInterlockController* interlockController;
 	IAccelerometer* accelerometer;
+	IPowerController* powerController;
 
 	pthread_mutex_t mutex;
 
@@ -59,6 +60,7 @@ public:
 	IPositionController* getPositionController() { return this->positionController; }
 	IInterlockController* getInterlockController() { return this->interlockController; }
 	IAccelerometer* getAccelerometer() { return this->accelerometer; }
+	IPowerController* getPowerController() { return this->powerController; }
 
 	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
 	double getCachedTimestamp() { return this->cachedTimestamp; }

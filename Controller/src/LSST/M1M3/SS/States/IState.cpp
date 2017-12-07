@@ -48,6 +48,8 @@ States::Type IState::storeTMAElevationSample(TMAElevationSampleCommand* command,
 States::Type IState::positionM1M3(PositionM1M3Command* command, IModel* model) { return States::NoStateTransition; }
 States::Type IState::turnLightsOn(TurnLightsOnCommand* command, IModel* model) { return States::NoStateTransition; }
 States::Type IState::turnLightsOff(TurnLightsOffCommand* command, IModel* model) { return States::NoStateTransition; }
+States::Type IState::turnPowerOn(TurnPowerOnCommand* command, IModel* model) { return States::NoStateTransition; }
+States::Type IState::turnPowerOff(TurnPowerOffCommand* command, IModel* model) { return States::NoStateTransition; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

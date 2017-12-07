@@ -58,4 +58,14 @@
 <FaultOnOutputMismatch>0</FaultOnOutputMismatch>
 <FaultOnSensorMismatch>0</FaultOnSensorMismatch>
 </CellLightSettings>
+<PowerControllerSettings>
+<FaultOnPowerNetworkAOutputMismatch>1</FaultOnPowerNetworkAOutputMismatch>
+<FaultOnPowerNetworkBOutputMismatch>1</FaultOnPowerNetworkBOutputMismatch>
+<FaultOnPowerNetworkCOutputMismatch>1</FaultOnPowerNetworkCOutputMismatch>
+<FaultOnPowerNetworkDOutputMismatch>1</FaultOnPowerNetworkDOutputMismatch>
+<FaultOnAuxPowerNetworkAOutputMismatch>1</FaultOnAuxPowerNetworkAOutputMismatch>
+<FaultOnAuxPowerNetworkBOutputMismatch>1</FaultOnAuxPowerNetworkBOutputMismatch>
+<FaultOnAuxPowerNetworkCOutputMismatch>1</FaultOnAuxPowerNetworkCOutputMismatch>
+<FaultOnAuxPowerNetworkDOutputMismatch>1</FaultOnAuxPowerNetworkDOutputMismatch>
+</PowerControllerSettings>
 </SafetyControllerSettings>

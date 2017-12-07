@@ -60,6 +60,8 @@ private:
 	m1m3_command_PositionM1M3C positionM1M3Data;
 	m1m3_command_TurnLightsOnC turnLightsOnData;
 	m1m3_command_TurnLightsOffC turnLightsOffData;
+	m1m3_command_TurnPowerOnC turnPowerOnData;
+	m1m3_command_TurnPowerOffC turnPowerOffData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
@@ -98,6 +100,8 @@ public:
 	ICommand* tryAcceptCommandPositionM1M3();
 	ICommand* tryAcceptCommandTurnLightsOn();
 	ICommand* tryAcceptCommandTurnLightsOff();
+	ICommand* tryAcceptCommandTurnPowerOn();
+	ICommand* tryAcceptCommandTurnPowerOff();
 	ICommand* tryGetSampleTMAAzimuth();
 	ICommand* tryGetSampleTMAElevation();
 };

@@ -69,6 +69,15 @@ void SafetyControllerSettings::load(const std::string &filename) {
 
 	this->CellLights.FaultOnOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/CellLightSettings/FaultOnOutputMismatch").node().child_value()) != 0;
 	this->CellLights.FaultOnSensorMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/CellLightSettings/FaultOnSensorMismatch").node().child_value()) != 0;
+
+	this->PowerController.FaultOnPowerNetworkAOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnPowerNetworkAOutputMismatch").node().child_value()) != 0;
+	this->PowerController.FaultOnPowerNetworkBOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnPowerNetworkBOutputMismatch").node().child_value()) != 0;
+	this->PowerController.FaultOnPowerNetworkCOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnPowerNetworkCOutputMismatch").node().child_value()) != 0;
+	this->PowerController.FaultOnPowerNetworkDOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnPowerNetworkDOutputMismatch").node().child_value()) != 0;
+	this->PowerController.FaultOnAuxPowerNetworkAOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnAuxPowerNetworkAOutputMismatch").node().child_value()) != 0;
+	this->PowerController.FaultOnAuxPowerNetworkBOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnAuxPowerNetworkBOutputMismatch").node().child_value()) != 0;
+	this->PowerController.FaultOnAuxPowerNetworkCOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnAuxPowerNetworkCOutputMismatch").node().child_value()) != 0;
+	this->PowerController.FaultOnAuxPowerNetworkDOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnAuxPowerNetworkDOutputMismatch").node().child_value()) != 0;
 }
 
 } /* namespace SS */

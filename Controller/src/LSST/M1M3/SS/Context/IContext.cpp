@@ -48,6 +48,8 @@ void IContext::storeTMAElevationSample(TMAElevationSampleCommand* command) { }
 void IContext::positionM1M3(PositionM1M3Command* command) { }
 void IContext::turnLightsOn(TurnLightsOnCommand* command) { }
 void IContext::turnLightsOff(TurnLightsOffCommand* command) { }
+void IContext::turnPowerOn(TurnPowerOnCommand* command) { }
+void IContext::turnPowerOff(TurnPowerOffCommand* command) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */
