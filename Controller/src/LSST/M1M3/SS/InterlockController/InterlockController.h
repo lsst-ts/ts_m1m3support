@@ -52,6 +52,8 @@ public:
 	void setMirrorLoweringRaising(bool state);
 	void setMirrorParked(bool state);
 
+	void checkInterlockStatus();
+
 	void setCellLightsOn(bool state);
 
 private:

@@ -13,6 +13,8 @@ namespace SS {
 
 IPowerController::~IPowerController() { }
 
+void IPowerController::checkPowerStatus() { }
+
 void IPowerController::setBothPowerNetworks(bool on) { }
 
 void IPowerController::setAllPowerNetworks(bool on) { }

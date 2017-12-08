@@ -16,6 +16,7 @@
 #include <IModel.h>
 #include <IPositionController.h>
 #include <ISafetyController.h>
+#include <IPowerController.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 
@@ -42,6 +43,8 @@ States::Type EnabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
+	model->getPowerController()->checkPowerStatus();
+	model->getInterlockController()->checkInterlockStatus();
 	model->getInterlockController()->tryToggleHeartbeat();
 	return States::NoStateTransition;
 }

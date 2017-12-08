@@ -43,6 +43,14 @@ void ISafetyController::interlockNotifyHeartbeatStateOutputMismatch(bool conditi
 void ISafetyController::interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag) { }
 void ISafetyController::interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag) { }
 void ISafetyController::interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag) { }
+void ISafetyController::interlockNotifyPowerNetworksOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyThermalEquipmentOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyLaserTrackerOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyAirSupplyOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyGISEarthquake(bool conditionFlag) { }
+void ISafetyController::interlockNotifyGISEStop(bool conditionFlag) { }
+void ISafetyController::interlockNotifyTMAMotionStop(bool conditionFlag) { }
+void ISafetyController::interlockNotifyGISHeartbeatLost(bool conditionFlag) { }
 
 void ISafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) { }
 void ISafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) { }

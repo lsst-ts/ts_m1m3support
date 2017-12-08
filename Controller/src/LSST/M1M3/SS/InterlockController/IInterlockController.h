@@ -23,6 +23,8 @@ public:
 	virtual void setMirrorLoweringRaising(bool state);
 	virtual void setMirrorParked(bool state);
 
+	virtual void checkInterlockStatus();
+
 	virtual void setCellLightsOn(bool state);
 };
 

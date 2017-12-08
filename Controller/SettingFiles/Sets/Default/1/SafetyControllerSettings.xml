@@ -33,6 +33,14 @@
 <FaultOnCriticalFaultStateOutputMismatch>1</FaultOnCriticalFaultStateOutputMismatch>
 <FaultOnMirrorLoweringRaisingStateOutputMismatch>1</FaultOnMirrorLoweringRaisingStateOutputMismatch>
 <FaultOnMirrorParkedStateOutputMismatch>1</FaultOnMirrorParkedStateOutputMismatch>
+<FaultOnPowerNetworksOff>1</FaultOnPowerNetworksOff>
+<FaultOnThermalEquipmentOff>0</FaultOnThermalEquipmentOff>
+<FaultOnLaserTrackerOff>0</FaultOnLaserTrackerOff>
+<FaultOnAirSupplyOff>1</FaultOnAirSupplyOff>
+<FaultOnGISEarthquake>1</FaultOnGISEarthquake>
+<FaultOnGISEStop>0</FaultOnGISEStop>
+<FaultOnTMAMotionStop>0</FaultOnTMAMotionStop>
+<FaultOnGISHeartbeatLost>1</FaultOnGISHeartbeatLost>
 </InterlockSettings>
 <ForceControllerSettings>
 <FaultOnSafetyLimit>0</FaultOnSafetyLimit>

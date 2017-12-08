@@ -48,6 +48,14 @@ public:
 	virtual void interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag);
 	virtual void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
 	virtual void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
+	virtual void interlockNotifyPowerNetworksOff(bool conditionFlag);
+	virtual void interlockNotifyThermalEquipmentOff(bool conditionFlag);
+	virtual void interlockNotifyLaserTrackerOff(bool conditionFlag);
+	virtual void interlockNotifyAirSupplyOff(bool conditionFlag);
+	virtual void interlockNotifyGISEarthquake(bool conditionFlag);
+	virtual void interlockNotifyGISEStop(bool conditionFlag);
+	virtual void interlockNotifyTMAMotionStop(bool conditionFlag);
+	virtual void interlockNotifyGISHeartbeatLost(bool conditionFlag);
 
 	virtual void forceControllerNotifySafetyLimit(bool conditionFlag);
 	virtual void forceControllerNotifyXMomentLimit(bool conditionFlag);

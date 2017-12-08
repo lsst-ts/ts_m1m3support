@@ -24,6 +24,50 @@ PowerController::PowerController(IPublisher* publisher, IFPGA* fpga, ISafetyCont
 	this->powerWarning = this->publisher->getEventPowerWarning();
 }
 
+void PowerController::checkPowerStatus() {
+	int previousStatus =
+			(this->powerStatus->PowerNetworkAOutputOn ? 1 : 0) |
+			(this->powerStatus->PowerNetworkBOutputOn ? 2 : 0) |
+			(this->powerStatus->PowerNetworkCOutputOn ? 4 : 0) |
+			(this->powerStatus->PowerNetworkDOutputOn ? 8 : 0) |
+			(this->powerStatus->AuxPowerNetworkAOutputOn ? 16 : 0) |
+			(this->powerStatus->AuxPowerNetworkBOutputOn ? 32 : 0) |
+			(this->powerStatus->AuxPowerNetworkCOutputOn ? 64 : 0) |
+			(this->powerStatus->AuxPowerNetworkDOutputOn ? 128 : 0);
+	this->checkPowerNetworkAOutput();
+	this->checkPowerNetworkBOutput();
+	this->checkPowerNetworkCOutput();
+	this->checkPowerNetworkDOutput();
+	this->checkAuxPowerNetworkAOutput();
+	this->checkAuxPowerNetworkBOutput();
+	this->checkAuxPowerNetworkCOutput();
+	this->checkAuxPowerNetworkDOutput();
+	int currentStatus =
+			(this->powerStatus->PowerNetworkAOutputOn ? 1 : 0) |
+			(this->powerStatus->PowerNetworkBOutputOn ? 2 : 0) |
+			(this->powerStatus->PowerNetworkCOutputOn ? 4 : 0) |
+			(this->powerStatus->PowerNetworkDOutputOn ? 8 : 0) |
+			(this->powerStatus->AuxPowerNetworkAOutputOn ? 16 : 0) |
+			(this->powerStatus->AuxPowerNetworkBOutputOn ? 32 : 0) |
+			(this->powerStatus->AuxPowerNetworkCOutputOn ? 64 : 0) |
+			(this->powerStatus->AuxPowerNetworkDOutputOn ? 128 : 0);
+	bool publishStatus = currentStatus != previousStatus;
+	bool publishWarning = this->isChangeInPowerNetworkAOutputMismatch() ||
+			this->isChangeInPowerNetworkBOutputMismatch() ||
+			this->isChangeInPowerNetworkCOutputMismatch() ||
+			this->isChangeInPowerNetworkDOutputMismatch() ||
+			this->isChangeInAuxPowerNetworkAOutputMismatch() ||
+			this->isChangeInAuxPowerNetworkBOutputMismatch() ||
+			this->isChangeInAuxPowerNetworkCOutputMismatch() ||
+			this->isChangeInAuxPowerNetworkDOutputMismatch();
+	if (publishStatus) {
+		this->publishStatus();
+	}
+	if (publishWarning) {
+		this->publishWarning();
+	}
+}
+
 void PowerController::setBothPowerNetworks(bool on) {
 	this->powerStatus->PowerNetworkACommandedOn = on;
 	this->powerStatus->PowerNetworkBCommandedOn = on;

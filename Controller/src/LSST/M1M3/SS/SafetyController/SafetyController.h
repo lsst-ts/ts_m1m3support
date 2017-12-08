@@ -60,6 +60,14 @@ public:
 	void interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag);
 	void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
 	void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
+	void interlockNotifyPowerNetworksOff(bool conditionFlag);
+	void interlockNotifyThermalEquipmentOff(bool conditionFlag);
+	void interlockNotifyLaserTrackerOff(bool conditionFlag);
+	void interlockNotifyAirSupplyOff(bool conditionFlag);
+	void interlockNotifyGISEarthquake(bool conditionFlag);
+	void interlockNotifyGISEStop(bool conditionFlag);
+	void interlockNotifyTMAMotionStop(bool conditionFlag);
+	void interlockNotifyGISHeartbeatLost(bool conditionFlag);
 
 	void forceControllerNotifySafetyLimit(bool conditionFlag);
 	void forceControllerNotifyXMomentLimit(bool conditionFlag);

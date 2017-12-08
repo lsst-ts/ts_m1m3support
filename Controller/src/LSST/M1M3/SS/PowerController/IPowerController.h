@@ -16,6 +16,8 @@ class IPowerController {
 public:
 	virtual ~IPowerController();
 
+	virtual void checkPowerStatus();
+
 	virtual void setBothPowerNetworks(bool on);
 
 	virtual void setAllPowerNetworks(bool on);

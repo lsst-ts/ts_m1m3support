@@ -35,6 +35,8 @@ private:
 public:
 	PowerController(IPublisher* publisher, IFPGA* fpga, ISafetyController* safetyController);
 
+	void checkPowerStatus();
+
 	void setBothPowerNetworks(bool on);
 
 	void setAllPowerNetworks(bool on);

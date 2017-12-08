@@ -89,6 +89,60 @@ void InterlockController::setMirrorParked(bool state) {
 	}
 }
 
+void InterlockController::checkInterlockStatus() {
+	// These signals are inverted (HIGH = Everything is OK, LOW = Bad this have happened)
+	uint16_t buffer[8] = {
+			FPGAAddresses::ILCPowerInterlockStatus,
+			FPGAAddresses::FanCoilerHeaterInterlockStatus,
+			FPGAAddresses::LaserTrackerInterlockStatus,
+			FPGAAddresses::AirSupplyInterlockStatus,
+			FPGAAddresses::GISEarthquakeInterlockStatus,
+			FPGAAddresses::GISEStopInterlockStatus,
+			FPGAAddresses::TMAMotionStopInterlockStatus,
+			FPGAAddresses::GISHeartbeatInterlockStatus
+	};
+	this->fpga->writeRequestFIFO(buffer, 8, 0);
+	this->fpga->readU16ResponseFIFO(buffer, 8, 20);
+	int previousStatus =
+			(this->interlockWarning->PowerNetworksOff ? 1 : 0) |
+			(this->interlockWarning->ThermalEquipmentOff ? 2 : 0) |
+			(this->interlockWarning->LaserTrackerOff ? 4 : 0) |
+			(this->interlockWarning->AirSupplyOff ? 8 : 0) |
+			(this->interlockWarning->GISEarthquake ? 16 : 0) |
+			(this->interlockWarning->GISEStop ? 32 : 0) |
+			(this->interlockWarning->TMAMotionStop ? 64 : 0) |
+			(this->interlockWarning->GISHeartbeatLost ? 128 : 0);
+	this->interlockWarning->PowerNetworksOff = buffer[0] == 0;
+	this->interlockWarning->ThermalEquipmentOff = buffer[1] == 0;
+	this->interlockWarning->LaserTrackerOff = buffer[2] == 0;
+	this->interlockWarning->AirSupplyOff = buffer[3] == 0;
+	this->interlockWarning->GISEarthquake = buffer[4] == 0;
+	this->interlockWarning->GISEStop = buffer[5] == 0;
+	this->interlockWarning->TMAMotionStop = buffer[6] == 0;
+	this->interlockWarning->GISHeartbeatLost = buffer[7] == 0;
+	int currentStatus =
+			(this->interlockWarning->PowerNetworksOff ? 1 : 0) |
+			(this->interlockWarning->ThermalEquipmentOff ? 2 : 0) |
+			(this->interlockWarning->LaserTrackerOff ? 4 : 0) |
+			(this->interlockWarning->AirSupplyOff ? 8 : 0) |
+			(this->interlockWarning->GISEarthquake ? 16 : 0) |
+			(this->interlockWarning->GISEStop ? 32 : 0) |
+			(this->interlockWarning->TMAMotionStop ? 64 : 0) |
+			(this->interlockWarning->GISHeartbeatLost ? 128 : 0);
+	this->safetyController->interlockNotifyPowerNetworksOff(this->interlockWarning->PowerNetworksOff);
+	this->safetyController->interlockNotifyThermalEquipmentOff(this->interlockWarning->ThermalEquipmentOff);
+	this->safetyController->interlockNotifyLaserTrackerOff(this->interlockWarning->LaserTrackerOff);
+	this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->AirSupplyOff);
+	this->safetyController->interlockNotifyGISEarthquake(this->interlockWarning->GISEarthquake);
+	this->safetyController->interlockNotifyGISEStop(this->interlockWarning->GISEStop);
+	this->safetyController->interlockNotifyTMAMotionStop(this->interlockWarning->TMAMotionStop);
+	this->safetyController->interlockNotifyGISHeartbeatLost(this->interlockWarning->GISHeartbeatLost);
+	bool publishWarning = currentStatus != previousStatus;
+	if (publishWarning) {
+		this->publishInterlockWarning();
+	}
+}
+
 void InterlockController::setCellLightsOn(bool state) {
 	this->cellLightStatus->CellLightsCommandedOn = state;
 	this->txBuffer[0] = FPGAAddresses::MirrorCellLightControl;
@@ -232,7 +286,15 @@ void InterlockController::publishInterlockWarning() {
 			this->interlockWarning->HeartbeatStateOutputMismatch |
 			this->interlockWarning->CriticalFaultStateOutputMismatch |
 			this->interlockWarning->MirrorLoweringRaisingStateOutputMismatch |
-			this->interlockWarning->MirrorParkedStateOutputMismatch;
+			this->interlockWarning->MirrorParkedStateOutputMismatch |
+			this->interlockWarning->PowerNetworksOff |
+			this->interlockWarning->ThermalEquipmentOff |
+			this->interlockWarning->LaserTrackerOff |
+			this->interlockWarning->AirSupplyOff |
+			this->interlockWarning->GISEarthquake |
+			this->interlockWarning->GISEStop |
+			this->interlockWarning->TMAMotionStop |
+			this->interlockWarning->GISHeartbeatLost;
 	this->publisher->logInterlockWarning();
 }
 
