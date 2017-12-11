@@ -26,6 +26,7 @@
 #include <Timestamp.h>
 #include <FPGAAddresses.h>
 #include <SafetyController.h>
+#include <InterlockController.h>
 #include <cstring>
 
 
@@ -70,8 +71,12 @@ int main() {
 	}
 	cout << "Creating state factory" << endl;
 	StaticStateFactory stateFactory = StaticStateFactory();
+	cout << "Load interlock application settings" << endl;
+	InterlockApplicationSettings* interlockApplicationSettings = settingReader.loadInterlockApplicationSettings();
+	cout << "Creating interlock controller" << endl;
+	InterlockController interlockController = InterlockController(&publisher, &fpga, interlockApplicationSettings);
 	cout << "Creating model" << endl;
-	Model model = Model(&settingReader, &publisher, &fpga);
+	Model model = Model(&settingReader, &publisher, &fpga, &interlockController);
 	cout << "Creating context" << endl;
 	Context context = Context(&stateFactory, &model);
 	cout << "Creating command factory" << endl;

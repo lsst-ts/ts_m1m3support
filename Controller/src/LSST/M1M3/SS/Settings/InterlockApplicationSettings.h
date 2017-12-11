@@ -1,12 +1,12 @@
 /*
- * InterlockSettings.h
+ * InterlockApplicationSettings.h
  *
  *  Created on: Nov 29, 2017
  *      Author: ccontaxis
  */
 
-#ifndef INTERLOCKSETTINGS_H_
-#define INTERLOCKSETTINGS_H_
+#ifndef INTERLOCKAPPLICATIONSETTINGS_H_
+#define INTERLOCKAPPLICATIONSETTINGS_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class InterlockSettings {
+class InterlockApplicationSettings {
 public:
 	double HeartbeatPeriodInSeconds;
 
@@ -25,4 +25,4 @@ public:
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* INTERLOCKSETTINGS_H_ */
+#endif /* INTERLOCKAPPLICATIONSETTINGS_H_ */

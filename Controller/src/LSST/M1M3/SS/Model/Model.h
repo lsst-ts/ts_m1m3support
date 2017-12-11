@@ -45,7 +45,7 @@ private:
 	double cachedTimestamp;
 
 public:
-	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga);
+	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IInterlockController* interlockController);
 	virtual ~Model();
 
 	ISettingReader* getSettingReader() { return this->settingReader; }

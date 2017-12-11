@@ -10,18 +10,18 @@
 #include <ISafetyController.h>
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
-#include <InterlockSettings.h>
+#include <InterlockApplicationSettings.h>
 #include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-InterlockController::InterlockController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga, InterlockSettings* interlockSettings) {
+InterlockController::InterlockController(IPublisher* publisher, IFPGA* fpga, InterlockApplicationSettings* interlockApplicationSettings) {
 	this->publisher = publisher;
-	this->safetyController = safetyController;
+	this->safetyController = 0;
 	this->fpga = fpga;
-	this->interlockSettings = interlockSettings;
+	this->interlockApplicationSettings = interlockApplicationSettings;
 	this->cellLightStatus = this->publisher->getEventCellLightStatus();
 	this->cellLightWarning = this->publisher->getEventCellLightWarning();
 	this->interlockStatus = this->publisher->getEventInterlockStatus();
@@ -29,9 +29,13 @@ InterlockController::InterlockController(IPublisher* publisher, ISafetyControlle
 	this->lastToggleTimestamp = 0;
 }
 
+void InterlockController::setSafetyController(ISafetyController* safetyController) {
+	this->safetyController = safetyController;
+}
+
 void InterlockController::tryToggleHeartbeat() {
 	double currentTimestamp = this->publisher->getTimestamp();
-	if (currentTimestamp >= (this->lastToggleTimestamp + this->interlockSettings->HeartbeatPeriodInSeconds)) {
+	if (currentTimestamp >= (this->lastToggleTimestamp + this->interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
 		this->setHeartbeat(!this->interlockStatus->HeartbeatCommandedState);
 		this->lastToggleTimestamp = currentTimestamp;
 	}
@@ -129,14 +133,16 @@ void InterlockController::checkInterlockStatus() {
 			(this->interlockWarning->GISEStop ? 32 : 0) |
 			(this->interlockWarning->TMAMotionStop ? 64 : 0) |
 			(this->interlockWarning->GISHeartbeatLost ? 128 : 0);
-	this->safetyController->interlockNotifyPowerNetworksOff(this->interlockWarning->PowerNetworksOff);
-	this->safetyController->interlockNotifyThermalEquipmentOff(this->interlockWarning->ThermalEquipmentOff);
-	this->safetyController->interlockNotifyLaserTrackerOff(this->interlockWarning->LaserTrackerOff);
-	this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->AirSupplyOff);
-	this->safetyController->interlockNotifyGISEarthquake(this->interlockWarning->GISEarthquake);
-	this->safetyController->interlockNotifyGISEStop(this->interlockWarning->GISEStop);
-	this->safetyController->interlockNotifyTMAMotionStop(this->interlockWarning->TMAMotionStop);
-	this->safetyController->interlockNotifyGISHeartbeatLost(this->interlockWarning->GISHeartbeatLost);
+	if (this->safetyController) {
+		this->safetyController->interlockNotifyPowerNetworksOff(this->interlockWarning->PowerNetworksOff);
+		this->safetyController->interlockNotifyThermalEquipmentOff(this->interlockWarning->ThermalEquipmentOff);
+		this->safetyController->interlockNotifyLaserTrackerOff(this->interlockWarning->LaserTrackerOff);
+		this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->AirSupplyOff);
+		this->safetyController->interlockNotifyGISEarthquake(this->interlockWarning->GISEarthquake);
+		this->safetyController->interlockNotifyGISEStop(this->interlockWarning->GISEStop);
+		this->safetyController->interlockNotifyTMAMotionStop(this->interlockWarning->TMAMotionStop);
+		this->safetyController->interlockNotifyGISHeartbeatLost(this->interlockWarning->GISHeartbeatLost);
+	}
 	bool publishWarning = currentStatus != previousStatus;
 	if (publishWarning) {
 		this->publishInterlockWarning();
@@ -218,7 +224,9 @@ bool InterlockController::checkForHeartbeatOutputStateMismatch() {
 	bool heartbeatStateOutputMismatch = this->interlockStatus->HeartbeatCommandedState != this->interlockStatus->HeartbeatOutputState;
 	bool statusChanged = heartbeatStateOutputMismatch != this->interlockWarning->HeartbeatStateOutputMismatch;
 	this->interlockWarning->HeartbeatStateOutputMismatch = heartbeatStateOutputMismatch;
-	this->safetyController->interlockNotifyHeartbeatStateOutputMismatch(this->interlockWarning->HeartbeatStateOutputMismatch);
+	if (this->safetyController) {
+		this->safetyController->interlockNotifyHeartbeatStateOutputMismatch(this->interlockWarning->HeartbeatStateOutputMismatch);
+	}
 	return statusChanged;
 }
 
@@ -226,7 +234,9 @@ bool InterlockController::checkForCriticalFaultOutputStateMismatch() {
 	bool criticalFaultStateOutputMismatch = this->interlockStatus->CriticalFaultCommandedState != this->interlockStatus->CriticalFaultOutputState;
 	bool statusChanged = criticalFaultStateOutputMismatch != this->interlockWarning->CriticalFaultStateOutputMismatch;
 	this->interlockWarning->CriticalFaultStateOutputMismatch = criticalFaultStateOutputMismatch;
-	this->safetyController->interlockNotifyCriticalFaultStateOutputMismatch(this->interlockWarning->CriticalFaultStateOutputMismatch);
+	if (this->safetyController) {
+		this->safetyController->interlockNotifyCriticalFaultStateOutputMismatch(this->interlockWarning->CriticalFaultStateOutputMismatch);
+	}
 	return statusChanged;
 }
 
@@ -234,7 +244,9 @@ bool InterlockController::checkForMirrorLoweringRaisingOutputStateMismatch() {
 	bool mirrorLoweringRaisingStateOutputMismatch = this->interlockStatus->MirrorLoweringRaisingCommandedState != this->interlockStatus->MirrorLoweringRaisingOutputState;
 	bool statusChanged = mirrorLoweringRaisingStateOutputMismatch != this->interlockWarning->MirrorLoweringRaisingStateOutputMismatch;
 	this->interlockWarning->MirrorLoweringRaisingStateOutputMismatch = mirrorLoweringRaisingStateOutputMismatch;
-	this->safetyController->interlockNotifyMirrorLoweringRaisingStateOutputMismatch(this->interlockWarning->MirrorLoweringRaisingStateOutputMismatch);
+	if (this->safetyController) {
+		this->safetyController->interlockNotifyMirrorLoweringRaisingStateOutputMismatch(this->interlockWarning->MirrorLoweringRaisingStateOutputMismatch);
+	}
 	return statusChanged;
 }
 
@@ -242,7 +254,9 @@ bool InterlockController::checkForMirrorParkedOutputStateMismatch() {
 	bool mirrorParkedStateOutputMismatch = this->interlockStatus->MirrorParkedCommandedState != this->interlockStatus->MirrorParkedOutputState;
 	bool statusChanged = mirrorParkedStateOutputMismatch != this->interlockWarning->MirrorParkedStateOutputMismatch;
 	this->interlockWarning->MirrorParkedStateOutputMismatch = mirrorParkedStateOutputMismatch;
-	this->safetyController->interlockNotifyMirrorParkedStateOutputMismatch(this->interlockWarning->MirrorParkedStateOutputMismatch);
+	if (this->safetyController) {
+		this->safetyController->interlockNotifyMirrorParkedStateOutputMismatch(this->interlockWarning->MirrorParkedStateOutputMismatch);
+	}
 	return statusChanged;
 }
 
@@ -250,7 +264,9 @@ bool InterlockController::checkForCellLightOutputMismatch() {
 	bool cellLightOutputMismatch = this->cellLightStatus->CellLightsCommandedOn != this->cellLightStatus->CellLightsOutputOn;
 	bool statusChanged = cellLightOutputMismatch != this->cellLightWarning->CellLightsOutputMismatch;
 	this->cellLightWarning->CellLightsOutputMismatch = cellLightOutputMismatch;
-	this->safetyController->cellLightNotifyOutputMismatch(this->cellLightWarning->CellLightsOutputMismatch);
+	if (this->safetyController) {
+		this->safetyController->cellLightNotifyOutputMismatch(this->cellLightWarning->CellLightsOutputMismatch);
+	}
 	return statusChanged;
 }
 
@@ -258,7 +274,9 @@ bool InterlockController::checkForCellLightSensorMismatch() {
 	bool cellLightSensorMismatch = this->cellLightStatus->CellLightsCommandedOn != this->cellLightStatus->CellLightsOn;
 	bool statusChanged = cellLightSensorMismatch != this->cellLightWarning->CellLightsSensorMismatch;
 	this->cellLightWarning->CellLightsSensorMismatch = cellLightSensorMismatch;
-	this->safetyController->cellLightNotifySensorMismatch(this->cellLightWarning->CellLightsSensorMismatch);
+	if (this->safetyController) {
+		this->safetyController->cellLightNotifySensorMismatch(this->cellLightWarning->CellLightsSensorMismatch);
+	}
 	return statusChanged;
 }
 

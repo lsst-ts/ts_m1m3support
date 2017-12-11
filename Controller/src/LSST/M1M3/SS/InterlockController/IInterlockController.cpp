@@ -13,6 +13,8 @@ namespace SS {
 
 IInterlockController::~IInterlockController() { }
 
+void IInterlockController::setSafetyController(ISafetyController* safetyController) { }
+
 void IInterlockController::tryToggleHeartbeat() { }
 
 void IInterlockController::setHeartbeat(bool state) { }

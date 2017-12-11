@@ -16,6 +16,7 @@ namespace SS {
 
 class StandbyState: public State {
 public:
+	virtual States::Type update(UpdateCommand* command, IModel* model);
 	virtual States::Type start(StartCommand* command, IModel* model);
 	virtual States::Type shutdown(ShutdownCommand* command, IModel* model);
 };

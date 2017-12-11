@@ -23,14 +23,14 @@ namespace SS {
 class IPublisher;
 class ISafetyController;
 class IFPGA;
-class InterlockSettings;
+class InterlockApplicationSettings;
 
 class InterlockController: public IInterlockController {
 private:
 	IPublisher* publisher;
 	ISafetyController* safetyController;
 	IFPGA* fpga;
-	InterlockSettings* interlockSettings;
+	InterlockApplicationSettings* interlockApplicationSettings;
 
 	m1m3_logevent_CellLightStatusC* cellLightStatus;
 	m1m3_logevent_CellLightWarningC* cellLightWarning;
@@ -43,7 +43,9 @@ private:
 	double lastToggleTimestamp;
 
 public:
-	InterlockController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga, InterlockSettings* interlockSettings);
+	InterlockController(IPublisher* publisher, IFPGA* fpga, InterlockApplicationSettings* interlockApplicationSettings);
+
+	void setSafetyController(ISafetyController* safetyController);
 
 	void tryToggleHeartbeat();
 

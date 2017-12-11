@@ -27,7 +27,7 @@
 <MomentDistributionZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/MomentDistributionZTable.csv</MomentDistributionZTablePath>
 <ForceActuatorLimitsTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorLimitsTable.csv</ForceActuatorLimitsTablePath>
 <ForceActuatorNeighborsTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorNeighborsTable.csv</ForceActuatorNeighborsTablePath>
-<UseInclinometer>0</UseInclinometer>
+<UseInclinometer>1</UseInclinometer>
 <MirrorWeight>166343.379</MirrorWeight>
 <MirrorXMoment>-572069</MirrorXMoment>
 <MirrorYMoment>-572069</MirrorYMoment>

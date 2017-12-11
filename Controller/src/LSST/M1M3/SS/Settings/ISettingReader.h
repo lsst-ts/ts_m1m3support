@@ -26,7 +26,7 @@ class PositionControllerSettings;
 class AccelerometerSettings;
 class DisplacementSensorSettings;
 class HardpointMonitorApplicationSettings;
-class InterlockSettings;
+class InterlockApplicationSettings;
 
 class ISettingReader {
 public:
@@ -45,7 +45,7 @@ public:
 	virtual AccelerometerSettings* loadAccelerometerSettings();
 	virtual DisplacementSensorSettings* loadDisplacementSensorSettings();
 	virtual HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
-	virtual InterlockSettings* loadInterlockSettings();
+	virtual InterlockApplicationSettings* loadInterlockApplicationSettings();
 };
 
 } /* namespace SS */
