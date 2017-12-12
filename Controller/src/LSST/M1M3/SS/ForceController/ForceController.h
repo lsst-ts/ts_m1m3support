@@ -58,6 +58,8 @@ public:
 	void decSupportPercentage();
 	void zeroSupportPercentage();
 	void fillSupportPercentage();
+	bool supportPercentageFilled();
+	bool supportPercentageZeroed();
 
 	void updateAppliedForces();
 	void processAppliedForces();

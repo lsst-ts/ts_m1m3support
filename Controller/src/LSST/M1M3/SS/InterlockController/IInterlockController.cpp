@@ -13,12 +13,17 @@ namespace SS {
 
 IInterlockController::~IInterlockController() { }
 
+void IInterlockController::setSafetyController(ISafetyController* safetyController) { }
+
 void IInterlockController::tryToggleHeartbeat() { }
 
 void IInterlockController::setHeartbeat(bool state) { }
 void IInterlockController::setCriticalFault(bool state) { }
 void IInterlockController::setMirrorLoweringRaising(bool state) { }
 void IInterlockController::setMirrorParked(bool state) { }
+
+void IInterlockController::checkInterlockStatus() { }
+
 void IInterlockController::setCellLightsOn(bool state) { }
 
 } /* namespace SS */

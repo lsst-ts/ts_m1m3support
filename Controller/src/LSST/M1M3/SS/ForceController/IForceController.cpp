@@ -20,6 +20,8 @@ void IForceController::incSupportPercentage() { }
 void IForceController::decSupportPercentage() { }
 void IForceController::zeroSupportPercentage() { }
 void IForceController::fillSupportPercentage() { }
+bool IForceController::supportPercentageFilled() { return false; }
+bool IForceController::supportPercentageZeroed() { return false; }
 
 void IForceController::updateAppliedForces() { }
 void IForceController::processAppliedForces() { }

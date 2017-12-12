@@ -10,15 +10,22 @@
 #include <IInterlockController.h>
 #include <IModel.h>
 #include <ISafetyController.h>
+#include <IPowerController.h>
 #include <StartCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+States::Type StandbyState::update(UpdateCommand* command, IModel* model) {
+	model->getInterlockController()->tryToggleHeartbeat();
+	return States::NoStateTransition;
+}
+
 States::Type StandbyState::start(StartCommand* command, IModel* model) {
 	States::Type newState = States::DisabledState;
 	model->loadSettings(command->getData()->SettingsToApply);
+	model->getPowerController()->setAllPowerNetworks(true);
 //	model->getILC()->writeCalibrationDataBuffer();
 //	model->getILC()->triggerModbus();
 //	model->getILC()->waitForAllSubnets(5000);

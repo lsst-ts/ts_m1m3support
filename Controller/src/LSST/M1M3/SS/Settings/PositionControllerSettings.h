@@ -21,6 +21,7 @@ public:
 	int32_t MaxStepsPerLoop;
 	double RaiseLowerForceLimitLow;
 	double RaiseLowerForceLimitHigh;
+	double RaiseLowerTimeoutInSeconds;
 
 	void load(const std::string &filename);
 };

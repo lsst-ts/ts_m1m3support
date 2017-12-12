@@ -39,6 +39,8 @@ struct m1m3_logevent_ILCWarningC;
 struct m1m3_logevent_InclinometerSensorWarningC;
 struct m1m3_logevent_InterlockStatusC;
 struct m1m3_logevent_InterlockWarningC;
+struct m1m3_logevent_PowerStatusC;
+struct m1m3_logevent_PowerWarningC;
 struct m1m3_logevent_SettingVersionsC;
 struct m1m3_logevent_SummaryStateC;
 
@@ -78,6 +80,8 @@ public:
 	virtual m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning();
 	virtual m1m3_logevent_InterlockStatusC* getEventInterlockStatus();
 	virtual m1m3_logevent_InterlockWarningC* getEventInterlockWarning();
+	virtual m1m3_logevent_PowerStatusC* getEventPowerStatus();
+	virtual m1m3_logevent_PowerWarningC* getEventPowerWarning();
 	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();
 	virtual m1m3_logevent_SummaryStateC* getEventSummaryState();
 
@@ -111,6 +115,8 @@ public:
 	virtual void logInclinometerSensorWarning();
 	virtual void logInterlockStatus();
 	virtual void logInterlockWarning();
+	virtual void logPowerStatus();
+	virtual void logPowerWarning();
 	virtual void logSettingVersions();
 	virtual void logSummaryState();
 
@@ -145,6 +151,8 @@ public:
 	virtual void ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description);
 	virtual void ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTurnPowerOn(int32_t commandID, int32_t ackCode, std::string description);
+	virtual void ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

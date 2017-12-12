@@ -35,6 +35,10 @@ PositionController::PositionController(PositionControllerSettings* positionContr
 
 }
 
+double PositionController::getRaiseLowerTimeout() {
+	return this->positionControllerSettings->RaiseLowerTimeoutInSeconds;
+}
+
 void PositionController::enableChase(int32_t actuatorID) {
 	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
 	this->hardpointActuatorMotionState->MotionState[actuatorID - 1] = HardpointActuatorMotionStates::Chasing;
@@ -61,6 +65,24 @@ void PositionController::disableChaseAll() {
 		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
 	}
 	this->publisher->logHardpointActuatorMotionState();
+}
+
+bool PositionController::forcesInTolerance() {
+	bool inTolerance = true;
+	for(int i = 0; i < HP_COUNT; i++) {
+		inTolerance = inTolerance && Range::InRange(this->positionControllerSettings->RaiseLowerForceLimitLow, this->positionControllerSettings->RaiseLowerForceLimitHigh, this->hardpointData->Force[i]);
+	}
+	return inTolerance;
+}
+
+
+bool PositionController::motionComplete() {
+	return this->hardpointActuatorMotionState->MotionState[0] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorMotionState->MotionState[1] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorMotionState->MotionState[2] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorMotionState->MotionState[3] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorMotionState->MotionState[4] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorMotionState->MotionState[5] == HardpointActuatorMotionStates::Standby;
 }
 
 void PositionController::move(int32_t* steps) {

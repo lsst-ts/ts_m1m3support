@@ -35,7 +35,19 @@ public:
 	 */
 	CommandFactory(IPublisher* publisher, IContext* context);
 
+	/*!
+	 * Creates a command.
+	 * This command is dynamically allocated and must be destroyed.
+	 * @param[in] commandType The type of command to create.
+	 * @param[in] data The data for the command.
+	 * @param[in] commandID The command ID (optional).
+	 */
 	ICommand* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
+	/*!
+	 * Destroys a command created by this factory.
+	 * Commands created by this factory are dynamically allocated and therefore must be cleaned up.
+	 * @param[in] command The command to destroy.
+	 */
 	void destroy(ICommand* command);
 };
 

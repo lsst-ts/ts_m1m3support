@@ -47,6 +47,8 @@ class TMAElevationSampleCommand;
 class PositionM1M3Command;
 class TurnLightsOnCommand;
 class TurnLightsOffCommand;
+class TurnPowerOnCommand;
+class TurnPowerOffCommand;
 
 /*!
  * An interface responsible for the context of a commands execution.
@@ -230,6 +232,16 @@ public:
 	 * @param[in] command The turn lights off command to execute.
 	 */
 	virtual void turnLightsOff(TurnLightsOffCommand* command);
+	/*!
+	 * Executes the command to turn the power on in the M1M3 cell.
+	 * @param[in] command The turn power on command to execute.
+	 */
+	virtual void turnPowerOn(TurnPowerOnCommand* command);
+	/*!
+	 * Executes the command to turn the power off in the M1M3 cell.
+	 * @param[in] command The turn power off command to execute.
+	 */
+	virtual void turnPowerOff(TurnPowerOffCommand* command);
 };
 
 } /* namespace SS */

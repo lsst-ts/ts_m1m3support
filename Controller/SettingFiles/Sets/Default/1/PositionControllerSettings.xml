@@ -3,4 +3,5 @@
 <MaxStepsPerLoop>40</MaxStepsPerLoop>
 <RaiseLowerForceLimitLow>-15</RaiseLowerForceLimitLow>
 <RaiseLowerForceLimitHigh>15</RaiseLowerForceLimitHigh>
+<RaiseLowerTimeoutInSeconds>300</RaiseLowerTimeoutInSeconds>
 </PositionControllerSettings>

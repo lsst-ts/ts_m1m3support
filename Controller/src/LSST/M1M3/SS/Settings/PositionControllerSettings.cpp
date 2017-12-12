@@ -20,6 +20,7 @@ void PositionControllerSettings::load(const std::string &filename) {
 	this->MaxStepsPerLoop = boost::lexical_cast<int32_t>(doc.select_node("//PositionControllerSettings/MaxStepsPerLoop").node().child_value());
 	this->RaiseLowerForceLimitLow = boost::lexical_cast<double>(doc.select_node("//PositionControllerSettings/RaiseLowerForceLimitLow").node().child_value());
 	this->RaiseLowerForceLimitHigh = boost::lexical_cast<double>(doc.select_node("//PositionControllerSettings/RaiseLowerForceLimitHigh").node().child_value());
+	this->RaiseLowerTimeoutInSeconds = boost::lexical_cast<double>(doc.select_node("//PositionControllerSettings/RaiseLowerTimeoutInSeconds").node().child_value());
 }
 
 } /* namespace SS */

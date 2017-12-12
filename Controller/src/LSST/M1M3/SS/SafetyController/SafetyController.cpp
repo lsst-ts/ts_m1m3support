@@ -24,6 +24,13 @@ SafetyController::SafetyController(IPublisher* publisher, SafetyControllerSettin
 	this->publisher->logErrorCode();
 }
 
+void SafetyController::clearErrorCode() {
+	this->errorCodeData->Timestamp = this->publisher->getTimestamp();
+	this->errorCodeData->DetailedErrorCode= FaultCodes::NoFault;
+	this->errorCodeData->ErrorCode= FaultCodes::NoFault;
+	this->publisher->logErrorCode();
+}
+
 void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::AirControllerCommandOutputMismatch, this->safetyControllerSettings->AirController.FaultOnCommandOutputMismatch, conditionFlag); }
 void SafetyController::airControllerNotifyCommandSensorMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::AirControllerCommandSensorMismatch, this->safetyControllerSettings->AirController.FaultOnCommandSensorMismatch, conditionFlag); }
 
@@ -54,6 +61,14 @@ void SafetyController::interlockNotifyHeartbeatStateOutputMismatch(bool conditio
 void SafetyController::interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag){ this->updateOverride(FaultCodes::InterlockCriticalFaultStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnCriticalFaultStateOutputMismatch, conditionFlag); }
 void SafetyController::interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockMirrorLoweringRaisingStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnMirrorLoweringRaisingStateOutputMismatch, conditionFlag); }
 void SafetyController::interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag){ this->updateOverride(FaultCodes::InterlockMirrorParkedStateOutputMismatch, this->safetyControllerSettings->Interlock.FaultOnMirrorParkedStateOutputMismatch, conditionFlag); }
+void SafetyController::interlockNotifyPowerNetworksOff(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockPowerNetworksOff, this->safetyControllerSettings->Interlock.FaultOnPowerNetworksOff, conditionFlag); }
+void SafetyController::interlockNotifyThermalEquipmentOff(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockThermalEquipmentOff, this->safetyControllerSettings->Interlock.FaultOnThermalEquipmentOff, conditionFlag); }
+void SafetyController::interlockNotifyLaserTrackerOff(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockLaserTrackerOff, this->safetyControllerSettings->Interlock.FaultOnLaserTrackerOff, conditionFlag); }
+void SafetyController::interlockNotifyAirSupplyOff(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockAirSupplyOff, this->safetyControllerSettings->Interlock.FaultOnAirSupplyOff, conditionFlag); }
+void SafetyController::interlockNotifyGISEarthquake(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockGISEarthquake, this->safetyControllerSettings->Interlock.FaultOnGISEarthquake, conditionFlag); }
+void SafetyController::interlockNotifyGISEStop(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockGISEStop, this->safetyControllerSettings->Interlock.FaultOnGISEStop, conditionFlag); }
+void SafetyController::interlockNotifyTMAMotionStop(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockTMAMotionStop, this->safetyControllerSettings->Interlock.FaultOnTMAMotionStop, conditionFlag); }
+void SafetyController::interlockNotifyGISHeartbeatLost(bool conditionFlag) { this->updateOverride(FaultCodes::InterlockGISHeartbeatLost, this->safetyControllerSettings->Interlock.FaultOnGISHeartbeatLost, conditionFlag); }
 
 void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerSafetyLimit, this->safetyControllerSettings->ForceController.FaultOnSafetyLimit, conditionFlag); }
 void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) { this->updateOverride(FaultCodes::ForceControllerXMomentLimit, this->safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag); }
@@ -76,6 +91,19 @@ void SafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFl
 
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::CellLightOutputMismatch, this->safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag); }
 void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::CellLightSensorMismatch, this->safetyControllerSettings->CellLights.FaultOnSensorMismatch, conditionFlag); }
+
+void SafetyController::powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkAOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkAOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkBOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkBOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkCOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkCOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerPowerNetworkDOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnPowerNetworkDOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkAOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkAOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkBOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkBOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkCOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkCOutputMismatch, conditionFlag); }
+void SafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkDOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkDOutputMismatch, conditionFlag); }
+
+void SafetyController::raiseOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->RaiseOperation.FaultOnTimeout, conditionFlag); }
+
+void SafetyController::lowerOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->LowerOperation.FaultOnTimeout, conditionFlag); }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {

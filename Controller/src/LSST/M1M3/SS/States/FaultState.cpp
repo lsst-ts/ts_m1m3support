@@ -11,6 +11,8 @@
 #include <IILC.h>
 #include <IDisplacement.h>
 #include <IInclinometer.h>
+#include <IPowerController.h>
+#include <ISafetyController.h>
 #include <unistd.h>
 
 namespace LSST {
@@ -47,7 +49,8 @@ States::Type FaultState::standby(StandbyCommand* command, IModel* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
-	// TODO: Need to clear the error code
+	model->getPowerController()->setAllPowerNetworks(false);
+	model->getSafetyController()->clearErrorCode();
 	return newState;
 }
 

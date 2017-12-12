@@ -77,11 +77,17 @@ void ForceController::updateTMAElevationData(MTMount_AltC* tmaElevationData) {
 
 void ForceController::incSupportPercentage() {
 	this->forceSetpoint->ElevationSetpointPercentage += this->forceActuatorSettings->RaiseIncrementPercentage;
+	if (this->supportPercentageFilled()) {
+		this->forceSetpoint->ElevationSetpointPercentage = 1.0;
+	}
 	this->forceData->ElevationSetpointPercentage = this->forceSetpoint->ElevationSetpointPercentage;
 }
 
 void ForceController::decSupportPercentage() {
 	this->forceSetpoint->ElevationSetpointPercentage -= this->forceActuatorSettings->LowerDecrementPercentage;
+	if (this->supportPercentageZeroed()) {
+		this->forceSetpoint->ElevationSetpointPercentage = 0.0;
+	}
 	this->forceData->ElevationSetpointPercentage = this->forceSetpoint->ElevationSetpointPercentage;
 }
 
@@ -93,6 +99,14 @@ void ForceController::zeroSupportPercentage() {
 void ForceController::fillSupportPercentage() {
 	this->forceSetpoint->ElevationSetpointPercentage = 1.0;
 	this->forceData->ElevationSetpointPercentage = 1.0;
+}
+
+bool ForceController::supportPercentageFilled() {
+	return this->forceSetpoint->ElevationSetpointPercentage >= 1.0;
+}
+
+bool ForceController::supportPercentageZeroed() {
+	return this->forceSetpoint->ElevationSetpointPercentage <= 0.0;
 }
 
 void ForceController::updateAppliedForces() {

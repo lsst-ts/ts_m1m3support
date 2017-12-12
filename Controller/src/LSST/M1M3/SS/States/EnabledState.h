@@ -19,6 +19,9 @@ public:
 	virtual States::Type update(UpdateCommand* command, IModel* model);
 	States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model);
 	States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model);
+
+protected:
+	States::Type performRaiseM1M3Actions(UpdateCommand* command, IModel* model);
 };
 
 } /* namespace SS */

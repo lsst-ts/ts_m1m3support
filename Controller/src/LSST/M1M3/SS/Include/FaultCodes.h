@@ -38,6 +38,14 @@ struct FaultCodes {
 		InterlockCriticalFaultStateOutputMismatch          = 0x000017D800000002,
 		InterlockMirrorLoweringRaisingStateOutputMismatch  = 0x000017D800000003,
 		InterlockMirrorParkedStateOutputMismatch           = 0x000017D800000004,
+		InterlockPowerNetworksOff                          = 0x000017D800000005,
+		InterlockThermalEquipmentOff                       = 0x000017D800000006,
+		InterlockLaserTrackerOff                           = 0x000017D800000007,
+		InterlockAirSupplyOff                              = 0x000017D800000008,
+		InterlockGISEarthquake                             = 0x000017D800000009,
+		InterlockGISEStop                                  = 0x000017D80000000A,
+		InterlockTMAMotionStop                             = 0x000017D80000000B,
+		InterlockGISHeartbeatLost                          = 0x000017D80000000C,
 		ForceControllerSafetyLimit                         = 0x000017D900000001, // 6105
 		ForceControllerXMomentLimit                        = 0x000017D900000002,
 		ForceControllerYMomentLimit                        = 0x000017D900000003,
@@ -58,6 +66,16 @@ struct FaultCodes {
 		ForceControllerOffsetForceClipping                 = 0x000017D900000012,
 		CellLightOutputMismatch                            = 0x000017DA00000001, // 6106
 		CellLightSensorMismatch                            = 0x000017DA00000002,
+		PowerControllerPowerNetworkAOutputMismatch         = 0x000017DB00000001, // 6107
+		PowerControllerPowerNetworkBOutputMismatch         = 0x000017DB00000002,
+		PowerControllerPowerNetworkCOutputMismatch         = 0x000017DB00000003,
+		PowerControllerPowerNetworkDOutputMismatch         = 0x000017DB00000004,
+		PowerControllerAuxPowerNetworkAOutputMismatch      = 0x000017DB00000005,
+		PowerControllerAuxPowerNetworkBOutputMismatch      = 0x000017DB00000006,
+		PowerControllerAuxPowerNetworkCOutputMismatch      = 0x000017DB00000007,
+		PowerControllerAuxPowerNetworkDOutputMismatch      = 0x000017DB00000008,
+		RaiseOperationTimeout                              = 0x000017DC00000001, // 6108
+		LowerOperationTimeout                              = 0x000017DD00000001, // 6109
 		UnknownFault                                       = 0x0000180600000001  // 6150
 	};
 };

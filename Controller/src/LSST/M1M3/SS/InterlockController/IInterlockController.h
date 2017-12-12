@@ -12,9 +12,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+class ISafetyController;
+
 class IInterlockController {
 public:
 	virtual ~IInterlockController();
+
+	virtual void setSafetyController(ISafetyController* safetyController);
 
 	virtual void tryToggleHeartbeat();
 
@@ -22,6 +26,8 @@ public:
 	virtual void setCriticalFault(bool state);
 	virtual void setMirrorLoweringRaising(bool state);
 	virtual void setMirrorParked(bool state);
+
+	virtual void checkInterlockStatus();
 
 	virtual void setCellLightsOn(bool state);
 };

@@ -24,10 +24,15 @@ class IPositionController {
 public:
 	virtual ~IPositionController();
 
+	virtual double getRaiseLowerTimeout();
+
 	virtual void enableChase(int32_t actuatorID);
 	virtual void disableChase(int32_t actuatorID);
 	virtual void enableChaseAll();
 	virtual void disableChaseAll();
+
+	virtual bool forcesInTolerance();
+	virtual bool motionComplete();
 
 	virtual void move(int32_t* steps);
 	virtual void moveToEncoder(int32_t* encoderValues);

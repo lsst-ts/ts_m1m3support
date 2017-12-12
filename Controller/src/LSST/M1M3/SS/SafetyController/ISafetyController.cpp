@@ -13,6 +13,8 @@ namespace SS {
 
 ISafetyController::~ISafetyController() { }
 
+void ISafetyController::clearErrorCode() { }
+
 void ISafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) { }
 void ISafetyController::airControllerNotifyCommandSensorMismatch(bool conditionFlag) { }
 
@@ -43,6 +45,14 @@ void ISafetyController::interlockNotifyHeartbeatStateOutputMismatch(bool conditi
 void ISafetyController::interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag) { }
 void ISafetyController::interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag) { }
 void ISafetyController::interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag) { }
+void ISafetyController::interlockNotifyPowerNetworksOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyThermalEquipmentOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyLaserTrackerOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyAirSupplyOff(bool conditionFlag) { }
+void ISafetyController::interlockNotifyGISEarthquake(bool conditionFlag) { }
+void ISafetyController::interlockNotifyGISEStop(bool conditionFlag) { }
+void ISafetyController::interlockNotifyTMAMotionStop(bool conditionFlag) { }
+void ISafetyController::interlockNotifyGISHeartbeatLost(bool conditionFlag) { }
 
 void ISafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) { }
 void ISafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) { }
@@ -65,6 +75,19 @@ void ISafetyController::forceControllerNotifyOffsetForceClipping(bool conditionF
 
 void ISafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) { }
 void ISafetyController::cellLightNotifySensorMismatch(bool conditionFlag) { }
+
+void ISafetyController::powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag) { }
+void ISafetyController::powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag) { }
+void ISafetyController::powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag) { }
+void ISafetyController::powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag) { }
+void ISafetyController::powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag) { }
+void ISafetyController::powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag) { }
+void ISafetyController::powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag) { }
+void ISafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag) { }
+
+void ISafetyController::raiseOperationTimeout(bool conditionFlag) { }
+
+void ISafetyController::lowerOperationTimeout(bool conditionFlag) { }
 
 States::Type ISafetyController::checkSafety(States::Type preferredNextState) { return preferredNextState; }
 

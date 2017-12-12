@@ -41,6 +41,8 @@ m1m3_logevent_ILCWarningC* IPublisher::getEventILCWarning() { return 0; }
 m1m3_logevent_InclinometerSensorWarningC* IPublisher::getEventInclinometerSensorWarning() { return 0; }
 m1m3_logevent_InterlockStatusC* IPublisher::getEventInterlockStatus() { return 0; }
 m1m3_logevent_InterlockWarningC* IPublisher::getEventInterlockWarning() { return 0; }
+m1m3_logevent_PowerStatusC* IPublisher::getEventPowerStatus() { return 0; }
+m1m3_logevent_PowerWarningC* IPublisher::getEventPowerWarning() { return 0; }
 m1m3_logevent_SettingVersionsC* IPublisher::getEventSettingVersions() { return 0; }
 m1m3_logevent_SummaryStateC* IPublisher::getEventSummaryState() { return 0; }
 
@@ -74,6 +76,8 @@ void IPublisher::logILCWarning() { }
 void IPublisher::logInclinometerSensorWarning() { }
 void IPublisher::logInterlockStatus() { }
 void IPublisher::logInterlockWarning() { }
+void IPublisher::logPowerStatus() { }
+void IPublisher::logPowerWarning() { }
 void IPublisher::logSettingVersions() { }
 void IPublisher::logSummaryState() { }
 
@@ -108,6 +112,8 @@ void IPublisher::ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCod
 void IPublisher::ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description) { }
 void IPublisher::ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTurnPowerOn(int32_t commandID, int32_t ackCode, std::string description) { }
+void IPublisher::ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, std::string description) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

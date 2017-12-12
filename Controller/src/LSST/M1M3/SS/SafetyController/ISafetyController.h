@@ -18,6 +18,8 @@ class ISafetyController {
 public:
 	virtual ~ISafetyController();
 
+	virtual void clearErrorCode();
+
 	virtual void airControllerNotifyCommandOutputMismatch(bool conditionFlag);
 	virtual void airControllerNotifyCommandSensorMismatch(bool conditionFlag);
 
@@ -48,6 +50,14 @@ public:
 	virtual void interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag);
 	virtual void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
 	virtual void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
+	virtual void interlockNotifyPowerNetworksOff(bool conditionFlag);
+	virtual void interlockNotifyThermalEquipmentOff(bool conditionFlag);
+	virtual void interlockNotifyLaserTrackerOff(bool conditionFlag);
+	virtual void interlockNotifyAirSupplyOff(bool conditionFlag);
+	virtual void interlockNotifyGISEarthquake(bool conditionFlag);
+	virtual void interlockNotifyGISEStop(bool conditionFlag);
+	virtual void interlockNotifyTMAMotionStop(bool conditionFlag);
+	virtual void interlockNotifyGISHeartbeatLost(bool conditionFlag);
 
 	virtual void forceControllerNotifySafetyLimit(bool conditionFlag);
 	virtual void forceControllerNotifyXMomentLimit(bool conditionFlag);
@@ -70,6 +80,19 @@ public:
 
 	virtual void cellLightNotifyOutputMismatch(bool conditionFlag);
 	virtual void cellLightNotifySensorMismatch(bool conditionFlag);
+
+	virtual void powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag);
+	virtual void powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag);
+
+	virtual void raiseOperationTimeout(bool conditionFlag);
+
+	virtual void lowerOperationTimeout(bool conditionFlag);
 
 	virtual States::Type checkSafety(States::Type preferredNextState);
 };

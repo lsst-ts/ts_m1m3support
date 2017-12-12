@@ -38,13 +38,14 @@ private:
 	IPositionController* positionController;
 	IInterlockController* interlockController;
 	IAccelerometer* accelerometer;
+	IPowerController* powerController;
 
 	pthread_mutex_t mutex;
 
 	double cachedTimestamp;
 
 public:
-	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga);
+	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IInterlockController* interlockController);
 	virtual ~Model();
 
 	ISettingReader* getSettingReader() { return this->settingReader; }
@@ -59,6 +60,7 @@ public:
 	IPositionController* getPositionController() { return this->positionController; }
 	IInterlockController* getInterlockController() { return this->interlockController; }
 	IAccelerometer* getAccelerometer() { return this->accelerometer; }
+	IPowerController* getPowerController() { return this->powerController; }
 
 	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
 	double getCachedTimestamp() { return this->cachedTimestamp; }

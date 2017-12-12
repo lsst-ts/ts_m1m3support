@@ -30,6 +30,8 @@ private:
 public:
 	SafetyController(IPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
 
+	void clearErrorCode();
+
 	void airControllerNotifyCommandOutputMismatch(bool conditionFlag);
 	void airControllerNotifyCommandSensorMismatch(bool conditionFlag);
 
@@ -60,6 +62,14 @@ public:
 	void interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag);
 	void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
 	void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
+	void interlockNotifyPowerNetworksOff(bool conditionFlag);
+	void interlockNotifyThermalEquipmentOff(bool conditionFlag);
+	void interlockNotifyLaserTrackerOff(bool conditionFlag);
+	void interlockNotifyAirSupplyOff(bool conditionFlag);
+	void interlockNotifyGISEarthquake(bool conditionFlag);
+	void interlockNotifyGISEStop(bool conditionFlag);
+	void interlockNotifyTMAMotionStop(bool conditionFlag);
+	void interlockNotifyGISHeartbeatLost(bool conditionFlag);
 
 	void forceControllerNotifySafetyLimit(bool conditionFlag);
 	void forceControllerNotifyXMomentLimit(bool conditionFlag);
@@ -82,6 +92,19 @@ public:
 
 	void cellLightNotifyOutputMismatch(bool conditionFlag);
 	void cellLightNotifySensorMismatch(bool conditionFlag);
+
+	void powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag);
+	void powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag);
+
+	void raiseOperationTimeout(bool conditionFlag);
+
+	void lowerOperationTimeout(bool conditionFlag);
 
 	States::Type checkSafety(States::Type preferredNextState);
 

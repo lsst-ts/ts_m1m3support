@@ -101,9 +101,9 @@ HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicat
 	return &this->hardpointMonitorApplicationSettings;
 }
 
-InterlockSettings* SettingReader::loadInterlockSettings() {
-	this->interlockSettings.load(this->getSetPath("InterlockSettings.xml").c_str());
-	return &this->interlockSettings;
+InterlockApplicationSettings* SettingReader::loadInterlockApplicationSettings() {
+	this->interlockApplicationSettings.load(this->getBasePath("InterlockApplicationSettings.xml").c_str());
+	return &this->interlockApplicationSettings;
 }
 
 std::string SettingReader::getBasePath(std::string file) {

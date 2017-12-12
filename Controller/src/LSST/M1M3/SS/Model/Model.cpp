@@ -28,6 +28,7 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
+#include <PowerController.h>
 
 using namespace std;
 
@@ -35,7 +36,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) {
+Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IInterlockController* interlockController) {
 	this->settingReader = settingReader;
 	this->publisher = publisher;
 	this->fpga = fpga;
@@ -46,8 +47,9 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga) 
 	this->airController = 0;
 	this->forceController = 0;
 	this->positionController = 0;
-	this->interlockController = 0;
+	this->interlockController = interlockController;
 	this->accelerometer = 0;
+	this->powerController = 0;
 	this->cachedTimestamp = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
@@ -78,11 +80,11 @@ Model::~Model() {
 	if (this->positionController) {
 		delete this->positionController;
 	}
-	if (this->interlockController) {
-		delete this->interlockController;
-	}
 	if (this->accelerometer) {
 		delete this->accelerometer;
+	}
+	if (this->powerController) {
+		delete this->powerController;
 	}
 }
 
@@ -99,7 +101,6 @@ void Model::loadSettings(std::string settingsToApply) {
 	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
 	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
 	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
-	InterlockSettings* interlockSettings = this->settingReader->loadInterlockSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -140,15 +141,17 @@ void Model::loadSettings(std::string settingsToApply) {
 	}
 	this->positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings, this->publisher);
 
-	if (this->interlockController) {
-		delete this->interlockController;
-	}
-	this->interlockController = new InterlockController(this->publisher, this->safetyController, this->fpga, interlockSettings);
+	this->interlockController->setSafetyController(this->safetyController);
 
 	if (this->accelerometer) {
 		delete this->accelerometer;
 	}
 	this->accelerometer = new Accelerometer(this->publisher, this->fpga, accelerometerSettings);
+
+	if (this->powerController) {
+		delete this->positionController;
+	}
+	this->powerController = new PowerController(this->publisher, this->fpga, this->safetyController);
 }
 
 void Model::queryFPGAData() {
