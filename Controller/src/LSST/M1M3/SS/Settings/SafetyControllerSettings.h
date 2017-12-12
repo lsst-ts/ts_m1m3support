@@ -15,6 +15,8 @@
 #include <ForceControllerSafetySettings.h>
 #include <CellLightsSafetySettings.h>
 #include <PowerControllerSafetySettings.h>
+#include <RaiseOperationSafetySettings.h>
+#include <LowerOperationSafetySettings.h>
 #include <string>
 
 namespace LSST {
@@ -30,6 +32,8 @@ public:
 	ForceControllerSafetySettings ForceController;
 	CellLightsSafetySettings CellLights;
 	PowerControllerSafetySettings PowerController;
+	RaiseOperationSafetySettings RaiseOperation;
+	LowerOperationSafetySettings LowerOperation;
 
 	void load(const std::string &filename);
 };

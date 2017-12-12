@@ -76,4 +76,10 @@
 <FaultOnAuxPowerNetworkCOutputMismatch>1</FaultOnAuxPowerNetworkCOutputMismatch>
 <FaultOnAuxPowerNetworkDOutputMismatch>1</FaultOnAuxPowerNetworkDOutputMismatch>
 </PowerControllerSettings>
+<RaiseOperationSettings>
+<FaultOnTimeout>1</FaultOnTimeout>
+</RaiseOperationSettings>
+<LowerOperationSettings>
+<FaultOnTimeout>1</FaultOnTimeout>
+</LowerOperationSettings>
 </SafetyControllerSettings>

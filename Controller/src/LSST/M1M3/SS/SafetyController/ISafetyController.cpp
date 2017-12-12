@@ -13,6 +13,8 @@ namespace SS {
 
 ISafetyController::~ISafetyController() { }
 
+void ISafetyController::clearErrorCode() { }
+
 void ISafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) { }
 void ISafetyController::airControllerNotifyCommandSensorMismatch(bool conditionFlag) { }
 
@@ -82,6 +84,10 @@ void ISafetyController::powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool
 void ISafetyController::powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag) { }
 void ISafetyController::powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag) { }
 void ISafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag) { }
+
+void ISafetyController::raiseOperationTimeout(bool conditionFlag) { }
+
+void ISafetyController::lowerOperationTimeout(bool conditionFlag) { }
 
 States::Type ISafetyController::checkSafety(States::Type preferredNextState) { return preferredNextState; }
 

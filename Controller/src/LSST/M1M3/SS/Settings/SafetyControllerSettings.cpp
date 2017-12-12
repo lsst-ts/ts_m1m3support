@@ -86,6 +86,10 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->PowerController.FaultOnAuxPowerNetworkBOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnAuxPowerNetworkBOutputMismatch").node().child_value()) != 0;
 	this->PowerController.FaultOnAuxPowerNetworkCOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnAuxPowerNetworkCOutputMismatch").node().child_value()) != 0;
 	this->PowerController.FaultOnAuxPowerNetworkDOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/PowerControllerSettings/FaultOnAuxPowerNetworkDOutputMismatch").node().child_value()) != 0;
+
+	this->RaiseOperation.FaultOnTimeout = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/RaiseOperationSettings/FaultOnTimeout").node().child_value()) != 0;
+
+	this->LowerOperation.FaultOnTimeout = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/LowerOperationSettings/FaultOnTimeout").node().child_value()) != 0;
 }
 
 } /* namespace SS */

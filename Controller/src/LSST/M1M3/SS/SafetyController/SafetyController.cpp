@@ -24,6 +24,13 @@ SafetyController::SafetyController(IPublisher* publisher, SafetyControllerSettin
 	this->publisher->logErrorCode();
 }
 
+void SafetyController::clearErrorCode() {
+	this->errorCodeData->Timestamp = this->publisher->getTimestamp();
+	this->errorCodeData->DetailedErrorCode= FaultCodes::NoFault;
+	this->errorCodeData->ErrorCode= FaultCodes::NoFault;
+	this->publisher->logErrorCode();
+}
+
 void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::AirControllerCommandOutputMismatch, this->safetyControllerSettings->AirController.FaultOnCommandOutputMismatch, conditionFlag); }
 void SafetyController::airControllerNotifyCommandSensorMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::AirControllerCommandSensorMismatch, this->safetyControllerSettings->AirController.FaultOnCommandSensorMismatch, conditionFlag); }
 
@@ -93,6 +100,10 @@ void SafetyController::powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool 
 void SafetyController::powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkBOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkBOutputMismatch, conditionFlag); }
 void SafetyController::powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkCOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkCOutputMismatch, conditionFlag); }
 void SafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::PowerControllerAuxPowerNetworkDOutputMismatch, this->safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkDOutputMismatch, conditionFlag); }
+
+void SafetyController::raiseOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->RaiseOperation.FaultOnTimeout, conditionFlag); }
+
+void SafetyController::lowerOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->LowerOperation.FaultOnTimeout, conditionFlag); }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {

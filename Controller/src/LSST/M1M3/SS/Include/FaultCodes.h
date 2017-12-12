@@ -74,6 +74,8 @@ struct FaultCodes {
 		PowerControllerAuxPowerNetworkBOutputMismatch      = 0x000017DB00000006,
 		PowerControllerAuxPowerNetworkCOutputMismatch      = 0x000017DB00000007,
 		PowerControllerAuxPowerNetworkDOutputMismatch      = 0x000017DB00000008,
+		RaiseOperationTimeout                              = 0x000017DC00000001, // 6108
+		LowerOperationTimeout                              = 0x000017DD00000001, // 6109
 		UnknownFault                                       = 0x0000180600000001  // 6150
 	};
 };

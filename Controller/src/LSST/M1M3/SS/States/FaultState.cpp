@@ -12,6 +12,7 @@
 #include <IDisplacement.h>
 #include <IInclinometer.h>
 #include <IPowerController.h>
+#include <ISafetyController.h>
 #include <unistd.h>
 
 namespace LSST {
@@ -49,7 +50,7 @@ States::Type FaultState::standby(StandbyCommand* command, IModel* model) {
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
 	model->getPowerController()->setAllPowerNetworks(false);
-	// TODO: Need to clear the error code
+	model->getSafetyController()->clearErrorCode();
 	return newState;
 }
 

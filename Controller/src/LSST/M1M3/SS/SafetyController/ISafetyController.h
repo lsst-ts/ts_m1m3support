@@ -18,6 +18,8 @@ class ISafetyController {
 public:
 	virtual ~ISafetyController();
 
+	virtual void clearErrorCode();
+
 	virtual void airControllerNotifyCommandOutputMismatch(bool conditionFlag);
 	virtual void airControllerNotifyCommandSensorMismatch(bool conditionFlag);
 
@@ -88,6 +90,9 @@ public:
 	virtual void powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag);
 	virtual void powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag);
 
+	virtual void raiseOperationTimeout(bool conditionFlag);
+
+	virtual void lowerOperationTimeout(bool conditionFlag);
 
 	virtual States::Type checkSafety(States::Type preferredNextState);
 };

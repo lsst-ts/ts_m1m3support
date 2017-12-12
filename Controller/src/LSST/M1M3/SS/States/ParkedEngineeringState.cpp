@@ -36,6 +36,7 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* mode
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
 	States::Type newState = States::RaisingEngineeringState;
+	model->getSafetyController()->raiseOperationTimeout(false);
 	model->getPositionController()->enableChaseAll();
 	model->getForceController()->applyElevationForces();
 	model->getForceController()->zeroStaticForces();

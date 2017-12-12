@@ -30,6 +30,8 @@ private:
 public:
 	SafetyController(IPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
 
+	void clearErrorCode();
+
 	void airControllerNotifyCommandOutputMismatch(bool conditionFlag);
 	void airControllerNotifyCommandSensorMismatch(bool conditionFlag);
 
@@ -99,6 +101,10 @@ public:
 	void powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag);
 	void powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag);
 	void powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag);
+
+	void raiseOperationTimeout(bool conditionFlag);
+
+	void lowerOperationTimeout(bool conditionFlag);
 
 	States::Type checkSafety(States::Type preferredNextState);
 
