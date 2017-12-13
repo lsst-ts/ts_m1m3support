@@ -28,6 +28,7 @@ class IPositionController;
 class IInterlockController;
 class IAccelerometer;
 class IPowerController;
+class IAutomaticOperationsController;
 
 class IModel {
 public:
@@ -46,6 +47,7 @@ public:
 	virtual IInterlockController* getInterlockController();
 	virtual IAccelerometer* getAccelerometer();
 	virtual IPowerController* getPowerController();
+	virtual IAutomaticOperationsController* getAutomaticOperationsController();
 
 	virtual void setCachedTimestamp(double timestamp);
 	virtual double getCachedTimestamp();

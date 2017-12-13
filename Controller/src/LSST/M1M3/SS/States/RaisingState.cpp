@@ -8,6 +8,7 @@
 #include <RaisingState.h>
 #include <IModel.h>
 #include <ISafetyController.h>
+#include <IAutomaticOperationsController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -15,7 +16,15 @@ namespace SS {
 
 States::Type RaisingState::update(UpdateCommand* command, IModel* model) {
 	States::Type newState = States::NoStateTransition;
-	newState = EnabledState::performRaiseM1M3Actions(command, model);
+	model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();
+	EnabledState::update(command, model);
+	if (model->getAutomaticOperationsController()->checkRaiseOperationComplete()) {
+		model->getAutomaticOperationsController()->completeRaiseOperation();
+		newState = States::ActiveState;
+	}
+	else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
+		model->getAutomaticOperationsController()->timeoutRaiseOperation();
+	}
 	return model->getSafetyController()->checkSafety(newState);
 }
 
