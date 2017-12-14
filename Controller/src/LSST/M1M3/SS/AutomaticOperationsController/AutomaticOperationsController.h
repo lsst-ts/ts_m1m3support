@@ -45,6 +45,8 @@ public:
 	void completeLowerOperation();
 	bool checkLowerOperationTimeout();
 	void timeoutLowerOperation();
+
+	void uncontrolledLowerOperation();
 };
 
 } /* namespace SS */

@@ -45,18 +45,18 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->publishAppliedForces();
 	for(int i = 0; i < FA_COUNT; i++) {
 		ForceActuatorNeighbors neighbors;
-		for(int j = 0; j < this->forceActuatorSettings->Neighbors[i].NearIDs.size(); ++j) {
+		for(unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].NearIDs.size(); ++j) {
 			int32_t id = this->forceActuatorSettings->Neighbors[i].NearIDs[j];
-			for(int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
+			for(unsigned int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
 				if (this->forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
 					neighbors.NearIDs.push_back(k);
 					break;
 				}
 			}
 		}
-		for(int j = 0; j < this->forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
+		for(unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
 			int32_t id = this->forceActuatorSettings->Neighbors[i].FarIDs[j];
-			for(int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
+			for(unsigned int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
 				if (this->forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
 					neighbors.FarIDs.push_back(k);
 					break;

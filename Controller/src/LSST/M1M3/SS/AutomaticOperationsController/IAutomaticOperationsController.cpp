@@ -27,6 +27,8 @@ void IAutomaticOperationsController::completeLowerOperation() { }
 bool IAutomaticOperationsController::checkLowerOperationTimeout() { return false; }
 void IAutomaticOperationsController::timeoutLowerOperation() { }
 
+void IAutomaticOperationsController::uncontrolledLowerOperation() { }
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

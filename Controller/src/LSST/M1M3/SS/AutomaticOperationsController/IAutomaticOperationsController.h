@@ -29,6 +29,8 @@ public:
 	virtual void completeLowerOperation();
 	virtual bool checkLowerOperationTimeout();
 	virtual void timeoutLowerOperation();
+
+	virtual void uncontrolledLowerOperation();
 };
 
 } /* namespace SS */

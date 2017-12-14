@@ -96,7 +96,7 @@ void AutomaticOperationsController::startLowerOperation() {
 	this->forceController->zeroOffsetForces();
 	this->forceController->zeroAberration();
 	this->forceController->zeroAOSCorrection();
-	this->forceController->zeroSupportPercentage();
+	this->forceController->fillSupportPercentage();
 	this->interlockController->setMirrorLoweringRaising(true);
 	this->cachedTimestamp = this->publisher->getTimestamp();
 }
@@ -144,6 +144,10 @@ void AutomaticOperationsController::timeoutLowerOperation() {
 	// TODO: How should the system react if the operation times out?
 	//       For now we will assume the worst and fault the system
 	this->safetyController->lowerOperationTimeout(true);
+}
+
+void AutomaticOperationsController::uncontrolledLowerOperation() {
+
 }
 
 } /* namespace SS */
