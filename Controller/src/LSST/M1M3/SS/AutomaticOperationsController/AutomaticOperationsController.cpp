@@ -11,17 +11,19 @@
 #include <IInterlockController.h>
 #include <ISafetyController.h>
 #include <IPublisher.h>
+#include <IPowerController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AutomaticOperationsController::AutomaticOperationsController(IPositionController* positionController, IForceController* forceController, IInterlockController* interlockController, ISafetyController* safetyController, IPublisher* publisher) {
+AutomaticOperationsController::AutomaticOperationsController(IPositionController* positionController, IForceController* forceController, IInterlockController* interlockController, ISafetyController* safetyController, IPublisher* publisher, IPowerController* powerController) {
 	this->positionController = positionController;
 	this->forceController = forceController;
 	this->interlockController = interlockController;
 	this->safetyController = safetyController;
 	this->publisher = publisher;
+	this->powerController = powerController;
 	this->cachedTimestamp = 0;
 }
 
@@ -147,7 +149,7 @@ void AutomaticOperationsController::timeoutLowerOperation() {
 }
 
 void AutomaticOperationsController::uncontrolledLowerOperation() {
-
+	this->powerController->setAllAuxPowerNetworks(false);
 }
 
 } /* namespace SS */

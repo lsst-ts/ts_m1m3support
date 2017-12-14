@@ -161,7 +161,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->automaticOperationsController) {
 		delete this->automaticOperationsController;
 	}
-	this->automaticOperationsController = new AutomaticOperationsController(this->positionController, this->forceController, this->interlockController, this->safetyController, this->publisher);
+	this->automaticOperationsController = new AutomaticOperationsController(this->positionController, this->forceController, this->interlockController, this->safetyController, this->publisher, this->powerController);
 }
 
 void Model::queryFPGAData() {

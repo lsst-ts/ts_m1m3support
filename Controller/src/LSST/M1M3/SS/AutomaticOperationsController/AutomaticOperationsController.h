@@ -19,6 +19,7 @@ class IForceController;
 class IInterlockController;
 class ISafetyController;
 class IPublisher;
+class IPowerController;
 
 class AutomaticOperationsController: public IAutomaticOperationsController {
 private:
@@ -27,10 +28,11 @@ private:
 	IInterlockController* interlockController;
 	ISafetyController* safetyController;
 	IPublisher* publisher;
+	IPowerController* powerController;
 	double cachedTimestamp;
 
 public:
-	AutomaticOperationsController(IPositionController* positionController, IForceController* forceController, IInterlockController* interlockController, ISafetyController* safetyController, IPublisher* publisher);
+	AutomaticOperationsController(IPositionController* positionController, IForceController* forceController, IInterlockController* interlockController, ISafetyController* safetyController, IPublisher* publisher, IPowerController* powerController);
 
 	void startRaiseOperation();
 	void tryIncrementingSupportPercentage();

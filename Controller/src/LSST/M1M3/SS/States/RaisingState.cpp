@@ -28,6 +28,11 @@ States::Type RaisingState::update(UpdateCommand* command, IModel* model) {
 	return model->getSafetyController()->checkSafety(newState);
 }
 
+States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command, IModel* model) {
+	States::Type newState = States::LoweringState;
+	return model->getSafetyController()->checkSafety(newState);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
