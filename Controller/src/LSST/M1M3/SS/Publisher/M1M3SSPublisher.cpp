@@ -34,6 +34,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent("m1m3_logevent_DisplacementSensorWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_ErrorCode");
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorDataRejection");
+	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorForceWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorInfo");
 	this->m1m3SAL->salEvent("m1m3_logevent_ForceActuatorSetpointWarning");
 	this->m1m3SAL->salEvent("m1m3_logevent_HardpointActuatorInfo");
@@ -70,6 +71,7 @@ void M1M3SSPublisher::logCellLightWarning() { this->m1m3SAL->logEvent_CellLightW
 void M1M3SSPublisher::logDisplacementSensorWarning() { this->m1m3SAL->logEvent_DisplacementSensorWarning(&this->eventDisplacementSensorWarning, 0); }
 void M1M3SSPublisher::logErrorCode() { this->m1m3SAL->logEvent_ErrorCode(&this->eventErrorCode, 0); }
 void M1M3SSPublisher::logForceActuatorDataRejection() { this->m1m3SAL->logEvent_ForceActuatorDataRejection(&this->eventForceActuatorDataRejection, 0); }
+void M1M3SSPublisher::logForceActuatorForceWarning() { this->m1m3SAL->logEvent_ForceActuatorForceWarning(&this->eventForceActuatorForceWarning, 0); }
 void M1M3SSPublisher::logForceActuatorInfo() { this->m1m3SAL->logEvent_ForceActuatorInfo(&this->eventForceActuatorInfo, 0); }
 void M1M3SSPublisher::logForceActuatorSetpointWarning() { this->m1m3SAL->logEvent_ForceActuatorSetpointWarning(&this->eventForceActuatorSetpointWarning, 0); }
 void M1M3SSPublisher::logHardpointActuatorInfo() { this->m1m3SAL->logEvent_HardpointActuatorInfo(&this->eventHardpointActuatorInfo, 0); }

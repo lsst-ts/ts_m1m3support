@@ -154,7 +154,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	this->accelerometer = new Accelerometer(this->publisher, this->fpga, accelerometerSettings);
 
 	if (this->powerController) {
-		delete this->positionController;
+		delete this->powerController;
 	}
 	this->powerController = new PowerController(this->publisher, this->fpga, this->safetyController);
 

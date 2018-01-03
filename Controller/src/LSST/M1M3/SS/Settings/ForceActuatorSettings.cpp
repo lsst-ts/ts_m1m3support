@@ -205,7 +205,19 @@ void ForceActuatorSettings::loadLimitTable(const std::string &filename) {
 			limits.StaticZLowLimit = boost::lexical_cast<double>(*i);
 			++i;
 			limits.StaticZHighLimit = boost::lexical_cast<double>(*i);
-			SetpointLimits.push_back(limits);
+			++i;
+			limits.MeasuredPrimaryAxisLowLimit = boost::lexical_cast<double>(*i);
+			++i;
+			limits.MeasuredPrimaryAxisHighLimit = boost::lexical_cast<double>(*i);
+			++i;
+			limits.MeasuredSecondaryAxisLowLimit = boost::lexical_cast<double>(*i);
+			++i;
+			limits.MeasuredSecondaryAxisHighLimit = boost::lexical_cast<double>(*i);
+			++i;
+			limits.FollowingErrorPrimaryAxisLimit = boost::lexical_cast<double>(*i);
+			++i;
+			limits.FollowingErrorSecondaryAxisLimit = boost::lexical_cast<double>(*i);
+			Limits.push_back(limits);
 		}
 		lineNumber++;
 	}

@@ -48,7 +48,7 @@ public:
 	std::vector<double> MomentDistributionXMatrix;
 	std::vector<double> MomentDistributionYMatrix;
 	std::vector<double> MomentDistributionZMatrix;
-	std::vector<ForceActuatorLimits> SetpointLimits;
+	std::vector<ForceActuatorLimits> Limits;
 	std::vector<ForceActuatorNeighbors> Neighbors;
 	bool UseInclinometer;
 	double MirrorWeight;

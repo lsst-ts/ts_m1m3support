@@ -44,6 +44,7 @@ States::Type EnabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
+	// TODO: Uncomment
 	//model->getPowerController()->checkPowerStatus();
 	//model->getInterlockController()->checkInterlockStatus();
 	model->getInterlockController()->tryToggleHeartbeat();
