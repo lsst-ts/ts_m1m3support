@@ -62,6 +62,12 @@ struct ForceActuatorLimits {
 	double StaticYHighLimit;
 	double StaticZLowLimit;
 	double StaticZHighLimit;
+	double MeasuredPrimaryAxisLowLimit;
+	double MeasuredPrimaryAxisHighLimit;
+	double MeasuredSecondaryAxisLowLimit;
+	double MeasuredSecondaryAxisHighLimit;
+	double FollowingErrorPrimaryAxisLimit;
+	double FollowingErrorSecondaryAxisLimit;
 };
 
 #endif /* FORCEACTUATORLIMITS_H_ */

@@ -6,6 +6,7 @@
  */
 
 #include <ILCResponseParser.h>
+#include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
 #include <IPublisher.h>
 #include <ModbusBuffer.h>
@@ -15,6 +16,7 @@
 #include <Timestamp.h>
 #include <ILCSubnetData.h>
 #include <SAL_m1m3C.h>
+#include <cmath>
 
 #include <iostream>
 using namespace std;
@@ -24,6 +26,7 @@ namespace M1M3 {
 namespace SS {
 
 ILCResponseParser::ILCResponseParser() {
+	this->forceActuatorSettings = 0;
 	this->hardpointActuatorSettings = 0;
 	this->publisher = 0;
 	this->subnetData = 0;
@@ -31,6 +34,7 @@ ILCResponseParser::ILCResponseParser() {
 	this->hardpointStatus = 0;
 	this->hardpointData = 0;
 	this->forceInfo = 0;
+	this->forceWarning = 0;
 	this->forceStatus = 0;
 	this->forceData = 0;
 	this->hardpointMonitorInfo = 0;
@@ -38,7 +42,8 @@ ILCResponseParser::ILCResponseParser() {
 	this->ilcWarning = 0;
 }
 
-ILCResponseParser::ILCResponseParser(HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData) {
+ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData) {
+	this->forceActuatorSettings = forceActuatorSettings;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->publisher = publisher;
 	this->subnetData = subnetData;
@@ -46,11 +51,25 @@ ILCResponseParser::ILCResponseParser(HardpointActuatorSettings* hardpointActuato
 	this->hardpointStatus = this->publisher->getHardpointStatus();
 	this->hardpointData = this->publisher->getHardpointData();
 	this->forceInfo = this->publisher->getEventForceActuatorInfo();
+	this->forceWarning = this->publisher->getEventForceActuatorForceWarning();
 	this->forceStatus = this->publisher->getForceActuatorStatus();
 	this->forceData = this->publisher->getForceActuatorData();
 	this->hardpointMonitorInfo = this->publisher->getEventHardpointMonitorInfo();
 	this->hardpointMonitorStatus = this->publisher->getHardpointMonitorStatus();
 	this->ilcWarning = this->publisher->getEventILCWarning();
+
+	this->forceWarning->Timestamp = 0;
+	this->forceWarning->AnyWarning = false;
+	this->forceWarning->AnyPrimaryAxisMeasuredForceWarning= false;
+	this->forceWarning->AnySecondaryAxisMeasuredForceWarning = false;
+	this->forceWarning->AnyPrimaryAxisFollowingErrorWarning = false;
+	this->forceWarning->AnySecondaryAxisFollowingErrorWarning = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceWarning->PrimaryAxisMeasuredForceWarning[i] = false;
+		this->forceWarning->SecondaryAxisMeasuredForceWarning[i] = false;
+		this->forceWarning->PrimaryAxisFollowingErrorWarning[i] = false;
+		this->forceWarning->SecondaryAxisFollowingErrorWarning[i] = false;
+	}
 
 	this->ilcWarning->Timestamp = 0;
 	this->ilcWarning->ActuatorId = -1;
@@ -737,6 +756,66 @@ void ILCResponseParser::calculateHPPostion() {
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * this->hardpointData->Displacement[5] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * this->hardpointData->Displacement[0] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * this->hardpointData->Displacement[1];
+}
+
+void ILCResponseParser::checkForceActuatorMeasuredForce(int32_t dataIndex) {
+	float primaryForce = this->forceData->PrimaryCylinderForce[dataIndex];
+	float secondaryForce = this->forceData->SecondaryCylinderForce[dataIndex];
+	double primaryLowLimit = this->forceActuatorSettings->Limits[dataIndex].MeasuredPrimaryAxisLowLimit;
+	double primaryHighLimit = this->forceActuatorSettings->Limits[dataIndex].MeasuredPrimaryAxisHighLimit;
+	double secondaryLowLimit = this->forceActuatorSettings->Limits[dataIndex].MeasuredSecondaryAxisLowLimit;
+	double secondaryHighLimit = this->forceActuatorSettings->Limits[dataIndex].MeasuredSecondaryAxisHighLimit;
+	bool primaryLimitWarning = primaryForce < primaryLowLimit || primaryForce > primaryHighLimit;
+	bool secondaryLimitWarning = secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit;
+	bool previousPrimaryLimit = this->forceWarning->PrimaryAxisMeasuredForceWarning[dataIndex];
+	bool previousSecondaryLimit = this->forceWarning->SecondaryAxisMeasuredForceWarning[dataIndex];
+	bool anyChange = primaryLimitWarning != previousPrimaryLimit || secondaryLimitWarning !=  previousSecondaryLimit;
+	this->forceWarning->PrimaryAxisMeasuredForceWarning[dataIndex] = primaryLimitWarning;
+	this->forceWarning->SecondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
+	if (anyChange) {
+		this->publishForceActuatorForceWarning();
+	}
+}
+
+void ILCResponseParser::checkForceActuatorFollowingError(int32_t dataIndex) {
+	float primaryForce = this->forceData->PrimaryCylinderForce[dataIndex];
+	double primarySetpoint = this->forceData->PrimaryCylinderSetpointCommanded[dataIndex] / 1000.0;
+	float secondaryForce = this->forceData->SecondaryCylinderForce[dataIndex];
+	double secondarySetpoint = this->forceData->SecondaryCylinderSetpointCommanded[dataIndex] / 1000.0;
+	double primaryLimit = this->forceActuatorSettings->Limits[dataIndex].FollowingErrorPrimaryAxisLimit;
+	double secondaryLimit = this->forceActuatorSettings->Limits[dataIndex].FollowingErrorSecondaryAxisLimit;
+	double primaryFollowingError = primaryForce - primarySetpoint;
+	double secondaryFollowingError = secondaryForce - secondarySetpoint;
+	bool primaryLimitWarning = std::abs(primaryFollowingError) > primaryLimit;
+	bool secondaryLimitWarning = std::abs(secondaryFollowingError) > secondaryLimit;
+	bool previousPrimaryWarning = this->forceWarning->PrimaryAxisFollowingErrorWarning[dataIndex];
+	bool previousSecondaryWarning = this->forceWarning->SecondaryAxisFollowingErrorWarning[dataIndex];
+	bool anyChange = primaryLimitWarning != previousPrimaryWarning || secondaryLimitWarning != previousSecondaryWarning;
+	this->forceWarning->PrimaryAxisFollowingErrorWarning[dataIndex] = primaryLimitWarning;
+	this->forceWarning->SecondaryAxisFollowingErrorWarning[dataIndex] = secondaryLimitWarning;
+	if (anyChange) {
+		this->publishForceActuatorForceWarning();
+	}
+}
+
+void ILCResponseParser::publishForceActuatorForceWarning() {
+	this->forceWarning->Timestamp = this->publisher->getTimestamp();
+	this->forceWarning->AnyPrimaryAxisMeasuredForceWarning = false;
+	this->forceWarning->AnySecondaryAxisMeasuredForceWarning = false;
+	this->forceWarning->AnyPrimaryAxisFollowingErrorWarning = false;
+	this->forceWarning->AnySecondaryAxisFollowingErrorWarning = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceWarning->AnyPrimaryAxisMeasuredForceWarning = this->forceWarning->AnyPrimaryAxisMeasuredForceWarning || this->forceWarning->PrimaryAxisMeasuredForceWarning[i];
+		this->forceWarning->AnySecondaryAxisMeasuredForceWarning = this->forceWarning->AnySecondaryAxisMeasuredForceWarning || this->forceWarning->SecondaryAxisMeasuredForceWarning[i];
+		this->forceWarning->AnyPrimaryAxisFollowingErrorWarning = this->forceWarning->AnyPrimaryAxisFollowingErrorWarning || this->forceWarning->PrimaryAxisFollowingErrorWarning[i];
+		this->forceWarning->AnySecondaryAxisFollowingErrorWarning = this->forceWarning->AnySecondaryAxisFollowingErrorWarning || this->forceWarning->SecondaryAxisFollowingErrorWarning[i];
+	}
+	this->forceWarning->AnyWarning =
+			this->forceWarning->AnyPrimaryAxisMeasuredForceWarning ||
+			this->forceWarning->AnySecondaryAxisMeasuredForceWarning ||
+			this->forceWarning->AnyPrimaryAxisFollowingErrorWarning ||
+			this->forceWarning->AnySecondaryAxisFollowingErrorWarning;
+	this->publisher->logForceActuatorForceWarning();
 }
 
 void ILCResponseParser::warnResponseTimeout(double timestamp, int32_t actuatorId) {

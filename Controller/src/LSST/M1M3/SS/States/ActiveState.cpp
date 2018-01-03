@@ -10,6 +10,7 @@
 #include <IModel.h>
 #include <IPublisher.h>
 #include <ISafetyController.h>
+#include <IAutomaticOperationsController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -27,8 +28,7 @@ States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command, IMo
 
 States::Type ActiveState::lowerM1M3(LowerM1M3Command* command, IModel* model) {
 	States::Type newState = States::LoweringState;
-	model->getInterlockController()->setMirrorLoweringRaising(true);
-	model->setCachedTimestamp(model->getPublisher()->getTimestamp());
+	model->getAutomaticOperationsController()->startLowerOperation();
 	return model->getSafetyController()->checkSafety(newState);
 }
 

@@ -30,6 +30,7 @@ struct m1m3_logevent_CellLightWarningC;
 struct m1m3_logevent_DisplacementSensorWarningC;
 struct m1m3_logevent_ErrorCodeC;
 struct m1m3_logevent_ForceActuatorDataRejectionC;
+struct m1m3_logevent_ForceActuatorForceWarningC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_logevent_ForceActuatorSetpointWarningC;
 struct m1m3_logevent_HardpointActuatorInfoC;
@@ -71,6 +72,7 @@ public:
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
 	virtual m1m3_logevent_ErrorCodeC* getEventErrorCode();
 	virtual m1m3_logevent_ForceActuatorDataRejectionC* getEventForceActuatorDataRejection();
+	virtual m1m3_logevent_ForceActuatorForceWarningC* getEventForceActuatorForceWarning();
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
 	virtual m1m3_logevent_ForceActuatorSetpointWarningC* getEventForceActuatorSetpointWarning();
 	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
@@ -106,6 +108,7 @@ public:
 	virtual void logDisplacementSensorWarning();
 	virtual void logErrorCode();
 	virtual void logForceActuatorDataRejection();
+	virtual void logForceActuatorForceWarning();
 	virtual void logForceActuatorInfo();
 	virtual void logForceActuatorSetpointWarning();
 	virtual void logHardpointActuatorInfo();

@@ -45,18 +45,18 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->publishAppliedForces();
 	for(int i = 0; i < FA_COUNT; i++) {
 		ForceActuatorNeighbors neighbors;
-		for(int j = 0; j < this->forceActuatorSettings->Neighbors[i].NearIDs.size(); ++j) {
+		for(unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].NearIDs.size(); ++j) {
 			int32_t id = this->forceActuatorSettings->Neighbors[i].NearIDs[j];
-			for(int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
+			for(unsigned int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
 				if (this->forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
 					neighbors.NearIDs.push_back(k);
 					break;
 				}
 			}
 		}
-		for(int j = 0; j < this->forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
+		for(unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
 			int32_t id = this->forceActuatorSettings->Neighbors[i].FarIDs[j];
-			for(int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
+			for(unsigned int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
 				if (this->forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
 					neighbors.FarIDs.push_back(k);
 					break;
@@ -145,9 +145,9 @@ void ForceController::applyStaticForces() {
 		// Check Static Forces
 		bool previousWarning = this->forceSetpointWarning->StaticForceWarning[i];
 		this->forceSetpointWarning->StaticForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].StaticXLowLimit, this->forceActuatorSettings->SetpointLimits[i].StaticXHighLimit, this->forceSetpoint->StaticXSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].StaticYLowLimit, this->forceActuatorSettings->SetpointLimits[i].StaticYHighLimit, this->forceSetpoint->StaticYSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].StaticZLowLimit, this->forceActuatorSettings->SetpointLimits[i].StaticZHighLimit, this->forceSetpoint->StaticZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].StaticXLowLimit, this->forceActuatorSettings->Limits[i].StaticXHighLimit, this->forceSetpoint->StaticXSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].StaticYLowLimit, this->forceActuatorSettings->Limits[i].StaticYHighLimit, this->forceSetpoint->StaticYSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].StaticZLowLimit, this->forceActuatorSettings->Limits[i].StaticZHighLimit, this->forceSetpoint->StaticZSetpoint[i]);
 		this->forceSetpointWarning->AnyStaticForceWarning = this->forceSetpointWarning->AnyStaticForceWarning || this->forceSetpointWarning->StaticForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->StaticForceWarning[i] != previousWarning);
 	}
@@ -159,9 +159,9 @@ void ForceController::applyStaticForces() {
 		// Coerce Static Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; ++i) {
-			this->forceSetpoint->StaticXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].StaticXLowLimit, this->forceActuatorSettings->SetpointLimits[i].StaticXHighLimit, this->forceSetpoint->StaticXSetpoint[i]);
-			this->forceSetpoint->StaticYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].StaticYLowLimit, this->forceActuatorSettings->SetpointLimits[i].StaticYHighLimit, this->forceSetpoint->StaticYSetpoint[i]);
-			this->forceSetpoint->StaticZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].StaticZLowLimit, this->forceActuatorSettings->SetpointLimits[i].StaticZHighLimit, this->forceSetpoint->StaticZSetpoint[i]);
+			this->forceSetpoint->StaticXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].StaticXLowLimit, this->forceActuatorSettings->Limits[i].StaticXHighLimit, this->forceSetpoint->StaticXSetpoint[i]);
+			this->forceSetpoint->StaticYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].StaticYLowLimit, this->forceActuatorSettings->Limits[i].StaticYHighLimit, this->forceSetpoint->StaticYSetpoint[i]);
+			this->forceSetpoint->StaticZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].StaticZLowLimit, this->forceActuatorSettings->Limits[i].StaticZHighLimit, this->forceSetpoint->StaticZSetpoint[i]);
 		}
 	}
 	// Move Static Forces
@@ -205,9 +205,9 @@ void ForceController::applyOffsetForces(double* x, double* y, double* z) {
 		// Check Offset Forces
 		bool previousWarning = this->forceSetpointWarning->OffsetForceWarning[i];
 		this->forceSetpointWarning->OffsetForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].OffsetXLowLimit, this->forceActuatorSettings->SetpointLimits[i].OffsetXHighLimit, this->forceSetpoint->OffsetXSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].OffsetYLowLimit, this->forceActuatorSettings->SetpointLimits[i].OffsetYHighLimit, this->forceSetpoint->OffsetYSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].OffsetZLowLimit, this->forceActuatorSettings->SetpointLimits[i].OffsetZHighLimit, this->forceSetpoint->OffsetZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].OffsetXLowLimit, this->forceActuatorSettings->Limits[i].OffsetXHighLimit, this->forceSetpoint->OffsetXSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].OffsetYLowLimit, this->forceActuatorSettings->Limits[i].OffsetYHighLimit, this->forceSetpoint->OffsetYSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].OffsetZLowLimit, this->forceActuatorSettings->Limits[i].OffsetZHighLimit, this->forceSetpoint->OffsetZSetpoint[i]);
 		this->forceSetpointWarning->AnyOffsetForceWarning = this->forceSetpointWarning->AnyOffsetForceWarning || this->forceSetpointWarning->OffsetForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->StaticForceWarning[i] != previousWarning);
 	}
@@ -219,9 +219,9 @@ void ForceController::applyOffsetForces(double* x, double* y, double* z) {
 		// Coerce Offset Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; ++i) {
-			this->forceSetpoint->OffsetXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].OffsetXLowLimit, this->forceActuatorSettings->SetpointLimits[i].OffsetXHighLimit, this->forceSetpoint->OffsetXSetpoint[i]);
-			this->forceSetpoint->OffsetYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].OffsetYLowLimit, this->forceActuatorSettings->SetpointLimits[i].OffsetYHighLimit, this->forceSetpoint->OffsetYSetpoint[i]);
-			this->forceSetpoint->OffsetZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].OffsetZLowLimit, this->forceActuatorSettings->SetpointLimits[i].OffsetZHighLimit, this->forceSetpoint->OffsetZSetpoint[i]);
+			this->forceSetpoint->OffsetXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].OffsetXLowLimit, this->forceActuatorSettings->Limits[i].OffsetXHighLimit, this->forceSetpoint->OffsetXSetpoint[i]);
+			this->forceSetpoint->OffsetYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].OffsetYLowLimit, this->forceActuatorSettings->Limits[i].OffsetYHighLimit, this->forceSetpoint->OffsetYSetpoint[i]);
+			this->forceSetpoint->OffsetZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].OffsetZLowLimit, this->forceActuatorSettings->Limits[i].OffsetZHighLimit, this->forceSetpoint->OffsetZSetpoint[i]);
 		}
 	}
 	// Move Offset Forces
@@ -288,7 +288,7 @@ void ForceController::applyAOSCorrectionByBendingModes(double* coefficients) {
 		netAOSForce += this->forceSetpoint->ActiveOpticsZSetpoint[i];
 		bool previousWarning = this->forceSetpointWarning->AOSForceWarning[i];
 		this->forceSetpointWarning->AOSForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].AOSZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].AOSZLowLimit, this->forceActuatorSettings->Limits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
 		this->forceSetpointWarning->AnyAOSForceWarning = this->forceSetpointWarning->AnyAOSForceWarning || this->forceSetpointWarning->AOSForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->StaticForceWarning[i] != previousWarning);
 	}
@@ -306,7 +306,7 @@ void ForceController::applyAOSCorrectionByBendingModes(double* coefficients) {
 		// Coerce AOS Correction Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->ActiveOpticsZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].AOSZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
+			this->forceSetpoint->ActiveOpticsZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].AOSZLowLimit, this->forceActuatorSettings->Limits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
 		}
 	}
 	// Move AOS Correction Forces
@@ -328,7 +328,7 @@ void ForceController::applyAOSCorrectionByForces(double* z) {
 		netAOSForce += this->forceSetpoint->ActiveOpticsZSetpoint[i];
 		bool previousWarning = this->forceSetpointWarning->AOSForceWarning[i];
 		this->forceSetpointWarning->AOSForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].AOSZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].AOSZLowLimit, this->forceActuatorSettings->Limits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
 		this->forceSetpointWarning->AnyAOSForceWarning = this->forceSetpointWarning->AnyAOSForceWarning || this->forceSetpointWarning->AOSForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->AOSForceWarning[i] != previousWarning);
 	}
@@ -346,7 +346,7 @@ void ForceController::applyAOSCorrectionByForces(double* z) {
 		// Coerce AOS Correction Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->ActiveOpticsZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].AOSZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
+			this->forceSetpoint->ActiveOpticsZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].AOSZLowLimit, this->forceActuatorSettings->Limits[i].AOSZHighLimit, this->forceSetpoint->ActiveOpticsZSetpoint[i]);
 		}
 	}
 	// Move AOS Correction Forces
@@ -409,7 +409,7 @@ void ForceController::applyAberrationByBendingModes(double* coefficients) {
 		netAberrationForce += this->forceSetpoint->AberrationZSetpoint[i];
 		bool previousWarning = this->forceSetpointWarning->AberrationForceWarning[i];
 		this->forceSetpointWarning->AberrationForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].AberrationZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].AberrationZLowLimit, this->forceActuatorSettings->Limits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
 		this->forceSetpointWarning->AnyAberrationForceWarning = this->forceSetpointWarning->AnyAberrationForceWarning || this->forceSetpointWarning->AberrationForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->AberrationForceWarning[i] != previousWarning);
 	}
@@ -427,7 +427,7 @@ void ForceController::applyAberrationByBendingModes(double* coefficients) {
 		// Coerce Aberration Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->AberrationZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].AberrationZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
+			this->forceSetpoint->AberrationZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].AberrationZLowLimit, this->forceActuatorSettings->Limits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
 		}
 	}
 	// Move Aberration Forces
@@ -449,7 +449,7 @@ void ForceController::applyAberrationByForces(double* z) {
 		netAberrationForce += this->forceSetpoint->AberrationZSetpoint[i];
 		bool previousWarning = this->forceSetpointWarning->AberrationForceWarning[i];
 		this->forceSetpointWarning->AberrationForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].AberrationZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].AberrationZLowLimit, this->forceActuatorSettings->Limits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
 		this->forceSetpointWarning->AnyAberrationForceWarning = this->forceSetpointWarning->AnyAberrationForceWarning || this->forceSetpointWarning->AberrationForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->AberrationForceWarning[i] != previousWarning);
 	}
@@ -467,7 +467,7 @@ void ForceController::applyAberrationByForces(double* z) {
 		// Coerce Aberration Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->AberrationZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].AberrationZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
+			this->forceSetpoint->AberrationZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].AberrationZLowLimit, this->forceActuatorSettings->Limits[i].AberrationZHighLimit, this->forceSetpoint->AberrationZSetpoint[i]);
 		}
 	}
 	// Move Aberration Forces
@@ -628,9 +628,9 @@ void ForceController::updateElevationForces() {
 		// Check Elevation Forces
 		bool previousWarning = this->forceSetpointWarning->ElevationForceWarning[i];
 		this->forceSetpointWarning->ElevationForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].ElevationXLowLimit, this->forceActuatorSettings->SetpointLimits[i].ElevationXHighLimit, this->forceSetpoint->ElevationXSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].ElevationYLowLimit, this->forceActuatorSettings->SetpointLimits[i].ElevationYHighLimit, this->forceSetpoint->ElevationYSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].ElevationZLowLimit, this->forceActuatorSettings->SetpointLimits[i].ElevationZHighLimit, this->forceSetpoint->ElevationZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].ElevationXLowLimit, this->forceActuatorSettings->Limits[i].ElevationXHighLimit, this->forceSetpoint->ElevationXSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].ElevationYLowLimit, this->forceActuatorSettings->Limits[i].ElevationYHighLimit, this->forceSetpoint->ElevationYSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].ElevationZLowLimit, this->forceActuatorSettings->Limits[i].ElevationZHighLimit, this->forceSetpoint->ElevationZSetpoint[i]);
 		this->forceSetpointWarning->AnyElevationForceWarning = this->forceSetpointWarning->AnyElevationForceWarning || this->forceSetpointWarning->ElevationForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->ElevationForceWarning[i] != previousWarning);
 	}
@@ -642,9 +642,9 @@ void ForceController::updateElevationForces() {
 		// Coerce Elevation Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->ElevationXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].ElevationXLowLimit, this->forceActuatorSettings->SetpointLimits[i].ElevationXHighLimit, this->forceSetpoint->ElevationXSetpoint[i]);
-			this->forceSetpoint->ElevationYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].ElevationYLowLimit, this->forceActuatorSettings->SetpointLimits[i].ElevationYHighLimit, this->forceSetpoint->ElevationYSetpoint[i]);
-			this->forceSetpoint->ElevationZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].ElevationZLowLimit, this->forceActuatorSettings->SetpointLimits[i].ElevationZHighLimit, this->forceSetpoint->ElevationZSetpoint[i]);
+			this->forceSetpoint->ElevationXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].ElevationXLowLimit, this->forceActuatorSettings->Limits[i].ElevationXHighLimit, this->forceSetpoint->ElevationXSetpoint[i]);
+			this->forceSetpoint->ElevationYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].ElevationYLowLimit, this->forceActuatorSettings->Limits[i].ElevationYHighLimit, this->forceSetpoint->ElevationYSetpoint[i]);
+			this->forceSetpoint->ElevationZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].ElevationZLowLimit, this->forceActuatorSettings->Limits[i].ElevationZHighLimit, this->forceSetpoint->ElevationZSetpoint[i]);
 		}
 	}
 	// Move Elevation Forces
@@ -686,9 +686,9 @@ void ForceController::updateAzimuthForces() {
 		// Check Azimuth Forces
 		bool previousWarning = this->forceSetpointWarning->AzimuthForceWarning[i];
 		this->forceSetpointWarning->AzimuthForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].AzimuthXLowLimit, this->forceActuatorSettings->SetpointLimits[i].AzimuthXHighLimit, this->forceSetpoint->AzimuthXSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].AzimuthYLowLimit, this->forceActuatorSettings->SetpointLimits[i].AzimuthYHighLimit, this->forceSetpoint->AzimuthYSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].AzimuthZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AzimuthZHighLimit, this->forceSetpoint->AzimuthZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].AzimuthXLowLimit, this->forceActuatorSettings->Limits[i].AzimuthXHighLimit, this->forceSetpoint->AzimuthXSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].AzimuthYLowLimit, this->forceActuatorSettings->Limits[i].AzimuthYHighLimit, this->forceSetpoint->AzimuthYSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].AzimuthZLowLimit, this->forceActuatorSettings->Limits[i].AzimuthZHighLimit, this->forceSetpoint->AzimuthZSetpoint[i]);
 		this->forceSetpointWarning->AnyAzimuthForceWarning = this->forceSetpointWarning->AnyAzimuthForceWarning || this->forceSetpointWarning->AzimuthForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->AzimuthForceWarning[i] != previousWarning);
 	}
@@ -700,9 +700,9 @@ void ForceController::updateAzimuthForces() {
 		// Coerce Azimuth Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->AzimuthXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].AzimuthXLowLimit, this->forceActuatorSettings->SetpointLimits[i].AzimuthXHighLimit, this->forceSetpoint->AzimuthXSetpoint[i]);
-			this->forceSetpoint->AzimuthYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].AzimuthYLowLimit, this->forceActuatorSettings->SetpointLimits[i].AzimuthYHighLimit, this->forceSetpoint->AzimuthYSetpoint[i]);
-			this->forceSetpoint->AzimuthZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].AzimuthZLowLimit, this->forceActuatorSettings->SetpointLimits[i].AzimuthZHighLimit, this->forceSetpoint->AzimuthZSetpoint[i]);
+			this->forceSetpoint->AzimuthXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].AzimuthXLowLimit, this->forceActuatorSettings->Limits[i].AzimuthXHighLimit, this->forceSetpoint->AzimuthXSetpoint[i]);
+			this->forceSetpoint->AzimuthYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].AzimuthYLowLimit, this->forceActuatorSettings->Limits[i].AzimuthYHighLimit, this->forceSetpoint->AzimuthYSetpoint[i]);
+			this->forceSetpoint->AzimuthZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].AzimuthZLowLimit, this->forceActuatorSettings->Limits[i].AzimuthZHighLimit, this->forceSetpoint->AzimuthZSetpoint[i]);
 		}
 	}
 	// Move Azimuth Forces
@@ -745,9 +745,9 @@ void ForceController::updateTemperatureForces() {
 		// Check Temperature Forces
 		bool previousWarning = this->forceSetpointWarning->TemperatureForceWarning[i];
 		this->forceSetpointWarning->TemperatureForceWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].TemperatureXLowLimit, this->forceActuatorSettings->SetpointLimits[i].TemperatureXHighLimit, this->forceSetpoint->TemperatureXSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].TemperatureYLowLimit, this->forceActuatorSettings->SetpointLimits[i].TemperatureYHighLimit, this->forceSetpoint->TemperatureYSetpoint[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].TemperatureZLowLimit, this->forceActuatorSettings->SetpointLimits[i].TemperatureZHighLimit, this->forceSetpoint->TemperatureZSetpoint[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].TemperatureXLowLimit, this->forceActuatorSettings->Limits[i].TemperatureXHighLimit, this->forceSetpoint->TemperatureXSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].TemperatureYLowLimit, this->forceActuatorSettings->Limits[i].TemperatureYHighLimit, this->forceSetpoint->TemperatureYSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].TemperatureZLowLimit, this->forceActuatorSettings->Limits[i].TemperatureZHighLimit, this->forceSetpoint->TemperatureZSetpoint[i]);
 		this->forceSetpointWarning->AnyTemperatureForceWarning = this->forceSetpointWarning->AnyTemperatureForceWarning || this->forceSetpointWarning->TemperatureForceWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->TemperatureForceWarning[i] != previousWarning);
 	}
@@ -759,9 +759,9 @@ void ForceController::updateTemperatureForces() {
 		// Coerce Temperature Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->TemperatureXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].TemperatureXLowLimit, this->forceActuatorSettings->SetpointLimits[i].TemperatureXHighLimit, this->forceSetpoint->TemperatureXSetpoint[i]);
-			this->forceSetpoint->TemperatureYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].TemperatureYLowLimit, this->forceActuatorSettings->SetpointLimits[i].TemperatureYHighLimit, this->forceSetpoint->TemperatureYSetpoint[i]);
-			this->forceSetpoint->TemperatureZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].TemperatureZLowLimit, this->forceActuatorSettings->SetpointLimits[i].TemperatureZHighLimit, this->forceSetpoint->TemperatureZSetpoint[i]);
+			this->forceSetpoint->TemperatureXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].TemperatureXLowLimit, this->forceActuatorSettings->Limits[i].TemperatureXHighLimit, this->forceSetpoint->TemperatureXSetpoint[i]);
+			this->forceSetpoint->TemperatureYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].TemperatureYLowLimit, this->forceActuatorSettings->Limits[i].TemperatureYHighLimit, this->forceSetpoint->TemperatureYSetpoint[i]);
+			this->forceSetpoint->TemperatureZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].TemperatureZLowLimit, this->forceActuatorSettings->Limits[i].TemperatureZHighLimit, this->forceSetpoint->TemperatureZSetpoint[i]);
 		}
 	}
 	// Move Temperature Forces
@@ -833,8 +833,8 @@ void ForceController::convertForcesToSetpoints() {
 		// Check Setpoints Forces
 		bool previousWarning = this->forceSetpointWarning->SafetyLimitWarning[i];
 		this->forceSetpointWarning->SafetyLimitWarning[i] =
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].PrimaryAxisTotalLowLimit, this->forceActuatorSettings->SetpointLimits[i].PrimaryAxisTotalHighLimit, this->forceSetpoint->PrimaryCylinderSetpointCommanded[i]) ||
-				!Range::InRange(this->forceActuatorSettings->SetpointLimits[i].SecondaryAxisTotalLowLimit, this->forceActuatorSettings->SetpointLimits[i].SecondaryAxisTotalHighLimit, this->forceSetpoint->SecondaryCylinderSetpointCommanded[i]);
+				!Range::InRange(this->forceActuatorSettings->Limits[i].PrimaryAxisTotalLowLimit, this->forceActuatorSettings->Limits[i].PrimaryAxisTotalHighLimit, this->forceSetpoint->PrimaryCylinderSetpointCommanded[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].SecondaryAxisTotalLowLimit, this->forceActuatorSettings->Limits[i].SecondaryAxisTotalHighLimit, this->forceSetpoint->SecondaryCylinderSetpointCommanded[i]);
 		this->forceSetpointWarning->AnySafetyLimitWarning = this->forceSetpointWarning->AnySafetyLimitWarning || this->forceSetpointWarning->SafetyLimitWarning[i];
 		warningChanged = warningChanged || (this->forceSetpointWarning->SafetyLimitWarning[i] != previousWarning);
 	}
@@ -846,8 +846,8 @@ void ForceController::convertForcesToSetpoints() {
 		// Coerce Setpoints Forces
 		this->publishForceDataRejection();
 		for(int i = 0; i < FA_COUNT; i++) {
-			this->forceSetpoint->PrimaryCylinderSetpointCommanded[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].PrimaryAxisTotalLowLimit, this->forceActuatorSettings->SetpointLimits[i].PrimaryAxisTotalHighLimit, this->forceSetpoint->PrimaryCylinderSetpointCommanded[i]);
-			this->forceSetpoint->SecondaryCylinderSetpointCommanded[i] = Range::CoerceIntoRange(this->forceActuatorSettings->SetpointLimits[i].SecondaryAxisTotalLowLimit, this->forceActuatorSettings->SetpointLimits[i].SecondaryAxisTotalHighLimit, this->forceSetpoint->SecondaryCylinderSetpointCommanded[i]);
+			this->forceSetpoint->PrimaryCylinderSetpointCommanded[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].PrimaryAxisTotalLowLimit, this->forceActuatorSettings->Limits[i].PrimaryAxisTotalHighLimit, this->forceSetpoint->PrimaryCylinderSetpointCommanded[i]);
+			this->forceSetpoint->SecondaryCylinderSetpointCommanded[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].SecondaryAxisTotalLowLimit, this->forceActuatorSettings->Limits[i].SecondaryAxisTotalHighLimit, this->forceSetpoint->SecondaryCylinderSetpointCommanded[i]);
 		}
 	}
 	// Move Setpoints Forces

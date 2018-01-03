@@ -15,6 +15,7 @@ struct m1m3_HardpointStatusC;
 struct m1m3_HardpointDataC;
 
 struct m1m3_logevent_ForceActuatorInfoC;
+struct m1m3_logevent_ForceActuatorForceWarningC;
 struct m1m3_ForceActuatorStatusC;
 struct m1m3_ForceActuatorDataC;
 
@@ -29,12 +30,14 @@ namespace SS {
 
 class ModbusBuffer;
 class HardpointActuatorSettings;
+class ForceActuatorSettings;
 class IPublisher;
 class ILCSubnetData;
 
 class ILCResponseParser {
 private:
 	HardpointActuatorSettings* hardpointActuatorSettings;
+	ForceActuatorSettings* forceActuatorSettings;
 	IPublisher* publisher;
 	ILCSubnetData* subnetData;
 
@@ -47,6 +50,7 @@ private:
 	m1m3_HardpointDataC* hardpointData;
 
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
+	m1m3_logevent_ForceActuatorForceWarningC* forceWarning;
 	m1m3_ForceActuatorStatusC* forceStatus;
 	m1m3_ForceActuatorDataC* forceData;
 
@@ -57,7 +61,7 @@ private:
 
 public:
 	ILCResponseParser();
-	ILCResponseParser(HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData);
+	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData);
 
 	void parse(ModbusBuffer* buffer, uint8_t subnet);
 	void incExpectedResponses(int32_t* fa, int32_t* hp);
@@ -103,6 +107,11 @@ private:
 	void parseReportLVDTResponse(ModbusBuffer* buffer, int32_t dataIndex);
 
 	void calculateHPPostion();
+
+	void checkForceActuatorMeasuredForce(int32_t dataIndex);
+	void checkForceActuatorFollowingError(int32_t dataIndex);
+
+	void publishForceActuatorForceWarning();
 
 	void warnResponseTimeout(double timestamp, int32_t actuatorId);
 	void warnInvalidCRC(double timestamp);

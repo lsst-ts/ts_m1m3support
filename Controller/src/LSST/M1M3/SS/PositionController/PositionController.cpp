@@ -32,7 +32,6 @@ PositionController::PositionController(PositionControllerSettings* positionContr
 		this->scaledMaxStepsPerLoop[i] = this->positionControllerSettings->MaxStepsPerLoop;
 	}
 	this->publisher->logHardpointActuatorMotionState();
-
 }
 
 double PositionController::getRaiseLowerTimeout() {

@@ -13,6 +13,7 @@
 #include <ISafetyController.h>
 #include <IForceController.h>
 #include <IPositionController.h>
+#include <IAutomaticOperationsController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -25,20 +26,7 @@ States::Type ParkedState::update(UpdateCommand* command, IModel* model) {
 
 States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
 	States::Type newState = States::RaisingState;
-	model->getSafetyController()->raiseOperationTimeout(false);
-	model->getPositionController()->enableChaseAll();
-	model->getForceController()->applyElevationForces();
-	model->getForceController()->zeroStaticForces();
-	model->getForceController()->zeroAzimuthForces();
-	model->getForceController()->zeroTemperatureForces();
-	model->getForceController()->zeroDynamicForces();
-	model->getForceController()->zeroOffsetForces();
-	model->getForceController()->zeroAberration();
-	model->getForceController()->zeroAOSCorrection();
-	model->getForceController()->zeroSupportPercentage();
-	model->getInterlockController()->setMirrorParked(false);
-	model->getInterlockController()->setMirrorLoweringRaising(true);
-	model->setCachedTimestamp(model->getPublisher()->getTimestamp());
+	model->getAutomaticOperationsController()->startRaiseOperation();
 	return model->getSafetyController()->checkSafety(newState);
 }
 

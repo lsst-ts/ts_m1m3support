@@ -31,6 +31,7 @@
 #include <IPowerController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
+#include <IAutomaticOperationsController.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -47,16 +48,7 @@ States::Type ActiveEngineeringState::update(UpdateCommand* command, IModel* mode
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, IModel* model) {
 	States::Type newState = States::LoweringEngineeringState;
-	model->getForceController()->zeroStaticForces();
-	model->getForceController()->zeroOffsetForces();
-	model->getForceController()->zeroElevationForces();
-	model->getForceController()->zeroAzimuthForces();
-	model->getForceController()->zeroTemperatureForces();
-	model->getForceController()->zeroAberration();
-	model->getForceController()->zeroAOSCorrection();
-	model->getForceController()->processAppliedForces();
-	model->getInterlockController()->setMirrorLoweringRaising(true);
-	model->setCachedTimestamp(model->getPublisher()->getTimestamp());
+	model->getAutomaticOperationsController()->startLowerOperation();
 	return model->getSafetyController()->checkSafety(newState);
 }
 

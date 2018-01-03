@@ -16,7 +16,7 @@ namespace SS {
 
 void RecommendedApplicationSettings::load(const std::string &filename) {
 	xml_document doc;
-	xml_parse_result result = doc.load_file(filename.c_str());
+	doc.load_file(filename.c_str());
 	xpath_node_set nodes = doc.select_nodes("//RecommendedApplicationSettings/RecommendedSettings/RecommendedSetting");
 	for(xpath_node_set::const_iterator node = nodes.begin(); node != nodes.end(); ++node) {
 			RecommendedSettings.push_back(node->node().child_value());

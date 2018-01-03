@@ -17,6 +17,7 @@ namespace SS {
 class RaisingEngineeringState: public EngineeringState {
 public:
 	States::Type update(UpdateCommand* command, IModel* model);
+	States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, IModel* model);
 };
 
 } /* namespace SS */

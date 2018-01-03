@@ -78,14 +78,14 @@ void PowerController::setBothPowerNetworks(bool on) {
 	this->powerStatus->AuxPowerNetworkCCommandedOn = on;
 	this->powerStatus->AuxPowerNetworkDCommandedOn = on;
 	uint16_t buffer[16] = {
-			FPGAAddresses::DCPowerNetworkAOn, this->powerStatus->PowerNetworkACommandedOn,
-			FPGAAddresses::DCPowerNetworkBOn, this->powerStatus->PowerNetworkBCommandedOn,
-			FPGAAddresses::DCPowerNetworkCOn, this->powerStatus->PowerNetworkCCommandedOn,
-			FPGAAddresses::DCPowerNetworkDOn, this->powerStatus->PowerNetworkDCommandedOn,
-			FPGAAddresses::DCAuxPowerNetworkAOn, this->powerStatus->AuxPowerNetworkACommandedOn,
-			FPGAAddresses::DCAuxPowerNetworkBOn, this->powerStatus->AuxPowerNetworkBCommandedOn,
-			FPGAAddresses::DCAuxPowerNetworkCOn, this->powerStatus->AuxPowerNetworkCCommandedOn,
-			FPGAAddresses::DCAuxPowerNetworkDOn, this->powerStatus->AuxPowerNetworkDCommandedOn };
+			FPGAAddresses::DCPowerNetworkAOn, (uint16_t)this->powerStatus->PowerNetworkACommandedOn,
+			FPGAAddresses::DCPowerNetworkBOn, (uint16_t)this->powerStatus->PowerNetworkBCommandedOn,
+			FPGAAddresses::DCPowerNetworkCOn, (uint16_t)this->powerStatus->PowerNetworkCCommandedOn,
+			FPGAAddresses::DCPowerNetworkDOn, (uint16_t)this->powerStatus->PowerNetworkDCommandedOn,
+			FPGAAddresses::DCAuxPowerNetworkAOn, (uint16_t)this->powerStatus->AuxPowerNetworkACommandedOn,
+			FPGAAddresses::DCAuxPowerNetworkBOn, (uint16_t)this->powerStatus->AuxPowerNetworkBCommandedOn,
+			FPGAAddresses::DCAuxPowerNetworkCOn, (uint16_t)this->powerStatus->AuxPowerNetworkCCommandedOn,
+			FPGAAddresses::DCAuxPowerNetworkDOn, (uint16_t)this->powerStatus->AuxPowerNetworkDCommandedOn };
 	this->sendCommand(buffer, 16);
 	this->checkPowerNetworkAOutput();
 	this->checkPowerNetworkBOutput();
@@ -116,10 +116,10 @@ void PowerController::setAllPowerNetworks(bool on) {
 	this->powerStatus->PowerNetworkCCommandedOn = on;
 	this->powerStatus->PowerNetworkDCommandedOn = on;
 	uint16_t buffer[8] = {
-			FPGAAddresses::DCPowerNetworkAOn, this->powerStatus->PowerNetworkACommandedOn,
-			FPGAAddresses::DCPowerNetworkBOn, this->powerStatus->PowerNetworkBCommandedOn,
-			FPGAAddresses::DCPowerNetworkCOn, this->powerStatus->PowerNetworkCCommandedOn,
-			FPGAAddresses::DCPowerNetworkDOn, this->powerStatus->PowerNetworkDCommandedOn };
+			FPGAAddresses::DCPowerNetworkAOn, (uint16_t)this->powerStatus->PowerNetworkACommandedOn,
+			FPGAAddresses::DCPowerNetworkBOn, (uint16_t)this->powerStatus->PowerNetworkBCommandedOn,
+			FPGAAddresses::DCPowerNetworkCOn, (uint16_t)this->powerStatus->PowerNetworkCCommandedOn,
+			FPGAAddresses::DCPowerNetworkDOn, (uint16_t)this->powerStatus->PowerNetworkDCommandedOn };
 	this->sendCommand(buffer, 8);
 	this->checkPowerNetworkAOutput();
 	this->checkPowerNetworkBOutput();
@@ -138,7 +138,7 @@ void PowerController::setAllPowerNetworks(bool on) {
 
 void PowerController::setPowerNetworkA(bool on) {
 	this->powerStatus->PowerNetworkACommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkAOn, this->powerStatus->PowerNetworkACommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkAOn, (uint16_t)this->powerStatus->PowerNetworkACommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkPowerNetworkAOutput();
 
@@ -151,7 +151,7 @@ void PowerController::setPowerNetworkA(bool on) {
 
 void PowerController::setPowerNetworkB(bool on) {
 	this->powerStatus->PowerNetworkBCommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkBOn, this->powerStatus->PowerNetworkBCommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkBOn, (uint16_t)this->powerStatus->PowerNetworkBCommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkPowerNetworkBOutput();
 
@@ -164,7 +164,7 @@ void PowerController::setPowerNetworkB(bool on) {
 
 void PowerController::setPowerNetworkC(bool on) {
 	this->powerStatus->PowerNetworkCCommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkCOn, this->powerStatus->PowerNetworkCCommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkCOn, (uint16_t)this->powerStatus->PowerNetworkCCommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkPowerNetworkCOutput();
 
@@ -177,7 +177,7 @@ void PowerController::setPowerNetworkC(bool on) {
 
 void PowerController::setPowerNetworkD(bool on) {
 	this->powerStatus->PowerNetworkDCommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkDOn, this->powerStatus->PowerNetworkDCommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCPowerNetworkDOn, (uint16_t)this->powerStatus->PowerNetworkDCommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkPowerNetworkDOutput();
 
@@ -194,10 +194,10 @@ void PowerController::setAllAuxPowerNetworks(bool on) {
 	this->powerStatus->AuxPowerNetworkCCommandedOn = on;
 	this->powerStatus->AuxPowerNetworkDCommandedOn = on;
 	uint16_t buffer[8] = {
-				FPGAAddresses::DCAuxPowerNetworkAOn, this->powerStatus->AuxPowerNetworkACommandedOn,
-				FPGAAddresses::DCAuxPowerNetworkBOn, this->powerStatus->AuxPowerNetworkBCommandedOn,
-				FPGAAddresses::DCAuxPowerNetworkCOn, this->powerStatus->AuxPowerNetworkCCommandedOn,
-				FPGAAddresses::DCAuxPowerNetworkDOn, this->powerStatus->AuxPowerNetworkDCommandedOn };
+				FPGAAddresses::DCAuxPowerNetworkAOn, (uint16_t)this->powerStatus->AuxPowerNetworkACommandedOn,
+				FPGAAddresses::DCAuxPowerNetworkBOn, (uint16_t)this->powerStatus->AuxPowerNetworkBCommandedOn,
+				FPGAAddresses::DCAuxPowerNetworkCOn, (uint16_t)this->powerStatus->AuxPowerNetworkCCommandedOn,
+				FPGAAddresses::DCAuxPowerNetworkDOn, (uint16_t)this->powerStatus->AuxPowerNetworkDCommandedOn };
 	this->sendCommand(buffer, 8);
 	this->checkAuxPowerNetworkAOutput();
 	this->checkAuxPowerNetworkBOutput();
@@ -216,7 +216,7 @@ void PowerController::setAllAuxPowerNetworks(bool on) {
 
 void PowerController::setAuxPowerNetworkA(bool on) {
 	this->powerStatus->AuxPowerNetworkACommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkAOn, this->powerStatus->AuxPowerNetworkACommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkAOn, (uint16_t)this->powerStatus->AuxPowerNetworkACommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkAuxPowerNetworkAOutput();
 
@@ -229,7 +229,7 @@ void PowerController::setAuxPowerNetworkA(bool on) {
 
 void PowerController::setAuxPowerNetworkB(bool on) {
 	this->powerStatus->AuxPowerNetworkBCommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkBOn, this->powerStatus->AuxPowerNetworkBCommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkBOn, (uint16_t)this->powerStatus->AuxPowerNetworkBCommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkAuxPowerNetworkBOutput();
 
@@ -242,7 +242,7 @@ void PowerController::setAuxPowerNetworkB(bool on) {
 
 void PowerController::setAuxPowerNetworkC(bool on) {
 	this->powerStatus->AuxPowerNetworkCCommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkCOn, this->powerStatus->AuxPowerNetworkCCommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkCOn, (uint16_t)this->powerStatus->AuxPowerNetworkCCommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkAuxPowerNetworkCOutput();
 
@@ -255,7 +255,7 @@ void PowerController::setAuxPowerNetworkC(bool on) {
 
 void PowerController::setAuxPowerNetworkD(bool on) {
 	this->powerStatus->AuxPowerNetworkDCommandedOn = on;
-	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkDOn, this->powerStatus->AuxPowerNetworkDCommandedOn };
+	uint16_t buffer[2] = { FPGAAddresses::DCAuxPowerNetworkDOn, (uint16_t)this->powerStatus->AuxPowerNetworkDCommandedOn };
 	this->sendCommand(buffer, 2);
 	this->checkAuxPowerNetworkDOutput();
 
