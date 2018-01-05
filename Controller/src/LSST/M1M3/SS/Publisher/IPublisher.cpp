@@ -16,6 +16,7 @@ IPublisher::~IPublisher() { }
 m1m3_AccelerometerDataC* IPublisher::getAccelerometerData() { return 0; }
 m1m3_ForceActuatorDataC* IPublisher::getForceActuatorData() { return 0; }
 m1m3_ForceActuatorStatusC* IPublisher::getForceActuatorStatus() { return 0; }
+m1m3_GyroDataC* IPublisher::getGyroData() { return 0; }
 m1m3_HardpointDataC* IPublisher::getHardpointData() { return 0; }
 m1m3_HardpointMonitorStatusC* IPublisher::getHardpointMonitorStatus() { return 0; }
 m1m3_HardpointStatusC* IPublisher::getHardpointStatus() { return 0; }
@@ -52,6 +53,7 @@ double IPublisher::getTimestamp() { return 0; }
 void IPublisher::putAccelerometerData() { }
 void IPublisher::putForceActuatorData() { }
 void IPublisher::putForceActuatorStatus() { }
+void IPublisher::putGyroData() { }
 void IPublisher::putHardpointData() { }
 void IPublisher::putHardpointMonitorStatus() { }
 void IPublisher::putHardpointStatus() { }

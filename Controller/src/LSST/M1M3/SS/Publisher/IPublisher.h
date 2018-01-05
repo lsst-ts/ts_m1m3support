@@ -14,6 +14,7 @@
 struct m1m3_AccelerometerDataC;
 struct m1m3_ForceActuatorDataC;
 struct m1m3_ForceActuatorStatusC;
+struct m1m3_GyroDataC;
 struct m1m3_HardpointDataC;
 struct m1m3_HardpointMonitorStatusC;
 struct m1m3_HardpointStatusC;
@@ -56,6 +57,7 @@ public:
 	virtual m1m3_AccelerometerDataC* getAccelerometerData();
 	virtual m1m3_ForceActuatorDataC* getForceActuatorData();
 	virtual m1m3_ForceActuatorStatusC* getForceActuatorStatus();
+	virtual m1m3_GyroDataC* getGyroData();
 	virtual m1m3_HardpointDataC* getHardpointData();
 	virtual m1m3_HardpointMonitorStatusC* getHardpointMonitorStatus();
 	virtual m1m3_HardpointStatusC* getHardpointStatus();
@@ -92,6 +94,7 @@ public:
 	virtual void putAccelerometerData();
 	virtual void putForceActuatorData();
 	virtual void putForceActuatorStatus();
+	virtual void putGyroData();
 	virtual void putHardpointData();
 	virtual void putHardpointMonitorStatus();
 	virtual void putHardpointStatus();

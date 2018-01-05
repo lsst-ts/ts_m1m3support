@@ -18,6 +18,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salTelemetryPub("m1m3_AccelerometerData");
 	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorData");
 	this->m1m3SAL->salTelemetryPub("m1m3_ForceActuatorStatus");
+	this->m1m3SAL->salTelemetryPub("m1m3_GyroData");
 	this->m1m3SAL->salTelemetryPub("m1m3_HardpointData");
 	this->m1m3SAL->salTelemetryPub("m1m3_HardpointMonitorStatus");
 	this->m1m3SAL->salTelemetryPub("m1m3_HardpointStatus");
@@ -55,6 +56,7 @@ double M1M3SSPublisher::getTimestamp() { return this->m1m3SAL->getCurrentTime();
 void M1M3SSPublisher::putAccelerometerData() { this->m1m3SAL->putSample_AccelerometerData(&this->accelerometerData); }
 void M1M3SSPublisher::putForceActuatorData() { this->m1m3SAL->putSample_ForceActuatorData(&this->forceActuatorData); }
 void M1M3SSPublisher::putForceActuatorStatus() { this->m1m3SAL->putSample_ForceActuatorStatus(&this->forceActuatorStatus); }
+void M1M3SSPublisher::putGyroData() { this->m1m3SAL->putSample_GyroData(&this->gyroData); }
 void M1M3SSPublisher::putHardpointData() { this->m1m3SAL->putSample_HardpointData(&this->hardpointData); }
 void M1M3SSPublisher::putHardpointMonitorStatus() { this->m1m3SAL->putSample_HardpointMonitorStatus(&this->hardpointMonitorStatus); }
 void M1M3SSPublisher::putHardpointStatus() { this->m1m3SAL->putSample_HardpointStatus(&this->hardpointStatus); }

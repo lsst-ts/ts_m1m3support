@@ -30,6 +30,7 @@
 #include <HardpointMonitorApplicationSettings.h>
 #include <PowerController.h>
 #include <AutomaticOperationsController.h>
+#include <Gyro.h>
 
 using namespace std;
 
@@ -52,6 +53,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, 
 	this->accelerometer = 0;
 	this->powerController = 0;
 	this->automaticOperationsController = 0;
+	this->gyro = 0;
 	this->cachedTimestamp = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
@@ -91,6 +93,9 @@ Model::~Model() {
 	if (this->automaticOperationsController) {
 		delete this->automaticOperationsController;
 	}
+	if (this->gyro) {
+		delete this->gyro;
+	}
 }
 
 void Model::loadSettings(std::string settingsToApply) {
@@ -106,6 +111,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
 	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
 	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
+	GyroSettings* gyroSettings = this->settingReader->loadGyroSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -162,6 +168,11 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->automaticOperationsController;
 	}
 	this->automaticOperationsController = new AutomaticOperationsController(this->positionController, this->forceController, this->interlockController, this->safetyController, this->publisher, this->powerController);
+
+	if (this->gyro) {
+		delete this->gyro;
+	}
+	this->gyro = new Gyro(gyroSettings, this->fpga, this->publisher);
 }
 
 void Model::queryFPGAData() {

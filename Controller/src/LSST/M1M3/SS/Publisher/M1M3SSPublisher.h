@@ -24,6 +24,7 @@ private:
 	m1m3_AccelerometerDataC accelerometerData;
 	m1m3_ForceActuatorDataC forceActuatorData;
 	m1m3_ForceActuatorStatusC forceActuatorStatus;
+	m1m3_GyroDataC gyroData;
 	m1m3_HardpointDataC hardpointData;
 	m1m3_HardpointMonitorStatusC hardpointMonitorStatus;
 	m1m3_HardpointStatusC hardpointStatus;
@@ -61,6 +62,7 @@ public:
 	m1m3_AccelerometerDataC* getAccelerometerData() { return &this->accelerometerData; }
 	m1m3_ForceActuatorDataC* getForceActuatorData() { return &this->forceActuatorData; }
 	m1m3_ForceActuatorStatusC* getForceActuatorStatus() { return &this->forceActuatorStatus; }
+	m1m3_GyroDataC* getGyroData() { return &this->gyroData; }
 	m1m3_HardpointDataC* getHardpointData() { return &this->hardpointData; }
 	m1m3_HardpointMonitorStatusC* getHardpointMonitorStatus() { return &this->hardpointMonitorStatus; }
 	m1m3_HardpointStatusC* getHardpointStatus() { return &this->hardpointStatus; }
@@ -97,6 +99,7 @@ public:
 	void putAccelerometerData();
 	void putForceActuatorData();
 	void putForceActuatorStatus();
+	void putGyroData();
 	void putHardpointData();
 	void putHardpointMonitorStatus();
 	void putHardpointStatus();

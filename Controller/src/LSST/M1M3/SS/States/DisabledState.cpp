@@ -24,7 +24,7 @@ namespace M1M3 {
 namespace SS {
 
 States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
-	//this->startTimer();
+//	this->startTimer();
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
@@ -40,8 +40,8 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
 	model->getInterlockController()->tryToggleHeartbeat();
-	//this->stopTimer();
-	//cout << "Time: " << this->getTimer() << endl;
+//	this->stopTimer();
+//	cout << "Time: " << this->getTimer() << endl;
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

@@ -22,6 +22,7 @@
 #include <DisplacementSensorSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <InterlockApplicationSettings.h>
+#include <GyroSettings.h>
 #include <string>
 
 namespace LSST {
@@ -43,6 +44,7 @@ private:
 	DisplacementSensorSettings displacementSensorSettings;
 	HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
 	InterlockApplicationSettings interlockApplicationSettings;
+	GyroSettings gyroSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -66,6 +68,7 @@ public:
 	DisplacementSensorSettings* loadDisplacementSensorSettings();
 	HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
 	InterlockApplicationSettings* loadInterlockApplicationSettings();
+	GyroSettings* loadGyroSettings();
 
 private:
 	std::string getBasePath(std::string file);

@@ -40,6 +40,7 @@ private:
 	IAccelerometer* accelerometer;
 	IPowerController* powerController;
 	IAutomaticOperationsController* automaticOperationsController;
+	IGyro* gyro;
 
 	pthread_mutex_t mutex;
 
@@ -63,6 +64,7 @@ public:
 	IAccelerometer* getAccelerometer() { return this->accelerometer; }
 	IPowerController* getPowerController() { return this->powerController; }
 	IAutomaticOperationsController* getAutomaticOperationsController() { return this->automaticOperationsController; }
+	IGyro* getGyro() { return this->gyro; }
 
 	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
 	double getCachedTimestamp() { return this->cachedTimestamp; }

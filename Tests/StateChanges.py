@@ -231,6 +231,8 @@ salM1M3.setDebugLevel(0)
 
 print("Initializing topics")
 startTime = time.time()
+salM1M3.salTelemetrySub("m1m3_InclinometerData")
+salM1M3.salTelemetrySub("m1m3_IMSData")
 salM1M3.salEvent("m1m3_logevent_SummaryState")
 salM1M3.salCommand("m1m3_command_Start")
 salM1M3.salCommand("m1m3_command_Enable")
@@ -262,6 +264,11 @@ def subnetToUDPClient(subnet):
 def checkEquals(actual, expected, description):
     result = actual == expected
     print("%s : %s" % (description, result))
+    return result
+    
+def checkInTolerance(actual, expected, tolerance, description):
+    result = actual >= (expected - tolerance) and actual <= (expected + tolerance)
+    print("%s: %s" % (description, result))
     return result
     
 def afterCommand():
@@ -347,7 +354,39 @@ def issueShutdownCommand():
     cmdId = salM1M3.issueCommand_Shutdown(data)
     salM1M3.waitForCompletion_Shutdown(cmdId, 10)
     afterCommand()
-
+    
+def checkInclinometerEquals(expected, tolerance, description):
+    data = m1m3_InclinometerDataC()
+    retVal = salM1M3.getSample_InclinometerData(data)
+    if retVal == 0:
+        return checkInTolerance(data.InclinometerAngle, expected, tolerance, description)
+    else:
+        print("%s : NO DATA AVAILABLE" % description)
+        
+def setInclinometer(value):
+    udpClientInclin.send(inclinSim.inclinometerResponse(degreesMeasured = value))
+    time.sleep(1)
+    
+def checkDisplacementEquals(e1, e2, e3, e4, e5, e6, e7, e8, tolerance, description):
+    data = m1m3_IMSDataC()
+    retVal = salM1M3.getSample_IMSData(data)
+    if retVal == 0:
+        result1 = checkInTolerance(data.RawSensorData[0], e1, tolerance, "%s %s" % ("E1", description))
+        result2 = checkInTolerance(data.RawSensorData[1], e2, tolerance, "%s %s" % ("E2", description))
+        result3 = checkInTolerance(data.RawSensorData[2], e3, tolerance, "%s %s" % ("E3", description))
+        result4 = checkInTolerance(data.RawSensorData[3], e4, tolerance, "%s %s" % ("E4", description))
+        result5 = checkInTolerance(data.RawSensorData[4], e5, tolerance, "%s %s" % ("E5", description))
+        result6 = checkInTolerance(data.RawSensorData[5], e6, tolerance, "%s %s" % ("E6", description))
+        result7 = checkInTolerance(data.RawSensorData[6], e7, tolerance, "%s %s" % ("E7", description))
+        result8 = checkInTolerance(data.RawSensorData[7], e8, tolerance, "%s %s" % ("E8", description))
+        return result1 and result2 and result3 and result4 and result5 and result6 and result7 and result8
+    else:
+        print("%s: NO DATA AVAILABLE" % description)
+    
+def setDisplacement(d1, d2, d3, d4, d5, d6, d7, d8):
+    udpClientDisplace.send(displaceSim.displacementResponse(displace1 = d1, displace2 = d2, displace3 = d3, displace4 = d4, displace5 = d5, displace6 = d6, displace7 = d7, displace8 = d8))
+    time.sleep(1)
+    
 def checkSummaryStateEquals(expected, description):
     data = m1m3_logevent_SummaryStateC()
     salM1M3.getEvent_SummaryState(data)
@@ -370,6 +409,21 @@ def waitForSummaryStateEquals(expected, timeout, description):
                 return checkEquals(data.SummaryState, expected, description)
         elif (time.time() - startTime) >= timeout:
             return checkEquals(data.SummaryState, expected, description)
+
+##################################
+print("----------------------------------------------------------------------")
+print("-- Configure Simulators")
+print("----------------------------------------------------------------------")  
+udpClientInclin.send(inclinSim.inclinometerResponse(degreesMeasured = 0))
+udpClientSubnetE.send(ilcSim.forceAndStatusRequest(serverAddr = 1, statusByte = 0, ssiEncoderValue = 2000, loadCellForce = 0.0))
+udpClientSubnetE.send(ilcSim.forceAndStatusRequest(serverAddr = 2, statusByte = 0, ssiEncoderValue = 2000, loadCellForce = 0.0))
+udpClientSubnetE.send(ilcSim.forceAndStatusRequest(serverAddr = 3, statusByte = 0, ssiEncoderValue = 2000, loadCellForce = 0.0))
+udpClientSubnetE.send(ilcSim.forceAndStatusRequest(serverAddr = 4, statusByte = 0, ssiEncoderValue = 2000, loadCellForce = 0.0))
+udpClientSubnetE.send(ilcSim.forceAndStatusRequest(serverAddr = 5, statusByte = 0, ssiEncoderValue = 2000, loadCellForce = 0.0))
+udpClientSubnetE.send(ilcSim.forceAndStatusRequest(serverAddr = 6, statusByte = 0, ssiEncoderValue = 2000, loadCellForce = 0.0))
+value = -0.9
+udpClientDisplace.send(displaceSim.displacementResponse(displace1 = 1 + value, displace2 = -2 + value, displace3 = 3 + value, displace4 = -4 + value, displace5 = 5 + value, displace6 = -6 + value, displace7 = 7 + value, displace8 = -8 + value))
+##################################
 
 ##################################    
 print("----------------------------------------------------------------------")
@@ -451,6 +505,44 @@ checkSummaryStateEquals(DisabledState, "Transition from StandbyState to Disabled
 # Verify Shutdown command does nothing
 issueShutdownCommand()
 checkNoSummaryState("No transition from DisabledState after Shutdown command")
+##################################
+
+##################################
+print("----------------------------------------------------------------------")
+print("-- Inclinometer DisabledState Verification")
+print("----------------------------------------------------------------------")
+setInclinometer(351.5)
+checkInclinometerEquals(351.5, 0.001, "Inclinometer should be 351.5")
+setInclinometer(45.4)
+checkInclinometerEquals(45.4, 0.001, "Inclinometer should be 45.4")
+setInclinometer(98.6)
+checkInclinometerEquals(98.6, 0.001, "Inclinometer should be 98.6")
+setInclinometer(0.0)
+checkInclinometerEquals(0.0, 0.001, "Inclinometer should be 0.0")
+##################################
+
+##################################
+print("----------------------------------------------------------------------")
+print("-- Displacement DisabledState Verification")
+print("----------------------------------------------------------------------")
+setDisplacement(1.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+checkDisplacementEquals(1.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.001, "Displacement 1 should be 1.1")
+setDisplacement(0.0, 2.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+checkDisplacementEquals(0.0, 2.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.001, "Displacement 2 should be 2.2")
+setDisplacement(0.0, 0.0, 3.3, 0.0, 0.0, 0.0, 0.0, 0.0)
+checkDisplacementEquals(0.0, 0.0, 3.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.001, "Displacement 3 should be 3.3")
+setDisplacement(0.0, 0.0, 0.0, 4.4, 0.0, 0.0, 0.0, 0.0)
+checkDisplacementEquals(0.0, 0.0, 0.0, 4.4, 0.0, 0.0, 0.0, 0.0, 0.001, "Displacement 4 should be 4.4")
+setDisplacement(0.0, 0.0, 0.0, 0.0, 5.5, 0.0, 0.0, 0.0)
+checkDisplacementEquals(0.0, 0.0, 0.0, 0.0, 5.5, 0.0, 0.0, 0.0, 0.001, "Displacement 5 should be 5.5")
+setDisplacement(0.0, 0.0, 0.0, 0.0, 0.0, 6.6, 0.0, 0.0)
+checkDisplacementEquals(0.0, 0.0, 0.0, 0.0, 0.0, 6.6, 0.0, 0.0, 0.001, "Displacement 6 should be 6.6")
+setDisplacement(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.7, 0.0)
+checkDisplacementEquals(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.7, 0.0, 0.001, "Displacement 7 should be 7.7")
+setDisplacement(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8.8)
+checkDisplacementEquals(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8.8, 0.001, "Displacement 8 should be 8.8")
+setDisplacement(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+checkDisplacementEquals(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.001, "Displacement should be 0.0")
 ##################################
 
 ##################################

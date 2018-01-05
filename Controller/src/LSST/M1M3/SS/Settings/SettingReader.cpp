@@ -106,6 +106,11 @@ InterlockApplicationSettings* SettingReader::loadInterlockApplicationSettings() 
 	return &this->interlockApplicationSettings;
 }
 
+GyroSettings* SettingReader::loadGyroSettings() {
+	this->gyroSettings.load(this->getSetPath("GyroSettings.xml").c_str());
+	return &this->gyroSettings;
+}
+
 std::string SettingReader::getBasePath(std::string file) {
 	return this->basePath + file;
 }

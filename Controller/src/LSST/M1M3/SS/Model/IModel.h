@@ -29,6 +29,7 @@ class IInterlockController;
 class IAccelerometer;
 class IPowerController;
 class IAutomaticOperationsController;
+class IGyro;
 
 class IModel {
 public:
@@ -48,6 +49,7 @@ public:
 	virtual IAccelerometer* getAccelerometer();
 	virtual IPowerController* getPowerController();
 	virtual IAutomaticOperationsController* getAutomaticOperationsController();
+	virtual IGyro* getGyro();
 
 	virtual void setCachedTimestamp(double timestamp);
 	virtual double getCachedTimestamp();
