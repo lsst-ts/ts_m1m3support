@@ -475,6 +475,8 @@ void ILCResponseParser::parseForceDemandResponse(ModbusBuffer* buffer, uint8_t a
 	else {
 		this->parseDualAxisForceDemandResponse(buffer, dataIndex);
 	}
+	this->checkForceActuatorMeasuredForce(dataIndex);
+	this->checkForceActuatorFollowingError(dataIndex);
 }
 
 void ILCResponseParser::parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, int32_t dataIndex) {
