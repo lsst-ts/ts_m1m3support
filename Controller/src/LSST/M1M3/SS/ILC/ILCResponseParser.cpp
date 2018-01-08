@@ -517,6 +517,8 @@ void ILCResponseParser::parsePneumaticForceStatusResponse(ModbusBuffer* buffer, 
 	else {
 		this->parseDualAxisPneumaticForceStatusResponse(buffer, dataIndex);
 	}
+	this->checkForceActuatorMeasuredForce(dataIndex);
+	this->checkForceActuatorFollowingError(dataIndex);
 }
 
 void ILCResponseParser::parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
