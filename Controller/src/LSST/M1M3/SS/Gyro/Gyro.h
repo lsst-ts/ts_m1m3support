@@ -10,9 +10,8 @@
 
 #include <IGyro.h>
 #include <DataTypes.h>
+#include <SAL_m1m3C.h>
 #include <string>
-
-struct m1m3_GyroDataC;
 
 namespace LSST {
 namespace M1M3 {
@@ -21,6 +20,7 @@ namespace SS {
 class GyroSettings;
 class IFPGA;
 class IPublisher;
+class ModbusBuffer;
 
 class Gyro: public IGyro {
 private:
@@ -28,6 +28,8 @@ private:
 	IFPGA* fpga;
 	IPublisher* publisher;
 	m1m3_GyroDataC* gyroData;
+	m1m3_logevent_GyroWarningC* gyroWarning;
+	m1m3_logevent_GyroWarningC previousGyroWarning;
 
 	struct GyroBuffer {
 		int32_t Size;
@@ -55,13 +57,24 @@ public:
 	void setAxis();
 	void setDataRate();
 
+	void read();
+
+	void publishGyroData();
+	void publishGyroWarningIfRequired();
+
 private:
 	void setBuffer(GyroBuffer* buffer, std::string text);
 
-	void publishGyroData();
-
 	void writeCommand(GyroBuffer* buffer);
 	void readCommand();
+
+	void readShortBIT(ModbusBuffer* buffer);
+	void readFirst6OfBIT(ModbusBuffer* buffer);
+	void readLongBIT(ModbusBuffer* buffer);
+	void readData(ModbusBuffer* buffer);
+
+	bool checkGyroWarningForUpdates();
+	void publishGyroWarning();
 };
 
 } /* namespace SS */

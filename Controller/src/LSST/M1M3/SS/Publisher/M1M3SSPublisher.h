@@ -31,6 +31,7 @@ private:
 	m1m3_IMSDataC imsData;
 	m1m3_InclinometerDataC inclinometerData;
 	m1m3_OuterLoopDataC outerLoopData;
+	m1m3_PowerSupplyDataC powerSupplyData;
 
 	m1m3_logevent_AccelerometerWarningC eventAccelerometerWarning;
 	m1m3_logevent_AirSupplyStatusC eventAirSupplyStatus;
@@ -44,6 +45,7 @@ private:
 	m1m3_logevent_ForceActuatorForceWarningC eventForceActuatorForceWarning;
 	m1m3_logevent_ForceActuatorInfoC eventForceActuatorInfo;
 	m1m3_logevent_ForceActuatorSetpointWarningC eventForceActuatorSetpointWarning;
+	m1m3_logevent_GyroWarningC eventGyroWarning;
 	m1m3_logevent_HardpointActuatorInfoC eventHardpointActuatorInfo;
 	m1m3_logevent_HardpointMonitorInfoC eventHardpointMonitorInfo;
 	m1m3_logevent_HardpointActuatorMotionStateC eventHardpointActuatorMotionState;
@@ -52,6 +54,7 @@ private:
 	m1m3_logevent_InterlockStatusC eventInterlockStatus;
 	m1m3_logevent_InterlockWarningC eventInterlockWarning;
 	m1m3_logevent_PowerStatusC eventPowerStatus;
+	m1m3_logevent_PowerSupplyStatusC eventPowerSupplyStatus;
 	m1m3_logevent_PowerWarningC eventPowerWarning;
 	m1m3_logevent_SettingVersionsC eventSettingVersions;
 	m1m3_logevent_SummaryStateC eventSummaryState;
@@ -69,6 +72,7 @@ public:
 	m1m3_IMSDataC* getIMSData() { return &this->imsData; }
 	m1m3_InclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
 	m1m3_OuterLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
+	m1m3_PowerSupplyDataC* getPowerSupplyData() { return &this->powerSupplyData; }
 
 	m1m3_logevent_AccelerometerWarningC* getEventAccelerometerWarning() { return &this->eventAccelerometerWarning; }
 	m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
@@ -82,6 +86,7 @@ public:
 	m1m3_logevent_ForceActuatorForceWarningC* getEventForceActuatorForceWarning() { return &this->eventForceActuatorForceWarning; }
 	m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
 	m1m3_logevent_ForceActuatorSetpointWarningC* getEventForceActuatorSetpointWarning() { return &this->eventForceActuatorSetpointWarning; }
+	m1m3_logevent_GyroWarningC* getEventGyroWarning() { return &this->eventGyroWarning; }
 	m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
 	m1m3_logevent_HardpointMonitorInfoC* getEventHardpointMonitorInfo() { return &this->eventHardpointMonitorInfo; }
 	m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState() { return &this->eventHardpointActuatorMotionState; }
@@ -90,6 +95,7 @@ public:
 	m1m3_logevent_InterlockStatusC* getEventInterlockStatus() { return &this->eventInterlockStatus; }
 	m1m3_logevent_InterlockWarningC* getEventInterlockWarning() { return &this->eventInterlockWarning; }
 	m1m3_logevent_PowerStatusC* getEventPowerStatus() { return &this->eventPowerStatus; }
+	m1m3_logevent_PowerSupplyStatusC* getEventPowerSupplyStatus() { return &this->eventPowerSupplyStatus; }
 	m1m3_logevent_PowerWarningC* getEventPowerWarning() { return &this->eventPowerWarning; }
 	m1m3_logevent_SettingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
 	m1m3_logevent_SummaryStateC* getEventSummaryState() { return &this->eventSummaryState; }
@@ -106,6 +112,7 @@ public:
 	void putIMSData();
 	void putInclinometerData();
 	void putOuterLoopData();
+	void putPowerSupplyData();
 
 	void logAccelerometerWarning();
 	void logAirSupplyStatus();
@@ -119,6 +126,7 @@ public:
 	void logForceActuatorForceWarning();
 	void logForceActuatorInfo();
 	void logForceActuatorSetpointWarning();
+	void logGyroWarning();
 	void logHardpointActuatorInfo();
 	void logHardpointMonitorInfo();
 	void logHardpointActuatorMotionState();
@@ -127,6 +135,7 @@ public:
 	void logInterlockStatus();
 	void logInterlockWarning();
 	void logPowerStatus();
+	void logPowerSupplyStatus();
 	void logPowerWarning();
 	void logSettingVersions();
 	void logSummaryState();

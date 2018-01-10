@@ -18,6 +18,7 @@ namespace SS {
 class ISettingReader;
 class IPublisher;
 class IFPGA;
+class IExpansionFPGA;
 class IDisplacement;
 class IInclinometer;
 class IILC;
@@ -38,6 +39,7 @@ public:
 	virtual ISettingReader* getSettingReader();
 	virtual IPublisher* getPublisher();
 	virtual IFPGA* getFPGA();
+	virtual IExpansionFPGA* getExpansionFPGA();
 	virtual IDisplacement* getDisplacement();
 	virtual IInclinometer* getInclinometer();
 	virtual IILC* getILC();

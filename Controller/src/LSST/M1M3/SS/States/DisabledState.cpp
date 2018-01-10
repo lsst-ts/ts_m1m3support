@@ -27,6 +27,7 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 //	this->startTimer();
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
+	model->getPowerController()->samplePowerSupplyDataAndStatus();
 	model->getDisplacement()->writeDataRequest();
 	model->getInclinometer()->writeDataRequest();
 	model->getAccelerometer()->sampleData();
@@ -39,7 +40,11 @@ States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
+	model->getPowerController()->publishPowerSupplyData();
+	model->getPowerController()->publishPowerSupplyStatusIfRequired();
+	model->getPowerController()->checkPowerStatus();
 	model->getInterlockController()->tryToggleHeartbeat();
+	model->getInterlockController()->checkInterlockStatus();
 //	this->stopTimer();
 //	cout << "Time: " << this->getTimer() << endl;
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);

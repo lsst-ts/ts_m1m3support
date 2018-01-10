@@ -28,6 +28,7 @@ class DisplacementSensorSettings;
 class HardpointMonitorApplicationSettings;
 class InterlockApplicationSettings;
 class GyroSettings;
+class ExpansionFPGAApplicationSettings;
 
 class ISettingReader {
 public:
@@ -48,6 +49,7 @@ public:
 	virtual HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
 	virtual InterlockApplicationSettings* loadInterlockApplicationSettings();
 	virtual GyroSettings* loadGyroSettings();
+	virtual ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
 };
 
 } /* namespace SS */

@@ -14,6 +14,9 @@ namespace SS {
 IPowerController::~IPowerController() { }
 
 void IPowerController::checkPowerStatus() { }
+void IPowerController::samplePowerSupplyDataAndStatus() { }
+void IPowerController::publishPowerSupplyData() { }
+void IPowerController::publishPowerSupplyStatusIfRequired() { }
 
 void IPowerController::setBothPowerNetworks(bool on) { }
 

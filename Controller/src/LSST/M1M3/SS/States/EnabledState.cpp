@@ -29,6 +29,7 @@ States::Type EnabledState::update(UpdateCommand* command, IModel* model) {
 	model->getPositionController()->updateSteps();
 	model->getILC()->writeRaisedListBuffer();
 	model->getILC()->triggerModbus();
+	model->getPowerController()->samplePowerSupplyDataAndStatus();
 	model->getDisplacement()->writeDataRequest();
 	model->getInclinometer()->writeDataRequest();
 	model->getILC()->waitForAllSubnets(5000);
@@ -44,9 +45,10 @@ States::Type EnabledState::update(UpdateCommand* command, IModel* model) {
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
-	// TODO: Uncomment
-	//model->getPowerController()->checkPowerStatus();
-	//model->getInterlockController()->checkInterlockStatus();
+	model->getPowerController()->publishPowerSupplyData();
+	model->getPowerController()->publishPowerSupplyStatusIfRequired();
+	model->getPowerController()->checkPowerStatus();
+	model->getInterlockController()->checkInterlockStatus();
 	model->getInterlockController()->tryToggleHeartbeat();
 	return States::NoStateTransition;
 }

@@ -25,6 +25,11 @@ public:
 	virtual void setRotationUnitsRadians();
 	virtual void setAxis();
 	virtual void setDataRate();
+
+	virtual void read();
+
+	virtual void publishGyroData();
+	virtual void publishGyroWarningIfRequired();
 };
 
 } /* namespace SS */

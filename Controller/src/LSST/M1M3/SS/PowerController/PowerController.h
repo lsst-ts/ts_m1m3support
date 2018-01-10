@@ -11,7 +11,10 @@
 #include <IPowerController.h>
 #include <DataTypes.h>
 
+struct m1m3_PowerSupplyDataC;
+
 struct m1m3_logevent_PowerStatusC;
+struct m1m3_logevent_PowerSupplyStatusC;
 struct m1m3_logevent_PowerWarningC;
 
 namespace LSST {
@@ -20,22 +23,31 @@ namespace SS {
 
 class IPublisher;
 class IFPGA;
+class IExpansionFPGA;
 class ISafetyController;
 
 class PowerController: public IPowerController {
 private:
 	IPublisher* publisher;
 	IFPGA* fpga;
+	IExpansionFPGA* expansionFPGA;
 	ISafetyController* safetyController;
 
+	m1m3_PowerSupplyDataC* powerSupplyData;
 	m1m3_logevent_PowerStatusC* powerStatus;
+	m1m3_logevent_PowerSupplyStatusC* powerSupplyStatus;
 	m1m3_logevent_PowerWarningC* powerWarning;
 	uint16_t rxBuffer[16];
+	double expansionSampleTime;
+	uint32_t previousSlot2Sample;
 
 public:
-	PowerController(IPublisher* publisher, IFPGA* fpga, ISafetyController* safetyController);
+	PowerController(IPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, ISafetyController* safetyController);
 
 	void checkPowerStatus();
+	void samplePowerSupplyDataAndStatus();
+	void publishPowerSupplyData();
+	void publishPowerSupplyStatusIfRequired();
 
 	void setBothPowerNetworks(bool on);
 

@@ -21,6 +21,7 @@ struct m1m3_HardpointStatusC;
 struct m1m3_IMSDataC;
 struct m1m3_InclinometerDataC;
 struct m1m3_OuterLoopDataC;
+struct m1m3_PowerSupplyDataC;
 
 struct m1m3_logevent_AccelerometerWarningC;
 struct m1m3_logevent_AirSupplyStatusC;
@@ -34,6 +35,7 @@ struct m1m3_logevent_ForceActuatorDataRejectionC;
 struct m1m3_logevent_ForceActuatorForceWarningC;
 struct m1m3_logevent_ForceActuatorInfoC;
 struct m1m3_logevent_ForceActuatorSetpointWarningC;
+struct m1m3_logevent_GyroWarningC;
 struct m1m3_logevent_HardpointActuatorInfoC;
 struct m1m3_logevent_HardpointMonitorInfoC;
 struct m1m3_logevent_HardpointActuatorMotionStateC;
@@ -42,6 +44,7 @@ struct m1m3_logevent_InclinometerSensorWarningC;
 struct m1m3_logevent_InterlockStatusC;
 struct m1m3_logevent_InterlockWarningC;
 struct m1m3_logevent_PowerStatusC;
+struct m1m3_logevent_PowerSupplyStatusC;
 struct m1m3_logevent_PowerWarningC;
 struct m1m3_logevent_SettingVersionsC;
 struct m1m3_logevent_SummaryStateC;
@@ -64,6 +67,7 @@ public:
 	virtual m1m3_IMSDataC* getIMSData();
 	virtual m1m3_InclinometerDataC* getInclinometerData();
 	virtual m1m3_OuterLoopDataC* getOuterLoopData();
+	virtual m1m3_PowerSupplyDataC* getPowerSupplyData();
 
 	virtual m1m3_logevent_AccelerometerWarningC* getEventAccelerometerWarning();
 	virtual m1m3_logevent_AirSupplyStatusC* getEventAirSupplyStatus();
@@ -77,6 +81,7 @@ public:
 	virtual m1m3_logevent_ForceActuatorForceWarningC* getEventForceActuatorForceWarning();
 	virtual m1m3_logevent_ForceActuatorInfoC* getEventForceActuatorInfo();
 	virtual m1m3_logevent_ForceActuatorSetpointWarningC* getEventForceActuatorSetpointWarning();
+	virtual m1m3_logevent_GyroWarningC* getEventGyroWarning();
 	virtual m1m3_logevent_HardpointActuatorInfoC* getEventHardpointActuatorInfo();
 	virtual m1m3_logevent_HardpointMonitorInfoC* getEventHardpointMonitorInfo();
 	virtual m1m3_logevent_HardpointActuatorMotionStateC* getEventHardpointActuatorMotionState();
@@ -85,6 +90,7 @@ public:
 	virtual m1m3_logevent_InterlockStatusC* getEventInterlockStatus();
 	virtual m1m3_logevent_InterlockWarningC* getEventInterlockWarning();
 	virtual m1m3_logevent_PowerStatusC* getEventPowerStatus();
+	virtual m1m3_logevent_PowerSupplyStatusC* getEventPowerSupplyStatus();
 	virtual m1m3_logevent_PowerWarningC* getEventPowerWarning();
 	virtual m1m3_logevent_SettingVersionsC* getEventSettingVersions();
 	virtual m1m3_logevent_SummaryStateC* getEventSummaryState();
@@ -101,6 +107,7 @@ public:
 	virtual void putIMSData();
 	virtual void putInclinometerData();
 	virtual void putOuterLoopData();
+	virtual void putPowerSupplyData();
 
 	virtual void logAccelerometerWarning();
 	virtual void logAirSupplyStatus();
@@ -114,6 +121,7 @@ public:
 	virtual void logForceActuatorForceWarning();
 	virtual void logForceActuatorInfo();
 	virtual void logForceActuatorSetpointWarning();
+	virtual void logGyroWarning();
 	virtual void logHardpointActuatorInfo();
 	virtual void logHardpointMonitorInfo();
 	virtual void logHardpointActuatorMotionState();
@@ -122,6 +130,7 @@ public:
 	virtual void logInterlockStatus();
 	virtual void logInterlockWarning();
 	virtual void logPowerStatus();
+	virtual void logPowerSupplyStatus();
 	virtual void logPowerWarning();
 	virtual void logSettingVersions();
 	virtual void logSummaryState();

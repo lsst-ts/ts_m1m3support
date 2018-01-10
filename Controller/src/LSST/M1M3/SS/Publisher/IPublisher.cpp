@@ -23,6 +23,7 @@ m1m3_HardpointStatusC* IPublisher::getHardpointStatus() { return 0; }
 m1m3_IMSDataC* IPublisher::getIMSData() { return 0; }
 m1m3_InclinometerDataC* IPublisher::getInclinometerData() { return 0; }
 m1m3_OuterLoopDataC* IPublisher::getOuterLoopData() { return 0; }
+m1m3_PowerSupplyDataC* IPublisher::getPowerSupplyData() { return 0; }
 
 m1m3_logevent_AccelerometerWarningC* IPublisher::getEventAccelerometerWarning() { return 0; }
 m1m3_logevent_AirSupplyStatusC* IPublisher::getEventAirSupplyStatus() { return 0; }
@@ -36,6 +37,7 @@ m1m3_logevent_ForceActuatorDataRejectionC* IPublisher::getEventForceActuatorData
 m1m3_logevent_ForceActuatorForceWarningC* IPublisher::getEventForceActuatorForceWarning() { return 0; }
 m1m3_logevent_ForceActuatorInfoC* IPublisher::getEventForceActuatorInfo() { return 0; }
 m1m3_logevent_ForceActuatorSetpointWarningC* IPublisher::getEventForceActuatorSetpointWarning() { return 0; }
+m1m3_logevent_GyroWarningC* IPublisher::getEventGyroWarning() { return 0; }
 m1m3_logevent_HardpointActuatorInfoC* IPublisher::getEventHardpointActuatorInfo() { return 0; }
 m1m3_logevent_HardpointMonitorInfoC* IPublisher::getEventHardpointMonitorInfo() { return 0; }
 m1m3_logevent_HardpointActuatorMotionStateC* IPublisher::getEventHardpointActuatorMotionState() { return 0; }
@@ -44,6 +46,7 @@ m1m3_logevent_InclinometerSensorWarningC* IPublisher::getEventInclinometerSensor
 m1m3_logevent_InterlockStatusC* IPublisher::getEventInterlockStatus() { return 0; }
 m1m3_logevent_InterlockWarningC* IPublisher::getEventInterlockWarning() { return 0; }
 m1m3_logevent_PowerStatusC* IPublisher::getEventPowerStatus() { return 0; }
+m1m3_logevent_PowerSupplyStatusC* IPublisher::getEventPowerSupplyStatus() { return 0; }
 m1m3_logevent_PowerWarningC* IPublisher::getEventPowerWarning() { return 0; }
 m1m3_logevent_SettingVersionsC* IPublisher::getEventSettingVersions() { return 0; }
 m1m3_logevent_SummaryStateC* IPublisher::getEventSummaryState() { return 0; }
@@ -60,6 +63,7 @@ void IPublisher::putHardpointStatus() { }
 void IPublisher::putIMSData() { }
 void IPublisher::putInclinometerData() { }
 void IPublisher::putOuterLoopData() { }
+void IPublisher::putPowerSupplyData() { }
 
 void IPublisher::logAccelerometerWarning() { }
 void IPublisher::logAirSupplyStatus() { }
@@ -73,6 +77,7 @@ void IPublisher::logForceActuatorDataRejection() { }
 void IPublisher::logForceActuatorForceWarning() { }
 void IPublisher::logForceActuatorInfo() { }
 void IPublisher::logForceActuatorSetpointWarning() { }
+void IPublisher::logGyroWarning() { }
 void IPublisher::logHardpointActuatorInfo() { }
 void IPublisher::logHardpointMonitorInfo() { }
 void IPublisher::logHardpointActuatorMotionState() { }
@@ -81,6 +86,7 @@ void IPublisher::logInclinometerSensorWarning() { }
 void IPublisher::logInterlockStatus() { }
 void IPublisher::logInterlockWarning() { }
 void IPublisher::logPowerStatus() { }
+void IPublisher::logPowerSupplyStatus() { }
 void IPublisher::logPowerWarning() { }
 void IPublisher::logSettingVersions() { }
 void IPublisher::logSummaryState() { }

@@ -23,6 +23,7 @@
 #include <HardpointMonitorApplicationSettings.h>
 #include <InterlockApplicationSettings.h>
 #include <GyroSettings.h>
+#include <ExpansionFPGAApplicationSettings.h>
 #include <string>
 
 namespace LSST {
@@ -45,6 +46,7 @@ private:
 	HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
 	InterlockApplicationSettings interlockApplicationSettings;
 	GyroSettings gyroSettings;
+	ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -69,6 +71,7 @@ public:
 	HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
 	InterlockApplicationSettings* loadInterlockApplicationSettings();
 	GyroSettings* loadGyroSettings();
+	ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
 
 private:
 	std::string getBasePath(std::string file);

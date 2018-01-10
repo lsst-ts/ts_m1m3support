@@ -16,6 +16,7 @@ IModel::~IModel() { }
 ISettingReader* IModel::getSettingReader() { return 0; }
 IPublisher* IModel::getPublisher() { return 0; }
 IFPGA* IModel::getFPGA() { return 0; }
+IExpansionFPGA* IModel::getExpansionFPGA() { return 0; }
 IDisplacement* IModel::getDisplacement() { return 0; }
 IInclinometer* IModel::getInclinometer() { return 0; }
 IILC* IModel::getILC() { return 0; }

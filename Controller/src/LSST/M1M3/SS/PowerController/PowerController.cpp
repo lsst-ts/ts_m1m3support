@@ -8,6 +8,7 @@
 #include <PowerController.h>
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
+#include <IExpansionFPGA.h>
 #include <IPublisher.h>
 #include <ISafetyController.h>
 #include <SAL_m1m3C.h>
@@ -16,11 +17,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PowerController::PowerController(IPublisher* publisher, IFPGA* fpga, ISafetyController* safetyController) {
+PowerController::PowerController(IPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, ISafetyController* safetyController) {
 	this->publisher = publisher;
 	this->fpga = fpga;
+	this->expansionFPGA = expansionFPGA;
 	this->safetyController = safetyController;
+	this->powerSupplyData = this->publisher->getPowerSupplyData();
 	this->powerStatus = this->publisher->getEventPowerStatus();
+	this->powerSupplyStatus = this->publisher->getEventPowerSupplyStatus();
 	this->powerWarning = this->publisher->getEventPowerWarning();
 }
 
@@ -65,6 +69,57 @@ void PowerController::checkPowerStatus() {
 	}
 	if (publishWarning) {
 		this->publishWarning();
+	}
+}
+
+void PowerController::samplePowerSupplyDataAndStatus() {
+	this->expansionSampleTime = this->publisher->getTimestamp();
+	this->expansionFPGA->sample();
+}
+
+void PowerController::publishPowerSupplyData() {
+	float sample[6];
+	this->expansionFPGA->readSlot1(sample);
+	this->powerSupplyData->Timestamp = this->expansionSampleTime;
+	this->powerSupplyData->PowerNetworkACurrent = sample[0];
+	this->powerSupplyData->PowerNetworkBCurrent = sample[1];
+	this->powerSupplyData->PowerNetworkCCurrent = sample[2];
+	this->powerSupplyData->PowerNetworkDCurrent = sample[3];
+	this->powerSupplyData->LightPowerNetworkCurrent = sample[4];
+	this->powerSupplyData->ControlsPowerNetworkCurrent = sample[5];
+	this->publisher->putPowerSupplyData();
+}
+
+void PowerController::publishPowerSupplyStatusIfRequired() {
+	uint32_t data;
+	this->expansionFPGA->readSlot2(&data);
+	if (data != this->previousSlot2Sample) {
+		this->previousSlot2Sample = data;
+		this->powerSupplyStatus->Timestamp = this->expansionSampleTime;
+		this->powerSupplyStatus->RCPMirrorCellUtility220VAC1Status =           (data >>  0) & 1;
+		this->powerSupplyStatus->RCPCabinetUtility220VACStatus =               (data >>  1) & 1;
+		this->powerSupplyStatus->RCPExternalEquipment220VACStatus =            (data >>  2) & 1;
+		this->powerSupplyStatus->RCPMirrorCellUtility220VAC2Status =           (data >>  3) & 1;
+		this->powerSupplyStatus->RCPMirrorCellUtility220VAC3Status =           (data >>  4) & 1;
+		this->powerSupplyStatus->PowerNetworkARedundancyControlStatus =        (data >>  5) & 1;
+		this->powerSupplyStatus->PowerNetworkBRedundancyControlStatus =        (data >>  6) & 1;
+		this->powerSupplyStatus->PowerNetworkCRedundancyControlStatus =        (data >>  7) & 1;
+		this->powerSupplyStatus->PowerNetworkDRedundancyControlStatus =        (data >>  8) & 1;
+		this->powerSupplyStatus->ControlsPowerNetworkRedundancyControlStatus = (data >>  9) & 1;
+		this->powerSupplyStatus->PowerNetworkAStatus =                         (data >> 11) & 1;
+		this->powerSupplyStatus->PowerNetworkARedundantStatus =                (data >> 12) & 1;
+		this->powerSupplyStatus->PowerNetworkBStatus =                         (data >> 13) & 1;
+		this->powerSupplyStatus->PowerNetworkBRedundantStatus =                (data >> 14) & 1;
+		this->powerSupplyStatus->PowerNetworkCStatus =                         (data >> 15) & 1;
+		this->powerSupplyStatus->PowerNetworkCRedundantStatus =                (data >> 16) & 1;
+		this->powerSupplyStatus->PowerNetworkDStatus =                         (data >> 17) & 1;
+		this->powerSupplyStatus->PowerNetworkDRedundantStatus =                (data >> 18) & 1;
+		this->powerSupplyStatus->ControlsPowerNetworkStatus =                  (data >> 19) & 1;
+		this->powerSupplyStatus->ControlsPowerNetworkRedundantStatus =         (data >> 20) & 1;
+		this->powerSupplyStatus->LightPowerNetworkStatus =                     (data >> 21) & 1;
+		this->powerSupplyStatus->ExternalEquipmentPowerNetworkStatus =         (data >> 22) & 1;
+		this->powerSupplyStatus->LaserTrackerPowerNetworkStatus =              (data >> 23) & 1;
+		this->publisher->logPowerSupplyStatus();
 	}
 }
 

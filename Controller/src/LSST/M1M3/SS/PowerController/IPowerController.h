@@ -17,6 +17,9 @@ public:
 	virtual ~IPowerController();
 
 	virtual void checkPowerStatus();
+	virtual void samplePowerSupplyDataAndStatus();
+	virtual void publishPowerSupplyData();
+	virtual void publishPowerSupplyStatusIfRequired();
 
 	virtual void setBothPowerNetworks(bool on);
 

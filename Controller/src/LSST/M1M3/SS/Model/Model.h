@@ -29,6 +29,7 @@ private:
 	ISettingReader* settingReader;
 	IPublisher* publisher;
 	IFPGA* fpga;
+	IExpansionFPGA* expansionFPGA;
 	IDisplacement* displacement;
 	IInclinometer* inclinometer;
 	IILC* ilc;
@@ -47,12 +48,13 @@ private:
 	double cachedTimestamp;
 
 public:
-	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IInterlockController* interlockController);
+	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, IInterlockController* interlockController);
 	virtual ~Model();
 
 	ISettingReader* getSettingReader() { return this->settingReader; }
 	IPublisher* getPublisher() { return this->publisher; }
 	IFPGA* getFPGA() { return this->fpga; }
+	IExpansionFPGA* getExpansionFPGA() { return this->expansionFPGA; }
 	IDisplacement* getDisplacement() { return this->displacement; }
 	IInclinometer* getInclinometer() { return this->inclinometer; }
 	IILC* getILC() { return this->ilc; }

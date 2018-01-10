@@ -38,10 +38,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IInterlockController* interlockController) {
+Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, IInterlockController* interlockController) {
 	this->settingReader = settingReader;
 	this->publisher = publisher;
 	this->fpga = fpga;
+	this->expansionFPGA = expansionFPGA;
 	this->safetyController = 0;
 	this->displacement = 0;
 	this->inclinometer = 0;
@@ -162,7 +163,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->powerController) {
 		delete this->powerController;
 	}
-	this->powerController = new PowerController(this->publisher, this->fpga, this->safetyController);
+	this->powerController = new PowerController(this->publisher, this->fpga, this->expansionFPGA, this->safetyController);
 
 	if (this->automaticOperationsController) {
 		delete this->automaticOperationsController;
@@ -199,7 +200,7 @@ void Model::publishStateChange(States::Type newState) {
 void Model::publishRecommendedSettings() {
 	RecommendedApplicationSettings* recommendedApplicationSettings = this->settingReader->loadRecommendedApplicationSettings();
 	m1m3_logevent_SettingVersionsC* data = this->publisher->getEventSettingVersions();
-	data->Timestamp = Timestamp::currentTime();
+	data->Timestamp = this->publisher->getTimestamp();
 	data->RecommendedSettingsVersion = "";
 	for(uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
 		data->RecommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";

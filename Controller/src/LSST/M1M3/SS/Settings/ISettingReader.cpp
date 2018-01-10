@@ -28,6 +28,7 @@ DisplacementSensorSettings* ISettingReader::loadDisplacementSensorSettings() { r
 HardpointMonitorApplicationSettings* ISettingReader::loadHardpointMonitorApplicationSettings() { return 0; }
 InterlockApplicationSettings* ISettingReader::loadInterlockApplicationSettings() { return 0; }
 GyroSettings* ISettingReader::loadGyroSettings() { return 0; }
+ExpansionFPGAApplicationSettings* ISettingReader::loadExpansionFPGAApplicationSettings() { return 0; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

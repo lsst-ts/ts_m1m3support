@@ -11,9 +11,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-U16ArrayUtilities::~U16ArrayUtilities() {
-	// TODO Auto-generated destructor stub
-}
+U16ArrayUtilities::~U16ArrayUtilities() { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

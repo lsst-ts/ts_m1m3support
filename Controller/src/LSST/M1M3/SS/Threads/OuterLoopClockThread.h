@@ -9,6 +9,7 @@
 #define OUTERLOOPCLOCKTHREAD_H_
 
 #include <IThread.h>
+#include <DataTypes.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -18,6 +19,7 @@ namespace SS {
 class ICommandFactory;
 class IController;
 class IFPGA;
+class IPublisher;
 
 /*!
  * The outer loop clock thread is responsible for controlling
@@ -28,11 +30,13 @@ private:
 	ICommandFactory* commandFactory;
 	IController* controller;
 	IFPGA* fpga;
+	IPublisher* publisher;
+	uint16_t timestampUpdateBuffer[5];
 	bool keepRunning;
 	pthread_mutex_t updateMutex;
 
 public:
-	OuterLoopClockThread(ICommandFactory* commandFactory, IController* controller, IFPGA* fpga);
+	OuterLoopClockThread(ICommandFactory* commandFactory, IController* controller, IFPGA* fpga, IPublisher* publisher);
 	~OuterLoopClockThread();
 
 	void run();
