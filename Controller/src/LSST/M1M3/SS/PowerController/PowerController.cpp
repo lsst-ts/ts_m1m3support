@@ -22,6 +22,7 @@ PowerController::PowerController(IPublisher* publisher, IFPGA* fpga, IExpansionF
 	this->fpga = fpga;
 	this->expansionFPGA = expansionFPGA;
 	this->safetyController = safetyController;
+	this->previousSlot2Sample = 0;
 	this->powerSupplyData = this->publisher->getPowerSupplyData();
 	this->powerStatus = this->publisher->getEventPowerStatus();
 	this->powerSupplyStatus = this->publisher->getEventPowerSupplyStatus();
