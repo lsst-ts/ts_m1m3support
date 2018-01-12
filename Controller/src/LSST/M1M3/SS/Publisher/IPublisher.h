@@ -29,6 +29,7 @@ struct m1m3_logevent_AirSupplyWarningC;
 struct m1m3_logevent_AppliedForcesC;
 struct m1m3_logevent_CellLightStatusC;
 struct m1m3_logevent_CellLightWarningC;
+struct m1m3_logevent_DetailedStateC;
 struct m1m3_logevent_DisplacementSensorWarningC;
 struct m1m3_logevent_ErrorCodeC;
 struct m1m3_logevent_ForceActuatorDataRejectionC;
@@ -75,6 +76,7 @@ public:
 	virtual m1m3_logevent_AppliedForcesC* getEventAppliedForces();
 	virtual m1m3_logevent_CellLightStatusC* getEventCellLightStatus();
 	virtual m1m3_logevent_CellLightWarningC* getEventCellLightWarning();
+	virtual m1m3_logevent_DetailedStateC* getEventDetailedState();
 	virtual m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning();
 	virtual m1m3_logevent_ErrorCodeC* getEventErrorCode();
 	virtual m1m3_logevent_ForceActuatorDataRejectionC* getEventForceActuatorDataRejection();
@@ -115,6 +117,7 @@ public:
 	virtual void logAppliedForces();
 	virtual void logCellLightStatus();
 	virtual void logCellLightWarning();
+	virtual void logDetailedState();
 	virtual void logDisplacementSensorWarning();
 	virtual void logErrorCode();
 	virtual void logForceActuatorDataRejection();

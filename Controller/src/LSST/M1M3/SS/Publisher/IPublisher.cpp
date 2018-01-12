@@ -31,6 +31,7 @@ m1m3_logevent_AirSupplyWarningC* IPublisher::getEventAirSupplyWarning() { return
 m1m3_logevent_AppliedForcesC* IPublisher::getEventAppliedForces() { return 0; }
 m1m3_logevent_CellLightStatusC* IPublisher::getEventCellLightStatus() { return 0; }
 m1m3_logevent_CellLightWarningC* IPublisher::getEventCellLightWarning() { return 0; }
+m1m3_logevent_DetailedStateC* IPublisher::getEventDetailedState() { return 0; }
 m1m3_logevent_DisplacementSensorWarningC* IPublisher::getEventDisplacementSensorWarning() { return 0; }
 m1m3_logevent_ErrorCodeC* IPublisher::getEventErrorCode() { return 0; }
 m1m3_logevent_ForceActuatorDataRejectionC* IPublisher::getEventForceActuatorDataRejection() { return 0; }
@@ -71,6 +72,7 @@ void IPublisher::logAirSupplyWarning() { }
 void IPublisher::logAppliedForces() { }
 void IPublisher::logCellLightStatus() { }
 void IPublisher::logCellLightWarning() { }
+void IPublisher::logDetailedState() { }
 void IPublisher::logDisplacementSensorWarning() { }
 void IPublisher::logErrorCode() { }
 void IPublisher::logForceActuatorDataRejection() { }

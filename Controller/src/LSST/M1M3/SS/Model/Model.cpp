@@ -191,10 +191,16 @@ void Model::publishFPGAData() {
 }
 
 void Model::publishStateChange(States::Type newState) {
-	m1m3_logevent_SummaryStateC* data = this->publisher->getEventSummaryState();
-	data->Timestamp = this->publisher->getTimestamp();
-	data->SummaryState = newState;
+	uint64_t state = (uint64_t)newState;
+	double timestamp = this->publisher->getTimestamp();
+	m1m3_logevent_SummaryStateC* summaryStateData = this->publisher->getEventSummaryState();
+	summaryStateData->Timestamp = timestamp;
+	summaryStateData->SummaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
 	this->publisher->logSummaryState();
+	m1m3_logevent_DetailedStateC* detailedStateData = this->publisher->getEventDetailedState();
+	detailedStateData->Timestamp = timestamp;
+	detailedStateData->DetailedState = (int32_t)(state & 0x00000000FFFFFFFF);
+	this->publisher->logDetailedState();
 }
 
 void Model::publishRecommendedSettings() {

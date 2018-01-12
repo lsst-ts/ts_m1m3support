@@ -10,21 +10,22 @@
 
 struct States {
 	enum Type {
-		OfflineState             = 0x00000000,
-		StandbyState             = 0x01000000,
-		DisabledState            = 0x02000000,
-		EnabledState             = 0x03000000,
-		ParkedState              = 0x03000001,
-		RaisingState             = 0x03000002,
-		ActiveState              = 0x03000003,
-		LoweringState            = 0x03000004,
-		EngineeringState         = 0x03010000,
-		ParkedEngineeringState   = 0x03010001,
-		RaisingEngineeringState  = 0x03010002,
-		ActiveEngineeringState   = 0x03010003,
-		LoweringEngineeringState = 0x03010004,
-		FaultState               = 0xFFFFFFFF,
-		NoStateTransition        = 0x7FFFFFFF
+//		StateName                  SState    DState
+		OfflineState             = 0x0000000000000000,
+		StandbyState             = 0x0000000100000001,
+		DisabledState            = 0x0000000200000002,
+		EnabledState             = 0x0000000300000003,
+		ParkedState              = 0x0000000300000005,
+		RaisingState             = 0x0000000300000006,
+		ActiveState              = 0x0000000300000007,
+		LoweringState            = 0x0000000300000008,
+		EngineeringState         = 0x0000000300000009,
+		ParkedEngineeringState   = 0x000000030000000A,
+		RaisingEngineeringState  = 0x000000030000000B,
+		ActiveEngineeringState   = 0x000000030000000C,
+		LoweringEngineeringState = 0x000000030000000D,
+		FaultState               = 0x0000000400000004,
+		NoStateTransition        = 0xFFFFFFFFFFFFFFFF
 	};
 };
 
