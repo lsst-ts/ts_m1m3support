@@ -8,7 +8,7 @@
 #ifndef EXPANSIONFPGA_H_
 #define EXPANSIONFPGA_H_
 
-#include <IExpansionFPGA.h>
+#include <NiFpga.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -16,7 +16,7 @@ namespace SS {
 
 class ExpansionFPGAApplicationSettings;
 
-class ExpansionFPGA: public IExpansionFPGA {
+class ExpansionFPGA {
 private:
 	ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;
 	uint32_t session;

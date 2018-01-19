@@ -6,18 +6,18 @@
  */
 
 #include <PowerController.h>
-#include <IFPGA.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
-#include <IExpansionFPGA.h>
-#include <IPublisher.h>
-#include <ISafetyController.h>
+#include <ExpansionFPGA.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
 #include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PowerController::PowerController(IPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, ISafetyController* safetyController) {
+PowerController::PowerController(M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, SafetyController* safetyController) {
 	this->publisher = publisher;
 	this->fpga = fpga;
 	this->expansionFPGA = expansionFPGA;
@@ -27,6 +27,7 @@ PowerController::PowerController(IPublisher* publisher, IFPGA* fpga, IExpansionF
 	this->powerStatus = this->publisher->getEventPowerStatus();
 	this->powerSupplyStatus = this->publisher->getEventPowerSupplyStatus();
 	this->powerWarning = this->publisher->getEventPowerWarning();
+	this->expansionSampleTime = 0;
 }
 
 void PowerController::checkPowerStatus() {

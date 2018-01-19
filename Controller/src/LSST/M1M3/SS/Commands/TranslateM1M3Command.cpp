@@ -6,14 +6,14 @@
  */
 
 #include <TranslateM1M3Command.h>
-#include <IContext.h>
-#include <IPublisher.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TranslateM1M3Command::TranslateM1M3Command(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_TranslateM1M3C* data) {
+TranslateM1M3Command::TranslateM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TranslateM1M3C* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;

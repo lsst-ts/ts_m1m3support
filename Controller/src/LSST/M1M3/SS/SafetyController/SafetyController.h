@@ -8,8 +8,8 @@
 #ifndef SAFETYCONTROLLER_H_
 #define SAFETYCONTROLLER_H_
 
-#include <ISafetyController.h>
 #include <FaultCodes.h>
+#include <StateTypes.h>
 
 struct m1m3_logevent_ErrorCodeC;
 
@@ -17,18 +17,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
+class M1M3SSPublisher;
 class SafetyControllerSettings;
 
-class SafetyController: public ISafetyController {
+class SafetyController {
 private:
-	IPublisher* publisher;
+	M1M3SSPublisher* publisher;
 	SafetyControllerSettings* safetyControllerSettings;
 
 	m1m3_logevent_ErrorCodeC* errorCodeData;
 
 public:
-	SafetyController(IPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
+	SafetyController(M1M3SSPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
 
 	void clearErrorCode();
 

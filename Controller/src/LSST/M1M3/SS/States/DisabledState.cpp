@@ -6,15 +6,16 @@
  */
 
 #include <DisabledState.h>
-#include <IAccelerometer.h>
-#include <IAirController.h>
-#include <IDisplacement.h>
-#include <IILC.h>
-#include <IInclinometer.h>
-#include <IInterlockController.h>
-#include <IModel.h>
-#include <ISafetyController.h>
-#include <IPowerController.h>
+#include <Accelerometer.h>
+#include <AirController.h>
+#include <Displacement.h>
+#include <ILC.h>
+#include <Inclinometer.h>
+#include <InterlockController.h>
+#include <Model.h>
+#include <SafetyController.h>
+#include <PowerController.h>
+#include <Gyro.h>
 
 #include <iostream>
 using namespace std;
@@ -23,34 +24,44 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type DisabledState::update(UpdateCommand* command, IModel* model) {
-//	this->startTimer();
-	model->getILC()->writeFreezeSensorListBuffer();
-	model->getILC()->triggerModbus();
-	model->getPowerController()->samplePowerSupplyDataAndStatus();
-	model->getDisplacement()->writeDataRequest();
-	model->getInclinometer()->writeDataRequest();
-	model->getAccelerometer()->sampleData();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getDisplacement()->readDataResponse();
-	model->getInclinometer()->readDataResponse();
-	model->getILC()->readAll();
-	model->getILC()->verifyResponses();
-	model->getILC()->publishForceActuatorStatus();
-	model->getILC()->publishForceActuatorData();
-	model->getILC()->publishHardpointStatus();
-	model->getILC()->publishHardpointData();
-	model->getPowerController()->publishPowerSupplyData();
-	model->getPowerController()->publishPowerSupplyStatusIfRequired();
-	model->getPowerController()->checkPowerStatus();
-	model->getInterlockController()->tryToggleHeartbeat();
-	model->getInterlockController()->checkInterlockStatus();
-//	this->stopTimer();
-//	cout << "Time: " << this->getTimer() << endl;
+States::Type DisabledState::update(UpdateCommand* command, Model* model) {
+	this->startTimer();
+	ILC* ilc = model->getILC();
+	PowerController* powerController = model->getPowerController();
+	Displacement* displacement = model->getDisplacement();
+	Inclinometer* inclinometer = model->getInclinometer();
+	Accelerometer* accelerometer = model->getAccelerometer();
+	Gyro* gyro = model->getGyro();
+	InterlockController* interlockController = model->getInterlockController();
+	ilc->writeFreezeSensorListBuffer();
+	ilc->triggerModbus();
+	powerController->samplePowerSupplyDataAndStatus();
+	displacement->writeDataRequest();
+	inclinometer->writeDataRequest();
+	accelerometer->sampleData();
+	ilc->waitForAllSubnets(5000);
+	displacement->readDataResponse();
+	inclinometer->readDataResponse();
+	gyro->read();
+	ilc->readAll();
+	ilc->verifyResponses();
+	ilc->publishForceActuatorStatus();
+	ilc->publishForceActuatorData();
+	ilc->publishHardpointStatus();
+	ilc->publishHardpointData();
+	gyro->publishGyroData();
+	gyro->publishGyroWarningIfRequired();
+	powerController->publishPowerSupplyData();
+	powerController->publishPowerSupplyStatusIfRequired();
+	powerController->checkPowerStatus();
+	interlockController->tryToggleHeartbeat();
+	interlockController->checkInterlockStatus();
+	this->stopTimer();
+	//cout << "Time: " << this->getTimer() << endl;
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type DisabledState::enable(EnableCommand* command, IModel* model) {
+States::Type DisabledState::enable(EnableCommand* command, Model* model) {
 	States::Type newState = States::ParkedState;
 	model->getILC()->writeSetModeEnableBuffer();
 	model->getILC()->triggerModbus();
@@ -60,8 +71,10 @@ States::Type DisabledState::enable(EnableCommand* command, IModel* model) {
 	return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type DisabledState::standby(StandbyCommand* command, IModel* model) {
+States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
 	States::Type newState = States::StandbyState;
+	model->getGyro()->enableIgnore();
+	model->getGyro()->read();
 	model->getILC()->writeSetModeStandbyBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);

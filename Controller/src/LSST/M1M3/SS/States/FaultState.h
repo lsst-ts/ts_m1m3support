@@ -16,8 +16,8 @@ namespace SS {
 
 class FaultState: public State {
 public:
-	States::Type update(UpdateCommand* command, IModel* model);
-	States::Type standby(StandbyCommand* command, IModel* model);
+	States::Type update(UpdateCommand* command, Model* model);
+	States::Type standby(StandbyCommand* command, Model* model);
 };
 
 } /* namespace SS */

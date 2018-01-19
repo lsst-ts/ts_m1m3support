@@ -8,7 +8,6 @@
 #ifndef POSITIONCONTROLLER_H_
 #define POSITIONCONTROLLER_H_
 
-#include <IPositionController.h>
 #include <DataTypes.h>
 
 struct m1m3_HardpointDataC;
@@ -21,13 +20,13 @@ namespace SS {
 
 class PositionControllerSettings;
 class HardpointActuatorSettings;
-class IPublisher;
+class M1M3SSPublisher;
 
-class PositionController: public IPositionController {
+class PositionController {
 private:
 	PositionControllerSettings* positionControllerSettings;
 	HardpointActuatorSettings* hardpointActuatorSettings;
-	IPublisher* publisher;
+	M1M3SSPublisher* publisher;
 
 	m1m3_HardpointDataC* hardpointData;
 	m1m3_logevent_HardpointActuatorMotionStateC* hardpointActuatorMotionState;
@@ -36,7 +35,7 @@ private:
 	int32_t scaledMaxStepsPerLoop[6];
 
 public:
-	PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher);
+	PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher);
 
 	double getRaiseLowerTimeout();
 

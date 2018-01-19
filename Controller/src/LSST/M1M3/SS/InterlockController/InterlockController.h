@@ -8,7 +8,6 @@
 #ifndef INTERLOCKCONTROLLER_H_
 #define INTERLOCKCONTROLLER_H_
 
-#include <IInterlockController.h>
 #include <DataTypes.h>
 
 struct m1m3_logevent_CellLightStatusC;
@@ -20,16 +19,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class ISafetyController;
-class IFPGA;
+class M1M3SSPublisher;
+class SafetyController;
+class FPGA;
 class InterlockApplicationSettings;
 
-class InterlockController: public IInterlockController {
+class InterlockController {
 private:
-	IPublisher* publisher;
-	ISafetyController* safetyController;
-	IFPGA* fpga;
+	M1M3SSPublisher* publisher;
+	SafetyController* safetyController;
+	FPGA* fpga;
 	InterlockApplicationSettings* interlockApplicationSettings;
 
 	m1m3_logevent_CellLightStatusC* cellLightStatus;
@@ -43,9 +42,9 @@ private:
 	double lastToggleTimestamp;
 
 public:
-	InterlockController(IPublisher* publisher, IFPGA* fpga, InterlockApplicationSettings* interlockApplicationSettings);
+	InterlockController(M1M3SSPublisher* publisher, FPGA* fpga, InterlockApplicationSettings* interlockApplicationSettings);
 
-	void setSafetyController(ISafetyController* safetyController);
+	void setSafetyController(SafetyController* safetyController);
 
 	void tryToggleHeartbeat();
 

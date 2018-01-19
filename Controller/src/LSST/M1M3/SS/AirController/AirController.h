@@ -8,7 +8,6 @@
 #ifndef AIRCONTROLLER_H_
 #define AIRCONTROLLER_H_
 
-#include <IAirController.h>
 #include <DataTypes.h>
 
 struct m1m3_logevent_AirSupplyStatusC;
@@ -18,18 +17,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class ISafetyController;
-class IFPGA;
+class M1M3SSPublisher;
+class SafetyController;
+class FPGA;
 
 /*!
  * Class used for controlling air supply.
  */
-class AirController: public IAirController {
+class AirController {
 private:
-	IPublisher* publisher;
-	ISafetyController* safetyController;
-	IFPGA* fpga;
+	M1M3SSPublisher* publisher;
+	SafetyController* safetyController;
+	FPGA* fpga;
 
 	uint16_t turnAirOnBuffer[2];
 	uint16_t turnAirOffBuffer[2];
@@ -42,7 +41,7 @@ private:
 	bool forcePublishAirSupplyWarning;
 
 public:
-	AirController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
+	AirController(M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga);
 
 	void turnAirOn();
 	void turnAirOff();

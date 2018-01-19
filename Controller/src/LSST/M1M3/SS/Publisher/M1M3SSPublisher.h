@@ -8,7 +8,7 @@
 #ifndef M1M3SSPUBLISHER_H_
 #define M1M3SSPUBLISHER_H_
 
-#include <IPublisher.h>
+#include <DataTypes.h>
 #include <SAL_m1m3C.h>
 
 class SAL_m1m3;
@@ -17,7 +17,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher : public IPublisher {
+class M1M3SSPublisher {
 private:
 	SAL_m1m3* m1m3SAL;
 

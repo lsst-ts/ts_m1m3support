@@ -18,13 +18,13 @@ namespace SS {
 
 class ApplyAOSCorrectionByBendingModesCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_ApplyAOSCorrectionByBendingModesC data;
 
 public:
-	ApplyAOSCorrectionByBendingModesCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_ApplyAOSCorrectionByBendingModesC* data);
+	ApplyAOSCorrectionByBendingModesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyAOSCorrectionByBendingModesC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_ApplyAOSCorrectionByBendingModesC* getData() { return &this->data; }

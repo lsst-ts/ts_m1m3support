@@ -8,7 +8,6 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
-#include <IController.h>
 #include <queue>
 #include <pthread.h>
 
@@ -16,19 +15,20 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ICommandFactory;
+class Command;
+class CommandFactory;
 
 /*!
  * The main controller for the application.
  */
-class Controller: public IController {
+class Controller {
 private:
-	ICommandFactory* commandFactory;
+	CommandFactory* commandFactory;
 	pthread_mutex_t mutex;
-	std::queue<ICommand*> queue;
+	std::queue<Command*> queue;
 
 public:
-	Controller(ICommandFactory* commandFactory);
+	Controller(CommandFactory* commandFactory);
 	~Controller();
 
 	void lock();
@@ -36,9 +36,9 @@ public:
 
 	void clear();
 
-	void enqueue(ICommand* command);
-	ICommand* dequeue();
-	void execute(ICommand* command);
+	void enqueue(Command* command);
+	Command* dequeue();
+	void execute(Command* command);
 };
 
 } /* namespace SS */

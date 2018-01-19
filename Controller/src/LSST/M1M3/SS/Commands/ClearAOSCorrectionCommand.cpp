@@ -6,14 +6,14 @@
  */
 
 #include <ClearAOSCorrectionCommand.h>
-#include <IContext.h>
-#include <IPublisher.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearAOSCorrectionCommand::ClearAOSCorrectionCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_ClearAOSCorrectionC* data) {
+ClearAOSCorrectionCommand::ClearAOSCorrectionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ClearAOSCorrectionC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;

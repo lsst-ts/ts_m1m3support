@@ -6,26 +6,27 @@
  */
 
 #include <EnabledState.h>
-#include <IAccelerometer.h>
-#include <IAirController.h>
-#include <IDisplacement.h>
-#include <IForceController.h>
-#include <IILC.h>
-#include <IInclinometer.h>
-#include <IInterlockController.h>
-#include <IModel.h>
-#include <IPositionController.h>
-#include <ISafetyController.h>
-#include <IPowerController.h>
+#include <Accelerometer.h>
+#include <AirController.h>
+#include <Displacement.h>
+#include <ForceController.h>
+#include <ILC.h>
+#include <Inclinometer.h>
+#include <InterlockController.h>
+#include <Model.h>
+#include <PositionController.h>
+#include <SafetyController.h>
+#include <PowerController.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
-#include <IPublisher.h>
+#include <M1M3SSPublisher.h>
+#include <Gyro.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type EnabledState::update(UpdateCommand* command, IModel* model) {
+States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	model->getPositionController()->updateSteps();
 	model->getILC()->writeRaisedListBuffer();
 	model->getILC()->triggerModbus();
@@ -39,12 +40,15 @@ States::Type EnabledState::update(UpdateCommand* command, IModel* model) {
 	model->getAirController()->checkStatus();
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
+	model->getGyro()->read();
 	model->getForceController()->updateAppliedForces();
 	model->getForceController()->processAppliedForces();
 	model->getILC()->publishForceActuatorStatus();
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
+	model->getGyro()->publishGyroData();
+	model->getGyro()->publishGyroWarningIfRequired();
 	model->getPowerController()->publishPowerSupplyData();
 	model->getPowerController()->publishPowerSupplyStatusIfRequired();
 	model->getPowerController()->checkPowerStatus();
@@ -53,12 +57,12 @@ States::Type EnabledState::update(UpdateCommand* command, IModel* model) {
 	return States::NoStateTransition;
 }
 
-States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model) {
+States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
 	model->getForceController()->updateTMAAzimuthData(command->getData());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model) {
+States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) {
 	model->getForceController()->updateTMAElevationData(command->getData());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }

@@ -8,15 +8,51 @@
 #ifndef CONTEXT_H_
 #define CONTEXT_H_
 
-#include <IContext.h>
 #include <StateTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IStateFactory;
-class IModel;
+class StaticStateFactory;
+class Model;
+class BootCommand;
+class StartCommand;
+class EnableCommand;
+class DisableCommand;
+class StandbyCommand;
+class ShutdownCommand;
+class UpdateCommand;
+class TurnAirOnCommand;
+class TurnAirOffCommand;
+class ApplyOffsetForcesCommand;
+class ClearOffsetForcesCommand;
+class RaiseM1M3Command;
+class LowerM1M3Command;
+class ApplyAberrationByBendingModesCommand;
+class ApplyAberrationByForcesCommand;
+class ClearAberrationCommand;
+class ApplyAOSCorrectionByBendingModesCommand;
+class ApplyAOSCorrectionByForcesCommand;
+class ClearAOSCorrectionCommand;
+class EnterEngineeringCommand;
+class ExitEngineeringCommand;
+class TestAirCommand;
+class TestHardpointCommand;
+class TestForceActuatorCommand;
+class MoveHardpointActuatorsCommand;
+class EnableHardpointChaseCommand;
+class DisableHardpointChaseCommand;
+class AbortRaiseM1M3Command;
+class TranslateM1M3Command;
+class StopHardpointMotionCommand;
+class TMAAzimuthSampleCommand;
+class TMAElevationSampleCommand;
+class PositionM1M3Command;
+class TurnLightsOnCommand;
+class TurnLightsOffCommand;
+class TurnPowerOnCommand;
+class TurnPowerOffCommand;
 
 /*!
  * The context used to execute commands against the current state.
@@ -24,16 +60,16 @@ class IModel;
  * the state (has no knowledge of how to do things) to provide state
  * based functionality.
  */
-class Context: public IContext {
+class Context {
 private:
-	IStateFactory* stateFactory;
-	IModel* model;
+	StaticStateFactory* stateFactory;
+	Model* model;
 	States::Type currentState;
 
 	void updateCurrentStateIfRequired(States::Type potentialNewState);
 
 public:
-	Context(IStateFactory* stateFactory, IModel* model);
+	Context(StaticStateFactory* stateFactory, Model* model);
 
 	void boot(BootCommand* command);
 	void start(StartCommand* command);

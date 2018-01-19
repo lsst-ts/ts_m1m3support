@@ -21,10 +21,10 @@ namespace SS {
  */
 class BootCommand: public Command {
 private:
-	IContext* context;
+	Context* context;
 
 public:
-	BootCommand(IContext* context);
+	BootCommand(Context* context);
 
 	void execute();
 };

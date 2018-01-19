@@ -8,7 +8,6 @@
 #ifndef M1M3SSSUBSCRIBER_H_
 #define M1M3SSSUBSCRIBER_H_
 
-#include <ISubscriber.h>
 #include <SAL_m1m3C.h>
 #include <SAL_MTMountC.h>
 
@@ -19,16 +18,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ICommandFactory;
+class CommandFactory;
+class Command;
 
 /*!
  * A subscriber that utilizes the SAL.
  */
-class M1M3SSSubscriber: public ISubscriber {
+class M1M3SSSubscriber {
 private:
 	SAL_m1m3* m1m3SAL;
 	SAL_MTMount* mtMountSAL;
-	ICommandFactory* commandFactory;
+	CommandFactory* commandFactory;
 	m1m3_command_StartC startData;
 	m1m3_command_EnableC enableData;
 	m1m3_command_DisableC disableData;
@@ -67,43 +67,43 @@ private:
 
 
 public:
-	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, ICommandFactory* commandFactory);
+	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, CommandFactory* commandFactory);
 
-	ICommand* tryAcceptCommandStart();
-	ICommand* tryAcceptCommandEnable();
-	ICommand* tryAcceptCommandDisable();
-	ICommand* tryAcceptCommandStandby();
-	ICommand* tryAcceptCommandShutdown();
-	ICommand* tryAcceptCommandTurnAirOn();
-	ICommand* tryAcceptCommandTurnAirOff();
-	ICommand* tryAcceptCommandApplyOffsetForces();
-	ICommand* tryAcceptCommandClearOffsetForces();
-	ICommand* tryAcceptCommandRaiseM1M3();
-	ICommand* tryAcceptCommandLowerM1M3();
-	ICommand* tryAcceptCommandApplyAberrationByBendingModes();
-	ICommand* tryAcceptCommandApplyAberrationByForces();
-	ICommand* tryAcceptCommandClearAberration();
-	ICommand* tryAcceptCommandApplyAOSCorrectionByBendingModes();
-	ICommand* tryAcceptCommandApplyAOSCorrectionByForces();
-	ICommand* tryAcceptCommandClearAOSCorrection();
-	ICommand* tryAcceptCommandEnterEngineering();
-	ICommand* tryAcceptCommandExitEngineering();
-	ICommand* tryAcceptCommandTestAir();
-	ICommand* tryAcceptCommandTestHardpoint();
-	ICommand* tryAcceptCommandTestForceActuator();
-	ICommand* tryAcceptCommandMoveHardpointActuators();
-	ICommand* tryAcceptCommandEnableHardpointChase();
-	ICommand* tryAcceptCommandDisableHardpointChase();
-	ICommand* tryAcceptCommandAbortRaiseM1M3();
-	ICommand* tryAcceptCommandTranslateM1M3();
-	ICommand* tryAcceptCommandStopHardpointMotion();
-	ICommand* tryAcceptCommandPositionM1M3();
-	ICommand* tryAcceptCommandTurnLightsOn();
-	ICommand* tryAcceptCommandTurnLightsOff();
-	ICommand* tryAcceptCommandTurnPowerOn();
-	ICommand* tryAcceptCommandTurnPowerOff();
-	ICommand* tryGetSampleTMAAzimuth();
-	ICommand* tryGetSampleTMAElevation();
+	Command* tryAcceptCommandStart();
+	Command* tryAcceptCommandEnable();
+	Command* tryAcceptCommandDisable();
+	Command* tryAcceptCommandStandby();
+	Command* tryAcceptCommandShutdown();
+	Command* tryAcceptCommandTurnAirOn();
+	Command* tryAcceptCommandTurnAirOff();
+	Command* tryAcceptCommandApplyOffsetForces();
+	Command* tryAcceptCommandClearOffsetForces();
+	Command* tryAcceptCommandRaiseM1M3();
+	Command* tryAcceptCommandLowerM1M3();
+	Command* tryAcceptCommandApplyAberrationByBendingModes();
+	Command* tryAcceptCommandApplyAberrationByForces();
+	Command* tryAcceptCommandClearAberration();
+	Command* tryAcceptCommandApplyAOSCorrectionByBendingModes();
+	Command* tryAcceptCommandApplyAOSCorrectionByForces();
+	Command* tryAcceptCommandClearAOSCorrection();
+	Command* tryAcceptCommandEnterEngineering();
+	Command* tryAcceptCommandExitEngineering();
+	Command* tryAcceptCommandTestAir();
+	Command* tryAcceptCommandTestHardpoint();
+	Command* tryAcceptCommandTestForceActuator();
+	Command* tryAcceptCommandMoveHardpointActuators();
+	Command* tryAcceptCommandEnableHardpointChase();
+	Command* tryAcceptCommandDisableHardpointChase();
+	Command* tryAcceptCommandAbortRaiseM1M3();
+	Command* tryAcceptCommandTranslateM1M3();
+	Command* tryAcceptCommandStopHardpointMotion();
+	Command* tryAcceptCommandPositionM1M3();
+	Command* tryAcceptCommandTurnLightsOn();
+	Command* tryAcceptCommandTurnLightsOff();
+	Command* tryAcceptCommandTurnPowerOn();
+	Command* tryAcceptCommandTurnPowerOff();
+	Command* tryGetSampleTMAAzimuth();
+	Command* tryGetSampleTMAElevation();
 };
 
 } /* namespace SS */

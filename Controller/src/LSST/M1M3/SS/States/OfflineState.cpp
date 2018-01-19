@@ -6,14 +6,14 @@
  */
 
 #include <OfflineState.h>
-#include <IModel.h>
-#include <IInterlockController.h>
+#include <Model.h>
+#include <InterlockController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type OfflineState::boot(BootCommand* command, IModel* model) {
+States::Type OfflineState::boot(BootCommand* command, Model* model) {
 	States::Type newState = States::StandbyState;
 	model->publishRecommendedSettings();
 	model->getInterlockController()->setCriticalFault(false);

@@ -6,9 +6,9 @@
  */
 
 #include <InterlockController.h>
-#include <IPublisher.h>
-#include <ISafetyController.h>
-#include <IFPGA.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <InterlockApplicationSettings.h>
 #include <SAL_m1m3C.h>
@@ -17,7 +17,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-InterlockController::InterlockController(IPublisher* publisher, IFPGA* fpga, InterlockApplicationSettings* interlockApplicationSettings) {
+InterlockController::InterlockController(M1M3SSPublisher* publisher, FPGA* fpga, InterlockApplicationSettings* interlockApplicationSettings) {
 	this->publisher = publisher;
 	this->safetyController = 0;
 	this->fpga = fpga;
@@ -29,7 +29,7 @@ InterlockController::InterlockController(IPublisher* publisher, IFPGA* fpga, Int
 	this->lastToggleTimestamp = 0;
 }
 
-void InterlockController::setSafetyController(ISafetyController* safetyController) {
+void InterlockController::setSafetyController(SafetyController* safetyController) {
 	this->safetyController = safetyController;
 }
 

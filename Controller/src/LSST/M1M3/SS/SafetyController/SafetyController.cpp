@@ -6,7 +6,7 @@
  */
 
 #include <SafetyController.h>
-#include <IPublisher.h>
+#include <M1M3SSPublisher.h>
 #include <SafetyControllerSettings.h>
 #include <SAL_m1m3C.h>
 
@@ -14,7 +14,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SafetyController::SafetyController(IPublisher* publisher, SafetyControllerSettings* safetyControllerSettings) {
+SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerSettings* safetyControllerSettings) {
 	this->publisher = publisher;
 	this->safetyControllerSettings = safetyControllerSettings;
 	this->errorCodeData = this->publisher->getEventErrorCode();

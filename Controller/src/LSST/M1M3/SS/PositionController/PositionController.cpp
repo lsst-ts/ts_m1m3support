@@ -8,7 +8,7 @@
 #include <PositionController.h>
 #include <PositionControllerSettings.h>
 #include <HardpointActuatorSettings.h>
-#include <IPublisher.h>
+#include <M1M3SSPublisher.h>
 #include <HardpointActuatorMotionStates.h>
 #include <Range.h>
 #include <SAL_m1m3C.h>
@@ -17,7 +17,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PositionController::PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher) {
+PositionController::PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher) {
 	this->positionControllerSettings = positionControllerSettings;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->publisher = publisher;

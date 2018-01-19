@@ -18,13 +18,13 @@ namespace SS {
 
 class TurnAirOffCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_TurnAirOffC data;
 
 public:
-	TurnAirOffCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_TurnAirOffC* data);
+	TurnAirOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnAirOffC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_TurnAirOffC* getData() { return &this->data; }

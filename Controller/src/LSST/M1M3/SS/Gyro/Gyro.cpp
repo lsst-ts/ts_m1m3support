@@ -7,22 +7,22 @@
 
 #include <Gyro.h>
 #include <GyroSettings.h>
-#include <IFPGA.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
-#include <IPublisher.h>
+#include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
 #include <SAL_m1m3C.h>
 #include <boost/lexical_cast.hpp>
 #include <cstring>
-
-#include <iostream>
-using namespace std;
+#include <CRC.h>
+#include <Checksum.h>
+#include <unistd.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Gyro::Gyro(GyroSettings* gyroSettings, IFPGA* fpga, IPublisher* publisher) {
+Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
 	this->gyroSettings = gyroSettings;
 	this->fpga = fpga;
 	this->publisher = publisher;
@@ -34,6 +34,7 @@ Gyro::Gyro(GyroSettings* gyroSettings, IFPGA* fpga, IPublisher* publisher) {
 	this->setBuffer(&this->rotationFormatRateBuffer, "=ROTFMT,RATE\r\n");
 	this->setBuffer(&this->rotationUnitsRadiansBuffer, "=ROTUNITS,RAD\r\n");
 	this->setBuffer(&this->dataRateBuffer, "=DR," + boost::lexical_cast<std::string>(this->gyroSettings->DataRate) + "\r\n");
+	this->setBuffer(&this->bitBuffer, "?BIT,2\r\n");
 
 	std::string axesText = "=AXES";
 	for(unsigned int i = 0; i < this->gyroSettings->AxesMatrix.size(); ++i) {
@@ -48,79 +49,138 @@ Gyro::Gyro(GyroSettings* gyroSettings, IFPGA* fpga, IPublisher* publisher) {
 	this->publishGyroWarning();
 }
 
+void Gyro::bit() {
+	this->writeCommand(&this->bitBuffer);
+	usleep(10000);
+}
+
 void Gyro::enterConfigurationMode() {
 	this->writeCommand(&this->enterConfigurationBuffer);
+	usleep(10000);
 }
 
 void Gyro::exitConfigurationMode() {
 	this->writeCommand(&this->exitConfigurationBuffer);
+	usleep(10000);
+}
+
+void Gyro::enableIgnore() {
+	uint16_t buffer[2] = {
+		FPGAAddresses::GyroRxIgnore,
+		1
+	};
+	this->fpga->writeCommandFIFO(buffer, 2, 0);
+}
+
+void Gyro::disableIgnore() {
+	uint16_t buffer[2] = {
+		FPGAAddresses::GyroRxIgnore,
+		0
+	};
+	this->fpga->writeCommandFIFO(buffer, 2, 0);
 }
 
 void Gyro::resetConfiguration() {
 	this->writeCommand(&this->resetBuffer);
+	usleep(10000);
 }
 
 void Gyro::setRotationFormatRate() {
 	this->writeCommand(&this->rotationFormatRateBuffer);
+	usleep(10000);
 }
 
 void Gyro::setRotationUnitsRadians() {
 	this->writeCommand(&this->rotationUnitsRadiansBuffer);
+	usleep(10000);
 }
 
 void Gyro::setAxis() {
 	this->writeCommand(&this->axesBuffer);
+	usleep(10000);
 }
 
 void Gyro::setDataRate() {
 	this->writeCommand(&this->dataRateBuffer);
+	usleep(10000);
 }
 
 void Gyro::read() {
-	cout << "Gyro: Reading" << endl;
 	uint16_t lengthBuffer[1];
 	ModbusBuffer buffer = ModbusBuffer();
-	this->fpga->writeRequestFIFO((uint16_t)FPGAAddresses::GyroRx, 0);
-	this->fpga->readU16ResponseFIFO(lengthBuffer, 1, 10);
+	this->fpga->writeRequestFIFO(FPGAAddresses::GyroRx, 0);
+	this->fpga->readU16ResponseFIFO(lengthBuffer, 1, 1000);
 	uint16_t length = lengthBuffer[0];
-	cout << "\tLength = " << length << endl;
 	if (length != 0) {
+		if (length > 1024) {
+			length = 1024;
+		}
 		buffer.setIndex(0);
-		this->fpga->readU16ResponseFIFO(buffer.getBuffer(), length, 10);
+		this->fpga->readU16ResponseFIFO(buffer.getBuffer(), length, 1000);
 		buffer.setLength(length);
 		while(!buffer.endOfBuffer()) {
-			while(!buffer.endOfFrame()) {
-				cout << " " << buffer.readU8();
+			uint8_t peek = buffer.readU8();
+			buffer.setIndex(buffer.getIndex() - 1);
+			if (peek == 0xFE) {
+				uint32_t header = buffer.readU32();
+				if (header == 0xFE81FF55 || header == 0xFE8100AA || header == 0xFE8100AB) {
+					uint8_t tmpBuffer[36];
+					int length = 0;
+					switch(header) {
+					case 0xFE81FF55: length = 36; break;
+					case 0xFE8100AA: length = 11; break;
+					case 0xFE8100AB: length = 13; break;
+					}
+					buffer.setIndex(buffer.getIndex() - 4);
+					for(int i = 0; i < length; ++i) {
+						tmpBuffer[i] = buffer.readU8();
+					}
+					bool valid = false;
+					switch(header) {
+					case 0xFE81FF55: valid = CRC::crc32(tmpBuffer, 0, length - 4) == buffer.readU32(); break;
+					case 0xFE8100AA: valid = Checksum::checksum8(tmpBuffer, 0, length - 1) == buffer.readU8(); break;
+					case 0xFE8100AB: valid = Checksum::checksum8(tmpBuffer, 0, length - 1) == buffer.readU8(); break;
+					}
+					if (valid) {
+						switch(header) {
+						case 0xFE81FF55: this->readData(&buffer); break;
+						case 0xFE8100AA: this->readShortBIT(&buffer); break;
+						case 0xFE8100AB: this->readLongBIT(&buffer); break;
+						}
+					}
+					double timestamp = buffer.readTimestamp();
+					this->gyroData->Timestamp = timestamp;
+					this->gyroWarning->Timestamp = timestamp;
+					buffer.readEndOfFrame();
+					if (!valid) {
+						this->gyroWarning->CRCMismatchWarning = true;
+					}
+				}
+				else {
+					// TODO: Incomplete Frame it is expected to occur because of how I read data
+					this->readToEndOfFrame(&buffer);
+				}
 			}
-//			uint8_t peek = buffer.readU8();
-//			buffer.setIndex(buffer.getIndex() - 1);
-//			if (peek == 0xFE) {
-//				uint32_t header = buffer.readU32();
-//				cout << "\tHeader = " << header << endl;
-//				switch(header) {
-//				case 0xFE81FF55: this->readData(&buffer); break;
-//				case 0xFE8100AA: this->readShortBIT(&buffer); break;
-//				case 0xFE8100AB: this->readLongBIT(&buffer); break;
-//				}
-//				// TODO: Need to decide how to handle CRC checks
-//			}
-//			else {
+			else {
+				this->readToEndOfFrame(&buffer);
+				// TODO: Need to decide how to handle ASCII responses
 //				int32_t startIndex = buffer.getIndex();
 //				uint8_t value = buffer.readU8();
-//				while(value != (uint8_t)'\n') ;
+//				while(value != (uint8_t)'\n') {
+//					value = buffer.readU8();
+//				}
 //				int32_t stopIndex = buffer.getIndex();
 //				int32_t strLength = stopIndex - startIndex - 2;
 //				buffer.setIndex(startIndex);
 //				std::string str = buffer.readString(strLength);
+//				buffer.readU16();
+//				buffer.readTimestamp();
+//				buffer.readEndOfFrame();
 //				cout << "\tMessage = " << str << endl;
-//				// TODO: Need to decide how to handle ASCII responses
-//			}
+			}
 		}
 
 	}
-	// 0xFE81FF55 = Binary Message
-	// 0xFE8100AA = 6 byte BIT
-	// 0xFE8100AB = 8 byte BIT
 }
 
 void Gyro::publishGyroData() {
@@ -134,19 +194,17 @@ void Gyro::publishGyroWarningIfRequired() {
 }
 
 void Gyro::setBuffer(GyroBuffer* buffer, std::string text) {
-	buffer->Size = text.size() + 1;
+	buffer->Size = text.size() + 3;
+	buffer->Buffer[0] = FPGAAddresses::GyroTx;
+	buffer->Buffer[1] = buffer->Size - 2;
 	for(int i = 0; i < (buffer->Size - 1); ++i) {
-		buffer->Buffer[i] = 0x1000 | (((uint16_t)text[i]) << 1);
+		buffer->Buffer[i + 2] = 0x1200 | (((uint16_t)text[i]) << 1);
 	}
 	buffer->Buffer[buffer->Size - 1] = 0x2100;
 }
 
 void Gyro::writeCommand(GyroBuffer* buffer) {
 	this->fpga->writeCommandFIFO(buffer->Buffer, buffer->Size, 0);
-}
-
-void Gyro::readCommand() {
-
 }
 
 void Gyro::readShortBIT(ModbusBuffer* buffer) {
@@ -228,6 +286,10 @@ void Gyro::readData(ModbusBuffer* buffer) {
 	buffer->readU32(); // CRC
 	this->gyroData->Timestamp = buffer->readTimestamp();
 	buffer->readEndOfFrame();
+}
+
+void Gyro::readToEndOfFrame(ModbusBuffer* buffer) {
+	buffer->skipToNextFrame();
 }
 
 bool Gyro::checkGyroWarningForUpdates() {

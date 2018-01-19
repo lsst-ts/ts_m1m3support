@@ -6,13 +6,13 @@
  */
 
 #include <UpdateCommand.h>
-#include <IContext.h>
+#include <Context.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-UpdateCommand::UpdateCommand(IContext* context, pthread_mutex_t* updateMutex) {
+UpdateCommand::UpdateCommand(Context* context, pthread_mutex_t* updateMutex) {
 	this->context = context;
 	this->updateMutex = updateMutex;
 

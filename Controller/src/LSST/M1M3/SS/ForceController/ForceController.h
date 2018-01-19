@@ -8,7 +8,6 @@
 #ifndef FORCECONTROLLER_H_
 #define FORCECONTROLLER_H_
 
-#include <IForceController.h>
 #include <DataTypes.h>
 #include <ForceActuatorNeighbors.h>
 #include <SAL_m1m3C.h>
@@ -21,18 +20,18 @@ namespace SS {
 
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
-class IPublisher;
-class ISafetyController;
+class M1M3SSPublisher;
+class SafetyController;
 
-class ForceController: public IForceController {
+class ForceController {
 private:
 	static double const sqrt2 = 1.4142135623730950488016887242097;
 	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
-	IPublisher* publisher;
-	ISafetyController* safetyController;
+	M1M3SSPublisher* publisher;
+	SafetyController* safetyController;
 
 	m1m3_logevent_AppliedForcesC* appliedForces;
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
@@ -49,7 +48,7 @@ private:
 	static int32_t toInt24(double force) { return (int32_t)(force * 1000.0); }
 
 public:
-	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, IPublisher* publisher, ISafetyController* safetyController);
+	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, M1M3SSPublisher* publisher, SafetyController* safetyController);
 
 	void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
 	void updateTMAElevationData(MTMount_AltC* tmaElevationData);

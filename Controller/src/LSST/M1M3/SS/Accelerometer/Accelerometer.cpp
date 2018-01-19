@@ -6,8 +6,8 @@
  */
 
 #include <Accelerometer.h>
-#include <IPublisher.h>
-#include <IFPGA.h>
+#include <M1M3SSPublisher.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <AccelerometerSettings.h>
 #include <U16ArrayUtilities.h>
@@ -18,7 +18,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Accelerometer::Accelerometer(IPublisher* publisher, IFPGA* fpga, AccelerometerSettings* accelerometerSettings) {
+Accelerometer::Accelerometer(M1M3SSPublisher* publisher, FPGA* fpga, AccelerometerSettings* accelerometerSettings) {
 	this->publisher = publisher;
 	this->fpga = fpga;
 	this->accelerometerSettings = accelerometerSettings;

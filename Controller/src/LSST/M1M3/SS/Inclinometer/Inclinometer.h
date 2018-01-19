@@ -8,7 +8,6 @@
 #ifndef INCLINOMETER_H_
 #define INCLINOMETER_H_
 
-#include <IInclinometer.h>
 #include <DataTypes.h>
 #include <SAL_m1m3C.h>
 
@@ -19,15 +18,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class ISafetyController;
-class IFPGA;
+class M1M3SSPublisher;
+class SafetyController;
+class FPGA;
 
-class Inclinometer: public IInclinometer {
+class Inclinometer {
 private:
-	IPublisher* publisher;
-	ISafetyController* safetyController;
-	IFPGA* fpga;
+	M1M3SSPublisher* publisher;
+	SafetyController* safetyController;
+	FPGA* fpga;
 	m1m3_InclinometerDataC* inclinometerData;
 	m1m3_logevent_InclinometerSensorWarningC* inclinometerWarning;
 
@@ -35,7 +34,7 @@ private:
 	uint8_t rxBuffer[32];
 
 public:
-	Inclinometer(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
+	Inclinometer(M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga);
 
 	void writeDataRequest();
 	void readDataResponse();

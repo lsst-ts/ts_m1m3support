@@ -6,14 +6,14 @@
  */
 
 #include <TurnAirOffCommand.h>
-#include <IContext.h>
-#include <IPublisher.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnAirOffCommand::TurnAirOffCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_TurnAirOffC* data) {
+TurnAirOffCommand::TurnAirOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnAirOffC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;

@@ -16,26 +16,25 @@ namespace SS {
 
 class ActiveEngineeringState: public EngineeringState {
 public:
-	States::Type update(UpdateCommand* command, IModel* model);
-	States::Type lowerM1M3(LowerM1M3Command* command, IModel* model);
-	States::Type exitEngineering(ExitEngineeringCommand* command, IModel* model);
-
-	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model);
-	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model);
-	States::Type applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, IModel* model);
-	States::Type applyAberrationByForces(ApplyAberrationByForcesCommand* command, IModel* model);
-	States::Type clearAberration(ClearAberrationCommand* command, IModel* model);
-	States::Type applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, IModel* model);
-	States::Type applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, IModel* model);
-	States::Type clearAOSCorrection(ClearAOSCorrectionCommand* command, IModel* model);
-	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model);
-	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model);
-	States::Type translateM1M3(TranslateM1M3Command* command, IModel* model);
-	States::Type positionM1M3(PositionM1M3Command* command, IModel* model);
-	States::Type turnLightsOn(TurnLightsOnCommand* command, IModel* model);
-	States::Type turnLightsOff(TurnLightsOffCommand* command, IModel* model);
-	States::Type turnPowerOn(TurnPowerOnCommand* command, IModel* model);
-	States::Type turnPowerOff(TurnPowerOffCommand* command, IModel* model);
+	States::Type update(UpdateCommand* command, Model* model);
+	States::Type lowerM1M3(LowerM1M3Command* command, Model* model);
+	States::Type exitEngineering(ExitEngineeringCommand* command, Model* model);
+	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model);
+	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, Model* model);
+	States::Type applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, Model* model);
+	States::Type applyAberrationByForces(ApplyAberrationByForcesCommand* command, Model* model);
+	States::Type clearAberration(ClearAberrationCommand* command, Model* model);
+	States::Type applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, Model* model);
+	States::Type applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, Model* model);
+	States::Type clearAOSCorrection(ClearAOSCorrectionCommand* command, Model* model);
+	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, Model* model);
+	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model);
+	States::Type translateM1M3(TranslateM1M3Command* command, Model* model);
+	States::Type positionM1M3(PositionM1M3Command* command, Model* model);
+	States::Type turnLightsOn(TurnLightsOnCommand* command, Model* model);
+	States::Type turnLightsOff(TurnLightsOffCommand* command, Model* model);
+	States::Type turnPowerOn(TurnPowerOnCommand* command, Model* model);
+	States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
 };
 
 } /* namespace SS */

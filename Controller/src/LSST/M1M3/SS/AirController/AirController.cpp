@@ -6,9 +6,9 @@
  */
 
 #include <AirController.h>
-#include <IPublisher.h>
-#include <ISafetyController.h>
-#include <IFPGA.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <SAL_m1m3C.h>
 #include <cstring>
@@ -17,7 +17,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AirController::AirController(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
+AirController::AirController(M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga) {
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 	this->fpga = fpga;

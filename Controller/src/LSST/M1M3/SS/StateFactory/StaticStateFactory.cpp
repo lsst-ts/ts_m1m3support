@@ -11,7 +11,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-IState* StaticStateFactory::create(States::Type state) {
+State* StaticStateFactory::create(States::Type state) {
 	switch(state) {
 	case States::OfflineState: return &this->offlineState;
 	case States::StandbyState: return &this->standbyState;
@@ -31,7 +31,7 @@ IState* StaticStateFactory::create(States::Type state) {
 	}
 }
 
-void StaticStateFactory::destroy(IState* state) { }
+void StaticStateFactory::destroy(State* state) { }
 
 } /* namespace SS */
 } /* namespace M1M3 */

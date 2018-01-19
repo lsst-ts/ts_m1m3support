@@ -8,7 +8,6 @@
 #ifndef POWERCONTROLLER_H_
 #define POWERCONTROLLER_H_
 
-#include <IPowerController.h>
 #include <DataTypes.h>
 
 struct m1m3_PowerSupplyDataC;
@@ -21,17 +20,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class IFPGA;
-class IExpansionFPGA;
-class ISafetyController;
+class M1M3SSPublisher;
+class FPGA;
+class ExpansionFPGA;
+class SafetyController;
 
-class PowerController: public IPowerController {
+class PowerController {
 private:
-	IPublisher* publisher;
-	IFPGA* fpga;
-	IExpansionFPGA* expansionFPGA;
-	ISafetyController* safetyController;
+	M1M3SSPublisher* publisher;
+	FPGA* fpga;
+	ExpansionFPGA* expansionFPGA;
+	SafetyController* safetyController;
 
 	m1m3_PowerSupplyDataC* powerSupplyData;
 	m1m3_logevent_PowerStatusC* powerStatus;
@@ -42,7 +41,7 @@ private:
 	uint32_t previousSlot2Sample;
 
 public:
-	PowerController(IPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, ISafetyController* safetyController);
+	PowerController(M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, SafetyController* safetyController);
 
 	void checkPowerStatus();
 	void samplePowerSupplyDataAndStatus();

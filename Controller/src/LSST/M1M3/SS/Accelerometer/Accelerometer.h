@@ -8,7 +8,6 @@
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 
-#include <IAccelerometer.h>
 #include <DataTypes.h>
 
 struct m1m3_AccelerometerDataC;
@@ -18,14 +17,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class IFPGA;
+class M1M3SSPublisher;
+class FPGA;
 class AccelerometerSettings;
 
-class Accelerometer: public IAccelerometer {
+class Accelerometer {
 private:
-	IPublisher* publisher;
-	IFPGA* fpga;
+	M1M3SSPublisher* publisher;
+	FPGA* fpga;
 	AccelerometerSettings* accelerometerSettings;
 
 	m1m3_AccelerometerDataC* accelerometerData;
@@ -35,7 +34,7 @@ private:
 	float dataBuffer[8];
 
 public:
-	Accelerometer(IPublisher* publisher, IFPGA* fpga, AccelerometerSettings* accelerometerSettings);
+	Accelerometer(M1M3SSPublisher* publisher, FPGA* fpga, AccelerometerSettings* accelerometerSettings);
 
 	void sampleData();
 

@@ -6,8 +6,8 @@
  */
 
 #include <Model.h>
-#include <ISettingReader.h>
-#include <IPublisher.h>
+#include <SettingReader.h>
+#include <M1M3SSPublisher.h>
 #include <Displacement.h>
 #include <Inclinometer.h>
 #include <ILC.h>
@@ -15,7 +15,7 @@
 #include <ILCApplicationSettings.h>
 #include <U16ArrayUtilities.h>
 #include <iostream>
-#include <IFPGA.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceController.h>
 #include <RecommendedApplicationSettings.h>
@@ -38,7 +38,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, IInterlockController* interlockController) {
+Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, InterlockController* interlockController) {
 	this->settingReader = settingReader;
 	this->publisher = publisher;
 	this->fpga = fpga;

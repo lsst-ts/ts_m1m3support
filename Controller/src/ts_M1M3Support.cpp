@@ -30,15 +30,6 @@
 #include <cstring>
 #include <ExpansionFPGA.h>
 
-#include <Gyro.h>
-
-
-
-#include <U8ArrayUtilities.h>
-#include <Timestamp.h>
-
-#include <stdio.h>
-
 using namespace std;
 using namespace LSST::M1M3::SS;
 
@@ -83,18 +74,6 @@ int main() {
 		m1m3SAL.salShutdown();
 		return -1;
 	}
-
-
-//	settingReader.configure("Default");
-//	usleep(1000000);
-//	GyroSettings* gyroSettings = settingReader.loadGyroSettings();
-//	Gyro gyro = Gyro(gyroSettings, &fpga, &publisher);
-//	for(int i = 0; i < 10; ++i) {
-//		usleep(10000);
-//		gyro.read();
-//	}
-
-
 	cout << "Creating state factory" << endl;
 	StaticStateFactory stateFactory = StaticStateFactory();
 	cout << "Load interlock application settings" << endl;

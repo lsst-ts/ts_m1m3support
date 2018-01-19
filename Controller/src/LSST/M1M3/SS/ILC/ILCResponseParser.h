@@ -31,14 +31,14 @@ namespace SS {
 class ModbusBuffer;
 class HardpointActuatorSettings;
 class ForceActuatorSettings;
-class IPublisher;
+class M1M3SSPublisher;
 class ILCSubnetData;
 
 class ILCResponseParser {
 private:
 	HardpointActuatorSettings* hardpointActuatorSettings;
 	ForceActuatorSettings* forceActuatorSettings;
-	IPublisher* publisher;
+	M1M3SSPublisher* publisher;
 	ILCSubnetData* subnetData;
 
 	int32_t faExpectedResponses[156];
@@ -61,7 +61,7 @@ private:
 
 public:
 	ILCResponseParser();
-	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData);
+	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData);
 
 	void parse(ModbusBuffer* buffer, uint8_t subnet);
 	void incExpectedResponses(int32_t* fa, int32_t* hp);

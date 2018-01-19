@@ -18,13 +18,13 @@ namespace SS {
 
 class ClearOffsetForcesCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_ClearOffsetForcesC data;
 
 public:
-	ClearOffsetForcesCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_ClearOffsetForcesC* data);
+	ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ClearOffsetForcesC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_ClearOffsetForcesC* getData() { return &this->data; }

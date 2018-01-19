@@ -18,13 +18,13 @@ namespace SS {
 
 class EnterEngineeringCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_EnterEngineeringC data;
 
 public:
-	EnterEngineeringCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_EnterEngineeringC* data);
+	EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnterEngineeringC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_EnterEngineeringC* getData() { return &this->data; }

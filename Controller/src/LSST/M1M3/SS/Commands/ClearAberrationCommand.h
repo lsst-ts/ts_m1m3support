@@ -18,13 +18,13 @@ namespace SS {
 
 class ClearAberrationCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_ClearAberrationC data;
 
 public:
-	ClearAberrationCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_ClearAberrationC* data);
+	ClearAberrationCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ClearAberrationC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_ClearAberrationC* getData() { return &this->data; }

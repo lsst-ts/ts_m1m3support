@@ -18,13 +18,13 @@ namespace SS {
 
 class ApplyOffsetForcesCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_ApplyOffsetForcesC data;
 
 public:
-	ApplyOffsetForcesCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_ApplyOffsetForcesC* data);
+	ApplyOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyOffsetForcesC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_ApplyOffsetForcesC* getData() { return &this->data; }

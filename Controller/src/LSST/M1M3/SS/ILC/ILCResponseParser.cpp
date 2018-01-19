@@ -8,7 +8,7 @@
 #include <ILCResponseParser.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
-#include <IPublisher.h>
+#include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
 #include <ForceConverter.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -42,7 +42,7 @@ ILCResponseParser::ILCResponseParser() {
 	this->ilcWarning = 0;
 }
 
-ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData) {
+ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData) {
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->publisher = publisher;

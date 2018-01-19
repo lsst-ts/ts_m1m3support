@@ -16,10 +16,10 @@ namespace SS {
 
 class ParkedState: public EnabledState {
 public:
-	States::Type update(UpdateCommand* command, IModel* model);
-	States::Type raiseM1M3(RaiseM1M3Command* command, IModel* model);
-	States::Type enterEngineering(EnterEngineeringCommand* command, IModel* model);
-	States::Type disable(DisableCommand* command, IModel* model);
+	States::Type update(UpdateCommand* command, Model* model);
+	States::Type raiseM1M3(RaiseM1M3Command* command, Model* model);
+	States::Type enterEngineering(EnterEngineeringCommand* command, Model* model);
+	States::Type disable(DisableCommand* command, Model* model);
 };
 
 } /* namespace SS */

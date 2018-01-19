@@ -8,7 +8,6 @@
 #ifndef SETTINGREADER_H_
 #define SETTINGREADER_H_
 
-#include <ISettingReader.h>
 #include <SafetyControllerSettings.h>
 #include <AliasApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -30,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SettingReader: public ISettingReader {
+class SettingReader {
 private:
 	AliasApplicationSettings aliasApplicationSettings;
 	ForceActuatorApplicationSettings forceActuatorApplicationSettings;

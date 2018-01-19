@@ -8,31 +8,29 @@
 #ifndef AUTOMATICOPERATIONSCONTROLLER_H_
 #define AUTOMATICOPERATIONSCONTROLLER_H_
 
-#include <IAutomaticOperationsController.h>
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPositionController;
-class IForceController;
-class IInterlockController;
-class ISafetyController;
-class IPublisher;
-class IPowerController;
+class PositionController;
+class ForceController;
+class InterlockController;
+class SafetyController;
+class M1M3SSPublisher;
+class PowerController;
 
-class AutomaticOperationsController: public IAutomaticOperationsController {
+class AutomaticOperationsController {
 private:
-	IPositionController* positionController;
-	IForceController* forceController;
-	IInterlockController* interlockController;
-	ISafetyController* safetyController;
-	IPublisher* publisher;
-	IPowerController* powerController;
+	PositionController* positionController;
+	ForceController* forceController;
+	InterlockController* interlockController;
+	SafetyController* safetyController;
+	M1M3SSPublisher* publisher;
+	PowerController* powerController;
 	double cachedTimestamp;
 
 public:
-	AutomaticOperationsController(IPositionController* positionController, IForceController* forceController, IInterlockController* interlockController, ISafetyController* safetyController, IPublisher* publisher, IPowerController* powerController);
+	AutomaticOperationsController(PositionController* positionController, ForceController* forceController, InterlockController* interlockController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController);
 
 	void startRaiseOperation();
 	void tryIncrementingSupportPercentage();

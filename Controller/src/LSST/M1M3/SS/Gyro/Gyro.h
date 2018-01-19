@@ -8,7 +8,6 @@
 #ifndef GYRO_H_
 #define GYRO_H_
 
-#include <IGyro.h>
 #include <DataTypes.h>
 #include <SAL_m1m3C.h>
 #include <string>
@@ -18,15 +17,15 @@ namespace M1M3 {
 namespace SS {
 
 class GyroSettings;
-class IFPGA;
-class IPublisher;
+class FPGA;
+class M1M3SSPublisher;
 class ModbusBuffer;
 
-class Gyro: public IGyro {
+class Gyro {
 private:
 	GyroSettings* gyroSettings;
-	IFPGA* fpga;
-	IPublisher* publisher;
+	FPGA* fpga;
+	M1M3SSPublisher* publisher;
 	m1m3_GyroDataC* gyroData;
 	m1m3_logevent_GyroWarningC* gyroWarning;
 	m1m3_logevent_GyroWarningC previousGyroWarning;
@@ -43,12 +42,18 @@ private:
 	GyroBuffer rotationUnitsRadiansBuffer;
 	GyroBuffer axesBuffer;
 	GyroBuffer dataRateBuffer;
+	GyroBuffer bitBuffer;
 
 public:
-	Gyro(GyroSettings* gyroSettings, IFPGA* fpga, IPublisher* publisher);
+	Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher);
+
+	void bit();
 
 	void enterConfigurationMode();
 	void exitConfigurationMode();
+
+	void enableIgnore();
+	void disableIgnore();
 
 	void resetConfiguration();
 
@@ -66,12 +71,12 @@ private:
 	void setBuffer(GyroBuffer* buffer, std::string text);
 
 	void writeCommand(GyroBuffer* buffer);
-	void readCommand();
 
 	void readShortBIT(ModbusBuffer* buffer);
 	void readFirst6OfBIT(ModbusBuffer* buffer);
 	void readLongBIT(ModbusBuffer* buffer);
 	void readData(ModbusBuffer* buffer);
+	void readToEndOfFrame(ModbusBuffer* buffer);
 
 	bool checkGyroWarningForUpdates();
 	void publishGyroWarning();
