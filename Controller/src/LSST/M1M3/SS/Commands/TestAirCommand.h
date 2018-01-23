@@ -18,13 +18,13 @@ namespace SS {
 
 class TestAirCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_TestAirC data;
 
 public:
-	TestAirCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_TestAirC* data);
+	TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestAirC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_TestAirC* getData() { return &this->data; }

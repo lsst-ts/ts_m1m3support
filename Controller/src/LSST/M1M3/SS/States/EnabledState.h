@@ -16,9 +16,9 @@ namespace SS {
 
 class EnabledState: public State {
 public:
-	virtual States::Type update(UpdateCommand* command, IModel* model);
-	States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, IModel* model);
-	States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, IModel* model);
+	virtual States::Type update(UpdateCommand* command, Model* model);
+	States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model);
+	States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model);
 };
 
 } /* namespace SS */

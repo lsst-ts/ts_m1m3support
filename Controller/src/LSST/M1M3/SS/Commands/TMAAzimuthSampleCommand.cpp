@@ -6,14 +6,14 @@
  */
 
 #include <TMAAzimuthSampleCommand.h>
-#include <IContext.h>
+#include <Context.h>
 #include <cstring>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(IContext* context, MTMount_AzC* data) {
+TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(Context* context, MTMount_AzC* data) {
 	this->context = context;
 	memcpy(&this->data, data, sizeof(MTMount_AzC));
 }

@@ -24,13 +24,13 @@ namespace SS {
  */
 class ShutdownCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_ShutdownC data;
 
 public:
-	ShutdownCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_ShutdownC* data);
+	ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ShutdownC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_ShutdownC* getData() { return &this->data; }

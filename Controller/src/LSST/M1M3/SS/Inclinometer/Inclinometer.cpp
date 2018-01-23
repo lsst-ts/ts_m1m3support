@@ -7,9 +7,9 @@
  */
 
 #include <Inclinometer.h>
-#include <IPublisher.h>
-#include <ISafetyController.h>
-#include <IFPGA.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <U8ArrayUtilities.h>
 #include <CRC.h>
@@ -21,7 +21,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Inclinometer::Inclinometer(IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
+Inclinometer::Inclinometer(M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga) {
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 	this->fpga = fpga;

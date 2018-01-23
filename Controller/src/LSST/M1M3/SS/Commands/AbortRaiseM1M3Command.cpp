@@ -6,14 +6,14 @@
  */
 
 #include <AbortRaiseM1M3Command.h>
-#include <IContext.h>
-#include <IPublisher.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AbortRaiseM1M3Command::AbortRaiseM1M3Command(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_AbortRaiseM1M3C* data) {
+AbortRaiseM1M3Command::AbortRaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_AbortRaiseM1M3C* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;

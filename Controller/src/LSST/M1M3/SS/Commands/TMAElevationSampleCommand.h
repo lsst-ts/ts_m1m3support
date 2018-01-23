@@ -19,12 +19,12 @@ namespace SS {
 
 class TMAElevationSampleCommand: public Command {
 private:
-	IContext* context;
+	Context* context;
 
 	MTMount_AltC data;
 
 public:
-	TMAElevationSampleCommand(IContext* context, MTMount_AltC* data);
+	TMAElevationSampleCommand(Context* context, MTMount_AltC* data);
 
 	MTMount_AltC* getData() { return &this->data; }
 

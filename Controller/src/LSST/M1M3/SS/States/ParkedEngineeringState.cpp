@@ -6,47 +6,47 @@
  */
 
 #include <ParkedEngineeringState.h>
-#include <IModel.h>
-#include <IAirController.h>
-#include <IDisplacement.h>
-#include <IInclinometer.h>
-#include <IILC.h>
+#include <Model.h>
+#include <AirController.h>
+#include <Displacement.h>
+#include <Inclinometer.h>
+#include <ILC.h>
 #include <unistd.h>
-#include <IForceController.h>
+#include <ForceController.h>
 #include <ApplyOffsetForcesCommand.h>
-#include <ISafetyController.h>
-#include <IPositionController.h>
+#include <SafetyController.h>
+#include <PositionController.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
-#include <IInterlockController.h>
-#include <IPublisher.h>
-#include <IPowerController.h>
+#include <InterlockController.h>
+#include <M1M3SSPublisher.h>
+#include <PowerController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
-#include <IAutomaticOperationsController.h>
+#include <AutomaticOperationsController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type ParkedEngineeringState::update(UpdateCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model) {
 	EnabledState::update(command, model);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, IModel* model) {
+States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
 	States::Type newState = States::RaisingEngineeringState;
 	model->getAutomaticOperationsController()->startRaiseOperation();
 	return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command, Model* model) {
 	States::Type newState = States::ParkedState;
 	return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* model) {
 	States::Type newState = States::DisabledState;
 	// Make sure the air is off
 	model->getAirController()->turnAirOff();
@@ -64,59 +64,59 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, IModel* mo
 	return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type ParkedEngineeringState::turnAirOn(TurnAirOnCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::turnAirOn(TurnAirOnCommand* command, Model* model) {
 	model->getAirController()->turnAirOn();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, Model* model) {
 	model->getAirController()->turnAirOff();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) {
 	model->getPositionController()->stopMotion();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
 	model->getPositionController()->move(command->getData()->Steps);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) {
 	model->getPositionController()->enableChase(command->getData()->ActuatorId);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command, Model* model) {
 	model->getPositionController()->disableChase(command->getData()->ActuatorId);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) {
 	model->getForceController()->applyOffsetForces(command->getData()->XForces, command->getData()->YForces, command->getData()->ZForces);
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) {
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::turnLightsOn(TurnLightsOnCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::turnLightsOn(TurnLightsOnCommand* command, Model* model) {
 	model->getInterlockController()->setCellLightsOn(true);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::turnLightsOff(TurnLightsOffCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::turnLightsOff(TurnLightsOffCommand* command, Model* model) {
 	model->getInterlockController()->setCellLightsOn(false);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::turnPowerOn(TurnPowerOnCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::turnPowerOn(TurnPowerOnCommand* command, Model* model) {
 	if (command->getData()->TurnPowerNetworkAOn) {
 		model->getPowerController()->setPowerNetworkA(true);
 	}
@@ -144,7 +144,7 @@ States::Type ParkedEngineeringState::turnPowerOn(TurnPowerOnCommand* command, IM
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::turnPowerOff(TurnPowerOffCommand* command, IModel* model) {
+States::Type ParkedEngineeringState::turnPowerOff(TurnPowerOffCommand* command, Model* model) {
 	if (command->getData()->TurnPowerNetworkAOff) {
 		model->getPowerController()->setPowerNetworkA(false);
 	}

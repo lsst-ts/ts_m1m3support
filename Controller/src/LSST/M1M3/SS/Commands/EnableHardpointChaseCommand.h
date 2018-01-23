@@ -18,13 +18,13 @@ namespace SS {
 
 class EnableHardpointChaseCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_EnableHardpointChaseC data;
 
 public:
-	EnableHardpointChaseCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_EnableHardpointChaseC* data);
+	EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnableHardpointChaseC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_EnableHardpointChaseC* getData() { return &this->data; }

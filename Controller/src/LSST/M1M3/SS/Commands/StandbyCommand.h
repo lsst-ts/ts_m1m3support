@@ -23,13 +23,13 @@ namespace SS {
  */
 class StandbyCommand: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_StandbyC data;
 
 public:
-	StandbyCommand(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_StandbyC* data);
+	StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_StandbyC* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_StandbyC* getData() { return &this->data; }

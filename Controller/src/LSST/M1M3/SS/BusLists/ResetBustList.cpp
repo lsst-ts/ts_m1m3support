@@ -29,6 +29,12 @@ ResetBustList::ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 			this->ilcMessageFactory->reset(&this->buffer, address);
 			this->expectedHPResponses[dataIndex] = 1;
 		}
+		for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
+			uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
+			this->ilcMessageFactory->reset(&this->buffer, address);
+			this->expectedHMResponses[dataIndex] = 1;
+		}
 		this->endSubnet();
 	}
 	this->buffer.setLength(this->buffer.getIndex());

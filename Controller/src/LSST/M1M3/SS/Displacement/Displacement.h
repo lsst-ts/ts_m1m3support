@@ -8,7 +8,6 @@
 #ifndef DISPLACEMENT_H_
 #define DISPLACEMENT_H_
 
-#include <IDisplacement.h>
 #include <DataTypes.h>
 
 struct m1m3_IMSDataC;
@@ -19,16 +18,16 @@ namespace M1M3 {
 namespace SS {
 
 class DisplacementSensorSettings;
-class IPublisher;
-class ISafetyController;
-class IFPGA;
+class M1M3SSPublisher;
+class SafetyController;
+class FPGA;
 
-class Displacement: public IDisplacement {
+class Displacement {
 private:
 	DisplacementSensorSettings* displacementSensorSettings;
-	IPublisher* publisher;
-	ISafetyController* safetyController;
-	IFPGA* fpga;
+	M1M3SSPublisher* publisher;
+	SafetyController* safetyController;
+	FPGA* fpga;
 
 	m1m3_IMSDataC* imsData;
 	m1m3_logevent_DisplacementSensorWarningC* displacementWarning;
@@ -37,7 +36,7 @@ private:
 	uint8_t rxBuffer[256];
 
 public:
-	Displacement(DisplacementSensorSettings* displacementSensorSettings, IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga);
+	Displacement(DisplacementSensorSettings* displacementSensorSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga);
 
 	void writeDataRequest();
 	void readDataResponse();

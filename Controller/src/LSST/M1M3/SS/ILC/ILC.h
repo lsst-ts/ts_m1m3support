@@ -8,7 +8,6 @@
 #ifndef ILC_H_
 #define ILC_H_
 
-#include <IILC.h>
 #include <ILCDataTypes.h>
 #include <ILCSubnetData.h>
 #include <ModbusBuffer.h>
@@ -43,8 +42,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class IFPGA;
+class M1M3SSPublisher;
+class FPGA;
 class IBusList;
 class ILCApplicationSettings;
 class ForceActuatorApplicationSettings;
@@ -56,10 +55,10 @@ class HardpointMonitorApplicationSettings;
 /*!
  * The ILC class used to communicate with the M1M3's 5 subnets.
  */
-class ILC: public IILC {
+class ILC {
 private:
-	IPublisher* publisher;
-	IFPGA* fpga;
+	M1M3SSPublisher* publisher;
+	FPGA* fpga;
 	ILCSubnetData subnetData;
 	ILCMessageFactory ilcMessageFactory;
 	ILCResponseParser responseParser;
@@ -88,7 +87,7 @@ private:
 	ModbusBuffer rxBuffer;
 
 public:
-	ILC(IPublisher* publisher, IFPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
+	ILC(M1M3SSPublisher* publisher, FPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 	virtual ~ILC();
 
 	void writeCalibrationDataBuffer();
@@ -118,10 +117,14 @@ public:
 
 	void verifyResponses();
 
+	void publishForceActuatorInfo();
 	void publishForceActuatorStatus();
 	void publishForceActuatorData();
+	void publishHardpointActuatorInfo();
 	void publishHardpointStatus();
 	void publishHardpointData();
+	void publishHardpointMonitorInfo();
+	void publishHardpointMonitorStatus();
 
 private:
 	uint8_t subnetToRxAddress(uint8_t subnet);

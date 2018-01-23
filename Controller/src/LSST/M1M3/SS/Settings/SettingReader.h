@@ -8,7 +8,6 @@
 #ifndef SETTINGREADER_H_
 #define SETTINGREADER_H_
 
-#include <ISettingReader.h>
 #include <SafetyControllerSettings.h>
 #include <AliasApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -22,13 +21,15 @@
 #include <DisplacementSensorSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <InterlockApplicationSettings.h>
+#include <GyroSettings.h>
+#include <ExpansionFPGAApplicationSettings.h>
 #include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SettingReader: public ISettingReader {
+class SettingReader {
 private:
 	AliasApplicationSettings aliasApplicationSettings;
 	ForceActuatorApplicationSettings forceActuatorApplicationSettings;
@@ -43,6 +44,8 @@ private:
 	DisplacementSensorSettings displacementSensorSettings;
 	HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
 	InterlockApplicationSettings interlockApplicationSettings;
+	GyroSettings gyroSettings;
+	ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -66,6 +69,8 @@ public:
 	DisplacementSensorSettings* loadDisplacementSensorSettings();
 	HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
 	InterlockApplicationSettings* loadInterlockApplicationSettings();
+	GyroSettings* loadGyroSettings();
+	ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
 
 private:
 	std::string getBasePath(std::string file);

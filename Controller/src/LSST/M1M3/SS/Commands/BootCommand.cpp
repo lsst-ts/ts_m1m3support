@@ -6,13 +6,13 @@
  */
 
 #include <BootCommand.h>
-#include <IContext.h>
+#include <Context.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-BootCommand::BootCommand(IContext* context) {
+BootCommand::BootCommand(Context* context) {
 	this->context = context;
 }
 

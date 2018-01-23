@@ -18,13 +18,13 @@ namespace SS {
 
 class TranslateM1M3Command: public Command {
 private:
-	IContext* context;
-	IPublisher* publisher;
+	Context* context;
+	M1M3SSPublisher* publisher;
 	int32_t commandID;
 	m1m3_command_TranslateM1M3C data;
 
 public:
-	TranslateM1M3Command(IContext* context, IPublisher* publisher, int32_t commandID, m1m3_command_TranslateM1M3C* data);
+	TranslateM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TranslateM1M3C* data);
 
 	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_TranslateM1M3C* getData() { return &this->data; }

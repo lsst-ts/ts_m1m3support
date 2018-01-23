@@ -23,6 +23,12 @@ ReportDCAStatusBusList::ReportDCAStatusBusList(ILCSubnetData* subnetData, ILCMes
 			this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
 			this->expectedFAResponses[dataIndex] = 1;
 		}
+		for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
+			uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
+			this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
+			this->expectedHMResponses[dataIndex] = 1;
+		}
 		this->endSubnet();
 	}
 	this->buffer.setLength(this->buffer.getIndex());

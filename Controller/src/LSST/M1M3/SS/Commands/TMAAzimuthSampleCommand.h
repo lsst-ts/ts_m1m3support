@@ -19,12 +19,12 @@ namespace SS {
 
 class TMAAzimuthSampleCommand: public Command {
 private:
-	IContext* context;
+	Context* context;
 
 	MTMount_AzC data;
 
 public:
-	TMAAzimuthSampleCommand(IContext* context, MTMount_AzC* data);
+	TMAAzimuthSampleCommand(Context* context, MTMount_AzC* data);
 
 	MTMount_AzC* getData() { return &this->data; }
 

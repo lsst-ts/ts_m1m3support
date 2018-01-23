@@ -6,16 +6,15 @@
  */
 
 #include <Controller.h>
-#include <IContext.h>
-#include <IPublisher.h>
-#include <ICommandFactory.h>
-#include <ICommand.h>
+#include <Context.h>
+#include <CommandFactory.h>
+#include <Command.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Controller::Controller(ICommandFactory* commandFactory) {
+Controller::Controller(CommandFactory* commandFactory) {
 	this->commandFactory = commandFactory;
 	pthread_mutex_init(&this->mutex, NULL);
 }
@@ -35,7 +34,7 @@ void Controller::unlock() {
 
 void Controller::clear() {
 	this->lock();
-	ICommand* command;
+	Command* command;
 	while(!this->queue.empty()) {
 		command = this->dequeue();
 		this->commandFactory->destroy(command);
@@ -43,20 +42,20 @@ void Controller::clear() {
 	this->unlock();
 }
 
-void Controller::enqueue(ICommand* command) {
+void Controller::enqueue(Command* command) {
 	this->queue.push(command);
 }
 
-ICommand* Controller::dequeue() {
+Command* Controller::dequeue() {
 	if (!this->queue.empty()) {
-		ICommand* command = this->queue.front();
+		Command* command = this->queue.front();
 		this->queue.pop();
 		return command;
 	}
 	return 0;
 }
 
-void Controller::execute(ICommand* command) {
+void Controller::execute(Command* command) {
 	command->ackInProgress();
 	command->execute();
 	command->ackComplete();

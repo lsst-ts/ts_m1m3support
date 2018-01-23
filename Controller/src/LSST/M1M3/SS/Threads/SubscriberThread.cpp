@@ -6,18 +6,18 @@
  */
 
 #include <SubscriberThread.h>
-#include <ISubscriber.h>
-#include <IController.h>
-#include <IPublisher.h>
-#include <ICommandFactory.h>
-#include <ICommand.h>
+#include <M1M3SSSubscriber.h>
+#include <Controller.h>
+#include <M1M3SSPublisher.h>
+#include <CommandFactory.h>
+#include <Command.h>
 #include <unistd.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SubscriberThread::SubscriberThread(ISubscriber* subscriber, IController* controller, IPublisher* publisher, ICommandFactory* commandFactory) {
+SubscriberThread::SubscriberThread(M1M3SSSubscriber* subscriber, Controller* controller, M1M3SSPublisher* publisher, CommandFactory* commandFactory) {
 	this->subscriber = subscriber;
 	this->controller = controller;
 	this->publisher = publisher;
@@ -70,7 +70,7 @@ void SubscriberThread::stop() {
 	this->keepRunning = false;
 }
 
-void SubscriberThread::enqueueCommandIfAvailable(ICommand* command) {
+void SubscriberThread::enqueueCommandIfAvailable(Command* command) {
 	if (command) {
 		if(command->validate()) {
 			this->controller->lock();

@@ -22,11 +22,11 @@ namespace SS {
  */
 class UpdateCommand: public Command {
 private:
-	IContext* context;
+	Context* context;
 	pthread_mutex_t* updateMutex;
 
 public:
-	UpdateCommand(IContext* context, pthread_mutex_t* updateMutext);
+	UpdateCommand(Context* context, pthread_mutex_t* updateMutext);
 	~UpdateCommand();
 
 	void execute();

@@ -10,8 +10,8 @@
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorSettings.h>
 #include <ForceActuatorLimits.h>
-#include <IPublisher.h>
-#include <ISafetyController.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
 #include <Range.h>
 #include <SAL_m1m3C.h>
 #include <cmath>
@@ -25,7 +25,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, IPublisher* publisher, ISafetyController* safetyController) {
+ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, M1M3SSPublisher* publisher, SafetyController* safetyController) {
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->publisher = publisher;

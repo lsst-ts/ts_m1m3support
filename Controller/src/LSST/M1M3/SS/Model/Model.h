@@ -8,7 +8,7 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 
-#include <IModel.h>
+#include <StateTypes.h>
 #include <pthread.h>
 #include <string>
 
@@ -16,7 +16,23 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ISettingReader;
+class SettingReader;
+class M1M3SSPublisher;
+class FPGA;
+class ExpansionFPGA;
+class Displacement;
+class Inclinometer;
+class ILC;
+class AirController;
+class ForceController;
+class SafetyController;
+class PositionController;
+class InterlockController;
+class Accelerometer;
+class PowerController;
+class AutomaticOperationsController;
+class Gyro;
+class SettingReader;
 class ForceCalculator;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
@@ -24,45 +40,49 @@ class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
 class HardpointMonitorApplicationSettings;
 
-class Model : public IModel {
+class Model {
 private:
-	ISettingReader* settingReader;
-	IPublisher* publisher;
-	IFPGA* fpga;
-	IDisplacement* displacement;
-	IInclinometer* inclinometer;
-	IILC* ilc;
-	IAirController* airController;
-	IForceController* forceController;
-	ISafetyController* safetyController;
-	IPositionController* positionController;
-	IInterlockController* interlockController;
-	IAccelerometer* accelerometer;
-	IPowerController* powerController;
-	IAutomaticOperationsController* automaticOperationsController;
+	SettingReader* settingReader;
+	M1M3SSPublisher* publisher;
+	FPGA* fpga;
+	ExpansionFPGA* expansionFPGA;
+	Displacement* displacement;
+	Inclinometer* inclinometer;
+	ILC* ilc;
+	AirController* airController;
+	ForceController* forceController;
+	SafetyController* safetyController;
+	PositionController* positionController;
+	InterlockController* interlockController;
+	Accelerometer* accelerometer;
+	PowerController* powerController;
+	AutomaticOperationsController* automaticOperationsController;
+	Gyro* gyro;
 
 	pthread_mutex_t mutex;
 
 	double cachedTimestamp;
 
 public:
-	Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IInterlockController* interlockController);
+	Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, InterlockController* interlockController);
 	virtual ~Model();
 
-	ISettingReader* getSettingReader() { return this->settingReader; }
-	IPublisher* getPublisher() { return this->publisher; }
-	IFPGA* getFPGA() { return this->fpga; }
-	IDisplacement* getDisplacement() { return this->displacement; }
-	IInclinometer* getInclinometer() { return this->inclinometer; }
-	IILC* getILC() { return this->ilc; }
-	IAirController* getAirController() { return this->airController; }
-	IForceController* getForceController() { return this->forceController; }
-	ISafetyController* getSafetyController() { return this->safetyController; }
-	IPositionController* getPositionController() { return this->positionController; }
-	IInterlockController* getInterlockController() { return this->interlockController; }
-	IAccelerometer* getAccelerometer() { return this->accelerometer; }
-	IPowerController* getPowerController() { return this->powerController; }
-	IAutomaticOperationsController* getAutomaticOperationsController() { return this->automaticOperationsController; }
+	SettingReader* getSettingReader() { return this->settingReader; }
+	M1M3SSPublisher* getPublisher() { return this->publisher; }
+	FPGA* getFPGA() { return this->fpga; }
+	ExpansionFPGA* getExpansionFPGA() { return this->expansionFPGA; }
+	Displacement* getDisplacement() { return this->displacement; }
+	Inclinometer* getInclinometer() { return this->inclinometer; }
+	ILC* getILC() { return this->ilc; }
+	AirController* getAirController() { return this->airController; }
+	ForceController* getForceController() { return this->forceController; }
+	SafetyController* getSafetyController() { return this->safetyController; }
+	PositionController* getPositionController() { return this->positionController; }
+	InterlockController* getInterlockController() { return this->interlockController; }
+	Accelerometer* getAccelerometer() { return this->accelerometer; }
+	PowerController* getPowerController() { return this->powerController; }
+	AutomaticOperationsController* getAutomaticOperationsController() { return this->automaticOperationsController; }
+	Gyro* getGyro() { return this->gyro; }
 
 	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
 	double getCachedTimestamp() { return this->cachedTimestamp; }

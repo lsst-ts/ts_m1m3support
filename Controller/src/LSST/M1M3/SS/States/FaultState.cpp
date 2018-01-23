@@ -6,20 +6,20 @@
  */
 
 #include <FaultState.h>
-#include <IInterlockController.h>
-#include <IModel.h>
-#include <IILC.h>
-#include <IDisplacement.h>
-#include <IInclinometer.h>
-#include <IPowerController.h>
-#include <ISafetyController.h>
+#include <InterlockController.h>
+#include <Model.h>
+#include <ILC.h>
+#include <Displacement.h>
+#include <Inclinometer.h>
+#include <PowerController.h>
+#include <SafetyController.h>
 #include <unistd.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type FaultState::update(UpdateCommand* command, IModel* model) {
+States::Type FaultState::update(UpdateCommand* command, Model* model) {
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
@@ -42,7 +42,7 @@ States::Type FaultState::update(UpdateCommand* command, IModel* model) {
 	return States::NoStateTransition;
 }
 
-States::Type FaultState::standby(StandbyCommand* command, IModel* model) {
+States::Type FaultState::standby(StandbyCommand* command, Model* model) {
 	States::Type newState = States::StandbyState;
 	model->getILC()->writeSetModeStandbyBuffer();
 	model->getILC()->triggerModbus();

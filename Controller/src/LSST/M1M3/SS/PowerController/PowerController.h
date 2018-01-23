@@ -8,34 +8,45 @@
 #ifndef POWERCONTROLLER_H_
 #define POWERCONTROLLER_H_
 
-#include <IPowerController.h>
 #include <DataTypes.h>
 
+struct m1m3_PowerSupplyDataC;
+
 struct m1m3_logevent_PowerStatusC;
+struct m1m3_logevent_PowerSupplyStatusC;
 struct m1m3_logevent_PowerWarningC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class IFPGA;
-class ISafetyController;
+class M1M3SSPublisher;
+class FPGA;
+class ExpansionFPGA;
+class SafetyController;
 
-class PowerController: public IPowerController {
+class PowerController {
 private:
-	IPublisher* publisher;
-	IFPGA* fpga;
-	ISafetyController* safetyController;
+	M1M3SSPublisher* publisher;
+	FPGA* fpga;
+	ExpansionFPGA* expansionFPGA;
+	SafetyController* safetyController;
 
+	m1m3_PowerSupplyDataC* powerSupplyData;
 	m1m3_logevent_PowerStatusC* powerStatus;
+	m1m3_logevent_PowerSupplyStatusC* powerSupplyStatus;
 	m1m3_logevent_PowerWarningC* powerWarning;
 	uint16_t rxBuffer[16];
+	double expansionSampleTime;
+	uint32_t previousSlot2Sample;
 
 public:
-	PowerController(IPublisher* publisher, IFPGA* fpga, ISafetyController* safetyController);
+	PowerController(M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, SafetyController* safetyController);
 
 	void checkPowerStatus();
+	void samplePowerSupplyDataAndStatus();
+	void publishPowerSupplyData();
+	void publishPowerSupplyStatusIfRequired();
 
 	void setBothPowerNetworks(bool on);
 

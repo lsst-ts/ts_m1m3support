@@ -28,15 +28,7 @@
 #include <SafetyController.h>
 #include <InterlockController.h>
 #include <cstring>
-
-
-
-
-#include <U8ArrayUtilities.h>
-#include <Timestamp.h>
-
-
-
+#include <ExpansionFPGA.h>
 
 using namespace std;
 using namespace LSST::M1M3::SS;
@@ -65,6 +57,19 @@ int main() {
 	}
 	if (fpga.isErrorCode(fpga.open())) {
 		cout << "Error opening FPGA" << endl;
+		fpga.finalize();
+		mtMountSAL.salShutdown();
+		m1m3SAL.salShutdown();
+		return -1;
+	}
+	cout << "Load expansion FPGA application settings" << endl;
+	ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings = settingReader.loadExpansionFPGAApplicationSettings();
+	cout << "Create expansion FPGA" << endl;
+	ExpansionFPGA expansionFPGA = ExpansionFPGA(expansionFPGAApplicationSettings);
+	if (expansionFPGA.isErrorCode(expansionFPGA.open())) {
+		cout << "Error opening expansion FPGA" << endl;
+		fpga.close();
+		fpga.finalize();
 		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
@@ -76,7 +81,7 @@ int main() {
 	cout << "Creating interlock controller" << endl;
 	InterlockController interlockController = InterlockController(&publisher, &fpga, interlockApplicationSettings);
 	cout << "Creating model" << endl;
-	Model model = Model(&settingReader, &publisher, &fpga, &interlockController);
+	Model model = Model(&settingReader, &publisher, &fpga, &expansionFPGA, &interlockController);
 	cout << "Creating context" << endl;
 	Context context = Context(&stateFactory, &model);
 	cout << "Creating command factory" << endl;
@@ -90,7 +95,7 @@ int main() {
 	cout << "Creating controller thread" << endl;
 	ControllerThread controllerThread = ControllerThread(&controller);
 	cout << "Creating outer loop clock thread" << endl;
-	OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, &fpga);
+	OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, &fpga, &publisher);
 	cout << "Queuing boot command" << endl;
 	controller.enqueue(commandFactory.create(Commands::BootCommand));
 
@@ -154,12 +159,16 @@ int main() {
 
 	pthread_attr_destroy(&threadAttribute);
 
+	if (expansionFPGA.isErrorCode(expansionFPGA.close())) {
+		cout << "Error closing expansion FPGA" << endl;
+	}
+
 	if (fpga.isErrorCode(fpga.close())) {
-		cout << "Error closing fpga" << endl;
+		cout << "Error closing FPGA" << endl;
 	}
 
 	if (fpga.isErrorCode(fpga.finalize())) {
-		cout << "Error finalizing fpga" << endl;
+		cout << "Error finalizing FPGA" << endl;
 	}
 
 	cout << "Shutting down MTMount SAL" << endl;

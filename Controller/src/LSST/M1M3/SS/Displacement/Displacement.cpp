@@ -7,9 +7,9 @@
 
 #include <Displacement.h>
 #include <DisplacementSensorSettings.h>
-#include <IPublisher.h>
-#include <ISafetyController.h>
-#include <IFPGA.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <U8ArrayUtilities.h>
 #include <Timestamp.h>
@@ -26,7 +26,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, IPublisher* publisher, ISafetyController* safetyController, IFPGA* fpga) {
+Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga) {
 	this->displacementSensorSettings = displacementSensorSettings;
 	this->publisher = publisher;
 	this->safetyController = safetyController;

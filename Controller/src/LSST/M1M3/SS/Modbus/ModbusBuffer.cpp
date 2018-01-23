@@ -21,9 +21,7 @@ ModbusBuffer::ModbusBuffer() {
 	this->length = 0;
 }
 
-ModbusBuffer::~ModbusBuffer() {
-	// TODO Auto-generated destructor stub
-}
+ModbusBuffer::~ModbusBuffer() { }
 
 int32_t ModbusBuffer::getIndex() {
 	return this->index;

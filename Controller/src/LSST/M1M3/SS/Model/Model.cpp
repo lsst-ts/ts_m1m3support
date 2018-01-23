@@ -6,8 +6,8 @@
  */
 
 #include <Model.h>
-#include <ISettingReader.h>
-#include <IPublisher.h>
+#include <SettingReader.h>
+#include <M1M3SSPublisher.h>
 #include <Displacement.h>
 #include <Inclinometer.h>
 #include <ILC.h>
@@ -15,7 +15,7 @@
 #include <ILCApplicationSettings.h>
 #include <U16ArrayUtilities.h>
 #include <iostream>
-#include <IFPGA.h>
+#include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceController.h>
 #include <RecommendedApplicationSettings.h>
@@ -30,6 +30,7 @@
 #include <HardpointMonitorApplicationSettings.h>
 #include <PowerController.h>
 #include <AutomaticOperationsController.h>
+#include <Gyro.h>
 
 using namespace std;
 
@@ -37,10 +38,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, IInterlockController* interlockController) {
+Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, InterlockController* interlockController) {
 	this->settingReader = settingReader;
 	this->publisher = publisher;
 	this->fpga = fpga;
+	this->expansionFPGA = expansionFPGA;
 	this->safetyController = 0;
 	this->displacement = 0;
 	this->inclinometer = 0;
@@ -52,6 +54,7 @@ Model::Model(ISettingReader* settingReader, IPublisher* publisher, IFPGA* fpga, 
 	this->accelerometer = 0;
 	this->powerController = 0;
 	this->automaticOperationsController = 0;
+	this->gyro = 0;
 	this->cachedTimestamp = 0;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
@@ -91,6 +94,9 @@ Model::~Model() {
 	if (this->automaticOperationsController) {
 		delete this->automaticOperationsController;
 	}
+	if (this->gyro) {
+		delete this->gyro;
+	}
 }
 
 void Model::loadSettings(std::string settingsToApply) {
@@ -106,6 +112,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
 	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
 	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
+	GyroSettings* gyroSettings = this->settingReader->loadGyroSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -156,12 +163,17 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->powerController) {
 		delete this->powerController;
 	}
-	this->powerController = new PowerController(this->publisher, this->fpga, this->safetyController);
+	this->powerController = new PowerController(this->publisher, this->fpga, this->expansionFPGA, this->safetyController);
 
 	if (this->automaticOperationsController) {
 		delete this->automaticOperationsController;
 	}
 	this->automaticOperationsController = new AutomaticOperationsController(this->positionController, this->forceController, this->interlockController, this->safetyController, this->publisher, this->powerController);
+
+	if (this->gyro) {
+		delete this->gyro;
+	}
+	this->gyro = new Gyro(gyroSettings, this->fpga, this->publisher);
 }
 
 void Model::queryFPGAData() {
@@ -179,16 +191,22 @@ void Model::publishFPGAData() {
 }
 
 void Model::publishStateChange(States::Type newState) {
-	m1m3_logevent_SummaryStateC* data = this->publisher->getEventSummaryState();
-	data->Timestamp = this->publisher->getTimestamp();
-	data->SummaryState = newState;
+	uint64_t state = (uint64_t)newState;
+	double timestamp = this->publisher->getTimestamp();
+	m1m3_logevent_SummaryStateC* summaryStateData = this->publisher->getEventSummaryState();
+	summaryStateData->Timestamp = timestamp;
+	summaryStateData->SummaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
 	this->publisher->logSummaryState();
+	m1m3_logevent_DetailedStateC* detailedStateData = this->publisher->getEventDetailedState();
+	detailedStateData->Timestamp = timestamp;
+	detailedStateData->DetailedState = (int32_t)(state & 0x00000000FFFFFFFF);
+	this->publisher->logDetailedState();
 }
 
 void Model::publishRecommendedSettings() {
 	RecommendedApplicationSettings* recommendedApplicationSettings = this->settingReader->loadRecommendedApplicationSettings();
 	m1m3_logevent_SettingVersionsC* data = this->publisher->getEventSettingVersions();
-	data->Timestamp = Timestamp::currentTime();
+	data->Timestamp = this->publisher->getTimestamp();
 	data->RecommendedSettingsVersion = "";
 	for(uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
 		data->RecommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";

@@ -6,17 +6,17 @@
  */
 
 #include <LoweringEngineeringState.h>
-#include <IInterlockController.h>
-#include <IModel.h>
-#include <IPublisher.h>
-#include <ISafetyController.h>
-#include <IAutomaticOperationsController.h>
+#include <InterlockController.h>
+#include <Model.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <AutomaticOperationsController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type LoweringEngineeringState::update(UpdateCommand* command, IModel* model) {
+States::Type LoweringEngineeringState::update(UpdateCommand* command, Model* model) {
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
 	EnabledState::update(command, model);

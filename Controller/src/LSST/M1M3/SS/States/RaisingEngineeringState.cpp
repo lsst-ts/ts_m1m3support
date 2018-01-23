@@ -6,15 +6,15 @@
  */
 
 #include <RaisingEngineeringState.h>
-#include <IModel.h>
-#include <ISafetyController.h>
-#include <IAutomaticOperationsController.h>
+#include <Model.h>
+#include <SafetyController.h>
+#include <AutomaticOperationsController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-States::Type RaisingEngineeringState::update(UpdateCommand* command, IModel* model) {
+States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* model) {
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();
 	EnabledState::update(command, model);
@@ -28,7 +28,7 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command, IModel* mod
 	return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command, IModel* model) {
+States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) {
 	States::Type newState = States::LoweringEngineeringState;
 	return model->getSafetyController()->checkSafety(newState);
 }

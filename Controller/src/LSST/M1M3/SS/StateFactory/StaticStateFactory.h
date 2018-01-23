@@ -8,7 +8,6 @@
 #ifndef STATICSTATEFACTORY_H_
 #define STATICSTATEFACTORY_H_
 
-#include <StateFactory.h>
 #include <OfflineState.h>
 #include <StandbyState.h>
 #include <DisabledState.h>
@@ -28,7 +27,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class StaticStateFactory: public StateFactory {
+class StaticStateFactory {
 private:
 	OfflineState offlineState;
 	StandbyState standbyState;
@@ -46,8 +45,8 @@ private:
 	FaultState faultState;
 
 public:
-	IState* create(States::Type state);
-	void destroy(IState* state);
+	State* create(States::Type state);
+	void destroy(State* state);
 };
 
 } /* namespace SS */

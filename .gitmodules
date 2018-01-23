@@ -16,3 +16,6 @@
 [submodule "FPGA/Common_FPGA_SerialASCII"]
 	path = FPGA/Common_FPGA_SerialASCII
 	url = https://stash.lsstcorp.org/scm/ts/common_fpga_serialascii.git
+[submodule "FPGA/Common_FPGA_DIOSerial"]
+	path = FPGA/Common_FPGA_DIOSerial
+	url = https://stash.lsstcorp.org/scm/ts/common_fpga_dioserial.git

@@ -6,14 +6,14 @@
  */
 
 #include <ControllerThread.h>
-#include <IController.h>
+#include <Controller.h>
 #include <unistd.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ControllerThread::ControllerThread(IController* controller) {
+ControllerThread::ControllerThread(Controller* controller) {
 	this->controller = controller;
 	this->keepRunning = true;
 }
@@ -21,7 +21,7 @@ ControllerThread::ControllerThread(IController* controller) {
 void ControllerThread::run() {
 	while(this->keepRunning) {
 		this->controller->lock();
-		ICommand* command = this->controller->dequeue();
+		Command* command = this->controller->dequeue();
 		this->controller->unlock();
 		if (command) {
 			this->controller->execute(command);

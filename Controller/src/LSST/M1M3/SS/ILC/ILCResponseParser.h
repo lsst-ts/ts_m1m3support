@@ -31,14 +31,14 @@ namespace SS {
 class ModbusBuffer;
 class HardpointActuatorSettings;
 class ForceActuatorSettings;
-class IPublisher;
+class M1M3SSPublisher;
 class ILCSubnetData;
 
 class ILCResponseParser {
 private:
 	HardpointActuatorSettings* hardpointActuatorSettings;
 	ForceActuatorSettings* forceActuatorSettings;
-	IPublisher* publisher;
+	M1M3SSPublisher* publisher;
 	ILCSubnetData* subnetData;
 
 	int32_t faExpectedResponses[156];
@@ -61,7 +61,7 @@ private:
 
 public:
 	ILCResponseParser();
-	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, IPublisher* publisher, ILCSubnetData* subnetData);
+	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData);
 
 	void parse(ModbusBuffer* buffer, uint8_t subnet);
 	void incExpectedResponses(int32_t* fa, int32_t* hp);
@@ -91,19 +91,19 @@ private:
 	void parseDualAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseSetHPADCScanRateResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseSetFAADCScanRateResponse(ModbusBuffer* buffer, int32_t dataIndex);
-	void parseSetHMADCScanRateResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex);
-	void parseSetHMADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseHPResetResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseFAResetResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseHMResetResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReadHPCalibrationResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReadFACalibrationResponse(ModbusBuffer* buffer, int32_t dataIndex);
-	void parseReadHMCalibrationResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, int32_t dataIndex);
+	void parseReadHMPressureValuesResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReportDCAIDResponse(ModbusBuffer* buffer, int32_t dataIndex);
+	void parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReportDCAStatusResponse(ModbusBuffer* buffer, int32_t dataIndex);
+	void parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, int32_t dataIndex);
 	void parseReportLVDTResponse(ModbusBuffer* buffer, int32_t dataIndex);
 
 	void calculateHPPostion();

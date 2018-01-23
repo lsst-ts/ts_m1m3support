@@ -6,18 +6,18 @@
  */
 
 #include <AutomaticOperationsController.h>
-#include <IForceController.h>
-#include <IPositionController.h>
-#include <IInterlockController.h>
-#include <ISafetyController.h>
-#include <IPublisher.h>
-#include <IPowerController.h>
+#include <ForceController.h>
+#include <PositionController.h>
+#include <InterlockController.h>
+#include <SafetyController.h>
+#include <M1M3SSPublisher.h>
+#include <PowerController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AutomaticOperationsController::AutomaticOperationsController(IPositionController* positionController, IForceController* forceController, IInterlockController* interlockController, ISafetyController* safetyController, IPublisher* publisher, IPowerController* powerController) {
+AutomaticOperationsController::AutomaticOperationsController(PositionController* positionController, ForceController* forceController, InterlockController* interlockController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController) {
 	this->positionController = positionController;
 	this->forceController = forceController;
 	this->interlockController = interlockController;

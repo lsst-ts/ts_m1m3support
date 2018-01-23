@@ -8,24 +8,26 @@
 #ifndef COMMANDFACTORY_H_
 #define COMMANDFACTORY_H_
 
-#include <ICommandFactory.h>
+#include <DataTypes.h>
+#include <CommandTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class IPublisher;
-class IContext;
+class M1M3SSPublisher;
+class Context;
+class Command;
 
 /*!
  * A command factory that creates dynamically allocated command objects.
  * The command objects created by this factory must be destroyed or a
  * memory leak will occur.
  */
-class CommandFactory: public ICommandFactory {
+class CommandFactory {
 private:
-	IPublisher* publisher;
-	IContext* context;
+	M1M3SSPublisher* publisher;
+	Context* context;
 
 public:
 	/*!
@@ -33,7 +35,7 @@ public:
 	 * @param[in] publisher The publisher that will be provided to the commands created by this factory.
 	 * @param[in] context The context that will be provided to the commands created by this factory.
 	 */
-	CommandFactory(IPublisher* publisher, IContext* context);
+	CommandFactory(M1M3SSPublisher* publisher, Context* context);
 
 	/*!
 	 * Creates a command.
@@ -42,13 +44,13 @@ public:
 	 * @param[in] data The data for the command.
 	 * @param[in] commandID The command ID (optional).
 	 */
-	ICommand* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
+	Command* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
 	/*!
 	 * Destroys a command created by this factory.
 	 * Commands created by this factory are dynamically allocated and therefore must be cleaned up.
 	 * @param[in] command The command to destroy.
 	 */
-	void destroy(ICommand* command);
+	void destroy(Command* command);
 };
 
 } /* namespace SS */

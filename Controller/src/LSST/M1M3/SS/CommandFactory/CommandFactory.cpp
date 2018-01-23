@@ -49,12 +49,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-CommandFactory::CommandFactory(IPublisher* publisher, IContext* context) {
+CommandFactory::CommandFactory(M1M3SSPublisher* publisher, Context* context) {
 	this->publisher = publisher;
 	this->context = context;
 }
 
-ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) {
+Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) {
 	switch(commandType) {
 	case Commands::BootCommand: return new BootCommand(this->context);
 	case Commands::StartCommand: return new StartCommand(this->context, this->publisher, commandID, (m1m3_command_StartC*)data);
@@ -97,7 +97,7 @@ ICommand* CommandFactory::create(Commands::Type commandType, void* data, int32_t
 	return 0;
 }
 
-void CommandFactory::destroy(ICommand* command) {
+void CommandFactory::destroy(Command* command) {
 	if (command) {
 		delete command;
 	}

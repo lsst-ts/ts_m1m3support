@@ -106,6 +106,16 @@ InterlockApplicationSettings* SettingReader::loadInterlockApplicationSettings() 
 	return &this->interlockApplicationSettings;
 }
 
+GyroSettings* SettingReader::loadGyroSettings() {
+	this->gyroSettings.load(this->getSetPath("GyroSettings.xml").c_str());
+	return &this->gyroSettings;
+}
+
+ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSettings() {
+	this->expansionFPGAApplicationSettings.load(this->getBasePath("ExpansionFPGAApplicationSettings.xml").c_str());
+	return &this->expansionFPGAApplicationSettings;
+}
+
 std::string SettingReader::getBasePath(std::string file) {
 	return this->basePath + file;
 }

@@ -6,6 +6,7 @@
  */
 
 #include <CRC.h>
+#include <boost/crc.hpp>
 
 namespace LSST {
 namespace M1M3 {
@@ -43,6 +44,12 @@ uint16_t CRC::modbus(uint16_t* buffer, int32_t startIndex, int32_t length) {
 		}
 	}
 	return crc;
+}
+
+uint32_t CRC::crc32(uint8_t* buffer, int32_t startIndex, int32_t length) {
+	boost::crc_optimal<32, 0x04C11DB7, 0xFFFFFFFF, 0x00000000, false, false> result;
+	result.process_block(buffer + startIndex, buffer + startIndex + length);
+	return result.checksum();
 }
 
 } /* namespace SS */
