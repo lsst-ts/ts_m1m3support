@@ -46,6 +46,7 @@ public:
 	void displacementNotifySensorReportsWriteControlError(bool conditionFlag);
 	void displacementNotifyResponseTimeoutError(bool conditionFlag);
 	void displacementNotifyInvalidLength(bool conditionFlag);
+	void displacementNotifyInvalidResponse(bool conditionFlag);
 	void displacementNotifyUnknownCommand(bool conditionFlag);
 	void displacementNotifyUnknownProblem(bool conditionFlag);
 

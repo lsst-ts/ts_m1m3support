@@ -15,6 +15,7 @@
 <FaultOnSensorReportsWriteControlError>1</FaultOnSensorReportsWriteControlError>
 <FaultOnResponseTimeoutError>1</FaultOnResponseTimeoutError>
 <FaultOnInvalidLength>1</FaultOnInvalidLength>
+<FaultOnInvalidResponse>1</FaultOnInvalidResponse>
 <FaultOnUnknownCommand>1</FaultOnUnknownCommand>
 <FaultOnUnknownProblem>1</FaultOnUnknownProblem>
 </DisplacementSettings>

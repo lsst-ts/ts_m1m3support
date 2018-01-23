@@ -58,6 +58,7 @@ private:
 	void warnSensorReportsWriteControlError(double timestamp);
 	void warnResponseTimeoutError(double timestamp);
 	void warnInvalidLength(double timestamp);
+	void warnInvalidResponse(double timestamp);
 	void warnUnknownCommand(double timestamp);
 	void warnUnknownProblem(double timestamp);
 };
