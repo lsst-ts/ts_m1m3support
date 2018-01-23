@@ -8,6 +8,9 @@
 #include <M1M3SSPublisher.h>
 #include <SAL_m1m3.h>
 
+#include <iostream>
+using namespace std;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {

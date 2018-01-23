@@ -77,6 +77,9 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	ilc->readAll();
 	interlockController->tryToggleHeartbeat();
 	ilc->verifyResponses();
+	ilc->publishForceActuatorInfo();
+	ilc->publishHardpointActuatorInfo();
+	ilc->publishHardpointMonitorInfo();
 	gyro->enterConfigurationMode();
 	gyro->resetConfiguration();
 	gyro->setAxis();

@@ -117,10 +117,14 @@ public:
 
 	void verifyResponses();
 
+	void publishForceActuatorInfo();
 	void publishForceActuatorStatus();
 	void publishForceActuatorData();
+	void publishHardpointActuatorInfo();
 	void publishHardpointStatus();
 	void publishHardpointData();
+	void publishHardpointMonitorInfo();
+	void publishHardpointMonitorStatus();
 
 private:
 	uint8_t subnetToRxAddress(uint8_t subnet);

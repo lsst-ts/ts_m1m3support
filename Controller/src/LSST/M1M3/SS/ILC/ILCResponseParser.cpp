@@ -168,10 +168,10 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 					case 17: this->parseReportHMServerIDResponse(buffer, dataIndex); break;
 					case 18: this->parseReportHMServerStatusResponse(buffer, dataIndex); break;
 					case 65: this->parseChangeHMILCModeResponse(buffer, dataIndex); break;
-					case 80: this->parseSetHMADCScanRateResponse(buffer, dataIndex); break;
-					case 81: this->parseSetHMADCChannelOffsetAndSensitivityResponse(buffer, dataIndex); break;
 					case 107: this->parseHMResetResponse(buffer, dataIndex); break;
-					case 110: this->parseReadHMCalibrationResponse(buffer, dataIndex); break;
+					case 119: this->parseReadHMPressureValuesResponse(buffer, dataIndex); break;
+					case 120: this->parseReportHMMezzanineIDResponse(buffer, dataIndex); break;
+					case 121: this->parseReportHMMezzanineStatusResponse(buffer, dataIndex); break;
 					case 122: this->parseReportLVDTResponse(buffer, dataIndex); break;
 					case 145:
 					case 146:
@@ -379,8 +379,8 @@ void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, 
 	this->hardpointMonitorStatus->MinorFault[dataIndex] = ilcStatus & 0x0002;
 	// 0x0004 is reserved
 	this->hardpointMonitorStatus->FaultOverridden[dataIndex] = ilcStatus & 0x0008;
-	this->hardpointMonitorInfo->MainCalibrationError[dataIndex] = ilcStatus & 0x0010;
-	this->hardpointMonitorInfo->BackupCalibrationError[dataIndex] = ilcStatus & 0x0020;
+	// 0x0010 is main calibration error (not used by HM)
+	// 0x0020 is backup calibration error (not used by HM)
 	// 0x0040 is reserved
 	// 0x0080 is reserved
 	// 0x0100 is limit switch (HP only)
@@ -561,20 +561,11 @@ void ILCResponseParser::parseSetFAADCScanRateResponse(ModbusBuffer* buffer, int3
 	buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::parseSetHMADCScanRateResponse(ModbusBuffer* buffer, int32_t dataIndex) {
-	this->hardpointMonitorInfo->ADCScanRate[dataIndex] = buffer->readU8();
-	buffer->skipToNextFrame();
-}
-
 void ILCResponseParser::parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex) {
-	buffer->skipToNextFrame();
-}
-
-void ILCResponseParser::parseSetHMADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->skipToNextFrame();
 }
 
@@ -646,27 +637,7 @@ void ILCResponseParser::parseReadFACalibrationResponse(ModbusBuffer* buffer, int
 	buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::parseReadHMCalibrationResponse(ModbusBuffer* buffer, int32_t dataIndex) {
-	this->hardpointMonitorInfo->MainADCCalibrationK1[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorInfo->MainADCCalibrationK2[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorInfo->MainADCCalibrationK3[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorInfo->MainADCCalibrationK4[dataIndex] = buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	this->hardpointMonitorInfo->BackupADCCalibrationK1[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorInfo->BackupADCCalibrationK2[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorInfo->BackupADCCalibrationK3[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorInfo->BackupADCCalibrationK4[dataIndex] = buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
-	buffer->readSGL();
+void ILCResponseParser::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
@@ -674,7 +645,7 @@ void ILCResponseParser::parseReadHMCalibrationResponse(ModbusBuffer* buffer, int
 	buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+void ILCResponseParser::parseReadHMPressureValuesResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
@@ -687,6 +658,14 @@ void ILCResponseParser::parseReportDCAIDResponse(ModbusBuffer* buffer, int32_t d
 	this->forceInfo->DCAFirmwareType[dataIndex] = buffer->readU8();
 	this->forceInfo->DCAMajorRevision[dataIndex] = buffer->readU8();
 	this->forceInfo->DCAMinorRevision[dataIndex] = buffer->readU8();
+	buffer->skipToNextFrame();
+}
+
+void ILCResponseParser::parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	this->hardpointMonitorInfo->MezzanineUniqueId[dataIndex] = buffer->readU48();
+	this->hardpointMonitorInfo->MezzanineFirmwareType[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->MezzanineMajorRevision[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->MezzanineMinorRevision[dataIndex] = buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
@@ -708,6 +687,27 @@ void ILCResponseParser::parseReportDCAStatusResponse(ModbusBuffer* buffer, int32
 	this->forceInfo->DCAApplicationCRCMismatch[dataIndex] = status & 0x2000;
 	// 0x4000 is reserved
 	this->forceInfo->DCABootloaderActive[dataIndex] = status & 0x8000;
+	buffer->skipToNextFrame();
+}
+
+void ILCResponseParser::parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+	uint16_t status = buffer->readU16();
+	this->hardpointMonitorStatus->MezzanineS1A1InterfaceFault[dataIndex] = status & 0x0001;
+	this->hardpointMonitorStatus->MezzanineS1A1LVDTFault[dataIndex] = status & 0x0002;
+	this->hardpointMonitorStatus->MezzanineS1A2InterfaceFault[dataIndex] = status & 0x0004;
+	this->hardpointMonitorStatus->MezzanineS1A2LVDTFault[dataIndex] = status & 0x0008;
+	this->hardpointMonitorInfo->MezzanineUniqueIdCRCError[dataIndex] = status & 0x0010;
+	// 0x0020 is reserved
+	// 0x0040 is reserved
+	// 0x0080 is reserved
+	this->hardpointMonitorStatus->MezzanineEventTrapReset[dataIndex] = status & 0x0100;
+	// 0x0200 is reserved
+	this->hardpointMonitorInfo->MezzanineDCPRS422ChipFault[dataIndex] = status & 0x0400;
+	// 0x0800 is reserved
+	this->hardpointMonitorInfo->MezzanineApplicationMissing[dataIndex] = status & 0x1000;
+	this->hardpointMonitorInfo->MezzanineApplicationCRCMismatch[dataIndex] = status & 0x2000;
+	// 0x4000 is reserved
+	this->hardpointMonitorInfo->MezzanineBootloaderActive[dataIndex] = status & 0x8000;
 	buffer->skipToNextFrame();
 }
 

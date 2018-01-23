@@ -79,6 +79,14 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 				this->expectedHPResponses[dataIndex] = 2;
 			}
 		}
+		for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
+			uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
+			this->ilcMessageFactory->reportLVDT(&this->buffer, address);
+			this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
+			this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
+			this->expectedHMResponses[dataIndex] = 3;
+		}
 		this->endSubnet();
 	}
 	this->buffer.setLength(this->buffer.getIndex());

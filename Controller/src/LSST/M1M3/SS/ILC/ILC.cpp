@@ -23,9 +23,6 @@
 
 using namespace std;
 
-#define SUBNET_COUNT 5
-#define FA_COUNT 156
-#define HP_COUNT 6
 #define ADDRESS_COUNT 256
 
 namespace LSST {
@@ -169,6 +166,11 @@ void ILC::verifyResponses() {
 	this->responseParser.verifyResponses();
 }
 
+void ILC::publishForceActuatorInfo() {
+	this->publisher->getEventForceActuatorInfo()->Timestamp = this->publisher->getTimestamp();
+	this->publisher->logForceActuatorInfo();
+}
+
 void ILC::publishForceActuatorStatus() {
 	this->publisher->putForceActuatorStatus();
 }
@@ -177,12 +179,26 @@ void ILC::publishForceActuatorData() {
 	this->publisher->putForceActuatorData();
 }
 
+void ILC::publishHardpointActuatorInfo() {
+	this->publisher->getEventHardpointActuatorInfo()->Timestamp = this->publisher->getTimestamp();
+	this->publisher->logHardpointActuatorInfo();
+}
+
 void ILC::publishHardpointStatus() {
 	this->publisher->putHardpointStatus();
 }
 
 void ILC::publishHardpointData() {
 	this->publisher->putHardpointData();
+}
+
+void ILC::publishHardpointMonitorInfo() {
+	this->publisher->getEventHardpointMonitorInfo()->Timestamp = this->publisher->getTimestamp();
+	this->publisher->logHardpointMonitorInfo();
+}
+
+void ILC::publishHardpointMonitorStatus() {
+	this->publisher->putHardpointMonitorStatus();
 }
 
 uint8_t ILC::subnetToRxAddress(uint8_t subnet) {

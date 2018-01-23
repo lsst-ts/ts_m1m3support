@@ -27,6 +27,7 @@ protected:
 	ModbusBuffer buffer;
 	int32_t expectedHPResponses[HP_COUNT];
 	int32_t expectedFAResponses[FA_COUNT];
+	int32_t expectedHMResponses[HM_COUNT];
 	int32_t subnetStartIndex;
 
 public:
@@ -37,6 +38,7 @@ public:
 
 	int32_t* getExpectedHPResponses() { return this->expectedHPResponses; }
 	int32_t* getExpectedFAResponses() { return this->expectedFAResponses; }
+	int32_t* getExpectedHMResponses() { return this->expectedHMResponses; }
 
 protected:
 	void startSubnet(uint8_t subnet);
