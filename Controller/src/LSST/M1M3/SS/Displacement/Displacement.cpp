@@ -48,20 +48,15 @@ void Displacement::readDataResponse() {
 	this->fpga->writeRequestFIFO(FPGAAddresses::Displacement, 0);
 	this->fpga->readU8ResponseFIFO(this->rxBuffer, 2, 50);
 	uint16_t length = U8ArrayUtilities::u16(this->rxBuffer, 0);
-	if (length == 92) {
+	// A response is expected to be 92 or 18
+	// A valid response is 84 characters + 8 bytes timestamp (92)
+	// An invalid response is 10 characters + 8 bytes timestamp (18)
+	if (length == 92 || length == 18) {
 		this->fpga->readU8ResponseFIFO(this->rxBuffer, length, 50);
 		double timestamp = Timestamp::fromRaw(U8ArrayUtilities::u64(this->rxBuffer, 0));
-		cout << "Timestamp : " << timestamp;
-		cout << " Length : " << length;
-		cout << " Buffer : ";
-		for(int i = 0; i < length; ++i) {
-			cout << (int32_t)this->rxBuffer[i] << " ";
-		}
-		cout << endl;
 		std::string response = U8ArrayUtilities::toString(this->rxBuffer, 8, length - 10);
 		typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
 		if (response.length() > 0) {
-			cout << response << endl;
 			tokenizer tokenize(response);
 			tokenizer::iterator token = tokenize.begin();
 			if ((*token) == "M0") {
