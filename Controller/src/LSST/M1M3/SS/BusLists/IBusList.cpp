@@ -14,12 +14,11 @@ namespace SS {
 IBusList::~IBusList() { }
 
 int32_t IBusList::getLength() { return 0; }
-
 uint16_t* IBusList::getBuffer() { return 0; }
 
 int32_t* IBusList::getExpectedHPResponses() { return 0; }
-
 int32_t* IBusList::getExpectedFAResponses() { return 0; }
+int32_t* IBusList::getExpectedHMResponses() { return 0; }
 
 void IBusList::update() { }
 

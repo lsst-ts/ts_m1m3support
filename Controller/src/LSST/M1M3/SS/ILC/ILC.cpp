@@ -214,7 +214,7 @@ uint8_t ILC::subnetToRxAddress(uint8_t subnet) {
 
 void ILC::writeBusList(IBusList* busList) {
 	this->fpga->writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
-	this->responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses());
+	this->responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(), busList->getExpectedHMResponses());
 }
 
 void ILC::updateHPSteps() {

@@ -49,6 +49,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	ilc->publishForceActuatorData();
 	ilc->publishHardpointStatus();
 	ilc->publishHardpointData();
+	ilc->publishHardpointMonitorStatus();
 	gyro->publishGyroData();
 	gyro->publishGyroWarningIfRequired();
 	powerController->publishPowerSupplyData();

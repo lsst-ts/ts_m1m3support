@@ -197,12 +197,15 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 	}
 }
 
-void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp) {
+void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm) {
 	for(int i = 0; i < FA_COUNT; i++) {
 		this->faExpectedResponses[i] += fa[i];
 	}
-	for (int i = 0; i < HP_COUNT; i++) {
+	for(int i = 0; i < HP_COUNT; i++) {
 		this->hpExpectedResponses[i] += hp[i];
+	}
+	for(int i = 0; i < HM_COUNT; ++i) {
+		this->hmExpectedResponses[i] += hm[i];
 	}
 }
 
@@ -218,6 +221,12 @@ void ILCResponseParser::verifyResponses() {
 		if (this->hpExpectedResponses[i] != 0) {
 			this->warnResponseTimeout(timestamp, this->hardpointInfo->ReferenceId[i]);
 			this->hpExpectedResponses[i] = 0;
+		}
+	}
+	for(int i = 0; i < HM_COUNT; ++i) {
+		if (this->hmExpectedResponses[i] != 0) {
+			this->warnResponseTimeout(timestamp, this->hardpointMonitorInfo->ReferenceId[i]);
+			this->hmExpectedResponses[i] = 0;
 		}
 	}
 }
@@ -297,16 +306,16 @@ void ILCResponseParser::parseReportHMServerIDResponse(ModbusBuffer* buffer, int3
 void ILCResponseParser::parseReportHPServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	this->hardpointStatus->Mode[dataIndex] = buffer->readU8();
 	uint16_t ilcStatus = buffer->readU16();
-	this->hardpointStatus->MajorFault[dataIndex] = ilcStatus & 0x0001;
-	this->hardpointStatus->MinorFault[dataIndex] = ilcStatus & 0x0002;
+	this->hardpointStatus->MajorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
+	this->hardpointStatus->MinorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
 	// 0x0004 is reserved
-	this->hardpointStatus->FaultOverridden[dataIndex] = ilcStatus & 0x0008;
-	this->hardpointInfo->MainCalibrationError[dataIndex] = ilcStatus & 0x0010;
-	this->hardpointInfo->BackupCalibrationError[dataIndex] = ilcStatus & 0x0020;
+	this->hardpointStatus->FaultOverridden[dataIndex] = (ilcStatus & 0x0008) != 0;
+	this->hardpointInfo->MainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
+	this->hardpointInfo->BackupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
 	// 0x0040 is reserved
 	// 0x0080 is reserved
-	this->hardpointData->CWLimitOperated[dataIndex] = ilcStatus & 0x0100;
-	this->hardpointData->CCWLimitOperated[dataIndex] = ilcStatus & 0x0200;
+	this->hardpointData->CWLimitOperated[dataIndex] = (ilcStatus & 0x0100) != 0;
+	this->hardpointData->CCWLimitOperated[dataIndex] = (ilcStatus & 0x0200) != 0;
 	// 0x0400 is reserved
 	// 0x0800 is reserved
 	// 0x1000 is reserved
@@ -314,21 +323,21 @@ void ILCResponseParser::parseReportHPServerStatusResponse(ModbusBuffer* buffer, 
 	// 0x4000 is DCA (FA only)
 	// 0x8000 is reserved
 	uint16_t ilcFaults = buffer->readU16();
-	this->hardpointInfo->UniqueIdCRCError[dataIndex] = ilcFaults & 0x0001;
-	this->hardpointInfo->ApplicationTypeMismatch[dataIndex] = ilcFaults & 0x0002;
-	this->hardpointInfo->ApplicationMissing[dataIndex] = ilcFaults & 0x0004;
-	this->hardpointInfo->ApplicationCRCMismatch[dataIndex] = ilcFaults & 0x0008;
-	this->hardpointInfo->OneWireMissing[dataIndex] = ilcFaults & 0x0010;
-	this->hardpointInfo->OneWire1Mismatch[dataIndex] = ilcFaults & 0x0020;
-	this->hardpointInfo->OneWire2Mismatch[dataIndex] = ilcFaults & 0x0040;
+	this->hardpointInfo->UniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
+	this->hardpointInfo->ApplicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
+	this->hardpointInfo->ApplicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
+	this->hardpointInfo->ApplicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
+	this->hardpointInfo->OneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
+	this->hardpointInfo->OneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
+	this->hardpointInfo->OneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
 	// 0x0080 is reserved
-	this->hardpointStatus->WatchdogReset[dataIndex] = ilcFaults & 0x0100;
-	this->hardpointStatus->BrownoutDetected[dataIndex] = ilcFaults & 0x0200;
-	this->hardpointStatus->EventTrapReset[dataIndex] = ilcFaults & 0x0400;
-	this->hardpointStatus->MotorPowerFault[dataIndex] = ilcFaults & 0x0800;
-	this->hardpointStatus->SSRPowerFault[dataIndex] = ilcFaults & 0x1000;
-	this->hardpointStatus->AUXPowerFault[dataIndex] = ilcFaults & 0x2000;
-	this->hardpointStatus->SMCPowerFault[dataIndex] = ilcFaults & 0x4000;
+	this->hardpointStatus->WatchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
+	this->hardpointStatus->BrownoutDetected[dataIndex] = (ilcFaults & 0x0200) != 0;
+	this->hardpointStatus->EventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
+	this->hardpointStatus->MotorPowerFault[dataIndex] = (ilcFaults & 0x0800) != 0;
+	this->hardpointStatus->SSRPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
+	this->hardpointStatus->AUXPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
+	this->hardpointStatus->SMCPowerFault[dataIndex] = (ilcFaults & 0x4000) != 0;
 	// 0x8000 is reserved
 	buffer->skipToNextFrame();
 }
@@ -336,12 +345,12 @@ void ILCResponseParser::parseReportHPServerStatusResponse(ModbusBuffer* buffer, 
 void ILCResponseParser::parseReportFAServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	this->forceStatus->Mode[dataIndex] = buffer->readU8();
 	uint16_t ilcStatus = buffer->readU16();
-	this->forceStatus->MajorFault[dataIndex] = ilcStatus & 0x0001;
-	this->forceStatus->MinorFault[dataIndex] = ilcStatus & 0x0002;
+	this->forceStatus->MajorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
+	this->forceStatus->MinorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
 	// 0x0004 is reserved
-	this->forceStatus->FaultOverridden[dataIndex] = ilcStatus & 0x0008;
-	this->forceInfo->MainCalibrationError[dataIndex] = ilcStatus & 0x0010;
-	this->forceInfo->BackupCalibrationError[dataIndex] = ilcStatus & 0x0020;
+	this->forceStatus->FaultOverridden[dataIndex] = (ilcStatus & 0x0008) != 0;
+	this->forceInfo->MainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
+	this->forceInfo->BackupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
 	// 0x0040 is reserved
 	// 0x0080 is reserved
 	// 0x0100 is limit switch (HP only)
@@ -349,25 +358,25 @@ void ILCResponseParser::parseReportFAServerStatusResponse(ModbusBuffer* buffer, 
 	// 0x0400 is reserved
 	// 0x0800 is reserved
 	// 0x1000 is reserved
-	this->forceStatus->DCAFault[dataIndex] = ilcStatus & 0x2000;
-	this->forceInfo->DCAFirmwareUpdate[dataIndex] = ilcStatus & 0x4000;
+	this->forceStatus->DCAFault[dataIndex] = (ilcStatus & 0x2000) != 0;
+	this->forceInfo->DCAFirmwareUpdate[dataIndex] = (ilcStatus & 0x4000) != 0;
 	// 0x8000 is reserved
 	uint16_t ilcFaults = buffer->readU16();
-	this->forceInfo->UniqueIdCRCError[dataIndex] = ilcFaults & 0x0001;
-	this->forceInfo->ApplicationTypeMismatch[dataIndex] = ilcFaults & 0x0002;
-	this->forceInfo->ApplicationMissing[dataIndex] = ilcFaults & 0x0004;
-	this->forceInfo->ApplicationCRCMismatch[dataIndex] = ilcFaults & 0x0008;
-	this->forceInfo->OneWireMissing[dataIndex] = ilcFaults & 0x0010;
-	this->forceInfo->OneWire1Mismatch[dataIndex] = ilcFaults & 0x0020;
-	this->forceInfo->OneWire2Mismatch[dataIndex] = ilcFaults & 0x0040;
+	this->forceInfo->UniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
+	this->forceInfo->ApplicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
+	this->forceInfo->ApplicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
+	this->forceInfo->ApplicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
+	this->forceInfo->OneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
+	this->forceInfo->OneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
+	this->forceInfo->OneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
 	// 0x0080 is reserved
-	this->forceStatus->WatchdogReset[dataIndex] = ilcFaults & 0x0100;
-	this->forceStatus->BrownoutDetected[dataIndex] = ilcFaults & 0x0200;
-	this->forceStatus->EventTrapReset[dataIndex] = ilcFaults & 0x0400;
-	this->forceStatus->MotorPowerFault[dataIndex] = ilcFaults & 0x0800;
-	this->forceStatus->SSRPowerFault[dataIndex] = ilcFaults & 0x1000;
-	this->forceStatus->AUXPowerFault[dataIndex] = ilcFaults & 0x2000;
-	this->forceStatus->SMCPowerFault[dataIndex] = ilcFaults & 0x4000;
+	this->forceStatus->WatchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
+	this->forceStatus->BrownoutDetected[dataIndex] = (ilcFaults & 0x0200) != 0;
+	this->forceStatus->EventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
+	this->forceStatus->MotorPowerFault[dataIndex] = (ilcFaults & 0x0800) != 0;
+	this->forceStatus->SSRPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
+	this->forceStatus->AUXPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
+	this->forceStatus->SMCPowerFault[dataIndex] = (ilcFaults & 0x4000) != 0;
 	// 0x8000 is reserved
 	buffer->skipToNextFrame();
 }
@@ -375,10 +384,10 @@ void ILCResponseParser::parseReportFAServerStatusResponse(ModbusBuffer* buffer, 
 void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	this->hardpointMonitorStatus->Mode[dataIndex] = buffer->readU8();
 	uint16_t ilcStatus = buffer->readU16();
-	this->hardpointMonitorStatus->MajorFault[dataIndex] = ilcStatus & 0x0001;
-	this->hardpointMonitorStatus->MinorFault[dataIndex] = ilcStatus & 0x0002;
+	this->hardpointMonitorStatus->MajorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
+	this->hardpointMonitorStatus->MinorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
 	// 0x0004 is reserved
-	this->hardpointMonitorStatus->FaultOverridden[dataIndex] = ilcStatus & 0x0008;
+	this->hardpointMonitorStatus->FaultOverridden[dataIndex] = (ilcStatus & 0x0008) != 0;
 	// 0x0010 is main calibration error (not used by HM)
 	// 0x0020 is backup calibration error (not used by HM)
 	// 0x0040 is reserved
@@ -392,21 +401,21 @@ void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, 
 	// 0x4000 is DCA firmware update (FA only)
 	// 0x8000 is reserved
 	uint16_t ilcFaults = buffer->readU16();
-	this->hardpointMonitorInfo->UniqueIdCRCError[dataIndex] = ilcFaults & 0x0001;
-	this->hardpointMonitorInfo->ApplicationTypeMismatch[dataIndex] = ilcFaults & 0x0002;
-	this->hardpointMonitorInfo->ApplicationMissing[dataIndex] = ilcFaults & 0x0004;
-	this->hardpointMonitorInfo->ApplicationCRCMismatch[dataIndex] = ilcFaults & 0x0008;
-	this->hardpointMonitorInfo->OneWireMissing[dataIndex] = ilcFaults & 0x0010;
-	this->hardpointMonitorInfo->OneWire1Mismatch[dataIndex] = ilcFaults & 0x0020;
-	this->hardpointMonitorInfo->OneWire2Mismatch[dataIndex] = ilcFaults & 0x0040;
+	this->hardpointMonitorInfo->UniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
+	this->hardpointMonitorInfo->ApplicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
+	this->hardpointMonitorInfo->ApplicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
+	this->hardpointMonitorInfo->ApplicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
+	this->hardpointMonitorInfo->OneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
+	this->hardpointMonitorInfo->OneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
+	this->hardpointMonitorInfo->OneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
 	// 0x0080 is reserved
-	this->hardpointMonitorStatus->WatchdogReset[dataIndex] = ilcFaults & 0x0100;
-	this->hardpointMonitorStatus->BrownoutDetected[dataIndex] = ilcFaults & 0x0200;
-	this->hardpointMonitorStatus->EventTrapReset[dataIndex] = ilcFaults & 0x0400;
-	this->hardpointMonitorStatus->MotorPowerFault[dataIndex] = ilcFaults & 0x0800;
-	this->hardpointMonitorStatus->SSRPowerFault[dataIndex] = ilcFaults & 0x1000;
-	this->hardpointMonitorStatus->AUXPowerFault[dataIndex] = ilcFaults & 0x2000;
-	this->hardpointMonitorStatus->SMCPowerFault[dataIndex] = ilcFaults & 0x4000;
+	this->hardpointMonitorStatus->WatchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
+	this->hardpointMonitorStatus->BrownoutDetected[dataIndex] = (ilcFaults & 0x0200) != 0;
+	this->hardpointMonitorStatus->EventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
+	this->hardpointMonitorStatus->MotorPowerFault[dataIndex] = (ilcFaults & 0x0800) != 0;
+	this->hardpointMonitorStatus->SSRPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
+	this->hardpointMonitorStatus->AUXPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
+	this->hardpointMonitorStatus->SMCPowerFault[dataIndex] = (ilcFaults & 0x4000) != 0;
 	// 0x8000 is reserved
 	buffer->skipToNextFrame();
 }
@@ -432,10 +441,10 @@ void ILCResponseParser::parseChangeHMILCModeResponse(ModbusBuffer* buffer, int32
 void ILCResponseParser::parseStepMotorResponse(ModbusBuffer* buffer, int32_t dataIndex, double timestamp) {
 	uint8_t status = buffer->readU8();
 	this->hardpointData->Timestamp = timestamp;
-	this->hardpointData->ILCFault[dataIndex] = status & 0x01;
+	this->hardpointData->ILCFault[dataIndex] = (status & 0x01) != 0;
 	// 0x02 is reserved
-	this->hardpointData->CWLimitOperated[dataIndex] = status & 0x04;
-	this->hardpointData->CCWLimitOperated[dataIndex] = status & 0x08;
+	this->hardpointData->CWLimitOperated[dataIndex] = (status & 0x04) != 0;
+	this->hardpointData->CCWLimitOperated[dataIndex] = (status & 0x08) != 0;
 	this->hardpointData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
 	this->hardpointData->Encoder[dataIndex] = buffer->readI32();
 	this->hardpointData->Force[dataIndex] = buffer->readSGL();
@@ -446,10 +455,10 @@ void ILCResponseParser::parseStepMotorResponse(ModbusBuffer* buffer, int32_t dat
 
 void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	uint8_t status = buffer->readU8();
-	this->hardpointData->ILCFault[dataIndex] = status & 0x01;
+	this->hardpointData->ILCFault[dataIndex] = (status & 0x01) != 0;
 	// 0x02 is reserved
-	this->hardpointData->CWLimitOperated[dataIndex] = status & 0x04;
-	this->hardpointData->CCWLimitOperated[dataIndex] = status & 0x08;
+	this->hardpointData->CWLimitOperated[dataIndex] = (status & 0x04) != 0;
+	this->hardpointData->CCWLimitOperated[dataIndex] = (status & 0x08) != 0;
 	this->hardpointData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
 	this->hardpointData->Encoder[dataIndex] = buffer->readI32();
 	this->hardpointData->Force[dataIndex] = buffer->readSGL();
@@ -481,8 +490,8 @@ void ILCResponseParser::parseForceDemandResponse(ModbusBuffer* buffer, uint8_t a
 
 void ILCResponseParser::parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	uint8_t status = buffer->readU8();
-	this->forceData->ILCFault[dataIndex] = status & 0x01;
-	this->forceData->DCAFault[dataIndex] = status & 0x02;
+	this->forceData->ILCFault[dataIndex] = (status & 0x01) != 0;
+	this->forceData->DCAFault[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
 	this->forceData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
@@ -494,8 +503,8 @@ void ILCResponseParser::parseSingleAxisForceDemandResponse(ModbusBuffer* buffer,
 
 void ILCResponseParser::parseDualAxisForceDemandResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	uint8_t status = buffer->readU8();
-	this->forceData->ILCFault[dataIndex] = status & 0x01;
-	this->forceData->DCAFault[dataIndex] = status & 0x02;
+	this->forceData->ILCFault[dataIndex] = (status & 0x01) != 0;
+	this->forceData->DCAFault[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
 	this->forceData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
@@ -523,8 +532,8 @@ void ILCResponseParser::parsePneumaticForceStatusResponse(ModbusBuffer* buffer, 
 
 void ILCResponseParser::parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	uint8_t status = buffer->readU8();
-	this->forceData->ILCFault[dataIndex] = status & 0x01;
-	this->forceData->DCAFault[dataIndex] = status & 0x02;
+	this->forceData->ILCFault[dataIndex] = (status & 0x01) != 0;
+	this->forceData->DCAFault[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
 	this->forceData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
@@ -535,8 +544,8 @@ void ILCResponseParser::parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer
 
 void ILCResponseParser::parseDualAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	uint8_t status = buffer->readU8();
-	this->forceData->ILCFault[dataIndex] = status & 0x01;
-	this->forceData->DCAFault[dataIndex] = status & 0x02;
+	this->forceData->ILCFault[dataIndex] = (status & 0x01) != 0;
+	this->forceData->DCAFault[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
 	this->forceData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
@@ -646,7 +655,7 @@ void ILCResponseParser::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer,
 }
 
 void ILCResponseParser::parseReadHMPressureValuesResponse(ModbusBuffer* buffer, int32_t dataIndex) {
-	buffer->readSGL();
+	this->hardpointData->BreakawayPressure[dataIndex] = buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
 	buffer->readSGL();
@@ -671,43 +680,43 @@ void ILCResponseParser::parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, i
 
 void ILCResponseParser::parseReportDCAStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	uint16_t status = buffer->readU16();
-	this->forceStatus->DCAOutputsEnabled[dataIndex] = status & 0x0001;
-	this->forceStatus->DCAPowerFault[dataIndex] = status & 0x0002;
-	this->forceStatus->DCAAmplifierAFault[dataIndex] = status & 0x0004;
-	this->forceStatus->DCAAmplifierBFault[dataIndex] = status & 0x0008;
-	this->forceInfo->DCAUniqueIdCRCError[dataIndex] = status & 0x0010;
+	this->forceStatus->DCAOutputsEnabled[dataIndex] = (status & 0x0001) != 0;
+	this->forceStatus->DCAPowerFault[dataIndex] = (status & 0x0002) != 0;
+	this->forceStatus->DCAAmplifierAFault[dataIndex] = (status & 0x0004) != 0;
+	this->forceStatus->DCAAmplifierBFault[dataIndex] = (status & 0x0008) != 0;
+	this->forceInfo->DCAUniqueIdCRCError[dataIndex] = (status & 0x0010) != 0;
 	// 0x0020 is reserved
-	this->forceInfo->DCAMainCalibrationError[dataIndex] = status & 0x0040;
-	this->forceInfo->DCABackupCalibrationError[dataIndex] = status & 0x0080;
-	this->forceStatus->DCAEventTrapReset[dataIndex] = status & 0x0100;
+	this->forceInfo->DCAMainCalibrationError[dataIndex] = (status & 0x0040) != 0;
+	this->forceInfo->DCABackupCalibrationError[dataIndex] = (status & 0x0080) != 0;
+	this->forceStatus->DCAEventTrapReset[dataIndex] = (status & 0x0100) != 0;
 	// 0x0200 is reserved
 	// 0x0400 is reserved
 	// 0x0800 is reserved
-	this->forceInfo->DCAApplicationMissing[dataIndex] = status & 0x1000;
-	this->forceInfo->DCAApplicationCRCMismatch[dataIndex] = status & 0x2000;
+	this->forceInfo->DCAApplicationMissing[dataIndex] = (status & 0x1000) != 0;
+	this->forceInfo->DCAApplicationCRCMismatch[dataIndex] = (status & 0x2000) != 0;
 	// 0x4000 is reserved
-	this->forceInfo->DCABootloaderActive[dataIndex] = status & 0x8000;
+	this->forceInfo->DCABootloaderActive[dataIndex] = (status & 0x8000) != 0;
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
 	uint16_t status = buffer->readU16();
-	this->hardpointMonitorStatus->MezzanineS1A1InterfaceFault[dataIndex] = status & 0x0001;
-	this->hardpointMonitorStatus->MezzanineS1A1LVDTFault[dataIndex] = status & 0x0002;
-	this->hardpointMonitorStatus->MezzanineS1A2InterfaceFault[dataIndex] = status & 0x0004;
-	this->hardpointMonitorStatus->MezzanineS1A2LVDTFault[dataIndex] = status & 0x0008;
-	this->hardpointMonitorInfo->MezzanineUniqueIdCRCError[dataIndex] = status & 0x0010;
+	this->hardpointMonitorStatus->MezzanineS1A1InterfaceFault[dataIndex] = (status & 0x0001) != 0;
+	this->hardpointMonitorStatus->MezzanineS1A1LVDTFault[dataIndex] = (status & 0x0002) != 0;
+	this->hardpointMonitorStatus->MezzanineS1A2InterfaceFault[dataIndex] = (status & 0x0004) != 0;
+	this->hardpointMonitorStatus->MezzanineS1A2LVDTFault[dataIndex] = (status & 0x0008) != 0;
+	this->hardpointMonitorInfo->MezzanineUniqueIdCRCError[dataIndex] = (status & 0x0010) != 0;
 	// 0x0020 is reserved
 	// 0x0040 is reserved
 	// 0x0080 is reserved
-	this->hardpointMonitorStatus->MezzanineEventTrapReset[dataIndex] = status & 0x0100;
+	this->hardpointMonitorStatus->MezzanineEventTrapReset[dataIndex] = (status & 0x0100) != 0;
 	// 0x0200 is reserved
-	this->hardpointMonitorInfo->MezzanineDCPRS422ChipFault[dataIndex] = status & 0x0400;
+	this->hardpointMonitorInfo->MezzanineDCPRS422ChipFault[dataIndex] = (status & 0x0400) != 0;
 	// 0x0800 is reserved
-	this->hardpointMonitorInfo->MezzanineApplicationMissing[dataIndex] = status & 0x1000;
-	this->hardpointMonitorInfo->MezzanineApplicationCRCMismatch[dataIndex] = status & 0x2000;
+	this->hardpointMonitorInfo->MezzanineApplicationMissing[dataIndex] = (status & 0x1000) != 0;
+	this->hardpointMonitorInfo->MezzanineApplicationCRCMismatch[dataIndex] = (status & 0x2000) != 0;
 	// 0x4000 is reserved
-	this->hardpointMonitorInfo->MezzanineBootloaderActive[dataIndex] = status & 0x8000;
+	this->hardpointMonitorInfo->MezzanineBootloaderActive[dataIndex] = (status & 0x8000) != 0;
 	buffer->skipToNextFrame();
 }
 
