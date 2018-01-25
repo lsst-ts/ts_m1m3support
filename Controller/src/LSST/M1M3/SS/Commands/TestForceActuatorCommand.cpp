@@ -40,7 +40,7 @@ void TestForceActuatorCommand::ackComplete() {
 }
 
 void TestForceActuatorCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTestForceActuator(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTestForceActuator(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

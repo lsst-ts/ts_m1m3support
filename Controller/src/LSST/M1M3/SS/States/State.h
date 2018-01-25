@@ -10,12 +10,14 @@
 
 #include <StateTypes.h>
 #include <time.h>
+#include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class Model;
+class M1M3SSPublisher;
 class BootCommand;
 class StartCommand;
 class EnableCommand;
@@ -55,7 +57,14 @@ class TurnPowerOnCommand;
 class TurnPowerOffCommand;
 
 class State {
+private:
+	M1M3SSPublisher* publisher;
+	std::string name;
+	timespec startTime;
+	timespec stopTime;
+
 public:
+	State(M1M3SSPublisher* publisher, std::string name);
 	virtual ~State();
 
 	virtual States::Type boot(BootCommand* command, Model* model);
@@ -96,15 +105,13 @@ public:
 	virtual States::Type turnPowerOn(TurnPowerOnCommand* command, Model* model);
 	virtual States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
 
-private:
-	clockid_t clk_id;
-	timespec startTime;
-	timespec stopTime;
-
 protected:
 	void startTimer();
 	void stopTimer();
 	double getTimer();
+
+private:
+	States::Type rejectCommandInvalidState(std::string command);
 };
 
 } /* namespace SS */

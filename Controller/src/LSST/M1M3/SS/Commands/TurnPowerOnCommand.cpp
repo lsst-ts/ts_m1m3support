@@ -28,6 +28,16 @@ TurnPowerOnCommand::TurnPowerOnCommand(Context* context, M1M3SSPublisher* publis
 }
 
 bool TurnPowerOnCommand::validate() {
+	if (!(this->data.TurnPowerNetworkAOn ||
+			this->data.TurnPowerNetworkBOn ||
+			this->data.TurnPowerNetworkCOn ||
+			this->data.TurnPowerNetworkDOn ||
+			this->data.TurnAuxPowerNetworkAOn ||
+			this->data.TurnAuxPowerNetworkBOn ||
+			this->data.TurnAuxPowerNetworkCOn ||
+			this->data.TurnAuxPowerNetworkDOn)) {
+		this->publisher->logCommandRejectionWarning("TurnPowerOn", "At least one field is not TRUE.");
+	}
 	return this->data.TurnPowerNetworkAOn ||
 			this->data.TurnPowerNetworkBOn ||
 			this->data.TurnPowerNetworkCOn ||
@@ -51,7 +61,7 @@ void TurnPowerOnCommand::ackComplete() {
 }
 
 void TurnPowerOnCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnPowerOn(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTurnPowerOn(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

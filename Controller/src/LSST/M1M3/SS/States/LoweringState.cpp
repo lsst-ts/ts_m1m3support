@@ -16,6 +16,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+LoweringState::LoweringState(M1M3SSPublisher* publisher) : EnabledState(publisher, "LoweringState") { }
+
 States::Type LoweringState::update(UpdateCommand* command, Model* model) {
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryDecrementSupportPercentage();

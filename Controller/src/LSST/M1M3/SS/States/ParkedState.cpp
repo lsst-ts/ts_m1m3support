@@ -19,6 +19,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+ParkedState::ParkedState(M1M3SSPublisher* publisher) : EnabledState(publisher, "ParkedState") { }
+
 States::Type ParkedState::update(UpdateCommand* command, Model* model) {
 	EnabledState::update(command, model);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);

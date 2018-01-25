@@ -21,7 +21,10 @@ LowerM1M3Command::LowerM1M3Command(Context* context, M1M3SSPublisher* publisher,
 }
 
 bool LowerM1M3Command::validate() {
-	return true;
+	if (!this->data.LowerM1M3) {
+		this->publisher->logCommandRejectionWarning("LowerM1M3", "The field LowerM1M3 is not TRUE.");
+	}
+	return this->data.LowerM1M3;
 }
 
 void LowerM1M3Command::execute() {
@@ -37,7 +40,7 @@ void LowerM1M3Command::ackComplete() {
 }
 
 void LowerM1M3Command::ackFailed(std::string reason) {
-	this->publisher->ackCommandLowerM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandLowerM1M3(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

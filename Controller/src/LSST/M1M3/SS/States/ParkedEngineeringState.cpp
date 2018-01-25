@@ -30,6 +30,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+ParkedEngineeringState::ParkedEngineeringState(M1M3SSPublisher* publisher) : EngineeringState(publisher, "ParkedEngineeringState") { }
+
 States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model) {
 	EnabledState::update(command, model);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);

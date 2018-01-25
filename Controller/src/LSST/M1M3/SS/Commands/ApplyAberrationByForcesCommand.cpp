@@ -39,7 +39,7 @@ void ApplyAberrationByForcesCommand::ackComplete() {
 }
 
 void ApplyAberrationByForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandApplyAberrationByForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandApplyAberrationByForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

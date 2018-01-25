@@ -42,7 +42,7 @@ void PositionM1M3Command::ackComplete() {
 }
 
 void PositionM1M3Command::ackFailed(std::string reason) {
-	this->publisher->ackCommandPositionM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandPositionM1M3(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

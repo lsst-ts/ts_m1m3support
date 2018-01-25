@@ -21,6 +21,9 @@ ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, i
 }
 
 bool ShutdownCommand::validate() {
+	if (!this->data.Shutdown) {
+		this->publisher->logCommandRejectionWarning("Shutdown", "The field Shutdown is not TRUE.");
+	}
 	return this->data.Shutdown;
 }
 
@@ -37,7 +40,7 @@ void ShutdownCommand::ackComplete() {
 }
 
 void ShutdownCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandShutdown(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandShutdown(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

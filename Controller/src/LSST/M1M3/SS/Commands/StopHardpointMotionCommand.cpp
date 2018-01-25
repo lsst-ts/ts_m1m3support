@@ -21,6 +21,9 @@ StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSP
 }
 
 bool StopHardpointMotionCommand::validate() {
+	if (!this->data.StopHardpointMotion) {
+		this->publisher->logCommandRejectionWarning("StopHardpointMotion", "The field StopHardpointMotion is not TRUE.");
+	}
 	return this->data.StopHardpointMotion;
 }
 
@@ -37,7 +40,7 @@ void StopHardpointMotionCommand::ackComplete() {
 }
 
 void StopHardpointMotionCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

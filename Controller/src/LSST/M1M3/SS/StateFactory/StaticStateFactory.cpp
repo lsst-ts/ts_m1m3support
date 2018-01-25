@@ -11,6 +11,22 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher) :
+		offlineState(publisher),
+		standbyState(publisher),
+		disabledState(publisher),
+		enabledState(publisher),
+		parkedState(publisher),
+		raisingState(publisher),
+		activeState(publisher),
+		loweringState(publisher),
+		engineeringState(publisher),
+		parkedEngineeringState(publisher),
+		raisingEngineeringState(publisher),
+		activeEngineeringState(publisher),
+		loweringEngineeringState(publisher),
+		faultState(publisher) { }
+
 State* StaticStateFactory::create(States::Type state) {
 	switch(state) {
 	case States::OfflineState: return &this->offlineState;

@@ -21,6 +21,9 @@ ExitEngineeringCommand::ExitEngineeringCommand(Context* context, M1M3SSPublisher
 }
 
 bool ExitEngineeringCommand::validate() {
+	if (!this->data.ExitEngineering) {
+		this->publisher->logCommandRejectionWarning("ExitEngineering", "The field ExitEngineering is not TRUE.");
+	}
 	return this->data.ExitEngineering;
 }
 
@@ -37,7 +40,7 @@ void ExitEngineeringCommand::ackComplete() {
 }
 
 void ExitEngineeringCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandExitEngineering(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandExitEngineering(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

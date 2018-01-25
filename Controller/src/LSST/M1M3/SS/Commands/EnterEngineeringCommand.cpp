@@ -21,6 +21,9 @@ EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublish
 }
 
 bool EnterEngineeringCommand::validate() {
+	if (!this->data.EnterEngineering) {
+		this->publisher->logCommandRejectionWarning("EnterEngineering", "The field EnterEngineering is not TRUE.");
+	}
 	return this->data.EnterEngineering;
 }
 
@@ -37,7 +40,7 @@ void EnterEngineeringCommand::ackComplete() {
 }
 
 void EnterEngineeringCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

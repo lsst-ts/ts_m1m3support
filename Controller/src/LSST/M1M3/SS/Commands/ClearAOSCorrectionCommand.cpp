@@ -21,6 +21,9 @@ ClearAOSCorrectionCommand::ClearAOSCorrectionCommand(Context* context, M1M3SSPub
 }
 
 bool ClearAOSCorrectionCommand::validate() {
+	if (!this->data.ClearAOSCorrection) {
+		this->publisher->logCommandRejectionWarning("ClearAOSCorrection", "The field ClearAOSCorrection is not TRUE.");
+	}
 	return this->data.ClearAOSCorrection;
 }
 
@@ -37,7 +40,7 @@ void ClearAOSCorrectionCommand::ackComplete() {
 }
 
 void ClearAOSCorrectionCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandClearAOSCorrection(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandClearAOSCorrection(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

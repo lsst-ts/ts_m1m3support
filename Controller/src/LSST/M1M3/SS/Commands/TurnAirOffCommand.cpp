@@ -21,6 +21,9 @@ TurnAirOffCommand::TurnAirOffCommand(Context* context, M1M3SSPublisher* publishe
 }
 
 bool TurnAirOffCommand::validate() {
+	if (!this->data.TurnAirOff) {
+		this->publisher->logCommandRejectionWarning("TurnAirOff", "The field TurnAirOff is not TRUE.");
+	}
 	return this->data.TurnAirOff;
 }
 
@@ -37,7 +40,7 @@ void TurnAirOffCommand::ackComplete() {
 }
 
 void TurnAirOffCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnAirOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTurnAirOff(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

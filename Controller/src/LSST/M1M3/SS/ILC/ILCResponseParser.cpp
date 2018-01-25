@@ -94,6 +94,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 	this->forceData->Timestamp = globalTimestamp;
 	this->hardpointStatus->Timestamp = globalTimestamp;
 	this->hardpointData->Timestamp = globalTimestamp;
+	this->hardpointMonitorStatus->Timestamp = globalTimestamp;
 	while(!buffer->endOfBuffer()) {
 		uint16_t length = 0;
 		double timestamp = 0;

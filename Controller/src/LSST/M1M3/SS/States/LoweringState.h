@@ -16,6 +16,8 @@ namespace SS {
 
 class LoweringState: public EnabledState {
 public:
+	LoweringState(M1M3SSPublisher* publisher);
+
 	States::Type update(UpdateCommand* command, Model* model);
 };
 

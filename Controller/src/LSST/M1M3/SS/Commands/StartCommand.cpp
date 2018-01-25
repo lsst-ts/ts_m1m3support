@@ -22,6 +22,9 @@ StartCommand::StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t
 }
 
 bool StartCommand::validate() {
+	if (!this->data.Start) {
+		this->publisher->logCommandRejectionWarning("Start", "The field Start is not TRUE.");
+	}
 	return this->data.Start;
 }
 
@@ -38,7 +41,7 @@ void StartCommand::ackComplete() {
 }
 
 void StartCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandStart(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandStart(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

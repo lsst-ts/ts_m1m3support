@@ -21,6 +21,9 @@ DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int
 }
 
 bool DisableCommand::validate() {
+	if (!this->data.Disable) {
+		this->publisher->logCommandRejectionWarning("Disable", "The field Disable is not TRUE.");
+	}
 	return this->data.Disable;
 }
 
@@ -37,7 +40,7 @@ void DisableCommand::ackComplete() {
 }
 
 void DisableCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandDisable(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandDisable(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

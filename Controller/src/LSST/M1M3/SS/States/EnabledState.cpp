@@ -26,6 +26,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+EnabledState::EnabledState(M1M3SSPublisher* publisher) : State(publisher, "EnabledState") { }
+EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) { }
+
 States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	model->getPositionController()->updateSteps();
 	model->getILC()->writeRaisedListBuffer();

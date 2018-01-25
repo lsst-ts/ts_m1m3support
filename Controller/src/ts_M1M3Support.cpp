@@ -75,7 +75,7 @@ int main() {
 		return -1;
 	}
 	cout << "Creating state factory" << endl;
-	StaticStateFactory stateFactory = StaticStateFactory();
+	StaticStateFactory stateFactory = StaticStateFactory(&publisher);
 	cout << "Load interlock application settings" << endl;
 	InterlockApplicationSettings* interlockApplicationSettings = settingReader.loadInterlockApplicationSettings();
 	cout << "Creating interlock controller" << endl;
