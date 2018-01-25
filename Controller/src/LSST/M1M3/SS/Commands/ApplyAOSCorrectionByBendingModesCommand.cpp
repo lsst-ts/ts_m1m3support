@@ -39,7 +39,7 @@ void ApplyAOSCorrectionByBendingModesCommand::ackComplete() {
 }
 
 void ApplyAOSCorrectionByBendingModesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandApplyAOSCorrectionByBendingModes(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandApplyAOSCorrectionByBendingModes(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

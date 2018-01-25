@@ -16,6 +16,8 @@ namespace SS {
 
 class DisabledState: public State {
 public:
+	DisabledState(M1M3SSPublisher* publisher);
+
 	States::Type update(UpdateCommand* command, Model* model);
 	States::Type enable(EnableCommand* command, Model* model);
 	States::Type standby(StandbyCommand* command, Model* model);

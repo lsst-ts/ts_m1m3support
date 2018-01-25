@@ -19,6 +19,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+FaultState::FaultState(M1M3SSPublisher* publisher) : State(publisher, "FaultState") { }
+
 States::Type FaultState::update(UpdateCommand* command, Model* model) {
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();

@@ -23,7 +23,10 @@ MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(Context* context, M
 }
 
 bool MoveHardpointActuatorsCommand::validate() {
-	return true;
+	if (this->data.Steps[0] == 0 && this->data.Steps[1] == 0 && this->data.Steps[2] == 0 && this->data.Steps[3] == 0 && this->data.Steps[4] == 0 && this->data.Steps[5] == 0) {
+		this->publisher->logCommandRejectionWarning("MoveHardpointActuators", "The field Steps must have at least one index with a step value not equal to zero.");
+	}
+	return this->data.Steps[0] != 0 || this->data.Steps[1] != 0 || this->data.Steps[2] != 0 || this->data.Steps[3] != 0 || this->data.Steps[4] != 0 || this->data.Steps[5] != 0;
 }
 
 void MoveHardpointActuatorsCommand::execute() {
@@ -39,7 +42,7 @@ void MoveHardpointActuatorsCommand::ackComplete() {
 }
 
 void MoveHardpointActuatorsCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandMoveHardpointActuators(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandMoveHardpointActuators(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

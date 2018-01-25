@@ -21,6 +21,9 @@ StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int
 }
 
 bool StandbyCommand::validate() {
+	if (!this->data.Standby) {
+		this->publisher->logCommandRejectionWarning("Standby", "The field Standby is not TRUE.");
+	}
 	return this->data.Standby;
 }
 
@@ -37,7 +40,7 @@ void StandbyCommand::ackComplete() {
 }
 
 void StandbyCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandStandby(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandStandby(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -26,6 +26,7 @@ struct FaultCodes {
 		DisplacementInvalidLength                          = 0x000017D60000000C,
 		DisplacementUnknownCommand                         = 0x000017D60000000D,
 		DisplacementUnknownProblem                         = 0x000017D60000000E,
+		DisplacementInvalidResponse                        = 0x000017D60000000F,
 		InclinometerResponseTimeout                        = 0x000017D700000001, // 6103
 		InclinometerInvalidCRC                             = 0x000017D700000002,
 		InclinometerUnknownAddress                         = 0x000017D700000003,

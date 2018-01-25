@@ -37,7 +37,7 @@ void TestHardpointCommand::ackComplete() {
 }
 
 void TestHardpointCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTestHardpoint(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTestHardpoint(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

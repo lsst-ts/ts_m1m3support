@@ -27,6 +27,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+class M1M3SSPublisher;
+
 class StaticStateFactory {
 private:
 	OfflineState offlineState;
@@ -45,6 +47,8 @@ private:
 	FaultState faultState;
 
 public:
+	StaticStateFactory(M1M3SSPublisher* publisher);
+
 	State* create(States::Type state);
 	void destroy(State* state);
 };

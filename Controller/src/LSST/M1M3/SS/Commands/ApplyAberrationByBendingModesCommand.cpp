@@ -39,7 +39,7 @@ void ApplyAberrationByBendingModesCommand::ackComplete() {
 }
 
 void ApplyAberrationByBendingModesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandApplyAberrationByBendingModes(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandApplyAberrationByBendingModes(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

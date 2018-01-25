@@ -39,7 +39,7 @@ void ApplyAOSCorrectionByForcesCommand::ackComplete() {
 }
 
 void ApplyAOSCorrectionByForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandApplyAOSCorrectionByForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandApplyAOSCorrectionByForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

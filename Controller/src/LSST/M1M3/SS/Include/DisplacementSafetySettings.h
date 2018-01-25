@@ -20,6 +20,7 @@ struct DisplacementSafetySettings {
 	bool FaultOnSensorReportsWriteControlError;
 	bool FaultOnResponseTimeoutError;
 	bool FaultOnInvalidLength;
+	bool FaultOnInvalidResponse;
 	bool FaultOnUnknownCommand;
 	bool FaultOnUnknownProblem;
 };

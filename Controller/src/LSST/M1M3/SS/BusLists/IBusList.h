@@ -23,6 +23,7 @@ public:
 
 	virtual int32_t* getExpectedHPResponses();
 	virtual int32_t* getExpectedFAResponses();
+	virtual int32_t* getExpectedHMResponses();
 
 	virtual void update();
 };

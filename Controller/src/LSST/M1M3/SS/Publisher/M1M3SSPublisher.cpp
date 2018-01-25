@@ -36,6 +36,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedForces");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_CellLightStatus");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_CellLightWarning");
+	this->m1m3SAL->salEvent((char*)"m1m3_logevent_CommandRejectionWarning");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_DetailedState");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_DisplacementSensorWarning");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ErrorCode");
@@ -78,6 +79,7 @@ void M1M3SSPublisher::logAirSupplyWarning() { this->m1m3SAL->logEvent_AirSupplyW
 void M1M3SSPublisher::logAppliedForces() { this->m1m3SAL->logEvent_AppliedForces(&this->eventAppliedForces, 0); }
 void M1M3SSPublisher::logCellLightStatus() { this->m1m3SAL->logEvent_CellLightStatus(&this->eventCellLightStatus, 0); }
 void M1M3SSPublisher::logCellLightWarning() { this->m1m3SAL->logEvent_CellLightWarning(&this->eventCellLightWarning, 0); }
+void M1M3SSPublisher::logCommandRejectionWarning() { this->m1m3SAL->logEvent_CommandRejectionWarning(&this->eventCommandRejectionWarning, 0); }
 void M1M3SSPublisher::logDetailedState() { this->m1m3SAL->logEvent_DetailedState(&this->eventDetailedState, 0); }
 void M1M3SSPublisher::logDisplacementSensorWarning() { this->m1m3SAL->logEvent_DisplacementSensorWarning(&this->eventDisplacementSensorWarning, 0); }
 void M1M3SSPublisher::logErrorCode() { this->m1m3SAL->logEvent_ErrorCode(&this->eventErrorCode, 0); }
@@ -98,6 +100,13 @@ void M1M3SSPublisher::logPowerSupplyStatus() { this->m1m3SAL->logEvent_PowerSupp
 void M1M3SSPublisher::logPowerWarning() { this->m1m3SAL->logEvent_PowerWarning(&this->eventPowerWarning, 0); }
 void M1M3SSPublisher::logSettingVersions() { this->m1m3SAL->logEvent_SettingVersions(&this->eventSettingVersions, 0); }
 void M1M3SSPublisher::logSummaryState() { this->m1m3SAL->logEvent_SummaryState(&this->eventSummaryState, 0); }
+
+void M1M3SSPublisher::logCommandRejectionWarning(std::string command, std::string reason) {
+	this->eventCommandRejectionWarning.Timestamp = this->getTimestamp();
+	this->eventCommandRejectionWarning.Command = command;
+	this->eventCommandRejectionWarning.Reason = reason;
+	this->logCommandRejectionWarning();
+}
 
 void M1M3SSPublisher::ackCommandStart(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_Start(commandID, ackCode, 0, (char*)description.c_str());

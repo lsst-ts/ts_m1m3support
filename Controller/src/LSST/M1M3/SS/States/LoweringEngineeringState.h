@@ -16,6 +16,8 @@ namespace SS {
 
 class LoweringEngineeringState: public EngineeringState {
 public:
+	LoweringEngineeringState(M1M3SSPublisher* publisher);
+
 	States::Type update(UpdateCommand* command, Model* model);
 };
 

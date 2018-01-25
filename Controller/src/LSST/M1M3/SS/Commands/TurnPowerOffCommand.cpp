@@ -28,6 +28,16 @@ TurnPowerOffCommand::TurnPowerOffCommand(Context* context, M1M3SSPublisher* publ
 }
 
 bool TurnPowerOffCommand::validate() {
+	if (!(this->data.TurnPowerNetworkAOff ||
+			this->data.TurnPowerNetworkBOff ||
+			this->data.TurnPowerNetworkCOff ||
+			this->data.TurnPowerNetworkDOff ||
+			this->data.TurnAuxPowerNetworkAOff ||
+			this->data.TurnAuxPowerNetworkBOff ||
+			this->data.TurnAuxPowerNetworkCOff ||
+			this->data.TurnAuxPowerNetworkDOff)) {
+		this->publisher->logCommandRejectionWarning("TurnPowerOff", "At least one field is not TRUE.");
+	}
 	return this->data.TurnPowerNetworkAOff ||
 			this->data.TurnPowerNetworkBOff ||
 			this->data.TurnPowerNetworkCOff ||
@@ -51,7 +61,7 @@ void TurnPowerOffCommand::ackComplete() {
 }
 
 void TurnPowerOffCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnPowerOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTurnPowerOff(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

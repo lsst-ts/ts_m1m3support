@@ -84,8 +84,9 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
 			this->ilcMessageFactory->reportLVDT(&this->buffer, address);
 			this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
+			this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
 			this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-			this->expectedHMResponses[dataIndex] = 3;
+			this->expectedHMResponses[dataIndex] = 4;
 		}
 		this->endSubnet();
 	}

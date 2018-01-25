@@ -21,6 +21,9 @@ TurnLightsOnCommand::TurnLightsOnCommand(Context* context, M1M3SSPublisher* publ
 }
 
 bool TurnLightsOnCommand::validate() {
+	if (!this->data.TurnLightsOn) {
+		this->publisher->logCommandRejectionWarning("TurnLightsOn", "The field TurnLightsOn is not TRUE.");
+	}
 	return this->data.TurnLightsOn;
 }
 
@@ -37,7 +40,7 @@ void TurnLightsOnCommand::ackComplete() {
 }
 
 void TurnLightsOnCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnLightsOn(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTurnLightsOn(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

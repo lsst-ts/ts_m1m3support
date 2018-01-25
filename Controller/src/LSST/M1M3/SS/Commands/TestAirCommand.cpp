@@ -21,6 +21,9 @@ TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int
 }
 
 bool TestAirCommand::validate() {
+	if (!this->data.TestAir) {
+		this->publisher->logCommandRejectionWarning("TestAir", "The field TestAir is not TRUE.");
+	}
 	return this->data.TestAir;
 }
 
@@ -37,7 +40,7 @@ void TestAirCommand::ackComplete() {
 }
 
 void TestAirCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTestAir(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTestAir(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

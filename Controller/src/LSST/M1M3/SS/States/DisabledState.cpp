@@ -24,6 +24,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+DisabledState::DisabledState(M1M3SSPublisher* publisher) : State(publisher, "DisabledState") { }
+
 States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	this->startTimer();
 	ILC* ilc = model->getILC();
@@ -49,6 +51,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	ilc->publishForceActuatorData();
 	ilc->publishHardpointStatus();
 	ilc->publishHardpointData();
+	ilc->publishHardpointMonitorStatus();
 	gyro->publishGyroData();
 	gyro->publishGyroWarningIfRequired();
 	powerController->publishPowerSupplyData();

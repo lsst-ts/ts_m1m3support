@@ -21,7 +21,10 @@ AbortRaiseM1M3Command::AbortRaiseM1M3Command(Context* context, M1M3SSPublisher* 
 }
 
 bool AbortRaiseM1M3Command::validate() {
-	return true;
+	if (!this->data.AbortRaiseM1M3) {
+		this->publisher->logCommandRejectionWarning("AbortRaiseM1M3", "The field AbortRaiseM1M3 is not TRUE.");
+	}
+	return this->data.AbortRaiseM1M3;
 }
 
 void AbortRaiseM1M3Command::execute() {
@@ -37,7 +40,7 @@ void AbortRaiseM1M3Command::ackComplete() {
 }
 
 void AbortRaiseM1M3Command::ackFailed(std::string reason) {
-	this->publisher->ackCommandAbortRaiseM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandAbortRaiseM1M3(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

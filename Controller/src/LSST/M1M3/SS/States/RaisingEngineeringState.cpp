@@ -14,6 +14,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+RaisingEngineeringState::RaisingEngineeringState(M1M3SSPublisher* publisher) : EngineeringState(publisher, "RaisingEngineeringState") { }
+
 States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* model) {
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();

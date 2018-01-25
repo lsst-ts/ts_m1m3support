@@ -21,6 +21,9 @@ TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher,
 }
 
 bool TurnAirOnCommand::validate() {
+	if (!this->data.TurnAirOn) {
+		this->publisher->logCommandRejectionWarning("TurnAirOn", "The field TurnAirOn is not TRUE.");
+	}
 	return this->data.TurnAirOn;
 }
 
@@ -37,7 +40,7 @@ void TurnAirOnCommand::ackComplete() {
 }
 
 void TurnAirOnCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnAirOn(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandTurnAirOn(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

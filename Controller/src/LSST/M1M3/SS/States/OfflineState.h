@@ -16,6 +16,8 @@ namespace SS {
 
 class OfflineState: public State {
 public:
+	OfflineState(M1M3SSPublisher* publisher);
+
 	virtual States::Type boot(BootCommand* command, Model* model);
 };
 

@@ -16,6 +16,8 @@ namespace SS {
 
 class ActiveEngineeringState: public EngineeringState {
 public:
+	ActiveEngineeringState(M1M3SSPublisher* publisher);
+
 	States::Type update(UpdateCommand* command, Model* model);
 	States::Type lowerM1M3(LowerM1M3Command* command, Model* model);
 	States::Type exitEngineering(ExitEngineeringCommand* command, Model* model);

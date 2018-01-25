@@ -18,6 +18,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+StandbyState::StandbyState(M1M3SSPublisher* publisher) : State(publisher, "StandbyState") { }
+
 States::Type StandbyState::update(UpdateCommand* command, Model* model) {
 	model->getInterlockController()->tryToggleHeartbeat();
 	return States::NoStateTransition;

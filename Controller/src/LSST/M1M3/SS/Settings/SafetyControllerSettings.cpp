@@ -31,6 +31,7 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->Displacement.FaultOnSensorReportsWriteControlError = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/DisplacementSettings/FaultOnSensorReportsWriteControlError").node().child_value()) != 0;
 	this->Displacement.FaultOnResponseTimeoutError = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/DisplacementSettings/FaultOnResponseTimeoutError").node().child_value()) != 0;
 	this->Displacement.FaultOnInvalidLength = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/DisplacementSettings/FaultOnInvalidLength").node().child_value()) != 0;
+	this->Displacement.FaultOnInvalidResponse = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/DisplacementSettings/FaultOnInvalidResponse").node().child_value()) != 0;
 	this->Displacement.FaultOnUnknownCommand = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/DisplacementSettings/FaultOnUnknownCommand").node().child_value()) != 0;
 	this->Displacement.FaultOnUnknownProblem = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/DisplacementSettings/FaultOnUnknownProblem").node().child_value()) != 0;
 

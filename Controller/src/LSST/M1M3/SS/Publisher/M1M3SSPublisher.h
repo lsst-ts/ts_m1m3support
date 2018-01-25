@@ -39,6 +39,7 @@ private:
 	m1m3_logevent_AppliedForcesC eventAppliedForces;
 	m1m3_logevent_CellLightStatusC eventCellLightStatus;
 	m1m3_logevent_CellLightWarningC eventCellLightWarning;
+	m1m3_logevent_CommandRejectionWarningC eventCommandRejectionWarning;
 	m1m3_logevent_DetailedStateC eventDetailedState;
 	m1m3_logevent_DisplacementSensorWarningC eventDisplacementSensorWarning;
 	m1m3_logevent_ErrorCodeC eventErrorCode;
@@ -81,6 +82,7 @@ public:
 	m1m3_logevent_AppliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
 	m1m3_logevent_CellLightStatusC* getEventCellLightStatus() { return &this->eventCellLightStatus; }
 	m1m3_logevent_CellLightWarningC* getEventCellLightWarning() { return &this->eventCellLightWarning; }
+	m1m3_logevent_CommandRejectionWarningC* getEventCommandRejectionWarning() { return &this->eventCommandRejectionWarning; }
 	m1m3_logevent_DetailedStateC* getEventDetailedState() { return &this->eventDetailedState; }
 	m1m3_logevent_DisplacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
 	m1m3_logevent_ErrorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
@@ -122,6 +124,7 @@ public:
 	void logAppliedForces();
 	void logCellLightStatus();
 	void logCellLightWarning();
+	void logCommandRejectionWarning();
 	void logDetailedState();
 	void logDisplacementSensorWarning();
 	void logErrorCode();
@@ -142,6 +145,8 @@ public:
 	void logPowerWarning();
 	void logSettingVersions();
 	void logSummaryState();
+
+	void logCommandRejectionWarning(std::string command, std::string reason);
 
 	void ackCommandStart(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandEnable(int32_t commandID, int32_t ackCode, std::string description);

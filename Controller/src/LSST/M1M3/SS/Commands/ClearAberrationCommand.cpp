@@ -21,6 +21,9 @@ ClearAberrationCommand::ClearAberrationCommand(Context* context, M1M3SSPublisher
 }
 
 bool ClearAberrationCommand::validate() {
+	if (!this->data.ClearAberration) {
+		this->publisher->logCommandRejectionWarning("ClearAberration", "The field ClearAberration is not TRUE.");
+	}
 	return this->data.ClearAberration;
 }
 
@@ -37,7 +40,7 @@ void ClearAberrationCommand::ackComplete() {
 }
 
 void ClearAberrationCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandClearAberration(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandClearAberration(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

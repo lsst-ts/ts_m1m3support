@@ -64,7 +64,7 @@ public:
 	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData);
 
 	void parse(ModbusBuffer* buffer, uint8_t subnet);
-	void incExpectedResponses(int32_t* fa, int32_t* hp);
+	void incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm);
 	void verifyResponses();
 
 private:

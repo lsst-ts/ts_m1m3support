@@ -21,6 +21,9 @@ ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPubli
 }
 
 bool ClearOffsetForcesCommand::validate() {
+	if (!this->data.ClearOffsetForces) {
+		this->publisher->logCommandRejectionWarning("ClearOffsetForces", "The field ClearOffsetForces is not TRUE.");
+	}
 	return this->data.ClearOffsetForces;
 }
 
@@ -37,7 +40,7 @@ void ClearOffsetForcesCommand::ackComplete() {
 }
 
 void ClearOffsetForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandClearOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandClearOffsetForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

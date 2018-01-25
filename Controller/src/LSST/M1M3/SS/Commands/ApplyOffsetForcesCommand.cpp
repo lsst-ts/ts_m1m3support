@@ -41,7 +41,7 @@ void ApplyOffsetForcesCommand::ackComplete() {
 }
 
 void ApplyOffsetForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandApplyOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandApplyOffsetForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

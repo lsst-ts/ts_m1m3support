@@ -13,6 +13,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+OfflineState::OfflineState(M1M3SSPublisher* publisher) : State(publisher, "OfflineState") { }
+
 States::Type OfflineState::boot(BootCommand* command, Model* model) {
 	States::Type newState = States::StandbyState;
 	model->publishRecommendedSettings();

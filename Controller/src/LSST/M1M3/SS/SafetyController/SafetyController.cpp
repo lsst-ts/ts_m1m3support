@@ -45,6 +45,7 @@ void SafetyController::displacementNotifySensorReportsExpansionLineError(bool co
 void SafetyController::displacementNotifySensorReportsWriteControlError(bool conditionFlag) { this->updateOverride(FaultCodes::DisplacementSensorReportsWriteControlError, this->safetyControllerSettings->Displacement.FaultOnSensorReportsWriteControlError, conditionFlag); }
 void SafetyController::displacementNotifyResponseTimeoutError(bool conditionFlag) { this->updateOverride(FaultCodes::DisplacementResponseTimeoutError, this->safetyControllerSettings->Displacement.FaultOnResponseTimeoutError, conditionFlag); }
 void SafetyController::displacementNotifyInvalidLength(bool conditionFlag) { this->updateOverride(FaultCodes::DisplacementInvalidLength, this->safetyControllerSettings->Displacement.FaultOnInvalidLength, conditionFlag); }
+void SafetyController::displacementNotifyInvalidResponse(bool conditionFlag) { this->updateOverride(FaultCodes::DisplacementInvalidResponse, this->safetyControllerSettings->Displacement.FaultOnInvalidResponse, conditionFlag); }
 void SafetyController::displacementNotifyUnknownCommand(bool conditionFlag) { this->updateOverride(FaultCodes::DisplacementUnknownCommand, this->safetyControllerSettings->Displacement.FaultOnUnknownCommand, conditionFlag); }
 void SafetyController::displacementNotifyUnknownProblem(bool conditionFlag) { this->updateOverride(FaultCodes::DisplacementUnknownProblem, this->safetyControllerSettings->Displacement.FaultOnUnknownProblem, conditionFlag); }
 

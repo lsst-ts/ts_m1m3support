@@ -21,6 +21,9 @@ DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M
 }
 
 bool DisableHardpointChaseCommand::validate() {
+	if (!(this->data.ActuatorId >= 1 && this->data.ActuatorId <= 6)) {
+		this->publisher->logCommandRejectionWarning("DisableHardpointChase", "The field ActuatorId is must be in range [1, 6].");
+	}
 	return this->data.ActuatorId >= 1 && this->data.ActuatorId <= 6;
 }
 
@@ -37,7 +40,7 @@ void DisableHardpointChaseCommand::ackComplete() {
 }
 
 void DisableHardpointChaseCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

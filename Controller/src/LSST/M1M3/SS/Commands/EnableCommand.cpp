@@ -21,6 +21,9 @@ EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32
 }
 
 bool EnableCommand::validate() {
+	if (!this->data.Enable) {
+		this->publisher->logCommandRejectionWarning("Enable", "The field Enable is not TRUE.");
+	}
 	return this->data.Enable;
 }
 
@@ -37,7 +40,7 @@ void EnableCommand::ackComplete() {
 }
 
 void EnableCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandEnable(this->commandID, ACK_FAILED, "Failed: " + reason);
+	this->publisher->ackCommandEnable(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */
