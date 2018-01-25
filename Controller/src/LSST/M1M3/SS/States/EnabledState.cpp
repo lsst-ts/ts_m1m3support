@@ -47,6 +47,7 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	model->getILC()->publishForceActuatorData();
 	model->getILC()->publishHardpointStatus();
 	model->getILC()->publishHardpointData();
+	model->getILC()->publishHardpointMonitorStatus();
 	model->getGyro()->publishGyroData();
 	model->getGyro()->publishGyroWarningIfRequired();
 	model->getPowerController()->publishPowerSupplyData();
