@@ -29,6 +29,7 @@ AutomaticOperationsController::AutomaticOperationsController(PositionController*
 
 void AutomaticOperationsController::startRaiseOperation() {
 	this->safetyController->raiseOperationTimeout(false);
+	this->positionController->stopMotion();
 	this->positionController->enableChaseAll();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroStaticForces();
@@ -89,6 +90,7 @@ void AutomaticOperationsController::timeoutRaiseOperation() {
 
 void AutomaticOperationsController::startLowerOperation() {
 	this->safetyController->lowerOperationTimeout(false);
+	this->positionController->stopMotion();
 	this->positionController->enableChaseAll();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroStaticForces();

@@ -82,12 +82,16 @@ States::Type ParkedEngineeringState::stopHardpointMotion(StopHardpointMotionComm
 }
 
 States::Type ParkedEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
-	model->getPositionController()->move(command->getData()->Steps);
+	if (!model->getPositionController()->move(command->getData()->Steps)) {
+		model->getPublisher()->logCommandRejectionWarning("MoveHardpointActuators", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) {
-	model->getPositionController()->enableChase(command->getData()->ActuatorId);
+	if (!model->getPositionController()->enableChase(command->getData()->ActuatorId)) {
+		model->getPublisher()->logCommandRejectionWarning("EnableHardpointChase", "At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
+	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

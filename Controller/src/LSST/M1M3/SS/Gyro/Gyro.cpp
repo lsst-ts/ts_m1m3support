@@ -18,6 +18,9 @@
 #include <Checksum.h>
 #include <unistd.h>
 
+#include <iostream>
+using namespace std;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -159,27 +162,18 @@ void Gyro::read() {
 				else {
 					// TODO: Incomplete Frame it is expected to occur because of how I read data
 					this->readToEndOfFrame(&buffer);
+//					cout << "Incomplete Frame" << endl;
 				}
 			}
 			else {
 				this->readToEndOfFrame(&buffer);
+//				cout << "Invalid Header" << endl;
 				// TODO: Need to decide how to handle ASCII responses
-//				int32_t startIndex = buffer.getIndex();
-//				uint8_t value = buffer.readU8();
-//				while(value != (uint8_t)'\n') {
-//					value = buffer.readU8();
-//				}
-//				int32_t stopIndex = buffer.getIndex();
-//				int32_t strLength = stopIndex - startIndex - 2;
-//				buffer.setIndex(startIndex);
-//				std::string str = buffer.readString(strLength);
-//				buffer.readU16();
-//				buffer.readTimestamp();
-//				buffer.readEndOfFrame();
-//				cout << "\tMessage = " << str << endl;
 			}
 		}
-
+	}
+	else {
+//		cout << "Invalid Length " << length << endl;
 	}
 }
 

@@ -39,19 +39,19 @@ public:
 
 	double getRaiseLowerTimeout();
 
-	void enableChase(int32_t actuatorID);
+	bool enableChase(int32_t actuatorID);
 	void disableChase(int32_t actuatorID);
-	void enableChaseAll();
+	bool enableChaseAll();
 	void disableChaseAll();
 
 	bool forcesInTolerance();
 	bool motionComplete();
 
-	void move(int32_t* steps);
-	void moveToEncoder(int32_t* encoderValues);
-	void moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
-	void moveToReferencePosition();
-	void translate(double x, double y, double z, double rX, double rY, double rZ);
+	bool move(int32_t* steps);
+	bool moveToEncoder(int32_t* encoderValues);
+	bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
+	bool moveToReferencePosition();
+	bool translate(double x, double y, double z, double rX, double rY, double rZ);
 	void stopMotion();
 
 	void updateSteps();

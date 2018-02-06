@@ -79,10 +79,12 @@ void Displacement::readDataResponse() {
 						this->publisher->putIMSData();
 					}
 					else {
+//						cout << "Not enough sensors" << endl;
 						this->warnInvalidResponse(timestamp);
 					}
 				}
 				catch(boost::bad_lexical_cast& e) {
+//					cout << "Exception" << endl;
 					this->warnInvalidResponse(timestamp);
 				}
 			}
@@ -107,6 +109,7 @@ void Displacement::readDataResponse() {
 			}
 		}
 		else {
+//			cout << "Invalid Response Length" << endl;
 			this->warnInvalidResponse(timestamp);
 		}
 	}
@@ -114,6 +117,7 @@ void Displacement::readDataResponse() {
 		this->warnResponseTimeoutError(this->publisher->getTimestamp());
 	}
 	else {
+//		cout << "Invalid Length " << length << endl;
 		this->warnInvalidResponse(this->publisher->getTimestamp());
 	}
 }

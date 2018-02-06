@@ -282,7 +282,7 @@ def issueStartCommand():
     data.Start = True
     data.SettingsToApply = "Default"
     cmdId = salM1M3.issueCommand_Start(data)
-    salM1M3.waitForCompletion_Start(cmdId, 10)
+    valid = salM1M3.waitForCompletion_Start(cmdId, 10)
     afterCommand()
     
 def issueEnableCommand():

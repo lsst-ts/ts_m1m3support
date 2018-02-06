@@ -21,7 +21,10 @@ TestHardpointCommand::TestHardpointCommand(Context* context, M1M3SSPublisher* pu
 }
 
 bool TestHardpointCommand::validate() {
-	return this->data.ActuatorId > 0 && this->data.ActuatorId <= 6;
+	if (!(this->data.ActuatorId >= 1 && this->data.ActuatorId <= 6)) {
+		this->publisher->logCommandRejectionWarning("TestHardpoint", "The field ActuatorId is must be in range [1, 6].");
+	}
+	return this->data.ActuatorId >= 1 && this->data.ActuatorId <= 6;
 }
 
 void TestHardpointCommand::execute() {

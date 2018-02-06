@@ -21,10 +21,16 @@ TestForceActuatorCommand::TestForceActuatorCommand(Context* context, M1M3SSPubli
 }
 
 bool TestForceActuatorCommand::validate() {
+	if (!((this->data.ActuatorId >= 101 && this->data.ActuatorId <= 143) ||
+			(this->data.ActuatorId >= 207 && this->data.ActuatorId <= 243) ||
+			(this->data.ActuatorId >= 301 && this->data.ActuatorId <= 343) ||
+			(this->data.ActuatorId >= 407 && this->data.ActuatorId <= 443)) ) {
+		this->publisher->logCommandRejectionWarning("TestForceActuator", "The field ActuatorId is must be in range [101, 143] or [207, 243] or [301, 343] or [407, 443].");
+	}
 	return (this->data.ActuatorId >= 101 && this->data.ActuatorId <= 143) ||
 			(this->data.ActuatorId >= 207 && this->data.ActuatorId <= 243) ||
 			(this->data.ActuatorId >= 301 && this->data.ActuatorId <= 343) ||
-			(this->data.ActuatorId >= 407 && this->data.ActuatorId <= 434);
+			(this->data.ActuatorId >= 407 && this->data.ActuatorId <= 443);
 }
 
 void TestForceActuatorCommand::execute() {

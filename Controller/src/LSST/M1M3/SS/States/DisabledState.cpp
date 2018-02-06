@@ -27,6 +27,7 @@ namespace SS {
 DisabledState::DisabledState(M1M3SSPublisher* publisher) : State(publisher, "DisabledState") { }
 
 States::Type DisabledState::update(UpdateCommand* command, Model* model) {
+//	cout << "Update,";
 	this->startTimer();
 	ILC* ilc = model->getILC();
 	PowerController* powerController = model->getPowerController();
@@ -35,32 +36,57 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	Accelerometer* accelerometer = model->getAccelerometer();
 	Gyro* gyro = model->getGyro();
 	InterlockController* interlockController = model->getInterlockController();
+//	cout << "GetModels," << this->getCurrentTimer();
 	ilc->writeFreezeSensorListBuffer();
+//	cout << ",WriteList," << this->getCurrentTimer();
 	ilc->triggerModbus();
+//	cout << ",TriggerModbus," << this->getCurrentTimer();
 	powerController->samplePowerSupplyDataAndStatus();
+//	cout << ",SampleStatusPS," << this->getCurrentTimer();
 	displacement->writeDataRequest();
+//	cout << ",DisplacementRequest," << this->getCurrentTimer();
 	inclinometer->writeDataRequest();
+//	cout << ",InclinometerRequest," << this->getCurrentTimer();
 	accelerometer->sampleData();
-	ilc->waitForAllSubnets(5000);
-	displacement->readDataResponse();
-	inclinometer->readDataResponse();
+//	cout << ",AccelerometerSample," << this->getCurrentTimer();
 	gyro->read();
-	ilc->readAll();
-	ilc->verifyResponses();
-	ilc->publishForceActuatorStatus();
-	ilc->publishForceActuatorData();
-	ilc->publishHardpointStatus();
-	ilc->publishHardpointData();
-	ilc->publishHardpointMonitorStatus();
+//	cout << ",GyroSample," << this->getCurrentTimer();
 	gyro->publishGyroData();
+//	cout << ",GyroPubData," << this->getCurrentTimer();
 	gyro->publishGyroWarningIfRequired();
+//	cout << ",GyroPubWarning," << this->getCurrentTimer();
 	powerController->publishPowerSupplyData();
+//	cout << ",PWRPubData," << this->getCurrentTimer();
 	powerController->publishPowerSupplyStatusIfRequired();
+//	cout << ",PWRPubStatus," << this->getCurrentTimer();
 	powerController->checkPowerStatus();
+//	cout << ",PWRCheckStatus," << this->getCurrentTimer();
 	interlockController->tryToggleHeartbeat();
+//	cout << ",InterHeartbeat," << this->getCurrentTimer();
 	interlockController->checkInterlockStatus();
+//	cout << ",InterStatus," << this->getCurrentTimer();
+	ilc->waitForAllSubnets(5000);
+//	cout << ",WaitAllSubnets," << this->getCurrentTimer();
+	ilc->readAll();
+//	cout << ",ILCReadAll," << this->getCurrentTimer();
+	ilc->verifyResponses();
+//	cout << ",ILCVerify," << this->getCurrentTimer();
+	ilc->publishForceActuatorStatus();
+//	cout << ",ILCPubForceStatus," << this->getCurrentTimer();
+	ilc->publishForceActuatorData();
+//	cout << ",ILCPubForceData," << this->getCurrentTimer();
+	ilc->publishHardpointStatus();
+//	cout << ",ILCPubHPStatus," << this->getCurrentTimer();
+	ilc->publishHardpointData();
+//	cout << ",ILCPubHPData," << this->getCurrentTimer();
+	ilc->publishHardpointMonitorStatus();
+//	cout << ",ILCPubHMStatus," << this->getCurrentTimer();
+	inclinometer->readDataResponse();
+//	cout << ",InclinometerResponse," << this->getCurrentTimer();
+	displacement->readDataResponse();
+//	cout << ",DisplacementResponse," << this->getCurrentTimer();
 	this->stopTimer();
-	//cout << "Time: " << this->getTimer() << endl;
+//	cout << ",TotalTime," << this->getTimer() << endl;
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
