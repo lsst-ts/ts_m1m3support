@@ -108,6 +108,7 @@ public:
 protected:
 	void startTimer();
 	void stopTimer();
+	double getCurrentTimer();
 	double getTimer();
 
 private:

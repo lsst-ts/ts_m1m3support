@@ -113,19 +113,25 @@ States::Type ActiveEngineeringState::stopHardpointMotion(StopHardpointMotionComm
 }
 
 States::Type ActiveEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
-	model->getPositionController()->move(command->getData()->Steps);
+	if (!model->getPositionController()->move(command->getData()->Steps)) {
+		model->getPublisher()->logCommandRejectionWarning("MoveHardpointActuators", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command, Model* model) {
-	model->getPositionController()->translate(command->getData()->XTranslation, command->getData()->YTranslation, command->getData()->ZTranslation,
-			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
+	if (!model->getPositionController()->translate(command->getData()->XTranslation, command->getData()->YTranslation, command->getData()->ZTranslation,
+			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation)) {
+		model->getPublisher()->logCommandRejectionWarning("TranslateM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, Model* model) {
-	model->getPositionController()->moveToAbsolute(command->getData()->XPosition, command->getData()->YPosition, command->getData()->ZPosition,
-			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation);
+	if (!model->getPositionController()->moveToAbsolute(command->getData()->XPosition, command->getData()->YPosition, command->getData()->ZPosition,
+			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation)) {
+		model->getPublisher()->logCommandRejectionWarning("PositionM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

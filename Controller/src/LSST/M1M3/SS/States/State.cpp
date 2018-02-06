@@ -66,6 +66,18 @@ void State::stopTimer() {
 	clock_gettime(CLOCK_REALTIME, &this->stopTime);
 }
 
+double State::getCurrentTimer() {
+	timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+	double deltaNano = now.tv_nsec - this->startTime.tv_nsec;
+	double deltaSec = now.tv_sec - this->startTime.tv_sec;
+	if (deltaNano < 0) {
+		deltaSec -= 1;
+		deltaNano += 1000000000;
+	}
+	return deltaSec + (deltaNano / 1000000000.0);
+}
+
 double State::getTimer() {
 	double deltaNano = this->stopTime.tv_nsec - this->startTime.tv_nsec;
 	double deltaSec = this->stopTime.tv_sec - this->startTime.tv_sec;
