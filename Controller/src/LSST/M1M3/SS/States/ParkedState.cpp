@@ -14,6 +14,7 @@
 #include <ForceController.h>
 #include <PositionController.h>
 #include <AutomaticOperationsController.h>
+#include <RaiseM1M3Command.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -27,8 +28,12 @@ States::Type ParkedState::update(UpdateCommand* command, Model* model) {
 }
 
 States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
+	if (command->getData()->BypassReferencePosition) {
+		model->getPublisher()->logCommandRejectionWarning("RaiseM1M3", "The BypassReferencePosition parameter of the RaiseM1M3 cannot be true in the ParkedState.");
+		return model->getSafetyController()->checkSafety(States::NoStateTransition);
+	}
 	States::Type newState = States::RaisingState;
-	model->getAutomaticOperationsController()->startRaiseOperation();
+	model->getAutomaticOperationsController()->startRaiseOperation(false);
 	return model->getSafetyController()->checkSafety(newState);
 }
 

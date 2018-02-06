@@ -27,7 +27,8 @@ AutomaticOperationsController::AutomaticOperationsController(PositionController*
 	this->cachedTimestamp = 0;
 }
 
-void AutomaticOperationsController::startRaiseOperation() {
+void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReference) {
+	this->bypassMoveToReference = bypassMoveToReference;
 	this->safetyController->raiseOperationTimeout(false);
 	this->positionController->stopMotion();
 	this->positionController->enableChaseAll();
@@ -58,7 +59,9 @@ void AutomaticOperationsController::tryIncrementingSupportPercentage() {
 				// force actuators, stop the hardpoints from chasing and start moving to the
 				// reference position
 				this->positionController->disableChaseAll();
-				this->positionController->moveToReferencePosition();
+				if (!this->bypassMoveToReference) {
+					this->positionController->moveToReferencePosition();
+				}
 			}
 		}
 	}

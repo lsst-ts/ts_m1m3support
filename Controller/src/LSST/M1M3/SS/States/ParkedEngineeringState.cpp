@@ -25,6 +25,7 @@
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
 #include <AutomaticOperationsController.h>
+#include <RaiseM1M3Command.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -39,7 +40,7 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
 	States::Type newState = States::RaisingEngineeringState;
-	model->getAutomaticOperationsController()->startRaiseOperation();
+	model->getAutomaticOperationsController()->startRaiseOperation(command->getData()->BypassReferencePosition);
 	return model->getSafetyController()->checkSafety(newState);
 }
 

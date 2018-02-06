@@ -18,6 +18,7 @@ RaiseM1M3Command::RaiseM1M3Command(Context* context, M1M3SSPublisher* publisher,
 	this->publisher = publisher;
 	this->commandID = commandID;
 	this->data.RaiseM1M3 = data->RaiseM1M3;
+	this->data.BypassReferencePosition = data->BypassReferencePosition;
 }
 
 bool RaiseM1M3Command::validate() {
