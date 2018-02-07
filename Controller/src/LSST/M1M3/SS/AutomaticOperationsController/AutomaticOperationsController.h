@@ -28,11 +28,12 @@ private:
 	M1M3SSPublisher* publisher;
 	PowerController* powerController;
 	double cachedTimestamp;
+	bool bypassMoveToReference;
 
 public:
 	AutomaticOperationsController(PositionController* positionController, ForceController* forceController, InterlockController* interlockController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController);
 
-	void startRaiseOperation();
+	void startRaiseOperation(bool bypassMoveToReference);
 	void tryIncrementingSupportPercentage();
 	bool checkRaiseOperationComplete();
 	void completeRaiseOperation();
