@@ -32,7 +32,7 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	ILC* ilc = model->getILC();
 	InterlockController* interlockController = model->getInterlockController();
 	Gyro* gyro = model->getGyro();
-	powerController->setAllPowerNetworks(true);
+	powerController->setBothPowerNetworks(true);
 	ilc->writeResetBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);

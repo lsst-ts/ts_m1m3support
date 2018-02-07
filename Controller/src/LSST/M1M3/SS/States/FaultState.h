@@ -17,6 +17,7 @@ namespace SS {
 class FaultState: public State {
 public:
 	FaultState(M1M3SSPublisher* publisher);
+	FaultState(M1M3SSPublisher* publisher, std::string name);
 
 	States::Type update(UpdateCommand* command, Model* model);
 	States::Type standby(StandbyCommand* command, Model* model);

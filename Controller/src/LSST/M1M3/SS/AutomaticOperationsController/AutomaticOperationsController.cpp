@@ -25,6 +25,7 @@ AutomaticOperationsController::AutomaticOperationsController(PositionController*
 	this->publisher = publisher;
 	this->powerController = powerController;
 	this->cachedTimestamp = 0;
+	this->bypassMoveToReference = false;
 }
 
 void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReference) {

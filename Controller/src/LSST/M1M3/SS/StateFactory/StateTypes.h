@@ -25,6 +25,7 @@ struct States {
 		ActiveEngineeringState   = 0x000000030000000C,
 		LoweringEngineeringState = 0x000000030000000D,
 		FaultState               = 0x0000000400000004,
+		LoweringFaultState       = 0x000000040000000E,
 		NoStateTransition        = 0xFFFFFFFFFFFFFFFF
 	};
 };

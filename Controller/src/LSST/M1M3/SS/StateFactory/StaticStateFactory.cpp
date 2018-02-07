@@ -25,7 +25,8 @@ StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher) :
 		raisingEngineeringState(publisher),
 		activeEngineeringState(publisher),
 		loweringEngineeringState(publisher),
-		faultState(publisher) { }
+		faultState(publisher),
+		loweringFaultState(publisher) { }
 
 State* StaticStateFactory::create(States::Type state) {
 	switch(state) {
@@ -43,6 +44,7 @@ State* StaticStateFactory::create(States::Type state) {
 	case States::ActiveEngineeringState: return &this->activeEngineeringState;
 	case States::LoweringEngineeringState: return &this->loweringEngineeringState;
 	case States::FaultState: return &this->faultState;
+	case States::LoweringFaultState: return &this->loweringFaultState;
 	default: return 0;
 	}
 }
