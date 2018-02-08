@@ -41,6 +41,7 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
 	this->forceController->zeroOffsetForces();
 	this->forceController->zeroAberration();
 	this->forceController->zeroAOSCorrection();
+	this->forceController->zeroHardpointCorrections();
 	this->forceController->zeroSupportPercentage();
 	this->interlockController->setMirrorParked(false);
 	this->interlockController->setMirrorLoweringRaising(true);
@@ -80,6 +81,7 @@ void AutomaticOperationsController::completeRaiseOperation() {
 	this->forceController->applyAzimuthForces();
 	this->forceController->applyTemperatureForces();
 	this->forceController->applyDynamicForces();
+	this->forceController->applyHardpointCorrections();
 	this->forceController->fillSupportPercentage();
 	this->interlockController->setMirrorLoweringRaising(false);
 }
@@ -104,6 +106,7 @@ void AutomaticOperationsController::startLowerOperation() {
 	this->forceController->zeroOffsetForces();
 	this->forceController->zeroAberration();
 	this->forceController->zeroAOSCorrection();
+	this->forceController->zeroHardpointCorrections();
 	this->forceController->fillSupportPercentage();
 	this->interlockController->setMirrorLoweringRaising(true);
 	this->cachedTimestamp = this->publisher->getTimestamp();
@@ -139,6 +142,7 @@ void AutomaticOperationsController::completeLowerOperation() {
 	this->forceController->zeroAzimuthForces();
 	this->forceController->zeroTemperatureForces();
 	this->forceController->zeroDynamicForces();
+	this->forceController->zeroHardpointCorrections();
 	this->forceController->zeroSupportPercentage();
 	this->interlockController->setMirrorParked(true);
 	this->interlockController->setMirrorLoweringRaising(false);

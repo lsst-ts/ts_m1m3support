@@ -201,6 +201,16 @@ States::Type ActiveEngineeringState::turnPowerOff(TurnPowerOffCommand* command, 
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
+States::Type ActiveEngineeringState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) {
+	model->getForceController()->applyHardpointCorrections();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) {
+	model->getForceController()->zeroHardpointCorrections();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

@@ -51,6 +51,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, C
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_TurnLightsOff");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_TurnPowerOn");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_TurnPowerOff");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_EnableHardpointCorrections");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_DisableHardpointCorrections");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Az");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Alt");
 }
@@ -315,6 +317,22 @@ Command* M1M3SSSubscriber::tryAcceptCommandTurnPowerOff() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_TurnPowerOff(&this->turnPowerOffData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::TurnPowerOffCommand, &this->turnPowerOffData, commandID);
+	}
+	return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandEnableHardpointCorrections() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_EnableHardpointCorrections(&this->enableHardpointCorrectionsData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::EnableHardpointCorrectionsCommand, &this->enableHardpointCorrectionsData, commandID);
+	}
+	return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandDisableHardpointCorrections() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_DisableHardpointCorrections(&this->disableHardpointCorrectionsData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::DisableHardpointCorrectionsCommand, &this->disableHardpointCorrectionsData, commandID);
 	}
 	return 0;
 }

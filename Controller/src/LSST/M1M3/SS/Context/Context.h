@@ -53,6 +53,8 @@ class TurnLightsOnCommand;
 class TurnLightsOffCommand;
 class TurnPowerOnCommand;
 class TurnPowerOffCommand;
+class EnableHardpointCorrectionsCommand;
+class DisableHardpointCorrectionsCommand;
 
 /*!
  * The context used to execute commands against the current state.
@@ -108,6 +110,8 @@ public:
 	void turnLightsOff(TurnLightsOffCommand* command);
 	void turnPowerOn(TurnPowerOnCommand* command);
 	void turnPowerOff(TurnPowerOffCommand* command);
+	void enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
+	void disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
 };
 
 } /* namespace SS */

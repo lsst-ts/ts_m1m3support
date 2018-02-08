@@ -596,6 +596,31 @@ void ForceController::zeroDynamicForces() {
 	this->publishAppliedForces();
 }
 
+void ForceController::applyHardpointCorrections() {
+	this->appliedForces->HardpointOffloadingForcesApplied = true;
+	this->publishAppliedForces();
+}
+
+void ForceController::zeroHardpointCorrections() {
+	this->appliedForces->HardpointOffloadingForcesApplied = false;
+	bool warningChanged = this->forceSetpointWarning->AnyHardpointOffloadForceWarning;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		this->forceSetpoint->HardpointOffloadXSetpoint[i] = 0;
+		this->forceSetpoint->HardpointOffloadYSetpoint[i] = 0;
+		this->forceSetpoint->HardpointOffloadZSetpoint[i] = 0;
+		this->forceData->HardpointOffloadXSetpoint[i] = 0;
+		this->forceData->HardpointOffloadYSetpoint[i] = 0;
+		this->forceData->HardpointOffloadZSetpoint[i] = 0;
+		this->forceSetpointWarning->HardpointOffloadForceWarning[i] = false;
+	}
+	this->forceSetpointWarning->AnyHardpointOffloadForceWarning = false;
+	this->safetyController->forceControllerNotifyHardpointOffloadForceClipping(this->forceSetpointWarning->AnyHardpointOffloadForceWarning);
+	if (warningChanged) {
+		this->publishForceSetpointWarning();
+	}
+	this->publishAppliedForces();
+}
+
 void ForceController::updateElevationForces() {
 	double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->InclinometerAngle : this->tmaElevationData.Angle_Actual;
 	double elevationMatrix[] = { std::pow(elevationAngle, 5.0), std::pow(elevationAngle, 4.0), std::pow(elevationAngle, 3.0), std::pow(elevationAngle, 2.0), elevationAngle, 1 };

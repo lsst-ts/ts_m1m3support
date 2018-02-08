@@ -62,6 +62,8 @@ private:
 	m1m3_command_TurnLightsOffC turnLightsOffData;
 	m1m3_command_TurnPowerOnC turnPowerOnData;
 	m1m3_command_TurnPowerOffC turnPowerOffData;
+	m1m3_command_EnableHardpointCorrectionsC enableHardpointCorrectionsData;
+	m1m3_command_DisableHardpointCorrectionsC disableHardpointCorrectionsData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
@@ -102,6 +104,8 @@ public:
 	Command* tryAcceptCommandTurnLightsOff();
 	Command* tryAcceptCommandTurnPowerOn();
 	Command* tryAcceptCommandTurnPowerOff();
+	Command* tryAcceptCommandEnableHardpointCorrections();
+	Command* tryAcceptCommandDisableHardpointCorrections();
 	Command* tryGetSampleTMAAzimuth();
 	Command* tryGetSampleTMAElevation();
 };

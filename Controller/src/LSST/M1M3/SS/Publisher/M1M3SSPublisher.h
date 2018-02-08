@@ -181,6 +181,8 @@ public:
 	void ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnPowerOn(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandEnableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandDisableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

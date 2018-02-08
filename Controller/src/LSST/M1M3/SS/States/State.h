@@ -55,6 +55,8 @@ class TurnLightsOnCommand;
 class TurnLightsOffCommand;
 class TurnPowerOnCommand;
 class TurnPowerOffCommand;
+class EnableHardpointCorrectionsCommand;
+class DisableHardpointCorrectionsCommand;
 
 class State {
 private:
@@ -104,6 +106,8 @@ public:
 	virtual States::Type turnLightsOff(TurnLightsOffCommand* command, Model* model);
 	virtual States::Type turnPowerOn(TurnPowerOnCommand* command, Model* model);
 	virtual States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
+	virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
+	virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
 
 protected:
 	void startTimer();

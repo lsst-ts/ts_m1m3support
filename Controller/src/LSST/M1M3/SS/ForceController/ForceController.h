@@ -89,6 +89,9 @@ public:
 	void applyDynamicForces();
 	void zeroDynamicForces();
 
+	void applyHardpointCorrections();
+	void zeroHardpointCorrections();
+
 private:
 	void updateElevationForces();
 	void updateAzimuthForces();

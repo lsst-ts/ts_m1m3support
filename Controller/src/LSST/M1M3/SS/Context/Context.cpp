@@ -242,6 +242,18 @@ void Context::turnPowerOff(TurnPowerOffCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->enableHardpointCorrections(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) {
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->disableHardpointCorrections(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::NoStateTransition) {
 		this->currentState = potentialNewState;

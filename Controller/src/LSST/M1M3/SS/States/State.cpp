@@ -57,6 +57,8 @@ States::Type State::turnLightsOn(TurnLightsOnCommand* command, Model* model) { r
 States::Type State::turnLightsOff(TurnLightsOffCommand* command, Model* model) { return this->rejectCommandInvalidState("TurnLightsOff"); }
 States::Type State::turnPowerOn(TurnPowerOnCommand* command, Model* model) { return this->rejectCommandInvalidState("TurnPowerOn"); }
 States::Type State::turnPowerOff(TurnPowerOffCommand* command, Model* model) { return this->rejectCommandInvalidState("TurnPowerOff"); }
+States::Type State::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("EnableHardpointCorrections"); }
+States::Type State::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("DisableHardpointCorrections"); }
 
 void State::startTimer() {
 	clock_gettime(CLOCK_REALTIME, &this->startTime);

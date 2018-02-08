@@ -53,7 +53,9 @@ struct Commands {
 		TurnLightsOnCommand = 33,
 		TurnLightsOffCommand = 34,
 		TurnPowerOnCommand = 35,
-		TurnPowerOffCommand = 36
+		TurnPowerOffCommand = 36,
+		EnableHardpointCorrectionsCommand = 37,
+		DisableHardpointCorrectionsCommand = 38
 	};
 };
 

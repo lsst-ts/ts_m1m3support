@@ -43,6 +43,8 @@
 #include <TurnLightsOffCommand.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
+#include <EnableHardpointCorrectionsCommand.h>
+#include <DisableHardpointCorrectionsCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -93,6 +95,8 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 	case Commands::TurnLightsOffCommand: return new TurnLightsOffCommand(this->context, this->publisher, commandID, (m1m3_command_TurnLightsOffC*)data);
 	case Commands::TurnPowerOnCommand: return new TurnPowerOnCommand(this->context, this->publisher, commandID, (m1m3_command_TurnPowerOnC*)data);
 	case Commands::TurnPowerOffCommand: return new TurnPowerOffCommand(this->context, this->publisher, commandID, (m1m3_command_TurnPowerOffC*)data);
+	case Commands::EnableHardpointCorrectionsCommand: return new EnableHardpointCorrectionsCommand(this->context, this->publisher, commandID, (m1m3_command_EnableHardpointCorrectionsC*)data);
+	case Commands::DisableHardpointCorrectionsCommand: return new DisableHardpointCorrectionsCommand(this->context, this->publisher, commandID, (m1m3_command_DisableHardpointCorrectionsC*)data);
 	}
 	return 0;
 }

@@ -37,6 +37,8 @@ public:
 	States::Type turnLightsOff(TurnLightsOffCommand* command, Model* model);
 	States::Type turnPowerOn(TurnPowerOnCommand* command, Model* model);
 	States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
+	States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
+	States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
 };
 
 } /* namespace SS */

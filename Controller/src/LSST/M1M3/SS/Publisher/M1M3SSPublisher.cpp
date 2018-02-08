@@ -240,6 +240,14 @@ void M1M3SSPublisher::ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode,
 	this->m1m3SAL->ackCommand_TurnPowerOff(commandID, ackCode, 0, (char*)description.c_str());
 }
 
+void M1M3SSPublisher::ackCommandEnableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_EnableHardpointCorrections(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandDisableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_DisableHardpointCorrections(commandID, ackCode, 0, (char*)description.c_str());
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
