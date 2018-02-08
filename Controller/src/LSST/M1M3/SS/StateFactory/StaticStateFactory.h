@@ -22,6 +22,7 @@
 #include <ActiveEngineeringState.h>
 #include <LoweringEngineeringState.h>
 #include <FaultState.h>
+#include <LoweringFaultState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -45,6 +46,7 @@ private:
 	ActiveEngineeringState activeEngineeringState;
 	LoweringEngineeringState loweringEngineeringState;
 	FaultState faultState;
+	LoweringFaultState loweringFaultState;
 
 public:
 	StaticStateFactory(M1M3SSPublisher* publisher);

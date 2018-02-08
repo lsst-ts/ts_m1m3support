@@ -111,7 +111,7 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 		this->publisher->logErrorCode();
 		this->errorCodeData->DetailedErrorCode= FaultCodes::NoFault;
 		this->errorCodeData->ErrorCode= FaultCodes::NoFault;
-		return States::FaultState;
+		return States::LoweringFaultState;
 	}
 	return preferredNextState;
 }
