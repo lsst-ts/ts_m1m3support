@@ -234,6 +234,11 @@ void ForceController::applyOffsetForces(double* x, double* y, double* z) {
 	this->publishAppliedForces();
 }
 
+void ForceController::applyOffsetForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
+	DistributedForces forces = this->calculateDistribution(xForce, yForce, zForce, xMoment, yMoment, zMoment);
+	this->applyOffsetForces(forces.XForces, forces.YForces, forces.ZForces);
+}
+
 void ForceController::zeroOffsetForces() {
 	this->appliedForces->OffsetForcesApplied = false;
 	bool warningChanged = this->forceSetpointWarning->AnyOffsetForceWarning;
@@ -619,6 +624,31 @@ void ForceController::zeroHardpointCorrections() {
 		this->publishForceSetpointWarning();
 	}
 	this->publishAppliedForces();
+}
+
+DistributedForces ForceController::calculateDistribution(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
+	DistributedForces forces;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		forces.XForces[i] += this->forceActuatorSettings->ForceDistributionXMatrix[i * 3 + 0] * xForce;
+		forces.YForces[i] += this->forceActuatorSettings->ForceDistributionXMatrix[i * 3 + 1] * xForce;
+		forces.ZForces[i] += this->forceActuatorSettings->ForceDistributionXMatrix[i * 3 + 2] * xForce;
+		forces.XForces[i] += this->forceActuatorSettings->ForceDistributionYMatrix[i * 3 + 0] * yForce;
+		forces.YForces[i] += this->forceActuatorSettings->ForceDistributionYMatrix[i * 3 + 1] * yForce;
+		forces.ZForces[i] += this->forceActuatorSettings->ForceDistributionYMatrix[i * 3 + 2] * yForce;
+		forces.XForces[i] += this->forceActuatorSettings->ForceDistributionZMatrix[i * 3 + 0] * zForce;
+		forces.YForces[i] += this->forceActuatorSettings->ForceDistributionZMatrix[i * 3 + 1] * zForce;
+		forces.ZForces[i] += this->forceActuatorSettings->ForceDistributionZMatrix[i * 3 + 2] * zForce;
+		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionXMatrix[i * 3 + 0] * xMoment;
+		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionXMatrix[i * 3 + 1] * xMoment;
+		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionXMatrix[i * 3 + 2] * xMoment;
+		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionYMatrix[i * 3 + 0] * yMoment;
+		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionYMatrix[i * 3 + 1] * yMoment;
+		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionYMatrix[i * 3 + 2] * yMoment;
+		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionZMatrix[i * 3 + 0] * zMoment;
+		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionZMatrix[i * 3 + 1] * zMoment;
+		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionZMatrix[i * 3 + 2] * zMoment;
+	}
+	return forces;
 }
 
 void ForceController::updateElevationForces() {

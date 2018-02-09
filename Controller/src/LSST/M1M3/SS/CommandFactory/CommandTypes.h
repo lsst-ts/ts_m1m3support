@@ -55,7 +55,10 @@ struct Commands {
 		TurnPowerOnCommand = 35,
 		TurnPowerOffCommand = 36,
 		EnableHardpointCorrectionsCommand = 37,
-		DisableHardpointCorrectionsCommand = 38
+		DisableHardpointCorrectionsCommand = 38,
+		RunHardpointCorrectionProfileCommand = 39,
+		AbortProfileCommand = 40,
+		ApplyOffsetForcesByMirrorForceCommand = 41
 	};
 };
 

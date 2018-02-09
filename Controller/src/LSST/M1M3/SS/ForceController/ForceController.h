@@ -12,6 +12,7 @@
 #include <ForceActuatorNeighbors.h>
 #include <SAL_m1m3C.h>
 #include <SAL_MTMountC.h>
+#include <DistributedForces.h>
 #include <vector>
 
 namespace LSST {
@@ -67,6 +68,7 @@ public:
 	void zeroStaticForces();
 
 	void applyOffsetForces(double* x, double* y, double* z);
+	void applyOffsetForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
 	void zeroOffsetForces();
 
 	void applyAOSCorrectionByBendingModes(double* coefficients);
@@ -93,6 +95,8 @@ public:
 	void zeroHardpointCorrections();
 
 private:
+	DistributedForces calculateDistribution(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
+
 	void updateElevationForces();
 	void updateAzimuthForces();
 	void updateTemperatureForces();

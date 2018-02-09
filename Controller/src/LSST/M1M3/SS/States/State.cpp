@@ -59,6 +59,9 @@ States::Type State::turnPowerOn(TurnPowerOnCommand* command, Model* model) { ret
 States::Type State::turnPowerOff(TurnPowerOffCommand* command, Model* model) { return this->rejectCommandInvalidState("TurnPowerOff"); }
 States::Type State::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("EnableHardpointCorrections"); }
 States::Type State::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("DisableHardpointCorrections"); }
+States::Type State::runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model) { return this->rejectCommandInvalidState("RunHardpointCorrectionProfile"); }
+States::Type State::abortProfile(AbortProfileCommand* command, Model* model) { return this->rejectCommandInvalidState("AbortProfile"); }
+States::Type State::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyOffsetForcesByMirrorForce"); }
 
 void State::startTimer() {
 	clock_gettime(CLOCK_REALTIME, &this->startTime);

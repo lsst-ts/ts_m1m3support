@@ -45,6 +45,9 @@
 #include <TurnPowerOffCommand.h>
 #include <EnableHardpointCorrectionsCommand.h>
 #include <DisableHardpointCorrectionsCommand.h>
+#include <RunHardpointCorrectionProfileCommand.h>
+#include <AbortProfileCommand.h>
+#incldue <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -97,6 +100,9 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 	case Commands::TurnPowerOffCommand: return new TurnPowerOffCommand(this->context, this->publisher, commandID, (m1m3_command_TurnPowerOffC*)data);
 	case Commands::EnableHardpointCorrectionsCommand: return new EnableHardpointCorrectionsCommand(this->context, this->publisher, commandID, (m1m3_command_EnableHardpointCorrectionsC*)data);
 	case Commands::DisableHardpointCorrectionsCommand: return new DisableHardpointCorrectionsCommand(this->context, this->publisher, commandID, (m1m3_command_DisableHardpointCorrectionsC*)data);
+	case Commands::RunHardpointCorrectionProfileCommand: return new RunHardpointCorrectionProfileCommand(this->context, this->publisher, commandID, (m1m3_command_RunHardpointCorrectionProfileC*)data);
+	case Commands::AbortProfileCommand: return new AbortProfileCommand(this->context, this->publisher, (m1m3_command_AbortProfileC*)data);
+	case Commands::ApplyOffsetForcesByMirrorForceCommand: return new ApplyOffsetForcesByMirrorForceCommand(this->context, this->publisher, (m1m3_command_ApplyOffsetForcesByMirrorForceC*)data);
 	}
 	return 0;
 }

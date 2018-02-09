@@ -183,6 +183,9 @@ public:
 	void ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandEnableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandDisableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandRunHardpointCorrectionProfile(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandAbortProfile(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandApplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

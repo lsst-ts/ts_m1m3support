@@ -55,6 +55,9 @@ class TurnPowerOnCommand;
 class TurnPowerOffCommand;
 class EnableHardpointCorrectionsCommand;
 class DisableHardpointCorrectionsCommand;
+class RunHardpointCorrectionProfileCommand;
+class AbortProfileCommand;
+class ApplyOffsetForcesByMirrorForceCommand;
 
 /*!
  * The context used to execute commands against the current state.
@@ -112,6 +115,9 @@ public:
 	void turnPowerOff(TurnPowerOffCommand* command);
 	void enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
 	void disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
+	void runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command);
+	void abortProfile(AbortProfileCommand* command);
+	void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
 };
 
 } /* namespace SS */
