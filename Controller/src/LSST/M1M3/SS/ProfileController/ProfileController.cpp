@@ -31,8 +31,8 @@ bool ProfileController::incHardpointCorrectionProfile() {
 HardpointCorrectionProfileForce ProfileController::getHardpointCorrectionProfileData() {
 	HardpointCorrectionProfileForce data;
 	data.XForce = this->hardpointCorrectionProfileXForce[this->hardpointCorrectionProfileIndex];
-	data.YForce = this->hardpointCorrectionProfileXForce[this->hardpointCorrectionProfileIndex];
-	data.ZForce = this->hardpointCorrectionProfileXForce[this->hardpointCorrectionProfileIndex];
+	data.YForce = this->hardpointCorrectionProfileYForce[this->hardpointCorrectionProfileIndex];
+	data.ZForce = this->hardpointCorrectionProfileZForce[this->hardpointCorrectionProfileIndex];
 	data.XMoment = this->hardpointCorrectionProfileXMoment[this->hardpointCorrectionProfileIndex];
 	data.YMoment = this->hardpointCorrectionProfileYMoment[this->hardpointCorrectionProfileIndex];
 	data.ZMoment = this->hardpointCorrectionProfileZMoment[this->hardpointCorrectionProfileIndex];

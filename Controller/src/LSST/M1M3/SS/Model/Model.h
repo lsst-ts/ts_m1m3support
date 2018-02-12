@@ -8,6 +8,7 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 
+#include <ProfileController.h>
 #include <StateTypes.h>
 #include <pthread.h>
 #include <string>
@@ -39,7 +40,6 @@ class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
 class HardpointMonitorApplicationSettings;
-class ProfileController;
 
 class Model {
 private:

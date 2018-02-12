@@ -8,6 +8,8 @@
 #ifndef PROFILECONTROLLER_H_
 #define PROFILECONTROLLER_H_
 
+#include <HardpointCorrectionProfileForce.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
