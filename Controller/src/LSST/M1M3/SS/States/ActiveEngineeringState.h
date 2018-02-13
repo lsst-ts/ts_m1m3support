@@ -39,6 +39,8 @@ public:
 	States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
 	States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
 	States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
+	States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
+	States::Type runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model);
 };
 
 } /* namespace SS */

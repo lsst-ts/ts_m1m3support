@@ -254,6 +254,24 @@ void Context::disableHardpointCorrections(DisableHardpointCorrectionsCommand* co
 	this->stateFactory->destroy(state);
 }
 
+void Context::runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command) {
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->runHardpointCorrectionProfile(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::abortProfile(AbortProfileCommand* command) {
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->abortProfile(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command) {
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->applyOffsetForcesByMirrorForce(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::NoStateTransition) {
 		this->currentState = potentialNewState;

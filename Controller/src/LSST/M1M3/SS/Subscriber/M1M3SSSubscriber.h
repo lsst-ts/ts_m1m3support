@@ -64,6 +64,9 @@ private:
 	m1m3_command_TurnPowerOffC turnPowerOffData;
 	m1m3_command_EnableHardpointCorrectionsC enableHardpointCorrectionsData;
 	m1m3_command_DisableHardpointCorrectionsC disableHardpointCorrectionsData;
+	m1m3_command_RunHardpointCorrectionProfileC runHardpointCorrectionProfileData;
+	m1m3_command_AbortProfileC abortProfileData;
+	m1m3_command_ApplyOffsetForcesByMirrorForceC applyOffsetForcesByMirrorForceData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
@@ -106,6 +109,9 @@ public:
 	Command* tryAcceptCommandTurnPowerOff();
 	Command* tryAcceptCommandEnableHardpointCorrections();
 	Command* tryAcceptCommandDisableHardpointCorrections();
+	Command* tryAcceptCommandRunHardpointCorrectionProfile();
+	Command* tryAcceptCommandAbortProfile();
+	Command* tryAcceptCommandApplyOffsetForcesByMirrorForce();
 	Command* tryGetSampleTMAAzimuth();
 	Command* tryGetSampleTMAElevation();
 };

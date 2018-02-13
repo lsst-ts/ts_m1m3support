@@ -8,6 +8,7 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 
+#include <ProfileController.h>
 #include <StateTypes.h>
 #include <pthread.h>
 #include <string>
@@ -58,6 +59,7 @@ private:
 	PowerController* powerController;
 	AutomaticOperationsController* automaticOperationsController;
 	Gyro* gyro;
+	ProfileController profileController;
 
 	pthread_mutex_t mutex;
 
@@ -83,6 +85,7 @@ public:
 	PowerController* getPowerController() { return this->powerController; }
 	AutomaticOperationsController* getAutomaticOperationsController() { return this->automaticOperationsController; }
 	Gyro* getGyro() { return this->gyro; }
+	ProfileController* getProfileController() { return &this->profileController; }
 
 	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
 	double getCachedTimestamp() { return this->cachedTimestamp; }

@@ -32,6 +32,9 @@
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
 #include <AutomaticOperationsController.h>
+#include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <RunHardpointCorrectionProfileCommand.h>
+#include <ProfileHardpointCorrectionState.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -209,6 +212,16 @@ States::Type ActiveEngineeringState::enableHardpointCorrections(EnableHardpointC
 States::Type ActiveEngineeringState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) {
 	model->getForceController()->zeroHardpointCorrections();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) {
+	model->getForceController()->applyOffsetForces(command->getData()->XForce, command->getData()->YForce, command->getData()->ZForce, command->getData()->XMoment, command->getData()->YMoment, command->getData()->ZMoment);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model) {
+	model->getProfileController()->setupHardpointCorrectionProfile(command->getData()->XForce, command->getData()->YForce, command->getData()->ZForce, command->getData()->XMoment, command->getData()->YMoment, command->getData()->ZMoment);
+	return model->getSafetyController()->checkSafety(States::ProfileHardpointCorrectionState);
 }
 
 } /* namespace SS */

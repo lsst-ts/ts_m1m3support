@@ -248,6 +248,18 @@ void M1M3SSPublisher::ackCommandDisableHardpointCorrections(int32_t commandID, i
 	this->m1m3SAL->ackCommand_DisableHardpointCorrections(commandID, ackCode, 0, (char*)description.c_str());
 }
 
+void M1M3SSPublisher::ackCommandRunHardpointCorrectionProfile(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_RunHardpointCorrectionProfile(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandAbortProfile(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_AbortProfile(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandApplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ApplyOffsetForcesByMirrorForce(commandID, ackCode, 0, (char*)description.c_str());
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

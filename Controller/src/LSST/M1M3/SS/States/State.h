@@ -57,6 +57,9 @@ class TurnPowerOnCommand;
 class TurnPowerOffCommand;
 class EnableHardpointCorrectionsCommand;
 class DisableHardpointCorrectionsCommand;
+class RunHardpointCorrectionProfileCommand;
+class AbortProfileCommand;
+class ApplyOffsetForcesByMirrorForceCommand;
 
 class State {
 private:
@@ -108,6 +111,9 @@ public:
 	virtual States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
 	virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
 	virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
+	virtual States::Type runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model);
+	virtual States::Type abortProfile(AbortProfileCommand* command, Model* model);
+	virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
 
 protected:
 	void startTimer();
