@@ -67,6 +67,8 @@ private:
 	m1m3_command_RunHardpointCorrectionProfileC runHardpointCorrectionProfileData;
 	m1m3_command_AbortProfileC abortProfileData;
 	m1m3_command_ApplyOffsetForcesByMirrorForceC applyOffsetForcesByMirrorForceData;
+	m1m3_command_UpdatePIDC updatePIDData;
+	m1m3_command_ResetPIDC resetPIDData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
@@ -112,6 +114,8 @@ public:
 	Command* tryAcceptCommandRunHardpointCorrectionProfile();
 	Command* tryAcceptCommandAbortProfile();
 	Command* tryAcceptCommandApplyOffsetForcesByMirrorForce();
+	Command* tryAcceptCommandUpdatePID();
+	Command* tryAcceptCommandResetPID();
 	Command* tryGetSampleTMAAzimuth();
 	Command* tryGetSampleTMAElevation();
 };

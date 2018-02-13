@@ -41,6 +41,8 @@ public:
 	States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
 	States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
 	States::Type runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model);
+	States::Type updatePID(UpdatePIDCommand* command, Model* model);
+	States::Type resetPID(ResetPIDCommand* command, Model* model);
 };
 
 } /* namespace SS */

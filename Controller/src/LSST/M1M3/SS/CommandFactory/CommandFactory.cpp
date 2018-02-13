@@ -48,6 +48,8 @@
 #include <RunHardpointCorrectionProfileCommand.h>
 #include <AbortProfileCommand.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <UpdatePIDCommand.h>
+#include <ResetPIDCommand.h>
 #include <pthread.h>
 
 namespace LSST {
@@ -103,6 +105,8 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 	case Commands::RunHardpointCorrectionProfileCommand: return new RunHardpointCorrectionProfileCommand(this->context, this->publisher, commandID, (m1m3_command_RunHardpointCorrectionProfileC*)data);
 	case Commands::AbortProfileCommand: return new AbortProfileCommand(this->context, this->publisher, commandID, (m1m3_command_AbortProfileC*)data);
 	case Commands::ApplyOffsetForcesByMirrorForceCommand: return new ApplyOffsetForcesByMirrorForceCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyOffsetForcesByMirrorForceC*)data);
+	case Commands::UpdatePIDCommand: return new UpdatePIDCommand(this->context, this->publisher, commandID, (m1m3_command_UpdatePIDC*)data);
+	case Commands::ResetPIDCommand: return new ResetPIDCommand(this->context, this->publisher, commandID, (m1m3_command_ResetPIDC*)data);
 	}
 	return 0;
 }

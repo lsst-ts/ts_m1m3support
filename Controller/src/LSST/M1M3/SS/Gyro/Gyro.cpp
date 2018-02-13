@@ -126,6 +126,7 @@ void Gyro::read() {
 			buffer.setIndex(buffer.getIndex() - 1);
 			if (peek == 0xFE) {
 				uint32_t header = buffer.readU32();
+				cout << "Header: " << header << endl;
 				if (header == 0xFE81FF55 || header == 0xFE8100AA || header == 0xFE8100AB) {
 					uint8_t tmpBuffer[36];
 					int length = 0;
@@ -162,18 +163,18 @@ void Gyro::read() {
 				else {
 					// TODO: Incomplete Frame it is expected to occur because of how I read data
 					this->readToEndOfFrame(&buffer);
-//					cout << "Incomplete Frame" << endl;
+					cout << "Incomplete Frame" << endl;
 				}
 			}
 			else {
 				this->readToEndOfFrame(&buffer);
-//				cout << "Invalid Header" << endl;
+				cout << "Invalid Header" << endl;
 				// TODO: Need to decide how to handle ASCII responses
 			}
 		}
 	}
 	else {
-//		cout << "Invalid Length " << length << endl;
+		cout << "Invalid Length " << length << endl;
 	}
 }
 

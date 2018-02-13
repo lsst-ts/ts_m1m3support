@@ -13,6 +13,7 @@
 #include <Inclinometer.h>
 #include <PowerController.h>
 #include <SafetyController.h>
+#include <ForceController.h>
 #include <unistd.h>
 
 namespace LSST {
@@ -32,6 +33,7 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
 	model->getILC()->verifyResponses();
+	model->getForceController()->calculateMirrorForces();
 	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);

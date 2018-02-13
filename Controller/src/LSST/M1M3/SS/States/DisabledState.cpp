@@ -16,6 +16,7 @@
 #include <SafetyController.h>
 #include <PowerController.h>
 #include <Gyro.h>
+#include <ForceController.h>
 
 #include <iostream>
 using namespace std;
@@ -35,6 +36,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	Inclinometer* inclinometer = model->getInclinometer();
 	Accelerometer* accelerometer = model->getAccelerometer();
 	Gyro* gyro = model->getGyro();
+	ForceController* forceController = model->getForceController();
 	InterlockController* interlockController = model->getInterlockController();
 //	cout << "GetModels," << this->getCurrentTimer();
 	ilc->writeFreezeSensorListBuffer();
@@ -70,6 +72,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	ilc->readAll();
 //	cout << ",ILCReadAll," << this->getCurrentTimer();
 	ilc->verifyResponses();
+	forceController->calculateMirrorForces();
 //	cout << ",ILCVerify," << this->getCurrentTimer();
 	ilc->publishForceActuatorStatus();
 //	cout << ",ILCPubForceStatus," << this->getCurrentTimer();

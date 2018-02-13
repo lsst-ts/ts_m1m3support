@@ -448,7 +448,7 @@ void ILCResponseParser::parseStepMotorResponse(ModbusBuffer* buffer, int32_t dat
 	this->hardpointData->CCWLimitOperated[dataIndex] = (status & 0x08) != 0;
 	this->hardpointData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
 	this->hardpointData->Encoder[dataIndex] = buffer->readI32();
-	this->hardpointData->Force[dataIndex] = buffer->readSGL();
+	this->hardpointData->MeasuredForce[dataIndex] = buffer->readSGL();
 	this->hardpointData->Displacement[dataIndex] = (this->hardpointData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
 	this->calculateHPPostion();
@@ -462,7 +462,7 @@ void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffe
 	this->hardpointData->CCWLimitOperated[dataIndex] = (status & 0x08) != 0;
 	this->hardpointData->BroadcastCounter[dataIndex] = (status & 0xF0) >> 4;
 	this->hardpointData->Encoder[dataIndex] = buffer->readI32();
-	this->hardpointData->Force[dataIndex] = buffer->readSGL();
+	this->hardpointData->MeasuredForce[dataIndex] = buffer->readSGL();
 	this->hardpointData->Displacement[dataIndex] = (this->hardpointData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
 	this->calculateHPPostion();

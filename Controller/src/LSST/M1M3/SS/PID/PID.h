@@ -8,16 +8,17 @@
 #ifndef PID_H_
 #define PID_H_
 
+#include <PIDParameters.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class PID {
 private:
-	double p;
-	double i;
-	double d;
-	double timestep;
+	int id;
+	PIDParameters initialParameters;
+	PIDParameters parameters;
 	double error;
 	double errorT1;
 	double errorT2;
@@ -30,11 +31,21 @@ private:
 	double measurement;
 
 public:
-	PID(double p, double i, double d, double timestep);
+	PID(int id, double timestep, double p, double i, double d, double n);
+	PID(int id, PIDParameters parameters);
 
-	void reset();
+	void updateParameters(PIDParameters parameters);
+	void restoreInitialParameters();
+	void resetPreviousValues();
 
 	double process(double setpoint, double measurement);
+
+	void publishTelemetry();
+
+private:
+	void calculateIntermediateValues();
+
+	void publishInfo();
 };
 
 } /* namespace SS */

@@ -82,7 +82,7 @@ void PositionController::disableChaseAll() {
 bool PositionController::forcesInTolerance() {
 	bool inTolerance = true;
 	for(int i = 0; i < HP_COUNT; i++) {
-		inTolerance = inTolerance && Range::InRange(this->positionControllerSettings->RaiseLowerForceLimitLow, this->positionControllerSettings->RaiseLowerForceLimitHigh, this->hardpointData->Force[i]);
+		inTolerance = inTolerance && Range::InRange(this->positionControllerSettings->RaiseLowerForceLimitLow, this->positionControllerSettings->RaiseLowerForceLimitHigh, this->hardpointData->MeasuredForce[i]);
 	}
 	return inTolerance;
 }
@@ -172,7 +172,7 @@ void PositionController::updateSteps() {
 			break;
 		case HardpointActuatorMotionStates::Chasing:
 		{
-			float force = this->hardpointData->Force[i];
+			float force = this->hardpointData->MeasuredForce[i];
 			int32_t chaseSteps = (int32_t)(force * this->positionControllerSettings->ForceToStepsCoefficient);
 			chaseSteps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, chaseSteps);
 			this->hardpointData->StepsCommanded[i] = (int16_t)chaseSteps;

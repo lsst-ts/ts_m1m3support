@@ -12,6 +12,7 @@
 #include <ForceActuatorLimits.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
+#include <PIDSettings.h>
 #include <Range.h>
 #include <SAL_m1m3C.h>
 #include <cmath>
@@ -25,17 +26,28 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, M1M3SSPublisher* publisher, SafetyController* safetyController) {
+ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController)
+ : fx(0, pidSettings->Fx),
+   fy(1, pidSettings->Fy),
+   fz(2, pidSettings->Fz),
+   mx(3, pidSettings->Mx),
+   my(4, pidSettings->My),
+   mz(5, pidSettings->Mz) {
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->publisher = publisher;
 	this->safetyController = safetyController;
+	this->pidSettings = pidSettings;
 	this->appliedForces = this->publisher->getEventAppliedForces();
 	this->forceInfo = this->publisher->getEventForceActuatorInfo();
 	this->inclinometerData = this->publisher->getInclinometerData();
 	this->forceData = this->publisher->getForceActuatorData();
 	this->forceSetpoint = this->publisher->getEventForceActuatorDataRejection();
 	this->forceSetpointWarning = this->publisher->getEventForceActuatorSetpointWarning();
+	this->pidData = this->publisher->getPIDData();
+	this->pidInfo = this->publisher->getEventPIDInfo();
+	this->hardpointData = this->publisher->getHardpointData();
+	this->mirrorForceData = this->publisher->getMirrorForceData();
 	memset(this->appliedForces, 0, sizeof(m1m3_logevent_AppliedForcesC));
 	memset(this->forceData, 0, sizeof(m1m3_ForceActuatorDataC));
 	memset(this->forceSetpoint, 0, sizeof(m1m3_logevent_ForceActuatorDataRejectionC));
@@ -118,6 +130,9 @@ void ForceController::updateAppliedForces() {
 	}
 	if (this->appliedForces->TemperatureForcesApplied) {
 		this->updateTemperatureForces();
+	}
+	if (this->appliedForces->HardpointOffloadingForcesApplied) {
+		this->updateHardpointCorrectionForces();
 	}
 }
 
@@ -603,6 +618,12 @@ void ForceController::zeroDynamicForces() {
 
 void ForceController::applyHardpointCorrections() {
 	this->appliedForces->HardpointOffloadingForcesApplied = true;
+	this->fx.resetPreviousValues();
+	this->fy.resetPreviousValues();
+	this->fz.resetPreviousValues();
+	this->mx.resetPreviousValues();
+	this->my.resetPreviousValues();
+	this->mz.resetPreviousValues();
 	this->publishAppliedForces();
 }
 
@@ -624,6 +645,48 @@ void ForceController::zeroHardpointCorrections() {
 		this->publishForceSetpointWarning();
 	}
 	this->publishAppliedForces();
+}
+
+void ForceController::updatePID(int id, double timestep, double p, double i, double d, double n) {
+	PID* pid = this->idToPID(id);
+	if (pid != 0) {
+		PIDParameters parameters;
+		parameters.Timestep = timestep;
+		parameters.P = p;
+		parameters.I = i;
+		parameters.D = d;
+		parameters.N = n;
+		pid->updateParameters(parameters);
+	}
+}
+
+void ForceController::resetPID(int id) {
+	PID* pid = this->idToPID(id);
+	if (pid != 0) {
+		pid->restoreInitialParameters();
+	}
+}
+
+void ForceController::resetPIDs() {
+	this->fx.restoreInitialParameters();
+	this->fy.restoreInitialParameters();
+	this->fz.restoreInitialParameters();
+	this->mx.restoreInitialParameters();
+	this->my.restoreInitialParameters();
+	this->mz.restoreInitialParameters();
+}
+
+void ForceController::calculateMirrorForces() {
+	std::vector<double> m = this->forceActuatorSettings->HardpointForceMomentMatrix;
+	float* force = this->hardpointData->MeasuredForce;
+	this->mirrorForceData->Timestamp = this->hardpointData->Timestamp;
+	this->mirrorForceData->Fx = m[0] * force[0] + m[6] * force[1] + m[12] * force[2] + m[18] * force[3] + m[24] * force[4] + m[30] * force[5];
+	this->mirrorForceData->Fy = m[1] * force[0] + m[7] * force[1] + m[13] * force[2] + m[19] * force[3] + m[25] * force[4] + m[31] * force[5];
+	this->mirrorForceData->Fz = m[2] * force[0] + m[8] * force[1] + m[14] * force[2] + m[20] * force[3] + m[26] * force[4] + m[32] * force[5];
+	this->mirrorForceData->Mx = m[3] * force[0] + m[9] * force[1] + m[15] * force[2] + m[21] * force[3] + m[27] * force[4] + m[33] * force[5];
+	this->mirrorForceData->My = m[4] * force[0] + m[10] * force[1] + m[16] * force[2] + m[22] * force[3] + m[28] * force[4] + m[34] * force[5];
+	this->mirrorForceData->Mz = m[5] * force[0] + m[11] * force[1] + m[17] * force[2] + m[23] * force[3] + m[29] * force[4] + m[35] * force[5];
+	this->publisher->putMirrorForceData();
 }
 
 DistributedForces ForceController::calculateDistribution(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
@@ -831,6 +894,51 @@ void ForceController::updateDynamicForces() {
 
 }
 
+void ForceController::updateHardpointCorrectionForces() {
+	float fx = this->fx.process(0, this->mirrorForceData->Fx);
+	float fy = this->fy.process(0, this->mirrorForceData->Fy);
+	float fz = this->fz.process(0, this->mirrorForceData->Fz);
+	float mx = this->mx.process(0, this->mirrorForceData->Mx);
+	float my = this->my.process(0, this->mirrorForceData->My);
+	float mz = this->mz.process(0, this->mirrorForceData->Mz);
+	DistributedForces forces = this->calculateDistribution(fx, fy, fz, mx, my, mz);
+	bool warningChanged = false;
+	this->forceSetpointWarning->AnyHardpointOffloadForceWarning = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		// Stage Hardpoint Offloading Forces
+		this->forceSetpoint->HardpointOffloadXSetpoint[i] = forces.XForces[i];
+		this->forceSetpoint->HardpointOffloadYSetpoint[i] = forces.YForces[i];
+		this->forceSetpoint->HardpointOffloadZSetpoint[i] = forces.ZForces[i];
+		// Check Hardpoint Offloading Forces
+		bool previousWarning = this->forceSetpointWarning->HardpointOffloadForceWarning[i];
+		this->forceSetpointWarning->HardpointOffloadForceWarning[i] =
+				!Range::InRange(this->forceActuatorSettings->Limits[i].HardpointOffloadingXLowLimit, this->forceActuatorSettings->Limits[i].HardpointOffloadingXHighLimit, this->forceSetpoint->HardpointOffloadXSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].HardpointOffloadingYLowLimit, this->forceActuatorSettings->Limits[i].HardpointOffloadingYHighLimit, this->forceSetpoint->HardpointOffloadYSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].HardpointOffloadingZLowLimit, this->forceActuatorSettings->Limits[i].HardpointOffloadingZHighLimit, this->forceSetpoint->HardpointOffloadZSetpoint[i]);
+		this->forceSetpointWarning->AnyHardpointOffloadForceWarning = this->forceSetpointWarning->AnyHardpointOffloadForceWarning || this->forceSetpointWarning->HardpointOffloadForceWarning[i];
+		warningChanged = warningChanged || (this->forceSetpointWarning->HardpointOffloadForceWarning[i] != previousWarning);
+	}
+	this->safetyController->forceControllerNotifyHardpointOffloadForceClipping(this->forceSetpointWarning->AnyHardpointOffloadForceWarning);
+	if (warningChanged) {
+		this->publishForceSetpointWarning();
+	}
+	if (this->forceSetpointWarning->AnyHardpointOffloadForceWarning) {
+		// Coerce Temperature Forces
+		this->publishForceDataRejection();
+		for(int i = 0; i < FA_COUNT; i++) {
+			this->forceSetpoint->HardpointOffloadXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].HardpointOffloadingXLowLimit, this->forceActuatorSettings->Limits[i].HardpointOffloadingXHighLimit, this->forceSetpoint->HardpointOffloadXSetpoint[i]);
+			this->forceSetpoint->HardpointOffloadYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].HardpointOffloadingYLowLimit, this->forceActuatorSettings->Limits[i].HardpointOffloadingYHighLimit, this->forceSetpoint->HardpointOffloadYSetpoint[i]);
+			this->forceSetpoint->HardpointOffloadZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].HardpointOffloadingZLowLimit, this->forceActuatorSettings->Limits[i].HardpointOffloadingZHighLimit, this->forceSetpoint->HardpointOffloadZSetpoint[i]);
+		}
+	}
+	// Move Hardpoint Offloading Forces
+	for(int i = 0; i < FA_COUNT; i++) {
+		this->forceData->HardpointOffloadXSetpoint[i] = this->forceSetpoint->HardpointOffloadXSetpoint[i];
+		this->forceData->HardpointOffloadYSetpoint[i] = this->forceSetpoint->HardpointOffloadYSetpoint[i];
+		this->forceData->HardpointOffloadZSetpoint[i] = this->forceSetpoint->HardpointOffloadZSetpoint[i];
+	}
+}
+
 void ForceController::sumAllForces() {
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->forceSetpoint->XSetpoint[i] =
@@ -838,13 +946,15 @@ void ForceController::sumAllForces() {
 				this->forceSetpoint->OffsetXSetpoint[i] +
 				this->forceSetpoint->ElevationXSetpoint[i] +
 				this->forceSetpoint->AzimuthXSetpoint[i] +
-				this->forceSetpoint->TemperatureXSetpoint[i];
+				this->forceSetpoint->TemperatureXSetpoint[i] +
+				this->forceSetpoint->HardpointOffloadXSetpoint[i];
 		this->forceSetpoint->YSetpoint[i] =
 				this->forceSetpoint->StaticYSetpoint[i] +
 				this->forceSetpoint->OffsetYSetpoint[i] +
 				this->forceSetpoint->ElevationYSetpoint[i] +
 				this->forceSetpoint->AzimuthYSetpoint[i] +
-				this->forceSetpoint->TemperatureYSetpoint[i];
+				this->forceSetpoint->TemperatureYSetpoint[i] +
+				this->forceSetpoint->HardpointOffloadYSetpoint[i];
 		this->forceSetpoint->ZSetpoint[i] =
 				this->forceSetpoint->StaticZSetpoint[i] +
 				this->forceSetpoint->OffsetZSetpoint[i] +
@@ -852,7 +962,8 @@ void ForceController::sumAllForces() {
 				this->forceSetpoint->ActiveOpticsZSetpoint[i] +
 				this->forceSetpoint->ElevationZSetpoint[i] +
 				this->forceSetpoint->AzimuthZSetpoint[i] +
-				this->forceSetpoint->TemperatureZSetpoint[i];
+				this->forceSetpoint->TemperatureZSetpoint[i] +
+				this->forceSetpoint->HardpointOffloadZSetpoint[i];
 		this->forceData->XSetpoint[i] = this->forceSetpoint->XSetpoint[i];
 		this->forceData->YSetpoint[i] = this->forceSetpoint->YSetpoint[i];
 		this->forceData->ZSetpoint[i] = this->forceSetpoint->ZSetpoint[i];
@@ -1028,6 +1139,18 @@ bool ForceController::checkFarNeighbors() {
 	}
 	this->safetyController->forceControllerNotifyFarNeighborCheck(this->forceSetpointWarning->AnyFarNeighborWarning);
 	return warningChanged;
+}
+
+PID* ForceController::idToPID(int id) {
+	switch(id) {
+	case 1: return &this->fx;
+	case 2: return &this->fy;
+	case 3: return &this->fz;
+	case 4: return &this->mx;
+	case 5: return &this->my;
+	case 6: return &this->mz;
+	default: return 0;
+	}
 }
 
 void ForceController::publishAppliedForces() {

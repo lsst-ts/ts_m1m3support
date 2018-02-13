@@ -70,7 +70,9 @@ void M1M3SSPublisher::putHardpointMonitorStatus() { this->m1m3SAL->putSample_Har
 void M1M3SSPublisher::putHardpointStatus() { this->m1m3SAL->putSample_HardpointStatus(&this->hardpointStatus); }
 void M1M3SSPublisher::putIMSData() { this->m1m3SAL->putSample_IMSData(&this->imsData); }
 void M1M3SSPublisher::putInclinometerData() { this->m1m3SAL->putSample_InclinometerData(&this->inclinometerData); }
+void M1M3SSPublisher::putMirrorForceData() { this->m1m3SAL->putSample_MirrorForceData(&this->mirrorForceData); }
 void M1M3SSPublisher::putOuterLoopData() { this->m1m3SAL->putSample_OuterLoopData(&this->outerLoopData); }
+void M1M3SSPublisher::putPIDData() { this->m1m3SAL->putSample_PIDData(&this->pidData); }
 void M1M3SSPublisher::putPowerSupplyData() { this->m1m3SAL->putSample_PowerSupplyData(&this->powerSupplyData); }
 
 void M1M3SSPublisher::logAccelerometerWarning() { this->m1m3SAL->logEvent_AccelerometerWarning(&this->eventAccelerometerWarning, 0); }
@@ -95,6 +97,7 @@ void M1M3SSPublisher::logILCWarning() { this->m1m3SAL->logEvent_ILCWarning(&this
 void M1M3SSPublisher::logInclinometerSensorWarning() { this->m1m3SAL->logEvent_InclinometerSensorWarning(&this->eventInclinometerSensorWarning, 0); }
 void M1M3SSPublisher::logInterlockStatus() { this->m1m3SAL->logEvent_InterlockStatus(&this->eventInterlockStatus, 0); }
 void M1M3SSPublisher::logInterlockWarning() { this->m1m3SAL->logEvent_InterlockWarning(&this->eventInterlockWarning, 0); }
+void M1M3SSPublisher::logPIDInfo() { this->m1m3SAL->logEvent_PIDInfo(&this->eventPIDInfo, 0); }
 void M1M3SSPublisher::logPowerStatus() { this->m1m3SAL->logEvent_PowerStatus(&this->eventPowerStatus, 0); }
 void M1M3SSPublisher::logPowerSupplyStatus() { this->m1m3SAL->logEvent_PowerSupplyStatus(&this->eventPowerSupplyStatus, 0); }
 void M1M3SSPublisher::logPowerWarning() { this->m1m3SAL->logEvent_PowerWarning(&this->eventPowerWarning, 0); }
@@ -258,6 +261,14 @@ void M1M3SSPublisher::ackCommandAbortProfile(int32_t commandID, int32_t ackCode,
 
 void M1M3SSPublisher::ackCommandApplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_ApplyOffsetForcesByMirrorForce(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandUpdatePID(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_UpdatePID(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandResetPID(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ResetPID(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

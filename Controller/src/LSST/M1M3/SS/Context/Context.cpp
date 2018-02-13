@@ -272,6 +272,18 @@ void Context::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceComma
 	this->stateFactory->destroy(state);
 }
 
+void Context::updatePID(UpdatePIDCommand* command) {
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->updatePID(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
+void Context::resetPID(ResetPIDCommand* command) {
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->resetPID(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::NoStateTransition) {
 		this->currentState = potentialNewState;

@@ -113,6 +113,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
 	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
 	GyroSettings* gyroSettings = this->settingReader->loadGyroSettings();
+	PIDSettings* pidSettings = this->settingReader->loadPIDSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -141,7 +142,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	if (this->forceController) {
 		delete this->forceController;
 	}
-	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher, this->safetyController);
+	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings, this->publisher, this->safetyController);
 
 	if (this->airController) {
 		delete this->airController;

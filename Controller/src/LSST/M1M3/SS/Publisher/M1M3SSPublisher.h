@@ -30,7 +30,9 @@ private:
 	m1m3_HardpointStatusC hardpointStatus;
 	m1m3_IMSDataC imsData;
 	m1m3_InclinometerDataC inclinometerData;
+	m1m3_MirrorForceDataC mirrorForceData;
 	m1m3_OuterLoopDataC outerLoopData;
+	m1m3_PIDDataC pidData;
 	m1m3_PowerSupplyDataC powerSupplyData;
 
 	m1m3_logevent_AccelerometerWarningC eventAccelerometerWarning;
@@ -55,6 +57,7 @@ private:
 	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
 	m1m3_logevent_InterlockStatusC eventInterlockStatus;
 	m1m3_logevent_InterlockWarningC eventInterlockWarning;
+	m1m3_logevent_PIDInfoC eventPIDInfo;
 	m1m3_logevent_PowerStatusC eventPowerStatus;
 	m1m3_logevent_PowerSupplyStatusC eventPowerSupplyStatus;
 	m1m3_logevent_PowerWarningC eventPowerWarning;
@@ -73,7 +76,9 @@ public:
 	m1m3_HardpointStatusC* getHardpointStatus() { return &this->hardpointStatus; }
 	m1m3_IMSDataC* getIMSData() { return &this->imsData; }
 	m1m3_InclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
+	m1m3_MirrorForceDataC* getMirrorForceData() { return &this->mirrorForceData; }
 	m1m3_OuterLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
+	m1m3_PIDDataC* getPIDData() { return &this->pidData; }
 	m1m3_PowerSupplyDataC* getPowerSupplyData() { return &this->powerSupplyData; }
 
 	m1m3_logevent_AccelerometerWarningC* getEventAccelerometerWarning() { return &this->eventAccelerometerWarning; }
@@ -98,6 +103,7 @@ public:
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
 	m1m3_logevent_InterlockStatusC* getEventInterlockStatus() { return &this->eventInterlockStatus; }
 	m1m3_logevent_InterlockWarningC* getEventInterlockWarning() { return &this->eventInterlockWarning; }
+	m1m3_logevent_PIDInfoC* getEventPIDInfo() { return &this->eventPIDInfo; }
 	m1m3_logevent_PowerStatusC* getEventPowerStatus() { return &this->eventPowerStatus; }
 	m1m3_logevent_PowerSupplyStatusC* getEventPowerSupplyStatus() { return &this->eventPowerSupplyStatus; }
 	m1m3_logevent_PowerWarningC* getEventPowerWarning() { return &this->eventPowerWarning; }
@@ -115,7 +121,9 @@ public:
 	void putHardpointStatus();
 	void putIMSData();
 	void putInclinometerData();
+	void putMirrorForceData();
 	void putOuterLoopData();
+	void putPIDData();
 	void putPowerSupplyData();
 
 	void logAccelerometerWarning();
@@ -140,6 +148,7 @@ public:
 	void logInclinometerSensorWarning();
 	void logInterlockStatus();
 	void logInterlockWarning();
+	void logPIDInfo();
 	void logPowerStatus();
 	void logPowerSupplyStatus();
 	void logPowerWarning();
@@ -186,6 +195,8 @@ public:
 	void ackCommandRunHardpointCorrectionProfile(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandAbortProfile(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandApplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandUpdatePID(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandResetPID(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

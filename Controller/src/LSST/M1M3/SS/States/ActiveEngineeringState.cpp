@@ -34,7 +34,8 @@
 #include <AutomaticOperationsController.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <RunHardpointCorrectionProfileCommand.h>
-#include <ProfileHardpointCorrectionState.h>
+#include <UpdatePIDCommand.h>
+#include <ResetPIDCommand.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -53,12 +54,14 @@ States::Type ActiveEngineeringState::update(UpdateCommand* command, Model* model
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, Model* model) {
 	States::Type newState = States::LoweringEngineeringState;
+	model->getForceController()->resetPIDs();
 	model->getAutomaticOperationsController()->startLowerOperation();
 	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* command, Model* model) {
 	States::Type newState = States::ActiveState;
+	model->getForceController()->resetPIDs();
 	return model->getSafetyController()->checkSafety(newState);
 }
 
@@ -222,6 +225,16 @@ States::Type ActiveEngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetF
 States::Type ActiveEngineeringState::runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model) {
 	model->getProfileController()->setupHardpointCorrectionProfile(command->getData()->XForce, command->getData()->YForce, command->getData()->ZForce, command->getData()->XMoment, command->getData()->YMoment, command->getData()->ZMoment);
 	return model->getSafetyController()->checkSafety(States::ProfileHardpointCorrectionState);
+}
+
+States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand* command, Model* model) {
+	model->getForceController()->updatePID(command->getData()->Id, command->getData()->Timestep, command->getData()->P, command->getData()->I, command->getData()->D, command->getData()->N);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::resetPID(ResetPIDCommand* command, Model* model) {
+	model->getForceController()->resetPID(command->getData()->Id);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

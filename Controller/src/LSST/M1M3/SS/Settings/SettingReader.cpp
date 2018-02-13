@@ -116,6 +116,11 @@ ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSet
 	return &this->expansionFPGAApplicationSettings;
 }
 
+PIDSettings* SettingReader::loadPIDSettings() {
+	this->pidSettings.load(this->getSetPath("PIDSettings.xml"));
+	return &this->pidSettings;
+}
+
 std::string SettingReader::getBasePath(std::string file) {
 	return this->basePath + file;
 }

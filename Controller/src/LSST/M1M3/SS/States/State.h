@@ -60,6 +60,8 @@ class DisableHardpointCorrectionsCommand;
 class RunHardpointCorrectionProfileCommand;
 class AbortProfileCommand;
 class ApplyOffsetForcesByMirrorForceCommand;
+class UpdatePIDCommand;
+class ResetPIDCommand;
 
 class State {
 private:
@@ -114,6 +116,8 @@ public:
 	virtual States::Type runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model);
 	virtual States::Type abortProfile(AbortProfileCommand* command, Model* model);
 	virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
+	virtual States::Type updatePID(UpdatePIDCommand* command, Model* model);
+	virtual States::Type resetPID(ResetPIDCommand* command, Model* model);
 
 protected:
 	void startTimer();

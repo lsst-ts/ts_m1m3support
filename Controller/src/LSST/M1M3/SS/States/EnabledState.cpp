@@ -44,6 +44,7 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
 	model->getGyro()->read();
+	model->getForceController()->calculateMirrorForces();
 	model->getForceController()->updateAppliedForces();
 	model->getForceController()->processAppliedForces();
 	model->getILC()->publishForceActuatorStatus();

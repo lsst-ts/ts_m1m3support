@@ -364,6 +364,22 @@ Command* M1M3SSSubscriber::tryAcceptCommandApplyOffsetForcesByMirrorForce() {
 	return 0;
 }
 
+Command* M1M3SSSubscriber::tryAcceptCommandUpdatePID() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_UpdatePID(&this->updatePIDData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::UpdatePIDCommand, &this->updatePIDData, commandID);
+	}
+	return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandResetPID() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ResetPID(&this->resetPIDData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ResetPIDCommand, &this->resetPIDData, commandID);
+	}
+	return 0;
+}
+
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
 	int32_t result = this->mtMountSAL->getSample_Az(&this->tmaAzimuth);
 	if (result == 0) {

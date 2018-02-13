@@ -58,7 +58,9 @@ struct Commands {
 		DisableHardpointCorrectionsCommand = 38,
 		RunHardpointCorrectionProfileCommand = 39,
 		AbortProfileCommand = 40,
-		ApplyOffsetForcesByMirrorForceCommand = 41
+		ApplyOffsetForcesByMirrorForceCommand = 41,
+		UpdatePIDCommand = 42,
+		ResetPIDCommand = 43
 	};
 };
 

@@ -58,6 +58,8 @@ class DisableHardpointCorrectionsCommand;
 class RunHardpointCorrectionProfileCommand;
 class AbortProfileCommand;
 class ApplyOffsetForcesByMirrorForceCommand;
+class UpdatePIDCommand;
+class ResetPIDCommand;
 
 /*!
  * The context used to execute commands against the current state.
@@ -118,6 +120,8 @@ public:
 	void runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command);
 	void abortProfile(AbortProfileCommand* command);
 	void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
+	void updatePID(UpdatePIDCommand* command);
+	void resetPID(ResetPIDCommand* command);
 };
 
 } /* namespace SS */
