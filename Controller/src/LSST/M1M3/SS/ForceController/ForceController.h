@@ -54,6 +54,8 @@ private:
 	m1m3_logevent_PIDInfoC* pidInfo;
 	m1m3_HardpointDataC* hardpointData;
 	m1m3_MirrorForceDataC* mirrorForceData;
+	m1m3_AccelerometerDataC* accelerometerData;
+	m1m3_GyroDataC* gyroData;
 
 	MTMount_AzC tmaAzimuthData;
 	MTMount_AltC tmaElevationData;

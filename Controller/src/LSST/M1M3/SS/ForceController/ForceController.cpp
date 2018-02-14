@@ -48,6 +48,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->pidInfo = this->publisher->getEventPIDInfo();
 	this->hardpointData = this->publisher->getHardpointData();
 	this->mirrorForceData = this->publisher->getMirrorForceData();
+	this->accelerometerData = this->publisher->getAccelerometerData();
+	this->gyroData = this->publisher->getGyroData();
 	memset(this->appliedForces, 0, sizeof(m1m3_logevent_AppliedForcesC));
 	memset(this->forceData, 0, sizeof(m1m3_ForceActuatorDataC));
 	memset(this->forceSetpoint, 0, sizeof(m1m3_logevent_ForceActuatorDataRejectionC));
@@ -133,6 +135,9 @@ void ForceController::updateAppliedForces() {
 	}
 	if (this->appliedForces->HardpointOffloadingForcesApplied) {
 		this->updateHardpointCorrectionForces();
+	}
+	if (this->appliedForces->DynamicForcesApplied) {
+		this->updateDynamicForces();
 	}
 }
 
@@ -891,7 +896,74 @@ void ForceController::updateTemperatureForces() {
 }
 
 void ForceController::updateDynamicForces() {
-
+	double angularAccelerationX = this->accelerometerData->AngularAccelerationX;
+	double angularAccelerationY = this->accelerometerData->AngularAccelerationY;
+	double angularAccelerationZ = this->accelerometerData->AngularAccelerationZ;
+	double angularVelocityX = this->gyroData->AngularVelocityX * this->gyroData->AngularVelocityX;
+	double angularVelocityY = this->gyroData->AngularVelocityY * this->gyroData->AngularVelocityY;
+	double angularVelocityZ = this->gyroData->AngularVelocityZ * this->gyroData->AngularVelocityZ;
+	double angularVelocityXZ = this->gyroData->AngularVelocityX * this->gyroData->AngularVelocityZ;
+	double angularVelocityYZ = this->gyroData->AngularVelocityY * this->gyroData->AngularVelocityZ;
+	bool warningChanged = false;
+	this->forceSetpointWarning->AnyDynamicForceWarning = false;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		// Stage Dynamic Forces
+		int mIndex = i * 3;
+		this->forceSetpoint->DynamicXSetpoint[i] =
+				(this->forceActuatorSettings->DynamicAccelerationXMatrix[mIndex + 0] * angularAccelerationX +
+				this->forceActuatorSettings->DynamicAccelerationYMatrix[mIndex + 0] * angularAccelerationY +
+				this->forceActuatorSettings->DynamicAccelerationZMatrix[mIndex + 0] * angularAccelerationZ +
+				this->forceActuatorSettings->DynamicVelocityXMatrix[mIndex + 0] * angularVelocityX +
+				this->forceActuatorSettings->DynamicVelocityYMatrix[mIndex + 0] * angularVelocityY +
+				this->forceActuatorSettings->DynamicVelocityZMatrix[mIndex + 0] * angularVelocityZ +
+				this->forceActuatorSettings->DynamicVelocityXZMatrix[mIndex + 0] * angularVelocityXZ +
+				this->forceActuatorSettings->DynamicVelocityYZMatrix[mIndex + 0] * angularVelocityYZ) * 0.0001; // Convert to N
+		this->forceSetpoint->DynamicYSetpoint[i] =
+				(this->forceActuatorSettings->DynamicAccelerationXMatrix[mIndex + 1] * angularAccelerationX +
+				this->forceActuatorSettings->DynamicAccelerationYMatrix[mIndex + 1] * angularAccelerationY +
+				this->forceActuatorSettings->DynamicAccelerationZMatrix[mIndex + 1] * angularAccelerationZ +
+				this->forceActuatorSettings->DynamicVelocityXMatrix[mIndex + 1] * angularVelocityX +
+				this->forceActuatorSettings->DynamicVelocityYMatrix[mIndex + 1] * angularVelocityY +
+				this->forceActuatorSettings->DynamicVelocityZMatrix[mIndex + 1] * angularVelocityZ +
+				this->forceActuatorSettings->DynamicVelocityXZMatrix[mIndex + 1] * angularVelocityXZ +
+				this->forceActuatorSettings->DynamicVelocityYZMatrix[mIndex + 1] * angularVelocityYZ) * 0.0001; // Convert to N
+		this->forceSetpoint->DynamicZSetpoint[i] =
+				(this->forceActuatorSettings->DynamicAccelerationXMatrix[mIndex + 2] * angularAccelerationX +
+				this->forceActuatorSettings->DynamicAccelerationYMatrix[mIndex + 2] * angularAccelerationY +
+				this->forceActuatorSettings->DynamicAccelerationZMatrix[mIndex + 2] * angularAccelerationZ +
+				this->forceActuatorSettings->DynamicVelocityXMatrix[mIndex + 2] * angularVelocityX +
+				this->forceActuatorSettings->DynamicVelocityYMatrix[mIndex + 2] * angularVelocityY +
+				this->forceActuatorSettings->DynamicVelocityZMatrix[mIndex + 2] * angularVelocityZ +
+				this->forceActuatorSettings->DynamicVelocityXZMatrix[mIndex + 2] * angularVelocityXZ +
+				this->forceActuatorSettings->DynamicVelocityYZMatrix[mIndex + 2] * angularVelocityYZ) * 0.0001; // Convert to N
+		// Check Dynamic Forces
+		bool previousWarning = this->forceSetpointWarning->DynamicForceWarning[i];
+		this->forceSetpointWarning->DynamicForceWarning[i] =
+				!Range::InRange(this->forceActuatorSettings->Limits[i].DynamicXLowLimit, this->forceActuatorSettings->Limits[i].DynamicXHighLimit, this->forceSetpoint->DynamicXSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].DynamicYLowLimit, this->forceActuatorSettings->Limits[i].DynamicYHighLimit, this->forceSetpoint->DynamicYSetpoint[i]) ||
+				!Range::InRange(this->forceActuatorSettings->Limits[i].DynamicZLowLimit, this->forceActuatorSettings->Limits[i].DynamicZHighLimit, this->forceSetpoint->DynamicZSetpoint[i]);
+		this->forceSetpointWarning->AnyDynamicForceWarning = this->forceSetpointWarning->AnyDynamicForceWarning || this->forceSetpointWarning->DynamicForceWarning[i];
+		warningChanged = warningChanged || (this->forceSetpointWarning->DynamicForceWarning[i] != previousWarning);
+	}
+	this->safetyController->forceControllerNotifyDynamicForceClipping(this->forceSetpointWarning->AnyDynamicForceWarning);
+	if (warningChanged) {
+		this->publishForceSetpointWarning();
+	}
+	if (this->forceSetpointWarning->AnyDynamicForceWarning) {
+		// Coerce Dynamic Forces
+		this->publishForceDataRejection();
+		for(int i = 0; i < FA_COUNT; i++) {
+			this->forceSetpoint->DynamicXSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].DynamicXLowLimit, this->forceActuatorSettings->Limits[i].DynamicXHighLimit, this->forceSetpoint->DynamicXSetpoint[i]);
+			this->forceSetpoint->DynamicYSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].DynamicYLowLimit, this->forceActuatorSettings->Limits[i].DynamicYHighLimit, this->forceSetpoint->DynamicYSetpoint[i]);
+			this->forceSetpoint->DynamicZSetpoint[i] = Range::CoerceIntoRange(this->forceActuatorSettings->Limits[i].DynamicZLowLimit, this->forceActuatorSettings->Limits[i].DynamicZHighLimit, this->forceSetpoint->DynamicZSetpoint[i]);
+		}
+	}
+	// Move Dynamic Forces
+	for(int i = 0; i < FA_COUNT; i++) {
+		this->forceData->DynamicXSetpoint[i] = this->forceSetpoint->DynamicXSetpoint[i];
+		this->forceData->DynamicYSetpoint[i] = this->forceSetpoint->DynamicYSetpoint[i];
+		this->forceData->DynamicZSetpoint[i] = this->forceSetpoint->DynamicZSetpoint[i];
+	}
 }
 
 void ForceController::updateHardpointCorrectionForces() {
@@ -947,14 +1019,16 @@ void ForceController::sumAllForces() {
 				this->forceSetpoint->ElevationXSetpoint[i] +
 				this->forceSetpoint->AzimuthXSetpoint[i] +
 				this->forceSetpoint->TemperatureXSetpoint[i] +
-				this->forceSetpoint->HardpointOffloadXSetpoint[i];
+				this->forceSetpoint->HardpointOffloadXSetpoint[i] +
+				this->forceSetpoint->DynamicXSetpoint[i];
 		this->forceSetpoint->YSetpoint[i] =
 				this->forceSetpoint->StaticYSetpoint[i] +
 				this->forceSetpoint->OffsetYSetpoint[i] +
 				this->forceSetpoint->ElevationYSetpoint[i] +
 				this->forceSetpoint->AzimuthYSetpoint[i] +
 				this->forceSetpoint->TemperatureYSetpoint[i] +
-				this->forceSetpoint->HardpointOffloadYSetpoint[i];
+				this->forceSetpoint->HardpointOffloadYSetpoint[i] +
+				this->forceSetpoint->DynamicYSetpoint[i];
 		this->forceSetpoint->ZSetpoint[i] =
 				this->forceSetpoint->StaticZSetpoint[i] +
 				this->forceSetpoint->OffsetZSetpoint[i] +
@@ -963,7 +1037,8 @@ void ForceController::sumAllForces() {
 				this->forceSetpoint->ElevationZSetpoint[i] +
 				this->forceSetpoint->AzimuthZSetpoint[i] +
 				this->forceSetpoint->TemperatureZSetpoint[i] +
-				this->forceSetpoint->HardpointOffloadZSetpoint[i];
+				this->forceSetpoint->HardpointOffloadZSetpoint[i] +
+				this->forceSetpoint->DynamicZSetpoint[i];
 		this->forceData->XSetpoint[i] = this->forceSetpoint->XSetpoint[i];
 		this->forceData->YSetpoint[i] = this->forceSetpoint->YSetpoint[i];
 		this->forceData->ZSetpoint[i] = this->forceSetpoint->ZSetpoint[i];

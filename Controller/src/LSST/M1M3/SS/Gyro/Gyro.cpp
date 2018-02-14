@@ -121,12 +121,17 @@ void Gyro::read() {
 		buffer.setIndex(0);
 		this->fpga->readU16ResponseFIFO(buffer.getBuffer(), length, 1000);
 		buffer.setLength(length);
+		for(int i = 0; i < length; ++i) {
+			cout << (int)(buffer.getBuffer()[i]) << " ";
+		}
+		cout << endl;
 		while(!buffer.endOfBuffer()) {
 			uint8_t peek = buffer.readU8();
+			//cout << "Peek: " << (int)peek << endl;
 			buffer.setIndex(buffer.getIndex() - 1);
 			if (peek == 0xFE) {
 				uint32_t header = buffer.readU32();
-				cout << "Header: " << header << endl;
+				//cout << "Header: " << header << endl;
 				if (header == 0xFE81FF55 || header == 0xFE8100AA || header == 0xFE8100AB) {
 					uint8_t tmpBuffer[36];
 					int length = 0;
@@ -163,18 +168,18 @@ void Gyro::read() {
 				else {
 					// TODO: Incomplete Frame it is expected to occur because of how I read data
 					this->readToEndOfFrame(&buffer);
-					cout << "Incomplete Frame" << endl;
+					this->gyroWarning->IncompleteFrameWarning = true;
 				}
 			}
 			else {
 				this->readToEndOfFrame(&buffer);
-				cout << "Invalid Header" << endl;
+				this->gyroWarning->InvalidHeaderWarning = true;
 				// TODO: Need to decide how to handle ASCII responses
 			}
 		}
 	}
 	else {
-		cout << "Invalid Length " << length << endl;
+		this->gyroWarning->InvalidLengthWarning = true;
 	}
 }
 
@@ -293,6 +298,9 @@ bool Gyro::checkGyroWarningForUpdates() {
 			this->gyroWarning->GyroZStatusWarning != this->previousGyroWarning.GyroZStatusWarning ||
 			this->gyroWarning->SequenceNumberWarning != this->previousGyroWarning.SequenceNumberWarning ||
 			this->gyroWarning->CRCMismatchWarning != this->previousGyroWarning.CRCMismatchWarning ||
+			this->gyroWarning->InvalidLengthWarning != this->previousGyroWarning.InvalidLengthWarning ||
+			this->gyroWarning->InvalidHeaderWarning != this->previousGyroWarning.InvalidHeaderWarning ||
+			this->gyroWarning->IncompleteFrameWarning != this->previousGyroWarning.IncompleteFrameWarning ||
 			this->gyroWarning->GyroXSLDWarning != this->previousGyroWarning.GyroXSLDWarning ||
 			this->gyroWarning->GyroXMODDACWarning != this->previousGyroWarning.GyroXMODDACWarning ||
 			this->gyroWarning->GyroXPhaseWarning != this->previousGyroWarning.GyroXPhaseWarning ||
@@ -339,6 +347,9 @@ void Gyro::publishGyroWarning() {
 			this->gyroWarning->GyroZStatusWarning ||
 			this->gyroWarning->SequenceNumberWarning ||
 			this->gyroWarning->CRCMismatchWarning ||
+			this->gyroWarning->InvalidLengthWarning ||
+			this->gyroWarning->InvalidHeaderWarning ||
+			this->gyroWarning->IncompleteFrameWarning ||
 			this->gyroWarning->GyroXSLDWarning ||
 			this->gyroWarning->GyroXMODDACWarning ||
 			this->gyroWarning->GyroXPhaseWarning ||
