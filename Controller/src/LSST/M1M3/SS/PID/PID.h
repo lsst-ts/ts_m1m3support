@@ -10,29 +10,39 @@
 
 #include <PIDParameters.h>
 
+struct m1m3_logevent_PIDInfoC;
+struct m1m3_PIDDataC;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+
+class M1M3SSPublisher;
 
 class PID {
 private:
 	int id;
 	PIDParameters initialParameters;
+	M1M3SSPublisher* publisher;
+	m1m3_logevent_PIDInfoC* pidInfo;
+	m1m3_PIDDataC* pidData;
 	PIDParameters parameters;
 	double error;
 	double errorT1;
 	double errorT2;
 	double control;
 	double controlT1;
+	double controlT2;
 	double a;
 	double b;
 	double c;
+	double d;
+	double e;
 	double setpoint;
 	double measurement;
 
 public:
-	PID(int id, double timestep, double p, double i, double d, double n);
-	PID(int id, PIDParameters parameters);
+	PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher);
 
 	void updateParameters(PIDParameters parameters);
 	void restoreInitialParameters();

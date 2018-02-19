@@ -56,6 +56,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, C
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_RunHardpointCorrectionProfile");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_AbortProfile");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyOffsetForcesByMirrorForce");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_UpdatePID");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ResetPID");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Az");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Alt");
 }

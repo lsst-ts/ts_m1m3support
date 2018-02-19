@@ -34,6 +34,7 @@
 #include <AutomaticOperationsController.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <RunHardpointCorrectionProfileCommand.h>
+#include <PIDParameters.h>
 #include <UpdatePIDCommand.h>
 #include <ResetPIDCommand.h>
 #include <unistd.h>
@@ -228,7 +229,13 @@ States::Type ActiveEngineeringState::runHardpointCorrectionProfile(RunHardpointC
 }
 
 States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand* command, Model* model) {
-	model->getForceController()->updatePID(command->getData()->Id, command->getData()->Timestep, command->getData()->P, command->getData()->I, command->getData()->D, command->getData()->N);
+	PIDParameters parameters;
+	parameters.Timestep = command->getData()->Timestep;
+	parameters.P = command->getData()->P;
+	parameters.I = command->getData()->I;
+	parameters.D = command->getData()->D;
+	parameters.N = command->getData()->N;
+	model->getForceController()->updatePID(command->getData()->Id, parameters);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

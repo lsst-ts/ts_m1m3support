@@ -7,6 +7,7 @@
 
 #include <M1M3SSPublisher.h>
 #include <SAL_m1m3.h>
+#include <ccpp_sal_m1m3.h> // Provides access to enumerations
 
 #include <iostream>
 using namespace std;

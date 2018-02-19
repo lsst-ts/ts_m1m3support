@@ -163,22 +163,34 @@ void Gyro::read() {
 					buffer.readEndOfFrame();
 					if (!valid) {
 						this->gyroWarning->CRCMismatchWarning = true;
+						this->gyroWarning->IncompleteFrameWarning = false;
+						this->gyroWarning->InvalidHeaderWarning = false;
+						this->gyroWarning->InvalidLengthWarning = false;
 					}
 				}
 				else {
 					// TODO: Incomplete Frame it is expected to occur because of how I read data
 					this->readToEndOfFrame(&buffer);
+					this->gyroWarning->CRCMismatchWarning = false;
 					this->gyroWarning->IncompleteFrameWarning = true;
+					this->gyroWarning->InvalidHeaderWarning = false;
+					this->gyroWarning->InvalidLengthWarning = false;
 				}
 			}
 			else {
 				this->readToEndOfFrame(&buffer);
+				this->gyroWarning->CRCMismatchWarning = false;
+				this->gyroWarning->IncompleteFrameWarning = false;
 				this->gyroWarning->InvalidHeaderWarning = true;
+				this->gyroWarning->InvalidLengthWarning = false;
 				// TODO: Need to decide how to handle ASCII responses
 			}
 		}
 	}
 	else {
+		this->gyroWarning->CRCMismatchWarning = false;
+		this->gyroWarning->IncompleteFrameWarning = false;
+		this->gyroWarning->InvalidHeaderWarning = false;
 		this->gyroWarning->InvalidLengthWarning = true;
 	}
 }

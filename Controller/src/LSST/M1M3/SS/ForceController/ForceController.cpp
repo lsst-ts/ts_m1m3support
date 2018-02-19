@@ -27,12 +27,12 @@ namespace M1M3 {
 namespace SS {
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController)
- : fx(0, pidSettings->Fx),
-   fy(1, pidSettings->Fy),
-   fz(2, pidSettings->Fz),
-   mx(3, pidSettings->Mx),
-   my(4, pidSettings->My),
-   mz(5, pidSettings->Mz) {
+ : fx(0, pidSettings->Fx, publisher),
+   fy(1, pidSettings->Fy, publisher),
+   fz(2, pidSettings->Fz, publisher),
+   mx(3, pidSettings->Mx, publisher),
+   my(4, pidSettings->My, publisher),
+   mz(5, pidSettings->Mz, publisher) {
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->publisher = publisher;
@@ -652,15 +652,9 @@ void ForceController::zeroHardpointCorrections() {
 	this->publishAppliedForces();
 }
 
-void ForceController::updatePID(int id, double timestep, double p, double i, double d, double n) {
+void ForceController::updatePID(int id, PIDParameters parameters) {
 	PID* pid = this->idToPID(id);
 	if (pid != 0) {
-		PIDParameters parameters;
-		parameters.Timestep = timestep;
-		parameters.P = p;
-		parameters.I = i;
-		parameters.D = d;
-		parameters.N = n;
 		pid->updateParameters(parameters);
 	}
 }
@@ -973,6 +967,8 @@ void ForceController::updateHardpointCorrectionForces() {
 	float mx = this->mx.process(0, this->mirrorForceData->Mx);
 	float my = this->my.process(0, this->mirrorForceData->My);
 	float mz = this->mz.process(0, this->mirrorForceData->Mz);
+	// Note: Publishing from any PID will publish ALL PID data
+	this->fx.publishTelemetry();
 	DistributedForces forces = this->calculateDistribution(fx, fy, fz, mx, my, mz);
 	bool warningChanged = false;
 	this->forceSetpointWarning->AnyHardpointOffloadForceWarning = false;

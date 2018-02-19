@@ -109,7 +109,7 @@ public:
 
 	void applyHardpointCorrections();
 	void zeroHardpointCorrections();
-	void updatePID(int id, double timestep, double p, double i, double d, double n);
+	void updatePID(int id, PIDParameters parameters);
 	void resetPID(int id);
 	void resetPIDs();
 	void calculateMirrorForces();

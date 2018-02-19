@@ -31,6 +31,14 @@
 #include <ExpansionFPGA.h>
 
 #include <Gyro.h>
+#include <string>
+#include <fstream>
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+#include <stdio.h>
+#include <PID.h>
 
 using namespace std;
 using namespace LSST::M1M3::SS;
@@ -45,6 +53,38 @@ int main() {
 	cout << "Initializing M1M3 SAL" << endl;
 	SAL_m1m3 m1m3SAL = SAL_m1m3();
 	m1m3SAL.setDebugLevel(0);
+
+
+//	std::string filename = "/usr/ts_M1M3Support/PID1.csv";
+//	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
+//	std::ifstream inputStream(filename.c_str());
+//	std::string lineText;
+//	int32_t lineNumber = 0;
+//	PID pid = PID(1, 0.02, 0.20431, 3.631165, 0, 0);
+//	double startTime = m1m3SAL.getCurrentTime();
+//	while(std::getline(inputStream, lineText)) {
+//		boost::trim_right(lineText);
+//		if (lineNumber != 0 && !lineText.empty()) {
+//			tokenizer tok(lineText);
+//			tokenizer::iterator i = tok.begin();
+//			double targetTimestamp = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetDemand = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetOutput = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetError = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetControl = boost::lexical_cast<double>(*i);
+//			double myControl = pid.process(targetDemand, targetOutput);
+//			cout << targetTimestamp << "," << targetDemand << "," << targetOutput << "," << targetError << "," << boost::str(boost::format("%.9f") % targetControl) << "," << boost::str(boost::format("%.9f") % myControl) << endl;
+//		}
+//		lineNumber++;
+//	}
+//	double stopTime = m1m3SAL.getCurrentTime();
+//	inputStream.close();
+//	cout << boost::str(boost::format("%.9f") % (stopTime - startTime)) << endl;
+
 	cout << "Initializing MTMount SAL" << endl;
 	SAL_MTMount mtMountSAL = SAL_MTMount();
 	cout << "Creating publisher" << endl;

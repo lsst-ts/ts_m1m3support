@@ -36,6 +36,13 @@ struct ILCAddressDataMap {
 	int32_t ActuatorId;
 };
 
+struct FASubnetDataMap {
+	int32_t DataIndexX;
+	int32_t DataIndexY;
+	int32_t DataIndexZ;
+	int32_t ActuatorId;
+};
+
 struct HPSettings {
 	uint8_t subnet[6];
 	uint8_t address[6];
