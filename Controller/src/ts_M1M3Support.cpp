@@ -53,38 +53,6 @@ int main() {
 	cout << "Initializing M1M3 SAL" << endl;
 	SAL_m1m3 m1m3SAL = SAL_m1m3();
 	m1m3SAL.setDebugLevel(0);
-
-
-//	std::string filename = "/usr/ts_M1M3Support/PID1.csv";
-//	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
-//	std::ifstream inputStream(filename.c_str());
-//	std::string lineText;
-//	int32_t lineNumber = 0;
-//	PID pid = PID(1, 0.02, 0.20431, 3.631165, 0, 0);
-//	double startTime = m1m3SAL.getCurrentTime();
-//	while(std::getline(inputStream, lineText)) {
-//		boost::trim_right(lineText);
-//		if (lineNumber != 0 && !lineText.empty()) {
-//			tokenizer tok(lineText);
-//			tokenizer::iterator i = tok.begin();
-//			double targetTimestamp = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetDemand = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetOutput = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetError = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetControl = boost::lexical_cast<double>(*i);
-//			double myControl = pid.process(targetDemand, targetOutput);
-//			cout << targetTimestamp << "," << targetDemand << "," << targetOutput << "," << targetError << "," << boost::str(boost::format("%.9f") % targetControl) << "," << boost::str(boost::format("%.9f") % myControl) << endl;
-//		}
-//		lineNumber++;
-//	}
-//	double stopTime = m1m3SAL.getCurrentTime();
-//	inputStream.close();
-//	cout << boost::str(boost::format("%.9f") % (stopTime - startTime)) << endl;
-
 	cout << "Initializing MTMount SAL" << endl;
 	SAL_MTMount mtMountSAL = SAL_MTMount();
 	cout << "Creating publisher" << endl;
@@ -116,6 +84,46 @@ int main() {
 		m1m3SAL.salShutdown();
 		return -1;
 	}
+
+//	std::string filename1 = "/usr/ts_M1M3Support/PID1.csv";
+//	std::string filename2 = "/usr/ts_M1M3Support/PID2.csv";
+//	std::string filename3 = "/usr/ts_M1M3Support/PID3.csv";
+//	std::string filename4 = "/usr/ts_M1M3Support/PID4.csv";
+//	std::string filename5 = "/usr/ts_M1M3Support/PID5.csv";
+//	PIDParameters p1; p1.Timestep = 0.02; p1.P = 0.235952; p1.I = 7.882626; p1.D = -0.01654; p1.N = 8.677372;
+//	PIDParameters p2; p2.Timestep = 0.02; p2.P = 0.235952; p2.I = 7.882626; p2.D = -0.01654; p2.N = 8.677372;
+//	PIDParameters p3; p3.Timestep = 0.02; p3.P = 0.009545; p3.I = 0.954463; p3.D = 0.0; p3.N = 50.0;
+//	PIDParameters p4; p4.Timestep = 0.02; p4.P = 0.080673; p4.I = 8.067314; p4.D = 0.0; p4.N = 50.0;
+//	PIDParameters p5; p5.Timestep = 0.02; p5.P = 0.174007; p5.I = 8.700364; p5.D = 0.00087; p5.N = 50.0;
+//	std::string filename = filename5;
+//	PID pid = PID(0, p5, &publisher);
+//	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
+//	std::ifstream inputStream(filename.c_str());
+//	std::string lineText;
+//	int32_t lineNumber = 0;
+//	double startTime = m1m3SAL.getCurrentTime();
+//	while(std::getline(inputStream, lineText)) {
+//		boost::trim_right(lineText);
+//		if (lineNumber != 0 && !lineText.empty()) {
+//			tokenizer tok(lineText);
+//			tokenizer::iterator i = tok.begin();
+//			double targetTimestamp = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetDemand = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetOutput = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetError = boost::lexical_cast<double>(*i);
+//			++i;
+//			double targetControl = boost::lexical_cast<double>(*i);
+//			double myControl = pid.process(targetDemand, targetOutput);
+//			cout << targetTimestamp << "," << targetDemand << "," << targetOutput << "," << targetError << "," << boost::str(boost::format("%.9f") % targetControl) << "," << boost::str(boost::format("%.9f") % myControl) << endl;
+//		}
+//		lineNumber++;
+//	}
+//	double stopTime = m1m3SAL.getCurrentTime();
+//	inputStream.close();
+//	cout << boost::str(boost::format("%.9f") % (stopTime - startTime)) << endl;
 
 //	settingReader.configure("Default");
 //	GyroSettings* gyroSettings = settingReader.loadGyroSettings();

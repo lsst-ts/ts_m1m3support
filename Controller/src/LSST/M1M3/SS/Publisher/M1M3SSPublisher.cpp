@@ -29,6 +29,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_IMSData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_InclinometerData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_OuterLoopData");
+	this->m1m3SAL->salTelemetryPub((char*)"m1m3_PIDData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_PowerSupplyData");
 
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AccelerometerWarning");
@@ -53,6 +54,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_InclinometerSensorWarning");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_InterlockStatus");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_InterlockWarning");
+	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PIDInfo");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PowerStatus");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PowerSupplyStatus");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PowerWarning");
