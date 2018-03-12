@@ -8,6 +8,7 @@
 #include <ControllerThread.h>
 #include <Controller.h>
 #include <unistd.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -19,6 +20,7 @@ ControllerThread::ControllerThread(Controller* controller) {
 }
 
 void ControllerThread::run() {
+	Log.Info("ControllerThread: Start");
 	while(this->keepRunning) {
 		this->controller->lock();
 		Command* command = this->controller->dequeue();
@@ -30,6 +32,7 @@ void ControllerThread::run() {
 			usleep(100);
 		}
 	}
+	Log.Info("ControllerThread: Completed");
 }
 
 void ControllerThread::stop() {

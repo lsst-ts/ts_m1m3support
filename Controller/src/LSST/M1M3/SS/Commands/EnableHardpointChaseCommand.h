@@ -20,13 +20,11 @@ class EnableHardpointChaseCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_EnableHardpointChaseC data;
 
 public:
 	EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnableHardpointChaseC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_EnableHardpointChaseC* getData() { return &this->data; }
 
 	bool validate();

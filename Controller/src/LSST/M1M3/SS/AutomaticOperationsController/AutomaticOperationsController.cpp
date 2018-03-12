@@ -12,12 +12,14 @@
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
 #include <PowerController.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 AutomaticOperationsController::AutomaticOperationsController(PositionController* positionController, ForceController* forceController, InterlockController* interlockController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController) {
+	Log.Debug("AutomaticOperationsController: AutomaticOperationsController()");
 	this->positionController = positionController;
 	this->forceController = forceController;
 	this->interlockController = interlockController;
@@ -29,6 +31,7 @@ AutomaticOperationsController::AutomaticOperationsController(PositionController*
 }
 
 void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReference) {
+	Log.Info("AutomaticOperationsController: startRaiseOperation(%d)", bypassMoveToReference);
 	this->bypassMoveToReference = bypassMoveToReference;
 	this->safetyController->raiseOperationTimeout(false);
 	this->positionController->stopMotion();
@@ -36,12 +39,12 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
 	this->forceController->applyElevationForces();
 	this->forceController->zeroStaticForces();
 	this->forceController->zeroAzimuthForces();
-	this->forceController->zeroTemperatureForces();
-	this->forceController->zeroDynamicForces();
+	this->forceController->zeroThermalForces();
+	this->forceController->zeroAccelerationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->zeroAberration();
-	this->forceController->zeroAOSCorrection();
-	this->forceController->zeroHardpointCorrections();
+	this->forceController->zeroAberrationForces();
+	this->forceController->zeroActiveOpticForces();
+	this->forceController->zeroBalanceForces();
 	this->forceController->zeroSupportPercentage();
 	this->interlockController->setMirrorParked(false);
 	this->interlockController->setMirrorLoweringRaising(true);
@@ -49,6 +52,7 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
 }
 
 void AutomaticOperationsController::tryIncrementingSupportPercentage() {
+	Log.Trace("AutomaticOperationsController: tryIncrementingSupportPercentage()");
 	if (!this->forceController->supportPercentageFilled()) {
 		// We are still in the process of transfering the support force from the static supports
 		// to the force actuators
@@ -74,14 +78,15 @@ bool AutomaticOperationsController::checkRaiseOperationComplete() {
 }
 
 void AutomaticOperationsController::completeRaiseOperation() {
+	Log.Info("AutomaticOperationsController: completeRaiseOperation()");
 	// Transition to the end state (active or active engineering) if all of the support force has been transfered
 	// from the static supports to the force actuators and all hardpoints have completed their
 	// commanded motions
 	this->forceController->applyStaticForces();
 	this->forceController->applyAzimuthForces();
-	this->forceController->applyTemperatureForces();
-	this->forceController->applyDynamicForces();
-	this->forceController->applyHardpointCorrections();
+	this->forceController->applyThermalForces();
+	this->forceController->applyAccelerationForces();
+	this->forceController->applyBalanceForces();
 	this->forceController->fillSupportPercentage();
 	this->interlockController->setMirrorLoweringRaising(false);
 }
@@ -91,28 +96,31 @@ bool AutomaticOperationsController::checkRaiseOperationTimeout() {
 }
 
 void AutomaticOperationsController::timeoutRaiseOperation() {
+	Log.Error("AutomaticOperationsController: timeoutRaiseOperation()");
 	this->safetyController->raiseOperationTimeout(true);
 }
 
 void AutomaticOperationsController::startLowerOperation() {
+	Log.Info("AutomaticOperationsController: startLowerOperation()");
 	this->safetyController->lowerOperationTimeout(false);
 	this->positionController->stopMotion();
 	this->positionController->enableChaseAll();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroStaticForces();
 	this->forceController->zeroAzimuthForces();
-	this->forceController->zeroTemperatureForces();
-	this->forceController->zeroDynamicForces();
+	this->forceController->zeroThermalForces();
+	this->forceController->zeroAccelerationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->zeroAberration();
-	this->forceController->zeroAOSCorrection();
-	this->forceController->zeroHardpointCorrections();
+	this->forceController->zeroAberrationForces();
+	this->forceController->zeroActiveOpticForces();
+	this->forceController->zeroBalanceForces();
 	this->forceController->fillSupportPercentage();
 	this->interlockController->setMirrorLoweringRaising(true);
 	this->cachedTimestamp = this->publisher->getTimestamp();
 }
 
 void AutomaticOperationsController::tryDecrementSupportPercentage() {
+	Log.Trace("AutomaticOperationsController: tryDecrementSupportPercentage()");
 	if (!this->forceController->supportPercentageZeroed()) {
 		// We are still in the process of transfering the support force from the static supports
 		// to the force actuators
@@ -129,20 +137,21 @@ bool AutomaticOperationsController::checkLowerOperationComplete() {
 }
 
 void AutomaticOperationsController::completeLowerOperation() {
+	Log.Info("AutomaticOperationsController: completeLowerOperation()");
 	// All of the support force has been transfered from the static supports to the
 	// force actuators, stop the hardpoints from chasing
 	// Transition to the end state (parked or parked engineering) if all of the support
 	// force has been transfered from the force actuators to the static supports
 	this->positionController->disableChaseAll();
 	this->forceController->zeroElevationForces();
-	this->forceController->zeroAOSCorrection();
-	this->forceController->zeroAberration();
+	this->forceController->zeroActiveOpticForces();
+	this->forceController->zeroAberrationForces();
 	this->forceController->zeroOffsetForces();
 	this->forceController->zeroStaticForces();
 	this->forceController->zeroAzimuthForces();
-	this->forceController->zeroTemperatureForces();
-	this->forceController->zeroDynamicForces();
-	this->forceController->zeroHardpointCorrections();
+	this->forceController->zeroThermalForces();
+	this->forceController->zeroAccelerationForces();
+	this->forceController->zeroBalanceForces();
 	this->forceController->zeroSupportPercentage();
 	this->interlockController->setMirrorParked(true);
 	this->interlockController->setMirrorLoweringRaising(false);
@@ -153,6 +162,7 @@ bool AutomaticOperationsController::checkLowerOperationTimeout() {
 }
 
 void AutomaticOperationsController::timeoutLowerOperation() {
+	Log.Error("AutomaticOperationsController: timeoutLowerOperation()");
 	// TODO: How should the system react if the operation times out?
 	//       For now we will assume the worst and fault the system
 	this->safetyController->lowerOperationTimeout(true);

@@ -17,6 +17,7 @@ AbortProfileCommand::AbortProfileCommand(Context* context, M1M3SSPublisher* publ
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
+	this->data = *data;
 	this->data.AbortProfile = data->AbortProfile;
 }
 

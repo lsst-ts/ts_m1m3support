@@ -44,16 +44,41 @@ private:
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
 
+	m1m3_logevent_AppliedAberrationForcesC* appliedAberrationForces;
+	m1m3_logevent_AppliedAccelerationForcesC* appliedAccelerationForces;
+	m1m3_logevent_AppliedActiveOpticForcesC* appliedActiveOpticForces;
+	m1m3_logevent_AppliedAzimuthForcesC* appliedAzimuthForces;
+	m1m3_logevent_AppliedBalanceForcesC* appliedBalanceForces;
+	m1m3_logevent_AppliedElevationForcesC* appliedElevationForces;
 	m1m3_logevent_AppliedForcesC* appliedForces;
-	m1m3_logevent_ForceActuatorInfoC* forceInfo;
-	m1m3_ForceActuatorDataC* forceData;
-	m1m3_logevent_ForceActuatorDataRejectionC* forceSetpoint;
-	m1m3_logevent_ForceActuatorSetpointWarningC* forceSetpointWarning;
+	m1m3_logevent_AppliedOffsetForcesC* appliedOffsetForces;
+	m1m3_logevent_AppliedStaticForcesC* appliedStaticForces;
+	m1m3_logevent_AppliedThermalForcesC* appliedThermalForces;
+	m1m3_logevent_AppliedVelocityForcesC* appliedVelocityForces;
+	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
+	m1m3_logevent_ForceSetpointWarningC* forceSetpointWarning;
+	m1m3_logevent_RejectedAberrationForcesC* rejectedAberrationForces;
+	m1m3_logevent_RejectedAccelerationForcesC* rejectedAccelerationForces;
+	m1m3_logevent_RejectedActiveOpticForcesC* rejectedActiveOpticForces;
+	m1m3_logevent_RejectedAzimuthForcesC* rejectedAzimuthForces;
+	m1m3_logevent_RejectedBalanceForcesC* rejectedBalanceForces;
+	m1m3_logevent_RejectedCylinderForcesC* rejectedCylinderForces;
+	m1m3_logevent_RejectedElevationForcesC* rejectedElevationForces;
+	m1m3_logevent_RejectedForcesC* rejectedForces;
+	m1m3_logevent_RejectedOffsetForcesC* rejectedOffsetForces;
+	m1m3_logevent_RejectedStaticForcesC* rejectedStaticForces;
+	m1m3_logevent_RejectedThermalForcesC* rejectedThermalForces;
+	m1m3_logevent_RejectedVelocityForcesC* rejectedVelocityForces;
+
+	m1m3_logevent_ForceActuatorInfoC* forceActuatorInfo;
+	m1m3_ForceActuatorDataC* forceActuatorData;
+
 	m1m3_InclinometerDataC* inclinometerData;
 	m1m3_PIDDataC* pidData;
 	m1m3_logevent_PIDInfoC* pidInfo;
-	m1m3_HardpointDataC* hardpointData;
-	m1m3_MirrorForceDataC* mirrorForceData;
+	m1m3_HardpointActuatorDataC* hardpointActuatorData;
+	m1m3_MeasuredMirrorForceDataC* measuredMirrorForceData;
+	m1m3_HardpointMirrorForceDataC* hardpointMirrorForceData;
 	m1m3_AccelerometerDataC* accelerometerData;
 	m1m3_GyroDataC* gyroData;
 
@@ -62,12 +87,11 @@ private:
 
 	std::vector<ForceActuatorNeighbors> neighbors;
 
-	static int32_t toInt24(double force) { return (int32_t)(force * 1000.0); }
+	static int32_t toInt24(float force) { return (int32_t)(force * 1000.0); }
 
 public:
 	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController);
 
-	void updateTMAAzimuthData(MTMount_AzC* tmaAzimuthData);
 	void updateTMAElevationData(MTMount_AltC* tmaElevationData);
 
 	void incSupportPercentage();
@@ -80,48 +104,53 @@ public:
 	void updateAppliedForces();
 	void processAppliedForces();
 
-	void applyStaticForces();
-	void zeroStaticForces();
+	void applyAberrationForcesByBendingModes(float* coefficients);
+	void applyAberrationForces(float* z);
+	void zeroAberrationForces();
 
-	void applyOffsetForces(double* x, double* y, double* z);
-	void applyOffsetForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
-	void zeroOffsetForces();
+	void applyAccelerationForces();
+	void updateAccelerationForces();
+	void zeroAccelerationForces();
 
-	void applyAOSCorrectionByBendingModes(double* coefficients);
-	void applyAOSCorrectionByForces(double* z);
-	void zeroAOSCorrection();
-
-	void applyAberrationByBendingModes(double* coefficients);
-	void applyAberrationByForces(double* z);
-	void zeroAberration();
-
-	void applyElevationForces();
-	void zeroElevationForces();
+	void applyActiveOpticForcesByBendingModes(float* coefficients);
+	void applyActiveOpticForces(float* z);
+	void zeroActiveOpticForces();
 
 	void applyAzimuthForces();
+	void updateAzimuthForces(float azimuthAngle);
 	void zeroAzimuthForces();
 
-	void applyTemperatureForces();
-	void zeroTemperatureForces();
-
-	void applyDynamicForces();
-	void zeroDynamicForces();
-
-	void applyHardpointCorrections();
-	void zeroHardpointCorrections();
+	void applyBalanceForces();
+	void updateBalanceForces();
+	void zeroBalanceForces();
+	void calculateMirrorForces();
 	void updatePID(int id, PIDParameters parameters);
 	void resetPID(int id);
 	void resetPIDs();
-	void calculateMirrorForces();
+
+	void applyElevationForces();
+	void updateElevationForces();
+	void updateElevationForces(float elevation);
+	void zeroElevationForces();
+
+	void applyOffsetForces(float* x, float* y, float* z);
+	void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
+	void zeroOffsetForces();
+
+	void applyStaticForces();
+	void zeroStaticForces();
+
+	void applyThermalForces();
+	void updateThermalForces();
+	void zeroThermalForces();
+
+	void applyVelocityForces();
+	void updateVelocityForces();
+	void zeroVelocityForces();
 
 private:
 	DistributedForces calculateDistribution(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
 
-	void updateElevationForces();
-	void updateAzimuthForces();
-	void updateTemperatureForces();
-	void updateDynamicForces();
-	void updateHardpointCorrectionForces();
 	void sumAllForces();
 	void convertForcesToSetpoints();
 
@@ -131,10 +160,6 @@ private:
 	bool checkFarNeighbors();
 
 	PID* idToPID(int id);
-
-	void publishAppliedForces();
-	void publishForceSetpointWarning();
-	void publishForceDataRejection();
 };
 
 } /* namespace SS */

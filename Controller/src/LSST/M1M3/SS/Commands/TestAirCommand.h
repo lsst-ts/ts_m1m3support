@@ -20,13 +20,11 @@ class TestAirCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_TestAirC data;
 
 public:
 	TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestAirC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_TestAirC* getData() { return &this->data; }
 
 	bool validate();

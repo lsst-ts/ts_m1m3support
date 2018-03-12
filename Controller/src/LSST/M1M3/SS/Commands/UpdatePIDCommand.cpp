@@ -17,7 +17,7 @@ UpdatePIDCommand::UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher,
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Id = data->Id;
+	this->data.PID = data->PID;
 	this->data.Timestep = data->Timestep;
 	this->data.P = data->P;
 	this->data.I = data->I;
@@ -26,10 +26,10 @@ UpdatePIDCommand::UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher,
 }
 
 bool UpdatePIDCommand::validate() {
-	if (this->data.Id < 1 || this->data.Id > 6) {
-		this->publisher->logCommandRejectionWarning("UpdatePID", "The field Id is must be in range [1, 6].");
+	if (this->data.PID < 1 || this->data.PID > 6) {
+		this->publisher->logCommandRejectionWarning("UpdatePID", "The field PID must be in range [1, 6].");
 	}
-	return this->data.Id >= 1 && this->data.Id <= 6;
+	return this->data.PID >= 1 && this->data.PID <= 6;
 }
 
 void UpdatePIDCommand::execute() {

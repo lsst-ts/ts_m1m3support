@@ -9,8 +9,7 @@
 #define SETBOOSTVALVEDCAGAINBUSLIST_H_
 
 #include <BusList.h>
-
-struct m1m3_logevent_ForceActuatorInfoC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {

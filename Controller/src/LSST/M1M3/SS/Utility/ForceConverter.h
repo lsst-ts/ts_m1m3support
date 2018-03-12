@@ -21,31 +21,31 @@ private:
 	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
 public:
-	static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, double* xForce, double* yForce, double* zForce) {
+	static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
 		*xForce = secondaryCylinder * reciprocalSqrt2;
 		*yForce = 0;
 		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
 	}
 
-	static void daaNegativeXToMirror(float primaryCylinder, float secondaryCylinder, double* xForce, double* yForce, double* zForce) {
+	static void daaNegativeXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
 		*xForce = -secondaryCylinder * reciprocalSqrt2;
 		*yForce = 0;
 		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
 	}
 
-	static void daaPositiveYToMirror(float primaryCylinder, float secondaryCylinder, double* xForce, double* yForce, double* zForce) {
+	static void daaPositiveYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
 		*xForce = 0;
 		*yForce = secondaryCylinder * reciprocalSqrt2;
 		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
 	}
 
-	static void daaNegativeYToMirror(float primaryCylinder, float secondaryCylinder, double* xForce, double* yForce, double* zForce) {
+	static void daaNegativeYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
 		*xForce = 0;
 		*yForce = -secondaryCylinder * reciprocalSqrt2;
 		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
 	}
 
-	static void saaToMirror(float primaryCylinder, float secondaryCylinder, double* xForce, double* yForce, double* zForce) {
+	static void saaToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
 		*xForce = 0;
 		*yForce = 0;
 		*zForce = primaryCylinder;

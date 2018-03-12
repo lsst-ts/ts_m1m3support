@@ -20,13 +20,11 @@ class AbortProfileCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_AbortProfileC data;
 
 public:
 	AbortProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_AbortProfileC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_AbortProfileC* getData() { return &this->data; }
 
 	bool validate();

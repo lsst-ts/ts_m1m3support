@@ -30,100 +30,54 @@
 #include <cstring>
 #include <ExpansionFPGA.h>
 
+#include <Log.h>
 #include <Gyro.h>
-#include <string>
-#include <fstream>
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
-#include <stdio.h>
-#include <PID.h>
 
 using namespace std;
 using namespace LSST::M1M3::SS;
 
 void* runThread(void* data);
 
-int main() {
-	void* status;
+LSST::M1M3::SS::Logger Log;
 
-	cout << "Creating setting reader" << endl;
+int main() {
+	Log.SetLevel(Levels::Info);
+	Log.Info("Main: Creating setting reader");
 	SettingReader settingReader = SettingReader("/usr/ts_M1M3Support/SettingFiles/Base/", "/usr/ts_M1M3Support/SettingFiles/Sets/");
-	cout << "Initializing M1M3 SAL" << endl;
+	Log.Info("Main: Initializing M1M3 SAL");
 	SAL_m1m3 m1m3SAL = SAL_m1m3();
 	m1m3SAL.setDebugLevel(0);
-	cout << "Initializing MTMount SAL" << endl;
+	Log.Info("Main: Initializing MTMount SAL");
 	SAL_MTMount mtMountSAL = SAL_MTMount();
-	cout << "Creating publisher" << endl;
+	Log.Info("Main: Creating publisher");
 	M1M3SSPublisher publisher = M1M3SSPublisher(&m1m3SAL);
-	cout << "Creating fpga" << endl;
+	Log.Info("Main: Creating fpga");
 	FPGA fpga = FPGA();
 	if (fpga.isErrorCode(fpga.initialize())) {
-		cout << "Error initializing FPGA" << endl;
+		Log.Fatal("Main: Error initializing FPGA");
 		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
 	}
 	if (fpga.isErrorCode(fpga.open())) {
-		cout << "Error opening FPGA" << endl;
+		Log.Fatal("Main: Error opening FPGA");
 		fpga.finalize();
 		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
 	}
-	cout << "Load expansion FPGA application settings" << endl;
+	Log.Info("Main: Load expansion FPGA application settings");
 	ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings = settingReader.loadExpansionFPGAApplicationSettings();
-	cout << "Create expansion FPGA" << endl;
+	Log.Info("Main: Create expansion FPGA");
 	ExpansionFPGA expansionFPGA = ExpansionFPGA(expansionFPGAApplicationSettings);
 	if (expansionFPGA.isErrorCode(expansionFPGA.open())) {
-		cout << "Error opening expansion FPGA" << endl;
+		Log.Fatal("Main: Error opening expansion FPGA");
 		fpga.close();
 		fpga.finalize();
 		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
 	}
-
-//	std::string filename1 = "/usr/ts_M1M3Support/PID1.csv";
-//	std::string filename2 = "/usr/ts_M1M3Support/PID2.csv";
-//	std::string filename3 = "/usr/ts_M1M3Support/PID3.csv";
-//	std::string filename4 = "/usr/ts_M1M3Support/PID4.csv";
-//	std::string filename5 = "/usr/ts_M1M3Support/PID5.csv";
-//	PIDParameters p1; p1.Timestep = 0.02; p1.P = 0.235952; p1.I = 7.882626; p1.D = -0.01654; p1.N = 8.677372;
-//	PIDParameters p2; p2.Timestep = 0.02; p2.P = 0.235952; p2.I = 7.882626; p2.D = -0.01654; p2.N = 8.677372;
-//	PIDParameters p3; p3.Timestep = 0.02; p3.P = 0.009545; p3.I = 0.954463; p3.D = 0.0; p3.N = 50.0;
-//	PIDParameters p4; p4.Timestep = 0.02; p4.P = 0.080673; p4.I = 8.067314; p4.D = 0.0; p4.N = 50.0;
-//	PIDParameters p5; p5.Timestep = 0.02; p5.P = 0.174007; p5.I = 8.700364; p5.D = 0.00087; p5.N = 50.0;
-//	std::string filename = filename5;
-//	PID pid = PID(0, p5, &publisher);
-//	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
-//	std::ifstream inputStream(filename.c_str());
-//	std::string lineText;
-//	int32_t lineNumber = 0;
-//	double startTime = m1m3SAL.getCurrentTime();
-//	while(std::getline(inputStream, lineText)) {
-//		boost::trim_right(lineText);
-//		if (lineNumber != 0 && !lineText.empty()) {
-//			tokenizer tok(lineText);
-//			tokenizer::iterator i = tok.begin();
-//			double targetTimestamp = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetDemand = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetOutput = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetError = boost::lexical_cast<double>(*i);
-//			++i;
-//			double targetControl = boost::lexical_cast<double>(*i);
-//			double myControl = pid.process(targetDemand, targetOutput);
-//			cout << targetTimestamp << "," << targetDemand << "," << targetOutput << "," << targetError << "," << boost::str(boost::format("%.9f") % targetControl) << "," << boost::str(boost::format("%.9f") % myControl) << endl;
-//		}
-//		lineNumber++;
-//	}
-//	double stopTime = m1m3SAL.getCurrentTime();
-//	inputStream.close();
-//	cout << boost::str(boost::format("%.9f") % (stopTime - startTime)) << endl;
 
 //	settingReader.configure("Default");
 //	GyroSettings* gyroSettings = settingReader.loadGyroSettings();
@@ -138,29 +92,29 @@ int main() {
 //		usleep(100000);
 //	}
 
-	cout << "Creating state factory" << endl;
+	Log.Info("Main: Creating state factory");
 	StaticStateFactory stateFactory = StaticStateFactory(&publisher);
-	cout << "Load interlock application settings" << endl;
+	Log.Info("Main: Load interlock application settings");
 	InterlockApplicationSettings* interlockApplicationSettings = settingReader.loadInterlockApplicationSettings();
-	cout << "Creating interlock controller" << endl;
+	Log.Info("Main: Creating interlock controller");
 	InterlockController interlockController = InterlockController(&publisher, &fpga, interlockApplicationSettings);
-	cout << "Creating model" << endl;
+	Log.Info("Main: Creating model");
 	Model model = Model(&settingReader, &publisher, &fpga, &expansionFPGA, &interlockController);
-	cout << "Creating context" << endl;
+	Log.Info("Main: Creating context");
 	Context context = Context(&stateFactory, &model);
-	cout << "Creating command factory" << endl;
+	Log.Info("Main: Creating command factory");
 	CommandFactory commandFactory = CommandFactory(&publisher, &context);
-	cout << "Creating subscriber" << endl;
+	Log.Info("Main: Creating subscriber");
 	M1M3SSSubscriber subscriber = M1M3SSSubscriber(&m1m3SAL, &mtMountSAL, &commandFactory);
-	cout << "Creating controller" << endl;
+	Log.Info("Main: Creating controller");
 	Controller controller = Controller(&commandFactory);
-	cout << "Creating subscriber thread" << endl;
+	Log.Info("Main: Creating subscriber thread");
 	SubscriberThread subscriberThread = SubscriberThread(&subscriber, &controller, &publisher, &commandFactory);
-	cout << "Creating controller thread" << endl;
+	Log.Info("Main: Creating controller thread");
 	ControllerThread controllerThread = ControllerThread(&controller);
-	cout << "Creating outer loop clock thread" << endl;
+	Log.Info("Main: Creating outer loop clock thread");
 	OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, &fpga, &publisher);
-	cout << "Queuing boot command" << endl;
+	Log.Info("Main: Queuing boot command");
 	controller.enqueue(commandFactory.create(Commands::BootCommand));
 
 	pthread_t subscriberThreadId;
@@ -170,86 +124,85 @@ int main() {
 	pthread_attr_init(&threadAttribute);
 	pthread_attr_setdetachstate(&threadAttribute, PTHREAD_CREATE_JOINABLE);
 
-	cout << "Starting subscriber thread" << endl;
+	Log.Info("Main: Starting subscriber thread");
 	int rc = pthread_create(&subscriberThreadId, &threadAttribute, runThread, (void*)(&subscriberThread));
 	if (!rc) {
-		cout << "Starting controller thread" << endl;
+		void* status;
+		Log.Info("Main: Starting controller thread");
 		rc = pthread_create(&controllerThreadId, &threadAttribute, runThread, (void*)(&controllerThread));
 		if (!rc) {
-			cout << "Starting outer loop clock thread" << endl;
+			Log.Info("Main: Starting outer loop clock thread");
 			rc = pthread_create(&outerLoopClockThreadId, &threadAttribute, runThread, (void*)(&outerLoopClockThread));
 			if (!rc) {
-				cout << "Waiting for shutdown" << endl;
+				Log.Info("Main: Waiting for shutdown");
 				model.waitForShutdown();
-				cout << "Shutdown received" << endl;
-				cout << "Stopping subscriber thread" << endl;
+				Log.Info("Main: Shutdown received");
+				Log.Info("Main: Stopping subscriber thread");
 				subscriberThread.stop();
-				cout << "Stopping controller thread" << endl;
+				Log.Info("Main: Stopping controller thread");
 				controllerThread.stop();
-				cout << "Stopping outer loop clock thread" << endl;
+				Log.Info("Main: Stopping outer loop clock thread");
 				outerLoopClockThread.stop();
 				usleep(100000);
 				controller.clear();
-				cout << "Joining subscriber thread" << endl;
+				Log.Info("Main: Joining subscriber thread");
 				pthread_join(subscriberThreadId, &status);
-				cout << "Joining controller thread" << endl;
+				Log.Info("Main: Joining controller thread");
 				pthread_join(controllerThreadId, &status);
-				cout << "Joining outer loop clock thread" << endl;
+				Log.Info("Main: Joining outer loop clock thread");
 				pthread_join(outerLoopClockThreadId, &status);
 			}
 			else {
-				cout << "Failed to start outer loop clock thread" << endl;
-				cout << "Stopping subscriber thread" << endl;
+				Log.Fatal("Main: Failed to start outer loop clock thread");
+				Log.Info("Main: Stopping subscriber thread");
 				subscriberThread.stop();
-				cout << "Stopping controller thread" << endl;
+				Log.Info("Main: Stopping controller thread");
 				controllerThread.stop();
-				cout << "Joining subscriber thread" << endl;
+				Log.Info("Main: Joining subscriber thread");
 				pthread_join(subscriberThreadId, &status);
-				cout << "Joining controller thread" << endl;
+				Log.Info("Main: Joining controller thread");
 				pthread_join(controllerThreadId, &status);
 			}
 		}
 		else {
-			cout << "Failed to start controller thread" << endl;
-			cout << "Stopping subscriber thread" << endl;
+			Log.Fatal("Main: Failed to start controller thread");
+			Log.Info("Main: Stopping subscriber thread");
 			subscriberThread.stop();
-			cout << "Joining subscriber thread" << endl;
+			Log.Info("Main: Joining subscriber thread");
 			pthread_join(subscriberThreadId, &status);
 		}
 	}
 	else {
-		cout << "Failed to start subscriber thread" << endl;
+		Log.Fatal("Main: Failed to start subscriber thread");
 	}
 
 	pthread_attr_destroy(&threadAttribute);
 
 	if (expansionFPGA.isErrorCode(expansionFPGA.close())) {
-		cout << "Error closing expansion FPGA" << endl;
+		Log.Error("Main: Error closing expansion FPGA");
 	}
 
 	if (fpga.isErrorCode(fpga.close())) {
-		cout << "Error closing FPGA" << endl;
+		Log.Error("Main: Error closing FPGA");
 	}
 
 	if (fpga.isErrorCode(fpga.finalize())) {
-		cout << "Error finalizing FPGA" << endl;
+		Log.Error("Main: Error finalizing FPGA");
 	}
 
-	cout << "Shutting down MTMount SAL" << endl;
+	Log.Info("Main: Shutting down MTMount SAL");
 	mtMountSAL.salShutdown();
 
-	cout << "Shutting down M1M3 SAL" << endl;
+	Log.Info("Main: Shutting down M1M3 SAL");
 	m1m3SAL.salShutdown();
 
-	cout << "Shutdown complete" << endl;
+	Log.Info("Main: Shutdown complete");
 
 	return 0;
 }
 
 void* runThread(void* data) {
-	cout << "Thread started" << endl;
 	IThread* thread = (IThread*)data;
 	thread->run();
-	cout << "Thread completed" << endl;
 	return 0;
 }

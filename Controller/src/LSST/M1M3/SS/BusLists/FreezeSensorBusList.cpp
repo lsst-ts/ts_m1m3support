@@ -9,7 +9,7 @@
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
 #include <RoundRobin.h>
-#include <SAL_m1m3C.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -17,6 +17,7 @@ namespace SS {
 
 FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData)
  : BusList(subnetData, ilcMessageFactory) {
+	Log.Debug("FreezeSensorBusList: FreezeSensorBusList()");
 	this->outerLoopData = outerLoopData;
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->freezeSensorCommandIndex[subnetIndex] = -1;

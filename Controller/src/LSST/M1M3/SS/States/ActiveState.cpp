@@ -11,6 +11,7 @@
 #include <Publisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -19,16 +20,19 @@ namespace SS {
 ActiveState::ActiveState(M1M3SSPublisher* publisher) : EnabledState(publisher, "ActiveState") { }
 
 States::Type ActiveState::update(UpdateCommand* command, Model* model) {
+	Log.Trace("ActiveState: update()");
 	EnabledState::update(command, model);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command, Model* model) {
+	Log.Info("ActiveState: enterEngineering()");
 	States::Type newState = States::ActiveEngineeringState;
 	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type ActiveState::lowerM1M3(LowerM1M3Command* command, Model* model) {
+	Log.Info("ActiveState: lowerM1M3()");
 	States::Type newState = States::LoweringState;
 	model->getAutomaticOperationsController()->startLowerOperation();
 	return model->getSafetyController()->checkSafety(newState);

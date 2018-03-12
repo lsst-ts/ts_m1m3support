@@ -9,12 +9,14 @@
 #include <Context.h>
 #include <CommandFactory.h>
 #include <Command.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 Controller::Controller(CommandFactory* commandFactory) {
+	Log.Debug("Controller: Controller()");
 	this->commandFactory = commandFactory;
 	pthread_mutex_init(&this->mutex, NULL);
 }
@@ -25,14 +27,17 @@ Controller::~Controller() {
 }
 
 void Controller::lock() {
+	Log.Trace("Controller: lock()");
 	pthread_mutex_lock(&this->mutex);
 }
 
 void Controller::unlock() {
+	Log.Trace("Controller: unlock()");
 	pthread_mutex_unlock(&this->mutex);
 }
 
 void Controller::clear() {
+	Log.Trace("Controller: clear()");
 	this->lock();
 	Command* command;
 	while(!this->queue.empty()) {
@@ -43,10 +48,12 @@ void Controller::clear() {
 }
 
 void Controller::enqueue(Command* command) {
+	Log.Trace("Controller: enqueue()");
 	this->queue.push(command);
 }
 
 Command* Controller::dequeue() {
+	Log.Trace("Controller: dequeue()");
 	if (!this->queue.empty()) {
 		Command* command = this->queue.front();
 		this->queue.pop();
@@ -56,6 +63,7 @@ Command* Controller::dequeue() {
 }
 
 void Controller::execute(Command* command) {
+	Log.Trace("Controller: execute()");
 	command->ackInProgress();
 	command->execute();
 	command->ackComplete();

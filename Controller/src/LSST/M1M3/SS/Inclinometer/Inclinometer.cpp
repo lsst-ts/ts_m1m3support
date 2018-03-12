@@ -16,12 +16,14 @@
 #include <Timestamp.h>
 #include <SAL_m1m3C.h>
 #include <cstring>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 Inclinometer::Inclinometer(M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga) {
+	Log.Debug("Inclinometer: Inclinometer()");
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 	this->fpga = fpga;
@@ -36,10 +38,12 @@ Inclinometer::Inclinometer(M1M3SSPublisher* publisher, SafetyController* safetyC
 }
 
 void Inclinometer::writeDataRequest() {
+	Log.Trace("Inclinometer: writeDataRequest()");
 	this->fpga->writeCommandFIFO(this->txBuffer, 10, 0);
 }
 
 void Inclinometer::readDataResponse() {
+	Log.Trace("Inclinometer: readDataResponse()");
 	this->fpga->writeRequestFIFO(FPGAAddresses::Inclinometer, 0);
 	this->fpga->readU8ResponseFIFO(this->rxBuffer, 2, 10);
 	uint16_t length = U8ArrayUtilities::u16(this->rxBuffer, 0);
@@ -68,29 +72,43 @@ void Inclinometer::readDataResponse() {
 						this->clearWarning(timestamp);
 					}
 					else {
+						Log.Warn("Inclinometer: Invalid length");
 						this->warnInvalidLength(timestamp);
 					}
 				}
 				else if (function == 0x83) {
 					switch(this->rxBuffer[10]) {
-					case 1: this->warnInvalidFunction(timestamp); break;
-					case 2: this->warnInvalidRegister(timestamp); break;
-					default: this->warnUnknownProblem(timestamp); break;
+					case 1:
+						Log.Warn("Inclinometer: Invalid function");
+						this->warnInvalidFunction(timestamp);
+						break;
+					case 2:
+						Log.Warn("Inclinometer: Invalid register");
+						this->warnInvalidRegister(timestamp);
+						break;
+					default:
+						Log.Warn("Inclinometer: Unknown problem");
+						this->warnUnknownProblem(timestamp);
+						break;
 					}
 				}
 				else {
+					Log.Warn("Inclinometer: Unknown function");
 					this->warnUnknownFunction(timestamp);
 				}
 			}
 			else {
+				Log.Warn("Inclinometer: Unknown address");
 				this->warnUnknownAddress(timestamp);
 			}
 		}
 		else {
+			Log.Warn("Inclinometer: Invalid CRC");
 			this->warnInvalidCRC(timestamp);
 		}
 	}
 	else {
+		Log.Warn("Inclinometer: Response timeout");
 		this->warnResponseTimeout(this->publisher->getTimestamp());
 	}
 }

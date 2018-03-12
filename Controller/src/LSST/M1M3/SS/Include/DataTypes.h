@@ -14,6 +14,9 @@
 
 #define SUBNET_COUNT  5
 #define FA_COUNT      156
+#define FA_X_COUNT    12
+#define FA_Y_COUNT    100
+#define FA_Z_COUNT    156
 #define HP_COUNT      6
 #define HM_COUNT      6
 #define BENDING_MODES 22

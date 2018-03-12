@@ -9,17 +9,15 @@
 #define ACCELEROMETER_H_
 
 #include <DataTypes.h>
-
-struct m1m3_AccelerometerDataC;
-struct m1m3_logevent_AccelerometerWarningC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class FPGA;
 class AccelerometerSettings;
+class FPGA;
+class M1M3SSPublisher;
 
 class Accelerometer {
 private:
@@ -37,9 +35,6 @@ public:
 	Accelerometer(M1M3SSPublisher* publisher, FPGA* fpga, AccelerometerSettings* accelerometerSettings);
 
 	void sampleData();
-
-private:
-
 };
 
 } /* namespace SS */

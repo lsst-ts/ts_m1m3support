@@ -19,12 +19,12 @@
 #include <ClearOffsetForcesCommand.h>
 #include <RaiseM1M3Command.h>
 #include <LowerM1M3Command.h>
-#include <ApplyAberrationByBendingModesCommand.h>
-#include <ApplyAberrationByForcesCommand.h>
-#include <ClearAberrationCommand.h>
-#include <ApplyAOSCorrectionByBendingModesCommand.h>
-#include <ApplyAOSCorrectionByForcesCommand.h>
-#include <ClearAOSCorrectionCommand.h>
+#include <ApplyAberrationForcesByBendingModesCommand.h>
+#include <ApplyAberrationForcesCommand.h>
+#include <ClearAberrationForcesCommand.h>
+#include <ApplyActiveOpticForcesByBendingModesCommand.h>
+#include <ApplyActiveOpticForcesCommand.h>
+#include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
 #include <TestAirCommand.h>
@@ -45,23 +45,26 @@
 #include <TurnPowerOffCommand.h>
 #include <EnableHardpointCorrectionsCommand.h>
 #include <DisableHardpointCorrectionsCommand.h>
-#include <RunHardpointCorrectionProfileCommand.h>
+#include <RunMirrorForceProfileCommand.h>
 #include <AbortProfileCommand.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <UpdatePIDCommand.h>
 #include <ResetPIDCommand.h>
 #include <pthread.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 CommandFactory::CommandFactory(M1M3SSPublisher* publisher, Context* context) {
+	Log.Debug("CommandFactory: CommandFactory()");
 	this->publisher = publisher;
 	this->context = context;
 }
 
 Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) {
+	Log.Trace("CommandFactory: create(%d, data, %d)", commandType, commandID);
 	switch(commandType) {
 	case Commands::BootCommand: return new BootCommand(this->context);
 	case Commands::StartCommand: return new StartCommand(this->context, this->publisher, commandID, (m1m3_command_StartC*)data);
@@ -76,12 +79,12 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 	case Commands::ClearOffsetForcesCommand: return new ClearOffsetForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ClearOffsetForcesC*)data);
 	case Commands::RaiseM1M3Command: return new RaiseM1M3Command(this->context, this->publisher, commandID, (m1m3_command_RaiseM1M3C*)data);
 	case Commands::LowerM1M3Command: return new LowerM1M3Command(this->context, this->publisher, commandID, (m1m3_command_LowerM1M3C*)data);
-	case Commands::ApplyAberrationByBendingModesCommand: return new ApplyAberrationByBendingModesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAberrationByBendingModesC*)data);
-	case Commands::ApplyAberrationByForcesCommand: return new ApplyAberrationByForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAberrationByForcesC*)data);
-	case Commands::ClearAberrationCommand: return new ClearAberrationCommand(this->context, this->publisher, commandID, (m1m3_command_ClearAberrationC*)data);
-	case Commands::ApplyAOSCorrectionByBendingModesCommand: return  new ApplyAOSCorrectionByBendingModesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAOSCorrectionByBendingModesC*)data);
-	case Commands::ApplyAOSCorrectionByForcesCommand: return new ApplyAOSCorrectionByForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAOSCorrectionByForcesC*)data);
-	case Commands::ClearAOSCorrectionCommand: return new ClearAOSCorrectionCommand(this->context, this->publisher, commandID, (m1m3_command_ClearAOSCorrectionC*)data);
+	case Commands::ApplyAberrationForcesByBendingModesCommand: return new ApplyAberrationForcesByBendingModesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAberrationForcesByBendingModesC*)data);
+	case Commands::ApplyAberrationForcesCommand: return new ApplyAberrationForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyAberrationForcesC*)data);
+	case Commands::ClearAberrationForcesCommand: return new ClearAberrationForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ClearAberrationForcesC*)data);
+	case Commands::ApplyActiveOpticForcesByBendingModesCommand: return  new ApplyActiveOpticForcesByBendingModesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyActiveOpticForcesByBendingModesC*)data);
+	case Commands::ApplyActiveOpticForcesCommand: return new ApplyActiveOpticForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyActiveOpticForcesC*)data);
+	case Commands::ClearActiveOpticForcesCommand: return new ClearActiveOpticForcesCommand(this->context, this->publisher, commandID, (m1m3_command_ClearActiveOpticForcesC*)data);
 	case Commands::EnterEngineeringCommand: return new EnterEngineeringCommand(this->context, this->publisher, commandID, (m1m3_command_EnterEngineeringC*)data);
 	case Commands::ExitEngineeringCommand: return new ExitEngineeringCommand(this->context, this->publisher, commandID, (m1m3_command_ExitEngineeringC*)data);
 	case Commands::TestAirCommand: return new TestAirCommand(this->context, this->publisher, commandID, (m1m3_command_TestAirC*)data);
@@ -102,7 +105,7 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 	case Commands::TurnPowerOffCommand: return new TurnPowerOffCommand(this->context, this->publisher, commandID, (m1m3_command_TurnPowerOffC*)data);
 	case Commands::EnableHardpointCorrectionsCommand: return new EnableHardpointCorrectionsCommand(this->context, this->publisher, commandID, (m1m3_command_EnableHardpointCorrectionsC*)data);
 	case Commands::DisableHardpointCorrectionsCommand: return new DisableHardpointCorrectionsCommand(this->context, this->publisher, commandID, (m1m3_command_DisableHardpointCorrectionsC*)data);
-	case Commands::RunHardpointCorrectionProfileCommand: return new RunHardpointCorrectionProfileCommand(this->context, this->publisher, commandID, (m1m3_command_RunHardpointCorrectionProfileC*)data);
+	case Commands::RunMirrorForceProfileCommand: return new RunMirrorForceProfileCommand(this->context, this->publisher, commandID, (m1m3_command_RunMirrorForceProfileC*)data);
 	case Commands::AbortProfileCommand: return new AbortProfileCommand(this->context, this->publisher, commandID, (m1m3_command_AbortProfileC*)data);
 	case Commands::ApplyOffsetForcesByMirrorForceCommand: return new ApplyOffsetForcesByMirrorForceCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyOffsetForcesByMirrorForceC*)data);
 	case Commands::UpdatePIDCommand: return new UpdatePIDCommand(this->context, this->publisher, commandID, (m1m3_command_UpdatePIDC*)data);
@@ -112,6 +115,7 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 }
 
 void CommandFactory::destroy(Command* command) {
+	Log.Trace("CommandFactory: destroy(%d)", command->getCommandID());
 	if (command) {
 		delete command;
 	}

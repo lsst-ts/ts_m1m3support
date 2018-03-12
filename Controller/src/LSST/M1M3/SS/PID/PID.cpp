@@ -19,64 +19,65 @@ PID::PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher) {
 	this->publisher = publisher;
 	this->pidInfo = this->publisher->getEventPIDInfo();
 	this->pidData = this->publisher->getPIDData();
-	this->parameters = this->initialParameters;
-	this->a = 0;
-	this->b = 0;
-	this->c = 0;
-	this->d = 0;
-	this->e = 0;
-	this->error = 0;
-	this->errorT1 = 0;
-	this->errorT2 = 0;
-	this->control = 0;
-	this->controlT1 = 0;
-	this->controlT2 = 0;
-	this->setpoint = 0;
-	this->measurement = 0;
+	this->pidInfo->Timestep[this->id] = parameters.Timestep;
+	this->pidInfo->P[this->id] = parameters.P;
+	this->pidInfo->I[this->id] = parameters.I;
+	this->pidInfo->D[this->id] = parameters.D;
+	this->pidInfo->N[this->id] = parameters.N;
 	this->calculateIntermediateValues();
 	this->publishInfo();
 }
 
 void PID::updateParameters(PIDParameters parameters) {
-	this->parameters = parameters;
+	this->pidInfo->Timestep[this->id] = parameters.Timestep;
+	this->pidInfo->P[this->id] = parameters.P;
+	this->pidInfo->I[this->id] = parameters.I;
+	this->pidInfo->D[this->id] = parameters.D;
+	this->pidInfo->N[this->id] = parameters.N;
 	this->calculateIntermediateValues();
 	this->publishInfo();
 }
 
 void PID::restoreInitialParameters() {
-	this->parameters = this->initialParameters;
+	this->pidInfo->Timestep[this->id] = this->initialParameters.Timestep;
+	this->pidInfo->P[this->id] = this->initialParameters.P;
+	this->pidInfo->I[this->id] = this->initialParameters.I;
+	this->pidInfo->D[this->id] = this->initialParameters.D;
+	this->pidInfo->N[this->id] = this->initialParameters.N;
 	this->calculateIntermediateValues();
 	this->resetPreviousValues();
 	this->publishInfo();
 }
 
 void PID::resetPreviousValues() {
-	this->error = 0;
-	this->errorT1 = 0;
-	this->errorT2 = 0;
-	this->control = 0;
-	this->controlT1 = 0;
-	this->controlT2 = 0;
+	this->pidData->ErrorT2[this->id] = 0.0;
+	this->pidData->ErrorT1[this->id] = 0.0;
+	this->pidData->Error[this->id] = 0.0;
+	this->pidData->ControlT2[this->id] = 0.0;
+	this->pidData->ControlT1[this->id] = 0.0;
+	this->pidData->Control[this->id] = 0.0;
 }
 
 double PID::process(double setpoint, double measurement) {
-	this->setpoint = setpoint;
-	this->measurement = measurement;
-	this->error = this->setpoint - this->measurement;
-	this->control = this->d * this->controlT1 + this->e * this->controlT2 + this->a * this->error + this->b * this->errorT1 + this->c * this->errorT2;
-	this->controlT2 = this->controlT1;
-	this->controlT1 = this->control;
-	this->errorT2 = this->errorT1;
-	this->errorT1 = this->error;
 	this->pidData->Setpoint[this->id] = setpoint;
 	this->pidData->Measurement[this->id] = measurement;
-	this->pidData->Error[this->id] = this->error;
-	this->pidData->ErrorT1[this->id] = this->errorT1;
-	this->pidData->ErrorT2[this->id] = this->errorT2;
-	this->pidData->Control[this->id] = this->control;
-	this->pidData->ControlT1[this->id] = this->controlT1;
-	this->pidData->ControlT2[this->id] = this->controlT2;
-	return this->control;
+	this->pidData->ErrorT2[this->id] = this->pidData->ErrorT1[this->id];
+	this->pidData->ErrorT1[this->id] = this->pidData->Error[this->id];
+	this->pidData->Error[this->id] = this->pidData->Setpoint[this->id] - this->pidData->Measurement[this->id];
+	this->pidData->ControlT2[this->id] = this->pidData->ControlT1[this->id];
+	this->pidData->ControlT1[this->id] = this->pidData->Control[this->id];
+	double A = this->pidInfo->CalculatedA[this->id];
+	double B = this->pidInfo->CalculatedB[this->id];
+	double C = this->pidInfo->CalculatedC[this->id];
+	double D = this->pidInfo->CalculatedD[this->id];
+	double E = this->pidInfo->CalculatedE[this->id];
+	double e = this->pidData->Error[this->id];
+	double e1 = this->pidData->ErrorT1[this->id];
+	double e2 = this->pidData->ErrorT2[this->id];
+	double u1 = this->pidData->ControlT1[this->id];
+	double u2 = this->pidData->ControlT2[this->id];
+	this->pidData->Control[this->id] = D * u1 + E * u2 + A * e + B * e1 + C * e2;
+	return this->pidData->Control[this->id];
 }
 
 void PID::publishTelemetry() {
@@ -85,26 +86,21 @@ void PID::publishTelemetry() {
 }
 
 void PID::calculateIntermediateValues() {
-	this->a = this->parameters.P + this->parameters.D * this->parameters.N;
-	this->b = -2  * this->parameters.P + this->parameters.P * this->parameters.N * this->parameters.Timestep + this->parameters.I * this->parameters.Timestep - 2 * this->parameters.D * this->parameters.N;
-	this->c = this->parameters.P - this->parameters.P * this->parameters.N * this->parameters.Timestep - this->parameters.I * this->parameters.Timestep + this->parameters.I * this->parameters.N * this->parameters.Timestep * this->parameters.Timestep + this->parameters.D * this->parameters.N;
-	this->d = 2 - this->parameters.N * this->parameters.Timestep;
-	this->e = this->parameters.N * this->parameters.Timestep - 1;
+	double Kp = this->pidInfo->P[this->id];
+	double Ki = this->pidInfo->I[this->id];
+	double Kd = this->pidInfo->D[this->id];
+	double N = this->pidInfo->N[this->id];
+	double Ts = this->pidInfo->Timestep[this->id];
+	this->pidInfo->CalculatedA[this->id] = Kp + Kd * N;
+	this->pidInfo->CalculatedB[this->id] = -2.0 * Kp + Kp * N * Ts + Ki * Ts - 2.0 * Kd * N;
+	this->pidInfo->CalculatedC[this->id] = Kp - Kp * N * Ts - Ki * Ts + Ki * N * Ts * Ts + Kd * N;
+	this->pidInfo->CalculatedD[this->id] = 2.0 - N * Ts;
+	this->pidInfo->CalculatedE[this->id] = N * Ts - 1.0;
 	this->resetPreviousValues();
 }
 
 void PID::publishInfo() {
 	this->pidInfo->Timestamp = this->publisher->getTimestamp();
-	this->pidInfo->Timestep[this->id] = this->parameters.Timestep;
-	this->pidInfo->P[this->id] = this->parameters.P;
-	this->pidInfo->I[this->id] = this->parameters.I;
-	this->pidInfo->D[this->id] = this->parameters.D;
-	this->pidInfo->N[this->id] = this->parameters.N;
-	this->pidInfo->CalculatedA[this->id] = this->a;
-	this->pidInfo->CalculatedB[this->id] = this->b;
-	this->pidInfo->CalculatedC[this->id] = this->c;
-	this->pidInfo->CalculatedD[this->id] = this->d;
-	this->pidInfo->CalculatedE[this->id] = this->e;
 	this->publisher->logPIDInfo();
 }
 

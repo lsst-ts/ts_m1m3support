@@ -15,6 +15,7 @@ namespace SS {
 
 TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(Context* context, MTMount_AzC* data) {
 	this->context = context;
+	this->commandID = -1;
 	memcpy(&this->data, data, sizeof(MTMount_AzC));
 }
 

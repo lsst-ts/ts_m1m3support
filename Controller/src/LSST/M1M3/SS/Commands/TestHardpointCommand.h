@@ -20,13 +20,11 @@ class TestHardpointCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_TestHardpointC data;
 
 public:
 	TestHardpointCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestHardpointC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_TestHardpointC* getData() { return &this->data; }
 
 	bool validate();

@@ -12,12 +12,14 @@
 #include <FPGAAddresses.h>
 #include <InterlockApplicationSettings.h>
 #include <SAL_m1m3C.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 InterlockController::InterlockController(M1M3SSPublisher* publisher, FPGA* fpga, InterlockApplicationSettings* interlockApplicationSettings) {
+	Log.Debug("InterlockController: InterlockController()");
 	this->publisher = publisher;
 	this->safetyController = 0;
 	this->fpga = fpga;
@@ -30,6 +32,7 @@ InterlockController::InterlockController(M1M3SSPublisher* publisher, FPGA* fpga,
 }
 
 void InterlockController::setSafetyController(SafetyController* safetyController) {
+	Log.Debug("InterlockController: setSafetyController()");
 	this->safetyController = safetyController;
 }
 
@@ -42,6 +45,7 @@ void InterlockController::tryToggleHeartbeat() {
 }
 
 void InterlockController::setHeartbeat(bool state) {
+	Log.Trace("InterlockController: setHeartbeat(%d)", state);
 	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->HeartbeatCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::HeartbeatToSafetyController;
@@ -55,6 +59,7 @@ void InterlockController::setHeartbeat(bool state) {
 }
 
 void InterlockController::setCriticalFault(bool state) {
+	Log.Info("InterlockController: setCriticalFault(%d)", state);
 	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->CriticalFaultCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::CriticalFaultToSafetyController;
@@ -68,6 +73,7 @@ void InterlockController::setCriticalFault(bool state) {
 }
 
 void InterlockController::setMirrorLoweringRaising(bool state) {
+	Log.Info("InterlockController: setMirrorLoweringRaising(%d)", state);
 	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->MirrorLoweringRaisingCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::MirrorLoweringRaisingToSafetyController;
@@ -81,6 +87,7 @@ void InterlockController::setMirrorLoweringRaising(bool state) {
 }
 
 void InterlockController::setMirrorParked(bool state) {
+	Log.Info("InterlockController: setMirrorParked(%d)", state);
 	// This signal is inverted (HIGH = OFF, LOW = ON)
 	this->interlockStatus->MirrorParkedCommandedState = state;
 	this->txBuffer[0] = FPGAAddresses::MirrorParkedToSafetyController;
@@ -94,6 +101,7 @@ void InterlockController::setMirrorParked(bool state) {
 }
 
 void InterlockController::checkInterlockStatus() {
+	Log.Trace("InterlockController: checkInterlockStatus()");
 	// These signals are inverted (HIGH = Everything is OK, LOW = Bad this have happened)
 	uint16_t buffer[8] = {
 			FPGAAddresses::ILCPowerInterlockStatus,
@@ -150,6 +158,7 @@ void InterlockController::checkInterlockStatus() {
 }
 
 void InterlockController::setCellLightsOn(bool state) {
+	Log.Info("InterlockController: setCellLightsOn(%d)", state);
 	this->cellLightStatus->CellLightsCommandedOn = state;
 	this->txBuffer[0] = FPGAAddresses::MirrorCellLightControl;
 	this->txBuffer[1] = this->cellLightStatus->CellLightsCommandedOn;

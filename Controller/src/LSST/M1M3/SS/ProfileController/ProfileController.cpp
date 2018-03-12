@@ -5,38 +5,38 @@
  *      Author: ccontaxis
  */
 
-#include "ProfileController.h"
+#include <ProfileController.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-void ProfileController::setupHardpointCorrectionProfile(float* xForce, float* yForce, float* zForce, float* xMoment, float* yMoment, float* zMoment) {
-	this->hardpointCorrectionProfileIndex = 0;
+ProfileController::ProfileController() {
+	Log.Debug("ProfileController: ProfileController()");
+}
+
+void ProfileController::setupMirrorForceProfile(float* xForce, float* yForce, float* zForce, float* xMoment, float* yMoment, float* zMoment) {
+	Log.Info("ProfileController: setupMirrorForceProfile()");
+	this->mirrorForceProfile.Index = 0;
 	for (int i = 0; i < 1000; ++i) {
-		this->hardpointCorrectionProfileXForce[i] = xForce[i];
-		this->hardpointCorrectionProfileYForce[i] = yForce[i];
-		this->hardpointCorrectionProfileZForce[i] = zForce[i];
-		this->hardpointCorrectionProfileXMoment[i] = xMoment[i];
-		this->hardpointCorrectionProfileYMoment[i] = yMoment[i];
-		this->hardpointCorrectionProfileZMoment[i] = zMoment[i];
+		this->mirrorForceProfile.Records[i].XForce = xForce[i];
+		this->mirrorForceProfile.Records[i].YForce = yForce[i];
+		this->mirrorForceProfile.Records[i].ZForce = zForce[i];
+		this->mirrorForceProfile.Records[i].XMoment = xMoment[i];
+		this->mirrorForceProfile.Records[i].YMoment = yMoment[i];
+		this->mirrorForceProfile.Records[i].ZMoment = zMoment[i];
 	}
 }
 
-bool ProfileController::incHardpointCorrectionProfile() {
-	++this->hardpointCorrectionProfileIndex;
-	return this->hardpointCorrectionProfileIndex >= 1000;
+bool ProfileController::incMirrorForceProfile() {
+	Log.Trace("ProfileController: incMirrorForceProfile()");
+	++this->mirrorForceProfile.Index;
+	return this->mirrorForceProfile.Index >= 1000;
 }
 
-HardpointCorrectionProfileForce ProfileController::getHardpointCorrectionProfileData() {
-	HardpointCorrectionProfileForce data;
-	data.XForce = this->hardpointCorrectionProfileXForce[this->hardpointCorrectionProfileIndex];
-	data.YForce = this->hardpointCorrectionProfileYForce[this->hardpointCorrectionProfileIndex];
-	data.ZForce = this->hardpointCorrectionProfileZForce[this->hardpointCorrectionProfileIndex];
-	data.XMoment = this->hardpointCorrectionProfileXMoment[this->hardpointCorrectionProfileIndex];
-	data.YMoment = this->hardpointCorrectionProfileYMoment[this->hardpointCorrectionProfileIndex];
-	data.ZMoment = this->hardpointCorrectionProfileZMoment[this->hardpointCorrectionProfileIndex];
-	return data;
+MirrorForceProfileRecord ProfileController::getMirrorForceProfileData() {
+	return this->mirrorForceProfile.Records[this->mirrorForceProfile.Index];
 }
 
 } /* namespace SS */

@@ -27,16 +27,7 @@
 #include <FreezeSensorBusList.h>
 #include <RaisedBusList.h>
 #include <ILCResponseParser.h>
-
-struct m1m3_logevent_HardpointActuatorInfoC;
-struct m1m3_HardpointStatusC;
-struct m1m3_HardpointDataC;
-
-struct m1m3_logevent_ForceActuatorInfoC;
-struct m1m3_ForceActuatorStatusC;
-struct m1m3_ForceActuatorDataC;
-
-struct m1m3_logevent_ILCWarningC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {

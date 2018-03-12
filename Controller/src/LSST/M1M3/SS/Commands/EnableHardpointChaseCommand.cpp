@@ -17,14 +17,14 @@ EnableHardpointChaseCommand::EnableHardpointChaseCommand(Context* context, M1M3S
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ActuatorId = data->ActuatorId;
+	this->data.HardpointActuator = data->HardpointActuator;
 }
 
 bool EnableHardpointChaseCommand::validate() {
-	if (!(this->data.ActuatorId >= 1 && this->data.ActuatorId <= 6)) {
-		this->publisher->logCommandRejectionWarning("EnableHardpointChase", "The field ActuatorId is must be in range [1, 6].");
+	if (!(this->data.HardpointActuator >= 1 && this->data.HardpointActuator <= 6)) {
+		this->publisher->logCommandRejectionWarning("EnableHardpointChase", "The field HardpointActuator must be in range [1, 6].");
 	}
-	return this->data.ActuatorId >= 1 && this->data.ActuatorId <= 6;
+	return this->data.HardpointActuator >= 1 && this->data.HardpointActuator <= 6;
 }
 
 void EnableHardpointChaseCommand::execute() {

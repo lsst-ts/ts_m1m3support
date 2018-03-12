@@ -8,15 +8,14 @@
 #include <FPGA.h>
 #include <NiFpga_M1M3Support.h>
 #include <unistd.h>
-#include <iostream>
-
-using namespace std;
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 FPGA::FPGA() {
+	Log.Debug("FPGA: FPGA()");
 	this->session = 0;
 	this->remaining = 0;
 	this->u16Buffer[0] = 0;
@@ -29,10 +28,12 @@ FPGA::~FPGA() {
 }
 
 int32_t FPGA::initialize() {
+	Log.Debug("FPGA: initialize()");
 	return NiFpga_Initialize();
 }
 
 int32_t FPGA::open() {
+	Log.Debug("FPGA: open()");
 	int32_t status = NiFpga_Open("/usr/ts_M1M3Support/"NiFpga_M1M3Support_Bitfile, NiFpga_M1M3Support_Signature, "RIO0", 0, &(this->session));
 	status = NiFpga_Abort(this->session);
 	status = NiFpga_Download(this->session);
@@ -45,12 +46,14 @@ int32_t FPGA::open() {
 }
 
 int32_t FPGA::close() {
+	Log.Debug("FPGA: close()");
 	NiFpga_UnreserveIrqContext(this->session, this->outerLoopIRQContext);
 	NiFpga_UnreserveIrqContext(this->session, this->modbusIRQContext);
 	return NiFpga_Close(this->session, 0);
 }
 
 int32_t FPGA::finalize() {
+	Log.Debug("FPGA: finalize()");
 	return NiFpga_Finalize();
 }
 

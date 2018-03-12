@@ -6,19 +6,20 @@
  */
 
 #include <Accelerometer.h>
-#include <M1M3SSPublisher.h>
+#include <AccelerometerSettings.h>
 #include <FPGA.h>
 #include <FPGAAddresses.h>
-#include <AccelerometerSettings.h>
-#include <U16ArrayUtilities.h>
+#include <M1M3SSPublisher.h>
 #include <Timestamp.h>
-#include <SAL_m1m3C.h>
+#include <U16ArrayUtilities.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 Accelerometer::Accelerometer(M1M3SSPublisher* publisher, FPGA* fpga, AccelerometerSettings* accelerometerSettings) {
+	Log.Debug("Accelerometer: Accelerometer()");
 	this->publisher = publisher;
 	this->fpga = fpga;
 	this->accelerometerSettings = accelerometerSettings;
@@ -27,6 +28,7 @@ Accelerometer::Accelerometer(M1M3SSPublisher* publisher, FPGA* fpga, Acceleromet
 }
 
 void Accelerometer::sampleData() {
+	Log.Trace("Accelerometer: sampleData()");
 	this->fpga->writeRequestFIFO(FPGAAddresses::Accelerometers, 0);
 	this->fpga->readU16ResponseFIFO(this->timestampBuffer, 4, 20);
 	this->fpga->readSGLResponseFIFO(this->dataBuffer, 8, 20);

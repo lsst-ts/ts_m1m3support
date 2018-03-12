@@ -9,11 +9,7 @@
 #define RAISEDBUSLIST_H_
 
 #include <BusList.h>
-
-struct m1m3_OuterLoopDataC;
-struct m1m3_ForceActuatorDataC;
-struct m1m3_HardpointDataC;
-struct m1m3_logevent_ForceActuatorInfoC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -22,8 +18,8 @@ namespace SS {
 class RaisedBusList: public BusList {
 private:
 	m1m3_OuterLoopDataC* outerLoopData;
-	m1m3_ForceActuatorDataC* forceData;
-	m1m3_HardpointDataC* hardpointData;
+	m1m3_ForceActuatorDataC* forceActuatorData;
+	m1m3_HardpointActuatorDataC* hardpointActuatorData;
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
 
 	int32_t setForceCommandIndex[5];
@@ -32,7 +28,7 @@ private:
 	int32_t roundRobinFAReportServerStatusIndex[5];
 
 public:
-	RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceData, m1m3_HardpointDataC* hardpointData, m1m3_logevent_ForceActuatorInfoC* forceInfo);
+	RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceActuatorData, m1m3_HardpointActuatorDataC* hardpointActuatorData, m1m3_logevent_ForceActuatorInfoC* forceInfo);
 
 	void update();
 };

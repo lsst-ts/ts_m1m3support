@@ -6,6 +6,7 @@
  */
 
 #include <StaticStateFactory.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -27,9 +28,12 @@ StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher) :
 		loweringEngineeringState(publisher),
 		faultState(publisher),
 		loweringFaultState(publisher),
-		profileHardpointCorrectionState(publisher) { }
+		profileHardpointCorrectionState(publisher) {
+	Log.Debug("StaticStateFactory: StaticStateFactor()");
+}
 
 State* StaticStateFactory::create(States::Type state) {
+	Log.Trace("StaticStateFactory: create(%d)", state);
 	switch(state) {
 	case States::OfflineState: return &this->offlineState;
 	case States::StandbyState: return &this->standbyState;
@@ -51,7 +55,9 @@ State* StaticStateFactory::create(States::Type state) {
 	}
 }
 
-void StaticStateFactory::destroy(State* state) { }
+void StaticStateFactory::destroy(State* state) {
+	Log.Trace("StaticStateFactory: destroy()");
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */

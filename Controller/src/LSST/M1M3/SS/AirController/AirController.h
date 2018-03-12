@@ -9,17 +9,15 @@
 #define AIRCONTROLLER_H_
 
 #include <DataTypes.h>
-
-struct m1m3_logevent_AirSupplyStatusC;
-struct m1m3_logevent_AirSupplyWarningC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+class FPGA;
 class M1M3SSPublisher;
 class SafetyController;
-class FPGA;
 
 /*!
  * Class used for controlling air supply.

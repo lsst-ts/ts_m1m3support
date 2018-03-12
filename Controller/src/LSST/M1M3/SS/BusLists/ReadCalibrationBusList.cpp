@@ -8,6 +8,7 @@
 #include <ReadCalibrationBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -15,6 +16,7 @@ namespace SS {
 
 ReadCalibrationBusList::ReadCalibrationBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
  : BusList(subnetData, ilcMessageFactory) {
+	Log.Debug("ReadCalibrationBusList: ReadCalibrationBusList()");
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->startSubnet(subnetIndex);
 		for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {

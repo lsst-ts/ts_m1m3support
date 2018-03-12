@@ -12,26 +12,28 @@
 #include <HardpointActuatorMotionStates.h>
 #include <Range.h>
 #include <SAL_m1m3C.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 PositionController::PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher) {
+	Log.Debug("PositionController: PositionController()");
 	this->positionControllerSettings = positionControllerSettings;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->publisher = publisher;
-	this->hardpointData = this->publisher->getHardpointData();
-	this->hardpointActuatorMotionState = this->publisher->getEventHardpointActuatorMotionState();
+	this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
+	this->hardpointActuatorState = this->publisher->getEventHardpointActuatorState();
 	this->hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
 	for(int i = 0; i < HP_COUNT; i++) {
-		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
-		this->hardpointData->StepsQueued[i] = 0;
-		this->hardpointData->StepsCommanded[i] = 0;
+		this->hardpointActuatorState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+		this->hardpointActuatorData->StepsQueued[i] = 0;
+		this->hardpointActuatorData->StepsCommanded[i] = 0;
 		this->scaledMaxStepsPerLoop[i] = this->positionControllerSettings->MaxStepsPerLoop;
 	}
-	this->publisher->logHardpointActuatorMotionState();
+	this->publisher->logHardpointActuatorState();
 }
 
 double PositionController::getRaiseLowerTimeout() {
@@ -39,78 +41,85 @@ double PositionController::getRaiseLowerTimeout() {
 }
 
 bool PositionController::enableChase(int32_t actuatorID) {
-	if (this->hardpointActuatorMotionState->MotionState[actuatorID - 1] != HardpointActuatorMotionStates::Standby) {
+	Log.Info("PositionController: enableChase(%d)", actuatorID);
+	if (this->hardpointActuatorState->MotionState[actuatorID - 1] != HardpointActuatorMotionStates::Standby) {
 		return false;
 	}
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
-	this->hardpointActuatorMotionState->MotionState[actuatorID - 1] = HardpointActuatorMotionStates::Chasing;
-	this->publisher->logHardpointActuatorMotionState();
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
+	this->hardpointActuatorState->MotionState[actuatorID - 1] = HardpointActuatorMotionStates::Chasing;
+	this->publisher->tryLogHardpointActuatorState();
 	return true;
 }
 
 void PositionController::disableChase(int32_t actuatorID) {
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
-	this->hardpointActuatorMotionState->MotionState[actuatorID - 1] = HardpointActuatorMotionStates::Standby;
-	this->publisher->logHardpointActuatorMotionState();
+	Log.Info("PositionController: disableChase(%d)", actuatorID);
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
+	this->hardpointActuatorState->MotionState[actuatorID - 1] = HardpointActuatorMotionStates::Standby;
+	this->publisher->tryLogHardpointActuatorState();
 }
 
 bool PositionController::enableChaseAll() {
-	if (this->hardpointActuatorMotionState->MotionState[0] != HardpointActuatorMotionStates::Standby ||
-			this->hardpointActuatorMotionState->MotionState[1] != HardpointActuatorMotionStates::Standby ||
-			this->hardpointActuatorMotionState->MotionState[2] != HardpointActuatorMotionStates::Standby ||
-			this->hardpointActuatorMotionState->MotionState[3] != HardpointActuatorMotionStates::Standby ||
-			this->hardpointActuatorMotionState->MotionState[4] != HardpointActuatorMotionStates::Standby ||
-			this->hardpointActuatorMotionState->MotionState[5] != HardpointActuatorMotionStates::Standby) {
+	Log.Info("PositionController: enableChaseAll()");
+	if (this->hardpointActuatorState->MotionState[0] != HardpointActuatorMotionStates::Standby ||
+			this->hardpointActuatorState->MotionState[1] != HardpointActuatorMotionStates::Standby ||
+			this->hardpointActuatorState->MotionState[2] != HardpointActuatorMotionStates::Standby ||
+			this->hardpointActuatorState->MotionState[3] != HardpointActuatorMotionStates::Standby ||
+			this->hardpointActuatorState->MotionState[4] != HardpointActuatorMotionStates::Standby ||
+			this->hardpointActuatorState->MotionState[5] != HardpointActuatorMotionStates::Standby) {
 		return false;
 	}
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
 	for(int i = 0; i < HP_COUNT; i++) {
-		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Chasing;
+		this->hardpointActuatorState->MotionState[i] = HardpointActuatorMotionStates::Chasing;
 	}
-	this->publisher->logHardpointActuatorMotionState();
+	this->publisher->tryLogHardpointActuatorState();
 	return true;
 }
 
 void PositionController::disableChaseAll() {
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	Log.Info("PositionController: disableChaseAll()");
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
 	for(int i = 0; i < HP_COUNT; i++) {
-		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+		this->hardpointActuatorState->MotionState[i] = HardpointActuatorMotionStates::Standby;
 	}
-	this->publisher->logHardpointActuatorMotionState();
+	this->publisher->tryLogHardpointActuatorState();
 }
 
 bool PositionController::forcesInTolerance() {
+	Log.Trace("PositionController: forcesInTolerance()");
 	bool inTolerance = true;
 	for(int i = 0; i < HP_COUNT; i++) {
-		inTolerance = inTolerance && Range::InRange(this->positionControllerSettings->RaiseLowerForceLimitLow, this->positionControllerSettings->RaiseLowerForceLimitHigh, this->hardpointData->MeasuredForce[i]);
+		inTolerance = inTolerance && Range::InRange((float)this->positionControllerSettings->RaiseLowerForceLimitLow, (float)this->positionControllerSettings->RaiseLowerForceLimitHigh, this->hardpointActuatorData->MeasuredForce[i]);
 	}
 	return inTolerance;
 }
 
 bool PositionController::motionComplete() {
-	return this->hardpointActuatorMotionState->MotionState[0] == HardpointActuatorMotionStates::Standby &&
-			this->hardpointActuatorMotionState->MotionState[1] == HardpointActuatorMotionStates::Standby &&
-			this->hardpointActuatorMotionState->MotionState[2] == HardpointActuatorMotionStates::Standby &&
-			this->hardpointActuatorMotionState->MotionState[3] == HardpointActuatorMotionStates::Standby &&
-			this->hardpointActuatorMotionState->MotionState[4] == HardpointActuatorMotionStates::Standby &&
-			this->hardpointActuatorMotionState->MotionState[5] == HardpointActuatorMotionStates::Standby;
+	Log.Debug("PositionController: motionComplete()");
+	return this->hardpointActuatorState->MotionState[0] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorState->MotionState[1] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorState->MotionState[2] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorState->MotionState[3] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorState->MotionState[4] == HardpointActuatorMotionStates::Standby &&
+			this->hardpointActuatorState->MotionState[5] == HardpointActuatorMotionStates::Standby;
 }
 
 bool PositionController::move(int32_t* steps) {
-	if ((this->hardpointActuatorMotionState->MotionState[0] != 0 && steps[0] != 0) ||
-			(this->hardpointActuatorMotionState->MotionState[1] != 0 && steps[1] != 0) ||
-			(this->hardpointActuatorMotionState->MotionState[2] != 0 && steps[2] != 0) ||
-			(this->hardpointActuatorMotionState->MotionState[3] != 0 && steps[3] != 0) ||
-			(this->hardpointActuatorMotionState->MotionState[4] != 0 && steps[4] != 0) ||
-			(this->hardpointActuatorMotionState->MotionState[5] != 0 && steps[5] != 0)) {
+	Log.Info("PositionController: move()");
+	if ((this->hardpointActuatorState->MotionState[0] != 0 && steps[0] != 0) ||
+			(this->hardpointActuatorState->MotionState[1] != 0 && steps[1] != 0) ||
+			(this->hardpointActuatorState->MotionState[2] != 0 && steps[2] != 0) ||
+			(this->hardpointActuatorState->MotionState[3] != 0 && steps[3] != 0) ||
+			(this->hardpointActuatorState->MotionState[4] != 0 && steps[4] != 0) ||
+			(this->hardpointActuatorState->MotionState[5] != 0 && steps[5] != 0)) {
 		return false;
 	}
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
 	double loopCycles[6];
 	double maxLoopCycles = 0;
 	for(int i = 0; i < HP_COUNT; i++) {
-		this->hardpointData->StepsQueued[i] = steps[i];
-		this->hardpointActuatorMotionState->MotionState[i] = steps[i] != 0 ? HardpointActuatorMotionStates::Moving : HardpointActuatorMotionStates::Standby;
+		this->hardpointActuatorData->StepsQueued[i] = steps[i];
+		this->hardpointActuatorState->MotionState[i] = steps[i] != 0 ? HardpointActuatorMotionStates::Moving : HardpointActuatorMotionStates::Standby;
 		loopCycles[i] = this->abs(steps[i]) / (double)this->positionControllerSettings->MaxStepsPerLoop;
 		if (loopCycles[i] > maxLoopCycles) {
 			maxLoopCycles = loopCycles[i];
@@ -119,19 +128,21 @@ bool PositionController::move(int32_t* steps) {
 	for(int i = 0; i < HP_COUNT; ++i) {
 		this->scaledMaxStepsPerLoop[i] = (int32_t)(this->positionControllerSettings->MaxStepsPerLoop/(maxLoopCycles/loopCycles[i]));
 	}
-	this->publisher->logHardpointActuatorMotionState();
+	this->publisher->tryLogHardpointActuatorState();
 	return true;
 }
 
 bool PositionController::moveToEncoder(int32_t* encoderValues) {
+	Log.Info("PositionController: moveToEncoder()");
 	int32_t steps[6];
 	for(int i = 0; i < HP_COUNT; ++i) {
-		steps[i] = (int32_t)((encoderValues[i] - this->hardpointData->Encoder[i]) * (this->hardpointActuatorSettings->MicrometersPerEncoder /  this->hardpointActuatorSettings->MicrometersPerStep));
+		steps[i] = (int32_t)((encoderValues[i] - this->hardpointActuatorData->Encoder[i]) * (this->hardpointActuatorSettings->MicrometersPerEncoder /  this->hardpointActuatorSettings->MicrometersPerStep));
 	}
 	return this->move(steps);
 }
 
 bool PositionController::moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ) {
+	Log.Info("PositionController: moveToAbsolute()");
 	int32_t steps[6];
 	this->convertToSteps(steps, x, y, z, rX, rY, rZ);
 	int32_t encoderValues[6];
@@ -143,56 +154,60 @@ bool PositionController::moveToAbsolute(double x, double y, double z, double rX,
 }
 
 bool PositionController::moveToReferencePosition() {
+	Log.Info("PositionController: moveToReferencePosition()");
 	return this->moveToEncoder(this->hardpointInfo->ReferencePosition);
 }
 
 bool PositionController::translate(double x, double y, double z, double rX, double rY, double rZ) {
+	Log.Info("PositionController: translate()");
 	int32_t steps[6];
 	this->convertToSteps(steps, x, y, z, rX, rY, rZ);
 	return this->move(steps);
 }
 
 void PositionController::stopMotion() {
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	Log.Info("PositionController: stopMotion()");
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
 	for(int i = 0; i < HP_COUNT; i++) {
-		this->hardpointData->StepsQueued[i] = 0;
-		this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+		this->hardpointActuatorData->StepsQueued[i] = 0;
+		this->hardpointActuatorState->MotionState[i] = HardpointActuatorMotionStates::Standby;
 	}
-	this->publisher->logHardpointActuatorMotionState();
+	this->publisher->tryLogHardpointActuatorState();
 }
 
 void PositionController::updateSteps() {
-	this->hardpointActuatorMotionState->Timestamp = this->publisher->getTimestamp();
+	Log.Trace("PositionController: updateSteps()");
+	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
 	bool publishState = false;
 	for(int i = 0; i < HP_COUNT; i++) {
-		switch(this->hardpointActuatorMotionState->MotionState[i]) {
+		switch(this->hardpointActuatorState->MotionState[i]) {
 		case HardpointActuatorMotionStates::Standby:
-			this->hardpointData->StepsCommanded[i] = 0;
-			this->hardpointData->StepsQueued[i] = 0;
+			this->hardpointActuatorData->StepsCommanded[i] = 0;
+			this->hardpointActuatorData->StepsQueued[i] = 0;
 			break;
 		case HardpointActuatorMotionStates::Chasing:
 		{
-			float force = this->hardpointData->MeasuredForce[i];
+			float force = this->hardpointActuatorData->MeasuredForce[i];
 			int32_t chaseSteps = (int32_t)(force * this->positionControllerSettings->ForceToStepsCoefficient);
 			chaseSteps = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, chaseSteps);
-			this->hardpointData->StepsCommanded[i] = (int16_t)chaseSteps;
+			this->hardpointActuatorData->StepsCommanded[i] = (int16_t)chaseSteps;
 			break;
 		}
 		case HardpointActuatorMotionStates::Moving:
 		{
-			int32_t moveSteps = Range::CoerceIntoRange(-this->scaledMaxStepsPerLoop[i], this->scaledMaxStepsPerLoop[i], this->hardpointData->StepsQueued[i]);
-			this->hardpointData->StepsQueued[i] -= moveSteps;
-			this->hardpointData->StepsCommanded[i] = (int16_t)moveSteps;
-			if(this->hardpointData->StepsQueued[i] == 0 && this->hardpointData->StepsCommanded[i] == 0) {
+			int32_t moveSteps = Range::CoerceIntoRange(-this->scaledMaxStepsPerLoop[i], this->scaledMaxStepsPerLoop[i], this->hardpointActuatorData->StepsQueued[i]);
+			this->hardpointActuatorData->StepsQueued[i] -= moveSteps;
+			this->hardpointActuatorData->StepsCommanded[i] = (int16_t)moveSteps;
+			if(this->hardpointActuatorData->StepsQueued[i] == 0 && this->hardpointActuatorData->StepsCommanded[i] == 0) {
 				publishState = true;
-				this->hardpointActuatorMotionState->MotionState[i] = HardpointActuatorMotionStates::Standby;
+				this->hardpointActuatorState->MotionState[i] = HardpointActuatorMotionStates::Standby;
 			}
 			break;
 		}
 		}
 	}
 	if (publishState) {
-		this->publisher->logHardpointActuatorMotionState();
+		this->publisher->tryLogHardpointActuatorState();
 	}
 }
 

@@ -23,12 +23,12 @@ public:
 	States::Type exitEngineering(ExitEngineeringCommand* command, Model* model);
 	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model);
 	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, Model* model);
-	States::Type applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, Model* model);
-	States::Type applyAberrationByForces(ApplyAberrationByForcesCommand* command, Model* model);
-	States::Type clearAberration(ClearAberrationCommand* command, Model* model);
-	States::Type applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, Model* model);
-	States::Type applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, Model* model);
-	States::Type clearAOSCorrection(ClearAOSCorrectionCommand* command, Model* model);
+	States::Type applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command, Model* model);
+	States::Type applyAberrationForces(ApplyAberrationForcesCommand* command, Model* model);
+	States::Type clearAberrationForces(ClearAberrationForcesCommand* command, Model* model);
+	States::Type applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command, Model* model);
+	States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model);
+	States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model);
 	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, Model* model);
 	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model);
 	States::Type translateM1M3(TranslateM1M3Command* command, Model* model);
@@ -40,7 +40,7 @@ public:
 	States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
 	States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
 	States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
-	States::Type runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model);
+	States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model);
 	States::Type updatePID(UpdatePIDCommand* command, Model* model);
 	States::Type resetPID(ResetPIDCommand* command, Model* model);
 };

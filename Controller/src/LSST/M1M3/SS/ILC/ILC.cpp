@@ -20,8 +20,7 @@
 #include <IBusList.h>
 #include <SAL_m1m3C.h>
 #include <ForceConverter.h>
-
-using namespace std;
+#include <Log.h>
 
 #define ADDRESS_COUNT 256
 
@@ -48,7 +47,8 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, ILCApplicationSettings* ilcAppl
    busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled),
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
-   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointData(), publisher->getEventForceActuatorInfo()) {
+   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo()) {
+	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
 	this->fpga = fpga;
 }
@@ -56,81 +56,100 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, ILCApplicationSettings* ilcAppl
 ILC::~ILC() { }
 
 void ILC::writeCalibrationDataBuffer() {
+	Log.Debug("ILC: writeCalibrationDataBuffer()");
 	this->writeBusList(&this->busListSetADCChannelOffsetAndSensitivity);
 }
 
 void ILC::writeSetADCScanRateBuffer() {
+	Log.Debug("ILC: writeSetADCScanRateBuffer()");
 	this->writeBusList(&this->busListSetADCScanRate);
 }
 
 void ILC::writeSetBoostValveDCAGainBuffer() {
+	Log.Debug("ILC: writeSetBoostValveDCAGainBuffer()");
 	this->writeBusList(&this->busListSetBoostValveDCAGains);
 }
 
 void ILC::writeResetBuffer() {
+	Log.Debug("ILC: writeResetBuffer()");
 	this->writeBusList(&this->busListReset);
 }
 
 void ILC::writeReportServerIDBuffer() {
+	Log.Debug("ILC: writeReportServerIDBuffer()");
 	this->writeBusList(&this->busListReportServerID);
 }
 
 void ILC::writeReportServerStatusBuffer() {
+	Log.Debug("ILC: writeReportServerStatusBuffer()");
 	this->writeBusList(&this->busListReportServerStatus);
 }
 
 void ILC::writeReportADCScanRateBuffer() {
+	Log.Debug("ILC: writeReportADCScanRateBuffer()");
 	this->writeBusList(&this->busListReportADCScanRate);
 }
 
 void ILC::writeReadCalibrationDataBuffer() {
+	Log.Debug("ILC: writeReadCalibrationDataBuffer()");
 	this->writeBusList(&this->busListReadCalibration);
 }
 
 void ILC::writeReadBoostValveDCAGainBuffer() {
+	Log.Debug("ILC: writeReadBoostValveDCAGainBuffer()");
 	this->writeBusList(&this->busListReadBoostValveDCAGains);
 }
 
 void ILC::writeReportDCAIDBuffer() {
+	Log.Debug("ILC: writeReportDCAIDBuffer()");
 	this->writeBusList(&this->busListReportDCAID);
 }
 
 void ILC::writeReportDCAStatusBuffer() {
+	Log.Debug("ILC: writeReportDCAStatusBuffer()");
 	this->writeBusList(&this->busListReportDCAStatus);
 }
 
 void ILC::writeSetModeDisableBuffer() {
+	Log.Debug("ILC: writeSetModeDisableBuffer()");
 	this->writeBusList(&this->busListChangeILCModeDisabled);
 }
 
 void ILC::writeSetModeEnableBuffer() {
+	Log.Debug("ILC: writeSetModeEnableBuffer()");
 	this->writeBusList(&this->busListChangeILCModeEnabled);
 }
 
 void ILC::writeSetModeStandbyBuffer() {
+	Log.Debug("ILC: writeSetModeStandbyBuffer()");
 	this->writeBusList(&this->busListChangeILCModeStandby);
 }
 
 void ILC::writeFreezeSensorListBuffer() {
+	Log.Debug("ILC: writeFreezeSensorListBuffer()");
 	this->busListFreezeSensor.update();
 	this->writeBusList(&this->busListFreezeSensor);
 }
 
 void ILC::writeRaisedListBuffer() {
+	Log.Debug("ILC: writeRaisedListBuffer()");
 	this->busListRaised.update();
 	this->writeBusList(&this->busListRaised);
 }
 
 void ILC::triggerModbus() {
+	Log.Debug("ILC: triggerModbus()");
 	this->fpga->writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
 }
 
 void ILC::waitForSubnet(int32_t subnet, int32_t timeout) {
+	Log.Debug("ILC: waitForSubnet(%d, %d)", subnet, timeout);
 	this->fpga->waitForModbusIRQ(subnet, timeout);
 	this->fpga->ackModbusIRQ(subnet);
 }
 
 void ILC::waitForAllSubnets(int32_t timeout) {
+	Log.Debug("ILC: waitForAllSubnets(%d)", timeout);
 	this->waitForSubnet(1, timeout);
 	this->waitForSubnet(2, timeout);
 	this->waitForSubnet(3, timeout);
@@ -139,6 +158,7 @@ void ILC::waitForAllSubnets(int32_t timeout) {
 }
 
 void ILC::read(uint8_t subnet) {
+	Log.Debug("ILC: read(%d)", subnet);
 	// TODO: The expectation is if someone asks to read something they expect something to be there
 	// so if something isn't there should be a warning (timeout on responses)
 	this->u16Buffer[0] = this->subnetToRxAddress(subnet);
@@ -155,6 +175,7 @@ void ILC::read(uint8_t subnet) {
 }
 
 void ILC::readAll() {
+	Log.Debug("ILC: readAll()");
 	this->read(1);
 	this->read(2);
 	this->read(3);
@@ -163,6 +184,7 @@ void ILC::readAll() {
 }
 
 void ILC::verifyResponses() {
+	Log.Debug("ILC: verifyResponses()");
 	this->responseParser.verifyResponses();
 }
 
@@ -172,7 +194,7 @@ void ILC::publishForceActuatorInfo() {
 }
 
 void ILC::publishForceActuatorStatus() {
-	this->publisher->putForceActuatorStatus();
+	//this->publisher->putForceActuatorStatus();
 }
 
 void ILC::publishForceActuatorData() {
@@ -185,11 +207,11 @@ void ILC::publishHardpointActuatorInfo() {
 }
 
 void ILC::publishHardpointStatus() {
-	this->publisher->putHardpointStatus();
+	//this->publisher->putHardpointStatus();
 }
 
 void ILC::publishHardpointData() {
-	this->publisher->putHardpointData();
+	this->publisher->putHardpointActuatorData();
 }
 
 void ILC::publishHardpointMonitorInfo() {
@@ -198,7 +220,7 @@ void ILC::publishHardpointMonitorInfo() {
 }
 
 void ILC::publishHardpointMonitorStatus() {
-	this->publisher->putHardpointMonitorStatus();
+	//this->publisher->putHardpointMonitorStatus();
 }
 
 uint8_t ILC::subnetToRxAddress(uint8_t subnet) {

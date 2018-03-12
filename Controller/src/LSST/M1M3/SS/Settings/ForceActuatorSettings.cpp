@@ -11,6 +11,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
+#include <TableLoader.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -19,34 +20,79 @@ namespace SS {
 void ForceActuatorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
 	doc.load_file(filename.c_str());
-	this->loadStaticForceTable(doc.select_node("//ForceActuatorSettings/StaticForceTablePath").node().child_value());
-	this->loadLimitTable(doc.select_node("//ForceActuatorSettings/ForceActuatorLimitsTablePath").node().child_value());
+
+
+	TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc.select_node("//ForceActuatorSettings/AccelerationYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &AccelerationZTable, doc.select_node("//ForceActuatorSettings/AccelerationZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 22, &BendingModeTable, doc.select_node("//ForceActuatorSettings/BendingModeTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &AzimuthXTable, doc.select_node("//ForceActuatorSettings/AzimuthXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &AzimuthYTable, doc.select_node("//ForceActuatorSettings/AzimuthYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &AzimuthZTable, doc.select_node("//ForceActuatorSettings/AzimuthZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &HardpointForceMomentTable, doc.select_node("//ForceActuatorSettings/HardpointForceMomentTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &ForceDistributionXTable, doc.select_node("//ForceActuatorSettings/ForceDistributionXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &ForceDistributionYTable, doc.select_node("//ForceActuatorSettings/ForceDistributionYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &ForceDistributionZTable, doc.select_node("//ForceActuatorSettings/ForceDistributionZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &MomentDistributionXTable, doc.select_node("//ForceActuatorSettings/MomentDistributionXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &MomentDistributionYTable, doc.select_node("//ForceActuatorSettings/MomentDistributionYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &MomentDistributionZTable, doc.select_node("//ForceActuatorSettings/MomentDistributionZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &ElevationXTable, doc.select_node("//ForceActuatorSettings/ElevationXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &ElevationYTable, doc.select_node("//ForceActuatorSettings/ElevationYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &ElevationZTable, doc.select_node("//ForceActuatorSettings/ElevationZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &StaticXTable, doc.select_node("//ForceActuatorSettings/StaticXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &StaticYTable, doc.select_node("//ForceActuatorSettings/StaticYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &StaticZTable, doc.select_node("//ForceActuatorSettings/StaticZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &ThermalXTable, doc.select_node("//ForceActuatorSettings/ThermalXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &ThermalYTable, doc.select_node("//ForceActuatorSettings/ThermalYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 6, &ThermalZTable, doc.select_node("//ForceActuatorSettings/ThermalZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &VelocityXTable, doc.select_node("//ForceActuatorSettings/VelocityXTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &VelocityYTable, doc.select_node("//ForceActuatorSettings/VelocityYTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &VelocityZTable, doc.select_node("//ForceActuatorSettings/VelocityZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &VelocityXZTable, doc.select_node("//ForceActuatorSettings/VelocityXZTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 3, &VelocityYZTable, doc.select_node("//ForceActuatorSettings/VelocityYZTablePath").node().child_value());
+
+	TableLoader::loadLimitTable(1, 1, &AberrationLimitZTable, doc.select_node("//ForceActuatorSettings/AberrationLimitZtTablePath").node().child_value());
+	this->NetAberrationForceTolerance = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/NetAberrationForceTolerance").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &AccelerationLimitXTable, doc.select_node("//ForceActuatorSettings/AccelerationLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &AccelerationLimitYTable, doc.select_node("//ForceActuatorSettings/AccelerationLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &AccelerationLimitZTable, doc.select_node("//ForceActuatorSettings/AccelerationLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ActiveOpticLimitZTable, doc.select_node("//ForceActuatorSettings/ActiveOpticLimitZTablePath").node().child_value());
+	this->NetActiveOpticForceTolerance = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/NetActiveOpticForceTolerance").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &AzimuthLimitXTable, doc.select_node("//ForceActuatorSettings/AzimuthLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &AzimuthLimitYTable, doc.select_node("//ForceActuatorSettings/AzimuthLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &AzimuthLimitZTable, doc.select_node("//ForceActuatorSettings/AzimuthLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &BalanceLimitXTable, doc.select_node("//ForceActuatorSettings/BalanceLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &BalanceLimitYTable, doc.select_node("//ForceActuatorSettings/BalanceLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &BalanceLimitZTable, doc.select_node("//ForceActuatorSettings/BalanceLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ElevationLimitXTable, doc.select_node("//ForceActuatorSettings/ElevationLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ElevationLimitYTable, doc.select_node("//ForceActuatorSettings/ElevationLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ElevationLimitZTable, doc.select_node("//ForceActuatorSettings/ElevationLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ForceLimitXTable, doc.select_node("//ForceActuatorSettings/ForceLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ForceLimitYTable, doc.select_node("//ForceActuatorSettings/ForceLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ForceLimitZTable, doc.select_node("//ForceActuatorSettings/ForceLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &StaticLimitXTable, doc.select_node("//ForceActuatorSettings/StaticLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &StaticLimitYTable, doc.select_node("//ForceActuatorSettings/StaticLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &StaticLimitZTable, doc.select_node("//ForceActuatorSettings/StaticLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &OffsetLimitXTable, doc.select_node("//ForceActuatorSettings/OffsetLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &OffsetLimitYTable, doc.select_node("//ForceActuatorSettings/OffsetLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &OffsetLimitZTable, doc.select_node("//ForceActuatorSettings/OffsetLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ThermalLimitXTable, doc.select_node("//ForceActuatorSettings/ThermalLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ThermalLimitYTable, doc.select_node("//ForceActuatorSettings/ThermalLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &ThermalLimitZTable, doc.select_node("//ForceActuatorSettings/ThermalLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &VelocityLimitXTable, doc.select_node("//ForceActuatorSettings/VelocityLimitXTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &VelocityLimitYTable, doc.select_node("//ForceActuatorSettings/VelocityLimitYTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &VelocityLimitZTable, doc.select_node("//ForceActuatorSettings/VelocityLimitZTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &CylinderLimitPrimaryTable, doc.select_node("//ForceActuatorSettings/CylinderLimitPrimaryTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &CylinderLimitSecondaryTable, doc.select_node("//ForceActuatorSettings/CylinderLimitSecondaryTablePath").node().child_value());
+
+	TableLoader::loadLimitTable(1, 1, &MeasuredPrimaryCylinderLimitTable, doc.select_node("//ForceActuatorSettings/MeasuredPrimaryCylinderLimitTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &MeasuredSecondaryCylinderLimitTable, doc.select_node("//ForceActuatorSettings/MeasuredSecondaryCylinderLimitTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &FollowingErrorPrimaryCylinderLimitTable, doc.select_node("//ForceActuatorSettings/FollowingErrorPrimaryCylinderLimitTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &FollowingErrorSecondaryCylinderLimitTable, doc.select_node("//ForceActuatorSettings/FollowingErrorSecondaryCylinderLimitTablePath").node().child_value());
+
 	this->loadNeighborsTable(doc.select_node("//ForceActuatorSettings/ForceActuatorNeighborsTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &ElevationXAxisCoefficients, doc.select_node("//ForceActuatorSettings/ElevationXAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &ElevationYAxisCoefficients, doc.select_node("//ForceActuatorSettings/ElevationYAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &ElevationZAxisCoefficients, doc.select_node("//ForceActuatorSettings/ElevationZAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &AzimuthXAxisCoefficients, doc.select_node("//ForceActuatorSettings/AzimuthXAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &AzimuthYAxisCoefficients, doc.select_node("//ForceActuatorSettings/AzimuthYAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &AzimuthZAxisCoefficients, doc.select_node("//ForceActuatorSettings/AzimuthZAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &TemperatureXAxisCoefficients, doc.select_node("//ForceActuatorSettings/TemperatureXAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &TemperatureYAxisCoefficients, doc.select_node("//ForceActuatorSettings/TemperatureYAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &TemperatureZAxisCoefficients, doc.select_node("//ForceActuatorSettings/TemperatureZAxisCoefficientTablePath").node().child_value());
-	this->loadTable(1, 1, 22, &BendingModeMatrix, doc.select_node("//ForceActuatorSettings/BendingModeTablePath").node().child_value());
-	this->loadTable(1, 1, 6, &HardpointForceMomentMatrix, doc.select_node("//ForceActuatorSettings/HardpointForceMomentTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicAccelerationXMatrix, doc.select_node("//ForceActuatorSettings/DynamicAccelerationXTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicAccelerationYMatrix, doc.select_node("//ForceActuatorSettings/DynamicAccelerationYTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicAccelerationZMatrix, doc.select_node("//ForceActuatorSettings/DynamicAccelerationZTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicVelocityXMatrix, doc.select_node("//ForceActuatorSettings/DynamicVelocityXTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicVelocityYMatrix, doc.select_node("//ForceActuatorSettings/DynamicVelocityYTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicVelocityZMatrix, doc.select_node("//ForceActuatorSettings/DynamicVelocityZTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicVelocityXZMatrix, doc.select_node("//ForceActuatorSettings/DynamicVelocityXZTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &DynamicVelocityYZMatrix, doc.select_node("//ForceActuatorSettings/DynamicVelocityYZTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &ForceDistributionXMatrix, doc.select_node("//ForceActuatorSettings/ForceDistributionXTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &ForceDistributionYMatrix, doc.select_node("//ForceActuatorSettings/ForceDistributionYTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &ForceDistributionZMatrix, doc.select_node("//ForceActuatorSettings/ForceDistributionZTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &MomentDistributionXMatrix, doc.select_node("//ForceActuatorSettings/MomentDistributionXTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &MomentDistributionYMatrix, doc.select_node("//ForceActuatorSettings/MomentDistributionYTablePath").node().child_value());
-	this->loadTable(1, 1, 3, &MomentDistributionZMatrix, doc.select_node("//ForceActuatorSettings/MomentDistributionZTablePath").node().child_value());
+
+
 	this->UseInclinometer = boost::lexical_cast<int32_t>(doc.select_node("//ForceActuatorSettings/UseInclinometer").node().child_value()) != 0;
 	this->MirrorWeight = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/MirrorWeight").node().child_value());
 	this->MirrorXMoment = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/MirrorXMoment").node().child_value());
@@ -61,167 +107,10 @@ void ForceActuatorSettings::load(const std::string &filename) {
 	this->SetpointNearNeighborLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointNearNeighborLimitPercentage").node().child_value());
 	this->SetpointMirrorWeightLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointMirrorWeightLimitPercentage").node().child_value());
 	this->SetpointFarNeighborLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointFarNeighborLimitPercentage").node().child_value());
-	this->NetAOSForceTolerance = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/NetAOSForceTolerance").node().child_value());
-	this->NetAberrationForceTolerance = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/NetAberrationForceTolerance").node().child_value());
+
+
 	this->RaiseIncrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/RaiseIncrementPercentage").node().child_value());
 	this->LowerDecrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());
-}
-
-void ForceActuatorSettings::loadStaticForceTable(const std::string &filename) {
-	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
-	std::ifstream inputStream(filename.c_str());
-	std::string lineText;
-	int32_t lineNumber = 0;
-	while(std::getline(inputStream, lineText)) {
-		boost::trim_right(lineText);
-		if (lineNumber >= 1 && !lineText.empty()) {
-			// Line Format:
-			//     ActuatorID,X,Y,Z
-			tokenizer tok(lineText);
-			tokenizer::iterator i = tok.begin();
-			++i;
-			StaticXForces.push_back(boost::lexical_cast<double>(*i));
-			++i;
-			StaticYForces.push_back(boost::lexical_cast<double>(*i));
-			++i;
-			StaticZForces.push_back(boost::lexical_cast<double>(*i));
-		}
-		lineNumber++;
-	}
-	inputStream.close();
-}
-
-void ForceActuatorSettings::loadLimitTable(const std::string &filename) {
-	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
-	std::ifstream inputStream(filename.c_str());
-	std::string lineText;
-	int32_t lineNumber = 0;
-	while(std::getline(inputStream, lineText)) {
-		boost::trim_right(lineText);
-		if (lineNumber >= 1 && !lineText.empty()) {
-			// Line Format:
-			//     ActuatorID,PrimaryAxisLowLimit,PrimaryAxisHighLimit,SecondaryAxisLowLimit,SecondaryAxisHighLimit
-			tokenizer tok(lineText);
-			tokenizer::iterator i = tok.begin();
-			ForceActuatorLimits limits;
-			limits.Id = boost::lexical_cast<int32_t>(*i);
-			++i;
-			limits.PrimaryAxisTotalLowLimit = (int32_t)(boost::lexical_cast<double>(*i) * 1000);
-			++i;
-			limits.PrimaryAxisTotalHighLimit = (int32_t)(boost::lexical_cast<double>(*i) * 1000);
-			++i;
-			limits.SecondaryAxisTotalLowLimit = (int32_t)(boost::lexical_cast<double>(*i) * 1000);
-			++i;
-			limits.SecondaryAxisTotalHighLimit = (int32_t)(boost::lexical_cast<double>(*i) * 1000);
-			++i;
-			limits.ElevationXLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.ElevationXHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.ElevationYLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.ElevationYHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.ElevationZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.ElevationZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AzimuthXLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AzimuthXHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AzimuthYLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AzimuthYHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AzimuthZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AzimuthZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.TemperatureXLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.TemperatureXHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.TemperatureYLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.TemperatureYHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.TemperatureZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.TemperatureZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.HardpointOffloadingXLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.HardpointOffloadingXHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.HardpointOffloadingYLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.HardpointOffloadingYHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.HardpointOffloadingZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.HardpointOffloadingZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.DynamicXLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.DynamicXHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.DynamicYLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.DynamicYHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.DynamicZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.DynamicZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AOSZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AOSZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AberrationZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.AberrationZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.OffsetXLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.OffsetXHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.OffsetYLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.OffsetYHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.OffsetZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.OffsetZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.StaticXLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.StaticXHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.StaticYLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.StaticYHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.StaticZLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.StaticZHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.MeasuredPrimaryAxisLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.MeasuredPrimaryAxisHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.MeasuredSecondaryAxisLowLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.MeasuredSecondaryAxisHighLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.FollowingErrorPrimaryAxisLimit = boost::lexical_cast<double>(*i);
-			++i;
-			limits.FollowingErrorSecondaryAxisLimit = boost::lexical_cast<double>(*i);
-			Limits.push_back(limits);
-		}
-		lineNumber++;
-	}
-	inputStream.close();
 }
 
 void ForceActuatorSettings::loadNeighborsTable(const std::string &filename) {
@@ -248,29 +137,6 @@ void ForceActuatorSettings::loadNeighborsTable(const std::string &filename) {
 				}
 			}
 			Neighbors.push_back(neighbors);
-		}
-		lineNumber++;
-	}
-	inputStream.close();
-}
-
-void ForceActuatorSettings::loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<double>* data, const std::string &filename) {
-	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
-	std::ifstream inputStream(filename.c_str());
-	std::string lineText;
-	int32_t lineNumber = 0;
-	while(std::getline(inputStream, lineText)) {
-		boost::trim_right(lineText);
-		if (lineNumber >= rowsToSkip && !lineText.empty()) {
-			tokenizer tok(lineText);
-			tokenizer::iterator i = tok.begin();
-			for(int j = 0; j < columnsToSkip; j++) {
-				++i;
-			}
-			for(int j = 0; j < columnsToKeep; j++) {
-				data->push_back(boost::lexical_cast<double>(*i));
-				++i;
-			}
 		}
 		lineNumber++;
 	}

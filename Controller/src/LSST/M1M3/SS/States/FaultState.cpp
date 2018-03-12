@@ -15,6 +15,9 @@
 #include <SafetyController.h>
 #include <ForceController.h>
 #include <unistd.h>
+#include <M1M3SSPublisher.h>
+#include <Accelerometer.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -24,10 +27,14 @@ FaultState::FaultState(M1M3SSPublisher* publisher) : State(publisher, "FaultStat
 FaultState::FaultState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) { }
 
 States::Type FaultState::update(UpdateCommand* command, Model* model) {
+	Log.Trace("FaultState: update()");
+	Accelerometer* accelerometer = model->getAccelerometer();
+	M1M3SSPublisher* publisher = model->getPublisher();
 	model->getILC()->writeFreezeSensorListBuffer();
 	model->getILC()->triggerModbus();
 	model->getDisplacement()->writeDataRequest();
 	model->getInclinometer()->writeDataRequest();
+	model->getAccelerometer()->sampleData();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getDisplacement()->readDataResponse();
@@ -48,6 +55,7 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
 }
 
 States::Type FaultState::standby(StandbyCommand* command, Model* model) {
+	Log.Trace("FaultState: standby()");
 	States::Type newState = States::StandbyState;
 	model->getILC()->writeSetModeStandbyBuffer();
 	model->getILC()->triggerModbus();

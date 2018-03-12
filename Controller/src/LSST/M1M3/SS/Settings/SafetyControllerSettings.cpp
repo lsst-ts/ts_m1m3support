@@ -66,15 +66,17 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->ForceController.FaultOnFarNeighborCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnFarNeighborCheck").node().child_value()) != 0;
 	this->ForceController.FaultOnElevationForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnElevationForceClipping").node().child_value()) != 0;
 	this->ForceController.FaultOnAzimuthForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAzimuthForceClipping").node().child_value()) != 0;
-	this->ForceController.FaultOnTemperatureForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnTemperatureForceClipping").node().child_value()) != 0;
-	this->ForceController.FaultOnHardpointOffloadForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnHardpointOffloadForceClipping").node().child_value()) != 0;
-	this->ForceController.FaultOnDynamicForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnDynamicForceClipping").node().child_value()) != 0;
-	this->ForceController.FaultOnAOSNetForceCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAOSNetForceCheck").node().child_value()) != 0;
-	this->ForceController.FaultOnAOSForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAOSForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnThermalForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnThermalForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnBalanceForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnBalanceForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnAccelerationForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAccelerationForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnActiveOpticNetForceCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnActiveOpticNetForceCheck").node().child_value()) != 0;
+	this->ForceController.FaultOnActiveOpticForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnActiveOpticForceClipping").node().child_value()) != 0;
 	this->ForceController.FaultOnStaticForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnStaticForceClipping").node().child_value()) != 0;
 	this->ForceController.FaultOnAberrationNetForceCheck = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAberrationNetForceCheck").node().child_value()) != 0;
 	this->ForceController.FaultOnAberrationForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnAberrationForceClipping").node().child_value()) != 0;
 	this->ForceController.FaultOnOffsetForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnOffsetForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnVelocityForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnVelocityForceClipping").node().child_value()) != 0;
+	this->ForceController.FaultOnForceClipping = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ForceControllerSettings/FaultOnForceClipping").node().child_value()) != 0;
 
 	this->CellLights.FaultOnOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/CellLightSettings/FaultOnOutputMismatch").node().child_value()) != 0;
 	this->CellLights.FaultOnSensorMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/CellLightSettings/FaultOnSensorMismatch").node().child_value()) != 0;

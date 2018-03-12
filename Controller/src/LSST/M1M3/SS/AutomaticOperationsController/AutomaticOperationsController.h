@@ -12,12 +12,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class PositionController;
 class ForceController;
 class InterlockController;
-class SafetyController;
 class M1M3SSPublisher;
+class PositionController;
 class PowerController;
+class SafetyController;
 
 class AutomaticOperationsController {
 private:

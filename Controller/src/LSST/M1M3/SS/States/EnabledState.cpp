@@ -21,6 +21,7 @@
 #include <TMAElevationSampleCommand.h>
 #include <M1M3SSPublisher.h>
 #include <Gyro.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -30,6 +31,7 @@ EnabledState::EnabledState(M1M3SSPublisher* publisher) : State(publisher, "Enabl
 EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) { }
 
 States::Type EnabledState::update(UpdateCommand* command, Model* model) {
+	Log.Trace("EnabledState: update()");
 	model->getPositionController()->updateSteps();
 	model->getILC()->writeRaisedListBuffer();
 	model->getILC()->triggerModbus();
@@ -63,11 +65,13 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 }
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
-	model->getForceController()->updateTMAAzimuthData(command->getData());
+	Log.Trace("EnabledState: storeTMAAzimuthSample()");
+	model->getForceController()->updateAzimuthForces((float)command->getData()->Angle_Actual);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) {
+	Log.Trace("EnabledState: storeTMAElevationSample()");
 	model->getForceController()->updateTMAElevationData(command->getData());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }

@@ -8,6 +8,7 @@
 #include <State.h>
 #include <DataTypes.h>
 #include <M1M3SSPublisher.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -33,12 +34,12 @@ States::Type State::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* 
 States::Type State::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ClearOffsetForces"); }
 States::Type State::raiseM1M3(RaiseM1M3Command* command, Model* model) { return this->rejectCommandInvalidState("RaiseM1M3"); }
 States::Type State::lowerM1M3(LowerM1M3Command* command, Model* model) { return this->rejectCommandInvalidState("LowerM1M3"); }
-States::Type State::applyAberrationByBendingModes(ApplyAberrationByBendingModesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyAberrationByBendingModes"); }
-States::Type State::applyAberrationByForces(ApplyAberrationByForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyAberrationByForces"); }
-States::Type State::clearAberration(ClearAberrationCommand* command, Model* model) { return this->rejectCommandInvalidState("ClearAberration"); }
-States::Type State::applyAOSCorrectionByBendingModes(ApplyAOSCorrectionByBendingModesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyAOSCorrectionByBendingModes"); }
-States::Type State::applyAOSCorrectionByForces(ApplyAOSCorrectionByForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyAOSCorrectionByForces"); }
-States::Type State::clearAOSCorrection(ClearAOSCorrectionCommand* command, Model* model) { return this->rejectCommandInvalidState("ClearAOSCorrection"); }
+States::Type State::applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyAberrationForcesByBendingModes"); }
+States::Type State::applyAberrationForces(ApplyAberrationForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyAberrationForces"); }
+States::Type State::clearAberrationForces(ClearAberrationForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ClearAberrationForces"); }
+States::Type State::applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyActiveOpticForcesByBendingModes"); }
+States::Type State::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyActiveOpticForces"); }
+States::Type State::clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ClearActiveOpticForces"); }
 States::Type State::enterEngineering(EnterEngineeringCommand* command, Model* model) { return this->rejectCommandInvalidState("EnterEngineering"); }
 States::Type State::exitEngineering(ExitEngineeringCommand* command, Model* model) { return this->rejectCommandInvalidState("ExitEngineering"); }
 States::Type State::testAir(TestAirCommand* command, Model* model) { return this->rejectCommandInvalidState("TestAir"); }
@@ -59,7 +60,7 @@ States::Type State::turnPowerOn(TurnPowerOnCommand* command, Model* model) { ret
 States::Type State::turnPowerOff(TurnPowerOffCommand* command, Model* model) { return this->rejectCommandInvalidState("TurnPowerOff"); }
 States::Type State::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("EnableHardpointCorrections"); }
 States::Type State::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("DisableHardpointCorrections"); }
-States::Type State::runHardpointCorrectionProfile(RunHardpointCorrectionProfileCommand* command, Model* model) { return this->rejectCommandInvalidState("RunHardpointCorrectionProfile"); }
+States::Type State::runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model) { return this->rejectCommandInvalidState("RunMirrorForceProfile"); }
 States::Type State::abortProfile(AbortProfileCommand* command, Model* model) { return this->rejectCommandInvalidState("AbortProfile"); }
 States::Type State::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyOffsetForcesByMirrorForce"); }
 States::Type State::updatePID(UpdatePIDCommand* command, Model* model) { return this->rejectCommandInvalidState("UpdatePID"); }
@@ -96,6 +97,7 @@ double State::getTimer() {
 }
 
 States::Type State::rejectCommandInvalidState(std::string command) {
+	Log.Warn("The command %s is not valid in the %s.", command.c_str(), this->name.c_str());
 	this->publisher->logCommandRejectionWarning(command, "The command " + command + " is not valid in the " + this->name + ".");
 	return States::NoStateTransition;
 }

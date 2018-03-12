@@ -20,13 +20,11 @@ class TestForceActuatorCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_TestForceActuatorC data;
 
 public:
 	TestForceActuatorCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestForceActuatorC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_TestForceActuatorC* getData() { return &this->data; }
 
 	bool validate();

@@ -25,22 +25,14 @@ struct ILCTypes {
 	};
 };
 
-struct ILCAddressDataIndexMap {
-	uint8_t Address;
-	int32_t DataIndex;
-};
-
-struct ILCAddressDataMap {
+struct ILCMap {
 	ILCTypes::Type Type;
+	uint8_t Address;
+	int32_t ActuatorId;
 	int32_t DataIndex;
-	int32_t ActuatorId;
-};
-
-struct FASubnetDataMap {
-	int32_t DataIndexX;
-	int32_t DataIndexY;
-	int32_t DataIndexZ;
-	int32_t ActuatorId;
+	int32_t XDataIndex;
+	int32_t YDataIndex;
+	int32_t SecondaryDataIndex;
 };
 
 struct HPSettings {

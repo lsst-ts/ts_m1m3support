@@ -10,8 +10,7 @@
 
 #include <FaultCodes.h>
 #include <StateTypes.h>
-
-struct m1m3_logevent_ErrorCodeC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -81,15 +80,17 @@ public:
 	void forceControllerNotifyFarNeighborCheck(bool conditionFlag);
 	void forceControllerNotifyElevationForceClipping(bool conditionFlag);
 	void forceControllerNotifyAzimuthForceClipping(bool conditionFlag);
-	void forceControllerNotifyTemperatureForceClipping(bool conditionFlag);
-	void forceControllerNotifyHardpointOffloadForceClipping(bool conditionFlag);
-	void forceControllerNotifyDynamicForceClipping(bool conditionFlag);
-	void forceControllerNotifyAOSNetForceCheck(bool conditionFlag);
-	void forceControllerNotifyAOSForceClipping(bool conditionFlag);
+	void forceControllerNotifyThermalForceClipping(bool conditionFlag);
+	void forceControllerNotifyBalanceForceClipping(bool conditionFlag);
+	void forceControllerNotifyAccelerationForceClipping(bool conditionFlag);
+	void forceControllerNotifyActiveOpticNetForceCheck(bool conditionFlag);
+	void forceControllerNotifyActiveOpticForceClipping(bool conditionFlag);
 	void forceControllerNotifyStaticForceClipping(bool conditionFlag);
 	void forceControllerNotifyAberrationNetForceCheck(bool conditionFlag);
 	void forceControllerNotifyAberrationForceClipping(bool conditionFlag);
 	void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
+	void forceControllerNotifyVelocityForceClipping(bool conditionFlag);
+	void forceControllerNotifyForceClipping(bool conditionFlag);
 
 	void cellLightNotifyOutputMismatch(bool conditionFlag);
 	void cellLightNotifySensorMismatch(bool conditionFlag);

@@ -12,6 +12,7 @@
 #include <CommandFactory.h>
 #include <Command.h>
 #include <unistd.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -26,6 +27,7 @@ SubscriberThread::SubscriberThread(M1M3SSSubscriber* subscriber, Controller* con
 }
 
 void SubscriberThread::run() {
+	Log.Info("SubscriberThread: Start");
 	while(this->keepRunning) {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandStart());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandEnable());
@@ -38,12 +40,12 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearOffsetForces());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandRaiseM1M3());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandLowerM1M3());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAberrationByBendingModes());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAberrationByForces());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearAberration());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAOSCorrectionByBendingModes());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAOSCorrectionByForces());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearAOSCorrection());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAberrationForcesByBendingModes());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyAberrationForces());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearAberrationForces());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyActiveOpticForcesByBendingModes());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyActiveOpticForces());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandClearActiveOpticForces());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandEnterEngineering());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandExitEngineering());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTestAir());
@@ -62,7 +64,7 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnPowerOff());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandEnableHardpointCorrections());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandDisableHardpointCorrections());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandRunHardpointCorrectionProfile());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandRunMirrorForceProfile());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandAbortProfile());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyOffsetForcesByMirrorForce());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandUpdatePID());
@@ -71,6 +73,7 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryGetSampleTMAElevation());
 		usleep(100);
 	}
+	Log.Info("SubscriberThread: Completed");
 }
 
 void SubscriberThread::stop() {
