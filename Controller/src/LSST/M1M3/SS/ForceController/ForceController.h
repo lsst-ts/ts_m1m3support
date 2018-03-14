@@ -10,6 +10,7 @@
 
 #include <DataTypes.h>
 #include <ForceActuatorNeighbors.h>
+#include <ForcesAndMoments.h>
 #include <SAL_m1m3C.h>
 #include <SAL_MTMountC.h>
 #include <DistributedForces.h>
@@ -49,6 +50,7 @@ private:
 	m1m3_logevent_AppliedActiveOpticForcesC* appliedActiveOpticForces;
 	m1m3_logevent_AppliedAzimuthForcesC* appliedAzimuthForces;
 	m1m3_logevent_AppliedBalanceForcesC* appliedBalanceForces;
+	m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces;
 	m1m3_logevent_AppliedElevationForcesC* appliedElevationForces;
 	m1m3_logevent_AppliedForcesC* appliedForces;
 	m1m3_logevent_AppliedOffsetForcesC* appliedOffsetForces;
@@ -86,6 +88,8 @@ private:
 	MTMount_AltC tmaElevationData;
 
 	std::vector<ForceActuatorNeighbors> neighbors;
+
+	float zero[156];
 
 	static int32_t toInt24(float force) { return (int32_t)(force * 1000.0); }
 
@@ -150,6 +154,30 @@ public:
 
 private:
 	DistributedForces calculateDistribution(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
+
+	ForcesAndMoments calculateForcesAndMoments(float* xForces, float* yForces, float* zForces);
+	void setAppliedAberrationForcesAndMoments();
+	void setAppliedAccelerationForcesAndMoments();
+	void setAppliedActiveOpticForcesAndMoments();
+	void setAppliedAzimuthForcesAndMoments();
+	void setAppliedBalanceForcesAndMoments();
+	void setAppliedElevationForcesAndMoments();
+	void setAppliedForcesAndMoments();
+	void setAppliedOffsetForcesAndMoments();
+	void setAppliedStaticForcesAndMoments();
+	void setAppliedThermalForcesAndMoments();
+	void setAppliedVelocityForcesAndMoments();
+	void setRejectedAberrationForcesAndMoments();
+	void setRejectedAccelerationForcesAndMoments();
+	void setRejectedActiveOpticForcesAndMoments();
+	void setRejectedAzimuthForcesAndMoments();
+	void setRejectedBalanceForcesAndMoments();
+	void setRejectedElevationForcesAndMoments();
+	void setRejectedForcesAndMoments();
+	void setRejectedOffsetForcesAndMoments();
+	void setRejectedStaticForcesAndMoments();
+	void setRejectedThermalForcesAndMoments();
+	void setRejectedVelocityForcesAndMoments();
 
 	void sumAllForces();
 	void convertForcesToSetpoints();

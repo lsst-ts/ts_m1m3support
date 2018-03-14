@@ -44,6 +44,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedActiveOpticForces");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedAzimuthForces");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedBalanceForces");
+	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedCylinderForces");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedElevationForces");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedForces");
 	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedOffsetForces");
@@ -158,7 +159,10 @@ void M1M3SSPublisher::logAppliedAberrationForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedAberrationForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedAberrationForces.Fz != this->previousEventAppliedAberrationForces.Fz ||
+		this->eventAppliedAberrationForces.Mx != this->previousEventAppliedAberrationForces.Mx ||
+		this->eventAppliedAberrationForces.My != this->previousEventAppliedAberrationForces.My;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			this->eventAppliedAberrationForces.ZForces[i] != this->previousEventAppliedAberrationForces.ZForces[i];
@@ -174,7 +178,13 @@ void M1M3SSPublisher::logAppliedAccelerationForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedAccelerationForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedAccelerationForces.Fx != this->previousEventAppliedAccelerationForces.Fx ||
+		this->eventAppliedAccelerationForces.Fy != this->previousEventAppliedAccelerationForces.Fy ||
+		this->eventAppliedAccelerationForces.Fz != this->previousEventAppliedAccelerationForces.Fz ||
+		this->eventAppliedAccelerationForces.Mx != this->previousEventAppliedAccelerationForces.Mx ||
+		this->eventAppliedAccelerationForces.My != this->previousEventAppliedAccelerationForces.My ||
+		this->eventAppliedAccelerationForces.Mz != this->previousEventAppliedAccelerationForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedAccelerationForces.XForces[i] != this->previousEventAppliedAccelerationForces.XForces[i]) ||
@@ -192,7 +202,10 @@ void M1M3SSPublisher::logAppliedActiveOpticForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedActiveOpticForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedActiveOpticForces.Fz != this->previousEventAppliedActiveOpticForces.Fz ||
+		this->eventAppliedActiveOpticForces.Mx != this->previousEventAppliedActiveOpticForces.Mx ||
+		this->eventAppliedActiveOpticForces.My != this->previousEventAppliedActiveOpticForces.My;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			this->eventAppliedActiveOpticForces.ZForces[i] != this->previousEventAppliedActiveOpticForces.ZForces[i];
@@ -208,7 +221,13 @@ void M1M3SSPublisher::logAppliedAzimuthForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedAzimuthForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedAzimuthForces.Fx != this->previousEventAppliedAzimuthForces.Fx ||
+		this->eventAppliedAzimuthForces.Fy != this->previousEventAppliedAzimuthForces.Fy ||
+		this->eventAppliedAzimuthForces.Fz != this->previousEventAppliedAzimuthForces.Fz ||
+		this->eventAppliedAzimuthForces.Mx != this->previousEventAppliedAzimuthForces.Mx ||
+		this->eventAppliedAzimuthForces.My != this->previousEventAppliedAzimuthForces.My ||
+		this->eventAppliedAzimuthForces.Mz != this->previousEventAppliedAzimuthForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedAzimuthForces.XForces[i] != this->previousEventAppliedAzimuthForces.XForces[i]) ||
@@ -226,7 +245,13 @@ void M1M3SSPublisher::logAppliedBalanceForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedBalanceForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedBalanceForces.Fx != this->previousEventAppliedBalanceForces.Fx ||
+		this->eventAppliedBalanceForces.Fy != this->previousEventAppliedBalanceForces.Fy ||
+		this->eventAppliedBalanceForces.Fz != this->previousEventAppliedBalanceForces.Fz ||
+		this->eventAppliedBalanceForces.Mx != this->previousEventAppliedBalanceForces.Mx ||
+		this->eventAppliedBalanceForces.My != this->previousEventAppliedBalanceForces.My ||
+		this->eventAppliedBalanceForces.Mz != this->previousEventAppliedBalanceForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedBalanceForces.XForces[i] != this->previousEventAppliedBalanceForces.XForces[i]) ||
@@ -238,13 +263,36 @@ void M1M3SSPublisher::tryLogAppliedBalanceForces() {
 	}
 }
 
+void M1M3SSPublisher::logAppliedCylinderForces() {
+	this->m1m3SAL->logEvent_AppliedCylinderForces(&this->eventAppliedCylinderForces, 0);
+	this->previousEventAppliedCylinderForces = this->eventAppliedCylinderForces;
+}
+
+void M1M3SSPublisher::tryLogAppliedCylinderForces() {
+	bool changeDetected = false;
+	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
+		changeDetected = changeDetected ||
+			(i < 112 && this->eventAppliedCylinderForces.SecondaryCylinderForces[i] != this->previousEventAppliedCylinderForces.SecondaryCylinderForces[i]) ||
+			(this->eventAppliedCylinderForces.PrimaryCylinderForces[i] != this->previousEventAppliedCylinderForces.PrimaryCylinderForces[i]);
+	}
+	if (changeDetected) {
+		this->logAppliedCylinderForces();
+	}
+}
+
 void M1M3SSPublisher::logAppliedElevationForces() {
 	this->m1m3SAL->logEvent_AppliedElevationForces(&this->eventAppliedElevationForces, 0);
 	this->previousEventAppliedElevationForces = this->eventAppliedElevationForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedElevationForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedElevationForces.Fx != this->previousEventAppliedElevationForces.Fx ||
+		this->eventAppliedElevationForces.Fy != this->previousEventAppliedElevationForces.Fy ||
+		this->eventAppliedElevationForces.Fz != this->previousEventAppliedElevationForces.Fz ||
+		this->eventAppliedElevationForces.Mx != this->previousEventAppliedElevationForces.Mx ||
+		this->eventAppliedElevationForces.My != this->previousEventAppliedElevationForces.My ||
+		this->eventAppliedElevationForces.Mz != this->previousEventAppliedElevationForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedElevationForces.XForces[i] != this->previousEventAppliedElevationForces.XForces[i]) ||
@@ -262,7 +310,13 @@ void M1M3SSPublisher::logAppliedForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedForces.Fx != this->previousEventAppliedForces.Fx ||
+		this->eventAppliedForces.Fy != this->previousEventAppliedForces.Fy ||
+		this->eventAppliedForces.Fz != this->previousEventAppliedForces.Fz ||
+		this->eventAppliedForces.Mx != this->previousEventAppliedForces.Mx ||
+		this->eventAppliedForces.My != this->previousEventAppliedForces.My ||
+		this->eventAppliedForces.Mz != this->previousEventAppliedForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedForces.XForces[i] != this->previousEventAppliedForces.XForces[i]) ||
@@ -280,7 +334,13 @@ void M1M3SSPublisher::logAppliedOffsetForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedOffsetForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedOffsetForces.Fx != this->previousEventAppliedOffsetForces.Fx ||
+		this->eventAppliedOffsetForces.Fy != this->previousEventAppliedOffsetForces.Fy ||
+		this->eventAppliedOffsetForces.Fz != this->previousEventAppliedOffsetForces.Fz ||
+		this->eventAppliedOffsetForces.Mx != this->previousEventAppliedOffsetForces.Mx ||
+		this->eventAppliedOffsetForces.My != this->previousEventAppliedOffsetForces.My ||
+		this->eventAppliedOffsetForces.Mz != this->previousEventAppliedOffsetForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedOffsetForces.XForces[i] != this->previousEventAppliedOffsetForces.XForces[i]) ||
@@ -309,7 +369,13 @@ void M1M3SSPublisher::logAppliedStaticForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedStaticForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedStaticForces.Fx != this->previousEventAppliedStaticForces.Fx ||
+		this->eventAppliedStaticForces.Fy != this->previousEventAppliedStaticForces.Fy ||
+		this->eventAppliedStaticForces.Fz != this->previousEventAppliedStaticForces.Fz ||
+		this->eventAppliedStaticForces.Mx != this->previousEventAppliedStaticForces.Mx ||
+		this->eventAppliedStaticForces.My != this->previousEventAppliedStaticForces.My ||
+		this->eventAppliedStaticForces.Mz != this->previousEventAppliedStaticForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedStaticForces.XForces[i] != this->previousEventAppliedStaticForces.XForces[i]) ||
@@ -327,7 +393,13 @@ void M1M3SSPublisher::logAppliedThermalForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedThermalForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedThermalForces.Fx != this->previousEventAppliedThermalForces.Fx ||
+		this->eventAppliedThermalForces.Fy != this->previousEventAppliedThermalForces.Fy ||
+		this->eventAppliedThermalForces.Fz != this->previousEventAppliedThermalForces.Fz ||
+		this->eventAppliedThermalForces.Mx != this->previousEventAppliedThermalForces.Mx ||
+		this->eventAppliedThermalForces.My != this->previousEventAppliedThermalForces.My ||
+		this->eventAppliedThermalForces.Mz != this->previousEventAppliedThermalForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedThermalForces.XForces[i] != this->previousEventAppliedThermalForces.XForces[i]) ||
@@ -345,7 +417,13 @@ void M1M3SSPublisher::logAppliedVelocityForces() {
 }
 
 void M1M3SSPublisher::tryLogAppliedVelocityForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventAppliedVelocityForces.Fx != this->previousEventAppliedVelocityForces.Fx ||
+		this->eventAppliedVelocityForces.Fy != this->previousEventAppliedVelocityForces.Fy ||
+		this->eventAppliedVelocityForces.Fz != this->previousEventAppliedVelocityForces.Fz ||
+		this->eventAppliedVelocityForces.Mx != this->previousEventAppliedVelocityForces.Mx ||
+		this->eventAppliedVelocityForces.My != this->previousEventAppliedVelocityForces.My ||
+		this->eventAppliedVelocityForces.Mz != this->previousEventAppliedVelocityForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventAppliedVelocityForces.XForces[i] != this->previousEventAppliedVelocityForces.XForces[i]) ||
@@ -1308,13 +1386,7 @@ void M1M3SSPublisher::logInterlockStatus() {
 
 void M1M3SSPublisher::tryLogInterlockStatus() {
 	if (this->eventInterlockStatus.HeartbeatCommandedState != this->previousEventInterlockStatus.HeartbeatCommandedState ||
-		this->eventInterlockStatus.HeartbeatOutputState != this->previousEventInterlockStatus.HeartbeatOutputState ||
-		this->eventInterlockStatus.CriticalFaultCommandedState != this->previousEventInterlockStatus.CriticalFaultCommandedState ||
-		this->eventInterlockStatus.CriticalFaultOutputState != this->previousEventInterlockStatus.CriticalFaultOutputState ||
-		this->eventInterlockStatus.MirrorLoweringRaisingCommandedState != this->previousEventInterlockStatus.MirrorLoweringRaisingCommandedState ||
-		this->eventInterlockStatus.MirrorLoweringRaisingOutputState != this->previousEventInterlockStatus.MirrorLoweringRaisingOutputState ||
-		this->eventInterlockStatus.MirrorParkedCommandedState != this->previousEventInterlockStatus.MirrorParkedCommandedState ||
-		this->eventInterlockStatus.MirrorParkedOutputState != this->previousEventInterlockStatus.MirrorParkedOutputState) {
+		this->eventInterlockStatus.HeartbeatOutputState != this->previousEventInterlockStatus.HeartbeatOutputState) {
 		this->logInterlockStatus();
 	}
 }
@@ -1322,15 +1394,10 @@ void M1M3SSPublisher::tryLogInterlockStatus() {
 void M1M3SSPublisher::logInterlockWarning() {
 	this->eventInterlockWarning.AnyWarning =
 		this->eventInterlockWarning.HeartbeatStateOutputMismatch ||
-		this->eventInterlockWarning.CriticalFaultStateOutputMismatch ||
-		this->eventInterlockWarning.MirrorLoweringRaisingStateOutputMismatch ||
-		this->eventInterlockWarning.MirrorParkedStateOutputMismatch ||
-		this->eventInterlockWarning.PowerNetworksOff ||
+		this->eventInterlockWarning.AuxPowerNetworksOff ||
 		this->eventInterlockWarning.ThermalEquipmentOff ||
-		this->eventInterlockWarning.LaserTrackerOff ||
 		this->eventInterlockWarning.AirSupplyOff ||
-		this->eventInterlockWarning.GISEarthquake ||
-		this->eventInterlockWarning.GISEStop ||
+		this->eventInterlockWarning.CabinetDoorOpen ||
 		this->eventInterlockWarning.TMAMotionStop ||
 		this->eventInterlockWarning.GISHeartbeatLost;
 	this->m1m3SAL->logEvent_InterlockWarning(&this->eventInterlockWarning, 0);
@@ -1339,15 +1406,10 @@ void M1M3SSPublisher::logInterlockWarning() {
 
 void M1M3SSPublisher::tryLogInterlockWarning() {
 	if (this->eventInterlockWarning.HeartbeatStateOutputMismatch != this->previousEventInterlockWarning.HeartbeatStateOutputMismatch ||
-		this->eventInterlockWarning.CriticalFaultStateOutputMismatch != this->previousEventInterlockWarning.CriticalFaultStateOutputMismatch ||
-		this->eventInterlockWarning.MirrorLoweringRaisingStateOutputMismatch != this->previousEventInterlockWarning.MirrorLoweringRaisingStateOutputMismatch ||
-		this->eventInterlockWarning.MirrorParkedStateOutputMismatch != this->previousEventInterlockWarning.MirrorParkedStateOutputMismatch ||
-		this->eventInterlockWarning.PowerNetworksOff != this->previousEventInterlockWarning.PowerNetworksOff ||
+		this->eventInterlockWarning.AuxPowerNetworksOff != this->previousEventInterlockWarning.AuxPowerNetworksOff ||
 		this->eventInterlockWarning.ThermalEquipmentOff != this->previousEventInterlockWarning.ThermalEquipmentOff ||
-		this->eventInterlockWarning.LaserTrackerOff != this->previousEventInterlockWarning.LaserTrackerOff ||
 		this->eventInterlockWarning.AirSupplyOff != this->previousEventInterlockWarning.AirSupplyOff ||
-		this->eventInterlockWarning.GISEarthquake != this->previousEventInterlockWarning.GISEarthquake ||
-		this->eventInterlockWarning.GISEStop != this->previousEventInterlockWarning.GISEStop ||
+		this->eventInterlockWarning.CabinetDoorOpen != this->previousEventInterlockWarning.CabinetDoorOpen ||
 		this->eventInterlockWarning.TMAMotionStop != this->previousEventInterlockWarning.TMAMotionStop ||
 		this->eventInterlockWarning.GISHeartbeatLost != this->previousEventInterlockWarning.GISHeartbeatLost) {
 		this->logInterlockWarning();
@@ -1471,7 +1533,10 @@ void M1M3SSPublisher::logRejectedAberrationForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedAberrationForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedAberrationForces.Fz != this->previousEventRejectedAberrationForces.Fz ||
+		this->eventRejectedAberrationForces.Mx != this->previousEventRejectedAberrationForces.Mx ||
+		this->eventRejectedAberrationForces.My != this->previousEventRejectedAberrationForces.My;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			this->eventRejectedAberrationForces.ZForces[i] != this->previousEventRejectedAberrationForces.ZForces[i];
@@ -1487,7 +1552,13 @@ void M1M3SSPublisher::logRejectedAccelerationForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedAccelerationForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedAccelerationForces.Fx != this->previousEventRejectedAccelerationForces.Fx ||
+		this->eventRejectedAccelerationForces.Fy != this->previousEventRejectedAccelerationForces.Fy ||
+		this->eventRejectedAccelerationForces.Fz != this->previousEventRejectedAccelerationForces.Fz ||
+		this->eventRejectedAccelerationForces.Mx != this->previousEventRejectedAccelerationForces.Mx ||
+		this->eventRejectedAccelerationForces.My != this->previousEventRejectedAccelerationForces.My ||
+		this->eventRejectedAccelerationForces.Mz != this->previousEventRejectedAccelerationForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedAccelerationForces.XForces[i] != this->previousEventRejectedAccelerationForces.XForces[i]) ||
@@ -1505,7 +1576,10 @@ void M1M3SSPublisher::logRejectedActiveOpticForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedActiveOpticForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedActiveOpticForces.Fz != this->previousEventRejectedActiveOpticForces.Fz ||
+		this->eventRejectedActiveOpticForces.Mx != this->previousEventRejectedActiveOpticForces.Mx ||
+		this->eventRejectedActiveOpticForces.My != this->previousEventRejectedActiveOpticForces.My;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			this->eventRejectedActiveOpticForces.ZForces[i] != this->previousEventRejectedActiveOpticForces.ZForces[i];
@@ -1521,7 +1595,13 @@ void M1M3SSPublisher::logRejectedAzimuthForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedAzimuthForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedAzimuthForces.Fx != this->previousEventRejectedAzimuthForces.Fx ||
+		this->eventRejectedAzimuthForces.Fy != this->previousEventRejectedAzimuthForces.Fy ||
+		this->eventRejectedAzimuthForces.Fz != this->previousEventRejectedAzimuthForces.Fz ||
+		this->eventRejectedAzimuthForces.Mx != this->previousEventRejectedAzimuthForces.Mx ||
+		this->eventRejectedAzimuthForces.My != this->previousEventRejectedAzimuthForces.My ||
+		this->eventRejectedAzimuthForces.Mz != this->previousEventRejectedAzimuthForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedAzimuthForces.XForces[i] != this->previousEventRejectedAzimuthForces.XForces[i]) ||
@@ -1539,7 +1619,13 @@ void M1M3SSPublisher::logRejectedBalanceForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedBalanceForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedBalanceForces.Fx != this->previousEventRejectedBalanceForces.Fx ||
+		this->eventRejectedBalanceForces.Fy != this->previousEventRejectedBalanceForces.Fy ||
+		this->eventRejectedBalanceForces.Fz != this->previousEventRejectedBalanceForces.Fz ||
+		this->eventRejectedBalanceForces.Mx != this->previousEventRejectedBalanceForces.Mx ||
+		this->eventRejectedBalanceForces.My != this->previousEventRejectedBalanceForces.My ||
+		this->eventRejectedBalanceForces.Mz != this->previousEventRejectedBalanceForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedBalanceForces.XForces[i] != this->previousEventRejectedBalanceForces.XForces[i]) ||
@@ -1574,7 +1660,13 @@ void M1M3SSPublisher::logRejectedElevationForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedElevationForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedElevationForces.Fx != this->previousEventRejectedElevationForces.Fx ||
+		this->eventRejectedElevationForces.Fy != this->previousEventRejectedElevationForces.Fy ||
+		this->eventRejectedElevationForces.Fz != this->previousEventRejectedElevationForces.Fz ||
+		this->eventRejectedElevationForces.Mx != this->previousEventRejectedElevationForces.Mx ||
+		this->eventRejectedElevationForces.My != this->previousEventRejectedElevationForces.My ||
+		this->eventRejectedElevationForces.Mz != this->previousEventRejectedElevationForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedElevationForces.XForces[i] != this->previousEventRejectedElevationForces.XForces[i]) ||
@@ -1592,7 +1684,13 @@ void M1M3SSPublisher::logRejectedForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedForces.Fx != this->previousEventRejectedForces.Fx ||
+		this->eventRejectedForces.Fy != this->previousEventRejectedForces.Fy ||
+		this->eventRejectedForces.Fz != this->previousEventRejectedForces.Fz ||
+		this->eventRejectedForces.Mx != this->previousEventRejectedForces.Mx ||
+		this->eventRejectedForces.My != this->previousEventRejectedForces.My ||
+		this->eventRejectedForces.Mz != this->previousEventRejectedForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedForces.XForces[i] != this->previousEventRejectedForces.XForces[i]) ||
@@ -1610,7 +1708,13 @@ void M1M3SSPublisher::logRejectedOffsetForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedOffsetForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedOffsetForces.Fx != this->previousEventRejectedOffsetForces.Fx ||
+		this->eventRejectedOffsetForces.Fy != this->previousEventRejectedOffsetForces.Fy ||
+		this->eventRejectedOffsetForces.Fz != this->previousEventRejectedOffsetForces.Fz ||
+		this->eventRejectedOffsetForces.Mx != this->previousEventRejectedOffsetForces.Mx ||
+		this->eventRejectedOffsetForces.My != this->previousEventRejectedOffsetForces.My ||
+		this->eventRejectedOffsetForces.Mz != this->previousEventRejectedOffsetForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedOffsetForces.XForces[i] != this->previousEventRejectedOffsetForces.XForces[i]) ||
@@ -1628,7 +1732,13 @@ void M1M3SSPublisher::logRejectedStaticForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedStaticForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedStaticForces.Fx != this->previousEventRejectedStaticForces.Fx ||
+		this->eventRejectedStaticForces.Fy != this->previousEventRejectedStaticForces.Fy ||
+		this->eventRejectedStaticForces.Fz != this->previousEventRejectedStaticForces.Fz ||
+		this->eventRejectedStaticForces.Mx != this->previousEventRejectedStaticForces.Mx ||
+		this->eventRejectedStaticForces.My != this->previousEventRejectedStaticForces.My ||
+		this->eventRejectedStaticForces.Mz != this->previousEventRejectedStaticForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedStaticForces.XForces[i] != this->previousEventRejectedStaticForces.XForces[i]) ||
@@ -1646,7 +1756,13 @@ void M1M3SSPublisher::logRejectedThermalForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedThermalForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedThermalForces.Fx != this->previousEventRejectedThermalForces.Fx ||
+		this->eventRejectedThermalForces.Fy != this->previousEventRejectedThermalForces.Fy ||
+		this->eventRejectedThermalForces.Fz != this->previousEventRejectedThermalForces.Fz ||
+		this->eventRejectedThermalForces.Mx != this->previousEventRejectedThermalForces.Mx ||
+		this->eventRejectedThermalForces.My != this->previousEventRejectedThermalForces.My ||
+		this->eventRejectedThermalForces.Mz != this->previousEventRejectedThermalForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedThermalForces.XForces[i] != this->previousEventRejectedThermalForces.XForces[i]) ||
@@ -1664,7 +1780,13 @@ void M1M3SSPublisher::logRejectedVelocityForces() {
 }
 
 void M1M3SSPublisher::tryLogRejectedVelocityForces() {
-	bool changeDetected = false;
+	bool changeDetected =
+		this->eventRejectedVelocityForces.Fx != this->previousEventRejectedVelocityForces.Fx ||
+		this->eventRejectedVelocityForces.Fy != this->previousEventRejectedVelocityForces.Fy ||
+		this->eventRejectedVelocityForces.Fz != this->previousEventRejectedVelocityForces.Fz ||
+		this->eventRejectedVelocityForces.Mx != this->previousEventRejectedVelocityForces.Mx ||
+		this->eventRejectedVelocityForces.My != this->previousEventRejectedVelocityForces.My ||
+		this->eventRejectedVelocityForces.Mz != this->previousEventRejectedVelocityForces.Mz;
 	for(int i = 0; i < FA_COUNT && !changeDetected; ++i) {
 		changeDetected = changeDetected ||
 			(i < 12 && this->eventRejectedVelocityForces.XForces[i] != this->previousEventRejectedVelocityForces.XForces[i]) ||

@@ -45,15 +45,10 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->Inclinometer.FaultOnUnknownProblem = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InclinometerSettings/FaultOnUnknownProblem").node().child_value()) != 0;
 
 	this->Interlock.FaultOnHeartbeatStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnHeartbeatStateOutputMismatch").node().child_value()) != 0;
-	this->Interlock.FaultOnCriticalFaultStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnCriticalFaultStateOutputMismatch").node().child_value()) != 0;
-	this->Interlock.FaultOnMirrorLoweringRaisingStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnMirrorLoweringRaisingStateOutputMismatch").node().child_value()) != 0;
-	this->Interlock.FaultOnMirrorParkedStateOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnMirrorParkedStateOutputMismatch").node().child_value()) != 0;
-	this->Interlock.FaultOnPowerNetworksOff = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnPowerNetworksOff").node().child_value()) != 0;
+	this->Interlock.FaultOnAuxPowerNetworksOff = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnAuxPowerNetworksOff").node().child_value()) != 0;
 	this->Interlock.FaultOnThermalEquipmentOff = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnThermalEquipmentOff").node().child_value()) != 0;
-	this->Interlock.FaultOnLaserTrackerOff = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnLaserTrackerOff").node().child_value()) != 0;
 	this->Interlock.FaultOnAirSupplyOff = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnAirSupplyOff").node().child_value()) != 0;
-	this->Interlock.FaultOnGISEarthquake = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnGISEarthquake").node().child_value()) != 0;
-	this->Interlock.FaultOnGISEStop = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnGISEStop").node().child_value()) != 0;
+	this->Interlock.FaultOnCabinetDoorOpen = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnCabinetDoorOpen").node().child_value()) != 0;
 	this->Interlock.FaultOnTMAMotionStop = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnTMAMotionStop").node().child_value()) != 0;
 	this->Interlock.FaultOnGISHeartbeatLost = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/InterlockSettings/FaultOnGISHeartbeatLost").node().child_value()) != 0;
 

@@ -12,6 +12,7 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <TableLoader.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -20,7 +21,6 @@ namespace SS {
 void ForceActuatorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
 	doc.load_file(filename.c_str());
-
 
 	TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc.select_node("//ForceActuatorSettings/AccelerationYTablePath").node().child_value());
@@ -51,7 +51,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
 	TableLoader::loadTable(1, 1, 3, &VelocityXZTable, doc.select_node("//ForceActuatorSettings/VelocityXZTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &VelocityYZTable, doc.select_node("//ForceActuatorSettings/VelocityYZTablePath").node().child_value());
 
-	TableLoader::loadLimitTable(1, 1, &AberrationLimitZTable, doc.select_node("//ForceActuatorSettings/AberrationLimitZtTablePath").node().child_value());
+	TableLoader::loadLimitTable(1, 1, &AberrationLimitZTable, doc.select_node("//ForceActuatorSettings/AberrationLimitZTablePath").node().child_value());
 	this->NetAberrationForceTolerance = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/NetAberrationForceTolerance").node().child_value());
 	TableLoader::loadLimitTable(1, 1, &AccelerationLimitXTable, doc.select_node("//ForceActuatorSettings/AccelerationLimitXTablePath").node().child_value());
 	TableLoader::loadLimitTable(1, 1, &AccelerationLimitYTable, doc.select_node("//ForceActuatorSettings/AccelerationLimitYTablePath").node().child_value());
@@ -92,22 +92,24 @@ void ForceActuatorSettings::load(const std::string &filename) {
 
 	this->loadNeighborsTable(doc.select_node("//ForceActuatorSettings/ForceActuatorNeighborsTablePath").node().child_value());
 
-
 	this->UseInclinometer = boost::lexical_cast<int32_t>(doc.select_node("//ForceActuatorSettings/UseInclinometer").node().child_value()) != 0;
-	this->MirrorWeight = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/MirrorWeight").node().child_value());
-	this->MirrorXMoment = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/MirrorXMoment").node().child_value());
-	this->MirrorYMoment = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/MirrorYMoment").node().child_value());
-	this->MirrorZMoment = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/MirrorZMoment").node().child_value());
-	this->SetpointXMomentLowLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointXMomentLowLimitPercentage").node().child_value());
-	this->SetpointXMomentHighLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointXMomentHighLimitPercentage").node().child_value());
-	this->SetpointYMomentLowLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointYMomentLowLimitPercentage").node().child_value());
-	this->SetpointYMomentHighLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointYMomentHighLimitPercentage").node().child_value());
-	this->SetpointZMomentLowLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointZMomentLowLimitPercentage").node().child_value());
-	this->SetpointZMomentHighLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointZMomentHighLimitPercentage").node().child_value());
-	this->SetpointNearNeighborLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointNearNeighborLimitPercentage").node().child_value());
-	this->SetpointMirrorWeightLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointMirrorWeightLimitPercentage").node().child_value());
-	this->SetpointFarNeighborLimitPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/SetpointFarNeighborLimitPercentage").node().child_value());
+	this->MirrorWeight = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorWeight").node().child_value());
+	this->MirrorXMoment = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorXMoment").node().child_value());
+	this->MirrorYMoment = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorYMoment").node().child_value());
+	this->MirrorZMoment = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorZMoment").node().child_value());
+	this->SetpointXMomentLowLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointXMomentLowLimitPercentage").node().child_value());
+	this->SetpointXMomentHighLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointXMomentHighLimitPercentage").node().child_value());
+	this->SetpointYMomentLowLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointYMomentLowLimitPercentage").node().child_value());
+	this->SetpointYMomentHighLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointYMomentHighLimitPercentage").node().child_value());
+	this->SetpointZMomentLowLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointZMomentLowLimitPercentage").node().child_value());
+	this->SetpointZMomentHighLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointZMomentHighLimitPercentage").node().child_value());
+	this->SetpointNearNeighborLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointNearNeighborLimitPercentage").node().child_value());
+	this->SetpointMirrorWeightLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointMirrorWeightLimitPercentage").node().child_value());
+	this->SetpointFarNeighborLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointFarNeighborLimitPercentage").node().child_value());
 
+	this->MirrorCenterOfGravityX = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityX").node().child_value());
+	this->MirrorCenterOfGravityY = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityY").node().child_value());
+	this->MirrorCenterOfGravityZ = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityZ").node().child_value());
 
 	this->RaiseIncrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/RaiseIncrementPercentage").node().child_value());
 	this->LowerDecrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());

@@ -31,15 +31,10 @@
 </InclinometerSettings>
 <InterlockSettings>
 <FaultOnHeartbeatStateOutputMismatch>1</FaultOnHeartbeatStateOutputMismatch>
-<FaultOnCriticalFaultStateOutputMismatch>1</FaultOnCriticalFaultStateOutputMismatch>
-<FaultOnMirrorLoweringRaisingStateOutputMismatch>1</FaultOnMirrorLoweringRaisingStateOutputMismatch>
-<FaultOnMirrorParkedStateOutputMismatch>1</FaultOnMirrorParkedStateOutputMismatch>
-<FaultOnPowerNetworksOff>0</FaultOnPowerNetworksOff>
+<FaultOnAuxPowerNetworksOff>0</FaultOnAuxPowerNetworksOff>
 <FaultOnThermalEquipmentOff>0</FaultOnThermalEquipmentOff>
-<FaultOnLaserTrackerOff>0</FaultOnLaserTrackerOff>
 <FaultOnAirSupplyOff>0</FaultOnAirSupplyOff>
-<FaultOnGISEarthquake>0</FaultOnGISEarthquake>
-<FaultOnGISEStop>0</FaultOnGISEStop>
+<FaultOnCabinetDoorOpen>0</FaultOnCabinetDoorOpen>
 <FaultOnTMAMotionStop>0</FaultOnTMAMotionStop>
 <FaultOnGISHeartbeatLost>0</FaultOnGISHeartbeatLost>
 </InterlockSettings>

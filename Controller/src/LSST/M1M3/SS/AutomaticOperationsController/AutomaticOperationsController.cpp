@@ -36,18 +36,17 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
 	this->safetyController->raiseOperationTimeout(false);
 	this->positionController->stopMotion();
 	this->positionController->enableChaseAll();
-	this->forceController->applyElevationForces();
-	this->forceController->zeroStaticForces();
-	this->forceController->zeroAzimuthForces();
-	this->forceController->zeroThermalForces();
-	this->forceController->zeroAccelerationForces();
-	this->forceController->zeroOffsetForces();
 	this->forceController->zeroAberrationForces();
+	this->forceController->zeroAccelerationForces();
 	this->forceController->zeroActiveOpticForces();
+	this->forceController->zeroAzimuthForces();
 	this->forceController->zeroBalanceForces();
+	this->forceController->applyElevationForces();
+	this->forceController->zeroOffsetForces();
+	this->forceController->zeroStaticForces();
+	this->forceController->zeroThermalForces();
+	this->forceController->zeroVelocityForces();
 	this->forceController->zeroSupportPercentage();
-	this->interlockController->setMirrorParked(false);
-	this->interlockController->setMirrorLoweringRaising(true);
 	this->cachedTimestamp = this->publisher->getTimestamp();
 }
 
@@ -82,13 +81,17 @@ void AutomaticOperationsController::completeRaiseOperation() {
 	// Transition to the end state (active or active engineering) if all of the support force has been transfered
 	// from the static supports to the force actuators and all hardpoints have completed their
 	// commanded motions
-	this->forceController->applyStaticForces();
-	this->forceController->applyAzimuthForces();
-	this->forceController->applyThermalForces();
+	this->forceController->zeroAberrationForces();
 	this->forceController->applyAccelerationForces();
+	this->forceController->zeroActiveOpticForces();
+	this->forceController->applyAzimuthForces();
 	this->forceController->applyBalanceForces();
+	this->forceController->applyElevationForces();
+	this->forceController->zeroOffsetForces();
+	this->forceController->applyStaticForces();
+	this->forceController->applyThermalForces();
+	this->forceController->applyVelocityForces();
 	this->forceController->fillSupportPercentage();
-	this->interlockController->setMirrorLoweringRaising(false);
 }
 
 bool AutomaticOperationsController::checkRaiseOperationTimeout() {
@@ -105,17 +108,17 @@ void AutomaticOperationsController::startLowerOperation() {
 	this->safetyController->lowerOperationTimeout(false);
 	this->positionController->stopMotion();
 	this->positionController->enableChaseAll();
-	this->forceController->applyElevationForces();
-	this->forceController->zeroStaticForces();
-	this->forceController->zeroAzimuthForces();
-	this->forceController->zeroThermalForces();
-	this->forceController->zeroAccelerationForces();
-	this->forceController->zeroOffsetForces();
 	this->forceController->zeroAberrationForces();
+	this->forceController->zeroAccelerationForces();
 	this->forceController->zeroActiveOpticForces();
+	this->forceController->zeroAzimuthForces();
 	this->forceController->zeroBalanceForces();
+	this->forceController->applyElevationForces();
+	this->forceController->zeroOffsetForces();
+	this->forceController->zeroStaticForces();
+	this->forceController->zeroThermalForces();
+	this->forceController->zeroVelocityForces();
 	this->forceController->fillSupportPercentage();
-	this->interlockController->setMirrorLoweringRaising(true);
 	this->cachedTimestamp = this->publisher->getTimestamp();
 }
 
@@ -143,18 +146,17 @@ void AutomaticOperationsController::completeLowerOperation() {
 	// Transition to the end state (parked or parked engineering) if all of the support
 	// force has been transfered from the force actuators to the static supports
 	this->positionController->disableChaseAll();
-	this->forceController->zeroElevationForces();
-	this->forceController->zeroActiveOpticForces();
 	this->forceController->zeroAberrationForces();
+	this->forceController->zeroAccelerationForces();
+	this->forceController->zeroActiveOpticForces();
+	this->forceController->zeroAzimuthForces();
+	this->forceController->zeroBalanceForces();
+	this->forceController->zeroElevationForces();
 	this->forceController->zeroOffsetForces();
 	this->forceController->zeroStaticForces();
-	this->forceController->zeroAzimuthForces();
 	this->forceController->zeroThermalForces();
-	this->forceController->zeroAccelerationForces();
-	this->forceController->zeroBalanceForces();
+	this->forceController->zeroVelocityForces();
 	this->forceController->zeroSupportPercentage();
-	this->interlockController->setMirrorParked(true);
-	this->interlockController->setMirrorLoweringRaising(false);
 }
 
 bool AutomaticOperationsController::checkLowerOperationTimeout() {

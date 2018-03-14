@@ -59,15 +59,10 @@ public:
 	void inclinometerNotifyUnknownProblem(bool conditionFlag);
 
 	void interlockNotifyHeartbeatStateOutputMismatch(bool conditionFlag);
-	void interlockNotifyCriticalFaultStateOutputMismatch(bool conditionFlag);
-	void interlockNotifyMirrorLoweringRaisingStateOutputMismatch(bool conditionFlag);
-	void interlockNotifyMirrorParkedStateOutputMismatch(bool conditionFlag);
-	void interlockNotifyPowerNetworksOff(bool conditionFlag);
+	void interlockNotifyAuxPowerNetworksOff(bool conditionFlag);
 	void interlockNotifyThermalEquipmentOff(bool conditionFlag);
-	void interlockNotifyLaserTrackerOff(bool conditionFlag);
 	void interlockNotifyAirSupplyOff(bool conditionFlag);
-	void interlockNotifyGISEarthquake(bool conditionFlag);
-	void interlockNotifyGISEStop(bool conditionFlag);
+	void interlockNotifyCabinetDoorOpen(bool conditionFlag);
 	void interlockNotifyTMAMotionStop(bool conditionFlag);
 	void interlockNotifyGISHeartbeatLost(bool conditionFlag);
 

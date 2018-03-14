@@ -43,6 +43,7 @@ private:
 	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
 	m1m3_logevent_ForceActuatorWarningC* forceActuatorWarning;
 	m1m3_logevent_ForceActuatorForceWarningC* forceWarning;
+	m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces;
 	m1m3_ForceActuatorDataC* forceActuatorData;
 
 	m1m3_logevent_HardpointMonitorInfoC* hardpointMonitorInfo;

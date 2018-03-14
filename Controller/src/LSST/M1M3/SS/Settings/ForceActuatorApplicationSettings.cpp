@@ -69,14 +69,6 @@ void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string 
 			else if (rawOrientation == "-X")
 				orientation = ForceActuatorOrientations::NegativeX;
 			row.Orientation = orientation;
-			++i;
-			row.PrimaryAxisSensorOffset = boost::lexical_cast<double>(*i);
-			++i;
-			row.PrimaryAxisSensorSensitivity = boost::lexical_cast<double>(*i);
-			++i;
-			row.SecondaryAxisSensorOffset = boost::lexical_cast<double>(*i);
-			++i;
-			row.SecondaryAxisSensorSensitivity = boost::lexical_cast<double>(*i);
 			this->Table.push_back(row);
 		}
 		lineNumber++;

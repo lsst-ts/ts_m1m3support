@@ -45,9 +45,6 @@ public:
 	void tryToggleHeartbeat();
 
 	void setHeartbeat(bool state);
-	void setCriticalFault(bool state);
-	void setMirrorLoweringRaising(bool state);
-	void setMirrorParked(bool state);
 
 	void checkInterlockStatus();
 
@@ -55,16 +52,10 @@ public:
 
 private:
 	bool checkHeartbeatOutputState();
-	bool checkCriticalFaultOutputState();
-	bool checkMirrorLoweringRaisingOutputState();
-	bool checkMirrorParkedOutputState();
 	bool checkCellLightOutputState();
 	bool checkCellLightState();
 
 	bool checkForHeartbeatOutputStateMismatch();
-	bool checkForCriticalFaultOutputStateMismatch();
-	bool checkForMirrorLoweringRaisingOutputStateMismatch();
-	bool checkForMirrorParkedOutputStateMismatch();
 	bool checkForCellLightOutputMismatch();
 	bool checkForCellLightSensorMismatch();
 

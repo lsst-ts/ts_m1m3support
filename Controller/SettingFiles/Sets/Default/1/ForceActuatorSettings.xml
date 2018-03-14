@@ -84,6 +84,13 @@
 <SetpointNearNeighborLimitPercentage>1</SetpointNearNeighborLimitPercentage>
 <SetpointMirrorWeightLimitPercentage>1.6</SetpointMirrorWeightLimitPercentage>
 <SetpointFarNeighborLimitPercentage>0.5</SetpointFarNeighborLimitPercentage>
+
+<MirrorCenterOfGravityX>-0.001121066</MirrorCenterOfGravityX>
+<MirrorCenterOfGravityY>0.000218726</MirrorCenterOfGravityY>
+<MirrorCenterOfGravityZ>-1.7657086</MirrorCenterOfGravityZ>
+
+
+
 <RaiseIncrementPercentage>0.002</RaiseIncrementPercentage>
 <LowerDecrementPercentage>0.002</LowerDecrementPercentage>
 </ForceActuatorSettings>

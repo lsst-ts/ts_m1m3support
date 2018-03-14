@@ -43,6 +43,7 @@ private:
 	m1m3_logevent_AppliedActiveOpticForcesC eventAppliedActiveOpticForces;
 	m1m3_logevent_AppliedAzimuthForcesC eventAppliedAzimuthForces;
 	m1m3_logevent_AppliedBalanceForcesC eventAppliedBalanceForces;
+	m1m3_logevent_AppliedCylinderForcesC eventAppliedCylinderForces;
 	m1m3_logevent_AppliedElevationForcesC eventAppliedElevationForces;
 	m1m3_logevent_AppliedForcesC eventAppliedForces;
 	m1m3_logevent_AppliedOffsetForcesC eventAppliedOffsetForces;
@@ -100,6 +101,7 @@ private:
 	m1m3_logevent_AppliedActiveOpticForcesC previousEventAppliedActiveOpticForces;
 	m1m3_logevent_AppliedAzimuthForcesC previousEventAppliedAzimuthForces;
 	m1m3_logevent_AppliedBalanceForcesC previousEventAppliedBalanceForces;
+	m1m3_logevent_AppliedCylinderForcesC previousEventAppliedCylinderForces;
 	m1m3_logevent_AppliedElevationForcesC previousEventAppliedElevationForces;
 	m1m3_logevent_AppliedForcesC previousEventAppliedForces;
 	m1m3_logevent_AppliedOffsetForcesC previousEventAppliedOffsetForces;
@@ -174,6 +176,7 @@ public:
 	m1m3_logevent_AppliedActiveOpticForcesC* getEventAppliedActiveOpticForces() { return &this->eventAppliedActiveOpticForces; }
 	m1m3_logevent_AppliedAzimuthForcesC* getEventAppliedAzimuthForces() { return &this->eventAppliedAzimuthForces; }
 	m1m3_logevent_AppliedBalanceForcesC* getEventAppliedBalanceForces() { return &this->eventAppliedBalanceForces; }
+	m1m3_logevent_AppliedCylinderForcesC* getEventAppliedCylinderForces() { return &this->eventAppliedCylinderForces; }
 	m1m3_logevent_AppliedElevationForcesC* getEventAppliedElevationForces() { return &this->eventAppliedElevationForces; }
 	m1m3_logevent_AppliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
 	m1m3_logevent_AppliedOffsetForcesC* getEventAppliedOffsetForces() { return &this->eventAppliedOffsetForces; }
@@ -255,6 +258,8 @@ public:
 	void tryLogAppliedAzimuthForces();
 	void logAppliedBalanceForces();
 	void tryLogAppliedBalanceForces();
+	void logAppliedCylinderForces();
+	void tryLogAppliedCylinderForces();
 	void logAppliedElevationForces();
 	void tryLogAppliedElevationForces();
 	void logAppliedForces();

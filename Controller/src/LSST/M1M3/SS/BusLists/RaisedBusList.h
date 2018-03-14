@@ -19,6 +19,7 @@ class RaisedBusList: public BusList {
 private:
 	m1m3_OuterLoopDataC* outerLoopData;
 	m1m3_ForceActuatorDataC* forceActuatorData;
+	m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces;
 	m1m3_HardpointActuatorDataC* hardpointActuatorData;
 	m1m3_logevent_ForceActuatorInfoC* forceInfo;
 
@@ -28,7 +29,7 @@ private:
 	int32_t roundRobinFAReportServerStatusIndex[5];
 
 public:
-	RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceActuatorData, m1m3_HardpointActuatorDataC* hardpointActuatorData, m1m3_logevent_ForceActuatorInfoC* forceInfo);
+	RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceActuatorData, m1m3_HardpointActuatorDataC* hardpointActuatorData, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces);
 
 	void update();
 };

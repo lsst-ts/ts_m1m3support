@@ -103,7 +103,7 @@ void Inclinometer::readDataResponse() {
 			}
 		}
 		else {
-			Log.Warn("Inclinometer: Invalid CRC");
+			Log.Warn("Inclinometer: Invalid CRC %d %d %d", this->rxBuffer[8], this->rxBuffer[9], this->rxBuffer[10]);
 			this->warnInvalidCRC(timestamp);
 		}
 	}

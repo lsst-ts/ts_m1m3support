@@ -17,11 +17,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceActuatorData, m1m3_HardpointActuatorDataC* hardpointActuatorData, m1m3_logevent_ForceActuatorInfoC* forceInfo)
+RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceActuatorData, m1m3_HardpointActuatorDataC* hardpointActuatorData, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("RaisedBusList: RaisedBusList()");
 	this->outerLoopData = outerLoopData;
 	this->forceActuatorData = forceActuatorData;
+	this->appliedCylinderForces = appliedCylinderForces;
 	this->hardpointActuatorData = hardpointActuatorData;
 	this->forceInfo = forceInfo;
 	for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
@@ -43,11 +44,11 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 				int32_t secondaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
 				if (address <= 16) {
-					saaPrimary[address - 1] = this->forceActuatorData->PrimaryCylinderSetpointCommanded[primaryDataIndex];
+					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
 				}
 				else {
-					daaPrimary[address - 17] = this->forceActuatorData->PrimaryCylinderSetpointCommanded[primaryDataIndex];
-					daaSecondary[address - 17] = this->forceActuatorData->SecondaryCylinderSetpointCommanded[secondaryDataIndex];
+					daaPrimary[address - 17] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
+					daaSecondary[address - 17] = this->appliedCylinderForces->SecondaryCylinderForces[secondaryDataIndex];
 				}
 			}
 			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->BroadcastCounter, this->outerLoopData->SlewFlag, saaPrimary, daaPrimary, daaSecondary);
@@ -109,11 +110,11 @@ void RaisedBusList::update() {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 				int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
 				if (address <= 16) {
-					saaPrimary[address - 1] = this->forceActuatorData->PrimaryCylinderSetpointCommanded[dataIndex];
+					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[dataIndex];
 				}
 				else {
-					daaPrimary[address - 17] = this->forceActuatorData->PrimaryCylinderSetpointCommanded[dataIndex];
-					daaSecondary[address - 17] = this->forceActuatorData->SecondaryCylinderSetpointCommanded[dataIndex];
+					daaPrimary[address - 17] = this->appliedCylinderForces->PrimaryCylinderForces[dataIndex];
+					daaSecondary[address - 17] = this->appliedCylinderForces->SecondaryCylinderForces[dataIndex];
 				}
 			}
 			this->buffer.setIndex(this->setForceCommandIndex[subnetIndex]);

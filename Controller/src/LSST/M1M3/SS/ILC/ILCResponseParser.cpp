@@ -36,6 +36,7 @@ ILCResponseParser::ILCResponseParser() {
 	this->forceActuatorState = 0;
 	this->forceActuatorWarning = 0;
 	this->forceWarning = 0;
+	this->appliedCylinderForces = 0;
 	this->forceActuatorData = 0;
 	this->hardpointMonitorInfo = 0;
 	this->hardpointMonitorState = 0;
@@ -60,6 +61,7 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
 	this->forceActuatorState = this->publisher->getEventForceActuatorState();
 	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
 	this->forceWarning = this->publisher->getEventForceActuatorForceWarning();
+	this->appliedCylinderForces = this->publisher->getEventAppliedCylinderForces();
 	this->forceActuatorData = this->publisher->getForceActuatorData();
 	this->hardpointMonitorInfo = this->publisher->getEventHardpointMonitorInfo();
 	this->hardpointMonitorState = this->publisher->getEventHardpointMonitorState();
@@ -892,7 +894,7 @@ void ILCResponseParser::checkForceActuatorFollowingError(ILCMap map) {
 	int32_t secondaryDataIndex = map.SecondaryDataIndex;
 
 	float primaryForce = this->forceActuatorData->PrimaryCylinderForce[dataIndex];
-	float primarySetpoint = this->forceActuatorData->PrimaryCylinderSetpointCommanded[dataIndex] / 1000.0;
+	float primarySetpoint = this->appliedCylinderForces->PrimaryCylinderForces[dataIndex] / 1000.0;
 	float primaryLimit = this->forceActuatorSettings->FollowingErrorPrimaryCylinderLimitTable[dataIndex].HighFault;
 	float primaryFollowingError = primaryForce - primarySetpoint;
 	bool primaryLimitWarning = std::abs(primaryFollowingError) > primaryLimit;
@@ -902,7 +904,7 @@ void ILCResponseParser::checkForceActuatorFollowingError(ILCMap map) {
 
 	if (secondaryDataIndex != -1) {
 		float secondaryForce = this->forceActuatorData->SecondaryCylinderForce[dataIndex];
-		float secondarySetpoint = this->forceActuatorData->SecondaryCylinderSetpointCommanded[dataIndex] / 1000.0;
+		float secondarySetpoint = this->appliedCylinderForces->SecondaryCylinderForces[dataIndex] / 1000.0;
 		float secondaryLimit = this->forceActuatorSettings->FollowingErrorSecondaryCylinderLimitTable[dataIndex].HighFault;
 		float secondaryFollowingError = secondaryForce - secondarySetpoint;
 		bool secondaryLimitWarning = std::abs(secondaryFollowingError) > secondaryLimit;

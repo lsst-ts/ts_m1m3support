@@ -92,19 +92,22 @@ public:
 	std::vector<ForceActuatorNeighbors> Neighbors;
 
 	bool UseInclinometer;
-	double MirrorWeight;
-	double MirrorXMoment;
-	double MirrorYMoment;
-	double MirrorZMoment;
-	double SetpointXMomentLowLimitPercentage;
-	double SetpointXMomentHighLimitPercentage;
-	double SetpointYMomentLowLimitPercentage;
-	double SetpointYMomentHighLimitPercentage;
-	double SetpointZMomentLowLimitPercentage;
-	double SetpointZMomentHighLimitPercentage;
-	double SetpointNearNeighborLimitPercentage;
-	double SetpointMirrorWeightLimitPercentage;
-	double SetpointFarNeighborLimitPercentage;
+	float MirrorWeight;
+	float MirrorXMoment;
+	float MirrorYMoment;
+	float MirrorZMoment;
+	float SetpointXMomentLowLimitPercentage;
+	float SetpointXMomentHighLimitPercentage;
+	float SetpointYMomentLowLimitPercentage;
+	float SetpointYMomentHighLimitPercentage;
+	float SetpointZMomentLowLimitPercentage;
+	float SetpointZMomentHighLimitPercentage;
+	float SetpointNearNeighborLimitPercentage;
+	float SetpointMirrorWeightLimitPercentage;
+	float SetpointFarNeighborLimitPercentage;
+	float MirrorCenterOfGravityX;
+	float MirrorCenterOfGravityY;
+	float MirrorCenterOfGravityZ;
 
 	double RaiseIncrementPercentage;
 	double LowerDecrementPercentage;
