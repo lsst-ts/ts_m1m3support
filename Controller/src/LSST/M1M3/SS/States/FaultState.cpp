@@ -39,8 +39,10 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
 	model->getILC()->readAll();
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
+	model->getILC()->calculateHPPostion();
+	model->getILC()->calculateHPMirrorForces();
+	model->getILC()->calculateFAMirrorForces();
 	model->getILC()->verifyResponses();
-	model->getForceController()->calculateMirrorForces();
 	usleep(50000);
 	model->queryFPGAData();
 	usleep(10000);

@@ -102,20 +102,32 @@ Model::~Model() {
 }
 
 void Model::loadSettings(std::string settingsToApply) {
-	Log.Debug("Model: loadSettings(%s)", settingsToApply.c_str());
+	Log.Info("Model: loadSettings(%s)", settingsToApply.c_str());
 	this->settingReader->configure(settingsToApply);
 
+	Log.Info("Model: Loading ILC application settings");
 	ILCApplicationSettings* ilcApplicationSettings = this->settingReader->loadILCApplicationSettings();
+	Log.Info("Model: Loading force actuator application settings");
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings = this->settingReader->loadForceActuatorApplicationSettings();
+	Log.Info("Model: Loading force actuator settings");
 	ForceActuatorSettings* forceActuatorSettings = this->settingReader->loadForceActuatorSettings();
+	Log.Info("Model: Loading hardpoint actuator application settings");
 	HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings = this->settingReader->loadHardpointActuatorApplicationSettings();
+	Log.Info("Model: Laoding hardpoint actuator settings");
 	HardpointActuatorSettings* hardpointActuatorSettings = this->settingReader->loadHardpointActuatorSettings();
+	Log.Info("Model: Loading safety controller settings");
 	SafetyControllerSettings* safetyControllerSettings = this->settingReader->loadSafetyControllerSettings();
+	Log.Info("Model: Loading position controller settings");
 	PositionControllerSettings* positionControllerSettings = this->settingReader->loadPositionControllerSettings();
+	Log.Info("Model: Loading accelerometer settings");
 	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
+	Log.Info("Model: Loading displacement settings");
 	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
+	Log.Info("Model: Loading hardpoint monitor application settings");
 	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
+	Log.Info("Model: Loading gyro settings");
 	GyroSettings* gyroSettings = this->settingReader->loadGyroSettings();
+	Log.Info("Model: Loading PID settings");
 	PIDSettings* pidSettings = this->settingReader->loadPIDSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);

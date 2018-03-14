@@ -10,6 +10,7 @@
 #include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <M1M3SSPublisher.h>
+#include <SAL_m1m3C.h>
 #include <Timestamp.h>
 #include <U16ArrayUtilities.h>
 #include <Log.h>

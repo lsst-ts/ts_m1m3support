@@ -40,13 +40,15 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	model->getInclinometer()->writeDataRequest();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
+	model->getILC()->calculateHPPostion();
+	model->getILC()->calculateHPMirrorForces();
+	model->getILC()->calculateFAMirrorForces();
 	model->getILC()->verifyResponses();
 	model->getAccelerometer()->sampleData();
 	model->getAirController()->checkStatus();
 	model->getDisplacement()->readDataResponse();
 	model->getInclinometer()->readDataResponse();
 	model->getGyro()->read();
-	model->getForceController()->calculateMirrorForces();
 	model->getForceController()->updateAppliedForces();
 	model->getForceController()->processAppliedForces();
 	model->getILC()->publishForceActuatorStatus();

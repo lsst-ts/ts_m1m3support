@@ -10,10 +10,14 @@
 
 #include <DataTypes.h>
 #include <cmath>
+#include <ForcesAndMoments.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+
+class ForceActuatorApplicationSettings;
+class ForceActuatorSettings;
 
 class ForceConverter {
 private:
@@ -50,6 +54,9 @@ public:
 		*yForce = 0;
 		*zForce = primaryCylinder;
 	}
+
+	static ForcesAndMoments calculateForcesAndMoments(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, float* xForces, float* yForces, float* zForces);
+
 };
 
 } /* namespace SS */

@@ -71,6 +71,12 @@ private:
 	FreezeSensorBusList busListFreezeSensor;
 	RaisedBusList busListRaised;
 
+	HardpointActuatorSettings* hardpointActuatorSettings;
+	m1m3_HardpointActuatorDataC* hardpointActuatorData;
+	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+	ForceActuatorSettings* forceActuatorSettings;
+	m1m3_ForceActuatorDataC* forceActuatorData;
+
 	int8_t hpStepCommand[6];
 	int32_t hpSteps[6];
 
@@ -106,6 +112,9 @@ public:
 	void read(uint8_t subnet);
 	void readAll();
 
+	void calculateHPPostion();
+	void calculateHPMirrorForces();
+	void calculateFAMirrorForces();
 	void verifyResponses();
 
 	void publishForceActuatorInfo();

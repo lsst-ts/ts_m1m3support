@@ -25,12 +25,9 @@ private:
 	m1m3_ForceActuatorDataC forceActuatorData;
 	m1m3_GyroDataC gyroData;
 	m1m3_HardpointActuatorDataC hardpointActuatorData;
-	m1m3_HardpointMirrorForceDataC hardpointMirrorForceData;
 	m1m3_HardpointMonitorDataC hardpointMonitorData;
 	m1m3_IMSDataC imsData;
 	m1m3_InclinometerDataC inclinometerData;
-	m1m3_MeasuredMirrorForceDataC measuredMirrorForceData;
-	m1m3_MirrorPositionDataC mirrorPositionData;
 	m1m3_OuterLoopDataC outerLoopData;
 	m1m3_PIDDataC pidData;
 	m1m3_PowerSupplyDataC powerSupplyData;
@@ -158,12 +155,9 @@ public:
 	m1m3_ForceActuatorDataC* getForceActuatorData() { return &this->forceActuatorData; }
 	m1m3_GyroDataC* getGyroData() { return &this->gyroData; }
 	m1m3_HardpointActuatorDataC* getHardpointActuatorData() { return &this->hardpointActuatorData; }
-	m1m3_HardpointMirrorForceDataC* getHardpointMirrorForceData() { return &this->hardpointMirrorForceData; }
 	m1m3_HardpointMonitorDataC* getHardpointMonitorData() { return &this->hardpointMonitorData; }
 	m1m3_IMSDataC* getIMSData() { return &this->imsData; }
 	m1m3_InclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
-	m1m3_MeasuredMirrorForceDataC* getMeasuredMirrorForceData() { return &this->measuredMirrorForceData; }
-	m1m3_MirrorPositionDataC* getMirrorPositionData() { return &this->mirrorPositionData; }
 	m1m3_OuterLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
 	m1m3_PIDDataC* getPIDData() { return &this->pidData; }
 	m1m3_PowerSupplyDataC* getPowerSupplyData() { return &this->powerSupplyData; }
@@ -232,12 +226,9 @@ public:
 	void putForceActuatorData();
 	void putGyroData();
 	void putHardpointActuatorData();
-	void putHardpointMirrorForceData();
 	void putHardpointMonitorData();
 	void putIMSData();
 	void putInclinometerData();
-	void putMeasuredMirrorForceData();
-	void putMirrorPositionData();
 	void putOuterLoopData();
 	void putPIDData();
 	void putPowerSupplyData();

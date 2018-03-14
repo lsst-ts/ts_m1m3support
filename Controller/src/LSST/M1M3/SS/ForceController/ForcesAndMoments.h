@@ -19,6 +19,7 @@ struct ForcesAndMoments {
 	float Mx;
 	float My;
 	float Mz;
+	float ForceMagnitude;
 };
 
 } /* namespace SS */

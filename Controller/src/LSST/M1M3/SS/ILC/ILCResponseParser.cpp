@@ -44,7 +44,6 @@ ILCResponseParser::ILCResponseParser() {
 	this->hardpointMonitorData = 0;
 	this->ilcWarning = 0;
 	this->outerLoopData = 0;
-	this->mirrorPositionData = 0;
 }
 
 ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData) {
@@ -69,7 +68,6 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
 	this->hardpointMonitorData = this->publisher->getHardpointMonitorData();
 	this->ilcWarning = this->publisher->getEventILCWarning();
 	this->outerLoopData = this->publisher->getOuterLoopData();
-	this->mirrorPositionData = this->publisher->getMirrorPositionData();
 
 	this->forceWarning->Timestamp = 0;
 	this->forceWarning->AnyWarning = false;
@@ -110,7 +108,6 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 	this->hardpointActuatorState->Timestamp = globalTimestamp;
 	this->hardpointActuatorWarning->Timestamp = globalTimestamp;
 	this->hardpointActuatorData->Timestamp = globalTimestamp;
-	this->mirrorPositionData->Timestamp = globalTimestamp;
 	this->hardpointMonitorState->Timestamp = globalTimestamp;
 	this->hardpointMonitorWarning->Timestamp = globalTimestamp;
 	this->hardpointMonitorData->Timestamp = globalTimestamp;
@@ -490,7 +487,6 @@ void ILCResponseParser::parseStepMotorResponse(ModbusBuffer* buffer, ILCMap map,
 	this->hardpointActuatorData->MeasuredForce[dataIndex] = buffer->readSGL();
 	this->hardpointActuatorData->Displacement[dataIndex] = (this->hardpointActuatorData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
-	this->calculateHPPostion();
 }
 
 void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map) {
@@ -505,7 +501,6 @@ void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffe
 	this->hardpointActuatorData->MeasuredForce[dataIndex] = buffer->readSGL();
 	this->hardpointActuatorData->Displacement[dataIndex] = (this->hardpointActuatorData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
-	this->calculateHPPostion();
 }
 
 void ILCResponseParser::parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
@@ -815,51 +810,6 @@ void ILCResponseParser::parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap map
 	this->hardpointMonitorData->BreakawayLVDT[dataIndex] = buffer->readSGL();
 	this->hardpointMonitorData->DisplacementLVDT[dataIndex] = buffer->readSGL();
 	buffer->skipToNextFrame();
-}
-
-void ILCResponseParser::calculateHPPostion() {
-	this->mirrorPositionData->XPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[2] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[3] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[4] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * this->hardpointActuatorData->Displacement[1];
-	this->mirrorPositionData->YPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[7] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[8] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[9] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[10] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * this->hardpointActuatorData->Displacement[1];
-	this->mirrorPositionData->ZPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[13] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[14] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[15] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[16] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * this->hardpointActuatorData->Displacement[1];
-	this->mirrorPositionData->XRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[19] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[20] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[21] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[22] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * this->hardpointActuatorData->Displacement[1];
-	this->mirrorPositionData->YRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[25] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[26] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[27] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[28] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * this->hardpointActuatorData->Displacement[1];
-	this->mirrorPositionData->ZRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[31] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[32] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * this->hardpointActuatorData->Displacement[1];
 }
 
 void ILCResponseParser::checkForceActuatorMeasuredForce(ILCMap map) {

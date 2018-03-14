@@ -9,15 +9,11 @@
 #define ACCELEROMETER_H_
 
 #include <DataTypes.h>
-#include <SAL_m1m3C.h>
+#include <TypeAlias.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-
-class AccelerometerSettings;
-class FPGA;
-class M1M3SSPublisher;
 
 class Accelerometer {
 private:

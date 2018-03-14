@@ -37,7 +37,6 @@ private:
 	m1m3_logevent_HardpointActuatorStateC* hardpointActuatorState;
 	m1m3_logevent_HardpointActuatorWarningC* hardpointActuatorWarning;
 	m1m3_HardpointActuatorDataC* hardpointActuatorData;
-	m1m3_MirrorPositionDataC* mirrorPositionData;
 
 	m1m3_logevent_ForceActuatorInfoC* forceActuatorInfo;
 	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
@@ -101,8 +100,6 @@ private:
 	void parseReportDCAStatusResponse(ModbusBuffer* buffer, ILCMap map);
 	void parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, ILCMap map);
 	void parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap map);
-
-	void calculateHPPostion();
 
 	void checkForceActuatorMeasuredForce(ILCMap map);
 	void checkForceActuatorFollowingError(ILCMap map);

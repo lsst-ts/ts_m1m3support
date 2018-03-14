@@ -79,8 +79,6 @@ private:
 	m1m3_PIDDataC* pidData;
 	m1m3_logevent_PIDInfoC* pidInfo;
 	m1m3_HardpointActuatorDataC* hardpointActuatorData;
-	m1m3_MeasuredMirrorForceDataC* measuredMirrorForceData;
-	m1m3_HardpointMirrorForceDataC* hardpointMirrorForceData;
 	m1m3_AccelerometerDataC* accelerometerData;
 	m1m3_GyroDataC* gyroData;
 
@@ -127,7 +125,6 @@ public:
 	void applyBalanceForces();
 	void updateBalanceForces();
 	void zeroBalanceForces();
-	void calculateMirrorForces();
 	void updatePID(int id, PIDParameters parameters);
 	void resetPID(int id);
 	void resetPIDs();

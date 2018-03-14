@@ -54,8 +54,10 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	interlockController->checkInterlockStatus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
+	ilc->calculateHPPostion();
+	ilc->calculateHPMirrorForces();
+	ilc->calculateFAMirrorForces();
 	ilc->verifyResponses();
-	forceController->calculateMirrorForces();
 	ilc->publishForceActuatorStatus();
 	ilc->publishForceActuatorData();
 	ilc->publishHardpointStatus();

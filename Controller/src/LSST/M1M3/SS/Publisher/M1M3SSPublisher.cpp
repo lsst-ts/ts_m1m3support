@@ -24,12 +24,9 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_ForceActuatorData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_GyroData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_HardpointActuatorData");
-	this->m1m3SAL->salTelemetryPub((char*)"m1m3_HardpointMirrorForceData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_HardpointMonitorData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_IMSData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_InclinometerData");
-	this->m1m3SAL->salTelemetryPub((char*)"m1m3_MeasuredMirrorForceData");
-	this->m1m3SAL->salTelemetryPub((char*)"m1m3_MirrorPositionData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_OuterLoopData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_PIDData");
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_PowerSupplyData");
@@ -101,12 +98,9 @@ void M1M3SSPublisher::putAccelerometerData() { this->m1m3SAL->putSample_Accelero
 void M1M3SSPublisher::putForceActuatorData() { this->m1m3SAL->putSample_ForceActuatorData(&this->forceActuatorData); }
 void M1M3SSPublisher::putGyroData() { this->m1m3SAL->putSample_GyroData(&this->gyroData); }
 void M1M3SSPublisher::putHardpointActuatorData() { this->m1m3SAL->putSample_HardpointActuatorData(&this->hardpointActuatorData); }
-void M1M3SSPublisher::putHardpointMirrorForceData() { this->m1m3SAL->putSample_HardpointMirrorForceData(&this->hardpointMirrorForceData); }
 void M1M3SSPublisher::putHardpointMonitorData() { this->m1m3SAL->putSample_HardpointMonitorData(&this->hardpointMonitorData); }
 void M1M3SSPublisher::putIMSData() { this->m1m3SAL->putSample_IMSData(&this->imsData); }
 void M1M3SSPublisher::putInclinometerData() { this->m1m3SAL->putSample_InclinometerData(&this->inclinometerData); }
-void M1M3SSPublisher::putMeasuredMirrorForceData() { this->m1m3SAL->putSample_MeasuredMirrorForceData(&this->measuredMirrorForceData); }
-void M1M3SSPublisher::putMirrorPositionData() { this->m1m3SAL->putSample_MirrorPositionData(&this->mirrorPositionData); }
 void M1M3SSPublisher::putOuterLoopData() { this->m1m3SAL->putSample_OuterLoopData(&this->outerLoopData); }
 void M1M3SSPublisher::putPIDData() { this->m1m3SAL->putSample_PIDData(&this->pidData); }
 void M1M3SSPublisher::putPowerSupplyData() { this->m1m3SAL->putSample_PowerSupplyData(&this->powerSupplyData); }

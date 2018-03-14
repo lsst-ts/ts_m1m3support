@@ -19,6 +19,7 @@
 #include <vector>
 #include <Log.h>
 #include <unistd.h>
+#include <ForceConverter.h>
 
 #include <iostream>
 using namespace std;
@@ -75,8 +76,6 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->pidData = this->publisher->getPIDData();
 	this->pidInfo = this->publisher->getEventPIDInfo();
 	this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
-	this->measuredMirrorForceData = this->publisher->getMeasuredMirrorForceData();
-	this->hardpointMirrorForceData = this->publisher->getHardpointMirrorForceData();
 	this->accelerometerData = this->publisher->getAccelerometerData();
 	this->gyroData = this->publisher->getGyroData();
 
@@ -621,12 +620,12 @@ void ForceController::applyBalanceForces() {
 
 void ForceController::updateBalanceForces() {
 	Log.Trace("ForceController: updateBalanceForces()");
-	float fx = this->fx.process(0, this->hardpointMirrorForceData->Fx);
-	float fy = this->fy.process(0, this->hardpointMirrorForceData->Fy);
-	float fz = this->fz.process(0, this->hardpointMirrorForceData->Fz);
-	float mx = this->mx.process(0, this->hardpointMirrorForceData->Mx);
-	float my = this->my.process(0, this->hardpointMirrorForceData->My);
-	float mz = this->mz.process(0, this->hardpointMirrorForceData->Mz);
+	float fx = this->fx.process(0, this->hardpointActuatorData->Fx);
+	float fy = this->fy.process(0, this->hardpointActuatorData->Fy);
+	float fz = this->fz.process(0, this->hardpointActuatorData->Fz);
+	float mx = this->mx.process(0, this->hardpointActuatorData->Mx);
+	float my = this->my.process(0, this->hardpointActuatorData->My);
+	float mz = this->mz.process(0, this->hardpointActuatorData->Mz);
 	// Note: Publishing from any PID will publish ALL PID data
 	this->fx.publishTelemetry();
 	DistributedForces forces = this->calculateDistribution(fx, fy, fz, mx, my, mz);
@@ -696,20 +695,6 @@ void ForceController::zeroBalanceForces() {
 	this->publisher->tryLogForceSetpointWarning();
 	this->publisher->tryLogAppliedBalanceForces();
 	this->publisher->tryLogForceActuatorState();
-}
-
-void ForceController::calculateMirrorForces() {
-	std::vector<float> m = this->forceActuatorSettings->HardpointForceMomentTable;
-	float* force = this->hardpointActuatorData->MeasuredForce;
-	this->hardpointMirrorForceData->Timestamp = this->hardpointActuatorData->Timestamp;
-	Log.Debug("EEK: %d", m.size());
-	this->hardpointMirrorForceData->Fx = m[0] * force[0] + m[6] * force[1] + m[12] * force[2] + m[18] * force[3] + m[24] * force[4] + m[30] * force[5];
-	this->hardpointMirrorForceData->Fy = m[1] * force[0] + m[7] * force[1] + m[13] * force[2] + m[19] * force[3] + m[25] * force[4] + m[31] * force[5];
-	this->hardpointMirrorForceData->Fz = m[2] * force[0] + m[8] * force[1] + m[14] * force[2] + m[20] * force[3] + m[26] * force[4] + m[32] * force[5];
-	this->hardpointMirrorForceData->Mx = m[3] * force[0] + m[9] * force[1] + m[15] * force[2] + m[21] * force[3] + m[27] * force[4] + m[33] * force[5];
-	this->hardpointMirrorForceData->My = m[4] * force[0] + m[10] * force[1] + m[16] * force[2] + m[22] * force[3] + m[28] * force[4] + m[34] * force[5];
-	this->hardpointMirrorForceData->Mz = m[5] * force[0] + m[11] * force[1] + m[17] * force[2] + m[23] * force[3] + m[29] * force[4] + m[35] * force[5];
-	this->publisher->putHardpointMirrorForceData();
 }
 
 void ForceController::updatePID(int id, PIDParameters parameters) {
@@ -1212,39 +1197,7 @@ DistributedForces ForceController::calculateDistribution(float xForce, float yFo
 }
 
 ForcesAndMoments ForceController::calculateForcesAndMoments(float* xForces, float* yForces, float* zForces) {
-	ForcesAndMoments fm;
-	fm.Fx = 0;
-	fm.Fy = 0;
-	fm.Fz = 0;
-	fm.Mx = 0;
-	fm.My = 0;
-	fm.Mz = 0;
-	for(int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-		float rx = this->forceActuatorInfo->XPosition[zIndex] - this->forceActuatorSettings->MirrorCenterOfGravityX;
-		float ry = this->forceActuatorInfo->YPosition[zIndex] - this->forceActuatorSettings->MirrorCenterOfGravityY;
-		float rz = this->forceActuatorInfo->ZPosition[zIndex] - this->forceActuatorSettings->MirrorCenterOfGravityZ;
-		float fx = 0;
-		float fy = 0;
-		float fz = zForces[zIndex];
-
-		if (xIndex != -1) {
-			fx = xForces[xIndex];
-		}
-
-		if (yIndex != -1) {
-			fy = yForces[yIndex];
-		}
-
-		fm.Fx += fx;
-		fm.Fy += fy;
-		fm.Fz += fz;
-		fm.Mx += (fz * ry) - (fy * rz);
-		fm.My += (fx * rz) - (fz * rx);
-		fm.Mz += (fy * rx) - (fx * ry);
-	}
-	return fm;
+	return ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, xForces, yForces, zForces);
 }
 
 void ForceController::setAppliedAberrationForcesAndMoments() {
@@ -1262,6 +1215,7 @@ void ForceController::setAppliedAccelerationForcesAndMoments() {
 	this->appliedAccelerationForces->Mx = fm.Mx;
 	this->appliedAccelerationForces->My = fm.My;
 	this->appliedAccelerationForces->Mz = fm.Mz;
+	this->appliedAccelerationForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedActiveOpticForcesAndMoments() {
@@ -1279,6 +1233,7 @@ void ForceController::setAppliedAzimuthForcesAndMoments() {
 	this->appliedAzimuthForces->Mx = fm.Mx;
 	this->appliedAzimuthForces->My = fm.My;
 	this->appliedAzimuthForces->Mz = fm.Mz;
+	this->appliedAzimuthForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedBalanceForcesAndMoments() {
@@ -1289,6 +1244,7 @@ void ForceController::setAppliedBalanceForcesAndMoments() {
 	this->appliedBalanceForces->Mx = fm.Mx;
 	this->appliedBalanceForces->My = fm.My;
 	this->appliedBalanceForces->Mz = fm.Mz;
+	this->appliedBalanceForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedElevationForcesAndMoments() {
@@ -1299,6 +1255,7 @@ void ForceController::setAppliedElevationForcesAndMoments() {
 	this->appliedElevationForces->Mx = fm.Mx;
 	this->appliedElevationForces->My = fm.My;
 	this->appliedElevationForces->Mz = fm.Mz;
+	this->appliedElevationForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedForcesAndMoments() {
@@ -1309,6 +1266,7 @@ void ForceController::setAppliedForcesAndMoments() {
 	this->appliedForces->Mx = fm.Mx;
 	this->appliedForces->My = fm.My;
 	this->appliedForces->Mz = fm.Mz;
+	this->appliedForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedOffsetForcesAndMoments() {
@@ -1319,6 +1277,7 @@ void ForceController::setAppliedOffsetForcesAndMoments() {
 	this->appliedOffsetForces->Mx = fm.Mx;
 	this->appliedOffsetForces->My = fm.My;
 	this->appliedOffsetForces->Mz = fm.Mz;
+	this->appliedOffsetForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedStaticForcesAndMoments() {
@@ -1329,6 +1288,7 @@ void ForceController::setAppliedStaticForcesAndMoments() {
 	this->appliedStaticForces->Mx = fm.Mx;
 	this->appliedStaticForces->My = fm.My;
 	this->appliedStaticForces->Mz = fm.Mz;
+	this->appliedStaticForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedThermalForcesAndMoments() {
@@ -1339,6 +1299,7 @@ void ForceController::setAppliedThermalForcesAndMoments() {
 	this->appliedThermalForces->Mx = fm.Mx;
 	this->appliedThermalForces->My = fm.My;
 	this->appliedThermalForces->Mz = fm.Mz;
+	this->appliedThermalForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setAppliedVelocityForcesAndMoments() {
@@ -1349,6 +1310,7 @@ void ForceController::setAppliedVelocityForcesAndMoments() {
 	this->appliedVelocityForces->Mx = fm.Mx;
 	this->appliedVelocityForces->My = fm.My;
 	this->appliedVelocityForces->Mz = fm.Mz;
+	this->appliedVelocityForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedAberrationForcesAndMoments() {
@@ -1366,6 +1328,7 @@ void ForceController::setRejectedAccelerationForcesAndMoments() {
 	this->rejectedAccelerationForces->Mx = fm.Mx;
 	this->rejectedAccelerationForces->My = fm.My;
 	this->rejectedAccelerationForces->Mz = fm.Mz;
+	this->rejectedAccelerationForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedActiveOpticForcesAndMoments() {
@@ -1383,6 +1346,7 @@ void ForceController::setRejectedAzimuthForcesAndMoments() {
 	this->rejectedAzimuthForces->Mx = fm.Mx;
 	this->rejectedAzimuthForces->My = fm.My;
 	this->rejectedAzimuthForces->Mz = fm.Mz;
+	this->rejectedAzimuthForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedBalanceForcesAndMoments() {
@@ -1393,6 +1357,7 @@ void ForceController::setRejectedBalanceForcesAndMoments() {
 	this->rejectedBalanceForces->Mx = fm.Mx;
 	this->rejectedBalanceForces->My = fm.My;
 	this->rejectedBalanceForces->Mz = fm.Mz;
+	this->rejectedBalanceForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedElevationForcesAndMoments() {
@@ -1403,6 +1368,7 @@ void ForceController::setRejectedElevationForcesAndMoments() {
 	this->rejectedElevationForces->Mx = fm.Mx;
 	this->rejectedElevationForces->My = fm.My;
 	this->rejectedElevationForces->Mz = fm.Mz;
+	this->rejectedElevationForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedForcesAndMoments() {
@@ -1413,6 +1379,7 @@ void ForceController::setRejectedForcesAndMoments() {
 	this->rejectedForces->Mx = fm.Mx;
 	this->rejectedForces->My = fm.My;
 	this->rejectedForces->Mz = fm.Mz;
+	this->rejectedForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedOffsetForcesAndMoments() {
@@ -1423,6 +1390,7 @@ void ForceController::setRejectedOffsetForcesAndMoments() {
 	this->rejectedOffsetForces->Mx = fm.Mx;
 	this->rejectedOffsetForces->My = fm.My;
 	this->rejectedOffsetForces->Mz = fm.Mz;
+	this->rejectedOffsetForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedStaticForcesAndMoments() {
@@ -1433,6 +1401,7 @@ void ForceController::setRejectedStaticForcesAndMoments() {
 	this->rejectedStaticForces->Mx = fm.Mx;
 	this->rejectedStaticForces->My = fm.My;
 	this->rejectedStaticForces->Mz = fm.Mz;
+	this->rejectedStaticForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedThermalForcesAndMoments() {
@@ -1443,6 +1412,7 @@ void ForceController::setRejectedThermalForcesAndMoments() {
 	this->rejectedThermalForces->Mx = fm.Mx;
 	this->rejectedThermalForces->My = fm.My;
 	this->rejectedThermalForces->Mz = fm.Mz;
+	this->rejectedThermalForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::setRejectedVelocityForcesAndMoments() {
@@ -1453,6 +1423,7 @@ void ForceController::setRejectedVelocityForcesAndMoments() {
 	this->rejectedVelocityForces->Mx = fm.Mx;
 	this->rejectedVelocityForces->My = fm.My;
 	this->rejectedVelocityForces->Mz = fm.Mz;
+	this->rejectedVelocityForces->ForceMagnitude = fm.ForceMagnitude;
 }
 
 void ForceController::sumAllForces() {
