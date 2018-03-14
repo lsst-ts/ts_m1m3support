@@ -27,16 +27,7 @@
 #include <FreezeSensorBusList.h>
 #include <RaisedBusList.h>
 #include <ILCResponseParser.h>
-
-struct m1m3_logevent_HardpointActuatorInfoC;
-struct m1m3_HardpointStatusC;
-struct m1m3_HardpointDataC;
-
-struct m1m3_logevent_ForceActuatorInfoC;
-struct m1m3_ForceActuatorStatusC;
-struct m1m3_ForceActuatorDataC;
-
-struct m1m3_logevent_ILCWarningC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -80,6 +71,12 @@ private:
 	FreezeSensorBusList busListFreezeSensor;
 	RaisedBusList busListRaised;
 
+	HardpointActuatorSettings* hardpointActuatorSettings;
+	m1m3_HardpointActuatorDataC* hardpointActuatorData;
+	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+	ForceActuatorSettings* forceActuatorSettings;
+	m1m3_ForceActuatorDataC* forceActuatorData;
+
 	int8_t hpStepCommand[6];
 	int32_t hpSteps[6];
 
@@ -115,6 +112,9 @@ public:
 	void read(uint8_t subnet);
 	void readAll();
 
+	void calculateHPPostion();
+	void calculateHPMirrorForces();
+	void calculateFAMirrorForces();
 	void verifyResponses();
 
 	void publishForceActuatorInfo();

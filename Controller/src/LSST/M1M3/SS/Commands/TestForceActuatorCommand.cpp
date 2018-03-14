@@ -17,20 +17,20 @@ TestForceActuatorCommand::TestForceActuatorCommand(Context* context, M1M3SSPubli
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ActuatorId = data->ActuatorId;
+	this->data.ForceActuator = data->ForceActuator;
 }
 
 bool TestForceActuatorCommand::validate() {
-	if (!((this->data.ActuatorId >= 101 && this->data.ActuatorId <= 143) ||
-			(this->data.ActuatorId >= 207 && this->data.ActuatorId <= 243) ||
-			(this->data.ActuatorId >= 301 && this->data.ActuatorId <= 343) ||
-			(this->data.ActuatorId >= 407 && this->data.ActuatorId <= 443)) ) {
-		this->publisher->logCommandRejectionWarning("TestForceActuator", "The field ActuatorId is must be in range [101, 143] or [207, 243] or [301, 343] or [407, 443].");
+	if (!((this->data.ForceActuator >= 101 && this->data.ForceActuator <= 143) ||
+			(this->data.ForceActuator >= 207 && this->data.ForceActuator <= 243) ||
+			(this->data.ForceActuator >= 301 && this->data.ForceActuator <= 343) ||
+			(this->data.ForceActuator >= 407 && this->data.ForceActuator <= 443)) ) {
+		this->publisher->logCommandRejectionWarning("TestForceActuator", "The field ForceActuator must be in range [101, 143] or [207, 243] or [301, 343] or [407, 443].");
 	}
-	return (this->data.ActuatorId >= 101 && this->data.ActuatorId <= 143) ||
-			(this->data.ActuatorId >= 207 && this->data.ActuatorId <= 243) ||
-			(this->data.ActuatorId >= 301 && this->data.ActuatorId <= 343) ||
-			(this->data.ActuatorId >= 407 && this->data.ActuatorId <= 443);
+	return (this->data.ForceActuator >= 101 && this->data.ForceActuator <= 143) ||
+			(this->data.ForceActuator >= 207 && this->data.ForceActuator <= 243) ||
+			(this->data.ForceActuator >= 301 && this->data.ForceActuator <= 343) ||
+			(this->data.ForceActuator >= 407 && this->data.ForceActuator <= 443);
 }
 
 void TestForceActuatorCommand::execute() {

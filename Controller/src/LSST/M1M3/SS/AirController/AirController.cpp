@@ -6,18 +6,19 @@
  */
 
 #include <AirController.h>
-#include <M1M3SSPublisher.h>
-#include <SafetyController.h>
+#include <cstring>
 #include <FPGA.h>
 #include <FPGAAddresses.h>
-#include <SAL_m1m3C.h>
-#include <cstring>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 AirController::AirController(M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga) {
+	Log.Debug("AirController: AirController()");
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 	this->fpga = fpga;
@@ -32,6 +33,7 @@ AirController::AirController(M1M3SSPublisher* publisher, SafetyController* safet
 }
 
 void AirController::turnAirOn() {
+	Log.Info("AirController: turnAirOn()");
 	this->fpga->writeCommandFIFO(this->turnAirOnBuffer, 2, 0);
 	this->airCommandedOnChanged = !this->airSupplyStatus->AirCommandedOn;
 	this->airSupplyStatus->AirCommandedOn = true;
@@ -39,6 +41,7 @@ void AirController::turnAirOn() {
 }
 
 void AirController::turnAirOff() {
+	Log.Info("AirController: turnAirOff()");
 	this->fpga->writeCommandFIFO(this->turnAirOffBuffer, 2, 0);
 	this->airCommandedOnChanged = this->airSupplyStatus->AirCommandedOn;
 	this->airSupplyStatus->AirCommandedOn = false;
@@ -46,6 +49,7 @@ void AirController::turnAirOff() {
 }
 
 void AirController::checkStatus() {
+	Log.Trace("AirController: checkStatus()");
 	bool controlStatusChanged = this->checkControlStatus();
 	bool valveOpenStatusChanged = this->checkValveOpenStatus();
 	bool valveClosedStatusChanged = this->checkValveClosedStatus();

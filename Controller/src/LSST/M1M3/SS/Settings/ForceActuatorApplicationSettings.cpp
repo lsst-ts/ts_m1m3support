@@ -13,6 +13,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <stdio.h>
+#include <TableLoader.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -21,6 +22,12 @@ namespace SS {
 void ForceActuatorApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
 	doc.load_file(filename.c_str());
+	TableLoader::loadTable(1, 1, 1, &XIndexToZIndex, doc.select_node("//ForceActuatorApplicationSettings/XIndexToZIndexTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &YIndexToZIndex, doc.select_node("//ForceActuatorApplicationSettings/YIndexToZIndexTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &SecondaryCylinderIndexToZIndex, doc.select_node("//ForceActuatorApplicationSettings/SecondaryCylinderIndexToZIndexTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &ZIndexToXIndex, doc.select_node("//ForceActuatorApplicationSettings/ZIndexToXIndexTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &ZIndexToYIndex, doc.select_node("//ForceActuatorApplicationSettings/ZIndexToYIndexTablePath").node().child_value());
+	TableLoader::loadTable(1, 1, 1, &ZIndexToSecondaryCylinderIndex, doc.select_node("//ForceActuatorApplicationSettings/ZIndexToSecondaryCylinderIndexTablePath").node().child_value());
 	this->loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath").node().child_value());
 }
 
@@ -62,14 +69,6 @@ void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string 
 			else if (rawOrientation == "-X")
 				orientation = ForceActuatorOrientations::NegativeX;
 			row.Orientation = orientation;
-			++i;
-			row.PrimaryAxisSensorOffset = boost::lexical_cast<double>(*i);
-			++i;
-			row.PrimaryAxisSensorSensitivity = boost::lexical_cast<double>(*i);
-			++i;
-			row.SecondaryAxisSensorOffset = boost::lexical_cast<double>(*i);
-			++i;
-			row.SecondaryAxisSensorSensitivity = boost::lexical_cast<double>(*i);
 			this->Table.push_back(row);
 		}
 		lineNumber++;

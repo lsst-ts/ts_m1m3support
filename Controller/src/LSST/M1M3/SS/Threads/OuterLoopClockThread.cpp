@@ -13,6 +13,7 @@
 #include <Command.h>
 #include <M1M3SSPublisher.h>
 #include <Timestamp.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -32,6 +33,7 @@ OuterLoopClockThread::~OuterLoopClockThread() {
 }
 
 void OuterLoopClockThread::run() {
+	Log.Info("OuterLoopClockThread: Start");
 	while(this->keepRunning) {
 		this->fpga->waitForOuterLoopClock(-1);
 		uint64_t timestamp = Timestamp::toRaw(this->publisher->getTimestamp());
@@ -50,6 +52,7 @@ void OuterLoopClockThread::run() {
 		pthread_mutex_unlock(&this->updateMutex);
 		this->fpga->ackOuterLoopClock();
 	}
+	Log.Info("OuterLoopClockThread: Completed");
 }
 
 void OuterLoopClockThread::stop() {

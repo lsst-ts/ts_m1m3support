@@ -1,5 +1,6 @@
 <AccelerometerSettings>
-<AngularAccelerationXCoefficient>1</AngularAccelerationXCoefficient>
-<AngularAccelerationYCoefficient>1</AngularAccelerationYCoefficient>
-<AngularAccelerationZCoefficient>1</AngularAccelerationZCoefficient>
+<VoltsToMetersPerSecondSqrd>4.9035</VoltsToMetersPerSecondSqrd>
+<AngularAccelerationXDistance>1</AngularAccelerationXDistance>
+<AngularAccelerationYDistance>1</AngularAccelerationYDistance>
+<AngularAccelerationZDistance>1</AngularAccelerationZDistance>
 </AccelerometerSettings>

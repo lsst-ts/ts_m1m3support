@@ -9,18 +9,21 @@
 #include <ExpansionFPGAApplicationSettings.h>
 #include <NiFpga_M1M3Expansion.h>
 #include <unistd.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 ExpansionFPGA::ExpansionFPGA(ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings) {
+	Log.Debug("ExpansionFPGA: ExpansionFPGA()");
 	this->expansionFPGAApplicationSettings = expansionFPGAApplicationSettings;
 	this->session = 0;
 	this->remaining = 0;
 }
 
 int32_t ExpansionFPGA::initialize() {
+	Log.Debug("ExpansionFPGA: initialize()");
 	if (!this->expansionFPGAApplicationSettings->Enabled) {
 		return 0;
 	}
@@ -28,6 +31,7 @@ int32_t ExpansionFPGA::initialize() {
 }
 
 int32_t ExpansionFPGA::open() {
+	Log.Debug("ExpansionFPGA: open()");
 	if (!this->expansionFPGAApplicationSettings->Enabled) {
 		return 0;
 	}
@@ -41,6 +45,7 @@ int32_t ExpansionFPGA::open() {
 }
 
 int32_t ExpansionFPGA::close() {
+	Log.Debug("ExpansionFPGA: close()");
 	if (!this->expansionFPGAApplicationSettings->Enabled) {
 		return 0;
 	}
@@ -48,6 +53,7 @@ int32_t ExpansionFPGA::close() {
 }
 
 int32_t ExpansionFPGA::finalize() {
+	Log.Debug("ExpansionFPGA: finalize()");
 	if (!this->expansionFPGAApplicationSettings->Enabled) {
 		return 0;
 	}

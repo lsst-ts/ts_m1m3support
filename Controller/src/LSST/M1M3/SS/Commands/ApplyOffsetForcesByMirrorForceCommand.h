@@ -20,13 +20,11 @@ class ApplyOffsetForcesByMirrorForceCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_ApplyOffsetForcesByMirrorForceC data;
 
 public:
 	ApplyOffsetForcesByMirrorForceCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyOffsetForcesByMirrorForceC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_ApplyOffsetForcesByMirrorForceC* getData() { return &this->data; }
 
 	bool validate();

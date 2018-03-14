@@ -11,9 +11,7 @@
 #include <BusList.h>
 #include <ILCDataTypes.h>
 #include <ModbusBuffer.h>
-
-struct m1m3_logevent_ForceActuatorInfoC;
-struct m1m3_logevent_HardpointActuatorInfoC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {

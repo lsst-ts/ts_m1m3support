@@ -20,13 +20,11 @@ class AbortRaiseM1M3Command: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_AbortRaiseM1M3C data;
 
 public:
 	AbortRaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_AbortRaiseM1M3C* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_AbortRaiseM1M3C* getData() { return &this->data; }
 
 	bool validate();

@@ -18,15 +18,17 @@ struct ForceControllerSafetySettings {
 	bool FaultOnFarNeighborCheck;
 	bool FaultOnElevationForceClipping;
 	bool FaultOnAzimuthForceClipping;
-	bool FaultOnTemperatureForceClipping;
-	bool FaultOnHardpointOffloadForceClipping;
-	bool FaultOnDynamicForceClipping;
-	bool FaultOnAOSNetForceCheck;
-	bool FaultOnAOSForceClipping;
+	bool FaultOnThermalForceClipping;
+	bool FaultOnBalanceForceClipping;
+	bool FaultOnAccelerationForceClipping;
+	bool FaultOnActiveOpticNetForceCheck;
+	bool FaultOnActiveOpticForceClipping;
 	bool FaultOnStaticForceClipping;
 	bool FaultOnAberrationNetForceCheck;
 	bool FaultOnAberrationForceClipping;
 	bool FaultOnOffsetForceClipping;
+	bool FaultOnVelocityForceClipping;
+	bool FaultOnForceClipping;
 };
 
 #endif /* FORCECONTROLLERSAFETYSETTINGS_H_ */

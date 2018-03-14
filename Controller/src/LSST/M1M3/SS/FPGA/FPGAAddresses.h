@@ -44,10 +44,10 @@ struct FPGAAddresses {
 		Slot4DIO7 = 24,
 		ILCPowerInterlockStatus = 25,                 // Slot5/DI0
 		FanCoilerHeaterInterlockStatus = 26,          // Slot5/DI1
-		LaserTrackerInterlockStatus = 27,             // Slot5/DI2
+		Slot5DI2 = 27,
 		AirSupplyInterlockStatus = 28,                // Slot5/DI3
-		GISEarthquakeInterlockStatus = 29,            // Slot5/DI4
-		GISEStopInterlockStatus = 30,                 // Slot5/DI5
+		CabinetDoorInterlockStatus = 29,              // Slot5/DI4
+		Slot5DI5 = 30,
 		TMAMotionStopInterlockStatus = 31,            // Slot5/DI6
 		GISHeartbeatInterlockStatus = 32,             // Slot5/DI7
 		AirSupplyValveOpen = 33,                      // Slot5/DI8
@@ -75,9 +75,9 @@ struct FPGAAddresses {
 		Slot5DI30 = 55,
 		Slot5DI31 = 56,
 		HeartbeatToSafetyController = 57,             // Slot6/CH0
-		CriticalFaultToSafetyController = 58,         // Slot6/CH1
-		MirrorLoweringRaisingToSafetyController = 59, // Slot6/CH2
-		MirrorParkedToSafetyController = 60,          // Slot6/CH3
+		Slot6CH1 = 58,
+		Slot6CH2 = 59,
+		Slot6CH3 = 60,
 		AirSupplyValveControl = 61,                   // Slot6/CH4
 		MirrorCellLightControl = 62,                  // Slot6/CH5
 		Slot6CH6 = 63,

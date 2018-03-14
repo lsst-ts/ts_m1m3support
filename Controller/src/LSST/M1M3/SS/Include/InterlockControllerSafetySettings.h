@@ -10,15 +10,10 @@
 
 struct InterlockControllerSafetySettings {
 	bool FaultOnHeartbeatStateOutputMismatch;
-	bool FaultOnCriticalFaultStateOutputMismatch;
-	bool FaultOnMirrorLoweringRaisingStateOutputMismatch;
-	bool FaultOnMirrorParkedStateOutputMismatch;
-	bool FaultOnPowerNetworksOff;
+	bool FaultOnAuxPowerNetworksOff;
 	bool FaultOnThermalEquipmentOff;
-	bool FaultOnLaserTrackerOff;
 	bool FaultOnAirSupplyOff;
-	bool FaultOnGISEarthquake;
-	bool FaultOnGISEStop;
+	bool FaultOnCabinetDoorOpen;
 	bool FaultOnTMAMotionStop;
 	bool FaultOnGISHeartbeatLost;
 };

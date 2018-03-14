@@ -8,6 +8,7 @@
 #include <LoweringFaultState.h>
 #include <Model.h>
 #include <PowerController.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -16,6 +17,7 @@ namespace SS {
 LoweringFaultState::LoweringFaultState(M1M3SSPublisher* publisher) : FaultState(publisher, "LoweringFaultState") { }
 
 States::Type LoweringFaultState::update(UpdateCommand* command, Model* model) {
+	Log.Trace("LoweringFaultState: update()");
 	model->getPowerController()->setAllAuxPowerNetworks(false);
 	FaultState::update(command, model);
 	return States::FaultState;

@@ -13,9 +13,9 @@ namespace M1M3 {
 namespace SS {
 
 struct DistributedForces {
-	double XForces[156];
-	double YForces[156];
-	double ZForces[156];
+	float XForces[156];
+	float YForces[156];
+	float ZForces[156];
 };
 
 } /* namespace SS */

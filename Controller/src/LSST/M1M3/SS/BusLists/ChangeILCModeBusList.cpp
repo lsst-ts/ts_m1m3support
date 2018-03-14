@@ -8,6 +8,7 @@
 #include <ChangeILCModeBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -15,6 +16,7 @@ namespace SS {
 
 ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode)
  : BusList(subnetData, ilcMessageFactory) {
+	Log.Debug("ChangeILCModeBusList: ChangeILCModeBusList()");
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->startSubnet(subnetIndex);
 		for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {

@@ -9,9 +9,7 @@
 #define DISPLACEMENT_H_
 
 #include <DataTypes.h>
-
-struct m1m3_IMSDataC;
-struct m1m3_logevent_DisplacementSensorWarningC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {

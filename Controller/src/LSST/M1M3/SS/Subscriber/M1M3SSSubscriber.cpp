@@ -9,12 +9,14 @@
 #include <SAL_m1m3.h>
 #include <SAL_MTMount.h>
 #include <CommandFactory.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, CommandFactory* commandFactory) {
+	Log.Debug("M1M3SSSubscriber: M1M3SSSubscriber()");
 	this->m1m3SAL = m1m3SAL;
 	this->mtMountSAL = mtMountSAL;
 	this->commandFactory = commandFactory;
@@ -29,12 +31,12 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, C
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ClearOffsetForces");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_RaiseM1M3");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_LowerM1M3");
-	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyAberrationByBendingModes");
-	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyAberrationByForces");
-	this->m1m3SAL->salProcessor((char*)"m1m3_command_ClearAberration");
-	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyAOSCorrectionByBendingModes");
-	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyAOSCorrectionByForces");
-	this->m1m3SAL->salProcessor((char*)"m1m3_command_ClearAOSCorrection");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyAberrationForcesByBendingModes");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyAberrationForces");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ClearAberrationForces");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyActiveOpticForcesByBendingModes");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyActiveOpticForces");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ClearActievOpticForces");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_EnterEngineering");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ExitEngineering");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_TestAir");
@@ -53,9 +55,11 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, C
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_TurnPowerOff");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_EnableHardpointCorrections");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_DisableHardpointCorrections");
-	this->m1m3SAL->salProcessor((char*)"m1m3_command_RunHardpointCorrectionProfile");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_RunMirrorForceProfile");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_AbortProfile");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyOffsetForcesByMirrorForce");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_UpdatePID");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ResetPID");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Az");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Alt");
 }
@@ -148,50 +152,50 @@ Command* M1M3SSSubscriber::tryAcceptCommandLowerM1M3() {
 	return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationByBendingModes() {
-	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAberrationByBendingModes(&this->applyAberrationByBendingModesData);
+Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationForcesByBendingModes() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAberrationForcesByBendingModes(&this->applyAberrationForcesByBendingModesData);
 	if (commandID > 0) {
-		return this->commandFactory->create(Commands::ApplyAberrationByBendingModesCommand, &this->applyAberrationByBendingModesData, commandID);
+		return this->commandFactory->create(Commands::ApplyAberrationForcesByBendingModesCommand, &this->applyAberrationForcesByBendingModesData, commandID);
 	}
 	return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationByForces() {
-	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAberrationByForces(&this->applyAberrationByForcesData);
+Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAberrationForces(&this->applyAberrationForcesData);
 	if (commandID > 0) {
-		return this->commandFactory->create(Commands::ApplyAberrationByForcesCommand, &this->applyAberrationByForcesData, commandID);
+		return this->commandFactory->create(Commands::ApplyAberrationForcesCommand, &this->applyAberrationForcesData, commandID);
 	}
 	return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandClearAberration() {
-	int32_t commandID = this->m1m3SAL->acceptCommand_ClearAberration(&this->clearAberrationData);
+Command* M1M3SSSubscriber::tryAcceptCommandClearAberrationForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ClearAberrationForces(&this->clearAberrationForcesData);
 	if (commandID > 0) {
-		return this->commandFactory->create(Commands::ClearAberrationCommand, &this->clearAberrationData, commandID);
+		return this->commandFactory->create(Commands::ClearAberrationForcesCommand, &this->clearAberrationForcesData, commandID);
 	}
 	return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandApplyAOSCorrectionByBendingModes() {
-	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAOSCorrectionByBendingModes(&this->applyAOSCorrectionByBendingModesData);
+Command* M1M3SSSubscriber::tryAcceptCommandApplyActiveOpticForcesByBendingModes() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyActiveOpticForcesByBendingModes(&this->applyActiveOpticForcesByBendingModesData);
 	if (commandID > 0) {
-		return this->commandFactory->create(Commands::ApplyAOSCorrectionByBendingModesCommand, &this->applyAOSCorrectionByBendingModesData, commandID);
+		return this->commandFactory->create(Commands::ApplyActiveOpticForcesByBendingModesCommand, &this->applyActiveOpticForcesByBendingModesData, commandID);
 	}
 	return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandApplyAOSCorrectionByForces() {
-	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyAOSCorrectionByForces(&this->applyAOSCorrectionByForcesData);
+Command* M1M3SSSubscriber::tryAcceptCommandApplyActiveOpticForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyActiveOpticForces(&this->applyActiveOpticForcesData);
 	if (commandID > 0) {
-		return this->commandFactory->create(Commands::ApplyAOSCorrectionByForcesCommand, &this->applyAOSCorrectionByForcesData, commandID);
+		return this->commandFactory->create(Commands::ApplyActiveOpticForcesCommand, &this->applyActiveOpticForcesData, commandID);
 	}
 	return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandClearAOSCorrection() {
-	int32_t commandID = this->m1m3SAL->acceptCommand_ClearAOSCorrection(&this->clearAOSCorrectionData);
+Command* M1M3SSSubscriber::tryAcceptCommandClearActiveOpticForces() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ClearActiveOpticForces(&this->clearActiveOpticForcesData);
 	if (commandID > 0) {
-		return this->commandFactory->create(Commands::ClearAOSCorrectionCommand, &this->clearAOSCorrectionData, commandID);
+		return this->commandFactory->create(Commands::ClearActiveOpticForcesCommand, &this->clearActiveOpticForcesData, commandID);
 	}
 	return 0;
 }
@@ -340,10 +344,10 @@ Command* M1M3SSSubscriber::tryAcceptCommandDisableHardpointCorrections() {
 	return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandRunHardpointCorrectionProfile() {
-	int32_t commandID = this->m1m3SAL->acceptCommand_RunHardpointCorrectionProfile(&this->runHardpointCorrectionProfileData);
+Command* M1M3SSSubscriber::tryAcceptCommandRunMirrorForceProfile() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_RunMirrorForceProfile(&this->runMirrorForceProfileData);
 	if (commandID > 0) {
-		return this->commandFactory->create(Commands::RunHardpointCorrectionProfileCommand, &this->runHardpointCorrectionProfileData, commandID);
+		return this->commandFactory->create(Commands::RunMirrorForceProfileCommand, &this->runMirrorForceProfileData, commandID);
 	}
 	return 0;
 }
@@ -360,6 +364,22 @@ Command* M1M3SSSubscriber::tryAcceptCommandApplyOffsetForcesByMirrorForce() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_ApplyOffsetForcesByMirrorForce(&this->applyOffsetForcesByMirrorForceData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::ApplyOffsetForcesByMirrorForceCommand, &this->applyOffsetForcesByMirrorForceData, commandID);
+	}
+	return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandUpdatePID() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_UpdatePID(&this->updatePIDData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::UpdatePIDCommand, &this->updatePIDData, commandID);
+	}
+	return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandResetPID() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ResetPID(&this->resetPIDData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ResetPIDCommand, &this->resetPIDData, commandID);
 	}
 	return 0;
 }

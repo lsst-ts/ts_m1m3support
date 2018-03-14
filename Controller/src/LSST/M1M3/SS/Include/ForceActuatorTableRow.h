@@ -22,10 +22,6 @@ struct ForceActuatorTableRow {
 	uint8_t Subnet;
 	uint8_t Address;
 	ForceActuatorOrientations::Type Orientation;
-	float PrimaryAxisSensorOffset;
-	float PrimaryAxisSensorSensitivity;
-	float SecondaryAxisSensorOffset;
-	float SecondaryAxisSensorSensitivity;
 };
 
 #endif /* FORCEACTUATORTABLEROW_H_ */

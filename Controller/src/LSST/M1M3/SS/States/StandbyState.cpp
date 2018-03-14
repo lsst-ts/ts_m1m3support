@@ -14,6 +14,8 @@
 #include <StartCommand.h>
 #include <Gyro.h>
 
+#include <Log.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -21,11 +23,13 @@ namespace SS {
 StandbyState::StandbyState(M1M3SSPublisher* publisher) : State(publisher, "StandbyState") { }
 
 States::Type StandbyState::update(UpdateCommand* command, Model* model) {
+	Log.Trace("StandbyState: update()");
 	model->getInterlockController()->tryToggleHeartbeat();
 	return States::NoStateTransition;
 }
 
 States::Type StandbyState::start(StartCommand* command, Model* model) {
+	Log.Info("StandbyState: start()");
 	States::Type newState = States::DisabledState;
 	model->loadSettings(command->getData()->SettingsToApply);
 	PowerController* powerController = model->getPowerController();
@@ -94,13 +98,11 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	gyro->read();
 	gyro->publishGyroWarningIfRequired();
 	interlockController->tryToggleHeartbeat();
-	interlockController->setCriticalFault(false);
-	interlockController->setMirrorLoweringRaising(false);
-	interlockController->setMirrorParked(true);
 	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type StandbyState::shutdown(ShutdownCommand* command, Model* model) {
+	Log.Info("StandbyState: shutdown()");
 	States::Type newState = States::OfflineState;
 	model->shutdown();
 	return newState;

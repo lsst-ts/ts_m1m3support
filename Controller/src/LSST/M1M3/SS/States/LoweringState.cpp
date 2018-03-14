@@ -11,6 +11,7 @@
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -19,6 +20,7 @@ namespace SS {
 LoweringState::LoweringState(M1M3SSPublisher* publisher) : EnabledState(publisher, "LoweringState") { }
 
 States::Type LoweringState::update(UpdateCommand* command, Model* model) {
+	Log.Trace("LoweringState: update()");
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
 	EnabledState::update(command, model);

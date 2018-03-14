@@ -9,6 +9,7 @@
 #define COMMAND_H_
 
 #include <string>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -18,8 +19,16 @@ class Context;
 class M1M3SSPublisher;
 
 class Command {
+protected:
+	int32_t commandID;
+
 public:
 	virtual ~Command();
+
+	/*!
+	 * Gets the command ID.
+	 */
+	virtual int32_t getCommandID() { return this->commandID; }
 
 	/*!
 	 * Validates the command.

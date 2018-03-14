@@ -25,13 +25,11 @@ class EnableCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_EnableC data;
 
 public:
 	EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnableC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_EnableC* getData() { return &this->data; }
 
 	bool validate();

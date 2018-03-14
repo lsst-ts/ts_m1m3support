@@ -9,12 +9,7 @@
 #define POWERCONTROLLER_H_
 
 #include <DataTypes.h>
-
-struct m1m3_PowerSupplyDataC;
-
-struct m1m3_logevent_PowerStatusC;
-struct m1m3_logevent_PowerSupplyStatusC;
-struct m1m3_logevent_PowerWarningC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {

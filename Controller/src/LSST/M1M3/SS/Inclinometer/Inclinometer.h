@@ -11,9 +11,6 @@
 #include <DataTypes.h>
 #include <SAL_m1m3C.h>
 
-struct m1m3_InclinometerDataC;
-struct m1m3_logevent_InclinometerSensorWarningC;
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {

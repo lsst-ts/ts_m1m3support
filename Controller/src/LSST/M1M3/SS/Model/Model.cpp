@@ -31,6 +31,7 @@
 #include <PowerController.h>
 #include <AutomaticOperationsController.h>
 #include <Gyro.h>
+#include <Log.h>
 
 using namespace std;
 
@@ -39,6 +40,7 @@ namespace M1M3 {
 namespace SS {
 
 Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, InterlockController* interlockController) {
+	Log.Debug("Model: Model()");
 	this->settingReader = settingReader;
 	this->publisher = publisher;
 	this->fpga = fpga;
@@ -100,80 +102,119 @@ Model::~Model() {
 }
 
 void Model::loadSettings(std::string settingsToApply) {
+	Log.Info("Model: loadSettings(%s)", settingsToApply.c_str());
 	this->settingReader->configure(settingsToApply);
 
+	Log.Info("Model: Loading ILC application settings");
 	ILCApplicationSettings* ilcApplicationSettings = this->settingReader->loadILCApplicationSettings();
+	Log.Info("Model: Loading force actuator application settings");
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings = this->settingReader->loadForceActuatorApplicationSettings();
+	Log.Info("Model: Loading force actuator settings");
 	ForceActuatorSettings* forceActuatorSettings = this->settingReader->loadForceActuatorSettings();
+	Log.Info("Model: Loading hardpoint actuator application settings");
 	HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings = this->settingReader->loadHardpointActuatorApplicationSettings();
+	Log.Info("Model: Laoding hardpoint actuator settings");
 	HardpointActuatorSettings* hardpointActuatorSettings = this->settingReader->loadHardpointActuatorSettings();
+	Log.Info("Model: Loading safety controller settings");
 	SafetyControllerSettings* safetyControllerSettings = this->settingReader->loadSafetyControllerSettings();
+	Log.Info("Model: Loading position controller settings");
 	PositionControllerSettings* positionControllerSettings = this->settingReader->loadPositionControllerSettings();
+	Log.Info("Model: Loading accelerometer settings");
 	AccelerometerSettings* accelerometerSettings = this->settingReader->loadAccelerometerSettings();
+	Log.Info("Model: Loading displacement settings");
 	DisplacementSensorSettings* displacementSensorSettings = this->settingReader->loadDisplacementSensorSettings();
+	Log.Info("Model: Loading hardpoint monitor application settings");
 	HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings = this->settingReader->loadHardpointMonitorApplicationSettings();
+	Log.Info("Model: Loading gyro settings");
 	GyroSettings* gyroSettings = this->settingReader->loadGyroSettings();
+	Log.Info("Model: Loading PID settings");
+	PIDSettings* pidSettings = this->settingReader->loadPIDSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
 	this->populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
 
 	if (this->safetyController) {
+		Log.Debug("Model: Deleting safety controller");
 		delete this->safetyController;
 	}
+	Log.Info("Model: Creating safety controller");
 	this->safetyController = new SafetyController(this->publisher, safetyControllerSettings);
 
 	if (this->displacement) {
+		Log.Debug("Model: Deleting displacement");
 		delete this->displacement;
 	}
+	Log.Info("Model: Creating displacement");
 	this->displacement = new Displacement(displacementSensorSettings, this->publisher, this->safetyController, this->fpga);
 
 	if (this->inclinometer) {
+		Log.Debug("Model: Deleting inclinometer");
 		delete this->inclinometer;
 	}
+	Log.Info("Model: Creating inclinometer");
 	this->inclinometer = new Inclinometer(this->publisher, this->safetyController, this->fpga);
 
 	if (this->ilc) {
+		Log.Debug("Model: Deleting ILC");
 		delete this->ilc;
 	}
+	Log.Info("Model: Creating ILC");
 	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings, hardpointMonitorApplicationSettings);
 
 	if (this->forceController) {
+		Log.Debug("Model: Deleting force controller");
 		delete this->forceController;
 	}
-	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, this->publisher, this->safetyController);
+	Log.Info("Model: Creating force controller");
+	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings, this->publisher, this->safetyController);
 
 	if (this->airController) {
+		Log.Debug("Model: Deleting air controller");
 		delete this->airController;
 	}
+	Log.Info("Model: Creating air controller");
 	this->airController = new AirController(this->publisher, this->safetyController, this->fpga);
 
 	if (this->positionController) {
+		Log.Debug("Model: Deleting position controller");
 		delete this->positionController;
 	}
+	Log.Info("Model: Creating position controller");
 	this->positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings, this->publisher);
 
+	Log.Info("Model: Updating interlock controller");
 	this->interlockController->setSafetyController(this->safetyController);
 
 	if (this->accelerometer) {
+		Log.Debug("Model: Deleting accelerometer");
 		delete this->accelerometer;
 	}
+	Log.Info("Model: Creating accelerometer");
 	this->accelerometer = new Accelerometer(this->publisher, this->fpga, accelerometerSettings);
 
 	if (this->powerController) {
+		Log.Debug("Model: Deleting power controller");
 		delete this->powerController;
 	}
+	Log.Info("Model: Creating power controller");
 	this->powerController = new PowerController(this->publisher, this->fpga, this->expansionFPGA, this->safetyController);
 
 	if (this->automaticOperationsController) {
+		Log.Debug("Model: Deleting automatic operations controller");
 		delete this->automaticOperationsController;
 	}
+	Log.Info("Model: Creating automatic operations controller");
 	this->automaticOperationsController = new AutomaticOperationsController(this->positionController, this->forceController, this->interlockController, this->safetyController, this->publisher, this->powerController);
 
 	if (this->gyro) {
+		Log.Debug("Model: Deleting gyro");
 		delete this->gyro;
 	}
+	Log.Info("Model: Creating gyro");
 	this->gyro = new Gyro(gyroSettings, this->fpga, this->publisher);
+
+	Log.Info("Model: Settings applied");
 }
 
 void Model::queryFPGAData() {
@@ -191,6 +232,7 @@ void Model::publishFPGAData() {
 }
 
 void Model::publishStateChange(States::Type newState) {
+	Log.Debug("Model: publishStateChange(%d)", newState);
 	uint64_t state = (uint64_t)newState;
 	double timestamp = this->publisher->getTimestamp();
 	m1m3_logevent_SummaryStateC* summaryStateData = this->publisher->getEventSummaryState();
@@ -204,6 +246,7 @@ void Model::publishStateChange(States::Type newState) {
 }
 
 void Model::publishRecommendedSettings() {
+	Log.Debug("Model: publishRecommendedSettings()");
 	RecommendedApplicationSettings* recommendedApplicationSettings = this->settingReader->loadRecommendedApplicationSettings();
 	m1m3_logevent_SettingVersionsC* data = this->publisher->getEventSettingVersions();
 	data->Timestamp = this->publisher->getTimestamp();
@@ -224,6 +267,7 @@ void Model::waitForShutdown() {
 }
 
 void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings) {
+	Log.Debug("Model: populateForceActuatorInfo()");
 	m1m3_logevent_ForceActuatorInfoC* forceInfo = this->publisher->getEventForceActuatorInfo();
 	for(int i = 0; i < FA_COUNT; i++) {
 		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
@@ -235,17 +279,11 @@ void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceAct
 		forceInfo->XPosition[row.Index] = row.XPosition;
 		forceInfo->YPosition[row.Index] = row.YPosition;
 		forceInfo->ZPosition[row.Index] = row.ZPosition;
-		forceInfo->PrimaryCylinderSensorOffset[row.Index] = row.PrimaryAxisSensorOffset;
-		forceInfo->PrimaryCylinderSensorSensitivity[row.Index] = row.PrimaryAxisSensorSensitivity;
-		forceInfo->SecondaryCylinderSensorOffset[row.Index] = row.SecondaryAxisSensorOffset;
-		forceInfo->SecondaryCylinderSensorSensitivity[row.Index] = row.SecondaryAxisSensorSensitivity;
-		forceInfo->StaticXSetpoint[row.Index] = forceActuatorSettings->StaticXForces[row.Index];
-		forceInfo->StaticYSetpoint[row.Index] = forceActuatorSettings->StaticYForces[row.Index];
-		forceInfo->StaticZSetpoint[row.Index] = forceActuatorSettings->StaticZForces[row.Index];
 	}
 }
 
 void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings) {
+	Log.Debug("Model: populateHardpointActuatorInfo()");
 	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
 	for(int i = 0; i < HP_COUNT; i++) {
 		HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
@@ -255,12 +293,11 @@ void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* 
 		hardpointInfo->XPosition[row.Index] = row.XPosition;
 		hardpointInfo->YPosition[row.Index] = row.YPosition;
 		hardpointInfo->ZPosition[row.Index] = row.ZPosition;
-		hardpointInfo->SensorOffset[row.Index] = row.SensorOffset;
-		hardpointInfo->SensorSensitivity[row.Index] = row.SensorSensitivity;
 	}
 }
 
 void Model::populateHardpointMonitorInfo(HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
+	Log.Debug("Model: populateHardpointMonitorInfo()");
 	m1m3_logevent_HardpointMonitorInfoC* hardpointMonitorInfo = this->publisher->getEventHardpointMonitorInfo();
 	for(int i = 0; i < HM_COUNT; i++) {
 		HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];

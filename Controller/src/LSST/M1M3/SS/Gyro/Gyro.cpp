@@ -17,15 +17,14 @@
 #include <CRC.h>
 #include <Checksum.h>
 #include <unistd.h>
-
-#include <iostream>
-using namespace std;
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
+	Log.Debug("Gyro: Gyro()");
 	this->gyroSettings = gyroSettings;
 	this->fpga = fpga;
 	this->publisher = publisher;
@@ -53,21 +52,25 @@ Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
 }
 
 void Gyro::bit() {
+	Log.Debug("Gyro: bit()");
 	this->writeCommand(&this->bitBuffer);
 	usleep(10000);
 }
 
 void Gyro::enterConfigurationMode() {
+	Log.Debug("Gyro: enterConfigurationMode()");
 	this->writeCommand(&this->enterConfigurationBuffer);
 	usleep(10000);
 }
 
 void Gyro::exitConfigurationMode() {
+	Log.Debug("Gyro: exitConfigurationMode()");
 	this->writeCommand(&this->exitConfigurationBuffer);
 	usleep(10000);
 }
 
 void Gyro::enableIgnore() {
+	Log.Debug("Gyro: enableIgnore()");
 	uint16_t buffer[2] = {
 		FPGAAddresses::GyroRxIgnore,
 		1
@@ -76,6 +79,7 @@ void Gyro::enableIgnore() {
 }
 
 void Gyro::disableIgnore() {
+	Log.Debug("Gyro: disableIgnore()");
 	uint16_t buffer[2] = {
 		FPGAAddresses::GyroRxIgnore,
 		0
@@ -84,31 +88,37 @@ void Gyro::disableIgnore() {
 }
 
 void Gyro::resetConfiguration() {
+	Log.Debug("Gyro: resetConfiguration()");
 	this->writeCommand(&this->resetBuffer);
 	usleep(10000);
 }
 
 void Gyro::setRotationFormatRate() {
+	Log.Debug("Gyro: setRotationFormatRate()");
 	this->writeCommand(&this->rotationFormatRateBuffer);
 	usleep(10000);
 }
 
 void Gyro::setRotationUnitsRadians() {
+	Log.Debug("Gyro: setRotationUnitsRadians()");
 	this->writeCommand(&this->rotationUnitsRadiansBuffer);
 	usleep(10000);
 }
 
 void Gyro::setAxis() {
+	Log.Debug("Gyro: setAxis()");
 	this->writeCommand(&this->axesBuffer);
 	usleep(10000);
 }
 
 void Gyro::setDataRate() {
+	Log.Debug("Gyro: setDataRate()");
 	this->writeCommand(&this->dataRateBuffer);
 	usleep(10000);
 }
 
 void Gyro::read() {
+	Log.Trace("Gyro: read()");
 	uint16_t lengthBuffer[1];
 	ModbusBuffer buffer = ModbusBuffer();
 	this->fpga->writeRequestFIFO(FPGAAddresses::GyroRx, 0);
@@ -121,6 +131,10 @@ void Gyro::read() {
 		buffer.setIndex(0);
 		this->fpga->readU16ResponseFIFO(buffer.getBuffer(), length, 1000);
 		buffer.setLength(length);
+//		for(int i = 0; i < length; ++i) {
+//			cout << (int)(buffer.getBuffer()[i]) << " ";
+//		}
+//		cout << endl;
 		while(!buffer.endOfBuffer()) {
 			uint8_t peek = buffer.readU8();
 			buffer.setIndex(buffer.getIndex() - 1);
@@ -156,24 +170,40 @@ void Gyro::read() {
 					this->gyroWarning->Timestamp = timestamp;
 					buffer.readEndOfFrame();
 					if (!valid) {
+						Log.Warn("Gyro: CRC mismatch");
 						this->gyroWarning->CRCMismatchWarning = true;
+						this->gyroWarning->IncompleteFrameWarning = false;
+						this->gyroWarning->InvalidHeaderWarning = false;
+						this->gyroWarning->InvalidLengthWarning = false;
 					}
 				}
 				else {
+					Log.Warn("Gyro: Incomplete frame");
 					// TODO: Incomplete Frame it is expected to occur because of how I read data
 					this->readToEndOfFrame(&buffer);
-//					cout << "Incomplete Frame" << endl;
+					this->gyroWarning->CRCMismatchWarning = false;
+					this->gyroWarning->IncompleteFrameWarning = true;
+					this->gyroWarning->InvalidHeaderWarning = false;
+					this->gyroWarning->InvalidLengthWarning = false;
 				}
 			}
 			else {
+				Log.Warn("Gyro: Invalid header");
 				this->readToEndOfFrame(&buffer);
-//				cout << "Invalid Header" << endl;
+				this->gyroWarning->CRCMismatchWarning = false;
+				this->gyroWarning->IncompleteFrameWarning = false;
+				this->gyroWarning->InvalidHeaderWarning = true;
+				this->gyroWarning->InvalidLengthWarning = false;
 				// TODO: Need to decide how to handle ASCII responses
 			}
 		}
 	}
 	else {
-//		cout << "Invalid Length " << length << endl;
+//		Log.Warn("Gyro: Invalid length");
+		this->gyroWarning->CRCMismatchWarning = false;
+		this->gyroWarning->IncompleteFrameWarning = false;
+		this->gyroWarning->InvalidHeaderWarning = false;
+		this->gyroWarning->InvalidLengthWarning = true;
 	}
 }
 
@@ -292,6 +322,9 @@ bool Gyro::checkGyroWarningForUpdates() {
 			this->gyroWarning->GyroZStatusWarning != this->previousGyroWarning.GyroZStatusWarning ||
 			this->gyroWarning->SequenceNumberWarning != this->previousGyroWarning.SequenceNumberWarning ||
 			this->gyroWarning->CRCMismatchWarning != this->previousGyroWarning.CRCMismatchWarning ||
+			this->gyroWarning->InvalidLengthWarning != this->previousGyroWarning.InvalidLengthWarning ||
+			this->gyroWarning->InvalidHeaderWarning != this->previousGyroWarning.InvalidHeaderWarning ||
+			this->gyroWarning->IncompleteFrameWarning != this->previousGyroWarning.IncompleteFrameWarning ||
 			this->gyroWarning->GyroXSLDWarning != this->previousGyroWarning.GyroXSLDWarning ||
 			this->gyroWarning->GyroXMODDACWarning != this->previousGyroWarning.GyroXMODDACWarning ||
 			this->gyroWarning->GyroXPhaseWarning != this->previousGyroWarning.GyroXPhaseWarning ||
@@ -338,6 +371,9 @@ void Gyro::publishGyroWarning() {
 			this->gyroWarning->GyroZStatusWarning ||
 			this->gyroWarning->SequenceNumberWarning ||
 			this->gyroWarning->CRCMismatchWarning ||
+			this->gyroWarning->InvalidLengthWarning ||
+			this->gyroWarning->InvalidHeaderWarning ||
+			this->gyroWarning->IncompleteFrameWarning ||
 			this->gyroWarning->GyroXSLDWarning ||
 			this->gyroWarning->GyroXMODDACWarning ||
 			this->gyroWarning->GyroXPhaseWarning ||

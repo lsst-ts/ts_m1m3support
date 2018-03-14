@@ -40,6 +40,7 @@ class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
 class HardpointMonitorApplicationSettings;
+class PIDSettings;
 
 class Model {
 private:

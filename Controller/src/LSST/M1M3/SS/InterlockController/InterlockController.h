@@ -9,11 +9,7 @@
 #define INTERLOCKCONTROLLER_H_
 
 #include <DataTypes.h>
-
-struct m1m3_logevent_CellLightStatusC;
-struct m1m3_logevent_CellLightWarningC;
-struct m1m3_logevent_InterlockStatusC;
-struct m1m3_logevent_InterlockWarningC;
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -49,9 +45,6 @@ public:
 	void tryToggleHeartbeat();
 
 	void setHeartbeat(bool state);
-	void setCriticalFault(bool state);
-	void setMirrorLoweringRaising(bool state);
-	void setMirrorParked(bool state);
 
 	void checkInterlockStatus();
 
@@ -59,16 +52,10 @@ public:
 
 private:
 	bool checkHeartbeatOutputState();
-	bool checkCriticalFaultOutputState();
-	bool checkMirrorLoweringRaisingOutputState();
-	bool checkMirrorParkedOutputState();
 	bool checkCellLightOutputState();
 	bool checkCellLightState();
 
 	bool checkForHeartbeatOutputStateMismatch();
-	bool checkForCriticalFaultOutputStateMismatch();
-	bool checkForMirrorLoweringRaisingOutputStateMismatch();
-	bool checkForMirrorParkedOutputStateMismatch();
 	bool checkForCellLightOutputMismatch();
 	bool checkForCellLightSensorMismatch();
 

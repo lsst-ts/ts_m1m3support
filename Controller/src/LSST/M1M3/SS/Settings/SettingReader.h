@@ -23,6 +23,7 @@
 #include <InterlockApplicationSettings.h>
 #include <GyroSettings.h>
 #include <ExpansionFPGAApplicationSettings.h>
+#include <PIDSettings.h>
 #include <string>
 
 namespace LSST {
@@ -46,6 +47,7 @@ private:
 	InterlockApplicationSettings interlockApplicationSettings;
 	GyroSettings gyroSettings;
 	ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
+	PIDSettings pidSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -71,6 +73,7 @@ public:
 	InterlockApplicationSettings* loadInterlockApplicationSettings();
 	GyroSettings* loadGyroSettings();
 	ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
+	PIDSettings* loadPIDSettings();
 
 private:
 	std::string getBasePath(std::string file);

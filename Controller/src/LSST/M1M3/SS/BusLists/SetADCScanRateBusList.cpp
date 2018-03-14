@@ -9,6 +9,7 @@
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
 #include <SAL_m1m3C.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -16,6 +17,7 @@ namespace SS {
 
 SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_HardpointActuatorInfoC* hardpointInfo)
  : BusList(subnetData, ilcMessageFactory) {
+	Log.Debug("SetADCScanRateBusList: SetADCScanRateBusList()");
 	this->forceInfo = forceInfo;
 	this->hardpointInfo = hardpointInfo;
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {

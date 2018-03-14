@@ -13,20 +13,18 @@
 #include <FPGAAddresses.h>
 #include <U8ArrayUtilities.h>
 #include <Timestamp.h>
-#include <SAL_m1m3C.h>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <string>
 #include <cstring>
-
-#include <iostream>
-using namespace std;
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga) {
+	Log.Debug("Displacement: Displacement()");
 	this->displacementSensorSettings = displacementSensorSettings;
 	this->publisher = publisher;
 	this->safetyController = safetyController;
@@ -41,10 +39,12 @@ Displacement::Displacement(DisplacementSensorSettings* displacementSensorSetting
 }
 
 void Displacement::writeDataRequest() {
+	Log.Trace("Displacement: writeDataRequest()");
 	this->fpga->writeCommandFIFO(this->txBuffer, 6, 0);
 }
 
 void Displacement::readDataResponse() {
+	Log.Trace("Displacement: readDataResponse()");
 	this->fpga->writeRequestFIFO(FPGAAddresses::Displacement, 0);
 	this->fpga->readU8ResponseFIFO(this->rxBuffer, 2, 50);
 	uint16_t length = U8ArrayUtilities::u16(this->rxBuffer, 0);
@@ -79,12 +79,12 @@ void Displacement::readDataResponse() {
 						this->publisher->putIMSData();
 					}
 					else {
-//						cout << "Not enough sensors" << endl;
+						Log.Warn("Displacement: Invalid number of sensors");
 						this->warnInvalidResponse(timestamp);
 					}
 				}
 				catch(boost::bad_lexical_cast& e) {
-//					cout << "Exception" << endl;
+					Log.Warn("Displacement: Invalid data");
 					this->warnInvalidResponse(timestamp);
 				}
 			}
@@ -92,32 +92,64 @@ void Displacement::readDataResponse() {
 				++token;
 				++token;
 				switch(boost::lexical_cast<int32_t>(*token)) {
-				case 0: this->warnSensorReportsInvalidCommand(timestamp); break;
-				case 2: this->warnSensorReportsCommunicationTimeoutError(timestamp); break;
-				case 20: this->warnSensorReportsDataLengthError(timestamp); break;
-				case 21: this->warnSensorReportsNumberOfParametersError(timestamp); break;
-				case 22: this->warnSensorReportsParameterError(timestamp); break;
-				case 29: this->warnSensorReportsCommunicationError(timestamp); break;
-				case 65: this->warnSensorReportsIDNumberError(timestamp); break;
-				case 66: this->warnSensorReportsExpansionLineError(timestamp); break;
-				case 67: this->warnSensorReportsWriteControlError(timestamp); break;
-				default: this->warnUnknownProblem(timestamp); break;
+				case 0:
+					Log.Warn("Displacement: Sensor reports invalid command");
+					this->warnSensorReportsInvalidCommand(timestamp);
+					break;
+				case 2:
+					Log.Warn("Displacement: Sensor reports communication timeout error");
+					this->warnSensorReportsCommunicationTimeoutError(timestamp);
+					break;
+				case 20:
+					Log.Warn("Displacement: Sensor reports data length error");
+					this->warnSensorReportsDataLengthError(timestamp);
+					break;
+				case 21:
+					Log.Warn("Displacement: Sensor reports number of parameters error");
+					this->warnSensorReportsNumberOfParametersError(timestamp);
+					break;
+				case 22:
+					Log.Warn("Displacement: Sensor reports parameter error");
+					this->warnSensorReportsParameterError(timestamp);
+					break;
+				case 29:
+					Log.Warn("Displacement: Sensor reports communication error");
+					this->warnSensorReportsCommunicationError(timestamp);
+					break;
+				case 65:
+					Log.Warn("Displacement: Sensor reports ID number error");
+					this->warnSensorReportsIDNumberError(timestamp);
+					break;
+				case 66:
+					Log.Warn("Displacement: Sensor reports expansion line error");
+					this->warnSensorReportsExpansionLineError(timestamp);
+					break;
+				case 67:
+					Log.Warn("Displacement: Sensor reports write control error");
+					this->warnSensorReportsWriteControlError(timestamp);
+					break;
+				default:
+					Log.Warn("Displacement: Unknown problem");
+					this->warnUnknownProblem(timestamp);
+					break;
 				}
 			}
 			else {
+				Log.Warn("Displacement: Unknown command");
 				this->warnUnknownCommand(timestamp);
 			}
 		}
 		else {
-//			cout << "Invalid Response Length" << endl;
+			Log.Warn("Displacement: Invalid response");
 			this->warnInvalidResponse(timestamp);
 		}
 	}
 	else if (length == 0) {
+		Log.Warn("Displacement: Response timeout");
 		this->warnResponseTimeoutError(this->publisher->getTimestamp());
 	}
 	else {
-//		cout << "Invalid Length " << length << endl;
+		Log.Warn("Displacement: Invalid length");
 		this->warnInvalidResponse(this->publisher->getTimestamp());
 	}
 }

@@ -16,9 +16,10 @@ namespace SS {
 
 class AccelerometerSettings {
 public:
-	double AngularAccelerationXCoefficient;
-	double AngularAccelerationYCoefficient;
-	double AngularAccelerationZCoefficient;
+	double VoltsToMetersPerSecondSqrd;
+	double AngularAccelerationXDistance;
+	double AngularAccelerationYDistance;
+	double AngularAccelerationZDistance;
 
 	void load(const std::string &filename);
 };

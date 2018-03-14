@@ -8,25 +8,28 @@
 #ifndef STATETYPES_H_
 #define STATETYPES_H_
 
+#include <DataTypes.h>
+#include <ccpp_sal_m1m3.h> // Provides access to enumerations
+
 struct States {
 	enum Type {
-//		StateName                         SState    DState
-		OfflineState                    = 0x0000000000000000,
-		StandbyState                    = 0x0000000100000001,
-		DisabledState                   = 0x0000000200000002,
-		EnabledState                    = 0x0000000300000003,
-		FaultState                      = 0x0000000400000004,
-		ParkedState                     = 0x0000000300000005,
-		RaisingState                    = 0x0000000300000006,
-		ActiveState                     = 0x0000000300000007,
-		LoweringState                   = 0x0000000300000008,
-		EngineeringState                = 0x0000000300000009,
-		ParkedEngineeringState          = 0x000000030000000A,
-		RaisingEngineeringState         = 0x000000030000000B,
-		ActiveEngineeringState          = 0x000000030000000C,
-		LoweringEngineeringState        = 0x000000030000000D,
-		LoweringFaultState              = 0x000000040000000E,
-		ProfileHardpointCorrectionState = 0x000000030000000F,
+//		StateName                         SState                                                  DState
+		OfflineState                    = (((uint64_t)m1m3::SummaryState_OfflineState)  << 32) | ((uint64_t)m1m3::DetailedState_OfflineState),
+		StandbyState                    = (((uint64_t)m1m3::SummaryState_StandbyState)  << 32) | ((uint64_t)m1m3::DetailedState_StandbyState),
+		DisabledState                   = (((uint64_t)m1m3::SummaryState_DisabledState) << 32) | ((uint64_t)m1m3::DetailedState_DisabledState),
+		EnabledState                    = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_EnabledState),
+		FaultState                      = (((uint64_t)m1m3::SummaryState_FaultState)    << 32) | ((uint64_t)m1m3::DetailedState_FaultState),
+		ParkedState                     = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ParkedState),
+		RaisingState                    = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_RaisingState),
+		ActiveState                     = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ActiveState),
+		LoweringState                   = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_LoweringState),
+		EngineeringState                = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_EngineeringState),
+		ParkedEngineeringState          = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ParkedEngineeringState),
+		RaisingEngineeringState         = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_RaisingEngineeringState),
+		ActiveEngineeringState          = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ActiveEngineeringState),
+		LoweringEngineeringState        = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_LoweringEngineeringState),
+		LoweringFaultState              = (((uint64_t)m1m3::SummaryState_FaultState)    << 32) | ((uint64_t)m1m3::DetailedState_LoweringFaultState),
+		ProfileHardpointCorrectionState = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ProfileHardpointCorrectionState),
 		NoStateTransition               = 0xFFFFFFFFFFFFFFFF
 	};
 };

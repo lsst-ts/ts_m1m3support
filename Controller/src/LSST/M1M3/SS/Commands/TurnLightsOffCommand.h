@@ -20,13 +20,11 @@ class TurnLightsOffCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	int32_t commandID;
 	m1m3_command_TurnLightsOffC data;
 
 public:
 	TurnLightsOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnLightsOffC* data);
 
-	int32_t getCommandID() { return this->commandID; }
 	m1m3_command_TurnLightsOffC* getData() { return &this->data; }
 
 	bool validate();
