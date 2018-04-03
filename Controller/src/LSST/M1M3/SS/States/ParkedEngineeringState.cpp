@@ -52,6 +52,12 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, Model*
 States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command, Model* model) {
 	Log.Info("ParkedEngineeringState: exitEngineering()");
 	States::Type newState = States::ParkedState;
+	model->getDigitalInputOutput()->turnAirOn();
+	model->getPositionController()->stopMotion();
+	model->getForceController()->zeroOffsetForces();
+	model->getForceController()->processAppliedForces();
+	model->getDigitalInputOutput()->turnCellLightsOff();
+	model->getPowerController()->setAllPowerNetworks(true);
 	return model->getSafetyController()->checkSafety(newState);
 }
 
