@@ -10,7 +10,6 @@
 #include <ILC.h>
 #include <Displacement.h>
 #include <Inclinometer.h>
-#include <AirController.h>
 #include <ForceController.h>
 #include <ApplyOffsetForcesCommand.h>
 #include <ApplyAberrationForcesByBendingModesCommand.h>
@@ -20,7 +19,7 @@
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <SafetyController.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
@@ -48,7 +47,10 @@ ActiveEngineeringState::ActiveEngineeringState(M1M3SSPublisher* publisher) : Eng
 
 States::Type ActiveEngineeringState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("ActiveEngineeringState: update()");
+	this->startTimer();
 	EnabledState::update(command, model);
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -157,13 +159,13 @@ States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, 
 
 States::Type ActiveEngineeringState::turnLightsOn(TurnLightsOnCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: turnLightsOn()");
-	model->getInterlockController()->setCellLightsOn(true);
+	model->getDigitalInputOutput()->turnCellLightsOn();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::turnLightsOff(TurnLightsOffCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: turnLightsOff()");
-	model->getInterlockController()->setCellLightsOn(false);
+	model->getDigitalInputOutput()->turnCellLightsOff();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

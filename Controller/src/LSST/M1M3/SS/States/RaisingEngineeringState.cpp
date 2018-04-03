@@ -19,6 +19,7 @@ RaisingEngineeringState::RaisingEngineeringState(M1M3SSPublisher* publisher) : E
 
 States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("RaisingEngineeringState: update()");
+	this->startTimer();
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();
 	EnabledState::update(command, model);
@@ -29,6 +30,8 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* mode
 	else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
 		model->getAutomaticOperationsController()->timeoutRaiseOperation();
 	}
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(newState);
 }
 

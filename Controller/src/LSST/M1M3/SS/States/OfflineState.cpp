@@ -7,7 +7,6 @@
 
 #include <OfflineState.h>
 #include <Model.h>
-#include <InterlockController.h>
 #include <Log.h>
 
 namespace LSST {

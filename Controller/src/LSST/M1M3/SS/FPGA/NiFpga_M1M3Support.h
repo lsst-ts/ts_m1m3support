@@ -24,7 +24,7 @@
 /**
  * The signature of the FPGA bitfile.
  */
-static const char* const NiFpga_M1M3Support_Signature = "5A300FE7BF8504C32B9136ED0087D078";
+static const char* const NiFpga_M1M3Support_Signature = "93CC2116CFAB5886B7CDE1A1542497E2";
 
 typedef enum
 {
@@ -38,13 +38,13 @@ typedef enum
 
 typedef enum
 {
-   NiFpga_M1M3Support_TargetToHostFifoSgl_SGLResponseFIFO = 2,
-} NiFpga_M1M3Support_TargetToHostFifoSgl;
-
-typedef enum
-{
    NiFpga_M1M3Support_HostToTargetFifoU16_CommandFIFO = 4,
    NiFpga_M1M3Support_HostToTargetFifoU16_RequestFIFO = 3,
 } NiFpga_M1M3Support_HostToTargetFifoU16;
+
+typedef enum
+{
+   NiFpga_M1M3Support_HostToTargetFifoU64_TimestampControlFIFO = 2,
+} NiFpga_M1M3Support_HostToTargetFifoU64;
 
 #endif

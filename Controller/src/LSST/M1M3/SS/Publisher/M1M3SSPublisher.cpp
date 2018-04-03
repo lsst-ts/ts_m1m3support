@@ -101,7 +101,13 @@ void M1M3SSPublisher::putHardpointActuatorData() { this->m1m3SAL->putSample_Hard
 void M1M3SSPublisher::putHardpointMonitorData() { this->m1m3SAL->putSample_HardpointMonitorData(&this->hardpointMonitorData); }
 void M1M3SSPublisher::putIMSData() { this->m1m3SAL->putSample_IMSData(&this->imsData); }
 void M1M3SSPublisher::putInclinometerData() { this->m1m3SAL->putSample_InclinometerData(&this->inclinometerData); }
-void M1M3SSPublisher::putOuterLoopData() { this->m1m3SAL->putSample_OuterLoopData(&this->outerLoopData); }
+void M1M3SSPublisher::putOuterLoopData() {
+	// TODO: Remove, just for testing
+	uint8_t t = this->outerLoopData.BroadcastCounter;
+	this->outerLoopData.BroadcastCounter = 0x30;
+	this->m1m3SAL->putSample_OuterLoopData(&this->outerLoopData);
+	this->outerLoopData.BroadcastCounter = t;
+ }
 void M1M3SSPublisher::putPIDData() { this->m1m3SAL->putSample_PIDData(&this->pidData); }
 void M1M3SSPublisher::putPowerSupplyData() { this->m1m3SAL->putSample_PowerSupplyData(&this->powerSupplyData); }
 

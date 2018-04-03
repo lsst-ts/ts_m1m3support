@@ -24,11 +24,9 @@ class ExpansionFPGA;
 class Displacement;
 class Inclinometer;
 class ILC;
-class AirController;
 class ForceController;
 class SafetyController;
 class PositionController;
-class InterlockController;
 class Accelerometer;
 class PowerController;
 class AutomaticOperationsController;
@@ -41,6 +39,7 @@ class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
 class HardpointMonitorApplicationSettings;
 class PIDSettings;
+class DigitalInputOutput;
 
 class Model {
 private:
@@ -51,42 +50,40 @@ private:
 	Displacement* displacement;
 	Inclinometer* inclinometer;
 	ILC* ilc;
-	AirController* airController;
 	ForceController* forceController;
 	SafetyController* safetyController;
 	PositionController* positionController;
-	InterlockController* interlockController;
 	Accelerometer* accelerometer;
 	PowerController* powerController;
 	AutomaticOperationsController* automaticOperationsController;
 	Gyro* gyro;
 	ProfileController profileController;
+	DigitalInputOutput* digitalInputOutput;
 
 	pthread_mutex_t mutex;
 
 	double cachedTimestamp;
 
 public:
-	Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, InterlockController* interlockController);
+	Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput);
 	virtual ~Model();
 
-	SettingReader* getSettingReader() { return this->settingReader; }
-	M1M3SSPublisher* getPublisher() { return this->publisher; }
-	FPGA* getFPGA() { return this->fpga; }
-	ExpansionFPGA* getExpansionFPGA() { return this->expansionFPGA; }
-	Displacement* getDisplacement() { return this->displacement; }
-	Inclinometer* getInclinometer() { return this->inclinometer; }
-	ILC* getILC() { return this->ilc; }
-	AirController* getAirController() { return this->airController; }
-	ForceController* getForceController() { return this->forceController; }
-	SafetyController* getSafetyController() { return this->safetyController; }
-	PositionController* getPositionController() { return this->positionController; }
-	InterlockController* getInterlockController() { return this->interlockController; }
-	Accelerometer* getAccelerometer() { return this->accelerometer; }
-	PowerController* getPowerController() { return this->powerController; }
-	AutomaticOperationsController* getAutomaticOperationsController() { return this->automaticOperationsController; }
-	Gyro* getGyro() { return this->gyro; }
-	ProfileController* getProfileController() { return &this->profileController; }
+	inline SettingReader* getSettingReader() { return this->settingReader; }
+	inline M1M3SSPublisher* getPublisher() { return this->publisher; }
+	inline FPGA* getFPGA() { return this->fpga; }
+	inline ExpansionFPGA* getExpansionFPGA() { return this->expansionFPGA; }
+	inline Displacement* getDisplacement() { return this->displacement; }
+	inline Inclinometer* getInclinometer() { return this->inclinometer; }
+	inline ILC* getILC() { return this->ilc; }
+	inline ForceController* getForceController() { return this->forceController; }
+	inline SafetyController* getSafetyController() { return this->safetyController; }
+	inline PositionController* getPositionController() { return this->positionController; }
+	inline DigitalInputOutput* getDigitalInputOutput() { return this->digitalInputOutput; }
+	inline Accelerometer* getAccelerometer() { return this->accelerometer; }
+	inline PowerController* getPowerController() { return this->powerController; }
+	inline AutomaticOperationsController* getAutomaticOperationsController() { return this->automaticOperationsController; }
+	inline Gyro* getGyro() { return this->gyro; }
+	inline ProfileController* getProfileController() { return &this->profileController; }
 
 	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
 	double getCachedTimestamp() { return this->cachedTimestamp; }
@@ -98,6 +95,7 @@ public:
 
 	void publishStateChange(States::Type newState);
 	void publishRecommendedSettings();
+	void publishOuterLoop(double executionTime);
 
 	void shutdown();
 	void waitForShutdown();

@@ -7,7 +7,6 @@
 
 #include <ParkedEngineeringState.h>
 #include <Model.h>
-#include <AirController.h>
 #include <Displacement.h>
 #include <Inclinometer.h>
 #include <ILC.h>
@@ -19,7 +18,7 @@
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
 #include <M1M3SSPublisher.h>
 #include <PowerController.h>
 #include <TurnPowerOnCommand.h>
@@ -36,7 +35,10 @@ ParkedEngineeringState::ParkedEngineeringState(M1M3SSPublisher* publisher) : Eng
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("ParkedEngineeringState: update()");
+	this->startTimer();
 	EnabledState::update(command, model);
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -57,7 +59,7 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* mod
 	Log.Info("ParkedEngineeringState: disable()");
 	States::Type newState = States::DisabledState;
 	// Make sure the air is off
-	model->getAirController()->turnAirOff();
+	model->getDigitalInputOutput()->turnAirOff();
 	// Stop any existing motion (chase and move commands)
 	model->getPositionController()->stopMotion();
 	// Clear any offset force
@@ -74,13 +76,13 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* mod
 
 States::Type ParkedEngineeringState::turnAirOn(TurnAirOnCommand* command, Model* model) {
 	Log.Info("ParkedEngineeringState: turnAirOn()");
-	model->getAirController()->turnAirOn();
+	model->getDigitalInputOutput()->turnAirOn();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::turnAirOff(TurnAirOffCommand* command, Model* model) {
 	Log.Info("ParkedEngineeringState: turnAirOff()");
-	model->getAirController()->turnAirOff();
+	model->getDigitalInputOutput()->turnAirOff();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -128,13 +130,13 @@ States::Type ParkedEngineeringState::clearOffsetForces(ClearOffsetForcesCommand*
 
 States::Type ParkedEngineeringState::turnLightsOn(TurnLightsOnCommand* command, Model* model) {
 	Log.Info("ParkedEngineeringState: turnLightsOn()");
-	model->getInterlockController()->setCellLightsOn(true);
+	model->getDigitalInputOutput()->turnCellLightsOn();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::turnLightsOff(TurnLightsOffCommand* command, Model* model) {
 	Log.Info("ParkedEngineeringState: turnLightsOff()");
-	model->getInterlockController()->setCellLightsOn(false);
+	model->getDigitalInputOutput()->turnCellLightsOff();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

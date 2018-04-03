@@ -9,6 +9,8 @@
 #include <NiFpga_M1M3Support.h>
 #include <unistd.h>
 #include <Log.h>
+#include <U8ArrayUtilities.h>
+#include <FPGAAddresses.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -21,6 +23,7 @@ FPGA::FPGA() {
 	this->u16Buffer[0] = 0;
 	this->outerLoopIRQContext = 0;
 	this->modbusIRQContext = 0;
+	this->ppsIRQContext = 0;
 }
 
 FPGA::~FPGA() {
@@ -42,6 +45,7 @@ int32_t FPGA::open() {
 	usleep(1000000);
 	NiFpga_ReserveIrqContext(this->session, &this->outerLoopIRQContext);
 	NiFpga_ReserveIrqContext(this->session, &this->modbusIRQContext);
+	NiFpga_ReserveIrqContext(this->session, &this->ppsIRQContext);
 	return status;
 }
 
@@ -49,6 +53,7 @@ int32_t FPGA::close() {
 	Log.Debug("FPGA: close()");
 	NiFpga_UnreserveIrqContext(this->session, this->outerLoopIRQContext);
 	NiFpga_UnreserveIrqContext(this->session, this->modbusIRQContext);
+	NiFpga_UnreserveIrqContext(this->session, this->ppsIRQContext);
 	return NiFpga_Close(this->session, 0);
 }
 
@@ -70,6 +75,17 @@ int32_t FPGA::waitForOuterLoopClock(int32_t timeout) {
 
 int32_t FPGA::ackOuterLoopClock() {
 	return NiFpga_AcknowledgeIrqs(this->session, NiFpga_Irq_0);
+}
+
+int32_t FPGA::waitForPPS(int32_t timeout) {
+	uint32_t assertedIRQs = 0;
+	uint8_t timedOut = false;
+	int32_t result = NiFpga_WaitOnIrqs(this->session, this->ppsIRQContext, NiFpga_Irq_10, timeout, &assertedIRQs, &timedOut);
+	return result;
+}
+
+int32_t FPGA::ackPPS() {
+	return NiFpga_AcknowledgeIrqs(this->session, NiFpga_Irq_10);
 }
 
 int32_t FPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {
@@ -107,6 +123,80 @@ int32_t FPGA::ackModbusIRQ(int32_t subnet) {
 	return 0;
 }
 
+void FPGA::pullTelemetry() {
+	Log.Trace("FPGA: pullTelemetry()");
+	this->writeRequestFIFO(FPGAAddresses::Telemetry, 0);
+	uint16_t length[1];
+	this->readU16ResponseFIFO(length, 1, 20);
+	uint8_t buffer[1024];
+	this->readU8ResponseFIFO(buffer, (int32_t)length[0], 20);
+	this->supportFPGAData.Reserved = U8ArrayUtilities::U64(buffer, 0);
+	this->supportFPGAData.InclinometerTxBytes = U8ArrayUtilities::U64(buffer, 8);
+	this->supportFPGAData.InclinometerRxBytes = U8ArrayUtilities::U64(buffer, 16);
+	this->supportFPGAData.InclinometerTxFrames = U8ArrayUtilities::U64(buffer, 24);
+	this->supportFPGAData.InclinometerRxFrames = U8ArrayUtilities::U64(buffer, 32);
+	this->supportFPGAData.InclinometerErrorTimestamp = U8ArrayUtilities::U64(buffer, 40);
+	this->supportFPGAData.InclinometerErrorCode = U8ArrayUtilities::U8(buffer, 48);
+	this->supportFPGAData.InclinometerSampleTimestamp = U8ArrayUtilities::U64(buffer, 49);
+	this->supportFPGAData.InclinometerAngleRaw = U8ArrayUtilities::I32(buffer, 57);
+	this->supportFPGAData.DisplacementTxBytes = U8ArrayUtilities::U64(buffer, 61);
+	this->supportFPGAData.DisplacementRxBytes = U8ArrayUtilities::U64(buffer, 69);
+	this->supportFPGAData.DisplacementTxFrames = U8ArrayUtilities::U64(buffer, 77);
+	this->supportFPGAData.DisplacementRxFrames = U8ArrayUtilities::U64(buffer, 85);
+	this->supportFPGAData.DisplacementErrorTimestamp = U8ArrayUtilities::U64(buffer, 93);
+	this->supportFPGAData.DisplacementErrorCode = U8ArrayUtilities::U8(buffer, 101);
+	this->supportFPGAData.DisplacementSampleTimestamp = U8ArrayUtilities::U64(buffer, 102);
+	this->supportFPGAData.DisplacementRaw1 = U8ArrayUtilities::I32(buffer, 110);
+	this->supportFPGAData.DisplacementRaw2 = U8ArrayUtilities::I32(buffer, 114);
+	this->supportFPGAData.DisplacementRaw3 = U8ArrayUtilities::I32(buffer, 118);
+	this->supportFPGAData.DisplacementRaw4 = U8ArrayUtilities::I32(buffer, 122);
+	this->supportFPGAData.DisplacementRaw5 = U8ArrayUtilities::I32(buffer, 126);
+	this->supportFPGAData.DisplacementRaw6 = U8ArrayUtilities::I32(buffer, 130);
+	this->supportFPGAData.DisplacementRaw7 = U8ArrayUtilities::I32(buffer, 134);
+	this->supportFPGAData.DisplacementRaw8 = U8ArrayUtilities::I32(buffer, 138);
+	this->supportFPGAData.AccelerometerSampleCount = U8ArrayUtilities::U64(buffer, 142);
+	this->supportFPGAData.AccelerometerSampleTimestamp = U8ArrayUtilities::U64(buffer, 150);
+	this->supportFPGAData.AccelerometerRaw1 = U8ArrayUtilities::SGL(buffer, 158);
+	this->supportFPGAData.AccelerometerRaw2 = U8ArrayUtilities::SGL(buffer, 162);
+	this->supportFPGAData.AccelerometerRaw3 = U8ArrayUtilities::SGL(buffer, 166);
+	this->supportFPGAData.AccelerometerRaw4 = U8ArrayUtilities::SGL(buffer, 170);
+	this->supportFPGAData.AccelerometerRaw5 = U8ArrayUtilities::SGL(buffer, 174);
+	this->supportFPGAData.AccelerometerRaw6 = U8ArrayUtilities::SGL(buffer, 178);
+	this->supportFPGAData.AccelerometerRaw7 = U8ArrayUtilities::SGL(buffer, 182);
+	this->supportFPGAData.AccelerometerRaw8 = U8ArrayUtilities::SGL(buffer, 186);
+	this->supportFPGAData.GyroTxBytes = U8ArrayUtilities::U64(buffer, 190);
+	this->supportFPGAData.GyroRxBytes = U8ArrayUtilities::U64(buffer, 198);
+	this->supportFPGAData.GyroTxFrames = U8ArrayUtilities::U64(buffer, 206);
+	this->supportFPGAData.GyroRxFrames = U8ArrayUtilities::U64(buffer, 214);
+	this->supportFPGAData.GyroErrorTimestamp = U8ArrayUtilities::U64(buffer, 222);
+	this->supportFPGAData.GyroErrorCode = U8ArrayUtilities::U8(buffer, 230);
+	this->supportFPGAData.GyroSampleTimestamp = U8ArrayUtilities::U64(buffer, 231);
+	this->supportFPGAData.GyroRawX = U8ArrayUtilities::SGL(buffer, 239);
+	this->supportFPGAData.GyroRawY = U8ArrayUtilities::SGL(buffer, 243);
+	this->supportFPGAData.GyroRawZ = U8ArrayUtilities::SGL(buffer, 247);
+	this->supportFPGAData.GyroStatus = U8ArrayUtilities::U8(buffer, 251);
+	this->supportFPGAData.GyroSequenceNumber = U8ArrayUtilities::U8(buffer, 252);
+	this->supportFPGAData.GyroTemperature = U8ArrayUtilities::I16(buffer, 253);
+	this->supportFPGAData.GyroBITTimestamp = U8ArrayUtilities::U64(buffer, 255);
+	this->supportFPGAData.GyroBIT0 = U8ArrayUtilities::U8(buffer, 263);
+	this->supportFPGAData.GyroBIT1 = U8ArrayUtilities::U8(buffer, 264);
+	this->supportFPGAData.GyroBIT2 = U8ArrayUtilities::U8(buffer, 265);
+	this->supportFPGAData.GyroBIT3 = U8ArrayUtilities::U8(buffer, 266);
+	this->supportFPGAData.GyroBIT4 = U8ArrayUtilities::U8(buffer, 267);
+	this->supportFPGAData.GyroBIT5 = U8ArrayUtilities::U8(buffer, 268);
+	this->supportFPGAData.GyroBIT6 = U8ArrayUtilities::U8(buffer, 269);
+	this->supportFPGAData.GyroBIT7 = U8ArrayUtilities::U8(buffer, 270);
+	this->supportFPGAData.DigitalInputSampleCount = U8ArrayUtilities::U64(buffer, 271);
+	this->supportFPGAData.DigitalInputTimestamp = U8ArrayUtilities::U64(buffer, 279);
+	this->supportFPGAData.DigitalInputStates = U8ArrayUtilities::U16(buffer, 287);
+	this->supportFPGAData.DigitalOutputSampleCount = U8ArrayUtilities::U64(buffer, 289);
+	this->supportFPGAData.DigitalOutputTimestamp = U8ArrayUtilities::U64(buffer, 297);
+	this->supportFPGAData.DigitalOutputStates = U8ArrayUtilities::U8(buffer, 305);
+	this->supportFPGAData.PowerSupplySampleCount = U8ArrayUtilities::U64(buffer, 306);
+	this->supportFPGAData.PowerSupplyTimestamp = U8ArrayUtilities::U64(buffer, 314);
+	this->supportFPGAData.PowerSupplyStates = U8ArrayUtilities::U8(buffer, 322);
+}
+
 int32_t FPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
 	return NiFpga_WriteFifoU16(this->session, NiFpga_M1M3Support_HostToTargetFifoU16_CommandFIFO, data, length, timeoutInMs, &this->remaining);
 }
@@ -125,16 +215,17 @@ int32_t FPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
 	return this->writeRequestFIFO(this->u16Buffer, 1, timeoutInMs);
 }
 
+int32_t FPGA::writeTimestampFIFO(uint64_t timestamp) {
+	uint64_t buffer[1] = { timestamp };
+	return NiFpga_WriteFifoU64(this->session, NiFpga_M1M3Support_HostToTargetFifoU64_TimestampControlFIFO, buffer, 1, 0, &this->remaining);
+}
+
 int32_t FPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) {
 	return NiFpga_ReadFifoU8(this->session, NiFpga_M1M3Support_TargetToHostFifoU8_U8ResponseFIFO, data, length, timeoutInMs, &this->remaining);
 }
 
 int32_t FPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
 	return NiFpga_ReadFifoU16(this->session, NiFpga_M1M3Support_TargetToHostFifoU16_U16ResponseFIFO, data, length, timeoutInMs, &this->remaining);
-}
-
-int32_t FPGA::readSGLResponseFIFO(float* data, int32_t length, int32_t timeoutInMs) {
-	return NiFpga_ReadFifoSgl(this->session, NiFpga_M1M3Support_TargetToHostFifoSgl_SGLResponseFIFO, data, length, timeoutInMs, &this->remaining);
 }
 
 } /* namespace SS */

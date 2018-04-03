@@ -125,6 +125,7 @@ public:
 	void publishHardpointData();
 	void publishHardpointMonitorInfo();
 	void publishHardpointMonitorStatus();
+	void publishHardpointMonitorData();
 
 private:
 	uint8_t subnetToRxAddress(uint8_t subnet);

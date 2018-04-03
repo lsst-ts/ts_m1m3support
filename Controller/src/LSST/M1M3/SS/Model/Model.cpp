@@ -22,9 +22,7 @@
 #include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <PositionController.h>
-#include <InterlockController.h>
 #include <Accelerometer.h>
-#include <AirController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
@@ -32,6 +30,7 @@
 #include <AutomaticOperationsController.h>
 #include <Gyro.h>
 #include <Log.h>
+#include <DigitalInputOutput.h>
 
 using namespace std;
 
@@ -39,7 +38,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, InterlockController* interlockController) {
+Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput) {
 	Log.Debug("Model: Model()");
 	this->settingReader = settingReader;
 	this->publisher = publisher;
@@ -49,10 +48,9 @@ Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpg
 	this->displacement = 0;
 	this->inclinometer = 0;
 	this->ilc = 0;
-	this->airController = 0;
 	this->forceController = 0;
 	this->positionController = 0;
-	this->interlockController = interlockController;
+	this->digitalInputOutput = digitalInputOutput;
 	this->accelerometer = 0;
 	this->powerController = 0;
 	this->automaticOperationsController = 0;
@@ -80,9 +78,6 @@ Model::~Model() {
 	}
 	if (this->forceController) {
 		delete this->forceController;
-	}
-	if (this->airController) {
-		delete this->airController;
 	}
 	if (this->positionController) {
 		delete this->positionController;
@@ -146,14 +141,14 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->displacement;
 	}
 	Log.Info("Model: Creating displacement");
-	this->displacement = new Displacement(displacementSensorSettings, this->publisher, this->safetyController, this->fpga);
+	this->displacement = new Displacement(displacementSensorSettings, this->fpga->getSupportFPGAData(), this->publisher, this->safetyController);
 
 	if (this->inclinometer) {
 		Log.Debug("Model: Deleting inclinometer");
 		delete this->inclinometer;
 	}
 	Log.Info("Model: Creating inclinometer");
-	this->inclinometer = new Inclinometer(this->publisher, this->safetyController, this->fpga);
+	this->inclinometer = new Inclinometer(this->fpga->getSupportFPGAData(), this->publisher, this->safetyController);
 
 	if (this->ilc) {
 		Log.Debug("Model: Deleting ILC");
@@ -169,13 +164,6 @@ void Model::loadSettings(std::string settingsToApply) {
 	Log.Info("Model: Creating force controller");
 	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings, this->publisher, this->safetyController);
 
-	if (this->airController) {
-		Log.Debug("Model: Deleting air controller");
-		delete this->airController;
-	}
-	Log.Info("Model: Creating air controller");
-	this->airController = new AirController(this->publisher, this->safetyController, this->fpga);
-
 	if (this->positionController) {
 		Log.Debug("Model: Deleting position controller");
 		delete this->positionController;
@@ -183,29 +171,29 @@ void Model::loadSettings(std::string settingsToApply) {
 	Log.Info("Model: Creating position controller");
 	this->positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings, this->publisher);
 
-	Log.Info("Model: Updating interlock controller");
-	this->interlockController->setSafetyController(this->safetyController);
+	Log.Info("Model: Updating digital input output");
+	this->digitalInputOutput->setSafetyController(this->safetyController);
 
 	if (this->accelerometer) {
 		Log.Debug("Model: Deleting accelerometer");
 		delete this->accelerometer;
 	}
 	Log.Info("Model: Creating accelerometer");
-	this->accelerometer = new Accelerometer(this->publisher, this->fpga, accelerometerSettings);
+	this->accelerometer = new Accelerometer(accelerometerSettings, this->fpga->getSupportFPGAData(), this->publisher);
 
 	if (this->powerController) {
 		Log.Debug("Model: Deleting power controller");
 		delete this->powerController;
 	}
 	Log.Info("Model: Creating power controller");
-	this->powerController = new PowerController(this->publisher, this->fpga, this->expansionFPGA, this->safetyController);
+	this->powerController = new PowerController(this->fpga, this->expansionFPGA, this->publisher, this->safetyController);
 
 	if (this->automaticOperationsController) {
 		Log.Debug("Model: Deleting automatic operations controller");
 		delete this->automaticOperationsController;
 	}
 	Log.Info("Model: Creating automatic operations controller");
-	this->automaticOperationsController = new AutomaticOperationsController(this->positionController, this->forceController, this->interlockController, this->safetyController, this->publisher, this->powerController);
+	this->automaticOperationsController = new AutomaticOperationsController(this->positionController, this->forceController, this->safetyController, this->publisher, this->powerController);
 
 	if (this->gyro) {
 		Log.Debug("Model: Deleting gyro");
@@ -255,6 +243,14 @@ void Model::publishRecommendedSettings() {
 		data->RecommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
 	}
 	this->publisher->logSettingVersions();
+}
+
+void Model::publishOuterLoop(double executionTime) {
+	Log.Trace("Model: publishOuterLoop()");
+	m1m3_OuterLoopDataC* data = this->publisher->getOuterLoopData();
+	data->Timestamp = this->publisher->getTimestamp();
+	data->ExecutionTime = executionTime;
+	this->publisher->putOuterLoopData();
 }
 
 void Model::shutdown() {

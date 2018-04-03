@@ -7,11 +7,10 @@
 
 #include <DisabledState.h>
 #include <Accelerometer.h>
-#include <AirController.h>
 #include <Displacement.h>
 #include <ILC.h>
 #include <Inclinometer.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
 #include <Model.h>
 #include <SafetyController.h>
 #include <PowerController.h>
@@ -19,6 +18,8 @@
 #include <ForceController.h>
 #include <M1M3SSPublisher.h>
 #include <Log.h>
+#include <unistd.h>
+#include <FPGA.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -30,28 +31,16 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("DisabledState::update()");
 	this->startTimer();
 	ILC* ilc = model->getILC();
-	PowerController* powerController = model->getPowerController();
-	Displacement* displacement = model->getDisplacement();
-	Inclinometer* inclinometer = model->getInclinometer();
-	Accelerometer* accelerometer = model->getAccelerometer();
-	Gyro* gyro = model->getGyro();
-	ForceController* forceController = model->getForceController();
-	InterlockController* interlockController = model->getInterlockController();
-	M1M3SSPublisher* publisher = model->getPublisher();
 	ilc->writeFreezeSensorListBuffer();
 	ilc->triggerModbus();
-	powerController->samplePowerSupplyDataAndStatus();
-	displacement->writeDataRequest();
-	inclinometer->writeDataRequest();
-	accelerometer->sampleData();
-	gyro->read();
-	gyro->publishGyroData();
-	gyro->publishGyroWarningIfRequired();
-	powerController->publishPowerSupplyData();
-	powerController->publishPowerSupplyStatusIfRequired();
-	powerController->checkPowerStatus();
-	interlockController->tryToggleHeartbeat();
-	interlockController->checkInterlockStatus();
+	model->getDigitalInputOutput()->tryToggleHeartbeat();
+	model->getFPGA()->pullTelemetry();
+	model->getAccelerometer()->processData();
+	model->getDigitalInputOutput()->processData();
+	model->getDisplacement()->processData();
+	model->getGyro()->processData();
+	model->getInclinometer()->processData();
+	model->getPowerController()->processData();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	ilc->calculateHPPostion();
@@ -63,9 +52,9 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	ilc->publishHardpointStatus();
 	ilc->publishHardpointData();
 	ilc->publishHardpointMonitorStatus();
-	inclinometer->readDataResponse();
-	displacement->readDataResponse();
+	ilc->publishHardpointMonitorData();
 	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -83,8 +72,6 @@ States::Type DisabledState::enable(EnableCommand* command, Model* model) {
 States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
 	Log.Info("DisabledState: standby()");
 	States::Type newState = States::StandbyState;
-	model->getGyro()->enableIgnore();
-	model->getGyro()->read();
 	model->getILC()->writeSetModeStandbyBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);

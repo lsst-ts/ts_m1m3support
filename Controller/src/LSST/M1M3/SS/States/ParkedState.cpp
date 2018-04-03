@@ -7,7 +7,6 @@
 
 #include <ParkedState.h>
 #include <ILC.h>
-#include <InterlockController.h>
 #include <Model.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
@@ -25,7 +24,10 @@ ParkedState::ParkedState(M1M3SSPublisher* publisher) : EnabledState(publisher, "
 
 States::Type ParkedState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("ParkedState: update()");
+	this->startTimer();
 	EnabledState::update(command, model);
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

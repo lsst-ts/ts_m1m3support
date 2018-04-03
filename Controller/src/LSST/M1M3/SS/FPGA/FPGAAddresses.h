@@ -94,9 +94,8 @@ struct FPGAAddresses {
 		Inclinometer = 74,
 		Slot8Port3 = 75,
 		Slot8Port4 = 76,
-		GyroRxIgnore = 251,
 		ModbusSoftwareTrigger = 252,
-		Accelerometers = 253,
+		Telemetry = 253,
 		HealthAndStatus = 254,
 		Timestamp = 255
 	};

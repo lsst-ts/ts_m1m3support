@@ -6,7 +6,6 @@
  */
 
 #include <LoweringEngineeringState.h>
-#include <InterlockController.h>
 #include <Model.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
@@ -21,6 +20,7 @@ LoweringEngineeringState::LoweringEngineeringState(M1M3SSPublisher* publisher) :
 
 States::Type LoweringEngineeringState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("LoweringEngineeringState: update()");
+	this->startTimer();
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
 	EnabledState::update(command, model);
@@ -31,6 +31,8 @@ States::Type LoweringEngineeringState::update(UpdateCommand* command, Model* mod
 	else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
 		model->getAutomaticOperationsController()->timeoutLowerOperation();
 	}
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(newState);
 }
 

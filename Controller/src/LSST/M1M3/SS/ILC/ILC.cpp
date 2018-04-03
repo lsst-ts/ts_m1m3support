@@ -297,6 +297,10 @@ void ILC::publishHardpointMonitorStatus() {
 	//this->publisher->putHardpointMonitorStatus();
 }
 
+void ILC::publishHardpointMonitorData() {
+	this->publisher->putHardpointMonitorData();
+}
+
 uint8_t ILC::subnetToRxAddress(uint8_t subnet) {
 	switch(subnet) {
 	case 1: return FPGAAddresses::ModbusSubnetARx;
