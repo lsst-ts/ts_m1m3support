@@ -66,6 +66,8 @@ States::Type DisabledState::enable(EnableCommand* command, Model* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
+	model->getDigitalInputOutput()->turnAirOn();
+	model->getPowerController()->setAllAuxPowerNetworks(true);
 	return model->getSafetyController()->checkSafety(newState);
 }
 

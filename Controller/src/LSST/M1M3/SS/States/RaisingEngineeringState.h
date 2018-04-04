@@ -20,6 +20,13 @@ public:
 
 	States::Type update(UpdateCommand* command, Model* model);
 	States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model);
+	States::Type stopHardpointMotion(StopHardpointMotionCommand* command, Model* model);
+	States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model);
+	States::Type enableHardpointChase(EnableHardpointChaseCommand* command, Model* model);
+	States::Type disableHardpointChase(DisableHardpointChaseCommand* command, Model* model);
+	States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model);
+	States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
+	States::Type clearOffsetForces(ClearOffsetForcesCommand* command, Model* model);
 };
 
 } /* namespace SS */

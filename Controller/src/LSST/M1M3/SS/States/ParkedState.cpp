@@ -14,6 +14,8 @@
 #include <PositionController.h>
 #include <AutomaticOperationsController.h>
 #include <RaiseM1M3Command.h>
+#include <DigitalInputOutput.h>
+#include <PowerController.h>
 #include <Log.h>
 
 namespace LSST {
@@ -56,6 +58,8 @@ States::Type ParkedState::disable(DisableCommand* command, Model* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
+	model->getDigitalInputOutput()->turnAirOff();
+	model->getPowerController()->setAllAuxPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
 }
 
