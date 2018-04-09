@@ -14,22 +14,22 @@
 struct States {
 	enum Type {
 //		StateName                         SState                                                  DState
-		OfflineState                    = (((uint64_t)m1m3::SummaryState_OfflineState)  << 32) | ((uint64_t)m1m3::DetailedState_OfflineState),
-		StandbyState                    = (((uint64_t)m1m3::SummaryState_StandbyState)  << 32) | ((uint64_t)m1m3::DetailedState_StandbyState),
-		DisabledState                   = (((uint64_t)m1m3::SummaryState_DisabledState) << 32) | ((uint64_t)m1m3::DetailedState_DisabledState),
-		EnabledState                    = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_EnabledState),
-		FaultState                      = (((uint64_t)m1m3::SummaryState_FaultState)    << 32) | ((uint64_t)m1m3::DetailedState_FaultState),
-		ParkedState                     = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ParkedState),
-		RaisingState                    = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_RaisingState),
-		ActiveState                     = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ActiveState),
-		LoweringState                   = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_LoweringState),
-		EngineeringState                = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_EngineeringState),
-		ParkedEngineeringState          = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ParkedEngineeringState),
-		RaisingEngineeringState         = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_RaisingEngineeringState),
-		ActiveEngineeringState          = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ActiveEngineeringState),
-		LoweringEngineeringState        = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_LoweringEngineeringState),
-		LoweringFaultState              = (((uint64_t)m1m3::SummaryState_FaultState)    << 32) | ((uint64_t)m1m3::DetailedState_LoweringFaultState),
-		ProfileHardpointCorrectionState = (((uint64_t)m1m3::SummaryState_EnabledState)  << 32) | ((uint64_t)m1m3::DetailedState_ProfileHardpointCorrectionState),
+		OfflineState                    = (((uint64_t)m1m3::m1m3_shared_SummaryStates_OfflineState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_OfflineState),
+		StandbyState                    = (((uint64_t)m1m3::m1m3_shared_SummaryStates_StandbyState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_StandbyState),
+		DisabledState                   = (((uint64_t)m1m3::m1m3_shared_SummaryStates_DisabledState) << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_DisabledState),
+		EnabledState                    = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_EnabledState),
+		FaultState                      = (((uint64_t)m1m3::m1m3_shared_SummaryStates_FaultState)    << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_FaultState),
+		ParkedState                     = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_ParkedState),
+		RaisingState                    = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_RaisingState),
+		ActiveState                     = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_ActiveState),
+		LoweringState                   = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_LoweringState),
+		EngineeringState                = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_EngineeringState),
+		ParkedEngineeringState          = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_ParkedEngineeringState),
+		RaisingEngineeringState         = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_RaisingEngineeringState),
+		ActiveEngineeringState          = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_ActiveEngineeringState),
+		LoweringEngineeringState        = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_LoweringEngineeringState),
+		LoweringFaultState              = (((uint64_t)m1m3::m1m3_shared_SummaryStates_FaultState)    << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_LoweringFaultState),
+		ProfileHardpointCorrectionState = (((uint64_t)m1m3::m1m3_shared_SummaryStates_EnabledState)  << 32) | ((uint64_t)m1m3::m1m3_shared_DetailedStates_ProfileHardpointCorrectionState),
 		NoStateTransition               = 0xFFFFFFFFFFFFFFFF
 	};
 };

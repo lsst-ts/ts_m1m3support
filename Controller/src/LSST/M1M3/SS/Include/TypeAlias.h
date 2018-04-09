@@ -15,6 +15,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+struct SupportFPGAData;
+
+class Accelerometer;
 class AccelerometerSettings;
 class FPGA;
 class M1M3SSPublisher;

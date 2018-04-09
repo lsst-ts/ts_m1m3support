@@ -7,7 +7,8 @@
 
 #include <OfflineState.h>
 #include <Model.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
+#include <PowerController.h>
 #include <Log.h>
 
 namespace LSST {
@@ -20,6 +21,10 @@ States::Type OfflineState::boot(BootCommand* command, Model* model) {
 	Log.Info("OfflineState: boot()");
 	States::Type newState = States::StandbyState;
 	model->publishRecommendedSettings();
+	model->getDigitalInputOutput()->turnAirOff();
+	model->getDigitalInputOutput()->turnCellLightsOff();
+	// TODO: May need to change power controller to act like digital input output
+//	model->getPowerController()->setBothPowerNetworks(false);
 	return newState;
 }
 

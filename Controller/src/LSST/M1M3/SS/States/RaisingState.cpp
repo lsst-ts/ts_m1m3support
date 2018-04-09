@@ -19,6 +19,7 @@ RaisingState::RaisingState(M1M3SSPublisher* publisher) : EnabledState(publisher,
 
 States::Type RaisingState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("RaisingState: update()");
+	this->startTimer();
 	States::Type newState = States::NoStateTransition;
 	model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();
 	EnabledState::update(command, model);
@@ -29,6 +30,8 @@ States::Type RaisingState::update(UpdateCommand* command, Model* model) {
 	else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
 		model->getAutomaticOperationsController()->timeoutRaiseOperation();
 	}
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(newState);
 }
 

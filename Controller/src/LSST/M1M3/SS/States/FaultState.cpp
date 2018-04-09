@@ -6,7 +6,7 @@
  */
 
 #include <FaultState.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
 #include <Model.h>
 #include <ILC.h>
 #include <Displacement.h>
@@ -18,6 +18,8 @@
 #include <M1M3SSPublisher.h>
 #include <Accelerometer.h>
 #include <Log.h>
+#include <Gyro.h>
+#include <FPGA.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -28,31 +30,32 @@ FaultState::FaultState(M1M3SSPublisher* publisher, std::string name) : State(pub
 
 States::Type FaultState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("FaultState: update()");
-	Accelerometer* accelerometer = model->getAccelerometer();
-	M1M3SSPublisher* publisher = model->getPublisher();
-	model->getILC()->writeFreezeSensorListBuffer();
-	model->getILC()->triggerModbus();
-	model->getDisplacement()->writeDataRequest();
-	model->getInclinometer()->writeDataRequest();
-	model->getAccelerometer()->sampleData();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getDisplacement()->readDataResponse();
-	model->getInclinometer()->readDataResponse();
-	model->getILC()->calculateHPPostion();
-	model->getILC()->calculateHPMirrorForces();
-	model->getILC()->calculateFAMirrorForces();
-	model->getILC()->verifyResponses();
-	usleep(50000);
-	model->queryFPGAData();
-	usleep(10000);
-	model->publishFPGAData();
-	model->getILC()->publishForceActuatorStatus();
-	model->getILC()->publishForceActuatorData();
-	model->getILC()->publishHardpointStatus();
-	model->getILC()->publishHardpointData();
-	//model->getAirController()->checkStatus();
-	model->getInterlockController()->tryToggleHeartbeat();
+	this->startTimer();
+	ILC* ilc = model->getILC();
+	ilc->writeFreezeSensorListBuffer();
+	ilc->triggerModbus();
+	model->getDigitalInputOutput()->tryToggleHeartbeat();
+	model->getFPGA()->pullTelemetry();
+	model->getAccelerometer()->processData();
+	model->getDigitalInputOutput()->processData();
+	model->getDisplacement()->processData();
+	model->getGyro()->processData();
+	model->getInclinometer()->processData();
+	model->getPowerController()->processData();
+	ilc->waitForAllSubnets(5000);
+	ilc->readAll();
+	ilc->calculateHPPostion();
+	ilc->calculateHPMirrorForces();
+	ilc->calculateFAMirrorForces();
+	ilc->verifyResponses();
+	ilc->publishForceActuatorStatus();
+	ilc->publishForceActuatorData();
+	ilc->publishHardpointStatus();
+	ilc->publishHardpointData();
+	ilc->publishHardpointMonitorStatus();
+	ilc->publishHardpointMonitorData();
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return States::NoStateTransition;
 }
 

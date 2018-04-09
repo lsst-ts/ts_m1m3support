@@ -115,6 +115,7 @@ public:
 	void calculateHPPostion();
 	void calculateHPMirrorForces();
 	void calculateFAMirrorForces();
+	void clearResponses();
 	void verifyResponses();
 
 	void publishForceActuatorInfo();
@@ -125,6 +126,7 @@ public:
 	void publishHardpointData();
 	void publishHardpointMonitorInfo();
 	void publishHardpointMonitorStatus();
+	void publishHardpointMonitorData();
 
 private:
 	uint8_t subnetToRxAddress(uint8_t subnet);

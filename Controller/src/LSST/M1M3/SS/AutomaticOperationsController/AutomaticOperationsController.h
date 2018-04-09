@@ -12,18 +12,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ForceController;
-class InterlockController;
-class M1M3SSPublisher;
 class PositionController;
-class PowerController;
+class ForceController;
 class SafetyController;
+class M1M3SSPublisher;
+class PowerController;
 
 class AutomaticOperationsController {
 private:
 	PositionController* positionController;
 	ForceController* forceController;
-	InterlockController* interlockController;
 	SafetyController* safetyController;
 	M1M3SSPublisher* publisher;
 	PowerController* powerController;
@@ -31,7 +29,7 @@ private:
 	bool bypassMoveToReference;
 
 public:
-	AutomaticOperationsController(PositionController* positionController, ForceController* forceController, InterlockController* interlockController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController);
+	AutomaticOperationsController(PositionController* positionController, ForceController* forceController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController);
 
 	void startRaiseOperation(bool bypassMoveToReference);
 	void tryIncrementingSupportPercentage();

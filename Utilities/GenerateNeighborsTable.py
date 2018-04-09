@@ -169,6 +169,8 @@ for mainRow in table:
     newRow[1].sort(key=lambda x: x[1])
     newTable.append(newRow)
     
+print (newTable[0])
+    
 print("ID,Neighbor1,Neighbor2,Neighbor3,Neighbor4,Neighbor5,Neighbor6,Neighbor7,Neighbor8,Neighbor9,Neighbor10,Neighbor11,Neighbor12")
 for newRow in newTable:
     print("%d" % newRow[0], end="")

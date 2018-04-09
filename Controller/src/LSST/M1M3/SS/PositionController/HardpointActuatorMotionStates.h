@@ -8,11 +8,13 @@
 #ifndef HARDPOINTACTUATORMOTIONSTATES_H_
 #define HARDPOINTACTUATORMOTIONSTATES_H_
 
+#include <ccpp_sal_m1m3.h> // Provides access to enumerations
+
 struct HardpointActuatorMotionStates {
 	enum Type {
-		Standby = 1,
-		Chasing = 2,
-		Moving = 3
+		Standby = m1m3::m1m3_shared_HardpointMotionStates_Standby,
+		Chasing = m1m3::m1m3_shared_HardpointMotionStates_Chasing,
+		Moving = m1m3::m1m3_shared_HardpointMotionStates_Moving
 	};
 };
 

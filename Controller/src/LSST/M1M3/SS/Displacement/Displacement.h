@@ -9,56 +9,49 @@
 #define DISPLACEMENT_H_
 
 #include <DataTypes.h>
-#include <SAL_m1m3C.h>
+
+struct m1m3_IMSDataC;
+struct m1m3_logevent_DisplacementSensorWarningC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class DisplacementSensorSettings;
+struct SupportFPGAData;
 class M1M3SSPublisher;
 class SafetyController;
-class FPGA;
 
+/*!
+ * The class used to process displacement data.
+ */
 class Displacement {
 private:
 	DisplacementSensorSettings* displacementSensorSettings;
+	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
-	FPGA* fpga;
 
 	m1m3_IMSDataC* imsData;
 	m1m3_logevent_DisplacementSensorWarningC* displacementWarning;
 
-	uint16_t txBuffer[32];
-	uint8_t rxBuffer[256];
+	uint64_t lastSampleTimestamp;
+	uint64_t lastErrorTimestamp;
 
 public:
-	Displacement(DisplacementSensorSettings* displacementSensorSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, FPGA* fpga);
+	/*!
+	 * Instantiates the displacement sensor.
+	 * @param[in] displacementSensorSettings The displacement settings.
+	 * @param[in] fpgaData The fpga data.
+	 * @param[in] publisher The publisher.
+	 * @param[in] safetyController The safety controller.
+	 */
+	Displacement(DisplacementSensorSettings* displacementSensorSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher, SafetyController* safetyController);
 
-	void writeDataRequest();
-	void readDataResponse();
-
-private:
-	void createTxBuffer();
-
-	void convertRawData();
-
-	void clearWarning(double timestamp);
-	void warnSensorReportsInvalidCommand(double timestamp);
-	void warnSensorReportsCommunicationTimeoutError(double timestamp);
-	void warnSensorReportsDataLengthError(double timestamp);
-	void warnSensorReportsNumberOfParametersError(double timestamp);
-	void warnSensorReportsParameterError(double timestamp);
-	void warnSensorReportsCommunicationError(double timestamp);
-	void warnSensorReportsIDNumberError(double timestamp);
-	void warnSensorReportsExpansionLineError(double timestamp);
-	void warnSensorReportsWriteControlError(double timestamp);
-	void warnResponseTimeoutError(double timestamp);
-	void warnInvalidLength(double timestamp);
-	void warnInvalidResponse(double timestamp);
-	void warnUnknownCommand(double timestamp);
-	void warnUnknownProblem(double timestamp);
+	/*!
+	 * Processes currently available displacement sensor data and publish it.
+	 */
+	void processData();
 };
 
 } /* namespace SS */

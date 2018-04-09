@@ -8,29 +8,42 @@
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 
-#include <DataTypes.h>
-#include <TypeAlias.h>
+struct m1m3_AccelerometerDataC;
+struct m1m3_logevent_AccelerometerWarningC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+class AccelerometerSettings;
+struct SupportFPGAData;
+class M1M3SSPublisher;
+
+/*!
+ * The class used to process accelerometer data.
+ */
 class Accelerometer {
 private:
-	M1M3SSPublisher* publisher;
-	FPGA* fpga;
 	AccelerometerSettings* accelerometerSettings;
+	SupportFPGAData* fpgaData;
+	M1M3SSPublisher* publisher;
 
 	m1m3_AccelerometerDataC* accelerometerData;
 	m1m3_logevent_AccelerometerWarningC* accelerometerWarning;
 
-	uint16_t timestampBuffer[4];
-	float dataBuffer[8];
-
 public:
-	Accelerometer(M1M3SSPublisher* publisher, FPGA* fpga, AccelerometerSettings* accelerometerSettings);
+	/*!
+	 * Instantiates the accelerometer.
+	 * @param[in] accelerometerSettings The accelerometer settings.
+	 * @param[in] fpgaData The fpga data.
+	 * @param[in] publisher The publisher.
+	 */
+	Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher);
 
-	void sampleData();
+	/*!
+	 * Processes currently available accelerometer data and publish it.
+	 */
+	void processData();
 };
 
 } /* namespace SS */

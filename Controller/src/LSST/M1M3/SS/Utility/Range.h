@@ -14,6 +14,8 @@ namespace SS {
 
 class Range {
 public:
+	static uint64_t Max(uint64_t a, uint64_t b) { return a >= b ? a : b; }
+
 	static bool InRange(float min, float max, float value) { return value >= min && value <= max; }
 	static bool InRange(double min, double max, double value) { return value >= min && value <= max; }
 	static bool InRange(int32_t min, int32_t max, int32_t value) { return value >= min && value <= max; }

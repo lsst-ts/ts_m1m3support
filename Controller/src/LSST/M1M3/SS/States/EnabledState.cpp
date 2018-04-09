@@ -7,12 +7,11 @@
 
 #include <EnabledState.h>
 #include <Accelerometer.h>
-#include <AirController.h>
 #include <Displacement.h>
 #include <ForceController.h>
 #include <ILC.h>
 #include <Inclinometer.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
 #include <Model.h>
 #include <PositionController.h>
 #include <SafetyController.h>
@@ -22,6 +21,7 @@
 #include <M1M3SSPublisher.h>
 #include <Gyro.h>
 #include <Log.h>
+#include <FPGA.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -32,37 +32,32 @@ EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State
 
 States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("EnabledState: update()");
+	ILC* ilc = model->getILC();
 	model->getPositionController()->updateSteps();
-	model->getILC()->writeRaisedListBuffer();
-	model->getILC()->triggerModbus();
-	model->getPowerController()->samplePowerSupplyDataAndStatus();
-	model->getDisplacement()->writeDataRequest();
-	model->getInclinometer()->writeDataRequest();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getILC()->calculateHPPostion();
-	model->getILC()->calculateHPMirrorForces();
-	model->getILC()->calculateFAMirrorForces();
-	model->getILC()->verifyResponses();
-	model->getAccelerometer()->sampleData();
-	model->getAirController()->checkStatus();
-	model->getDisplacement()->readDataResponse();
-	model->getInclinometer()->readDataResponse();
-	model->getGyro()->read();
 	model->getForceController()->updateAppliedForces();
 	model->getForceController()->processAppliedForces();
-	model->getILC()->publishForceActuatorStatus();
-	model->getILC()->publishForceActuatorData();
-	model->getILC()->publishHardpointStatus();
-	model->getILC()->publishHardpointData();
-	model->getILC()->publishHardpointMonitorStatus();
-	model->getGyro()->publishGyroData();
-	model->getGyro()->publishGyroWarningIfRequired();
-	model->getPowerController()->publishPowerSupplyData();
-	model->getPowerController()->publishPowerSupplyStatusIfRequired();
-	model->getPowerController()->checkPowerStatus();
-	model->getInterlockController()->checkInterlockStatus();
-	model->getInterlockController()->tryToggleHeartbeat();
+	ilc->writeRaisedListBuffer();
+	ilc->triggerModbus();
+	model->getDigitalInputOutput()->tryToggleHeartbeat();
+	model->getFPGA()->pullTelemetry();
+	model->getAccelerometer()->processData();
+	model->getDigitalInputOutput()->processData();
+	model->getDisplacement()->processData();
+	model->getGyro()->processData();
+	model->getInclinometer()->processData();
+	model->getPowerController()->processData();
+	ilc->waitForAllSubnets(5000);
+	ilc->readAll();
+	ilc->calculateHPPostion();
+	ilc->calculateHPMirrorForces();
+	ilc->calculateFAMirrorForces();
+	ilc->verifyResponses();
+	ilc->publishForceActuatorStatus();
+	ilc->publishForceActuatorData();
+	ilc->publishHardpointStatus();
+	ilc->publishHardpointData();
+	ilc->publishHardpointMonitorStatus();
+	ilc->publishHardpointMonitorData();
 	return States::NoStateTransition;
 }
 

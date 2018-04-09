@@ -75,14 +75,14 @@
 <MirrorXMoment>-572069</MirrorXMoment>
 <MirrorYMoment>-572069</MirrorYMoment>
 <MirrorZMoment>-572069</MirrorZMoment>
-<SetpointXMomentLowLimitPercentage>0.2</SetpointXMomentLowLimitPercentage>
+<SetpointXMomentLowLimitPercentage>-0.2</SetpointXMomentLowLimitPercentage>
 <SetpointXMomentHighLimitPercentage>1.2</SetpointXMomentHighLimitPercentage>
 <SetpointYMomentLowLimitPercentage>-0.2</SetpointYMomentLowLimitPercentage>
 <SetpointYMomentHighLimitPercentage>0.2</SetpointYMomentHighLimitPercentage>
-<SetpointZMomentLowLimitPercentage>-1</SetpointZMomentLowLimitPercentage>
-<SetpointZMomentHighLimitPercentage>1</SetpointZMomentHighLimitPercentage>
+<SetpointZMomentLowLimitPercentage>-0.2</SetpointZMomentLowLimitPercentage>
+<SetpointZMomentHighLimitPercentage>0.2</SetpointZMomentHighLimitPercentage>
 <SetpointNearNeighborLimitPercentage>1</SetpointNearNeighborLimitPercentage>
-<SetpointMirrorWeightLimitPercentage>1.6</SetpointMirrorWeightLimitPercentage>
+<SetpointMirrorWeightLimitPercentage>1.8</SetpointMirrorWeightLimitPercentage> <!-- Increased over LBT due to slewing loads -->
 <SetpointFarNeighborLimitPercentage>0.5</SetpointFarNeighborLimitPercentage>
 
 <MirrorCenterOfGravityX>-0.001121066</MirrorCenterOfGravityX>

@@ -43,7 +43,7 @@
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\MTMount\cpp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/AirController}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/DigitalInputOutput}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Accelerometer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/AutomaticOperationsController}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/BusLists}&quot;"/>
@@ -59,7 +59,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/ILC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Logging}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/InterlockController}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Modbus}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Model}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/PID}&quot;"/>

@@ -107,7 +107,6 @@ void ForceActuatorSettings::load(const std::string &filename) {
 	this->SetpointMirrorWeightLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointMirrorWeightLimitPercentage").node().child_value());
 	this->SetpointFarNeighborLimitPercentage = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/SetpointFarNeighborLimitPercentage").node().child_value());
 
-	Log.Info("CG");
 	this->MirrorCenterOfGravityX = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityX").node().child_value());
 	this->MirrorCenterOfGravityY = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityY").node().child_value());
 	this->MirrorCenterOfGravityZ = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityZ").node().child_value());

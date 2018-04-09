@@ -64,7 +64,7 @@ class UpdatePIDCommand;
 class ResetPIDCommand;
 
 class State {
-private:
+protected:
 	M1M3SSPublisher* publisher;
 	std::string name;
 	timespec startTime;
@@ -125,7 +125,6 @@ protected:
 	double getCurrentTimer();
 	double getTimer();
 
-private:
 	States::Type rejectCommandInvalidState(std::string command);
 };
 

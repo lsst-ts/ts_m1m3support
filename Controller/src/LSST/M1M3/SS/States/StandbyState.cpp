@@ -7,7 +7,7 @@
 
 #include <StandbyState.h>
 #include <ILC.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
 #include <Model.h>
 #include <SafetyController.h>
 #include <PowerController.h>
@@ -24,7 +24,7 @@ StandbyState::StandbyState(M1M3SSPublisher* publisher) : State(publisher, "Stand
 
 States::Type StandbyState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("StandbyState: update()");
-	model->getInterlockController()->tryToggleHeartbeat();
+	model->getDigitalInputOutput()->tryToggleHeartbeat();
 	return States::NoStateTransition;
 }
 
@@ -34,54 +34,56 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	model->loadSettings(command->getData()->SettingsToApply);
 	PowerController* powerController = model->getPowerController();
 	ILC* ilc = model->getILC();
-	InterlockController* interlockController = model->getInterlockController();
+	DigitalInputOutput* digitalInputOutput = model->getDigitalInputOutput();
 	Gyro* gyro = model->getGyro();
-	powerController->setBothPowerNetworks(true);
-	ilc->writeResetBuffer();
-	ilc->triggerModbus();
-	ilc->waitForAllSubnets(5000);
-	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	powerController->setAllPowerNetworks(true);
+	powerController->setAllAuxPowerNetworks(false);
+	// TODO: Wont need this because the power network is just turned on.
+//	ilc->writeResetBuffer();
+//	ilc->triggerModbus();
+//	ilc->waitForAllSubnets(5000);
+//	ilc->readAll();
+//	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeReportServerIDBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeReportServerStatusBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeReportADCScanRateBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeReadCalibrationDataBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeReadBoostValveDCAGainBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeReportDCAIDBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeReportDCAStatusBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->writeSetModeDisableBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	ilc->verifyResponses();
 	ilc->publishForceActuatorInfo();
 	ilc->publishHardpointActuatorInfo();
@@ -93,11 +95,8 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	gyro->setRotationFormatRate();
 	gyro->setRotationUnitsRadians();
 	gyro->exitConfigurationMode();
-	gyro->disableIgnore();
 	gyro->bit();
-	gyro->read();
-	gyro->publishGyroWarningIfRequired();
-	interlockController->tryToggleHeartbeat();
+	digitalInputOutput->tryToggleHeartbeat();
 	return model->getSafetyController()->checkSafety(newState);
 }
 

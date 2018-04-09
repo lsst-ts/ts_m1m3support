@@ -7,7 +7,6 @@
 
 #include <ParkedState.h>
 #include <ILC.h>
-#include <InterlockController.h>
 #include <Model.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
@@ -15,6 +14,8 @@
 #include <PositionController.h>
 #include <AutomaticOperationsController.h>
 #include <RaiseM1M3Command.h>
+#include <DigitalInputOutput.h>
+#include <PowerController.h>
 #include <Log.h>
 
 namespace LSST {
@@ -25,7 +26,10 @@ ParkedState::ParkedState(M1M3SSPublisher* publisher) : EnabledState(publisher, "
 
 States::Type ParkedState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("ParkedState: update()");
+	this->startTimer();
 	EnabledState::update(command, model);
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -54,6 +58,8 @@ States::Type ParkedState::disable(DisableCommand* command, Model* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
+	model->getDigitalInputOutput()->turnAirOff();
+	model->getPowerController()->setAllAuxPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
 }
 

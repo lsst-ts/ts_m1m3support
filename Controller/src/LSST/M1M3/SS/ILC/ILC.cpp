@@ -175,7 +175,9 @@ void ILC::read(uint8_t subnet) {
 	uint16_t reportedLength = this->rxBuffer.readLength();
 	if (reportedLength > 0) {
 		this->rxBuffer.setIndex(0);
-		this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10);
+		if (this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
+			Log.Warn("ILC: Failed to read all %d words", reportedLength);
+		}
 		this->rxBuffer.setLength(reportedLength);
 		this->responseParser.parse(&this->rxBuffer, subnet);
 	}
@@ -238,12 +240,12 @@ void ILC::calculateHPPostion() {
 void ILC::calculateHPMirrorForces() {
 	std::vector<float> m = this->forceActuatorSettings->HardpointForceMomentTable;
 	float* force = this->hardpointActuatorData->MeasuredForce;
-	this->hardpointActuatorData->Fx = m[0] * force[0] + m[6] * force[1] + m[12] * force[2] + m[18] * force[3] + m[24] * force[4] + m[30] * force[5];
-	this->hardpointActuatorData->Fy = m[1] * force[0] + m[7] * force[1] + m[13] * force[2] + m[19] * force[3] + m[25] * force[4] + m[31] * force[5];
-	this->hardpointActuatorData->Fz = m[2] * force[0] + m[8] * force[1] + m[14] * force[2] + m[20] * force[3] + m[26] * force[4] + m[32] * force[5];
-	this->hardpointActuatorData->Mx = m[3] * force[0] + m[9] * force[1] + m[15] * force[2] + m[21] * force[3] + m[27] * force[4] + m[33] * force[5];
-	this->hardpointActuatorData->My = m[4] * force[0] + m[10] * force[1] + m[16] * force[2] + m[22] * force[3] + m[28] * force[4] + m[34] * force[5];
-	this->hardpointActuatorData->Mz = m[5] * force[0] + m[11] * force[1] + m[17] * force[2] + m[23] * force[3] + m[29] * force[4] + m[35] * force[5];
+	this->hardpointActuatorData->Fx = m[0] * force[0] + m[1] * force[1] + m[2] * force[2] + m[3] * force[3] + m[4] * force[4] + m[5] * force[5];
+	this->hardpointActuatorData->Fy = m[6] * force[0] + m[7] * force[1] + m[8] * force[2] + m[9] * force[3] + m[10] * force[4] + m[11] * force[5];
+	this->hardpointActuatorData->Fz = m[12] * force[0] + m[13] * force[1] + m[14] * force[2] + m[15] * force[3] + m[16] * force[4] + m[17] * force[5];
+	this->hardpointActuatorData->Mx = m[18] * force[0] + m[19] * force[1] + m[20] * force[2] + m[21] * force[3] + m[22] * force[4] + m[23] * force[5];
+	this->hardpointActuatorData->My = m[24] * force[0] + m[25] * force[1] + m[26] * force[2] + m[27] * force[3] + m[28] * force[4] + m[29] * force[5];
+	this->hardpointActuatorData->Mz = m[30] * force[0] + m[31] * force[1] + m[32] * force[2] + m[33] * force[3] + m[34] * force[4] + m[35] * force[5];
 }
 
 void ILC::calculateFAMirrorForces() {
@@ -255,6 +257,11 @@ void ILC::calculateFAMirrorForces() {
 	this->forceActuatorData->My = fm.My;
 	this->forceActuatorData->Mz = fm.Mz;
 	this->forceActuatorData->ForceMagnitude = fm.ForceMagnitude;
+}
+
+void ILC::clearResponses() {
+	Log.Debug("ILC: clearResponses()");
+	this->responseParser.clearResponses();
 }
 
 void ILC::verifyResponses() {
@@ -295,6 +302,10 @@ void ILC::publishHardpointMonitorInfo() {
 
 void ILC::publishHardpointMonitorStatus() {
 	//this->publisher->putHardpointMonitorStatus();
+}
+
+void ILC::publishHardpointMonitorData() {
+	this->publisher->putHardpointMonitorData();
 }
 
 uint8_t ILC::subnetToRxAddress(uint8_t subnet) {

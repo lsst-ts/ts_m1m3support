@@ -6,7 +6,6 @@
  */
 
 #include <ActiveState.h>
-#include <InterlockController.h>
 #include <Model.h>
 #include <Publisher.h>
 #include <SafetyController.h>
@@ -21,7 +20,10 @@ ActiveState::ActiveState(M1M3SSPublisher* publisher) : EnabledState(publisher, "
 
 States::Type ActiveState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("ActiveState: update()");
+	this->startTimer();
 	EnabledState::update(command, model);
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

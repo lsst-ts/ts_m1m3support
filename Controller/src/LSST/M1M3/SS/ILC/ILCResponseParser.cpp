@@ -153,7 +153,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 					case 248:
 					case 249: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 					default:
-						Log.Warn("ILCResponseParser: Unknown address");
+						Log.Warn("ILCResponseParser: Unknown function FA %d", subnet);
 						this->warnUnknownFunction(timestamp, map.ActuatorId);
 						break;
 					}
@@ -180,7 +180,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 					case 235:
 					case 238: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 					default:
-						Log.Warn("ILCResponseParser: Unknown address");
+						Log.Warn("ILCResponseParser: Unknown function HP %d", subnet);
 						this->warnUnknownFunction(timestamp, map.ActuatorId);
 						break;
 					}
@@ -204,22 +204,25 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 					case 235:
 					case 238:
 					case 250: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
-					default: this->warnUnknownFunction(timestamp, map.ActuatorId); break;
+					default:
+						Log.Warn("ILCResponseParser: Unknown function HM %d", subnet);
+						this->warnUnknownFunction(timestamp, map.ActuatorId);
+						break;
 					}
 					break;
 				default:
-					Log.Warn("ILCResponseParser: Unknown address");
+					Log.Warn("ILCResponseParser: Unknown address %d", subnet);
 					this->warnUnknownAddress(timestamp, map.ActuatorId);
 					break;
 				}
 			}
 			else {
-				Log.Warn("ILCResponseParser: Unknown subnet");
+				Log.Warn("ILCResponseParser: Unknown subnet %d", subnet);
 				this->warnUnknownSubnet(timestamp);
 			}
 		}
 		else {
-			Log.Warn("ILCResponseParser: Invalid CRC");
+			Log.Warn("ILCResponseParser: Invalid CRC %d", subnet);
 			this->warnInvalidCRC(timestamp);
 		}
 	}
@@ -237,25 +240,53 @@ void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* 
 	}
 }
 
+void ILCResponseParser::clearResponses() {
+	for(int i = 0; i < FA_COUNT; i++) {
+		this->faExpectedResponses[i] = 0;
+	}
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->hpExpectedResponses[i] = 0;
+	}
+	for(int i = 0; i < HM_COUNT; ++i) {
+		this->hmExpectedResponses[i] = 0;
+	}
+}
+
 void ILCResponseParser::verifyResponses() {
 	double timestamp = this->publisher->getTimestamp();
+	bool warn = false;
 	for(int i = 0; i < FA_COUNT; i++) {
 		if (this->faExpectedResponses[i] != 0) {
+			warn = true;
 			this->warnResponseTimeout(timestamp, this->forceActuatorInfo->ReferenceId[i]);
 			this->faExpectedResponses[i] = 0;
 		}
 	}
+	if (warn) {
+		Log.Warn("ILCResponseParser: Force actuator response timeout");
+	}
+	warn = false;
 	for(int i = 0; i < HP_COUNT; i++) {
 		if (this->hpExpectedResponses[i] != 0) {
+			warn = true;
 			this->warnResponseTimeout(timestamp, this->hardpointActuatorInfo->ReferenceId[i]);
 			this->hpExpectedResponses[i] = 0;
 		}
 	}
+	if (warn) {
+		Log.Warn("ILCResponseParser: Hardpoint actuator response timeout");
+	}
+	warn = false;
 	for(int i = 0; i < HM_COUNT; ++i) {
 		if (this->hmExpectedResponses[i] != 0) {
+			warn = true;
 			this->warnResponseTimeout(timestamp, this->hardpointMonitorInfo->ReferenceId[i]);
 			this->hmExpectedResponses[i] = 0;
+
 		}
+	}
+	if (warn) {
+		Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
 	}
 }
 
@@ -326,6 +357,8 @@ void ILCResponseParser::parseReportHMServerIDResponse(ModbusBuffer* buffer, ILCM
 	this->hardpointMonitorInfo->ILCUniqueId[dataIndex] = buffer->readU48();
 	this->hardpointMonitorInfo->ILCApplicationType[dataIndex] = buffer->readU8();
 	this->hardpointMonitorInfo->NetworkNodeType[dataIndex] = buffer->readU8();
+	buffer->readU8(); // ILCSelectedOptions
+	buffer->readU8(); // NetworkNodeOptions
 	this->hardpointMonitorInfo->MajorRevision[dataIndex] = buffer->readU8();
 	this->hardpointMonitorInfo->MinorRevision[dataIndex] = buffer->readU8();
 	buffer->incIndex(length - 12);

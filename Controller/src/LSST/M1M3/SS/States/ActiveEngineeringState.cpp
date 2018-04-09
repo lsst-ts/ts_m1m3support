@@ -10,7 +10,6 @@
 #include <ILC.h>
 #include <Displacement.h>
 #include <Inclinometer.h>
-#include <AirController.h>
 #include <ForceController.h>
 #include <ApplyOffsetForcesCommand.h>
 #include <ApplyAberrationForcesByBendingModesCommand.h>
@@ -20,7 +19,7 @@
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <SafetyController.h>
-#include <InterlockController.h>
+#include <DigitalInputOutput.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
@@ -48,7 +47,10 @@ ActiveEngineeringState::ActiveEngineeringState(M1M3SSPublisher* publisher) : Eng
 
 States::Type ActiveEngineeringState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("ActiveEngineeringState: update()");
+	this->startTimer();
 	EnabledState::update(command, model);
+	this->stopTimer();
+	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -64,21 +66,16 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
 	Log.Info("ActiveEngineeringState: exitEngineering()");
 	States::Type newState = States::ActiveState;
 	model->getForceController()->resetPIDs();
-	return model->getSafetyController()->checkSafety(newState);
-}
-
-States::Type ActiveEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: applyOffsetForces()");
-	model->getForceController()->applyOffsetForces(command->getData()->XForces, command->getData()->YForces, command->getData()->ZForces);
-	model->getForceController()->processAppliedForces();
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: clearOffsetForces()");
+	model->getDigitalInputOutput()->turnAirOn();
+	model->getPositionController()->stopMotion();
+	model->getForceController()->zeroAberrationForces();
+	model->getForceController()->applyBalanceForces();
 	model->getForceController()->zeroOffsetForces();
 	model->getForceController()->processAppliedForces();
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+	model->getDigitalInputOutput()->turnCellLightsOff();
+	// TODO: Real problems exist if the user enabled / disabled ILC power...
+	model->getPowerController()->setAllPowerNetworks(true);
+	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type ActiveEngineeringState::applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command, Model* model) {
@@ -123,20 +120,6 @@ States::Type ActiveEngineeringState::clearActiveOpticForces(ClearActiveOpticForc
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: stopHardpointMotion()");
-	model->getPositionController()->stopMotion();
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: moveHardpointActuators()");
-	if (!model->getPositionController()->move(command->getData()->Steps)) {
-		model->getPublisher()->logCommandRejectionWarning("MoveHardpointActuators", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
-	}
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command, Model* model) {
 	Log.Info("ActiveEngineeringState: translateM1M3()");
 	if (!model->getPositionController()->translate(command->getData()->XTranslation, command->getData()->YTranslation, command->getData()->ZTranslation,
@@ -155,76 +138,6 @@ States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, 
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::turnLightsOn(TurnLightsOnCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: turnLightsOn()");
-	model->getInterlockController()->setCellLightsOn(true);
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::turnLightsOff(TurnLightsOffCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: turnLightsOff()");
-	model->getInterlockController()->setCellLightsOn(false);
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::turnPowerOn(TurnPowerOnCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: turnPowerOn()");
-	if (command->getData()->TurnPowerNetworkAOn) {
-		model->getPowerController()->setPowerNetworkA(true);
-	}
-	if (command->getData()->TurnPowerNetworkBOn) {
-		model->getPowerController()->setPowerNetworkB(true);
-	}
-	if (command->getData()->TurnPowerNetworkCOn) {
-		model->getPowerController()->setPowerNetworkC(true);
-	}
-	if (command->getData()->TurnPowerNetworkDOn) {
-		model->getPowerController()->setPowerNetworkD(true);
-	}
-	if (command->getData()->TurnAuxPowerNetworkAOn) {
-		model->getPowerController()->setAuxPowerNetworkA(true);
-	}
-	if (command->getData()->TurnAuxPowerNetworkBOn) {
-		model->getPowerController()->setAuxPowerNetworkB(true);
-	}
-	if (command->getData()->TurnAuxPowerNetworkCOn) {
-		model->getPowerController()->setAuxPowerNetworkC(true);
-	}
-	if (command->getData()->TurnAuxPowerNetworkDOn) {
-		model->getPowerController()->setAuxPowerNetworkD(true);
-	}
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::turnPowerOff(TurnPowerOffCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: turnPowerOff()");
-	if (command->getData()->TurnPowerNetworkAOff) {
-		model->getPowerController()->setPowerNetworkA(false);
-	}
-	if (command->getData()->TurnPowerNetworkBOff) {
-		model->getPowerController()->setPowerNetworkB(false);
-	}
-	if (command->getData()->TurnPowerNetworkCOff) {
-		model->getPowerController()->setPowerNetworkC(false);
-	}
-	if (command->getData()->TurnPowerNetworkDOff) {
-		model->getPowerController()->setPowerNetworkD(false);
-	}
-	if (command->getData()->TurnAuxPowerNetworkAOff) {
-		model->getPowerController()->setAuxPowerNetworkA(false);
-	}
-	if (command->getData()->TurnAuxPowerNetworkBOff) {
-		model->getPowerController()->setAuxPowerNetworkB(false);
-	}
-	if (command->getData()->TurnAuxPowerNetworkCOff) {
-		model->getPowerController()->setAuxPowerNetworkC(false);
-	}
-	if (command->getData()->TurnAuxPowerNetworkDOff) {
-		model->getPowerController()->setAuxPowerNetworkD(false);
-	}
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 States::Type ActiveEngineeringState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: enableHardpointCorrections()");
 	model->getForceController()->applyBalanceForces();
@@ -234,12 +147,6 @@ States::Type ActiveEngineeringState::enableHardpointCorrections(EnableHardpointC
 States::Type ActiveEngineeringState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: disableHardpointCorrections()");
 	model->getForceController()->zeroBalanceForces();
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: applyOffsetForcesByMirrorForce()");
-	model->getForceController()->applyOffsetForcesByMirrorForces(command->getData()->XForce, command->getData()->YForce, command->getData()->ZForce, command->getData()->XMoment, command->getData()->YMoment, command->getData()->ZMoment);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
