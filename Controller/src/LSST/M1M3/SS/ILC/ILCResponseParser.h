@@ -60,6 +60,7 @@ public:
 
 	void parse(ModbusBuffer* buffer, uint8_t subnet);
 	void incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm);
+	void clearResponses();
 	void verifyResponses();
 
 private:

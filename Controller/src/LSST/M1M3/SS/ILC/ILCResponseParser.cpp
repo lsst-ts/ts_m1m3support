@@ -240,25 +240,53 @@ void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* 
 	}
 }
 
+void ILCResponseParser::clearResponses() {
+	for(int i = 0; i < FA_COUNT; i++) {
+		this->faExpectedResponses[i] = 0;
+	}
+	for(int i = 0; i < HP_COUNT; i++) {
+		this->hpExpectedResponses[i] = 0;
+	}
+	for(int i = 0; i < HM_COUNT; ++i) {
+		this->hmExpectedResponses[i] = 0;
+	}
+}
+
 void ILCResponseParser::verifyResponses() {
 	double timestamp = this->publisher->getTimestamp();
+	bool warn = false;
 	for(int i = 0; i < FA_COUNT; i++) {
 		if (this->faExpectedResponses[i] != 0) {
+			warn = true;
 			this->warnResponseTimeout(timestamp, this->forceActuatorInfo->ReferenceId[i]);
 			this->faExpectedResponses[i] = 0;
 		}
 	}
+	if (warn) {
+		Log.Warn("ILCResponseParser: Force actuator response timeout");
+	}
+	warn = false;
 	for(int i = 0; i < HP_COUNT; i++) {
 		if (this->hpExpectedResponses[i] != 0) {
+			warn = true;
 			this->warnResponseTimeout(timestamp, this->hardpointActuatorInfo->ReferenceId[i]);
 			this->hpExpectedResponses[i] = 0;
 		}
 	}
+	if (warn) {
+		Log.Warn("ILCResponseParser: Hardpoint actuator response timeout");
+	}
+	warn = false;
 	for(int i = 0; i < HM_COUNT; ++i) {
 		if (this->hmExpectedResponses[i] != 0) {
+			warn = true;
 			this->warnResponseTimeout(timestamp, this->hardpointMonitorInfo->ReferenceId[i]);
 			this->hmExpectedResponses[i] = 0;
+
 		}
+	}
+	if (warn) {
+		Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
 	}
 }
 

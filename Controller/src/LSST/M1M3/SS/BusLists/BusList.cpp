@@ -18,6 +18,7 @@ BusList::BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory
 	this->ilcMessageFactory = ilcMessageFactory;
 	memset(this->expectedHPResponses, 0, sizeof(this->expectedHPResponses));
 	memset(this->expectedFAResponses, 0, sizeof(this->expectedFAResponses));
+	memset(this->expectedHMResponses, 0, sizeof(this->expectedHMResponses));
 	this->subnetStartIndex = 0;
 }
 

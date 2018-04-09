@@ -189,12 +189,12 @@ void ILCMessageFactory::readCalibration(ModbusBuffer* buffer, uint8_t address) {
 	buffer->writeWaitForRx(this->ilcApplicationSettings->ReadCalibration);
 }
 
-void ILCMessageFactory::readDCAPressureValues(ModbusBuffer* buffer, uint8_t address) {
+void ILCMessageFactory::reportDCAPressure(ModbusBuffer* buffer, uint8_t address) {
 	buffer->writeU8(address);
 	buffer->writeU8(119);
 	buffer->writeCRC(2);
 	buffer->writeEndOfFrame();
-	buffer->writeWaitForRx(this->ilcApplicationSettings->ReadDCAPressureValues);
+	buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAPressure);
 }
 
 void ILCMessageFactory::reportDCAID(ModbusBuffer* buffer, uint8_t address) {
@@ -211,14 +211,6 @@ void ILCMessageFactory::reportDCAStatus(ModbusBuffer* buffer, uint8_t address) {
 	buffer->writeCRC(2);
 	buffer->writeEndOfFrame();
 	buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAStatus);
-}
-
-void ILCMessageFactory::reportDCAPressure(ModbusBuffer* buffer, uint8_t address) {
-	buffer->writeU8(address);
-	buffer->writeU8(119);
-	buffer->writeCRC(2);
-	buffer->writeEndOfFrame();
-	buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAPressure);
 }
 
 void ILCMessageFactory::reportLVDT(ModbusBuffer* buffer, uint8_t address) {

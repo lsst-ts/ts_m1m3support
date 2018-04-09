@@ -115,6 +115,7 @@ public:
 	void calculateHPPostion();
 	void calculateHPMirrorForces();
 	void calculateFAMirrorForces();
+	void clearResponses();
 	void verifyResponses();
 
 	void publishForceActuatorInfo();
