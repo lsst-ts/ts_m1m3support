@@ -35,7 +35,7 @@ namespace SS {
 ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
  : subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
    ilcMessageFactory(ilcApplicationSettings),
-   responseParser(forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings, hardpointMonitorApplicationSettings, publisher, &this->subnetData),
+   responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData),
    busListSetADCChannelOffsetAndSensitivity(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
    busListSetADCScanRate(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
    busListSetBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo()),

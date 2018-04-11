@@ -9,7 +9,6 @@
 #define ACCELEROMETERSETTINGS_H_
 
 #include <string>
-#include <OffsetScalar.h>
 
 namespace LSST {
 namespace M1M3 {
