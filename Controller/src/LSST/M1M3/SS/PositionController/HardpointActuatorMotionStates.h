@@ -12,9 +12,9 @@
 
 struct HardpointActuatorMotionStates {
 	enum Type {
-		Standby = m1m3::m1m3_shared_HardpointMotionStates_Standby,
-		Chasing = m1m3::m1m3_shared_HardpointMotionStates_Chasing,
-		Moving = m1m3::m1m3_shared_HardpointMotionStates_Moving
+		Standby = 0,
+		Chasing = 1,
+		Moving = 2
 	};
 };
 

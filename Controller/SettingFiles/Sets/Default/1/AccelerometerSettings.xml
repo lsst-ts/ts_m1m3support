@@ -1,6 +1,58 @@
 <AccelerometerSettings>
-<VoltsToMetersPerSecondSqrd>4.9035</VoltsToMetersPerSecondSqrd>
-<AngularAccelerationXDistance>0.9478</AngularAccelerationXDistance>
-<AngularAccelerationYDistance>0.7648</AngularAccelerationYDistance>
-<AngularAccelerationZDistance>4.2500</AngularAccelerationZDistance>
+    <VoltsToMetersPerSecondSqrd>4.9035</VoltsToMetersPerSecondSqrd>
+    <AngularAccelerationXDistance>0.9478</AngularAccelerationXDistance>
+    <AngularAccelerationYDistance>0.7648</AngularAccelerationYDistance>
+    <AngularAccelerationZDistance>4.2500</AngularAccelerationZDistance>
+    <Accelerometer1>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer1>
+    <Accelerometer2>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer2>
+    <Accelerometer3>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer3>
+    <Accelerometer4>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer4>
+    <Accelerometer5>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer5>
+    <Accelerometer6>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer6>
+    <Accelerometer7>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer7>
+    <Accelerometer8>
+        <Offset>0.0</Offset>
+        <Scalar>1.0</Scalar>
+    </Accelerometer8>
+    <Limits>
+        <AngularAccelerationX>
+            <FaultLow>9000</FaultLow>
+            <WarningLow>-9000</WarningLow>
+            <WarningHigh>9000</WarningHigh>
+            <FaultHigh>9000</FaultHigh>
+        </AngularAccelerationX>
+        <AngularAccelerationY>
+            <FaultLow>9000</FaultLow>
+            <WarningLow>-9000</WarningLow>
+            <WarningHigh>9000</WarningHigh>
+            <FaultHigh>9000</FaultHigh>
+        </AngularAccelerationY>
+        <AngularAccelerationZ>
+            <FaultLow>9000</FaultLow>
+            <WarningLow>-9000</WarningLow>
+            <WarningHigh>9000</WarningHigh>
+            <FaultHigh>9000</FaultHigh>
+        </AngularAccelerationZ>
+    </Limits>
 </AccelerometerSettings>
