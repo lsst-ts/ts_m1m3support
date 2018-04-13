@@ -20,6 +20,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->subnetData[subnetIndex].FACount = 0;
 		this->subnetData[subnetIndex].HPCount = 0;
+		this->subnetData[subnetIndex].HMCount = 0;
 	}
 	for(int i = 0; i < FA_COUNT; i++) {
 		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
