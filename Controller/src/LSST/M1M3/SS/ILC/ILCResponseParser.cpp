@@ -17,6 +17,7 @@
 #include <ILCSubnetData.h>
 #include <SAL_m1m3C.h>
 #include <cmath>
+#include <cstring>
 #include <Log.h>
 
 namespace LSST {
@@ -93,6 +94,10 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
 	this->ilcWarning->UnknownAddress = false;
 	this->ilcWarning->UnknownFunction = false;
 	this->ilcWarning->UnknownProblem = false;
+
+	memset(this->faExpectedResponses, 0, sizeof(this->faExpectedResponses));
+	memset(this->hpExpectedResponses, 0, sizeof(this->hpExpectedResponses));
+	memset(this->hmExpectedResponses, 0, sizeof(this->hmExpectedResponses));
 }
 
 void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
