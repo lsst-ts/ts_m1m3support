@@ -106,12 +106,12 @@ bool PositionController::motionComplete() {
 
 bool PositionController::move(int32_t* steps) {
 	Log.Info("PositionController: move()");
-	if ((this->hardpointActuatorState->MotionState[0] != 0 && steps[0] != 0) ||
-			(this->hardpointActuatorState->MotionState[1] != 0 && steps[1] != 0) ||
-			(this->hardpointActuatorState->MotionState[2] != 0 && steps[2] != 0) ||
-			(this->hardpointActuatorState->MotionState[3] != 0 && steps[3] != 0) ||
-			(this->hardpointActuatorState->MotionState[4] != 0 && steps[4] != 0) ||
-			(this->hardpointActuatorState->MotionState[5] != 0 && steps[5] != 0)) {
+	if ((this->hardpointActuatorState->MotionState[0] != HardpointActuatorMotionStates::Standby && steps[0] != 0) ||
+			(this->hardpointActuatorState->MotionState[1] != HardpointActuatorMotionStates::Standby && steps[1] != 0) ||
+			(this->hardpointActuatorState->MotionState[2] != HardpointActuatorMotionStates::Standby && steps[2] != 0) ||
+			(this->hardpointActuatorState->MotionState[3] != HardpointActuatorMotionStates::Standby && steps[3] != 0) ||
+			(this->hardpointActuatorState->MotionState[4] != HardpointActuatorMotionStates::Standby && steps[4] != 0) ||
+			(this->hardpointActuatorState->MotionState[5] != HardpointActuatorMotionStates::Standby && steps[5] != 0)) {
 		return false;
 	}
 	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();

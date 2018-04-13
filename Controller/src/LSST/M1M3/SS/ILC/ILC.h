@@ -26,6 +26,7 @@
 #include <SetBoostValveDCAGainBusList.h>
 #include <FreezeSensorBusList.h>
 #include <RaisedBusList.h>
+#include <ActiveBusList.h>
 #include <ILCResponseParser.h>
 #include <SAL_m1m3C.h>
 
@@ -42,6 +43,7 @@ class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
 class HardpointMonitorApplicationSettings;
+class PositionController;
 
 /*!
  * The ILC class used to communicate with the M1M3's 5 subnets.
@@ -70,12 +72,14 @@ private:
 	ChangeILCModeBusList busListChangeILCModeStandby;
 	FreezeSensorBusList busListFreezeSensor;
 	RaisedBusList busListRaised;
+	ActiveBusList busListActive;
 
 	HardpointActuatorSettings* hardpointActuatorSettings;
 	m1m3_HardpointActuatorDataC* hardpointActuatorData;
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
 	m1m3_ForceActuatorDataC* forceActuatorData;
+	PositionController* positionController;
 
 	int8_t hpStepCommand[6];
 	int32_t hpSteps[6];
@@ -83,8 +87,10 @@ private:
 	uint16_t u16Buffer[1];
 	ModbusBuffer rxBuffer;
 
+	int32_t controlListToggle;
+
 public:
-	ILC(M1M3SSPublisher* publisher, FPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
+	ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 	virtual ~ILC();
 
 	void writeCalibrationDataBuffer();
@@ -103,6 +109,8 @@ public:
 	void writeSetModeStandbyBuffer();
 	void writeFreezeSensorListBuffer();
 	void writeRaisedListBuffer();
+	void writeActiveListBuffer();
+	void writeControlListBuffer();
 
 	void triggerModbus();
 

@@ -23,6 +23,8 @@
 #include <Log.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
+#include <RoundRobin.h>
+#include <PositionController.h>
 
 #define ADDRESS_COUNT 256
 
@@ -30,7 +32,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
+ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
  : subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
    ilcMessageFactory(ilcApplicationSettings),
    responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData),
@@ -49,7 +51,8 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, ILCApplicationSettings* ilcAppl
    busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled),
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
-   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()) {
+   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
+   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()) {
 	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
 	this->fpga = fpga;
@@ -58,6 +61,8 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, ILCApplicationSettings* ilcAppl
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceActuatorData = this->publisher->getForceActuatorData();
+	this->controlListToggle = 0;
+	this->positionController = positionController;
 }
 
 ILC::~ILC() { }
@@ -140,8 +145,26 @@ void ILC::writeFreezeSensorListBuffer() {
 
 void ILC::writeRaisedListBuffer() {
 	Log.Debug("ILC: writeRaisedListBuffer()");
+	this->positionController->updateSteps();
 	this->busListRaised.update();
 	this->writeBusList(&this->busListRaised);
+}
+
+void ILC::writeActiveListBuffer() {
+	Log.Debug("ILC: writeActiveListBuffer()");
+	this->busListActive.update();
+	this->writeBusList(&this->busListActive);
+}
+
+void ILC::writeControlListBuffer() {
+	Log.Debug("ILC: writeControlListBuffer()");
+	if (this->controlListToggle == 0) {
+		this->writeRaisedListBuffer();
+	}
+	else {
+		this->writeActiveListBuffer();
+	}
+	this->controlListToggle = RoundRobin::Inc(this->controlListToggle, 3);
 }
 
 void ILC::triggerModbus() {

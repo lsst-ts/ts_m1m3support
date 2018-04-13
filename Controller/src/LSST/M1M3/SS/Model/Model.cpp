@@ -150,12 +150,19 @@ void Model::loadSettings(std::string settingsToApply) {
 	Log.Info("Model: Creating inclinometer");
 	this->inclinometer = new Inclinometer(this->fpga->getSupportFPGAData(), this->publisher, this->safetyController);
 
+	if (this->positionController) {
+		Log.Debug("Model: Deleting position controller");
+		delete this->positionController;
+	}
+	Log.Info("Model: Creating position controller");
+	this->positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings, this->publisher);
+
 	if (this->ilc) {
 		Log.Debug("Model: Deleting ILC");
 		delete this->ilc;
 	}
 	Log.Info("Model: Creating ILC");
-	this->ilc = new ILC(this->publisher, this->fpga, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings, hardpointMonitorApplicationSettings);
+	this->ilc = new ILC(this->publisher, this->fpga, this->positionController, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings, hardpointMonitorApplicationSettings);
 
 	if (this->forceController) {
 		Log.Debug("Model: Deleting force controller");
@@ -163,13 +170,6 @@ void Model::loadSettings(std::string settingsToApply) {
 	}
 	Log.Info("Model: Creating force controller");
 	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings, this->publisher, this->safetyController);
-
-	if (this->positionController) {
-		Log.Debug("Model: Deleting position controller");
-		delete this->positionController;
-	}
-	Log.Info("Model: Creating position controller");
-	this->positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings, this->publisher);
 
 	Log.Info("Model: Updating digital input output");
 	this->digitalInputOutput->setSafetyController(this->safetyController);

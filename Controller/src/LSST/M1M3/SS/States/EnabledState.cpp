@@ -33,10 +33,9 @@ EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State
 States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("EnabledState: update()");
 	ILC* ilc = model->getILC();
-	model->getPositionController()->updateSteps();
 	model->getForceController()->updateAppliedForces();
 	model->getForceController()->processAppliedForces();
-	ilc->writeRaisedListBuffer();
+	ilc->writeControlListBuffer();
 	ilc->triggerModbus();
 	model->getDigitalInputOutput()->tryToggleHeartbeat();
 	model->getFPGA()->pullTelemetry();

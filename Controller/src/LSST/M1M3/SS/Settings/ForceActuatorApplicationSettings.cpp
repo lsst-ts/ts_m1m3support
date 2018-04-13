@@ -14,6 +14,7 @@
 #include <boost/algorithm/string.hpp>
 #include <stdio.h>
 #include <TableLoader.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -22,13 +23,51 @@ namespace SS {
 void ForceActuatorApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
 	doc.load_file(filename.c_str());
-	TableLoader::loadTable(1, 1, 1, &XIndexToZIndex, doc.select_node("//ForceActuatorApplicationSettings/XIndexToZIndexTablePath").node().child_value());
-	TableLoader::loadTable(1, 1, 1, &YIndexToZIndex, doc.select_node("//ForceActuatorApplicationSettings/YIndexToZIndexTablePath").node().child_value());
-	TableLoader::loadTable(1, 1, 1, &SecondaryCylinderIndexToZIndex, doc.select_node("//ForceActuatorApplicationSettings/SecondaryCylinderIndexToZIndexTablePath").node().child_value());
-	TableLoader::loadTable(1, 1, 1, &ZIndexToXIndex, doc.select_node("//ForceActuatorApplicationSettings/ZIndexToXIndexTablePath").node().child_value());
-	TableLoader::loadTable(1, 1, 1, &ZIndexToYIndex, doc.select_node("//ForceActuatorApplicationSettings/ZIndexToYIndexTablePath").node().child_value());
-	TableLoader::loadTable(1, 1, 1, &ZIndexToSecondaryCylinderIndex, doc.select_node("//ForceActuatorApplicationSettings/ZIndexToSecondaryCylinderIndexTablePath").node().child_value());
 	this->loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath").node().child_value());
+	this->XIndexToZIndex.clear();
+	this->YIndexToZIndex.clear();
+	this->SecondaryCylinderIndexToZIndex.clear();
+	this->ZIndexToXIndex.clear();
+	this->ZIndexToYIndex.clear();
+	this->ZIndexToSecondaryCylinderIndex.clear();
+	int xIndex = 0;
+	int yIndex = 0;
+	int sIndex = 0;
+	for(int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+		ForceActuatorTypes::Type type = this->Table[zIndex].Type;
+		ForceActuatorOrientations::Type orientation = this->Table[zIndex].Orientation;
+		if (type == ForceActuatorTypes::DAA) {
+			if (orientation == ForceActuatorOrientations::PositiveX || orientation == ForceActuatorOrientations::NegativeX) {
+				this->XIndexToZIndex.push_back(zIndex);
+				this->ZIndexToXIndex.push_back(xIndex);
+				this->ZIndexToYIndex.push_back(-1);
+				xIndex += 1;
+			}
+			if (orientation == ForceActuatorOrientations::PositiveY || orientation == ForceActuatorOrientations::NegativeY) {
+				this->YIndexToZIndex.push_back(zIndex);
+				this->ZIndexToXIndex.push_back(-1);
+				this->ZIndexToYIndex.push_back(yIndex);
+				yIndex += 1;
+			}
+			if (orientation != ForceActuatorOrientations::NA) {
+				this->SecondaryCylinderIndexToZIndex.push_back(zIndex);
+				this->ZIndexToSecondaryCylinderIndex.push_back(sIndex);
+				sIndex += 1;
+			}
+		}
+		else {
+			this->ZIndexToXIndex.push_back(-1);
+			this->ZIndexToYIndex.push_back(-1);
+			this->ZIndexToSecondaryCylinderIndex.push_back(-1);
+		}
+	}
+	Log.Debug("ForceActuatorApplicationSettings: Index map sizes %d %d %d %d %d %d",
+			(int)this->XIndexToZIndex.size(),
+			(int)this->YIndexToZIndex.size(),
+			(int)this->SecondaryCylinderIndexToZIndex.size(),
+			(int)this->ZIndexToXIndex.size(),
+			(int)this->ZIndexToYIndex.size(),
+			(int)this->ZIndexToSecondaryCylinderIndex.size());
 }
 
 void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string &filename) {
@@ -52,7 +91,7 @@ void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string 
 			++i;
 			row.ZPosition = boost::lexical_cast<double>(*i);
 			++i;
-			row.Type = (*i) == "SAA" ? ForceActuatorTypes::SAA : ForceActuatorTypes::DAA;
+			row.Type = (*i)[0] == 'S' ? ForceActuatorTypes::SAA : ForceActuatorTypes::DAA;
 			++i;
 			row.Subnet = (uint8_t)boost::lexical_cast<int32_t>(*i);
 			++i;
@@ -60,13 +99,13 @@ void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string 
 			++i;
 			std::string rawOrientation = *i;
 			ForceActuatorOrientations::Type orientation = ForceActuatorOrientations::NA;
-			if (rawOrientation == "+Y")
+			if (rawOrientation[0] == '+' && rawOrientation[1] == 'Y')
 				orientation = ForceActuatorOrientations::PositiveY;
-			else if (rawOrientation == "-Y")
+			else if (rawOrientation[0] == '-' && rawOrientation[1] == 'Y')
 				orientation = ForceActuatorOrientations::NegativeY;
-			else if (rawOrientation == "+X")
+			else if (rawOrientation[0] == '+' && rawOrientation[1] == 'X')
 				orientation = ForceActuatorOrientations::PositiveX;
-			else if (rawOrientation == "-X")
+			else if (rawOrientation[0] == '-' && rawOrientation[1] == 'X')
 				orientation = ForceActuatorOrientations::NegativeX;
 			row.Orientation = orientation;
 			this->Table.push_back(row);
