@@ -25,6 +25,7 @@
 #include <HardpointActuatorSettings.h>
 #include <RoundRobin.h>
 #include <PositionController.h>
+#include <cmath>
 
 #define ADDRESS_COUNT 256
 
@@ -269,6 +270,10 @@ void ILC::calculateHPMirrorForces() {
 	this->hardpointActuatorData->Mx = m[18] * force[0] + m[19] * force[1] + m[20] * force[2] + m[21] * force[3] + m[22] * force[4] + m[23] * force[5];
 	this->hardpointActuatorData->My = m[24] * force[0] + m[25] * force[1] + m[26] * force[2] + m[27] * force[3] + m[28] * force[4] + m[29] * force[5];
 	this->hardpointActuatorData->Mz = m[30] * force[0] + m[31] * force[1] + m[32] * force[2] + m[33] * force[3] + m[34] * force[4] + m[35] * force[5];
+	this->hardpointActuatorData->ForceMagnitude = sqrt(
+			this->hardpointActuatorData->Fx * this->hardpointActuatorData->Fx +
+			this->hardpointActuatorData->Fy * this->hardpointActuatorData->Fy +
+			this->hardpointActuatorData->Fz * this->hardpointActuatorData->Fz);
 }
 
 void ILC::calculateFAMirrorForces() {
