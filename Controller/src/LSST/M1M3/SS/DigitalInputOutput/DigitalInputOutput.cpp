@@ -141,6 +141,7 @@ void DigitalInputOutput::tryToggleHeartbeat() {
 	Log.Trace("DigitalInputOutput: tryToggleHeartbeat()");
 	double timestamp = this->publisher->getTimestamp();
 	if (timestamp >= (this->lastToggleTimestamp + this->interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
+		Log.Debug("DigitalInputOutput: toggleHeartbeat()");
 		this->lastToggleTimestamp = timestamp;
 		this->interlockStatus->HeartbeatCommandedState = !this->interlockStatus->HeartbeatCommandedState;
 		uint16_t buffer[2] = { FPGAAddresses::HeartbeatToSafetyController, (uint16_t)this->interlockStatus->HeartbeatCommandedState };

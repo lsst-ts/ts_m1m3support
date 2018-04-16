@@ -44,6 +44,7 @@ Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
 void Gyro::bit() {
 	Log.Debug("Gyro: bit()");
 	this->writeCommand("?BIT,2\r\n");
+	usleep(10000);
 }
 
 void Gyro::enterConfigurationMode() {
@@ -179,6 +180,7 @@ void Gyro::processData() {
 
 void Gyro::writeCommand(std::string command) {
 	uint16_t buffer[256];
+	memset(buffer, 0, sizeof(buffer));
 	int32_t size = (int32_t)command.size();
 	buffer[0] = FPGAAddresses::GyroTx;
 	buffer[1] = (uint16_t)size;
