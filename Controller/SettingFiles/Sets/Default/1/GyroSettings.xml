@@ -1,0 +1,4 @@
+<GyroSettings>
+<DataRate>500</DataRate>
+<AxesMatrix>1,0,0,0,1,0,0,0,1</AxesMatrix>
+</GyroSettings>
