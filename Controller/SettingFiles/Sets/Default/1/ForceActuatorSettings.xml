@@ -91,6 +91,6 @@
 
 
 
-<RaiseIncrementPercentage>0.002</RaiseIncrementPercentage>
-<LowerDecrementPercentage>0.002</LowerDecrementPercentage>
+<RaiseIncrementPercentage>0.001</RaiseIncrementPercentage>
+<LowerDecrementPercentage>0.001</LowerDecrementPercentage>
 </ForceActuatorSettings>
