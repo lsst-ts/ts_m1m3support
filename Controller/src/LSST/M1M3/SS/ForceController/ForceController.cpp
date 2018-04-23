@@ -1498,8 +1498,6 @@ void ForceController::convertForcesToSetpoints() {
 	Log.Trace("ForceController: convertForcesToSetpoints()");
 	bool rejectionRequired = false;
 	for(int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
 		int sIndex = this->forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[pIndex];
 
 		this->forceSetpointWarning->SafetyLimitWarning[pIndex] = false;
@@ -1509,16 +1507,16 @@ void ForceController::convertForcesToSetpoints() {
 			float secondaryHighFault = this->forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].HighFault;
 			switch(this->forceActuatorInfo->ActuatorOrientation[pIndex]) {
 			case ForceActuatorOrientations::PositiveY:
-				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(this->appliedForces->YForces[yIndex] * sqrt2);
+				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(this->appliedForces->YForces[pIndex] * sqrt2);
 				break;
 			case ForceActuatorOrientations::PositiveX:
-				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(this->appliedForces->XForces[xIndex] * sqrt2);
+				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(this->appliedForces->XForces[pIndex] * sqrt2);
 				break;
 			case ForceActuatorOrientations::NegativeX:
-				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(-this->appliedForces->XForces[xIndex] * sqrt2);
+				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(-this->appliedForces->XForces[pIndex] * sqrt2);
 				break;
 			case ForceActuatorOrientations::NegativeY:
-				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(-this->appliedForces->YForces[yIndex] * sqrt2);
+				this->rejectedCylinderForces->SecondaryCylinderForces[sIndex] = toInt24(-this->appliedForces->YForces[pIndex] * sqrt2);
 				break;
 			}
 			this->forceSetpointWarning->SafetyLimitWarning[pIndex] = this->forceSetpointWarning->SafetyLimitWarning[pIndex] ||
@@ -1529,19 +1527,19 @@ void ForceController::convertForcesToSetpoints() {
 		float primaryHighFault = this->forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].HighFault;
 		switch(this->forceActuatorInfo->ActuatorOrientation[pIndex]) {
 		case ForceActuatorOrientations::PositiveY:
-			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - this->appliedForces->YForces[yIndex]);
+			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - this->appliedForces->YForces[pIndex]);
 			break;
 		case ForceActuatorOrientations::NA:
 			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex]);
 			break;
 		case ForceActuatorOrientations::PositiveX:
-			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - this->appliedForces->XForces[xIndex]);
+			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - this->appliedForces->XForces[pIndex]);
 			break;
 		case ForceActuatorOrientations::NegativeX:
-			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - -this->appliedForces->XForces[xIndex]);
+			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - -this->appliedForces->XForces[pIndex]);
 			break;
 		case ForceActuatorOrientations::NegativeY:
-			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - -this->appliedForces->YForces[yIndex]);
+			this->rejectedCylinderForces->PrimaryCylinderForces[pIndex] = toInt24(this->appliedForces->ZForces[pIndex] - -this->appliedForces->YForces[pIndex]);
 			break;
 		}
 		this->forceSetpointWarning->SafetyLimitWarning[pIndex] = this->forceSetpointWarning->SafetyLimitWarning[pIndex] ||
