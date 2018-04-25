@@ -209,14 +209,14 @@ uint16_t ModbusBuffer::readCRC() {
 double ModbusBuffer::readTimestamp() {
 	this->index += 8;
 	uint64_t data =
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 8])) |
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 7])) << 8 |
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 6])) << 16 |
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 5])) << 24 |
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 4])) << 32 |
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 3])) << 40 |
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 2])) << 48 |
-			((uint64_t)this->readInstructionByte(this->buffer[this->index - 1])) << 56;
+			((uint64_t)(this->buffer[this->index - 8] & 0xFF)) |
+			((uint64_t)(this->buffer[this->index - 7] & 0xFF)) << 8 |
+			((uint64_t)(this->buffer[this->index - 6] & 0xFF)) << 16 |
+			((uint64_t)(this->buffer[this->index - 5] & 0xFF)) << 24 |
+			((uint64_t)(this->buffer[this->index - 4] & 0xFF)) << 32 |
+			((uint64_t)(this->buffer[this->index - 3] & 0xFF)) << 40 |
+			((uint64_t)(this->buffer[this->index - 2] & 0xFF)) << 48 |
+			((uint64_t)(this->buffer[this->index - 1] & 0xFF)) << 56;
 	return Timestamp::fromRaw(data);
 }
 

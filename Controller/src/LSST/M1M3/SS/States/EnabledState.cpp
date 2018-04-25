@@ -57,6 +57,7 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	ilc->publishHardpointData();
 	ilc->publishHardpointMonitorStatus();
 	ilc->publishHardpointMonitorData();
+	model->getPublisher()->tryLogHardpointActuatorWarning();
 	return States::NoStateTransition;
 }
 
