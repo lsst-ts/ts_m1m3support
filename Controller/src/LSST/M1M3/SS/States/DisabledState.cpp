@@ -53,6 +53,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	ilc->publishHardpointData();
 	ilc->publishHardpointMonitorStatus();
 	ilc->publishHardpointMonitorData();
+	model->getPublisher()->tryLogHardpointActuatorWarning();
 	this->stopTimer();
 	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);

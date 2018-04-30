@@ -1647,10 +1647,19 @@ bool ForceController::checkNearNeighbors() {
 
 bool ForceController::checkMirrorWeight() {
 	Log.Trace("ForceController: checkMirrorWeight()");
-	float globalX = this->appliedForces->Fx;
-	float globalY = this->appliedForces->Fy;
-	float globalZ = this->appliedForces->Fz;
-	float globalForce = sqrt(globalX * globalX + globalY * globalY + globalZ * globalZ);
+	float x = 0;
+	float y = 0;
+	float z = 0;
+	for (int i = 0; i < FA_COUNT; ++i) {
+		if (i < FA_X_COUNT) {
+			x += abs(this->appliedForces->XForces[i]);
+		}
+		if (i < FA_Y_COUNT) {
+			y += abs(this->appliedForces->YForces[i]);
+		}
+		z += abs(this->appliedForces->ZForces[i]);
+	}
+	float globalForce = x + y + z;
 	bool previousWarning = this->forceSetpointWarning->MagnitudeWarning;
 	this->forceSetpointWarning->MagnitudeWarning = globalForce > (this->forceActuatorSettings->MirrorWeight * this->forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
 	this->safetyController->forceControllerNotifyMagnitudeLimit(this->forceSetpointWarning->MagnitudeWarning);
