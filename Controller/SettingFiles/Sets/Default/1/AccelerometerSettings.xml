@@ -1,7 +1,7 @@
 <AccelerometerSettings>
     <VoltsToMetersPerSecondSqrd>4.9035</VoltsToMetersPerSecondSqrd>
     <AngularAccelerationXDistance>0.9478</AngularAccelerationXDistance>
-    <AngularAccelerationYDistance>0.7648</AngularAccelerationYDistance>
+    <AngularAccelerationYDistance>0.7565</AngularAccelerationYDistance>
     <AngularAccelerationZDistance>4.2500</AngularAccelerationZDistance>
     <Accelerometer1>
         <Offset>0.0</Offset>
