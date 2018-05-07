@@ -34,7 +34,7 @@ namespace M1M3 {
 namespace SS {
 
 ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
- : subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
+ : subnetData(forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
    ilcMessageFactory(ilcApplicationSettings),
    responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData),
    busListSetADCChannelOffsetAndSensitivity(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
@@ -214,6 +214,31 @@ void ILC::readAll() {
 	this->read(3);
 	this->read(4);
 	this->read(5);
+}
+
+void ILC::flush(uint8_t subnet) {
+	Log.Debug("ILC: flush(%d)", (int32_t)subnet);
+	this->u16Buffer[0] = this->subnetToRxAddress(subnet);
+	this->fpga->writeRequestFIFO(this->u16Buffer, 1, 0);
+	this->rxBuffer.setIndex(0);
+	this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
+	uint16_t reportedLength = this->rxBuffer.readLength();
+	if (reportedLength > 0) {
+		this->rxBuffer.setIndex(0);
+		if (this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
+			Log.Warn("ILC: Failed to read all %d words", reportedLength);
+		}
+		this->rxBuffer.setLength(reportedLength);
+	}
+}
+
+void ILC::flushAll() {
+	Log.Debug("ILC: flushAll()");
+	this->flush(1);
+	this->flush(2);
+	this->flush(3);
+	this->flush(4);
+	this->flush(5);
 }
 
 void ILC::calculateHPPostion() {

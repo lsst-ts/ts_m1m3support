@@ -20,6 +20,7 @@ void AliasApplicationSettings::load(const std::string &filename) {
 
 	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
 
+	this->Aliases.clear();
 	for(pugi::xpath_node_set::const_iterator node = nodes.begin(); node != nodes.end(); ++node) {
 		std::string value = node->node().child_value();
 		tokenizer tokenize(value);
@@ -31,7 +32,7 @@ void AliasApplicationSettings::load(const std::string &filename) {
 		++token;
 		alias.Version = *token;
 
-		Aliases.push_back(alias);
+		this->Aliases.push_back(alias);
 	}
 }
 

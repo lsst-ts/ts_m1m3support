@@ -21,6 +21,7 @@ namespace SS {
 
 class ForceActuatorSettings {
 public:
+	std::vector<int> DisabledActuators;
 	std::vector<float> AccelerationXTable;
 	std::vector<float> AccelerationYTable;
 	std::vector<float> AccelerationZTable;
@@ -114,7 +115,10 @@ public:
 
 	void load(const std::string &filename);
 
+	bool IsActuatorDisabled(int32_t actId);
+
 private:
+	void loadDisabledActuators(const std::string line);
 	void loadNeighborsTable(const std::string &filename);
 };
 

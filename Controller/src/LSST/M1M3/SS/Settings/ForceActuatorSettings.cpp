@@ -21,7 +21,7 @@ namespace SS {
 void ForceActuatorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
 	doc.load_file(filename.c_str());
-
+	this->loadDisabledActuators(doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc.select_node("//ForceActuatorSettings/AccelerationYTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationZTable, doc.select_node("//ForceActuatorSettings/AccelerationZTablePath").node().child_value());
@@ -115,11 +115,33 @@ void ForceActuatorSettings::load(const std::string &filename) {
 	this->LowerDecrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());
 }
 
+bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
+	for(int i = 0; i < this->DisabledActuators.size(); ++i) {
+		if (this->DisabledActuators[i] == actId) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void ForceActuatorSettings::loadDisabledActuators(const std::string line) {
+	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
+	tokenizer tok(line);
+	tokenizer::iterator i = tok.begin();
+	this->DisabledActuators.clear();
+	while (i != tok.end()) {
+		this->DisabledActuators.push_back(boost::lexical_cast<int32_t>(*i));
+		Log.Warn("ForceActuatorSettings: Disabled Actuator %d", this->DisabledActuators[this->DisabledActuators.size() - 1]);
+		++i;
+	}
+}
+
 void ForceActuatorSettings::loadNeighborsTable(const std::string &filename) {
 	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
 	std::ifstream inputStream(filename.c_str());
 	std::string lineText;
 	int32_t lineNumber = 0;
+	this->Neighbors.clear();
 	while(std::getline(inputStream, lineText)) {
 		boost::trim_right(lineText);
 		if (lineNumber >= 1 && !lineText.empty()) {

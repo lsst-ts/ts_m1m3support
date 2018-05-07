@@ -33,6 +33,7 @@ struct ILCMap {
 	int32_t XDataIndex;
 	int32_t YDataIndex;
 	int32_t SecondaryDataIndex;
+	bool Disabled;
 };
 
 struct HPSettings {

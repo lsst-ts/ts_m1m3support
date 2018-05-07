@@ -327,7 +327,9 @@ void ILCResponseParser::parseErrorResponse(ModbusBuffer* buffer, double timestam
 	//case 8: break; // Memory Parity Error
 	//case 10: break; // Gateway Path Unavailable
 	//case 11: break; // Gateway Target Device Failed to Respond
-	default: this->warnUnknownProblem(timestamp, actuatorId); break;
+	default:
+		Log.Warn("ILCResponseParser: Actuator %d received exception code %d", actuatorId, (int32_t)exceptionCode);
+		this->warnUnknownProblem(timestamp, actuatorId); break;
 	}
 	buffer->skipToNextFrame();
 }

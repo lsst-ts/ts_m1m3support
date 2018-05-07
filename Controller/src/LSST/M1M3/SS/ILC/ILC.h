@@ -119,6 +119,8 @@ public:
 
 	void read(uint8_t subnet);
 	void readAll();
+	void flush(uint8_t subnet);
+	void flushAll();
 
 	void calculateHPPostion();
 	void calculateHPMirrorForces();

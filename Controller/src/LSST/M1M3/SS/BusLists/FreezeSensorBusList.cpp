@@ -33,10 +33,18 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 				int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-				this->ilcMessageFactory->pneumaticForceStatus(&this->buffer, address);
-				this->expectedFAResponses[dataIndex] = 1;
+				bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
+				if (!disabled) {
+					//this->ilcMessageFactory->pneumaticForceStatus(&this->buffer, address);
+					this->ilcMessageFactory->unicastDualAxisForceDemand(&this->buffer, address, false, 0, 0);
+					this->expectedFAResponses[dataIndex] = 1;
+				}
 			}
 			int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+			while(this->subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
+				this->roundRobinFAReportServerStatusIndex[subnetIndex] = RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
+				statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+			}
 			uint8_t address = this->subnetData->getFAIndex(subnetIndex, statusIndex).Address;
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
 			this->faStatusCommandIndex[subnetIndex] = this->buffer.getIndex();
@@ -46,18 +54,24 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 		for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
 			uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
 			int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-			this->ilcMessageFactory->electromechanicalForceAndStatus(&this->buffer, address);
-			this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-			this->expectedHPResponses[dataIndex] = 2;
+			bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
+			if (!disabled) {
+				this->ilcMessageFactory->electromechanicalForceAndStatus(&this->buffer, address);
+				this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
+				this->expectedHPResponses[dataIndex] = 2;
+			}
 		}
 		for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
 			uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
 			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
-			this->ilcMessageFactory->reportLVDT(&this->buffer, address);
-			this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
-			this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
-			this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-			this->expectedHMResponses[dataIndex] = 4;
+			bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+			if (!disabled) {
+				this->ilcMessageFactory->reportLVDT(&this->buffer, address);
+				this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
+				this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
+				this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
+				this->expectedHMResponses[dataIndex] = 4;
+			}
 		}
 		this->endSubnet();
 	}
@@ -75,6 +89,10 @@ void FreezeSensorBusList::update() {
 			this->expectedFAResponses[dataIndex] = 1;
 			this->roundRobinFAReportServerStatusIndex[subnetIndex] = RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
 			statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+			while(this->subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
+				this->roundRobinFAReportServerStatusIndex[subnetIndex] = RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
+				statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+			}
 			uint8_t address = this->subnetData->getFAIndex(subnetIndex, statusIndex).Address;
 			dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
 
