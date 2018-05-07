@@ -169,10 +169,10 @@ uint64_t ModbusBuffer::readU64() {
 
 float ModbusBuffer::readSGL() {
 	this->index += 4;
-	this->floatPointBuffer[3] = this->readInstructionByte(this->buffer[this->index - 4]);
-	this->floatPointBuffer[2] = this->readInstructionByte(this->buffer[this->index - 3]);
-	this->floatPointBuffer[1] = this->readInstructionByte(this->buffer[this->index - 2]);
-	this->floatPointBuffer[0] = this->readInstructionByte(this->buffer[this->index - 1]);
+	this->floatPointBuffer[0] = this->readInstructionByte(this->buffer[this->index - 4]);
+	this->floatPointBuffer[1] = this->readInstructionByte(this->buffer[this->index - 3]);
+	this->floatPointBuffer[2] = this->readInstructionByte(this->buffer[this->index - 2]);
+	this->floatPointBuffer[3] = this->readInstructionByte(this->buffer[this->index - 1]);
 	float data;
 	memcpy(&data, this->floatPointBuffer, sizeof(float));
 	return data;
