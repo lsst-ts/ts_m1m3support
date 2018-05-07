@@ -316,14 +316,18 @@ bool ILCResponseParser::validateCRC(ModbusBuffer* buffer, uint16_t* length, doub
 
 void ILCResponseParser::parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId) {
 	uint8_t exceptionCode = buffer->readU8();
-	if (exceptionCode == 1) {
-		this->warnIllegalFunction(timestamp, actuatorId);
-	}
-	else if (exceptionCode == 3) {
-		this->warnIllegalDataValue(timestamp, actuatorId);
-	}
-	else {
-		this->warnUnknownProblem(timestamp, actuatorId);
+	switch(exceptionCode) {
+	case 1: this->warnIllegalFunction(timestamp, actuatorId); break;
+	//case 2:	break; // Illegal Data Address
+	case 3: this->warnIllegalDataValue(timestamp, actuatorId); break;
+	//case 4: break; // Slave Device Failure
+	//case 5: break; // Acknowledge
+	//case 6: break; // Slave Device Busy
+	//case 7: break; // Negative Acknowledge
+	//case 8: break; // Memory Parity Error
+	//case 10: break; // Gateway Path Unavailable
+	//case 11: break; // Gateway Target Device Failed to Respond
+	default: this->warnUnknownProblem(timestamp, actuatorId); break;
 	}
 	buffer->skipToNextFrame();
 }
@@ -499,8 +503,8 @@ void ILCResponseParser::parseChangeHPILCModeResponse(ModbusBuffer* buffer, ILCMa
 
 void ILCResponseParser::parseChangeFAILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->forceActuatorState->ILCState[dataIndex] = buffer->readU8();
-	buffer->readU8();
+	this->forceActuatorState->ILCState[dataIndex] = buffer->readU16();
+	//buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
