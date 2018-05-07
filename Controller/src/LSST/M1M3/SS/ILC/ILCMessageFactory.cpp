@@ -37,7 +37,8 @@ void ILCMessageFactory::reportServerStatus(ModbusBuffer* buffer, uint8_t address
 void ILCMessageFactory::changeILCMode(ModbusBuffer* buffer, uint8_t address, uint16_t mode) {
 	buffer->writeU8(address);
 	buffer->writeU8(65);
-	buffer->writeU16(mode);
+	buffer->writeU8(0);
+	buffer->writeU8((uint8_t)mode);
 	buffer->writeCRC(4);
 	buffer->writeEndOfFrame();
 	buffer->writeWaitForRx(this->ilcApplicationSettings->ChangeILCMode);
