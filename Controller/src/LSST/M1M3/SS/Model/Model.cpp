@@ -108,7 +108,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	ForceActuatorSettings* forceActuatorSettings = this->settingReader->loadForceActuatorSettings();
 	Log.Info("Model: Loading hardpoint actuator application settings");
 	HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings = this->settingReader->loadHardpointActuatorApplicationSettings();
-	Log.Info("Model: Laoding hardpoint actuator settings");
+	Log.Info("Model: Loading hardpoint actuator settings");
 	HardpointActuatorSettings* hardpointActuatorSettings = this->settingReader->loadHardpointActuatorSettings();
 	Log.Info("Model: Loading safety controller settings");
 	SafetyControllerSettings* safetyControllerSettings = this->settingReader->loadSafetyControllerSettings();

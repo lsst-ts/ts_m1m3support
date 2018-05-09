@@ -27,12 +27,14 @@ struct ILCTypes {
 
 struct ILCMap {
 	ILCTypes::Type Type;
+	uint8_t Subnet;
 	uint8_t Address;
 	int32_t ActuatorId;
 	int32_t DataIndex;
 	int32_t XDataIndex;
 	int32_t YDataIndex;
 	int32_t SecondaryDataIndex;
+	bool Disabled;
 };
 
 struct HPSettings {

@@ -60,7 +60,8 @@ struct Commands {
 		AbortProfileCommand = 40,
 		ApplyOffsetForcesByMirrorForceCommand = 41,
 		UpdatePIDCommand = 42,
-		ResetPIDCommand = 43
+		ResetPIDCommand = 43,
+		ProgramILCCommand = 44
 	};
 };
 

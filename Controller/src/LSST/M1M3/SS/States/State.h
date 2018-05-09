@@ -62,6 +62,7 @@ class AbortProfileCommand;
 class ApplyOffsetForcesByMirrorForceCommand;
 class UpdatePIDCommand;
 class ResetPIDCommand;
+class ProgramILCCommand;
 
 class State {
 protected:
@@ -118,6 +119,7 @@ public:
 	virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
 	virtual States::Type updatePID(UpdatePIDCommand* command, Model* model);
 	virtual States::Type resetPID(ResetPIDCommand* command, Model* model);
+	virtual States::Type programILC(ProgramILCCommand* command, Model* model);
 
 protected:
 	void startTimer();

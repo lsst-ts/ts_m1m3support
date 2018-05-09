@@ -37,7 +37,8 @@ void ILCMessageFactory::reportServerStatus(ModbusBuffer* buffer, uint8_t address
 void ILCMessageFactory::changeILCMode(ModbusBuffer* buffer, uint8_t address, uint16_t mode) {
 	buffer->writeU8(address);
 	buffer->writeU8(65);
-	buffer->writeU16(mode);
+	buffer->writeU8(0);
+	buffer->writeU8((uint8_t)mode);
 	buffer->writeCRC(4);
 	buffer->writeEndOfFrame();
 	buffer->writeWaitForRx(this->ilcApplicationSettings->ChangeILCMode);
@@ -76,8 +77,17 @@ void ILCMessageFactory::electromechanicalForceAndStatus(ModbusBuffer* buffer, ui
 	buffer->writeWaitForRx(this->ilcApplicationSettings->ElectromechanicalForceAndStatus);
 }
 
-void ILCMessageFactory::broadcastFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter) {
+void ILCMessageFactory::broadcastElectromechanicalFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter) {
 	buffer->writeU8(248);
+	buffer->writeU8(68);
+	buffer->writeU8(broadcastCounter);
+	buffer->writeCRC(3);
+	buffer->writeEndOfFrame();
+	buffer->writeDelay(this->ilcApplicationSettings->BroadcastFreezeSensorValues);
+}
+
+void ILCMessageFactory::broadcastPneumaticFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter) {
+	buffer->writeU8(249);
 	buffer->writeU8(68);
 	buffer->writeU8(broadcastCounter);
 	buffer->writeCRC(3);
@@ -104,7 +114,7 @@ void ILCMessageFactory::readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t add
 }
 
 void ILCMessageFactory::broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, bool slewFlag, int32_t* saaPrimarySetpoint, int32_t* daaPrimarySetpoint, int32_t* daaSecondarySetpoint) {
-	buffer->writeU8(248);
+	buffer->writeU8(249);
 	buffer->writeU8(75);
 	buffer->writeU8(broadcastCounter);
 	buffer->writeU8(slewFlag ? 255 : 0);
@@ -118,6 +128,15 @@ void ILCMessageFactory::broadcastForceDemand(ModbusBuffer* buffer, uint8_t broad
 	buffer->writeCRC(244);
 	buffer->writeEndOfFrame();
 	buffer->writeDelay(this->ilcApplicationSettings->BroadcastForceDemand);
+}
+
+void ILCMessageFactory::unicastForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint, int32_t secondarySetpoint = 0) {
+	if (address <= 16) {
+		this->unicastSingleAxisForceDemand(buffer, address, slewFlag, primarySetpoint);
+	}
+	else {
+		this->unicastDualAxisForceDemand(buffer, address, slewFlag, primarySetpoint, secondarySetpoint);
+	}
 }
 
 void ILCMessageFactory::unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint) {

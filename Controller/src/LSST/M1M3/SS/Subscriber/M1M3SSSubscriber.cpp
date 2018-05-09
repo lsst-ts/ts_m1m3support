@@ -60,6 +60,7 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, C
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ApplyOffsetForcesByMirrorForce");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_UpdatePID");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ResetPID");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ProgramILC");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Az");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Alt");
 }
@@ -380,6 +381,14 @@ Command* M1M3SSSubscriber::tryAcceptCommandResetPID() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_ResetPID(&this->resetPIDData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::ResetPIDCommand, &this->resetPIDData, commandID);
+	}
+	return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandProgramILC() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ProgramILC(&this->programILCData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ProgramILCCommand, &this->programILCData, commandID);
 	}
 	return 0;
 }

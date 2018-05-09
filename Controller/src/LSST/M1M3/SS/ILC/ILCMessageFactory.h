@@ -31,10 +31,12 @@ public:
 	void broadcastStepMotor(ModbusBuffer* buffer, uint8_t broadcastCounter, int8_t* steps);
 	void unicastStepMotor(ModbusBuffer* buffer, uint8_t address, int8_t steps);
 	void electromechanicalForceAndStatus(ModbusBuffer* buffer, uint8_t address);
-	void broadcastFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter);
+	void broadcastElectromechanicalFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter);
+	void broadcastPneumaticFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter);
 	void setBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address, float primaryGain, float secondaryGain);
 	void readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address);
 	void broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, bool slewFlag, int32_t* saaPrimarySetpoint, int32_t* daaPrimarySetpoint, int32_t* daaSecondarySetpoint);
+	void unicastForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint, int32_t secondarySetpoint);
 	void unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint);
 	void unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint, int32_t secondarySetpoint);
 	void pneumaticForceStatus(ModbusBuffer* buffer, uint8_t address);

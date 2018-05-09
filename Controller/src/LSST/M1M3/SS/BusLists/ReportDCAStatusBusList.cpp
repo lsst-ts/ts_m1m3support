@@ -22,14 +22,20 @@ ReportDCAStatusBusList::ReportDCAStatusBusList(ILCSubnetData* subnetData, ILCMes
 		for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 			uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-			this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
-			this->expectedFAResponses[dataIndex] = 1;
+			bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
+			if (!disabled) {
+				this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
+				this->expectedFAResponses[dataIndex] = 1;
+			}
 		}
 		for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
 			uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
 			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
-			this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
-			this->expectedHMResponses[dataIndex] = 1;
+			bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+			if (!disabled) {
+				this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
+				this->expectedHMResponses[dataIndex] = 1;
+			}
 		}
 		this->endSubnet();
 	}

@@ -30,6 +30,7 @@ void HardpointActuatorApplicationSettings::load(const std::string &filename) {
 	std::ifstream inputStream(hardpointActuatorTablePath.c_str());
 	std::string lineText;
 	int32_t lineNumber = 0;
+	this->Table.clear();
 	while(std::getline(inputStream, lineText)) {
 		boost::trim_right(lineText);
 		if (lineNumber != 0) {

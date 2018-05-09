@@ -34,7 +34,7 @@ namespace M1M3 {
 namespace SS {
 
 ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
- : subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
+ : subnetData(forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
    ilcMessageFactory(ilcApplicationSettings),
    responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData),
    busListSetADCChannelOffsetAndSensitivity(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
@@ -53,7 +53,8 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
    busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
-   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()) {
+   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
+   firmwareUpdate(fpga, &this->subnetData) {
 	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
 	this->fpga = fpga;
@@ -67,6 +68,11 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
 }
 
 ILC::~ILC() { }
+
+void ILC::programILC(int32_t actuatorId, std::string filePath) {
+	Log.Debug("ILC: programILC(%d,%s)", actuatorId, filePath.c_str());
+	this->firmwareUpdate.Program(actuatorId, filePath);
+}
 
 void ILC::writeCalibrationDataBuffer() {
 	Log.Debug("ILC: writeCalibrationDataBuffer()");
@@ -216,6 +222,31 @@ void ILC::readAll() {
 	this->read(5);
 }
 
+void ILC::flush(uint8_t subnet) {
+	Log.Debug("ILC: flush(%d)", (int32_t)subnet);
+	this->u16Buffer[0] = this->subnetToRxAddress(subnet);
+	this->fpga->writeRequestFIFO(this->u16Buffer, 1, 0);
+	this->rxBuffer.setIndex(0);
+	this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
+	uint16_t reportedLength = this->rxBuffer.readLength();
+	if (reportedLength > 0) {
+		this->rxBuffer.setIndex(0);
+		if (this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
+			Log.Warn("ILC: Failed to read all %d words", reportedLength);
+		}
+		this->rxBuffer.setLength(reportedLength);
+	}
+}
+
+void ILC::flushAll() {
+	Log.Debug("ILC: flushAll()");
+	this->flush(1);
+	this->flush(2);
+	this->flush(3);
+	this->flush(4);
+	this->flush(5);
+}
+
 void ILC::calculateHPPostion() {
 	this->hardpointActuatorData->XPosition =
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * this->hardpointActuatorData->Displacement[2] +
@@ -343,6 +374,17 @@ uint8_t ILC::subnetToRxAddress(uint8_t subnet) {
 	case 3: return FPGAAddresses::ModbusSubnetCRx;
 	case 4: return FPGAAddresses::ModbusSubnetDRx;
 	case 5: return FPGAAddresses::ModbusSubnetERx;
+	default: return 0;
+	}
+}
+
+uint8_t ILC::subnetToTxAddress(uint8_t subnet) {
+	switch(subnet) {
+	case 1: return FPGAAddresses::ModbusSubnetATx;
+	case 2: return FPGAAddresses::ModbusSubnetBTx;
+	case 3: return FPGAAddresses::ModbusSubnetCTx;
+	case 4: return FPGAAddresses::ModbusSubnetDTx;
+	case 5: return FPGAAddresses::ModbusSubnetETx;
 	default: return 0;
 	}
 }

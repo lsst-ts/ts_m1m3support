@@ -65,6 +65,7 @@ States::Type State::abortProfile(AbortProfileCommand* command, Model* model) { r
 States::Type State::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyOffsetForcesByMirrorForce"); }
 States::Type State::updatePID(UpdatePIDCommand* command, Model* model) { return this->rejectCommandInvalidState("UpdatePID"); }
 States::Type State::resetPID(ResetPIDCommand* command, Model* model) { return this->rejectCommandInvalidState("ResetPID"); }
+States::Type State::programILC(ProgramILCCommand* command, Model* model) { return this->rejectCommandInvalidState("ProgramILC"); }
 
 void State::startTimer() {
 	clock_gettime(CLOCK_REALTIME, &this->startTime);

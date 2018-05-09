@@ -32,64 +32,64 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salTelemetryPub((char*)"m1m3_PowerSupplyData");
 
 	Log.Debug("M1M3SSPublisher: Initializing SAL Events");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AccelerometerWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AccelerometerWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AirSupplyStatus");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AirSupplyWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedAberrationForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedAccelerationForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedActiveOpticForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedAzimuthForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedBalanceForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedCylinderForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedElevationForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedOffsetForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedSettingsMatchStart");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedStaticForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedThermalForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_AppliedVelocityForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_CellLightStatus");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_CellLightWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_CommandRejectionWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_DetailedState");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_DisplacementSensorWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ErrorCode");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ForceActuatorForceWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ForceActuatorInfo");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ForceActuatorState");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ForceActuatorWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ForceSetpointWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_GyroWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_HardpointActuatorInfo");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_HardpointActuatorState");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_HardpointActuatorWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_HardpointMonitorInfo");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_HardpointMonitorState");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_HardpointMonitorWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_ILCWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_InclinometerSensorWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_InterlockStatus");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_InterlockWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PIDInfo");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PowerStatus");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PowerSupplyStatus");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_PowerWarning");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedAberrationForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedAccelerationForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedActiveOpticForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedAzimuthForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedBalanceForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedCylinderForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedElevationForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedOffsetForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedStaticForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedThermalForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_RejectedVelocityForces");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_SettingVersions");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_SettingsApplied");
-	this->m1m3SAL->salEvent((char*)"m1m3_logevent_SummaryState");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AccelerometerWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AccelerometerWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AirSupplyStatus");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AirSupplyWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedAberrationForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedAccelerationForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedActiveOpticForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedAzimuthForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedBalanceForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedCylinderForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedElevationForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedOffsetForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedSettingsMatchStart");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedStaticForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedThermalForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_AppliedVelocityForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_CellLightStatus");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_CellLightWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_CommandRejectionWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_DetailedState");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_DisplacementSensorWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ErrorCode");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ForceActuatorForceWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ForceActuatorInfo");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ForceActuatorState");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ForceActuatorWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ForceSetpointWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_GyroWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_HardpointActuatorInfo");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_HardpointActuatorState");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_HardpointActuatorWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_HardpointMonitorInfo");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_HardpointMonitorState");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_HardpointMonitorWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ILCWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_InclinometerSensorWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_InterlockStatus");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_InterlockWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_PIDInfo");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_PowerStatus");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_PowerSupplyStatus");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_PowerWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedAberrationForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedAccelerationForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedActiveOpticForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedAzimuthForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedBalanceForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedCylinderForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedElevationForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedOffsetForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedStaticForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedThermalForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_RejectedVelocityForces");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_SettingVersions");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_SettingsApplied");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_SummaryState");
 }
 
 double M1M3SSPublisher::getTimestamp() { return this->m1m3SAL->getCurrentTime(); }
@@ -1983,6 +1983,10 @@ void M1M3SSPublisher::ackCommandUpdatePID(int32_t commandID, int32_t ackCode, st
 
 void M1M3SSPublisher::ackCommandResetPID(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_ResetPID(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandProgramILC(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ProgramILC(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

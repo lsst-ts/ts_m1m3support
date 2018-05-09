@@ -13,6 +13,8 @@
 #include <PowerController.h>
 #include <StartCommand.h>
 #include <Gyro.h>
+#include <M1M3SSPublisher.h>
+#include <unistd.h>
 
 #include <Log.h>
 
@@ -44,46 +46,72 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 //	ilc->waitForAllSubnets(5000);
 //	ilc->readAll();
 //	digitalInputOutput->tryToggleHeartbeat();
+	Log.Info("ClearBuffer");
+	ilc->flushAll();
+	Log.Info("ReportServerID");
 	ilc->writeReportServerIDBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
+	Log.Info("ReportServerStatus");
 	ilc->writeReportServerStatusBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
+	Log.Info("ReportADCScanRate");
 	ilc->writeReportADCScanRateBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
+	Log.Info("ReadCalibrationData");
 	ilc->writeReadCalibrationDataBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
+	Log.Info("ReadBoostValveDCAGain");
 	ilc->writeReadBoostValveDCAGainBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
+	Log.Info("ReportDCAID");
 	ilc->writeReportDCAIDBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
-	ilc->writeReportDCAStatusBuffer();
-	ilc->triggerModbus();
-	ilc->waitForAllSubnets(5000);
-	ilc->readAll();
-	digitalInputOutput->tryToggleHeartbeat();
+//	Log.Info("ReportDCAStatus");
+//	ilc->writeReportDCAStatusBuffer();
+//	ilc->triggerModbus();
+//	ilc->waitForAllSubnets(5000);
+//	ilc->readAll();
+//	digitalInputOutput->tryToggleHeartbeat();
+//	Log.Info("SetModeStandby");
+//	ilc->writeSetModeStandbyBuffer();
+//	ilc->triggerModbus();
+//	ilc->waitForAllSubnets(5000);
+//	ilc->readAll();
+//	digitalInputOutput->tryToggleHeartbeat();
+//	model->getPublisher()->tryLogForceActuatorState();
+	Log.Info("SetModeDisable");
 	ilc->writeSetModeDisableBuffer();
 	ilc->triggerModbus();
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
+	model->getPublisher()->tryLogForceActuatorState();
+	usleep(20000);
+//	Log.Info("SetModeEnable");
+//	ilc->writeSetModeEnableBuffer();
+//	ilc->triggerModbus();
+//	ilc->waitForAllSubnets(5000);
+//	ilc->readAll();
+//	digitalInputOutput->tryToggleHeartbeat();
+//	model->getPublisher()->tryLogForceActuatorState();
 	ilc->verifyResponses();
 	ilc->publishForceActuatorInfo();
 	ilc->publishHardpointActuatorInfo();

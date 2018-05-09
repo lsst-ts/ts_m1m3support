@@ -22,14 +22,20 @@ ReadCalibrationBusList::ReadCalibrationBusList(ILCSubnetData* subnetData, ILCMes
 		for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 			uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-			this->ilcMessageFactory->readCalibration(&this->buffer, address);
-			this->expectedFAResponses[dataIndex] = 1;
+			bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
+			if (!disabled) {
+				this->ilcMessageFactory->readCalibration(&this->buffer, address);
+				this->expectedFAResponses[dataIndex] = 1;
+			}
 		}
 		for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
 			uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
 			int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-			this->ilcMessageFactory->readCalibration(&this->buffer, address);
-			this->expectedHPResponses[dataIndex] = 1;
+			bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
+			if (!disabled) {
+				this->ilcMessageFactory->readCalibration(&this->buffer, address);
+				this->expectedHPResponses[dataIndex] = 1;
+			}
 		}
 		this->endSubnet();
 	}

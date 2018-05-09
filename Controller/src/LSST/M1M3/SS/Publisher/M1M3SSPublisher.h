@@ -390,6 +390,7 @@ public:
 	void ackCommandApplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandUpdatePID(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandResetPID(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandProgramILC(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

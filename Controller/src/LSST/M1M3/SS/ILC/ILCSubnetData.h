@@ -15,6 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class ForceActuatorApplicationSettings;
+class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointMonitorApplicationSettings;
 
@@ -31,7 +32,7 @@ class ILCSubnetData {
 	Container subnetData[5];
 
 public:
-	ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
+	ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
 	int32_t getHPCount(int32_t subnetIndex) { return this->subnetData[subnetIndex].HPIndex.size(); }
 	ILCMap getHPIndex(int32_t subnetIndex, int32_t hpIndex) { return this->subnetData[subnetIndex].HPIndex[hpIndex]; }
@@ -40,6 +41,7 @@ public:
 	int32_t getHMCount(int32_t subnetIndex) { return this->subnetData[subnetIndex].HMIndex.size(); }
 	ILCMap getHMIndex(int32_t subnetIndex, int32_t hmIndex) { return this->subnetData[subnetIndex].HMIndex[hmIndex]; }
 	ILCMap getILCDataFromAddress(int32_t subnetIndex, uint8_t address) { return this->subnetData[subnetIndex].ILCDataFromAddress[address]; }
+	ILCMap getMap(int32_t actuatorId);
 };
 
 } /* namespace SS */
