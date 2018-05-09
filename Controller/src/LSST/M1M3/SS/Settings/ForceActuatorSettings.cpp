@@ -116,7 +116,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
 }
 
 bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
-	for(int i = 0; i < this->DisabledActuators.size(); ++i) {
+	for(unsigned int i = 0; i < this->DisabledActuators.size(); ++i) {
 		if (this->DisabledActuators[i] == actId) {
 			return true;
 		}
