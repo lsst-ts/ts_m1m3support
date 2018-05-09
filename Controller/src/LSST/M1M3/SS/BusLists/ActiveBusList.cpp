@@ -75,7 +75,7 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 		}
 		if (this->subnetData->getHPCount(subnetIndex) > 0) {
 			this->hpFreezeCommandIndex[subnetIndex] = this->buffer.getIndex();
-			this->ilcMessageFactory->broadcastFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
 			this->buffer.writeTimestamp();
 			for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
 				uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
@@ -145,7 +145,7 @@ void ActiveBusList::update() {
 		}
 		if (this->subnetData->getHPCount(subnetIndex) > 0) {
 			this->buffer.setIndex(this->hpFreezeCommandIndex[subnetIndex]);
-			this->ilcMessageFactory->broadcastFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
 		}
 	}
 }

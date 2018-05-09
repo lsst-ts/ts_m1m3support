@@ -69,6 +69,7 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyOffsetForcesByMirrorForce());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandUpdatePID());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandResetPID());
+		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandProgramILC());
 		this->enqueueCommandIfAvailable(this->subscriber->tryGetSampleTMAAzimuth());
 		this->enqueueCommandIfAvailable(this->subscriber->tryGetSampleTMAElevation());
 		usleep(100);

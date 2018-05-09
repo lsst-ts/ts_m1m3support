@@ -60,6 +60,7 @@ class AbortProfileCommand;
 class ApplyOffsetForcesByMirrorForceCommand;
 class UpdatePIDCommand;
 class ResetPIDCommand;
+class ProgramILCCommand;
 
 /*!
  * The context used to execute commands against the current state.
@@ -122,6 +123,7 @@ public:
 	void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
 	void updatePID(UpdatePIDCommand* command);
 	void resetPID(ResetPIDCommand* command);
+	void programILC(ProgramILCCommand* command);
 };
 
 } /* namespace SS */

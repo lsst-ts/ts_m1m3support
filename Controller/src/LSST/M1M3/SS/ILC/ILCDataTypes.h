@@ -27,6 +27,7 @@ struct ILCTypes {
 
 struct ILCMap {
 	ILCTypes::Type Type;
+	uint8_t Subnet;
 	uint8_t Address;
 	int32_t ActuatorId;
 	int32_t DataIndex;

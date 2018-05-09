@@ -330,6 +330,13 @@ void Context::resetPID(ResetPIDCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::programILC(ProgramILCCommand* command) {
+	Log.Debug("Context: programILC()");
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->programILC(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::NoStateTransition) {
 		this->currentState = potentialNewState;

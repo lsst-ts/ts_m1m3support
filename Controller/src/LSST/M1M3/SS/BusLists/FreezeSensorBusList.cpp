@@ -26,17 +26,17 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 	}
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->startSubnet(subnetIndex);
-		this->freezeSensorCommandIndex[subnetIndex] = this->buffer.getIndex();
-		this->ilcMessageFactory->broadcastFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
-		this->buffer.writeTimestamp();
 		if (this->subnetData->getFACount(subnetIndex) > 0) {
+			this->freezeSensorCommandIndex[subnetIndex] = this->buffer.getIndex();
+			this->ilcMessageFactory->broadcastPneumaticFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->buffer.writeTimestamp();
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 				int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
 				bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
 				if (!disabled) {
-					//this->ilcMessageFactory->pneumaticForceStatus(&this->buffer, address);
-					this->ilcMessageFactory->unicastDualAxisForceDemand(&this->buffer, address, false, 0, 0);
+					this->ilcMessageFactory->pneumaticForceStatus(&this->buffer, address);
+					//this->ilcMessageFactory->unicastForceDemand(&this->buffer, address, false, 0, 0);
 					this->expectedFAResponses[dataIndex] = 1;
 				}
 			}
@@ -51,14 +51,19 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 			this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
 			this->expectedFAResponses[dataIndex] = 2;
 		}
-		for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
-			uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
-			int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-			bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
-			if (!disabled) {
-				this->ilcMessageFactory->electromechanicalForceAndStatus(&this->buffer, address);
-				this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-				this->expectedHPResponses[dataIndex] = 2;
+		if (this->subnetData->getHPCount(subnetIndex) > 0) {
+			this->freezeSensorCommandIndex[subnetIndex] = this->buffer.getIndex();
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->buffer.writeTimestamp();
+			for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
+				uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
+				int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
+				bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
+				if (!disabled) {
+					this->ilcMessageFactory->electromechanicalForceAndStatus(&this->buffer, address);
+					this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
+					this->expectedHPResponses[dataIndex] = 2;
+				}
 			}
 		}
 		for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
@@ -82,7 +87,12 @@ void FreezeSensorBusList::update() {
 	this->outerLoopData->BroadcastCounter = RoundRobin::BroadcastCounter(this->outerLoopData->BroadcastCounter);
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->buffer.setIndex(this->freezeSensorCommandIndex[subnetIndex]);
-		this->ilcMessageFactory->broadcastFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+		if (this->subnetData->getFACount(subnetIndex) > 0) {
+			this->ilcMessageFactory->broadcastPneumaticFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+		}
+		else if (this->subnetData->getHPCount(subnetIndex) > 0) {
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+		}
 		if (this->subnetData->getFACount(subnetIndex) > 0) {
 			int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;

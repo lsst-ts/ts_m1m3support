@@ -27,6 +27,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
 		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
 		int32_t subnetIndex = row.Subnet - 1;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::FA;
+		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Address = row.Address;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;
@@ -42,6 +43,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
 		HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
 		int32_t subnetIndex = row.Subnet - 1;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::HP;
+		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Address = row.Address;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;
@@ -57,6 +59,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
 		HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
 		int32_t subnetIndex = row.Subnet - 1;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::HM;
+		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Address = row.Address;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
 		this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;
@@ -68,6 +71,31 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
 		this->subnetData[subnetIndex].HMIndex.push_back(map);
 		this->subnetData[subnetIndex].HMCount += 1;
 	}
+}
+
+ILCMap ILCSubnetData::getMap(int32_t actuatorId) {
+	for(int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
+		Container container = this->subnetData[subnetIndex];
+		for(int i = 0; i < container.HPCount; ++i) {
+			if (container.HPIndex[i].ActuatorId == actuatorId) {
+				return container.HPIndex[i];
+			}
+		}
+		for(int i = 0; i < container.FACount; ++i) {
+			if (container.FAIndex[i].ActuatorId == actuatorId) {
+				return container.FAIndex[i];
+			}
+		}
+		for(int i = 0; i < container.HMCount; ++i) {
+			if (container.HMIndex[i].ActuatorId == actuatorId) {
+				return container.HMIndex[i];
+			}
+		}
+	}
+	ILCMap none;
+	none.Address = 255;
+	none.Subnet = 255;
+	return none;
 }
 
 } /* namespace SS */

@@ -69,6 +69,7 @@ private:
 	m1m3_command_ApplyOffsetForcesByMirrorForceC applyOffsetForcesByMirrorForceData;
 	m1m3_command_UpdatePIDC updatePIDData;
 	m1m3_command_ResetPIDC resetPIDData;
+	m1m3_command_ProgramILCC programILCData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
@@ -116,6 +117,7 @@ public:
 	Command* tryAcceptCommandApplyOffsetForcesByMirrorForce();
 	Command* tryAcceptCommandUpdatePID();
 	Command* tryAcceptCommandResetPID();
+	Command* tryAcceptCommandProgramILC();
 	Command* tryGetSampleTMAAzimuth();
 	Command* tryGetSampleTMAElevation();
 };

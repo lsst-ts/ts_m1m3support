@@ -21,6 +21,7 @@ public:
 	States::Type update(UpdateCommand* command, Model* model);
 	States::Type enable(EnableCommand* command, Model* model);
 	States::Type standby(StandbyCommand* command, Model* model);
+	States::Type programILC(ProgramILCCommand* command, Model* model);
 };
 
 } /* namespace SS */

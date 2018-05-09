@@ -17,6 +17,7 @@
 #include <Gyro.h>
 #include <ForceController.h>
 #include <M1M3SSPublisher.h>
+#include <ProgramILCCommand.h>
 #include <Log.h>
 #include <unistd.h>
 #include <FPGA.h>
@@ -75,13 +76,27 @@ States::Type DisabledState::enable(EnableCommand* command, Model* model) {
 States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
 	Log.Info("DisabledState: standby()");
 	States::Type newState = States::StandbyState;
+	Log.Info("SetModeDisable");
+	model->getILC()->writeSetModeDisableBuffer();
+	model->getILC()->triggerModbus();
+	model->getILC()->waitForAllSubnets(5000);
+	model->getILC()->readAll();
+	model->getPublisher()->tryLogForceActuatorState();
+	Log.Info("SetModeStandby");
 	model->getILC()->writeSetModeStandbyBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
+	model->getPublisher()->tryLogForceActuatorState();
 	model->getPowerController()->setAllPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
+}
+
+States::Type DisabledState::programILC(ProgramILCCommand* command, Model* model) {
+	Log.Info("DisabledState: programILC()");
+	model->getILC()->programILC(command->getData()->ActuatorId, command->getData()->FilePath);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

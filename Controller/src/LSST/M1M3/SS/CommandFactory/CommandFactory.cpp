@@ -50,6 +50,7 @@
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <UpdatePIDCommand.h>
 #include <ResetPIDCommand.h>
+#include <ProgramILCCommand.h>
 #include <pthread.h>
 #include <Log.h>
 
@@ -110,6 +111,7 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 	case Commands::ApplyOffsetForcesByMirrorForceCommand: return new ApplyOffsetForcesByMirrorForceCommand(this->context, this->publisher, commandID, (m1m3_command_ApplyOffsetForcesByMirrorForceC*)data);
 	case Commands::UpdatePIDCommand: return new UpdatePIDCommand(this->context, this->publisher, commandID, (m1m3_command_UpdatePIDC*)data);
 	case Commands::ResetPIDCommand: return new ResetPIDCommand(this->context, this->publisher, commandID, (m1m3_command_ResetPIDC*)data);
+	case Commands::ProgramILCCommand: return new ProgramILCCommand(this->context, this->publisher, commandID, (m1m3_command_ProgramILCC*)data);
 	}
 	return 0;
 }

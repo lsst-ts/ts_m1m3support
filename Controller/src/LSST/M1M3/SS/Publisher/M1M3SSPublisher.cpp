@@ -1985,6 +1985,10 @@ void M1M3SSPublisher::ackCommandResetPID(int32_t commandID, int32_t ackCode, std
 	this->m1m3SAL->ackCommand_ResetPID(commandID, ackCode, 0, (char*)description.c_str());
 }
 
+void M1M3SSPublisher::ackCommandProgramILC(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ProgramILC(commandID, ackCode, 0, (char*)description.c_str());
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

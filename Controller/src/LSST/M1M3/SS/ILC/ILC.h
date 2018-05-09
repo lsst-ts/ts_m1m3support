@@ -29,6 +29,7 @@
 #include <ActiveBusList.h>
 #include <ILCResponseParser.h>
 #include <SAL_m1m3C.h>
+#include <FirmwareUpdate.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -73,6 +74,7 @@ private:
 	FreezeSensorBusList busListFreezeSensor;
 	RaisedBusList busListRaised;
 	ActiveBusList busListActive;
+	FirmwareUpdate firmwareUpdate;
 
 	HardpointActuatorSettings* hardpointActuatorSettings;
 	m1m3_HardpointActuatorDataC* hardpointActuatorData;
@@ -92,6 +94,8 @@ private:
 public:
 	ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 	virtual ~ILC();
+
+	void programILC(int32_t actuatorId, std::string filePath);
 
 	void writeCalibrationDataBuffer();
 	void writeSetADCScanRateBuffer();
@@ -140,6 +144,7 @@ public:
 
 private:
 	uint8_t subnetToRxAddress(uint8_t subnet);
+	uint8_t subnetToTxAddress(uint8_t subnet);
 
 	void writeBusList(IBusList* busList);
 

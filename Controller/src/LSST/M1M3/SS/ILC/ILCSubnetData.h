@@ -41,6 +41,7 @@ public:
 	int32_t getHMCount(int32_t subnetIndex) { return this->subnetData[subnetIndex].HMIndex.size(); }
 	ILCMap getHMIndex(int32_t subnetIndex, int32_t hmIndex) { return this->subnetData[subnetIndex].HMIndex[hmIndex]; }
 	ILCMap getILCDataFromAddress(int32_t subnetIndex, uint8_t address) { return this->subnetData[subnetIndex].ILCDataFromAddress[address]; }
+	ILCMap getMap(int32_t actuatorId);
 };
 
 } /* namespace SS */

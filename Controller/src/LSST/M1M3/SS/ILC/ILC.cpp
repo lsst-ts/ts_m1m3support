@@ -53,7 +53,8 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
    busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
-   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()) {
+   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
+   firmwareUpdate(fpga, &this->subnetData) {
 	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
 	this->fpga = fpga;
@@ -67,6 +68,11 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
 }
 
 ILC::~ILC() { }
+
+void ILC::programILC(int32_t actuatorId, std::string filePath) {
+	Log.Debug("ILC: programILC(%d,%s)", actuatorId, filePath.c_str());
+	this->firmwareUpdate.Program(actuatorId, filePath);
+}
 
 void ILC::writeCalibrationDataBuffer() {
 	Log.Debug("ILC: writeCalibrationDataBuffer()");
@@ -368,6 +374,17 @@ uint8_t ILC::subnetToRxAddress(uint8_t subnet) {
 	case 3: return FPGAAddresses::ModbusSubnetCRx;
 	case 4: return FPGAAddresses::ModbusSubnetDRx;
 	case 5: return FPGAAddresses::ModbusSubnetERx;
+	default: return 0;
+	}
+}
+
+uint8_t ILC::subnetToTxAddress(uint8_t subnet) {
+	switch(subnet) {
+	case 1: return FPGAAddresses::ModbusSubnetATx;
+	case 2: return FPGAAddresses::ModbusSubnetBTx;
+	case 3: return FPGAAddresses::ModbusSubnetCTx;
+	case 4: return FPGAAddresses::ModbusSubnetDTx;
+	case 5: return FPGAAddresses::ModbusSubnetETx;
 	default: return 0;
 	}
 }
