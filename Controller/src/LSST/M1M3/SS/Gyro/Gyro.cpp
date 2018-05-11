@@ -101,9 +101,9 @@ void Gyro::processData() {
 	if (this->fpgaData->GyroSampleTimestamp != this->lastSampleTimestamp) {
 		this->lastSampleTimestamp = this->fpgaData->GyroSampleTimestamp;
 		this->gyroData->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
-		this->gyroData->AngularVelocityX = this->fpgaData->GyroRawX;
-		this->gyroData->AngularVelocityY = this->fpgaData->GyroRawY;
-		this->gyroData->AngularVelocityZ = this->fpgaData->GyroRawZ;
+		this->gyroData->AngularVelocityX = this->fpgaData->GyroRawX + this->gyroSettings->AngularVelocityXOffset;
+		this->gyroData->AngularVelocityY = this->fpgaData->GyroRawY + this->gyroSettings->AngularVelocityYOffset;
+		this->gyroData->AngularVelocityZ = this->fpgaData->GyroRawZ + this->gyroSettings->AngularVelocityZOffset;
 		this->gyroData->SequenceNumber = this->fpgaData->GyroSequenceNumber;
 		this->gyroData->Temperature = this->fpgaData->GyroTemperature;
 		uint8_t status = this->fpgaData->GyroStatus;

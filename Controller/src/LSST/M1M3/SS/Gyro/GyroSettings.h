@@ -17,6 +17,9 @@ namespace SS {
 
 struct GyroSettings {
 	int DataRate;
+	float AngularVelocityXOffset;
+	float AngularVelocityYOffset;
+	float AngularVelocityZOffset;
 	std::vector<double> AxesMatrix;
 
 	void load(const std::string &filename);
