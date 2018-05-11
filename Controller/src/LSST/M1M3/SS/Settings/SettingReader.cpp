@@ -140,6 +140,12 @@ PIDSettings* SettingReader::loadPIDSettings() {
 	return &this->pidSettings;
 }
 
+InclinometerSettings* SettingReader::loadInclinometerSettings() {
+	Log.Debug("SettingReader: loadInclinometerSettings()");
+	this->inclinometerSettings.load(this->getSetPath("InclinometerSettings.xml"));
+	return &this->inclinometerSettings;
+}
+
 std::string SettingReader::getBasePath(std::string file) {
 	return this->basePath + file;
 }

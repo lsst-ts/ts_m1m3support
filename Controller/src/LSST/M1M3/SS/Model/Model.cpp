@@ -124,6 +124,8 @@ void Model::loadSettings(std::string settingsToApply) {
 	GyroSettings* gyroSettings = this->settingReader->loadGyroSettings();
 	Log.Info("Model: Loading PID settings");
 	PIDSettings* pidSettings = this->settingReader->loadPIDSettings();
+	Log.Info("Model: Loading inclinometer settings");
+	InclinometerSettings* inclinometerSettings = this->settingReader->loadInclinometerSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
 	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
@@ -148,7 +150,7 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->inclinometer;
 	}
 	Log.Info("Model: Creating inclinometer");
-	this->inclinometer = new Inclinometer(this->fpga->getSupportFPGAData(), this->publisher, this->safetyController);
+	this->inclinometer = new Inclinometer(this->fpga->getSupportFPGAData(), this->publisher, this->safetyController, inclinometerSettings);
 
 	if (this->positionController) {
 		Log.Debug("Model: Deleting position controller");

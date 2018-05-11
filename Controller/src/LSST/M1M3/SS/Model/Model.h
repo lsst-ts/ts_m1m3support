@@ -40,6 +40,7 @@ class HardpointActuatorSettings;
 class HardpointMonitorApplicationSettings;
 class PIDSettings;
 class DigitalInputOutput;
+class InclinometerSettings;
 
 class Model {
 private:
