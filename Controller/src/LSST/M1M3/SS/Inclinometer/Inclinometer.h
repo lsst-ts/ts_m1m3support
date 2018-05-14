@@ -20,6 +20,7 @@ namespace SS {
 struct SupportFPGAData;
 class M1M3SSPublisher;
 class SafetyController;
+class InclinometerSettings;
 
 /*!
  * The class used to process inclinometer data.
@@ -29,6 +30,7 @@ private:
 	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
+	InclinometerSettings* inclinometerSettings;
 
 	m1m3_InclinometerDataC* inclinometerData;
 	m1m3_logevent_InclinometerSensorWarningC* inclinometerWarning;
@@ -43,7 +45,7 @@ public:
 	 * @param[in] publisher The publisher.
 	 * @param[in] safetyController The safety controller.
 	 */
-	Inclinometer(SupportFPGAData* fpgaData, M1M3SSPublisher* publisher, SafetyController* safetyController);
+	Inclinometer(SupportFPGAData* fpgaData, M1M3SSPublisher* publisher, SafetyController* safetyController, InclinometerSettings* inclinometerSettings);
 
 	/*!
 	 * Processes currently available inclinometer data and publish it.

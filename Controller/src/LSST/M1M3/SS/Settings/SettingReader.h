@@ -24,6 +24,7 @@
 #include <GyroSettings.h>
 #include <ExpansionFPGAApplicationSettings.h>
 #include <PIDSettings.h>
+#include <InclinometerSettings.h>
 #include <string>
 
 namespace LSST {
@@ -48,6 +49,7 @@ private:
 	GyroSettings gyroSettings;
 	ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
 	PIDSettings pidSettings;
+	InclinometerSettings inclinometerSettings;
 
 	std::string basePath;
 	std::string setsPath;
@@ -74,6 +76,7 @@ public:
 	GyroSettings* loadGyroSettings();
 	ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
 	PIDSettings* loadPIDSettings();
+	InclinometerSettings* loadInclinometerSettings();
 
 private:
 	std::string getBasePath(std::string file);

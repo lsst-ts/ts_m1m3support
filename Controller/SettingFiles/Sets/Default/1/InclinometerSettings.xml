@@ -1,0 +1,9 @@
+<InclinometerSettings>
+    <Offset>0.0</Offset>
+    <Limits>
+        <FaultLow>100.0</FaultLow>
+        <WarningLow>99.0</WarningLow>
+        <WarningHigh>-9.0</WarningHigh>
+        <FaultHigh>-10.0</FaultHigh>
+    </Limits>
+</InclinometerSettings>
