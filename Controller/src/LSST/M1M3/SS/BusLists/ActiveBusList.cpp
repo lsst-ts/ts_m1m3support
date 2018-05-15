@@ -59,8 +59,8 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 				bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
 				if (!disabled) {
 					this->ilcMessageFactory->pneumaticForceStatus(&this->buffer, address);
+					this->expectedFAResponses[dataIndex] = 1;
 				}
-				this->expectedFAResponses[dataIndex] = 1;
 			}
 			int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
 			while(this->subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
