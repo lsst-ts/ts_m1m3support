@@ -57,6 +57,10 @@ bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
 		Log.Error("FirmwareUpdate: Failed to calculate application statistics CRC for actuator %d", actuatorId);
 		return false;
 	}
+	if (!this->RestartApplication(subnet, address)) {
+		Log.Error("FirmwareUpdate: Failed to restart ILC application for actuator %d before loading firmware", actuatorId);
+		return false;
+	}
 	if (!this->EnterFirmwareUpdate(subnet, address)) {
 		Log.Error("FirmwareUpdate: Failed to start transition to firmware update state for actuator %d", actuatorId);
 		return false;
@@ -82,7 +86,11 @@ bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
 		return false;
 	}
 	if (!this->RestartApplication(subnet, address)) {
-		Log.Error("FirmwareUpdate: Failed to restart ILC application for actuator %d", actuatorId);
+		Log.Error("FirmwareUpdate: Failed to restart ILC application for actuator %d after loading firmware", actuatorId);
+		return false;
+	}
+	if (!this->EnterDisable(subnet, address)) {
+		Log.Error("FirmwareUpdate: Failed to enter disabled state for actuator %d", actuatorId);
 		return false;
 	}
 	return true;
@@ -103,12 +111,31 @@ bool FirmwareUpdate::ProcessFile(std::string filePath) {
 	this->hexData.clear();
 	std::ifstream inputStream(filePath.c_str());
 	std::string lineText;
+	bool allZero = true;
 	bool ok = true;
+	bool ignoreData = false;
 	while(std::getline(inputStream, lineText)) {
 		boost::trim_right(lineText);
 		IntelHexLine hexLine;
 		if (this->ProcessLine(lineText.c_str(), &hexLine)) {
-			this->hexData.push_back(hexLine);
+			switch(hexLine.RecordType) {
+			case IntelRecordType::Data:
+				if (!ignoreData) {
+					this->hexData.push_back(hexLine);
+				}
+				break;
+			case IntelRecordType::ExtendedLinearAddress:
+				// Basically if the data is non-zero that means we are skipping a bunch of address which
+				// means we are at the end of the file and what we are skipping is a bunch of filler so lets
+				// not bother doing anything and just ignore all of the data
+				allZero = true;
+				for(unsigned int i = 0; i < hexLine.Data.size() && allZero; ++i) {
+					allZero = hexLine.Data[i] == 0;
+				}
+				ignoreData = !allZero;
+				break;
+			default: break;
+			}
 		}
 		else {
 			ok = false;
@@ -153,21 +180,21 @@ bool FirmwareUpdate::ProcessLine(const char* line, IntelHexLine* hexLine) {
 				if (returnCode >= 0) {
 					char checksum = 0;
 					checksum += hexLine->ByteCount;
-					checksum += hexLine->Address;
+					checksum += (char)((hexLine->Address & 0xFF00) >> 8);
+					checksum += (char)(hexLine->Address & 0x00FF);
 					checksum += hexLine->RecordType;
 					for(unsigned int i = 0; i < hexLine->Data.size(); ++i) {
 						checksum += hexLine->Data[i];
 					}
-					checksum = checksum & 0xFF;
 					checksum = ~checksum;
 					checksum += 1;
 					if (checksum != hexLine->Checksum) {
-						Log.Error("FirmwareUpdate: Checksum mismatch for Address %d, expecting %d got %d", (int)hexLine->Address, (int)hexLine->Checksum, checksum);
+						Log.Error("FirmwareUpdate: Checksum mismatch for Address 0x%04X, expecting 0x%02X got 0x%02X", (int)hexLine->Address, (int)hexLine->Checksum, checksum);
 						ok = false;
 					}
 				}
 				else {
-					Log.Error("FirmwareUpdate: Unable to parse Checksum for Address %d", (int)hexLine->Address);
+					Log.Error("FirmwareUpdate: Unable to parse Checksum for Address 0x%04X", (int)hexLine->Address);
 					ok = false;
 				}
 			}
@@ -193,15 +220,20 @@ bool FirmwareUpdate::UpdateAppData() {
 	unsigned short endAddress = 0;
 	for(unsigned int i = 0; i < this->hexData.size(); ++i) {
 		IntelHexLine line = this->hexData[i];
-		if (line.Address < this->appStats.StartAddress) {
-			this->appStats.StartAddress = line.Address;
-		}
-		if (line.Address > endAddress) {
-			endAddress = line.Address;
-		}
-		for(unsigned int j = 0; j < line.Data.size(); ++j) {
-			unsigned int address = line.Address + j;
-			this->appData[address] = line.Data[j];
+		switch(line.RecordType) {
+		case IntelRecordType::Data:
+			if (line.Address < this->appStats.StartAddress) {
+				this->appStats.StartAddress = line.Address;
+			}
+			if ((line.Address + line.ByteCount) > endAddress) {
+				endAddress = (line.Address + line.ByteCount);
+			}
+			for(unsigned int j = 0; j < line.Data.size(); ++j) {
+				unsigned int address = line.Address + j;
+				this->appData[address] = line.Data[j];
+			}
+			break;
+		default: break;
 		}
 	}
 	this->appStats.DataLength = endAddress - this->appStats.StartAddress + 1;
@@ -282,7 +314,8 @@ bool FirmwareUpdate::EraseILCApplication(int subnet, int address) {
 }
 
 bool FirmwareUpdate::WriteApplication(int subnet, int address) {
-	for(unsigned int i = 0; i < this->appStats.DataLength;) {
+	for(unsigned int i = this->appStats.StartAddress; i < (this->appStats.StartAddress + this->appStats.DataLength);) {
+		unsigned int startAddress = i;
 		uint8_t buffer[192];
 		for(int j = 0; j < 64; ++j) {
 			buffer[j * 3 + 0] = this->appData[i + 0];
@@ -290,7 +323,6 @@ bool FirmwareUpdate::WriteApplication(int subnet, int address) {
 			buffer[j * 3 + 2] = this->appData[i + 2];
 			i += 4;
 		}
-		uint16_t startAddress = this->appStats.StartAddress + i;
 		if (!this->WriteApplicationPage(subnet, address, startAddress, 192, buffer)) {
 			Log.Error("FirmwareUpdate: Failed to write application page address %d", startAddress);
 			return false;
@@ -367,21 +399,44 @@ bool FirmwareUpdate::RestartApplication(int subnet, int address) {
 	return this->ProcessResponse(&buffer, subnet);
 }
 
+bool FirmwareUpdate::EnterDisable(int subnet, int address) {
+	this->desiredState = 1;
+	ModbusBuffer buffer;
+	this->SetupBuffer(&buffer, subnet);
+	buffer.writeU8((uint8_t)address);
+	buffer.writeU8(65);
+	buffer.writeU8(0);
+	buffer.writeU8(1);
+	buffer.writeCRC(4);
+	buffer.writeEndOfFrame();
+	buffer.writeWaitForRx(10000);
+	this->EndBuffer(&buffer);
+	return this->PrintBuffer(&buffer, "EnterDisable:");
+	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	return this->ProcessResponse(&buffer, subnet);
+}
+
 bool FirmwareUpdate::ProcessResponse(ModbusBuffer* buffer, int subnet) {
-	this->fpga->waitForModbusIRQ(subnet, 200);
+	this->fpga->writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
+	this->fpga->waitForModbusIRQ(subnet, 2000);
 	this->fpga->ackModbusIRQ(subnet);
 	buffer->setIndex(0);
 	buffer->setLength(0);
-	this->fpga->writeRequestFIFO(this->SubnetToFPGAAddress(subnet), 200);
-	this->fpga->readU16ResponseFIFO(buffer->getBuffer(), 1, 10);
+	this->fpga->writeRequestFIFO(this->SubnetRxToFPGAAddress(subnet), 0);
+	this->fpga->readU16ResponseFIFO(buffer->getBuffer(), 1, 2000);
 	uint16_t reportedLength = buffer->readLength();
 	if (reportedLength > 0) {
 		buffer->setIndex(0);
-		if (this->fpga->readU16ResponseFIFO(buffer->getBuffer(), reportedLength, 10)) {
+		if (this->fpga->readU16ResponseFIFO(buffer->getBuffer(), reportedLength, 2000)) {
 			Log.Error("FirmwareUpdate: Failed to read all %d words", reportedLength);
 			return false;
 		}
 		buffer->setLength(reportedLength);
+		// Read U64 Global Timestamp (UNUSED)
+		buffer->readLength();
+		buffer->readLength();
+		buffer->readLength();
+		buffer->readLength();
 		while(!buffer->endOfBuffer()) {
 			uint16_t length = 0;
 			double timestamp = 0;
@@ -484,31 +539,45 @@ bool FirmwareUpdate::ProcessExceptionCode(ModbusBuffer* buffer, int functionCode
 }
 
 void FirmwareUpdate::SetupBuffer(ModbusBuffer* buffer, int subnet) {
-	buffer->writeSubnet((uint8_t)this->SubnetToFPGAAddress(subnet));
+	buffer->setIndex(0);
+	buffer->setLength(0);
+	buffer->writeSubnet((uint8_t)this->SubnetTxToFPGAAddress(subnet));
 	buffer->writeLength(0);
+	buffer->writeSoftwareTrigger();
 }
 
-int FirmwareUpdate::SubnetToFPGAAddress(int subnet) {
+int FirmwareUpdate::SubnetTxToFPGAAddress(int subnet) {
 	switch(subnet) {
-	case 1: subnet = FPGAAddresses::ModbusSubnetATx; break;
-	case 2: subnet = FPGAAddresses::ModbusSubnetBTx; break;
-	case 3: subnet = FPGAAddresses::ModbusSubnetCTx; break;
-	case 4: subnet = FPGAAddresses::ModbusSubnetDTx; break;
-	case 5: subnet = FPGAAddresses::ModbusSubnetETx; break;
-	default: subnet = 255; break;
+	case 1: return FPGAAddresses::ModbusSubnetATx;
+	case 2: return FPGAAddresses::ModbusSubnetBTx;
+	case 3: return FPGAAddresses::ModbusSubnetCTx;
+	case 4: return FPGAAddresses::ModbusSubnetDTx;
+	case 5: return FPGAAddresses::ModbusSubnetETx;
+	default: return 255;
 	}
-	return subnet;
+}
+
+int FirmwareUpdate::SubnetRxToFPGAAddress(int subnet) {
+	switch(subnet) {
+	case 1: return FPGAAddresses::ModbusSubnetARx;
+	case 2: return FPGAAddresses::ModbusSubnetBRx;
+	case 3: return FPGAAddresses::ModbusSubnetCRx;
+	case 4: return FPGAAddresses::ModbusSubnetDRx;
+	case 5: return FPGAAddresses::ModbusSubnetERx;
+	default: return 255;
+	}
 }
 
 void FirmwareUpdate::EndBuffer(ModbusBuffer* buffer) {
 	buffer->writeTriggerIRQ();
 	buffer->set(1, buffer->getIndex() - 2);
+	buffer->setLength(buffer->getIndex());
 }
 
 bool FirmwareUpdate::PrintBuffer(ModbusBuffer* buffer, std::string text) {
-	buffer->setIndex(0);
-	for(int i = 0; i < buffer->getLength(); ++i) {
-		text = text + " " + boost::lexical_cast<std::string>(buffer->readU8());
+	buffer->setIndex(3);
+	for(int i = 3; i < buffer->getLength() - 3; ++i) {
+		text = text + " " + boost::lexical_cast<std::string>((int)buffer->readU8());
 	}
 	Log.Info(text.c_str());
 	return true;
