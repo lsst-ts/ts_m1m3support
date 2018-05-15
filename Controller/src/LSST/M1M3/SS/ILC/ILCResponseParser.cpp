@@ -216,7 +216,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 					}
 					break;
 				default:
-					Log.Warn("ILCResponseParser: Unknown address %d", subnet);
+					Log.Warn("ILCResponseParser: Unknown address %d on subnet %d for function code %d", (int)address, (int)subnet, (int)function);
 					this->warnUnknownAddress(timestamp, map.ActuatorId);
 					break;
 				}
