@@ -20,8 +20,8 @@
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1754150713" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
 							<builder autoBuildTarget="all" buildPath="${workspace_loc:/ts_M1M3Support}/Debug" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.957120600" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.2083704718" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1467807804" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.debugging.level.168655909" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1467807804" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.168655909" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.dialect.std.1138310749" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.66705219" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -82,6 +82,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.551830841" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
 								<option id="gnu.cpp.link.option.libs.933608053" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="dl"/>
+									<listOptionValue builtIn="false" value="pthread"/>
 									<listOptionValue builtIn="false" value="SAL_MTMount"/>
 									<listOptionValue builtIn="false" value="SAL_m1m3"/>
 									<listOptionValue builtIn="false" value="sacpp_MTMount_types"/>
@@ -146,7 +147,7 @@
 							<builder buildPath="${workspace_loc:/ts_M1M3Support}/Debug" id="cdt.managedbuild.builder.gnu.cross.1741012034" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1212106918" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1015057643" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.debugging.level.2097659847" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.2097659847" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.dialect.std.868155273" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.719822965" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -168,37 +169,37 @@
 									<listOptionValue builtIn="false" value="&quot;/usr/ts_sal/test/MTMount/cpp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;/usr/ts_sal/test&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;/usr/ts_sal/test/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/DigitalInputOutput}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/FirmwareUpdate}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Accelerometer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/AutomaticOperationsController}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/BusLists}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/CommandFactory}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Displacement}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Inclinometer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/ForceController}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Commands}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Context}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Controller}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/FPGA}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Gyro}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/ILC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Logging}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Modbus}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Model}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/PID}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/PositionController}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/PowerController}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/ProfileController}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Publisher}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/SafetyController}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Settings}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/StateFactory}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/States}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Subscriber}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Threads}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/LSST/M1M3/SS/Utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/DigitalInputOutput&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/FirmwareUpdate&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Accelerometer&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/AutomaticOperationsController&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/BusLists&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/CommandFactory&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Displacement&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Inclinometer&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/ForceController&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Commands&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Context&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Controller&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/FPGA&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Gyro&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/ILC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Logging&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Modbus&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Model&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/PID&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/PositionController&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/PowerController&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/ProfileController&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Publisher&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/SafetyController&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Settings&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/StateFactory&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/States&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Subscriber&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Threads&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Utility&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1333991322" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1095637684" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -215,6 +216,7 @@
 									<listOptionValue builtIn="false" value="dcpsgapi"/>
 									<listOptionValue builtIn="false" value="ddsuser"/>
 									<listOptionValue builtIn="false" value="ddskernel"/>
+									<listOptionValue builtIn="false" value="pthread"/>
 									<listOptionValue builtIn="false" value="ddsserialization"/>
 									<listOptionValue builtIn="false" value="ddsconfparser"/>
 									<listOptionValue builtIn="false" value="ddsconf"/>
@@ -273,6 +275,8 @@
 		<configuration configurationName="Linux-Debug">
 			<resource resourceType="PROJECT" workspacePath="/ts_M1M3Support"/>
 		</configuration>
+		<configuration configurationName="Linux-Release"/>
+		<configuration configurationName="Windows-Release"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/ts_M1M3Support"/>
 		</configuration>
