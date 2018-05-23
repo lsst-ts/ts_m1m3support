@@ -45,6 +45,8 @@ ILCResponseParser::ILCResponseParser() {
 	this->hardpointMonitorData = 0;
 	this->ilcWarning = 0;
 	this->outerLoopData = 0;
+	this->modbusResponse = 0;
+	this->grabResponse = false;
 }
 
 ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData) {
@@ -69,6 +71,8 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
 	this->hardpointMonitorData = this->publisher->getHardpointMonitorData();
 	this->ilcWarning = this->publisher->getEventILCWarning();
 	this->outerLoopData = this->publisher->getOuterLoopData();
+	this->modbusResponse = this->publisher->getEventModbusResponse();
+	this->grabResponse = false;
 
 	this->forceWarning->Timestamp = 0;
 	this->forceWarning->AnyWarning = false;
@@ -120,115 +124,125 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 		uint16_t length = 0;
 		double timestamp = 0;
 		if (this->validateCRC(buffer, &length, &timestamp)) {
-			if(subnet >= 1 && subnet <= 5) {
-				uint8_t address = buffer->readU8();
-				uint8_t function = buffer->readU8();
-				ILCMap map = this->subnetData->getILCDataFromAddress(subnet - 1, address);
-				int32_t dataIndex = map.DataIndex;
-				switch(map.Type) {
-				case ILCTypes::FA:
-					this->faExpectedResponses[dataIndex]--;
-					switch(function) {
-					case 17: this->parseReportFAServerIDResponse(buffer, map); break;
-					case 18: this->parseReportFAServerStatusResponse(buffer, map); break;
-					case 65: this->parseChangeFAILCModeResponse(buffer, map); break;
-					case 73: this->parseSetBoostValveDCAGainsResponse(buffer, map); break;
-					case 74: this->parseReadBoostValveDCAGainsResponse(buffer, map); break;
-					case 75: this->parseForceDemandResponse(buffer, address, map); break;
-					case 76: this->parsePneumaticForceStatusResponse(buffer, address, map); break;
-					case 80: this->parseSetFAADCScanRateResponse(buffer, map); break;
-					case 81: this->parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map); break;
-					case 107: this->parseFAResetResponse(buffer, map); break;
-					case 110: this->parseReadFACalibrationResponse(buffer, map); break;
-					case 119: this->parseReadDCAPressureValuesResponse(buffer, map); break;
-					case 120: this->parseReportDCAIDResponse(buffer, map); break;
-					case 121: this->parseReportDCAStatusResponse(buffer, map); break;
-					case 145:
-					case 146:
-					case 193:
-					case 201:
-					case 202:
-					case 203:
-					case 204:
-					case 208:
-					case 209:
-					case 235:
-					case 238:
-					case 247:
-					case 248:
-					case 249: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
-					default:
-						Log.Warn("ILCResponseParser: Unknown function FA %d", subnet);
-						this->warnUnknownFunction(timestamp, map.ActuatorId);
-						break;
-					}
-					break;
-				case ILCTypes::HP:
-					this->hpExpectedResponses[dataIndex]--;
-					switch(function) {
-					case 17: this->parseReportHPServerIDResponse(buffer, map); break;
-					case 18: this->parseReportHPServerStatusResponse(buffer, map); break;
-					case 65: this->parseChangeHPILCModeResponse(buffer, map); break;
-					case 66: this->parseStepMotorResponse(buffer, map, timestamp); break;
-					case 67: this->parseElectromechanicalForceAndStatusResponse(buffer, map); break;
-					case 80: this->parseSetHPADCScanRateResponse(buffer, map); break;
-					case 81: this->parseSetHPADCChannelOffsetAndSensitivityResponse(buffer, map); break;
-					case 107: this->parseHPResetResponse(buffer, map); break;
-					case 110: this->parseReadHPCalibrationResponse(buffer, map); break;
-					case 145:
-					case 146:
-					case 193:
-					case 194:
-					case 195:
-					case 208:
-					case 209:
-					case 235:
-					case 238: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
-					default:
-						Log.Warn("ILCResponseParser: Unknown function HP %d", subnet);
-						this->warnUnknownFunction(timestamp, map.ActuatorId);
-						break;
-					}
-					break;
-				case ILCTypes::HM:
-					this->hmExpectedResponses[dataIndex]--;
-					switch(function) {
-					case 17: this->parseReportHMServerIDResponse(buffer, map); break;
-					case 18: this->parseReportHMServerStatusResponse(buffer, map); break;
-					case 65: this->parseChangeHMILCModeResponse(buffer, map); break;
-					case 107: this->parseHMResetResponse(buffer, map); break;
-					case 119: this->parseReadHMPressureValuesResponse(buffer, map); break;
-					case 120: this->parseReportHMMezzanineIDResponse(buffer, map); break;
-					case 121: this->parseReportHMMezzanineStatusResponse(buffer, map); break;
-					case 122: this->parseReportLVDTResponse(buffer, map); break;
-					case 145:
-					case 146:
-					case 193:
-					case 208:
-					case 209:
-					case 235:
-					case 238:
-					case 250: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
-					default:
-						Log.Warn("ILCResponseParser: Unknown function HM %d", subnet);
-						this->warnUnknownFunction(timestamp, map.ActuatorId);
-						break;
-					}
-					break;
-				default:
-					Log.Warn("ILCResponseParser: Unknown address %d on subnet %d for function code %d", (int)address, (int)subnet, (int)function);
-					this->warnUnknownAddress(timestamp, map.ActuatorId);
-					break;
-				}
+			if (this->grabResponse) {
+				this->parseOneOffCommand(buffer, length, timestamp, true);
 			}
 			else {
-				Log.Warn("ILCResponseParser: Unknown subnet %d", subnet);
-				this->warnUnknownSubnet(timestamp);
+				if(subnet >= 1 && subnet <= 5) {
+					uint8_t address = buffer->readU8();
+					uint8_t function = buffer->readU8();
+					ILCMap map = this->subnetData->getILCDataFromAddress(subnet - 1, address);
+					int32_t dataIndex = map.DataIndex;
+					switch(map.Type) {
+					case ILCTypes::FA:
+						this->faExpectedResponses[dataIndex]--;
+						switch(function) {
+						case 17: this->parseReportFAServerIDResponse(buffer, map); break;
+						case 18: this->parseReportFAServerStatusResponse(buffer, map); break;
+						case 65: this->parseChangeFAILCModeResponse(buffer, map); break;
+						case 73: this->parseSetBoostValveDCAGainsResponse(buffer, map); break;
+						case 74: this->parseReadBoostValveDCAGainsResponse(buffer, map); break;
+						case 75: this->parseForceDemandResponse(buffer, address, map); break;
+						case 76: this->parsePneumaticForceStatusResponse(buffer, address, map); break;
+						case 80: this->parseSetFAADCScanRateResponse(buffer, map); break;
+						case 81: this->parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map); break;
+						case 107: this->parseFAResetResponse(buffer, map); break;
+						case 110: this->parseReadFACalibrationResponse(buffer, map); break;
+						case 119: this->parseReadDCAPressureValuesResponse(buffer, map); break;
+						case 120: this->parseReportDCAIDResponse(buffer, map); break;
+						case 121: this->parseReportDCAStatusResponse(buffer, map); break;
+						case 145:
+						case 146:
+						case 193:
+						case 201:
+						case 202:
+						case 203:
+						case 204:
+						case 208:
+						case 209:
+						case 235:
+						case 238:
+						case 247:
+						case 248:
+						case 249: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
+						default:
+							Log.Warn("ILCResponseParser: Unknown function FA %d", subnet);
+							this->warnUnknownFunction(timestamp, map.ActuatorId);
+							break;
+						}
+						break;
+					case ILCTypes::HP:
+						this->hpExpectedResponses[dataIndex]--;
+						switch(function) {
+						case 17: this->parseReportHPServerIDResponse(buffer, map); break;
+						case 18: this->parseReportHPServerStatusResponse(buffer, map); break;
+						case 65: this->parseChangeHPILCModeResponse(buffer, map); break;
+						case 66: this->parseStepMotorResponse(buffer, map, timestamp); break;
+						case 67: this->parseElectromechanicalForceAndStatusResponse(buffer, map); break;
+						case 80: this->parseSetHPADCScanRateResponse(buffer, map); break;
+						case 81: this->parseSetHPADCChannelOffsetAndSensitivityResponse(buffer, map); break;
+						case 107: this->parseHPResetResponse(buffer, map); break;
+						case 110: this->parseReadHPCalibrationResponse(buffer, map); break;
+						case 145:
+						case 146:
+						case 193:
+						case 194:
+						case 195:
+						case 208:
+						case 209:
+						case 235:
+						case 238: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
+						default:
+							Log.Warn("ILCResponseParser: Unknown function HP %d", subnet);
+							this->warnUnknownFunction(timestamp, map.ActuatorId);
+							break;
+						}
+						break;
+					case ILCTypes::HM:
+						this->hmExpectedResponses[dataIndex]--;
+						switch(function) {
+						case 17: this->parseReportHMServerIDResponse(buffer, map); break;
+						case 18: this->parseReportHMServerStatusResponse(buffer, map); break;
+						case 65: this->parseChangeHMILCModeResponse(buffer, map); break;
+						case 107: this->parseHMResetResponse(buffer, map); break;
+						case 119: this->parseReadHMPressureValuesResponse(buffer, map); break;
+						case 120: this->parseReportHMMezzanineIDResponse(buffer, map); break;
+						case 121: this->parseReportHMMezzanineStatusResponse(buffer, map); break;
+						case 122: this->parseReportLVDTResponse(buffer, map); break;
+						case 145:
+						case 146:
+						case 193:
+						case 208:
+						case 209:
+						case 235:
+						case 238:
+						case 250: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
+						default:
+							Log.Warn("ILCResponseParser: Unknown function HM %d", subnet);
+							this->warnUnknownFunction(timestamp, map.ActuatorId);
+							break;
+						}
+						break;
+					default:
+						Log.Warn("ILCResponseParser: Unknown address %d on subnet %d for function code %d", (int)address, (int)subnet, (int)function);
+						this->warnUnknownAddress(timestamp, map.ActuatorId);
+						break;
+					}
+				}
+				else {
+					Log.Warn("ILCResponseParser: Unknown subnet %d", subnet);
+					this->warnUnknownSubnet(timestamp);
+				}
 			}
 		}
 		else {
 			Log.Warn("ILCResponseParser: Invalid CRC %d", subnet);
-			this->warnInvalidCRC(timestamp);
+			if (this->grabResponse) {
+				this->parseOneOffCommand(buffer, length, timestamp, false);
+			}
+			else {
+				this->warnInvalidCRC(timestamp);
+			}
 		}
 	}
 }
@@ -295,11 +309,15 @@ void ILCResponseParser::verifyResponses() {
 	}
 }
 
+void ILCResponseParser::grabNextResponse() {
+	this->grabResponse = true;
+}
+
 bool ILCResponseParser::validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp) {
 	int32_t addressIndex = buffer->getIndex();
 	while(!buffer->endOfFrame() && !buffer->endOfBuffer() && (buffer->readLength() & 0xF000) != 0xB000) { }
 	int32_t crcIndex = buffer->getIndex() - 3;
-	(*length) = crcIndex - addressIndex + 11;
+	(*length) = crcIndex - addressIndex + 2; // + 11; // This was +11 however it didn't seem to be used. Reusing this length as something helpful.
 	buffer->setIndex(crcIndex);
 	uint16_t calculatedCRC = buffer->calculateCRC(crcIndex - addressIndex);
 	uint16_t crc = buffer->readCRC();
@@ -312,6 +330,21 @@ bool ILCResponseParser::validateCRC(ModbusBuffer* buffer, uint16_t* length, doub
 		buffer->readEndOfFrame();
 		return false;
 	}
+}
+
+void ILCResponseParser::parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp, bool valid) {
+	this->grabResponse = false;
+	this->modbusResponse->Timestamp = timestamp;
+	this->modbusResponse->ResponseValid = valid;
+	this->modbusResponse->Address = buffer->readU8();
+	this->modbusResponse->FunctionCode = buffer->readU8();
+	this->modbusResponse->DataLength = length - 4;
+	for(uint16_t i = 0; i < this->modbusResponse->DataLength; ++i) {
+		this->modbusResponse->Data[i] = buffer->readU8();
+	}
+	this->modbusResponse->CRC = buffer->readCRC();
+	buffer->skipToNextFrame();
+	this->publisher->logModbusResponse();
 }
 
 void ILCResponseParser::parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId) {

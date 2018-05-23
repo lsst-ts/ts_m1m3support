@@ -54,6 +54,9 @@ private:
 
 	m1m3_OuterLoopDataC* outerLoopData;
 
+	bool grabResponse;
+	m1m3_logevent_ModbusResponseC* modbusResponse;
+
 public:
 	ILCResponseParser();
 	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData);
@@ -62,9 +65,11 @@ public:
 	void incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm);
 	void clearResponses();
 	void verifyResponses();
+	void grabNextResponse();
 
 private:
 	bool validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
+	void parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp, bool valid);
 	void parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId);
 	void parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCMap map);
 	void parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map);

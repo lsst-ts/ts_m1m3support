@@ -70,6 +70,7 @@ private:
 	m1m3_logevent_InclinometerSensorWarningC eventInclinometerSensorWarning;
 	m1m3_logevent_InterlockStatusC eventInterlockStatus;
 	m1m3_logevent_InterlockWarningC eventInterlockWarning;
+	m1m3_logevent_ModbusResponseC eventModbusResponse;
 	m1m3_logevent_PIDInfoC eventPIDInfo;
 	m1m3_logevent_PowerStatusC eventPowerStatus;
 	m1m3_logevent_PowerSupplyStatusC eventPowerSupplyStatus;
@@ -128,6 +129,7 @@ private:
 	m1m3_logevent_InclinometerSensorWarningC previousEventInclinometerSensorWarning;
 	m1m3_logevent_InterlockStatusC previousEventInterlockStatus;
 	m1m3_logevent_InterlockWarningC previousEventInterlockWarning;
+	m1m3_logevent_ModbusResponseC previousEventModbusResponse;
 	m1m3_logevent_PIDInfoC previousEventPIDInfo;
 	m1m3_logevent_PowerStatusC previousEventPowerStatus;
 	m1m3_logevent_PowerSupplyStatusC previousEventPowerSupplyStatus;
@@ -200,6 +202,7 @@ public:
 	m1m3_logevent_InclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
 	m1m3_logevent_InterlockStatusC* getEventInterlockStatus() { return &this->eventInterlockStatus; }
 	m1m3_logevent_InterlockWarningC* getEventInterlockWarning() { return &this->eventInterlockWarning; }
+	m1m3_logevent_ModbusResponseC* getEventModbusResponse() { return &this->eventModbusResponse; }
 	m1m3_logevent_PIDInfoC* getEventPIDInfo() { return &this->eventPIDInfo; }
 	m1m3_logevent_PowerStatusC* getEventPowerStatus() { return &this->eventPowerStatus; }
 	m1m3_logevent_PowerSupplyStatusC* getEventPowerSupplyStatus() { return &this->eventPowerSupplyStatus; }
@@ -311,6 +314,8 @@ public:
 	void tryLogInterlockStatus();
 	void logInterlockWarning();
 	void tryLogInterlockWarning();
+	void logModbusResponse();
+	void tryLogModbusResponse();
 	void logPIDInfo();
 	void tryLogPIDInfo();
 	void logPowerStatus();
@@ -391,6 +396,7 @@ public:
 	void ackCommandUpdatePID(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandResetPID(int32_t commandID, int32_t ackCode, std::string description);
 	void ackCommandProgramILC(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandModbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
 };
 
 } /* namespace SS */

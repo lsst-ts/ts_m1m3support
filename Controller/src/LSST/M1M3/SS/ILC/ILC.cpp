@@ -74,6 +74,40 @@ void ILC::programILC(int32_t actuatorId, std::string filePath) {
 	this->firmwareUpdate.Program(actuatorId, filePath);
 }
 
+void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data) {
+	ILCMap map = this->subnetData.getMap(actuatorId);
+	int subnet = map.Subnet;
+	int address = map.Address;
+	if (subnet == 255 || address == 255) {
+		Log.Error("ILC: Modbus Transmit unknown actuator %d", actuatorId);
+		return;
+	}
+	ModbusBuffer buffer;
+	buffer.setIndex(0);
+	buffer.setLength(0);
+	buffer.writeSubnet((uint8_t)this->subnetToTxAddress(subnet));
+	buffer.writeLength(0);
+	buffer.writeSoftwareTrigger();
+
+	buffer.writeU8((uint8_t)address);
+	buffer.writeU8((uint8_t)functionCode);
+	for(int i = 0; i < dataLength && i < 252; ++i) {
+		buffer.writeU8((uint8_t)data[i]);
+	}
+	buffer.writeCRC(dataLength + 2);
+	buffer.writeEndOfFrame();
+	buffer.writeWaitForRx(10000);
+
+	buffer.writeTriggerIRQ();
+	buffer.set(1, buffer.getIndex() - 2);
+	buffer.setLength(buffer.getIndex());
+
+	this->responseParser.grabNextResponse();
+	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	this->waitForSubnet(subnet, 5000);
+	this->read(subnet);
+}
+
 void ILC::writeCalibrationDataBuffer() {
 	Log.Debug("ILC: writeCalibrationDataBuffer()");
 	this->writeBusList(&this->busListSetADCChannelOffsetAndSensitivity);

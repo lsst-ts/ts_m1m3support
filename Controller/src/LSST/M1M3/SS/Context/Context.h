@@ -61,6 +61,7 @@ class ApplyOffsetForcesByMirrorForceCommand;
 class UpdatePIDCommand;
 class ResetPIDCommand;
 class ProgramILCCommand;
+class ModbusTransmitCommand;
 
 /*!
  * The context used to execute commands against the current state.
@@ -124,6 +125,7 @@ public:
 	void updatePID(UpdatePIDCommand* command);
 	void resetPID(ResetPIDCommand* command);
 	void programILC(ProgramILCCommand* command);
+	void modbusTransmit(ModbusTransmitCommand* command);
 };
 
 } /* namespace SS */

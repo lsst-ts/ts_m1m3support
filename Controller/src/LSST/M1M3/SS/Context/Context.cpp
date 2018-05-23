@@ -337,6 +337,13 @@ void Context::programILC(ProgramILCCommand* command) {
 	this->stateFactory->destroy(state);
 }
 
+void Context::modbusTransmit(ModbusTransmitCommand* command) {
+	Log.Debug("Context: modbusTransmit()");
+	State* state = this->stateFactory->create(this->currentState);
+	this->updateCurrentStateIfRequired(state->modbusTransmit(command, this->model));
+	this->stateFactory->destroy(state);
+}
+
 void Context::updateCurrentStateIfRequired(States::Type potentialNewState) {
 	if (potentialNewState != States::NoStateTransition) {
 		this->currentState = potentialNewState;
