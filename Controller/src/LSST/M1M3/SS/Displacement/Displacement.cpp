@@ -44,73 +44,81 @@ void Displacement::processData() {
 	if (this->fpgaData->DisplacementSampleTimestamp != this->lastSampleTimestamp) {
 		this->lastSampleTimestamp = this->fpgaData->DisplacementSampleTimestamp;
 		this->imsData->Timestamp = Timestamp::fromFPGA(this->fpgaData->DisplacementSampleTimestamp);
-		this->imsData->RawSensorData[0] = this->fpgaData->DisplacementRaw1 / 10000.0;
-		this->imsData->RawSensorData[1] = this->fpgaData->DisplacementRaw2 / 10000.0;
-		this->imsData->RawSensorData[2] = this->fpgaData->DisplacementRaw3 / 10000.0;
-		this->imsData->RawSensorData[3] = this->fpgaData->DisplacementRaw4 / 10000.0;
-		this->imsData->RawSensorData[4] = this->fpgaData->DisplacementRaw5 / 10000.0;
-		this->imsData->RawSensorData[5] = this->fpgaData->DisplacementRaw6 / 10000.0;
-		this->imsData->RawSensorData[6] = this->fpgaData->DisplacementRaw7 / 10000.0;
-		this->imsData->RawSensorData[7] = this->fpgaData->DisplacementRaw8 / 10000.0;
+		this->imsData->RawSensorData[0] = (this->fpgaData->DisplacementRaw1 + this->displacementSensorSettings->N1Offset) / 10000.0;
+		this->imsData->RawSensorData[1] = (this->fpgaData->DisplacementRaw2 + this->displacementSensorSettings->N2Offset) / 10000.0;
+		this->imsData->RawSensorData[2] = (this->fpgaData->DisplacementRaw3 + this->displacementSensorSettings->N3Offset) / 10000.0;
+		this->imsData->RawSensorData[3] = (this->fpgaData->DisplacementRaw4 + this->displacementSensorSettings->N4Offset) / 10000.0;
+		this->imsData->RawSensorData[4] = (this->fpgaData->DisplacementRaw5 + this->displacementSensorSettings->N5Offset) / 10000.0;
+		this->imsData->RawSensorData[5] = (this->fpgaData->DisplacementRaw6 + this->displacementSensorSettings->N6Offset) / 10000.0;
+		this->imsData->RawSensorData[6] = (this->fpgaData->DisplacementRaw7 + this->displacementSensorSettings->N7Offset)/ 10000.0;
+		this->imsData->RawSensorData[7] = (this->fpgaData->DisplacementRaw8 + this->displacementSensorSettings->N8Offset) / 10000.0;
+		int p1 = this->displacementSensorSettings->N1Port;
+		int p2 = this->displacementSensorSettings->N2Port;
+		int p3 = this->displacementSensorSettings->N3Port;
+		int p4 = this->displacementSensorSettings->N4Port;
+		int p5 = this->displacementSensorSettings->N5Port;
+		int p6 = this->displacementSensorSettings->N6Port;
+		int p7 = this->displacementSensorSettings->N7Port;
+		int p8 = this->displacementSensorSettings->N8Port;
 		this->imsData->XPosition =
-					(this->displacementSensorSettings->ConverterMatrix[0] * this->imsData->RawSensorData[0] +
-					this->displacementSensorSettings->ConverterMatrix[1] * this->imsData->RawSensorData[1] +
-					this->displacementSensorSettings->ConverterMatrix[2] * this->imsData->RawSensorData[2] +
-					this->displacementSensorSettings->ConverterMatrix[3] * this->imsData->RawSensorData[3] +
-					this->displacementSensorSettings->ConverterMatrix[4] * this->imsData->RawSensorData[4] +
-					this->displacementSensorSettings->ConverterMatrix[5] * this->imsData->RawSensorData[5] +
-					this->displacementSensorSettings->ConverterMatrix[6] * this->imsData->RawSensorData[6] +
-					this->displacementSensorSettings->ConverterMatrix[7] * this->imsData->RawSensorData[7]) /
+					(this->displacementSensorSettings->ConverterMatrix[0] * this->imsData->RawSensorData[p1] +
+					this->displacementSensorSettings->ConverterMatrix[1] * this->imsData->RawSensorData[p2] +
+					this->displacementSensorSettings->ConverterMatrix[2] * this->imsData->RawSensorData[p3] +
+					this->displacementSensorSettings->ConverterMatrix[3] * this->imsData->RawSensorData[p4] +
+					this->displacementSensorSettings->ConverterMatrix[4] * this->imsData->RawSensorData[p5] +
+					this->displacementSensorSettings->ConverterMatrix[5] * this->imsData->RawSensorData[p6] +
+					this->displacementSensorSettings->ConverterMatrix[6] * this->imsData->RawSensorData[p7] +
+					this->displacementSensorSettings->ConverterMatrix[7] * this->imsData->RawSensorData[p8]) /
 					MILLIMETERS_PER_METER;
 			this->imsData->YPosition =
-					(this->displacementSensorSettings->ConverterMatrix[8] * this->imsData->RawSensorData[0] +
-					this->displacementSensorSettings->ConverterMatrix[9] * this->imsData->RawSensorData[1] +
-					this->displacementSensorSettings->ConverterMatrix[10] * this->imsData->RawSensorData[2] +
-					this->displacementSensorSettings->ConverterMatrix[11] * this->imsData->RawSensorData[3] +
-					this->displacementSensorSettings->ConverterMatrix[12] * this->imsData->RawSensorData[4] +
-					this->displacementSensorSettings->ConverterMatrix[13] * this->imsData->RawSensorData[5] +
-					this->displacementSensorSettings->ConverterMatrix[14] * this->imsData->RawSensorData[6] +
-					this->displacementSensorSettings->ConverterMatrix[15] * this->imsData->RawSensorData[7]) /
+					(this->displacementSensorSettings->ConverterMatrix[8] * this->imsData->RawSensorData[p1] +
+					this->displacementSensorSettings->ConverterMatrix[9] * this->imsData->RawSensorData[p2] +
+					this->displacementSensorSettings->ConverterMatrix[10] * this->imsData->RawSensorData[p3] +
+					this->displacementSensorSettings->ConverterMatrix[11] * this->imsData->RawSensorData[p4] +
+					this->displacementSensorSettings->ConverterMatrix[12] * this->imsData->RawSensorData[p5] +
+					this->displacementSensorSettings->ConverterMatrix[13] * this->imsData->RawSensorData[p6] +
+					this->displacementSensorSettings->ConverterMatrix[14] * this->imsData->RawSensorData[p7] +
+					this->displacementSensorSettings->ConverterMatrix[15] * this->imsData->RawSensorData[p8]) /
 					MILLIMETERS_PER_METER;
 			this->imsData->ZPosition =
-					(this->displacementSensorSettings->ConverterMatrix[16] * this->imsData->RawSensorData[0] +
-					this->displacementSensorSettings->ConverterMatrix[17] * this->imsData->RawSensorData[1] +
-					this->displacementSensorSettings->ConverterMatrix[18] * this->imsData->RawSensorData[2] +
-					this->displacementSensorSettings->ConverterMatrix[19] * this->imsData->RawSensorData[3] +
-					this->displacementSensorSettings->ConverterMatrix[20] * this->imsData->RawSensorData[4] +
-					this->displacementSensorSettings->ConverterMatrix[21] * this->imsData->RawSensorData[5] +
-					this->displacementSensorSettings->ConverterMatrix[22] * this->imsData->RawSensorData[6] +
-					this->displacementSensorSettings->ConverterMatrix[23] * this->imsData->RawSensorData[7]) /
+					(this->displacementSensorSettings->ConverterMatrix[16] * this->imsData->RawSensorData[p1] +
+					this->displacementSensorSettings->ConverterMatrix[17] * this->imsData->RawSensorData[p2] +
+					this->displacementSensorSettings->ConverterMatrix[18] * this->imsData->RawSensorData[p3] +
+					this->displacementSensorSettings->ConverterMatrix[19] * this->imsData->RawSensorData[p4] +
+					this->displacementSensorSettings->ConverterMatrix[20] * this->imsData->RawSensorData[p5] +
+					this->displacementSensorSettings->ConverterMatrix[21] * this->imsData->RawSensorData[p6] +
+					this->displacementSensorSettings->ConverterMatrix[22] * this->imsData->RawSensorData[p7] +
+					this->displacementSensorSettings->ConverterMatrix[23] * this->imsData->RawSensorData[p8]) /
 					MILLIMETERS_PER_METER;
 			this->imsData->XRotation =
-					(this->displacementSensorSettings->ConverterMatrix[24] * this->imsData->RawSensorData[0] +
-					this->displacementSensorSettings->ConverterMatrix[25] * this->imsData->RawSensorData[1] +
-					this->displacementSensorSettings->ConverterMatrix[26] * this->imsData->RawSensorData[2] +
-					this->displacementSensorSettings->ConverterMatrix[27] * this->imsData->RawSensorData[3] +
-					this->displacementSensorSettings->ConverterMatrix[28] * this->imsData->RawSensorData[4] +
-					this->displacementSensorSettings->ConverterMatrix[29] * this->imsData->RawSensorData[5] +
-					this->displacementSensorSettings->ConverterMatrix[30] * this->imsData->RawSensorData[6] +
-					this->displacementSensorSettings->ConverterMatrix[31] * this->imsData->RawSensorData[7]) /
+					(this->displacementSensorSettings->ConverterMatrix[24] * this->imsData->RawSensorData[p1] +
+					this->displacementSensorSettings->ConverterMatrix[25] * this->imsData->RawSensorData[p2] +
+					this->displacementSensorSettings->ConverterMatrix[26] * this->imsData->RawSensorData[p3] +
+					this->displacementSensorSettings->ConverterMatrix[27] * this->imsData->RawSensorData[p4] +
+					this->displacementSensorSettings->ConverterMatrix[28] * this->imsData->RawSensorData[p5] +
+					this->displacementSensorSettings->ConverterMatrix[29] * this->imsData->RawSensorData[p6] +
+					this->displacementSensorSettings->ConverterMatrix[30] * this->imsData->RawSensorData[p7] +
+					this->displacementSensorSettings->ConverterMatrix[31] * this->imsData->RawSensorData[p8]) /
 					MILLIMETERS_PER_METER;
 			this->imsData->YRotation =
-					(this->displacementSensorSettings->ConverterMatrix[32] * this->imsData->RawSensorData[0] +
-					this->displacementSensorSettings->ConverterMatrix[33] * this->imsData->RawSensorData[1] +
-					this->displacementSensorSettings->ConverterMatrix[34] * this->imsData->RawSensorData[2] +
-					this->displacementSensorSettings->ConverterMatrix[35] * this->imsData->RawSensorData[3] +
-					this->displacementSensorSettings->ConverterMatrix[36] * this->imsData->RawSensorData[4] +
-					this->displacementSensorSettings->ConverterMatrix[37] * this->imsData->RawSensorData[5] +
-					this->displacementSensorSettings->ConverterMatrix[38] * this->imsData->RawSensorData[6] +
-					this->displacementSensorSettings->ConverterMatrix[39] * this->imsData->RawSensorData[7]) /
+					(this->displacementSensorSettings->ConverterMatrix[32] * this->imsData->RawSensorData[p1] +
+					this->displacementSensorSettings->ConverterMatrix[33] * this->imsData->RawSensorData[p2] +
+					this->displacementSensorSettings->ConverterMatrix[34] * this->imsData->RawSensorData[p3] +
+					this->displacementSensorSettings->ConverterMatrix[35] * this->imsData->RawSensorData[p4] +
+					this->displacementSensorSettings->ConverterMatrix[36] * this->imsData->RawSensorData[p5] +
+					this->displacementSensorSettings->ConverterMatrix[37] * this->imsData->RawSensorData[p6] +
+					this->displacementSensorSettings->ConverterMatrix[38] * this->imsData->RawSensorData[p7] +
+					this->displacementSensorSettings->ConverterMatrix[39] * this->imsData->RawSensorData[p8]) /
 					MILLIMETERS_PER_METER;
 			this->imsData->ZRotation =
-					(this->displacementSensorSettings->ConverterMatrix[40] * this->imsData->RawSensorData[0] +
-					this->displacementSensorSettings->ConverterMatrix[41] * this->imsData->RawSensorData[1] +
-					this->displacementSensorSettings->ConverterMatrix[42] * this->imsData->RawSensorData[2] +
-					this->displacementSensorSettings->ConverterMatrix[43] * this->imsData->RawSensorData[3] +
-					this->displacementSensorSettings->ConverterMatrix[44] * this->imsData->RawSensorData[4] +
-					this->displacementSensorSettings->ConverterMatrix[45] * this->imsData->RawSensorData[5] +
-					this->displacementSensorSettings->ConverterMatrix[46] * this->imsData->RawSensorData[6] +
-					this->displacementSensorSettings->ConverterMatrix[47] * this->imsData->RawSensorData[7]) /
+					(this->displacementSensorSettings->ConverterMatrix[40] * this->imsData->RawSensorData[p1] +
+					this->displacementSensorSettings->ConverterMatrix[41] * this->imsData->RawSensorData[p2] +
+					this->displacementSensorSettings->ConverterMatrix[42] * this->imsData->RawSensorData[p3] +
+					this->displacementSensorSettings->ConverterMatrix[43] * this->imsData->RawSensorData[p4] +
+					this->displacementSensorSettings->ConverterMatrix[44] * this->imsData->RawSensorData[p5] +
+					this->displacementSensorSettings->ConverterMatrix[45] * this->imsData->RawSensorData[p6] +
+					this->displacementSensorSettings->ConverterMatrix[46] * this->imsData->RawSensorData[p7] +
+					this->displacementSensorSettings->ConverterMatrix[47] * this->imsData->RawSensorData[p8]) /
 					MILLIMETERS_PER_METER;
 		this->publisher->putIMSData();
 	}

@@ -45,7 +45,7 @@ void Inclinometer::processData() {
 	if (this->fpgaData->InclinometerSampleTimestamp != this->lastSampleTimestamp) {
 		this->lastSampleTimestamp = this->fpgaData->InclinometerSampleTimestamp;
 		this->inclinometerData->Timestamp = Timestamp::fromFPGA(this->fpgaData->InclinometerSampleTimestamp);
-		this->inclinometerData->InclinometerAngle = (float)(this->fpgaData->InclinometerAngleRaw / 1000.0) - this->inclinometerSettings->Offset;
+		this->inclinometerData->InclinometerAngle = (float)(this->fpgaData->InclinometerAngleRaw / 1000.0) + this->inclinometerSettings->Offset;
 		this->publisher->putInclinometerData();
 	}
 	if (this->fpgaData->InclinometerErrorTimestamp != this->lastErrorTimestamp) {
