@@ -61,7 +61,11 @@ int32_t ExpansionFPGA::finalize() {
 }
 
 bool ExpansionFPGA::isErrorCode(int32_t status) {
-	return NiFpga_IsError(status);
+	bool isError = NiFpga_IsError(status);
+	if (isError) {
+		Log.Error("ExpansionFPGA: Error code %d", status);
+	}
+	return isError;
 }
 
 int32_t ExpansionFPGA::sample() {

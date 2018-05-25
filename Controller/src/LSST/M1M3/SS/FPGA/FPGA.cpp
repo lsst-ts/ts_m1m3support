@@ -65,7 +65,7 @@ int32_t FPGA::finalize() {
 bool FPGA::isErrorCode(int32_t status) {
 	bool isError = NiFpga_IsError(status);
 	if (isError) {
-		Log.Error("FPGA: Error #%d", status);
+		Log.Error("FPGA: Error code %d", status);
 	}
 	return isError;
 }

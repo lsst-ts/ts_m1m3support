@@ -38,8 +38,14 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	ILC* ilc = model->getILC();
 	DigitalInputOutput* digitalInputOutput = model->getDigitalInputOutput();
 	Gyro* gyro = model->getGyro();
+
 	powerController->setAllPowerNetworks(true);
 	powerController->setAllAuxPowerNetworks(false);
+	for(int i = 0; i < 10; ++i) {
+		digitalInputOutput->tryToggleHeartbeat();
+		usleep(500000);
+	}
+
 	// TODO: Wont need this because the power network is just turned on.
 //	ilc->writeResetBuffer();
 //	ilc->triggerModbus();

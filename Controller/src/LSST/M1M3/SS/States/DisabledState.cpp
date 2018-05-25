@@ -90,7 +90,7 @@ States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
 	model->getPublisher()->tryLogForceActuatorState();
-	model->getPowerController()->setAllPowerNetworks(false);
+	model->getPowerController()->setBothPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
 }
 
