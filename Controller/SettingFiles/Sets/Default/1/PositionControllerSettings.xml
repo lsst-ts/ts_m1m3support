@@ -1,5 +1,5 @@
 <PositionControllerSettings>
-<ForceToStepsCoefficient>0.125</ForceToStepsCoefficient>
+<ForceToStepsCoefficient>-1.0</ForceToStepsCoefficient>
 <MaxStepsPerLoop>40</MaxStepsPerLoop>
 <RaiseLowerForceLimitLow>-15</RaiseLowerForceLimitLow>
 <RaiseLowerForceLimitHigh>15</RaiseLowerForceLimitHigh>

@@ -45,7 +45,13 @@ void Inclinometer::processData() {
 	if (this->fpgaData->InclinometerSampleTimestamp != this->lastSampleTimestamp) {
 		this->lastSampleTimestamp = this->fpgaData->InclinometerSampleTimestamp;
 		this->inclinometerData->Timestamp = Timestamp::fromFPGA(this->fpgaData->InclinometerSampleTimestamp);
-		this->inclinometerData->InclinometerAngle = (float)(this->fpgaData->InclinometerAngleRaw / 1000.0) + this->inclinometerSettings->Offset;
+		// 0 = Zenith, we want 0 to = Horizon
+		// Also we want below horizon to be negative
+		float angle = (float)(this->fpgaData->InclinometerAngleRaw / 1000.0) + 90.0;
+		if (angle > 180.0) {
+			angle = angle - 360.0;
+		}
+		this->inclinometerData->InclinometerAngle = angle + this->inclinometerSettings->Offset;
 		this->publisher->putInclinometerData();
 	}
 	if (this->fpgaData->InclinometerErrorTimestamp != this->lastErrorTimestamp) {

@@ -39,21 +39,21 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	DigitalInputOutput* digitalInputOutput = model->getDigitalInputOutput();
 	Gyro* gyro = model->getGyro();
 
-	powerController->setAllPowerNetworks(true);
 	powerController->setAllAuxPowerNetworks(false);
-	for(int i = 0; i < 10; ++i) {
+	powerController->setAllPowerNetworks(true);
+	for(int i = 0; i < 2; ++i) {
 		digitalInputOutput->tryToggleHeartbeat();
 		usleep(500000);
 	}
 
-	// TODO: Wont need this because the power network is just turned on.
-//	ilc->writeResetBuffer();
-//	ilc->triggerModbus();
-//	ilc->waitForAllSubnets(5000);
-//	ilc->readAll();
-//	digitalInputOutput->tryToggleHeartbeat();
 	Log.Info("ClearBuffer");
 	ilc->flushAll();
+	Log.Info("SetModeClearFaults");
+	ilc->writeSetModeClearFaultsBuffer();
+	ilc->triggerModbus();
+	ilc->waitForAllSubnets(5000);
+	ilc->readAll();
+	digitalInputOutput->tryToggleHeartbeat();
 	Log.Info("ReportServerID");
 	ilc->writeReportServerIDBuffer();
 	ilc->triggerModbus();
@@ -90,19 +90,12 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	ilc->waitForAllSubnets(5000);
 	ilc->readAll();
 	digitalInputOutput->tryToggleHeartbeat();
-//	Log.Info("ReportDCAStatus");
-//	ilc->writeReportDCAStatusBuffer();
-//	ilc->triggerModbus();
-//	ilc->waitForAllSubnets(5000);
-//	ilc->readAll();
-//	digitalInputOutput->tryToggleHeartbeat();
-//	Log.Info("SetModeStandby");
-//	ilc->writeSetModeStandbyBuffer();
-//	ilc->triggerModbus();
-//	ilc->waitForAllSubnets(5000);
-//	ilc->readAll();
-//	digitalInputOutput->tryToggleHeartbeat();
-//	model->getPublisher()->tryLogForceActuatorState();
+	Log.Info("ReportDCAStatus");
+	ilc->writeReportDCAStatusBuffer();
+	ilc->triggerModbus();
+	ilc->waitForAllSubnets(5000);
+	ilc->readAll();
+	digitalInputOutput->tryToggleHeartbeat();
 	Log.Info("SetModeDisable");
 	ilc->writeSetModeDisableBuffer();
 	ilc->triggerModbus();
@@ -111,13 +104,6 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
 	digitalInputOutput->tryToggleHeartbeat();
 	model->getPublisher()->tryLogForceActuatorState();
 	usleep(20000);
-//	Log.Info("SetModeEnable");
-//	ilc->writeSetModeEnableBuffer();
-//	ilc->triggerModbus();
-//	ilc->waitForAllSubnets(5000);
-//	ilc->readAll();
-//	digitalInputOutput->tryToggleHeartbeat();
-//	model->getPublisher()->tryLogForceActuatorState();
 	ilc->verifyResponses();
 	ilc->publishForceActuatorInfo();
 	ilc->publishHardpointActuatorInfo();

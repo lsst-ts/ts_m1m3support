@@ -71,6 +71,7 @@ private:
 	ChangeILCModeBusList busListChangeILCModeDisabled;
 	ChangeILCModeBusList busListChangeILCModeEnabled;
 	ChangeILCModeBusList busListChangeILCModeStandby;
+	ChangeILCModeBusList busListChangeILCModeClearFaults;
 	FreezeSensorBusList busListFreezeSensor;
 	RaisedBusList busListRaised;
 	ActiveBusList busListActive;
@@ -112,6 +113,7 @@ public:
 	void writeSetModeDisableBuffer();
 	void writeSetModeEnableBuffer();
 	void writeSetModeStandbyBuffer();
+	void writeSetModeClearFaultsBuffer();
 	void writeFreezeSensorListBuffer();
 	void writeRaisedListBuffer();
 	void writeActiveListBuffer();

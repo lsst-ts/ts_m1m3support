@@ -20,6 +20,8 @@
 #include <TurnPowerOffCommand.h>
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
+#include <ILC.h>
+#include <ModbusTransmitCommand.h>
 #include <Log.h>
 
 namespace LSST {
@@ -157,6 +159,12 @@ States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command, Model*
 	if (command->getData()->TurnAuxPowerNetworkDOff) {
 		model->getPowerController()->setAuxPowerNetworkD(false);
 	}
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EngineeringState::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
+	Log.Info("%s: modbusTransmit()", this->name.c_str());
+	model->getILC()->modbusTransmit(command->getData()->ActuatorId, command->getData()->FunctionCode, command->getData()->DataLength, command->getData()->Data);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

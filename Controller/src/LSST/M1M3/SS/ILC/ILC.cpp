@@ -51,6 +51,7 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
    busListChangeILCModeDisabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Disabled),
    busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled),
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
+   busListChangeILCModeClearFaults(&this->subnetData, &this->ilcMessageFactory, ILCModes::ClearFaults),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
    busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
    busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
@@ -176,6 +177,11 @@ void ILC::writeSetModeEnableBuffer() {
 void ILC::writeSetModeStandbyBuffer() {
 	Log.Debug("ILC: writeSetModeStandbyBuffer()");
 	this->writeBusList(&this->busListChangeILCModeStandby);
+}
+
+void ILC::writeSetModeClearFaultsBuffer() {
+	Log.Debug("ILC: writeSetModeClearFaultsBuffer()");
+	this->writeBusList(&this->busListChangeILCModeClearFaults);
 }
 
 void ILC::writeFreezeSensorListBuffer() {

@@ -733,6 +733,8 @@ void ForceController::applyElevationForces() {
 void ForceController::updateElevationForces() {
 	Log.Trace("ForceController: updateElevationForces()");
 	double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->InclinometerAngle : this->tmaElevationData.Angle_Actual;
+	// Convert elevation angle to zenith angle (used be matrix)
+	elevationAngle = 90.0 - elevationAngle;
 	double elevationMatrix[] = { std::pow(elevationAngle, 5.0), std::pow(elevationAngle, 4.0), std::pow(elevationAngle, 3.0), std::pow(elevationAngle, 2.0), elevationAngle, 1 };
 	bool rejectionRequired = false;
 	for(int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {

@@ -166,7 +166,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 						case 248:
 						case 249: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 						default:
-							Log.Warn("ILCResponseParser: Unknown function FA %d", subnet);
+							Log.Warn("ILCResponseParser: Unknown FA function on subnet %d function %d", (int)function, subnet);
 							this->warnUnknownFunction(timestamp, map.ActuatorId);
 							break;
 						}
@@ -193,7 +193,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 						case 235:
 						case 238: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 						default:
-							Log.Warn("ILCResponseParser: Unknown function HP %d", subnet);
+							Log.Warn("ILCResponseParser: Unknown HP function %d on subnet %d", (int)function, subnet);
 							this->warnUnknownFunction(timestamp, map.ActuatorId);
 							break;
 						}
@@ -218,7 +218,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 						case 238:
 						case 250: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 						default:
-							Log.Warn("ILCResponseParser: Unknown function HM %d", subnet);
+							Log.Warn("ILCResponseParser: Unknown HM function %d on subnet %d", (int)function, subnet);
 							this->warnUnknownFunction(timestamp, map.ActuatorId);
 							break;
 						}
@@ -236,7 +236,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 			}
 		}
 		else {
-			Log.Warn("ILCResponseParser: Invalid CRC %d", subnet);
+			Log.Warn("ILCResponseParser: Invalid CRC on subnet %d", subnet);
 			if (this->grabResponse) {
 				this->parseOneOffCommand(buffer, length, timestamp, false);
 			}
@@ -305,7 +305,7 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
-		Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
+		//Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
 	}
 }
 
@@ -531,8 +531,8 @@ void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, 
 
 void ILCResponseParser::parseChangeHPILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointActuatorState->ILCState[dataIndex] = buffer->readU8();
-	buffer->readU8();
+	this->hardpointActuatorState->ILCState[dataIndex] = buffer->readU16();
+	//buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
@@ -545,8 +545,8 @@ void ILCResponseParser::parseChangeFAILCModeResponse(ModbusBuffer* buffer, ILCMa
 
 void ILCResponseParser::parseChangeHMILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorState->ILCState[dataIndex] = buffer->readU8();
-	buffer->readU8();
+	this->hardpointMonitorState->ILCState[dataIndex] = buffer->readU16();
+	//buffer->readU8();
 	buffer->skipToNextFrame();
 }
 

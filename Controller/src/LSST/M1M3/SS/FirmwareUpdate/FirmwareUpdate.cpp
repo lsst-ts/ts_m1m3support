@@ -82,16 +82,16 @@ bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
 		return false;
 	}
 	if (!this->WriteVerifyApplication(subnet, address)) {
-		Log.Error("FirmwareUpdate: Failed to verify ILC application for actuator %d", actuatorId);
-		return false;
+		// ILC seems to produce a CRC error
+		Log.Warn("FirmwareUpdate: Failed to verify ILC application for actuator %d", actuatorId);
 	}
 	if (!this->RestartApplication(subnet, address)) {
-		Log.Error("FirmwareUpdate: Failed to restart ILC application for actuator %d after loading firmware", actuatorId);
-		return false;
+		// ILC doesn't seem to restart the application as intended
+		Log.Warn("FirmwareUpdate: Failed to restart ILC application for actuator %d after loading firmware", actuatorId);
 	}
 	if (!this->EnterDisable(subnet, address)) {
-		Log.Error("FirmwareUpdate: Failed to enter disabled state for actuator %d", actuatorId);
-		return false;
+		// ILC doesn't seem to restart the application as intended
+		Log.Warn("FirmwareUpdate: Failed to enter disabled state for actuator %d", actuatorId);
 	}
 	return true;
 }
@@ -236,7 +236,7 @@ bool FirmwareUpdate::UpdateAppData() {
 		default: break;
 		}
 	}
-	this->appStats.DataLength = endAddress - this->appStats.StartAddress + 1;
+	this->appStats.DataLength = endAddress - this->appStats.StartAddress;
 	return ok;
 }
 
@@ -254,14 +254,20 @@ bool FirmwareUpdate::UpdateAppDataCRC() {
 
 bool FirmwareUpdate::UpdateAppStatCRC() {
 	bool ok = true;
-	unsigned char buffer[6];
-	buffer[0] = (unsigned char)((this->appStats.DataCRC >> 8) & 0xFF);
-	buffer[1] = (unsigned char)(this->appStats.DataCRC & 0xFF);
-	buffer[2] = (unsigned char)((this->appStats.StartAddress >> 8) & 0xFF);
-	buffer[3] = (unsigned char)(this->appStats.StartAddress & 0xFF);
-	buffer[4] = (unsigned char)((this->appStats.DataLength >> 8) & 0xFF);
-	buffer[5] = (unsigned char)(this->appStats.DataLength & 0xFF);
-	this->appStats.StatsCRC = CRC::modbus(buffer, 0, 6);
+	unsigned char buffer[12];
+	buffer[1] = (unsigned char)((this->appStats.DataCRC >> 8) & 0xFF);
+	buffer[0] = (unsigned char)(this->appStats.DataCRC & 0xFF);
+	buffer[2] = 0;
+	buffer[3] = 0;
+	buffer[5] = (unsigned char)((this->appStats.StartAddress >> 8) & 0xFF);
+	buffer[4] = (unsigned char)(this->appStats.StartAddress & 0xFF);
+	buffer[6] = 0;
+	buffer[7] = 0;
+	buffer[9] = (unsigned char)((this->appStats.DataLength >> 8) & 0xFF);
+	buffer[8] = (unsigned char)(this->appStats.DataLength & 0xFF);
+	buffer[10] = 0;
+	buffer[11] = 0;
+	this->appStats.StatsCRC = CRC::modbus(buffer, 0, 12);
 	return ok;
 }
 
@@ -275,9 +281,8 @@ bool FirmwareUpdate::EnterFirmwareUpdate(int subnet, int address) {
 	buffer.writeU8(3);
 	buffer.writeCRC(4);
 	buffer.writeEndOfFrame();
-	buffer.writeWaitForRx(10000);
+	buffer.writeWaitForRx(100000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "EnterFirmware:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -294,7 +299,6 @@ bool FirmwareUpdate::ClearFaults(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(10000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "ClearFaults:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -306,9 +310,8 @@ bool FirmwareUpdate::EraseILCApplication(int subnet, int address) {
 	buffer.writeU8(101);
 	buffer.writeCRC(2);
 	buffer.writeEndOfFrame();
-	buffer.writeWaitForRx(10000);
+	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "EraseILCApplication:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -343,9 +346,8 @@ bool FirmwareUpdate::WriteApplicationPage(int subnet, int address, uint16_t star
 	}
 	buffer.writeCRC(6 + length);
 	buffer.writeEndOfFrame();
-	buffer.writeWaitForRx(10000);
+	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "WriteApplicationPage:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -361,9 +363,8 @@ bool FirmwareUpdate::WriteApplicationStats(int subnet, int address, ILCApplicati
 	buffer.writeU16(stats.StatsCRC);
 	buffer.writeCRC(10);
 	buffer.writeEndOfFrame();
-	buffer.writeWaitForRx(10000);
+	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "WriteApplicationStats:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -375,9 +376,8 @@ bool FirmwareUpdate::WriteVerifyApplication(int subnet, int address) {
 	buffer.writeU8(103);
 	buffer.writeCRC(2);
 	buffer.writeEndOfFrame();
-	buffer.writeWaitForRx(10000);
+	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "WriteVerifyApplication:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -392,9 +392,8 @@ bool FirmwareUpdate::RestartApplication(int subnet, int address) {
 	buffer.writeU8(0);
 	buffer.writeCRC(4);
 	buffer.writeEndOfFrame();
-	buffer.writeWaitForRx(10000);
+	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "RestartApplication:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -411,7 +410,6 @@ bool FirmwareUpdate::EnterDisable(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(10000);
 	this->EndBuffer(&buffer);
-	return this->PrintBuffer(&buffer, "EnterDisable:");
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
@@ -468,13 +466,14 @@ bool FirmwareUpdate::ProcessResponse(ModbusBuffer* buffer, int subnet) {
 				}
 			}
 			else {
+
 				Log.Warn("FirmwareUpdate: Invalid CRC %d", subnet);
 				return false;
 			}
 		}
 	}
 	else {
-		Log.Error("FirmwareUpdate: Erase ILC Application had no response");
+		Log.Error("FirmwareUpdate: No response");
 		return false;
 	}
 	return true;
