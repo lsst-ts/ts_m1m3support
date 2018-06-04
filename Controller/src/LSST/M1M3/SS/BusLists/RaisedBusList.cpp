@@ -11,6 +11,7 @@
 #include <RoundRobin.h>
 #include <ForceConverter.h>
 #include <SAL_m1m3C.h>
+#include <cstring>
 #include <Log.h>
 
 namespace LSST {
@@ -38,6 +39,9 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 			int32_t saaPrimary[16];
 			int32_t daaPrimary[32];
 			int32_t daaSecondary[32];
+			memset(saaPrimary, 0, sizeof(saaPrimary));
+			memset(daaPrimary, 0, sizeof(daaPrimary));
+			memset(daaSecondary, 0, sizeof(daaSecondary));
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 				int32_t primaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
@@ -119,15 +123,21 @@ void RaisedBusList::update() {
 			int32_t saaPrimary[16];
 			int32_t daaPrimary[32];
 			int32_t daaSecondary[32];
+			memset(saaPrimary, 0, sizeof(saaPrimary));
+			memset(daaPrimary, 0, sizeof(daaPrimary));
+			memset(daaSecondary, 0, sizeof(daaSecondary));
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
-				int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
+				int32_t primaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
+				int32_t secondaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
+				int32_t id = this->subnetData->getFAIndex(subnetIndex, faIndex).ActuatorId;
+
 				if (address <= 16) {
-					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[dataIndex];
+					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
 				}
 				else {
-					daaPrimary[address - 17] = this->appliedCylinderForces->PrimaryCylinderForces[dataIndex];
-					daaSecondary[address - 17] = this->appliedCylinderForces->SecondaryCylinderForces[dataIndex];
+					daaPrimary[address - 17] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
+					daaSecondary[address - 17] = this->appliedCylinderForces->SecondaryCylinderForces[secondaryDataIndex];
 				}
 			}
 			this->buffer.setIndex(this->setForceCommandIndex[subnetIndex]);
