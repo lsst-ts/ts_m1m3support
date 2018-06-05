@@ -130,7 +130,6 @@ void RaisedBusList::update() {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 				int32_t primaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
 				int32_t secondaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
-				int32_t id = this->subnetData->getFAIndex(subnetIndex, faIndex).ActuatorId;
 
 				if (address <= 16) {
 					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
