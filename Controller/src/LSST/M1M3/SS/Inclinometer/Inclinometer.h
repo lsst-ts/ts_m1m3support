@@ -37,6 +37,7 @@ private:
 
 	uint64_t lastSampleTimestamp;
 	uint64_t lastErrorTimestamp;
+	bool errorCleared;
 
 public:
 	/*!
