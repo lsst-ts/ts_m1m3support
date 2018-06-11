@@ -31,7 +31,7 @@
     </InclinometerSettings>
     <InterlockSettings>
         <FaultOnHeartbeatStateOutputMismatch>0</FaultOnHeartbeatStateOutputMismatch>
-        <FaultOnAuxPowerNetworksOff>0</FaultOnAuxPowerNetworksOff>
+        <FaultOnAuxPowerNetworksOff>1</FaultOnAuxPowerNetworksOff>
         <FaultOnThermalEquipmentOff>0</FaultOnThermalEquipmentOff>
         <FaultOnAirSupplyOff>0</FaultOnAirSupplyOff>
         <FaultOnCabinetDoorOpen>0</FaultOnCabinetDoorOpen>

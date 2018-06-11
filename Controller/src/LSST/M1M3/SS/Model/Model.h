@@ -41,6 +41,7 @@ class HardpointMonitorApplicationSettings;
 class PIDSettings;
 class DigitalInputOutput;
 class InclinometerSettings;
+class PositionControllerSettings;
 
 class Model {
 private:
@@ -103,7 +104,7 @@ public:
 
 private:
 	void populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
-	void populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings);
+	void populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, PositionControllerSettings* positionControllerSettings);
 	void populateHardpointMonitorInfo(HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 };
 

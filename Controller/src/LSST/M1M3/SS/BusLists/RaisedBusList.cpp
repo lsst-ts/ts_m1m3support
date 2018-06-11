@@ -83,7 +83,9 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 			for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
 				uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
 				int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-				steps[address - 1] = this->hardpointActuatorData->StepsCommanded[dataIndex];
+				// Steps are swapped because negative steps extend and positive steps retract
+				// This doesn't match what most people would expect so we are swapping it
+				steps[address - 1] = -this->hardpointActuatorData->StepsCommanded[dataIndex];
 			}
 			this->ilcMessageFactory->broadcastStepMotor(&this->buffer, this->outerLoopData->BroadcastCounter, steps);
 			this->buffer.writeTimestamp();
@@ -163,7 +165,9 @@ void RaisedBusList::update() {
 			for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
 				uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
 				int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-				steps[address - 1] = this->hardpointActuatorData->StepsCommanded[dataIndex];
+				// Steps are swapped because negative steps extend and positive steps retract
+				// This doesn't match what most people would expect so we are swapping it
+				steps[address - 1] = -this->hardpointActuatorData->StepsCommanded[dataIndex];
 			}
 			this->buffer.setIndex(this->moveStepCommandIndex[subnetIndex]);
 			this->ilcMessageFactory->broadcastStepMotor(&this->buffer, this->outerLoopData->BroadcastCounter, steps);

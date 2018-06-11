@@ -128,7 +128,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	InclinometerSettings* inclinometerSettings = this->settingReader->loadInclinometerSettings();
 
 	this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
-	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings);
+	this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings, positionControllerSettings);
 	this->populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
 
 	if (this->safetyController) {
@@ -280,7 +280,7 @@ void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceAct
 	}
 }
 
-void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings) {
+void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, PositionControllerSettings* positionControllerSettings) {
 	Log.Debug("Model: populateHardpointActuatorInfo()");
 	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
 	for(int i = 0; i < HP_COUNT; i++) {
@@ -292,6 +292,12 @@ void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* 
 		hardpointInfo->YPosition[row.Index] = row.YPosition;
 		hardpointInfo->ZPosition[row.Index] = row.ZPosition;
 	}
+	hardpointInfo->ReferencePosition[0] = positionControllerSettings->ReferencePositionEncoder1;
+	hardpointInfo->ReferencePosition[1] = positionControllerSettings->ReferencePositionEncoder2;
+	hardpointInfo->ReferencePosition[2] = positionControllerSettings->ReferencePositionEncoder3;
+	hardpointInfo->ReferencePosition[3] = positionControllerSettings->ReferencePositionEncoder4;
+	hardpointInfo->ReferencePosition[4] = positionControllerSettings->ReferencePositionEncoder5;
+	hardpointInfo->ReferencePosition[5] = positionControllerSettings->ReferencePositionEncoder6;
 }
 
 void Model::populateHardpointMonitorInfo(HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {

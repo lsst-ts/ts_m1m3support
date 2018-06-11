@@ -8,6 +8,7 @@
 #ifndef HARDPOINTACTUATORSETTINGS_H_
 #define HARDPOINTACTUATORSETTINGS_H_
 
+#include <DataTypes.h>
 #include <string>
 #include <vector>
 
@@ -21,12 +22,12 @@ public:
 	std::vector<double> MirrorPositionToHardpointDisplacement;
 	double MicrometersPerStep;
 	double MicrometersPerEncoder;
-	double DisplacementOffset1;
-	double DisplacementOffset2;
-	double DisplacementOffset3;
-	double DisplacementOffset4;
-	double DisplacementOffset5;
-	double DisplacementOffset6;
+	int32_t HP1EncoderOffset;
+	int32_t HP2EncoderOffset;
+	int32_t HP3EncoderOffset;
+	int32_t HP4EncoderOffset;
+	int32_t HP5EncoderOffset;
+	int32_t HP6EncoderOffset;
 
 	void load(const std::string &filename);
 };
