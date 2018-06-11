@@ -38,6 +38,8 @@ public:
 	bool checkRaiseOperationTimeout();
 	void timeoutRaiseOperation();
 
+	void abortRaiseM1M3();
+
 	void startLowerOperation();
 	void tryDecrementSupportPercentage();
 	bool checkLowerOperationComplete();

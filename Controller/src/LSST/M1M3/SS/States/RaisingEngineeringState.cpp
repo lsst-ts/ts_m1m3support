@@ -38,6 +38,7 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* mode
 States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) {
 	Log.Info("RaisingEngineeringState: abortRaiseM1M3()");
 	States::Type newState = States::LoweringEngineeringState;
+	model->getAutomaticOperationsController()->abortRaiseM1M3();
 	return model->getSafetyController()->checkSafety(newState);
 }
 
