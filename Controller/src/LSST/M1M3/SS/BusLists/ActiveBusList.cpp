@@ -111,7 +111,6 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 
 void ActiveBusList::update() {
 	this->outerLoopData->BroadcastCounter = RoundRobin::BroadcastCounter(this->outerLoopData->BroadcastCounter);
-
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		if (this->subnetData->getFACount(subnetIndex) > 0) {
 			int32_t saaPrimary[16];
@@ -124,7 +123,6 @@ void ActiveBusList::update() {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
 				int32_t primaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
 				int32_t secondaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
-				int32_t id = this->subnetData->getFAIndex(subnetIndex, faIndex).ActuatorId;
 
 				if (address <= 16) {
 					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
@@ -133,11 +131,6 @@ void ActiveBusList::update() {
 					daaPrimary[address - 17] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
 					daaSecondary[address - 17] = this->appliedCylinderForces->SecondaryCylinderForces[secondaryDataIndex];
 				}
-
-				if (id == 326) {
-					Log.Info("DAA326: %d %d", daaPrimary[address-17], daaSecondary[address-17]);
-				}
-
 			}
 			this->buffer.setIndex(this->setForceCommandIndex[subnetIndex]);
 			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->BroadcastCounter, this->outerLoopData->SlewFlag, saaPrimary, daaPrimary, daaSecondary);
