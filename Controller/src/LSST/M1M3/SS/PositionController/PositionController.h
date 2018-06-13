@@ -30,6 +30,7 @@ private:
 	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo;
 
 	int32_t scaledMaxStepsPerLoop[6];
+	int32_t targetEncoderValues[6];
 
 public:
 	PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher);

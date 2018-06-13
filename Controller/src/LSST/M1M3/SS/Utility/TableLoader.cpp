@@ -45,6 +45,7 @@ void TableLoader::loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep
 	std::ifstream inputStream(filename.c_str());
 	std::string lineText;
 	int32_t lineNumber = 0;
+	data->clear();
 	while(std::getline(inputStream, lineText)) {
 		boost::trim_right(lineText);
 		if (lineNumber >= rowsToSkip && !lineText.empty()) {

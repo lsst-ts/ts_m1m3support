@@ -14,7 +14,8 @@ struct HardpointActuatorMotionStates {
 	enum Type {
 		Standby = 0,
 		Chasing = 1,
-		Moving = 2
+		Stepping = 2,
+		Positioning = 3
 	};
 };
 

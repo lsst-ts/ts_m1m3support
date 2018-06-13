@@ -1185,15 +1185,16 @@ DistributedForces ForceController::calculateDistribution(float xForce, float yFo
 		forces.XForces[i] += this->forceActuatorSettings->ForceDistributionZTable[i * 3 + 0] * zForce;
 		forces.YForces[i] += this->forceActuatorSettings->ForceDistributionZTable[i * 3 + 1] * zForce;
 		forces.ZForces[i] += this->forceActuatorSettings->ForceDistributionZTable[i * 3 + 2] * zForce;
-		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionXTable[i * 3 + 0] * xMoment;
-		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionXTable[i * 3 + 1] * xMoment;
-		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionXTable[i * 3 + 2] * xMoment;
-		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionYTable[i * 3 + 0] * yMoment;
-		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionYTable[i * 3 + 1] * yMoment;
-		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionYTable[i * 3 + 2] * yMoment;
-		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionZTable[i * 3 + 0] * zMoment;
-		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionZTable[i * 3 + 1] * zMoment;
-		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionZTable[i * 3 + 2] * zMoment;
+		// The moment table produces forces in millinewtons, need to multiply by 1000 to bring it up to newtons
+		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionXTable[i * 3 + 0] * xMoment * 1000.0;
+		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionXTable[i * 3 + 1] * xMoment * 1000.0;
+		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionXTable[i * 3 + 2] * xMoment * 1000.0;
+		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionYTable[i * 3 + 0] * yMoment * 1000.0;
+		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionYTable[i * 3 + 1] * yMoment * 1000.0;
+		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionYTable[i * 3 + 2] * yMoment * 1000.0;
+		forces.XForces[i] += this->forceActuatorSettings->MomentDistributionZTable[i * 3 + 0] * zMoment * 1000.0;
+		forces.YForces[i] += this->forceActuatorSettings->MomentDistributionZTable[i * 3 + 1] * zMoment * 1000.0;
+		forces.ZForces[i] += this->forceActuatorSettings->MomentDistributionZTable[i * 3 + 2] * zMoment * 1000.0;
 	}
 	return forces;
 }
@@ -1484,7 +1485,7 @@ void ForceController::sumAllForces() {
 			this->appliedVelocityForces->ZForces[zIndex];
 		this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] ||
 			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->ZForces[zIndex], this->appliedForces->ZForces + zIndex);
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->SafetyLimitWarning[zIndex];
+		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ForceWarning[zIndex];
 	}
 	this->setAppliedForcesAndMoments();
 	this->setRejectedForcesAndMoments();

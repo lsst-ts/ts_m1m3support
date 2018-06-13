@@ -574,8 +574,20 @@ void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffe
 	this->hardpointActuatorWarning->LimitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
 	this->hardpointActuatorWarning->LimitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
 	this->hardpointActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
-	this->hardpointActuatorData->Encoder[dataIndex] = buffer->readI32();
-	this->hardpointActuatorData->MeasuredForce[dataIndex] = buffer->readSGL();
+	int32_t offset = 0;
+	switch(map.ActuatorId) {
+	case 1: offset = this->hardpointActuatorSettings->HP1EncoderOffset; break;
+	case 2: offset = this->hardpointActuatorSettings->HP2EncoderOffset; break;
+	case 3: offset = this->hardpointActuatorSettings->HP3EncoderOffset; break;
+	case 4: offset = this->hardpointActuatorSettings->HP4EncoderOffset; break;
+	case 5: offset = this->hardpointActuatorSettings->HP5EncoderOffset; break;
+	case 6: offset = this->hardpointActuatorSettings->HP6EncoderOffset; break;
+	}
+	// Encoder value needs to be swapped to keep with the theme of extension is positive
+	// retaction is negative
+	this->hardpointActuatorData->Encoder[dataIndex] = -buffer->readI32() + offset;
+	// Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
+	this->hardpointActuatorData->MeasuredForce[dataIndex] = -buffer->readSGL();
 	this->hardpointActuatorData->Displacement[dataIndex] = (this->hardpointActuatorData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
 }

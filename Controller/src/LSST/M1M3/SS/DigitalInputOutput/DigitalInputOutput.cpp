@@ -119,7 +119,7 @@ void DigitalInputOutput::processData() {
 		if (this->safetyController) {
 			this->safetyController->airControllerNotifyCommandSensorMismatch(this->airSupplyWarning->CommandSensorMismatch);
 			this->safetyController->cellLightNotifySensorMismatch(this->cellLightWarning->CellLightsSensorMismatch);
-			this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->AuxPowerNetworksOff);
+			this->safetyController->interlockNotifyAuxPowerNetworksOff(this->interlockWarning->AuxPowerNetworksOff);
 			this->safetyController->interlockNotifyThermalEquipmentOff(this->interlockWarning->ThermalEquipmentOff);
 			this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->AirSupplyOff);
 			this->safetyController->interlockNotifyCabinetDoorOpen(this->interlockWarning->CabinetDoorOpen);
