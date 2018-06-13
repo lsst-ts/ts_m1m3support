@@ -16,6 +16,8 @@
 #define COLOR_CYAN  "\x1B[36m"
 #define COLOR_WHITE "\x1B[37m"
 
+#define BUFFER_SIZE 1024
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -28,7 +30,7 @@ void Logger::Trace(const char* format, ...) {
 	if (LOGGER_LEVEL > Levels::Trace) {
 		return;
 	}
-	char buffer[256];
+	char buffer[BUFFER_SIZE];
 	va_list args;
 	va_start(args, format);
 	vsprintf(buffer, format, args);
@@ -40,7 +42,7 @@ void Logger::Debug(const char* format, ...) {
 	if (LOGGER_LEVEL > Levels::Debug) {
 		return;
 	}
-	char buffer[256];
+	char buffer[BUFFER_SIZE];
 	va_list args;
 	va_start(args, format);
 	vsprintf(buffer, format, args);
@@ -52,7 +54,7 @@ void Logger::Info(const char* format, ...) {
 	if (LOGGER_LEVEL > Levels::Info) {
 		return;
 	}
-	char buffer[256];
+	char buffer[BUFFER_SIZE];
 	va_list args;
 	va_start(args, format);
 	vsprintf(buffer, format, args);
@@ -64,7 +66,7 @@ void Logger::Warn(const char* format, ...) {
 	if (LOGGER_LEVEL > Levels::Warn) {
 		return;
 	}
-	char buffer[256];
+	char buffer[BUFFER_SIZE];
 	va_list args;
 	va_start(args, format);
 	vsprintf(buffer, format, args);
@@ -76,7 +78,7 @@ void Logger::Error(const char* format, ...) {
 	if (LOGGER_LEVEL > Levels::Error) {
 		return;
 	}
-	char buffer[256];
+	char buffer[BUFFER_SIZE];
 	va_list args;
 	va_start(args, format);
 	vsprintf(buffer, format, args);
@@ -88,7 +90,7 @@ void Logger::Fatal(const char* format, ...) {
 	if (LOGGER_LEVEL > Levels::Fatal) {
 		return;
 	}
-	char buffer[256];
+	char buffer[BUFFER_SIZE];
 	va_list args;
 	va_start(args, format);
 	vsprintf(buffer, format, args);

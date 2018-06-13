@@ -71,6 +71,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_m1m3* m1m3SAL) {
 	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_InclinometerSensorWarning");
 	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_InterlockStatus");
 	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_InterlockWarning");
+	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_ModbusResponse");
 	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_PIDInfo");
 	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_PowerStatus");
 	this->m1m3SAL->salEventPub((char*)"m1m3_logevent_PowerSupplyStatus");
@@ -546,6 +547,10 @@ void M1M3SSPublisher::tryLogErrorCode() {
 }
 
 void M1M3SSPublisher::logForceActuatorForceWarning() {
+	this->eventForceActuatorForceWarning.AnyPrimaryAxisMeasuredForceWarning = false;
+	this->eventForceActuatorForceWarning.AnySecondaryAxisMeasuredForceWarning = false;
+	this->eventForceActuatorForceWarning.AnyPrimaryAxisFollowingErrorWarning = false;
+	this->eventForceActuatorForceWarning.AnySecondaryAxisFollowingErrorWarning = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->eventForceActuatorForceWarning.AnyPrimaryAxisMeasuredForceWarning = this->eventForceActuatorForceWarning.AnyPrimaryAxisMeasuredForceWarning ||
 				this->eventForceActuatorForceWarning.PrimaryAxisMeasuredForceWarning[i];
@@ -660,6 +665,36 @@ void M1M3SSPublisher::tryLogForceActuatorState() {
 }
 
 void M1M3SSPublisher::logForceActuatorWarning() {
+	this->eventForceActuatorWarning.AnyMajorFault = false;
+	this->eventForceActuatorWarning.AnyMinorFault = false;
+	this->eventForceActuatorWarning.AnyFaultOverride = false;
+	this->eventForceActuatorWarning.AnyMainCalibrationError = false;
+	this->eventForceActuatorWarning.AnyBackupCalibrationError = false;
+	this->eventForceActuatorWarning.AnyMezzanineError = false;
+	this->eventForceActuatorWarning.AnyMezzanineBootloaderActive = false;
+	this->eventForceActuatorWarning.AnyUniqueIdCRCError = false;
+	this->eventForceActuatorWarning.AnyApplicationTypeMismatch = false;
+	this->eventForceActuatorWarning.AnyApplicationMissing = false;
+	this->eventForceActuatorWarning.AnyApplicationCRCMismatch = false;
+	this->eventForceActuatorWarning.AnyOneWireMissing = false;
+	this->eventForceActuatorWarning.AnyOneWire1Mismatch = false;
+	this->eventForceActuatorWarning.AnyOneWire2Mismatch = false;
+	this->eventForceActuatorWarning.AnyWatchdogReset = false;
+	this->eventForceActuatorWarning.AnyBrownOut = false;
+	this->eventForceActuatorWarning.AnyEventTrapReset = false;
+	this->eventForceActuatorWarning.AnySSRPowerFault = false;
+	this->eventForceActuatorWarning.AnyAuxPowerFault = false;
+	this->eventForceActuatorWarning.AnyMezzaninePowerFault = false;
+	this->eventForceActuatorWarning.AnyMezzanineCurrentAmp1Fault = false;
+	this->eventForceActuatorWarning.AnyMezzanineCurrentAmp2Fault = false;
+	this->eventForceActuatorWarning.AnyMezzanineUniqueIdCRCError = false;
+	this->eventForceActuatorWarning.AnyMezzanineMainCalibrationError = false;
+	this->eventForceActuatorWarning.AnyMezzanineBackupCalibrationError = false;
+	this->eventForceActuatorWarning.AnyMezzanineEventTrapReset = false;
+	this->eventForceActuatorWarning.AnyMezzanineApplicationMissing = false;
+	this->eventForceActuatorWarning.AnyMezzanineApplicationCRCMismatch = false;
+	this->eventForceActuatorWarning.AnyILCFault = false;
+	this->eventForceActuatorWarning.AnyBroadcastCounterWarning = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->eventForceActuatorWarning.AnyMajorFault = this->eventForceActuatorWarning.AnyMajorFault ||
 				this->eventForceActuatorWarning.MajorFault[i];
@@ -798,6 +833,19 @@ void M1M3SSPublisher::tryLogForceActuatorWarning() {
 }
 
 void M1M3SSPublisher::logForceSetpointWarning() {
+	this->eventForceSetpointWarning.AnySafetyLimitWarning = false;
+	this->eventForceSetpointWarning.AnyNearNeighborWarning = false;
+	this->eventForceSetpointWarning.AnyFarNeighborWarning = false;
+	this->eventForceSetpointWarning.AnyElevationForceWarning = false;
+	this->eventForceSetpointWarning.AnyAzimuthForceWarning = false;
+	this->eventForceSetpointWarning.AnyThermalForceWarning = false;
+	this->eventForceSetpointWarning.AnyBalanceForceWarning = false;
+	this->eventForceSetpointWarning.AnyAccelerationForceWarning = false;
+	this->eventForceSetpointWarning.AnyVelocityForceWarning = false;
+	this->eventForceSetpointWarning.AnyActiveOpticForceWarning = false;
+	this->eventForceSetpointWarning.AnyStaticForceWarning = false;
+	this->eventForceSetpointWarning.AnyAberrationForceWarning = false;
+	this->eventForceSetpointWarning.AnyOffsetForceWarning = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->eventForceSetpointWarning.AnySafetyLimitWarning = this->eventForceSetpointWarning.AnySafetyLimitWarning ||
 				this->eventForceSetpointWarning.SafetyLimitWarning[i];
@@ -1038,6 +1086,29 @@ void M1M3SSPublisher::tryLogHardpointActuatorState() {
 }
 
 void M1M3SSPublisher::logHardpointActuatorWarning() {
+	this->eventHardpointActuatorWarning.AnyMajorFault = false;
+	this->eventHardpointActuatorWarning.AnyMinorFault = false;
+	this->eventHardpointActuatorWarning.AnyFaultOverride = false;
+	this->eventHardpointActuatorWarning.AnyMainCalibrationError = false;
+	this->eventHardpointActuatorWarning.AnyBackupCalibrationError = false;
+	this->eventHardpointActuatorWarning.AnyLimitSwitch1Operated = false;
+	this->eventHardpointActuatorWarning.AnyLimitSwitch2Operated = false;
+	this->eventHardpointActuatorWarning.AnyUniqueIdCRCError = false;
+	this->eventHardpointActuatorWarning.AnyApplicationTypeMismatch = false;
+	this->eventHardpointActuatorWarning.AnyApplicationMissing = false;
+	this->eventHardpointActuatorWarning.AnyApplicationCRCMismatch = false;
+	this->eventHardpointActuatorWarning.AnyOneWireMissing = false;
+	this->eventHardpointActuatorWarning.AnyOneWire1Mismatch = false;
+	this->eventHardpointActuatorWarning.AnyOneWire2Mismatch = false;
+	this->eventHardpointActuatorWarning.AnyWatchdogReset = false;
+	this->eventHardpointActuatorWarning.AnyBrownOut = false;
+	this->eventHardpointActuatorWarning.AnyEventTrapReset = false;
+	this->eventHardpointActuatorWarning.AnyMotorDriverFault = false;
+	this->eventHardpointActuatorWarning.AnySSRPowerFault = false;
+	this->eventHardpointActuatorWarning.AnyAuxPowerFault = false;
+	this->eventHardpointActuatorWarning.AnySMCPowerFault = false;
+	this->eventHardpointActuatorWarning.AnyILCFault = false;
+	this->eventHardpointActuatorWarning.AnyBroadcastCounterWarning = false;
 	for(int i = 0; i < HP_COUNT; ++i) {
 		this->eventHardpointActuatorWarning.AnyMajorFault = this->eventHardpointActuatorWarning.AnyMajorFault ||
 			this->eventHardpointActuatorWarning.MajorFault[i];
@@ -1191,6 +1262,33 @@ void M1M3SSPublisher::tryLogHardpointMonitorState() {
 }
 
 void M1M3SSPublisher::logHardpointMonitorWarning() {
+	this->eventHardpointMonitorWarning.AnyMajorFault = false;
+	this->eventHardpointMonitorWarning.AnyMinorFault = false;
+	this->eventHardpointMonitorWarning.AnyFaultOverride = false;
+	this->eventHardpointMonitorWarning.AnyInstrumentError = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineError = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineBootloaderActive = false;
+	this->eventHardpointMonitorWarning.AnyUniqueIdCRCError = false;
+	this->eventHardpointMonitorWarning.AnyApplicationTypeMismatch = false;
+	this->eventHardpointMonitorWarning.AnyApplicationMissing = false;
+	this->eventHardpointMonitorWarning.AnyApplicationCRCMismatch = false;
+	this->eventHardpointMonitorWarning.AnyOneWireMissing = false;
+	this->eventHardpointMonitorWarning.AnyOneWire1Mismatch = false;
+	this->eventHardpointMonitorWarning.AnyOneWire2Mismatch = false;
+	this->eventHardpointMonitorWarning.AnyWatchdogReset = false;
+	this->eventHardpointMonitorWarning.AnyBrownOut = false;
+	this->eventHardpointMonitorWarning.AnyEventTrapReset = false;
+	this->eventHardpointMonitorWarning.AnySSRPowerFault = false;
+	this->eventHardpointMonitorWarning.AnyAuxPowerFault = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineS1AInterface1Fault = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineS1ALVDT1Fault = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineS1AInterface2Fault = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineS1ALVDT2Fault = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineUniqueIdCRCError = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineEventTrapReset = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineDCPRS422ChipFault = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineApplicationMissing = false;
+	this->eventHardpointMonitorWarning.AnyMezzanineApplicationCRCMismatch = false;
 	for(int i = 0; i < HM_COUNT; ++i) {
 		this->eventHardpointMonitorWarning.AnyMajorFault = this->eventHardpointMonitorWarning.AnyMajorFault ||
 			this->eventHardpointMonitorWarning.MajorFault[i];
@@ -1407,6 +1505,21 @@ void M1M3SSPublisher::tryLogInterlockWarning() {
 		this->eventInterlockWarning.TMAMotionStop != this->previousEventInterlockWarning.TMAMotionStop ||
 		this->eventInterlockWarning.GISHeartbeatLost != this->previousEventInterlockWarning.GISHeartbeatLost) {
 		this->logInterlockWarning();
+	}
+}
+
+void M1M3SSPublisher::logModbusResponse() {
+	this->m1m3SAL->logEvent_ModbusResponse(&this->eventModbusResponse, 0);
+	this->previousEventModbusResponse = this->eventModbusResponse;
+}
+
+void M1M3SSPublisher::tryLogModbusResponse() {
+	if (this->eventModbusResponse.ResponseValid != this->previousEventModbusResponse.ResponseValid ||
+		this->eventModbusResponse.Address != this->previousEventModbusResponse.Address ||
+		this->eventModbusResponse.FunctionCode != this->previousEventModbusResponse.FunctionCode ||
+		this->eventModbusResponse.CRC != this->previousEventModbusResponse.CRC ||
+		this->eventModbusResponse.DataLength != this->previousEventModbusResponse.DataLength) {
+		this->logModbusResponse();
 	}
 }
 
@@ -1987,6 +2100,10 @@ void M1M3SSPublisher::ackCommandResetPID(int32_t commandID, int32_t ackCode, std
 
 void M1M3SSPublisher::ackCommandProgramILC(int32_t commandID, int32_t ackCode, std::string description) {
 	this->m1m3SAL->ackCommand_ProgramILC(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandModbusTransmit(int32_t commandID, int32_t ackCode, std::string description) {
+	this->m1m3SAL->ackCommand_ModbusTransmit(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

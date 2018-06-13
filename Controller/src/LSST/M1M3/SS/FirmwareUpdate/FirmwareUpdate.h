@@ -75,6 +75,7 @@ public:
 	bool WriteApplicationStats(int subnet, int address, ILCApplicationStats stats);
 	bool WriteVerifyApplication(int subnet, int address);
 	bool RestartApplication(int subnet, int address);
+	bool EnterDisable(int subnet, int address);
 
 	bool ProcessResponse(ModbusBuffer* buffer, int subnet);
 	bool ValidateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
@@ -86,7 +87,8 @@ public:
 	bool ProcessExceptionCode(ModbusBuffer* buffer, int functionCode);
 
 	void SetupBuffer(ModbusBuffer* buffer, int subnet);
-	int SubnetToFPGAAddress(int subnet);
+	int SubnetTxToFPGAAddress(int subnet);
+	int SubnetRxToFPGAAddress(int subnet);
 	void EndBuffer(ModbusBuffer* buffer);
 
 	bool PrintBuffer(ModbusBuffer* buffer, std::string text);

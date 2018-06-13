@@ -18,6 +18,7 @@
 #include <ForceController.h>
 #include <M1M3SSPublisher.h>
 #include <ProgramILCCommand.h>
+#include <ModbusTransmitCommand.h>
 #include <Log.h>
 #include <unistd.h>
 #include <FPGA.h>
@@ -89,13 +90,19 @@ States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
 	model->getPublisher()->tryLogForceActuatorState();
-	model->getPowerController()->setAllPowerNetworks(false);
+	model->getPowerController()->setBothPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type DisabledState::programILC(ProgramILCCommand* command, Model* model) {
 	Log.Info("DisabledState: programILC()");
 	model->getILC()->programILC(command->getData()->ActuatorId, command->getData()->FilePath);
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type DisabledState::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
+	Log.Info("DisabledState: modbusTransmit()");
+	model->getILC()->modbusTransmit(command->getData()->ActuatorId, command->getData()->FunctionCode, command->getData()->DataLength, command->getData()->Data);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

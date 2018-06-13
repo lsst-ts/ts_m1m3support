@@ -70,6 +70,7 @@ private:
 	m1m3_command_UpdatePIDC updatePIDData;
 	m1m3_command_ResetPIDC resetPIDData;
 	m1m3_command_ProgramILCC programILCData;
+	m1m3_command_ModbusTransmitC modbusTransmitData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
@@ -118,6 +119,7 @@ public:
 	Command* tryAcceptCommandUpdatePID();
 	Command* tryAcceptCommandResetPID();
 	Command* tryAcceptCommandProgramILC();
+	Command* tryAcceptCommandModbusTransmit();
 	Command* tryGetSampleTMAAzimuth();
 	Command* tryGetSampleTMAElevation();
 };

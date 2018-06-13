@@ -80,15 +80,15 @@ void AutomaticOperationsController::completeRaiseOperation() {
 	// from the static supports to the force actuators and all hardpoints have completed their
 	// commanded motions
 	this->forceController->zeroAberrationForces();
-	this->forceController->applyAccelerationForces();
+	//this->forceController->applyAccelerationForces();
 	this->forceController->zeroActiveOpticForces();
-	this->forceController->applyAzimuthForces();
+	//this->forceController->applyAzimuthForces();
 	this->forceController->applyBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
 	this->forceController->applyStaticForces();
-	this->forceController->applyThermalForces();
-	this->forceController->applyVelocityForces();
+	//this->forceController->applyThermalForces();
+	//this->forceController->applyVelocityForces();
 	this->forceController->fillSupportPercentage();
 }
 
@@ -99,6 +99,24 @@ bool AutomaticOperationsController::checkRaiseOperationTimeout() {
 void AutomaticOperationsController::timeoutRaiseOperation() {
 	Log.Error("AutomaticOperationsController: timeoutRaiseOperation()");
 	this->safetyController->raiseOperationTimeout(true);
+}
+
+void AutomaticOperationsController::abortRaiseM1M3() {
+	Log.Info("AutomaticOperationsController:: abortRaiseM1M3()");
+	this->safetyController->lowerOperationTimeout(false);
+	this->positionController->stopMotion();
+	this->positionController->enableChaseAll();
+	this->forceController->zeroAberrationForces();
+	this->forceController->zeroAccelerationForces();
+	this->forceController->zeroActiveOpticForces();
+	this->forceController->zeroAzimuthForces();
+	this->forceController->zeroBalanceForces();
+	this->forceController->applyElevationForces();
+	this->forceController->zeroOffsetForces();
+	this->forceController->zeroStaticForces();
+	this->forceController->zeroThermalForces();
+	this->forceController->zeroVelocityForces();
+	this->cachedTimestamp = this->publisher->getTimestamp();
 }
 
 void AutomaticOperationsController::startLowerOperation() {

@@ -51,6 +51,7 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
    busListChangeILCModeDisabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Disabled),
    busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled),
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
+   busListChangeILCModeClearFaults(&this->subnetData, &this->ilcMessageFactory, ILCModes::ClearFaults),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
    busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
    busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
@@ -72,6 +73,40 @@ ILC::~ILC() { }
 void ILC::programILC(int32_t actuatorId, std::string filePath) {
 	Log.Debug("ILC: programILC(%d,%s)", actuatorId, filePath.c_str());
 	this->firmwareUpdate.Program(actuatorId, filePath);
+}
+
+void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data) {
+	ILCMap map = this->subnetData.getMap(actuatorId);
+	int subnet = map.Subnet;
+	int address = map.Address;
+	if (subnet == 255 || address == 255) {
+		Log.Error("ILC: Modbus Transmit unknown actuator %d", actuatorId);
+		return;
+	}
+	ModbusBuffer buffer;
+	buffer.setIndex(0);
+	buffer.setLength(0);
+	buffer.writeSubnet((uint8_t)this->subnetToTxAddress(subnet));
+	buffer.writeLength(0);
+	buffer.writeSoftwareTrigger();
+
+	buffer.writeU8((uint8_t)address);
+	buffer.writeU8((uint8_t)functionCode);
+	for(int i = 0; i < dataLength && i < 252; ++i) {
+		buffer.writeU8((uint8_t)data[i]);
+	}
+	buffer.writeCRC(dataLength + 2);
+	buffer.writeEndOfFrame();
+	buffer.writeWaitForRx(10000);
+
+	buffer.writeTriggerIRQ();
+	buffer.set(1, buffer.getIndex() - 2);
+	buffer.setLength(buffer.getIndex());
+
+	this->responseParser.grabNextResponse();
+	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	this->waitForSubnet(subnet, 5000);
+	this->read(subnet);
 }
 
 void ILC::writeCalibrationDataBuffer() {
@@ -142,6 +177,11 @@ void ILC::writeSetModeEnableBuffer() {
 void ILC::writeSetModeStandbyBuffer() {
 	Log.Debug("ILC: writeSetModeStandbyBuffer()");
 	this->writeBusList(&this->busListChangeILCModeStandby);
+}
+
+void ILC::writeSetModeClearFaultsBuffer() {
+	Log.Debug("ILC: writeSetModeClearFaultsBuffer()");
+	this->writeBusList(&this->busListChangeILCModeClearFaults);
 }
 
 void ILC::writeFreezeSensorListBuffer() {

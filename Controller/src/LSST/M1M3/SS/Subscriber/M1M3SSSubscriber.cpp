@@ -61,6 +61,7 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, C
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_UpdatePID");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ResetPID");
 	this->m1m3SAL->salProcessor((char*)"m1m3_command_ProgramILC");
+	this->m1m3SAL->salProcessor((char*)"m1m3_command_ModbusTransmit");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Az");
 	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Alt");
 }
@@ -389,6 +390,14 @@ Command* M1M3SSSubscriber::tryAcceptCommandProgramILC() {
 	int32_t commandID = this->m1m3SAL->acceptCommand_ProgramILC(&this->programILCData);
 	if (commandID > 0) {
 		return this->commandFactory->create(Commands::ProgramILCCommand, &this->programILCData, commandID);
+	}
+	return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandModbusTransmit() {
+	int32_t commandID = this->m1m3SAL->acceptCommand_ModbusTransmit(&this->modbusTransmitData);
+	if (commandID > 0) {
+		return this->commandFactory->create(Commands::ModbusTransmitCommand, &this->modbusTransmitData, commandID);
 	}
 	return 0;
 }

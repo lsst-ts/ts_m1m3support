@@ -71,6 +71,7 @@ private:
 	ChangeILCModeBusList busListChangeILCModeDisabled;
 	ChangeILCModeBusList busListChangeILCModeEnabled;
 	ChangeILCModeBusList busListChangeILCModeStandby;
+	ChangeILCModeBusList busListChangeILCModeClearFaults;
 	FreezeSensorBusList busListFreezeSensor;
 	RaisedBusList busListRaised;
 	ActiveBusList busListActive;
@@ -96,6 +97,7 @@ public:
 	virtual ~ILC();
 
 	void programILC(int32_t actuatorId, std::string filePath);
+	void modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data);
 
 	void writeCalibrationDataBuffer();
 	void writeSetADCScanRateBuffer();
@@ -111,6 +113,7 @@ public:
 	void writeSetModeDisableBuffer();
 	void writeSetModeEnableBuffer();
 	void writeSetModeStandbyBuffer();
+	void writeSetModeClearFaultsBuffer();
 	void writeFreezeSensorListBuffer();
 	void writeRaisedListBuffer();
 	void writeActiveListBuffer();

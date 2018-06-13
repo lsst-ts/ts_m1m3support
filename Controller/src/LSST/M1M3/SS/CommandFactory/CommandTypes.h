@@ -61,7 +61,8 @@ struct Commands {
 		ApplyOffsetForcesByMirrorForceCommand = 41,
 		UpdatePIDCommand = 42,
 		ResetPIDCommand = 43,
-		ProgramILCCommand = 44
+		ProgramILCCommand = 44,
+		ModbusTransmitCommand = 45
 	};
 };
 

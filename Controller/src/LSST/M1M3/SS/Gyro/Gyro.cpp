@@ -42,43 +42,43 @@ Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
 }
 
 void Gyro::bit() {
-	Log.Debug("Gyro: bit()");
+	Log.Info("Gyro: bit()");
 	this->writeCommand("?BIT,2\r\n");
 	usleep(10000);
 }
 
 void Gyro::enterConfigurationMode() {
-	Log.Debug("Gyro: enterConfigurationMode()");
+	Log.Info("Gyro: enterConfigurationMode()");
 	this->writeCommand("=CONFIG,1\r\n");
 	usleep(10000);
 }
 
 void Gyro::exitConfigurationMode() {
-	Log.Debug("Gyro: exitConfigurationMode()");
+	Log.Info("Gyro: exitConfigurationMode()");
 	this->writeCommand("=CONFIG,0\r\n");
 	usleep(10000);
 }
 
 void Gyro::resetConfiguration() {
-	Log.Debug("Gyro: resetConfiguration()");
+	Log.Info("Gyro: resetConfiguration()");
 	this->writeCommand("=RSTCFG\r\n");
 	usleep(10000);
 }
 
 void Gyro::setRotationFormatRate() {
-	Log.Debug("Gyro: setRotationFormatRate()");
+	Log.Info("Gyro: setRotationFormatRate()");
 	this->writeCommand("=ROTFMT,RATE\r\n");
 	usleep(10000);
 }
 
 void Gyro::setRotationUnitsRadians() {
-	Log.Debug("Gyro: setRotationUnitsRadians()");
+	Log.Info("Gyro: setRotationUnitsRadians()");
 	this->writeCommand("=ROTUNITS,RAD\r\n");
 	usleep(10000);
 }
 
 void Gyro::setAxis() {
-	Log.Debug("Gyro: setAxis()");
+	Log.Info("Gyro: setAxis()");
 	std::string command = "=AXES";
 	for(unsigned int i = 0; i < this->gyroSettings->AxesMatrix.size(); ++i) {
 		command = command + "," + boost::lexical_cast<std::string>(this->gyroSettings->AxesMatrix[i]);
@@ -88,7 +88,7 @@ void Gyro::setAxis() {
 }
 
 void Gyro::setDataRate() {
-	Log.Debug("Gyro: setDataRate()");
+	Log.Info("Gyro: setDataRate()");
 	this->writeCommand("=DR," + boost::lexical_cast<std::string>(this->gyroSettings->DataRate) + "\r\n");
 	usleep(10000);
 }
@@ -187,7 +187,7 @@ void Gyro::writeCommand(std::string command) {
 	for(int i = 0; i < size; ++i) {
 		buffer[i + 2] = (uint16_t)command[i];
 	}
-	this->fpga->writeCommandFIFO(buffer, size, 0);
+	this->fpga->writeCommandFIFO(buffer, size + 2, 0);
 }
 
 } /* namespace SS */

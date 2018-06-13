@@ -1,3 +1,4 @@
 <ExpansionFPGAApplicationSettings>
-<Enabled>0</Enabled>
+    <Enabled>1</Enabled>
+    <Resource>rio://140.252.32.202/M1M3-SupportExpansion-RIO</Resource>
 </ExpansionFPGAApplicationSettings>

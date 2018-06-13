@@ -22,6 +22,7 @@ public:
 	States::Type enable(EnableCommand* command, Model* model);
 	States::Type standby(StandbyCommand* command, Model* model);
 	States::Type programILC(ProgramILCCommand* command, Model* model);
+	States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model);
 };
 
 } /* namespace SS */

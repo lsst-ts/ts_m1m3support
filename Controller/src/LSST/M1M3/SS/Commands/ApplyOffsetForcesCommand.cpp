@@ -18,8 +18,12 @@ ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(Context* context, M1M3SSPubli
 	this->publisher = publisher;
 	this->commandID = commandID;
 	for(int i = 0; i < FA_COUNT; i++) {
-		this->data.XForces[i] = data->XForces[i];
-		this->data.YForces[i] = data->YForces[i];
+		if (i < FA_X_COUNT) {
+			this->data.XForces[i] = data->XForces[i];
+		}
+		if (i < FA_Y_COUNT) {
+			this->data.YForces[i] = data->YForces[i];
+		}
 		this->data.ZForces[i] = data->ZForces[i];
 	}
 }

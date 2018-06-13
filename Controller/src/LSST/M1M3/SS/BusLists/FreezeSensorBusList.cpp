@@ -36,7 +36,6 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 				bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
 				if (!disabled) {
 					this->ilcMessageFactory->pneumaticForceStatus(&this->buffer, address);
-					//this->ilcMessageFactory->unicastForceDemand(&this->buffer, address, false, 0, 0);
 					this->expectedFAResponses[dataIndex] = 1;
 				}
 			}

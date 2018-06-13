@@ -4,34 +4,34 @@
         <FaultOnCommandSensorMismatch>0</FaultOnCommandSensorMismatch>
     </AirControllerSettings>
     <DisplacementSettings>
-        <FaultOnSensorReportsInvalidCommand>1</FaultOnSensorReportsInvalidCommand>
-        <FaultOnSensorReportsCommunicationTimeoutError>1</FaultOnSensorReportsCommunicationTimeoutError>
-        <FaultOnSensorReportsDataLengthError>1</FaultOnSensorReportsDataLengthError>
-        <FaultOnSensorReportsNumberOfParametersError>1</FaultOnSensorReportsNumberOfParametersError>
-        <FaultOnSensorReportsParameterError>1</FaultOnSensorReportsParameterError>
-        <FaultOnSensorReportsCommunicationError>1</FaultOnSensorReportsCommunicationError>
-        <FaultOnSensorReportsIDNumberError>1</FaultOnSensorReportsIDNumberError>
-        <FaultOnSensorReportsExpansionLineError>1</FaultOnSensorReportsExpansionLineError>
-        <FaultOnSensorReportsWriteControlError>1</FaultOnSensorReportsWriteControlError>
-        <FaultOnResponseTimeoutError>1</FaultOnResponseTimeoutError>
-        <FaultOnInvalidLength>1</FaultOnInvalidLength>
-        <FaultOnInvalidResponse>1</FaultOnInvalidResponse>
-        <FaultOnUnknownCommand>1</FaultOnUnknownCommand>
-        <FaultOnUnknownProblem>1</FaultOnUnknownProblem>
+        <FaultOnSensorReportsInvalidCommand>0</FaultOnSensorReportsInvalidCommand>
+        <FaultOnSensorReportsCommunicationTimeoutError>0</FaultOnSensorReportsCommunicationTimeoutError>
+        <FaultOnSensorReportsDataLengthError>0</FaultOnSensorReportsDataLengthError>
+        <FaultOnSensorReportsNumberOfParametersError>0</FaultOnSensorReportsNumberOfParametersError>
+        <FaultOnSensorReportsParameterError>0</FaultOnSensorReportsParameterError>
+        <FaultOnSensorReportsCommunicationError>0</FaultOnSensorReportsCommunicationError>
+        <FaultOnSensorReportsIDNumberError>0</FaultOnSensorReportsIDNumberError>
+        <FaultOnSensorReportsExpansionLineError>0</FaultOnSensorReportsExpansionLineError>
+        <FaultOnSensorReportsWriteControlError>0</FaultOnSensorReportsWriteControlError>
+        <FaultOnResponseTimeoutError>0</FaultOnResponseTimeoutError>
+        <FaultOnInvalidLength>0</FaultOnInvalidLength>
+        <FaultOnInvalidResponse>0</FaultOnInvalidResponse>
+        <FaultOnUnknownCommand>0</FaultOnUnknownCommand>
+        <FaultOnUnknownProblem>0</FaultOnUnknownProblem>
     </DisplacementSettings>
     <InclinometerSettings>
-        <FaultOnResponseTimeout>1</FaultOnResponseTimeout>
-        <FaultOnInvalidCRC>1</FaultOnInvalidCRC>
-        <FaultOnUnknownAddress>1</FaultOnUnknownAddress>
-        <FaultOnUnknownFunction>1</FaultOnUnknownFunction>
-        <FaultOnInvalidLength>1</FaultOnInvalidLength>
-        <FaultOnSensorReportsIllegalDataAddress>1</FaultOnSensorReportsIllegalDataAddress>
-        <FaultOnSensorReportsIllegalFunction>1</FaultOnSensorReportsIllegalFunction>
-        <FaultOnUnknownProblem>1</FaultOnUnknownProblem>
+        <FaultOnResponseTimeout>0</FaultOnResponseTimeout>
+        <FaultOnInvalidCRC>0</FaultOnInvalidCRC>
+        <FaultOnUnknownAddress>0</FaultOnUnknownAddress>
+        <FaultOnUnknownFunction>0</FaultOnUnknownFunction>
+        <FaultOnInvalidLength>0</FaultOnInvalidLength>
+        <FaultOnSensorReportsIllegalDataAddress>0</FaultOnSensorReportsIllegalDataAddress>
+        <FaultOnSensorReportsIllegalFunction>0</FaultOnSensorReportsIllegalFunction>
+        <FaultOnUnknownProblem>0</FaultOnUnknownProblem>
     </InclinometerSettings>
     <InterlockSettings>
         <FaultOnHeartbeatStateOutputMismatch>0</FaultOnHeartbeatStateOutputMismatch>
-        <FaultOnAuxPowerNetworksOff>0</FaultOnAuxPowerNetworksOff>
+        <FaultOnAuxPowerNetworksOff>1</FaultOnAuxPowerNetworksOff>
         <FaultOnThermalEquipmentOff>0</FaultOnThermalEquipmentOff>
         <FaultOnAirSupplyOff>0</FaultOnAirSupplyOff>
         <FaultOnCabinetDoorOpen>0</FaultOnCabinetDoorOpen>
@@ -81,7 +81,7 @@
         <FaultOnTimeout>1</FaultOnTimeout>
     </LowerOperationSettings>
     <AccelerometerSettings>
-        <FaultOnSampleTimeout>1</FaultOnSampleTimeout>
+        <FaultOnSampleTimeout>0</FaultOnSampleTimeout>
         <FaultOnAngularAccelerationX>0</FaultOnAngularAccelerationX>
         <FaultOnAngularAccelerationY>0</FaultOnAngularAccelerationY>
         <FaultOnAngularAccelerationZ>0</FaultOnAngularAccelerationZ>

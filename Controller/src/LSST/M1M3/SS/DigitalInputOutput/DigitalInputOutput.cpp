@@ -81,7 +81,7 @@ void DigitalInputOutput::processData() {
 		this->interlockStatus->HeartbeatOutputState = (this->fpgaData->DigitalOutputStates & 0x01) != 0;
 
 		this->interlockWarning->Timestamp = timestamp;
-		this->interlockWarning->HeartbeatStateOutputMismatch = this->interlockStatus->HeartbeatOutputState = this->interlockStatus->HeartbeatCommandedState;
+		this->interlockWarning->HeartbeatStateOutputMismatch = this->interlockStatus->HeartbeatOutputState == this->interlockStatus->HeartbeatCommandedState;
 
 		if (this->safetyController) {
 			this->safetyController->airControllerNotifyCommandOutputMismatch(this->airSupplyWarning->CommandOutputMismatch);
@@ -109,17 +109,17 @@ void DigitalInputOutput::processData() {
 		this->cellLightWarning->CellLightsSensorMismatch = this->cellLightStatus->CellLightsCommandedOn != this->cellLightStatus->CellLightsOn;
 
 		this->interlockWarning->Timestamp = timestamp;
-		this->interlockWarning->AuxPowerNetworksOff = (this->fpgaData->DigitalInputStates & 0x0001) != 0;
-		this->interlockWarning->ThermalEquipmentOff = (this->fpgaData->DigitalInputStates & 0x0002) != 0;
-		this->interlockWarning->AirSupplyOff = (this->fpgaData->DigitalInputStates & 0x0008) != 0;
-		this->interlockWarning->CabinetDoorOpen = (this->fpgaData->DigitalInputStates & 0x0010) != 0;
-		this->interlockWarning->TMAMotionStop = (this->fpgaData->DigitalInputStates & 0x0040) != 0;
-		this->interlockWarning->GISHeartbeatLost = (this->fpgaData->DigitalInputStates & 0x0080) != 0;
+		this->interlockWarning->AuxPowerNetworksOff = (this->fpgaData->DigitalInputStates & 0x0001) == 0;
+		this->interlockWarning->ThermalEquipmentOff = (this->fpgaData->DigitalInputStates & 0x0002) == 0;
+		this->interlockWarning->AirSupplyOff = (this->fpgaData->DigitalInputStates & 0x0008) == 0;
+		this->interlockWarning->CabinetDoorOpen = (this->fpgaData->DigitalInputStates & 0x0010) == 0;
+		this->interlockWarning->TMAMotionStop = (this->fpgaData->DigitalInputStates & 0x0040) == 0;
+		this->interlockWarning->GISHeartbeatLost = (this->fpgaData->DigitalInputStates & 0x0080) == 0;
 
 		if (this->safetyController) {
 			this->safetyController->airControllerNotifyCommandSensorMismatch(this->airSupplyWarning->CommandSensorMismatch);
 			this->safetyController->cellLightNotifySensorMismatch(this->cellLightWarning->CellLightsSensorMismatch);
-			this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->AuxPowerNetworksOff);
+			this->safetyController->interlockNotifyAuxPowerNetworksOff(this->interlockWarning->AuxPowerNetworksOff);
 			this->safetyController->interlockNotifyThermalEquipmentOff(this->interlockWarning->ThermalEquipmentOff);
 			this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->AirSupplyOff);
 			this->safetyController->interlockNotifyCabinetDoorOpen(this->interlockWarning->CabinetDoorOpen);
