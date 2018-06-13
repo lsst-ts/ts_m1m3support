@@ -83,10 +83,10 @@ void AutomaticOperationsController::completeRaiseOperation() {
 	//this->forceController->applyAccelerationForces();
 	this->forceController->zeroActiveOpticForces();
 	//this->forceController->applyAzimuthForces();
-	//this->forceController->applyBalanceForces();
+	this->forceController->applyBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
-	//this->forceController->applyStaticForces();
+	this->forceController->applyStaticForces();
 	//this->forceController->applyThermalForces();
 	//this->forceController->applyVelocityForces();
 	this->forceController->fillSupportPercentage();
