@@ -1485,7 +1485,7 @@ void ForceController::sumAllForces() {
 			this->appliedVelocityForces->ZForces[zIndex];
 		this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] ||
 			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->ZForces[zIndex], this->appliedForces->ZForces + zIndex);
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->SafetyLimitWarning[zIndex];
+		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ForceWarning[zIndex];
 	}
 	this->setAppliedForcesAndMoments();
 	this->setRejectedForcesAndMoments();
