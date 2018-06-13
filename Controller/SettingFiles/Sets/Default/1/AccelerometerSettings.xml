@@ -1,37 +1,61 @@
 <AccelerometerSettings>
-    <VoltsToMetersPerSecondSqrd>4.9035</VoltsToMetersPerSecondSqrd>
+    <GsToMetersPerSecondSqrd>9.80665</GsToMetersPerSecondSqrd>
     <AngularAccelerationXDistance>0.9478</AngularAccelerationXDistance>
     <AngularAccelerationYDistance>0.7565</AngularAccelerationYDistance>
     <AngularAccelerationZDistance>4.2500</AngularAccelerationZDistance>
+    <!-- Accelerometer A1.X -->
     <Accelerometer1>
+        <Bias>0.009</Bias>
+        <Sensitivity>.1993</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer1>
+    <!-- Accelerometer A1.Y -->
     <Accelerometer2>
+        <Bias>0.0039</Bias>
+        <Sensitivity>1.994</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer2>
+    <!-- Accelerometer A2.X -->
     <Accelerometer3>
+        <Bias>0.0125</Bias>
+        <Sensitivity>1.994</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer3>
+    <!-- Accelerometer A2.Y -->
     <Accelerometer4>
+        <Bias>0.0007</Bias>
+        <Sensitivity>1.995</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer4>
+    <!-- Accelerometer A3.X -->
     <Accelerometer5>
+        <Bias>0.0146</Bias>
+        <Sensitivity>1997</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer5>
+    <!-- Accelerometer A3.Y -->
     <Accelerometer6>
+        <Bias>0.017</Bias>
+        <Sensitivity>1.996</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer6>
+    <!-- Accelerometer A4.X -->
     <Accelerometer7>
+        <Bias>-0.0108</Bias>
+        <Sensitivity>1.994</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer7>
+    <!-- Accelerometer A4.Y -->
     <Accelerometer8>
+        <Bias>0.0179</Bias>
+        <Sensitivity>1.992</Sensitivity>
         <Offset>0.0</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer8>
