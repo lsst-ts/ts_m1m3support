@@ -5,58 +5,58 @@
     <AngularAccelerationZDistance>4.2500</AngularAccelerationZDistance>
     <!-- Accelerometer A1.X -->
     <Accelerometer1>
-        <Bias>0.009</Bias>
-        <Sensitivity>.1993</Sensitivity>
-        <Offset>0.0</Offset>
-        <Scalar>1.0</Scalar>
+        <Bias>0.009</Bias> <!-- mV -->
+        <Sensitivity>.1993</Sensitivity> <!-- mV/g -->
+        <Offset>0.011519981</Offset> <!-- m/s^2 -->
+        <Scalar>1.0</Scalar> 
     </Accelerometer1>
     <!-- Accelerometer A1.Y -->
     <Accelerometer2>
         <Bias>0.0039</Bias>
         <Sensitivity>1.994</Sensitivity>
-        <Offset>0.0</Offset>
+        <Offset>0.007553103</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer2>
     <!-- Accelerometer A2.X -->
     <Accelerometer3>
         <Bias>0.0125</Bias>
         <Sensitivity>1.994</Sensitivity>
-        <Offset>0.0</Offset>
+        <Offset>0.086111715</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer3>
     <!-- Accelerometer A2.Y -->
     <Accelerometer4>
         <Bias>0.0007</Bias>
         <Sensitivity>1.995</Sensitivity>
-        <Offset>0.0</Offset>
+        <Offset>0.156193491</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer4>
     <!-- Accelerometer A3.X -->
     <Accelerometer5>
         <Bias>0.0146</Bias>
-        <Sensitivity>1997</Sensitivity>
-        <Offset>0.0</Offset>
+        <Sensitivity>1.997</Sensitivity>
+        <Offset>-0.141127269</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer5>
     <!-- Accelerometer A3.Y -->
     <Accelerometer6>
         <Bias>0.017</Bias>
         <Sensitivity>1.996</Sensitivity>
-        <Offset>0.0</Offset>
+        <Offset>0.00167552</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer6>
     <!-- Accelerometer A4.X -->
     <Accelerometer7>
         <Bias>-0.0108</Bias>
         <Sensitivity>1.994</Sensitivity>
-        <Offset>0.0</Offset>
+        <Offset>-0.010106905</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer7>
     <!-- Accelerometer A4.Y -->
     <Accelerometer8>
         <Bias>0.0179</Bias>
         <Sensitivity>1.992</Sensitivity>
-        <Offset>0.0</Offset>
+        <Offset>-0.075325936</Offset>
         <Scalar>1.0</Scalar>
     </Accelerometer8>
     <Limits>

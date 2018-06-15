@@ -870,9 +870,24 @@ void ForceController::applyOffsetForces(float* x, float* y, float* z) {
 }
 
 void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
-	Log.Info("ForceController: applyOffsetForcesByMirrorForces()");
+	Log.Info("ForceController: applyOffsetForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
 	DistributedForces forces = this->calculateDistribution(xForce, yForce, zForce, xMoment, yMoment, zMoment);
-	this->applyOffsetForces(forces.XForces, forces.YForces, forces.ZForces);
+	float xForces[12];
+	float yForces[100];
+	float zForces[156];
+	for(int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+
+		if (xIndex != -1) {
+			xForces[xIndex] = forces.XForces[zIndex];
+		}
+		if (yIndex != -1) {
+			yForces[yIndex] = forces.YForces[zIndex];
+		}
+		zForces[zIndex] = forces.ZForces[zIndex];
+	}
+	this->applyOffsetForces(xForces, yForces, zForces);
 }
 
 void ForceController::zeroOffsetForces() {
