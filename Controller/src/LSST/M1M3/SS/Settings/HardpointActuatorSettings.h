@@ -28,6 +28,12 @@ public:
 	int32_t HP4EncoderOffset;
 	int32_t HP5EncoderOffset;
 	int32_t HP6EncoderOffset;
+	double XPositionOffset;
+	double YPositionOffset;
+	double ZPositionOffset;
+	double XRotationOffset;
+	double YRotationOffset;
+	double ZRotationOffset;
 
 	void load(const std::string &filename);
 };

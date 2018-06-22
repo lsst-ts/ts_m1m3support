@@ -27,6 +27,12 @@ void HardpointActuatorSettings::load(const std::string &filename) {
 	this->HP4EncoderOffset = boost::lexical_cast<int32_t>(doc.select_node("//HardpointActuatorSettings/HP4EncoderOffset").node().child_value());
 	this->HP5EncoderOffset = boost::lexical_cast<int32_t>(doc.select_node("//HardpointActuatorSettings/HP5EncoderOffset").node().child_value());
 	this->HP6EncoderOffset = boost::lexical_cast<int32_t>(doc.select_node("//HardpointActuatorSettings/HP6EncoderOffset").node().child_value());
+	this->XPositionOffset = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/PositionOffset/XPosition").node().child_value());
+	this->YPositionOffset = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/PositionOffset/YPosition").node().child_value());
+	this->ZPositionOffset = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/PositionOffset/ZPosition").node().child_value());
+	this->XRotationOffset = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/PositionOffset/XRotation").node().child_value());
+	this->YRotationOffset = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/PositionOffset/YRotation").node().child_value());
+	this->ZRotationOffset = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/PositionOffset/ZRotation").node().child_value());
 }
 
 } /* namespace SS */

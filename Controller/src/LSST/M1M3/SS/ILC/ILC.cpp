@@ -288,49 +288,54 @@ void ILC::flushAll() {
 }
 
 void ILC::calculateHPPostion() {
-
 	this->hardpointActuatorData->XPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * this->hardpointActuatorData->Displacement[2] +
+			(this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * this->hardpointActuatorData->Displacement[2] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * this->hardpointActuatorData->Displacement[3] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[2] * this->hardpointActuatorData->Displacement[4] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[3] * this->hardpointActuatorData->Displacement[5] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[4] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * this->hardpointActuatorData->Displacement[1]) +
+			this->hardpointActuatorSettings->XPositionOffset;
 	this->hardpointActuatorData->YPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * this->hardpointActuatorData->Displacement[2] +
+			(this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * this->hardpointActuatorData->Displacement[2] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[7] * this->hardpointActuatorData->Displacement[3] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[8] * this->hardpointActuatorData->Displacement[4] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[9] * this->hardpointActuatorData->Displacement[5] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[10] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * this->hardpointActuatorData->Displacement[1]) +
+			this->hardpointActuatorSettings->YPositionOffset;
 	this->hardpointActuatorData->ZPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * this->hardpointActuatorData->Displacement[2] +
+			(this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * this->hardpointActuatorData->Displacement[2] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[13] * this->hardpointActuatorData->Displacement[3] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[14] * this->hardpointActuatorData->Displacement[4] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[15] * this->hardpointActuatorData->Displacement[5] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[16] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * this->hardpointActuatorData->Displacement[1]) +
+			this->hardpointActuatorSettings->ZPositionOffset;
 	this->hardpointActuatorData->XRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * this->hardpointActuatorData->Displacement[2] +
+			(this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * this->hardpointActuatorData->Displacement[2] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[19] * this->hardpointActuatorData->Displacement[3] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[20] * this->hardpointActuatorData->Displacement[4] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[21] * this->hardpointActuatorData->Displacement[5] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[22] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * this->hardpointActuatorData->Displacement[1]) +
+			this->hardpointActuatorSettings->XRotationOffset;
 	this->hardpointActuatorData->YRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * this->hardpointActuatorData->Displacement[2] +
+			(this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * this->hardpointActuatorData->Displacement[2] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[25] * this->hardpointActuatorData->Displacement[3] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[26] * this->hardpointActuatorData->Displacement[4] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[27] * this->hardpointActuatorData->Displacement[5] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[28] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * this->hardpointActuatorData->Displacement[1]) +
+			this->hardpointActuatorSettings->YRotationOffset;
 	this->hardpointActuatorData->ZRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * this->hardpointActuatorData->Displacement[2] +
+			(this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * this->hardpointActuatorData->Displacement[2] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[31] * this->hardpointActuatorData->Displacement[3] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[32] * this->hardpointActuatorData->Displacement[4] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * this->hardpointActuatorData->Displacement[5] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * this->hardpointActuatorData->Displacement[1]) +
+			this->hardpointActuatorSettings->ZRotationOffset;
 }
 
 void ILC::calculateHPMirrorForces() {
