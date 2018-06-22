@@ -76,14 +76,16 @@ void Displacement::processData() {
 	if (this->fpgaData->DisplacementSampleTimestamp > this->lastSampleTimestamp) {
 		this->lastSampleTimestamp = this->fpgaData->DisplacementSampleTimestamp;
 		this->imsData->Timestamp = Timestamp::fromFPGA(this->fpgaData->DisplacementSampleTimestamp);
-		this->imsData->RawSensorData[0] = (this->fpgaData->DisplacementRaw1 + this->displacementSensorSettings->N1Offset) / 10000.0;
-		this->imsData->RawSensorData[1] = (this->fpgaData->DisplacementRaw2 + this->displacementSensorSettings->N2Offset) / 10000.0;
-		this->imsData->RawSensorData[2] = (this->fpgaData->DisplacementRaw3 + this->displacementSensorSettings->N3Offset) / 10000.0;
-		this->imsData->RawSensorData[3] = (this->fpgaData->DisplacementRaw4 + this->displacementSensorSettings->N4Offset) / 10000.0;
-		this->imsData->RawSensorData[4] = (this->fpgaData->DisplacementRaw5 + this->displacementSensorSettings->N5Offset) / 10000.0;
-		this->imsData->RawSensorData[5] = (this->fpgaData->DisplacementRaw6 + this->displacementSensorSettings->N6Offset) / 10000.0;
-		this->imsData->RawSensorData[6] = (this->fpgaData->DisplacementRaw7 + this->displacementSensorSettings->N7Offset)/ 10000.0;
-		this->imsData->RawSensorData[7] = (this->fpgaData->DisplacementRaw8 + this->displacementSensorSettings->N8Offset) / 10000.0;
+		// We need to swap the direction of the IMS reading
+		// We also need to convert the raw sensor values to millimeters
+		this->imsData->RawSensorData[0] = 50.0 - ((this->fpgaData->DisplacementRaw1 + this->displacementSensorSettings->N1Offset) / 10000.0);
+		this->imsData->RawSensorData[1] = 50.0 - ((this->fpgaData->DisplacementRaw2 + this->displacementSensorSettings->N2Offset) / 10000.0);
+		this->imsData->RawSensorData[2] = 50.0 - ((this->fpgaData->DisplacementRaw3 + this->displacementSensorSettings->N3Offset) / 10000.0);
+		this->imsData->RawSensorData[3] = 50.0 - ((this->fpgaData->DisplacementRaw4 + this->displacementSensorSettings->N4Offset) / 10000.0);
+		this->imsData->RawSensorData[4] = 50.0 - ((this->fpgaData->DisplacementRaw5 + this->displacementSensorSettings->N5Offset) / 10000.0);
+		this->imsData->RawSensorData[5] = 50.0 - ((this->fpgaData->DisplacementRaw6 + this->displacementSensorSettings->N6Offset) / 10000.0);
+		this->imsData->RawSensorData[6] = 50.0 - ((this->fpgaData->DisplacementRaw7 + this->displacementSensorSettings->N7Offset) / 10000.0);
+		this->imsData->RawSensorData[7] = 50.0 - ((this->fpgaData->DisplacementRaw8 + this->displacementSensorSettings->N8Offset) / 10000.0);
 		int p1 = this->displacementSensorSettings->N1Port;
 		int p2 = this->displacementSensorSettings->N2Port;
 		int p3 = this->displacementSensorSettings->N3Port;
@@ -101,7 +103,8 @@ void Displacement::processData() {
 					this->displacementSensorSettings->ConverterMatrix[5] * this->imsData->RawSensorData[p6] +
 					this->displacementSensorSettings->ConverterMatrix[6] * this->imsData->RawSensorData[p7] +
 					this->displacementSensorSettings->ConverterMatrix[7] * this->imsData->RawSensorData[p8]) /
-					MILLIMETERS_PER_METER;
+					MILLIMETERS_PER_METER +
+					this->displacementSensorSettings->XPositionOffset;
 			this->imsData->YPosition =
 					(this->displacementSensorSettings->ConverterMatrix[8] * this->imsData->RawSensorData[p1] +
 					this->displacementSensorSettings->ConverterMatrix[9] * this->imsData->RawSensorData[p2] +
@@ -111,7 +114,8 @@ void Displacement::processData() {
 					this->displacementSensorSettings->ConverterMatrix[13] * this->imsData->RawSensorData[p6] +
 					this->displacementSensorSettings->ConverterMatrix[14] * this->imsData->RawSensorData[p7] +
 					this->displacementSensorSettings->ConverterMatrix[15] * this->imsData->RawSensorData[p8]) /
-					MILLIMETERS_PER_METER;
+					MILLIMETERS_PER_METER +
+					this->displacementSensorSettings->YPositionOffset;
 			this->imsData->ZPosition =
 					(this->displacementSensorSettings->ConverterMatrix[16] * this->imsData->RawSensorData[p1] +
 					this->displacementSensorSettings->ConverterMatrix[17] * this->imsData->RawSensorData[p2] +
@@ -121,7 +125,8 @@ void Displacement::processData() {
 					this->displacementSensorSettings->ConverterMatrix[21] * this->imsData->RawSensorData[p6] +
 					this->displacementSensorSettings->ConverterMatrix[22] * this->imsData->RawSensorData[p7] +
 					this->displacementSensorSettings->ConverterMatrix[23] * this->imsData->RawSensorData[p8]) /
-					MILLIMETERS_PER_METER;
+					MILLIMETERS_PER_METER +
+					this->displacementSensorSettings->ZPositionOffset;
 			this->imsData->XRotation =
 					(this->displacementSensorSettings->ConverterMatrix[24] * this->imsData->RawSensorData[p1] +
 					this->displacementSensorSettings->ConverterMatrix[25] * this->imsData->RawSensorData[p2] +
@@ -131,7 +136,8 @@ void Displacement::processData() {
 					this->displacementSensorSettings->ConverterMatrix[29] * this->imsData->RawSensorData[p6] +
 					this->displacementSensorSettings->ConverterMatrix[30] * this->imsData->RawSensorData[p7] +
 					this->displacementSensorSettings->ConverterMatrix[31] * this->imsData->RawSensorData[p8]) /
-					MILLIMETERS_PER_METER;
+					MILLIMETERS_PER_METER +
+					this->displacementSensorSettings->XRotationOffset;
 			this->imsData->YRotation =
 					(this->displacementSensorSettings->ConverterMatrix[32] * this->imsData->RawSensorData[p1] +
 					this->displacementSensorSettings->ConverterMatrix[33] * this->imsData->RawSensorData[p2] +
@@ -141,7 +147,8 @@ void Displacement::processData() {
 					this->displacementSensorSettings->ConverterMatrix[37] * this->imsData->RawSensorData[p6] +
 					this->displacementSensorSettings->ConverterMatrix[38] * this->imsData->RawSensorData[p7] +
 					this->displacementSensorSettings->ConverterMatrix[39] * this->imsData->RawSensorData[p8]) /
-					MILLIMETERS_PER_METER;
+					MILLIMETERS_PER_METER +
+					this->displacementSensorSettings->YRotationOffset;
 			this->imsData->ZRotation =
 					(this->displacementSensorSettings->ConverterMatrix[40] * this->imsData->RawSensorData[p1] +
 					this->displacementSensorSettings->ConverterMatrix[41] * this->imsData->RawSensorData[p2] +
@@ -151,7 +158,8 @@ void Displacement::processData() {
 					this->displacementSensorSettings->ConverterMatrix[45] * this->imsData->RawSensorData[p6] +
 					this->displacementSensorSettings->ConverterMatrix[46] * this->imsData->RawSensorData[p7] +
 					this->displacementSensorSettings->ConverterMatrix[47] * this->imsData->RawSensorData[p8]) /
-					MILLIMETERS_PER_METER;
+					MILLIMETERS_PER_METER +
+					this->displacementSensorSettings->ZRotationOffset;
 		this->publisher->putIMSData();
 		if (!this->errorCleared && this->fpgaData->DisplacementSampleTimestamp > this->fpgaData->DisplacementErrorTimestamp) {
 			this->errorCleared = true;

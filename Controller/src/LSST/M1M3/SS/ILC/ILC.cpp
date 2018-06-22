@@ -288,6 +288,7 @@ void ILC::flushAll() {
 }
 
 void ILC::calculateHPPostion() {
+
 	this->hardpointActuatorData->XPosition =
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * this->hardpointActuatorData->Displacement[2] +
 			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * this->hardpointActuatorData->Displacement[3] +
