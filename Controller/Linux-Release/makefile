@@ -75,7 +75,7 @@ all: ts_M1M3Support
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	g++ -L../lib -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++-4.7 -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
