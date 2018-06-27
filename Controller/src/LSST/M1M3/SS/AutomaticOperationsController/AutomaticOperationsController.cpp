@@ -41,7 +41,7 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
 	this->forceController->zeroBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->zeroStaticForces();
+	this->forceController->applyStaticForces();
 	this->forceController->zeroThermalForces();
 	this->forceController->zeroVelocityForces();
 	this->forceController->zeroSupportPercentage();
@@ -113,7 +113,7 @@ void AutomaticOperationsController::abortRaiseM1M3() {
 	this->forceController->zeroBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->zeroStaticForces();
+	this->forceController->applyStaticForces();
 	this->forceController->zeroThermalForces();
 	this->forceController->zeroVelocityForces();
 	this->cachedTimestamp = this->publisher->getTimestamp();
@@ -131,7 +131,7 @@ void AutomaticOperationsController::startLowerOperation() {
 	this->forceController->zeroBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->zeroStaticForces();
+	this->forceController->applyStaticForces();
 	this->forceController->zeroThermalForces();
 	this->forceController->zeroVelocityForces();
 	this->forceController->fillSupportPercentage();

@@ -16,10 +16,10 @@
     <N6Offset>0</N6Offset>
     <N7Offset>0</N7Offset>
     <N8Offset>0</N8Offset>
-    <XPositionOffset>-0.023859814</XPositionOffset>
-    <YPositionOffset>-0.019288485</YPositionOffset>
-    <ZPositionOffset>-0.030425664</ZPositionOffset>
-    <XRotationOffset>-0.000041237</XRotationOffset>
-    <YRotationOffset>+0.000153956</YRotationOffset>
-    <ZRotationOffset>+0.000609998</ZRotationOffset>
+    <XPositionOffset>-0.023806594</XPositionOffset>
+    <YPositionOffset>-0.019285750</YPositionOffset>
+    <ZPositionOffset>-0.030456442</ZPositionOffset>
+    <XRotationOffset>-0.000038710</XRotationOffset>
+    <YRotationOffset>+0.000154538</YRotationOffset>
+    <ZRotationOffset>+0.000615828</ZRotationOffset>
 </DisplacementSensorSettings>
