@@ -66,13 +66,15 @@ void DigitalInputOutput::processData() {
 		this->lastDOTimestamp = this->fpgaData->DigitalOutputTimestamp;
 
 		this->airSupplyStatus->Timestamp = timestamp;
-		this->airSupplyStatus->AirCommandOutputOn = (this->fpgaData->DigitalOutputStates & 0x10) != 0;
+		// Polarity is swapped
+		this->airSupplyStatus->AirCommandOutputOn = (this->fpgaData->DigitalOutputStates & 0x10) == 0;
 
 		this->airSupplyWarning->Timestamp = timestamp;
 		this->airSupplyWarning->CommandOutputMismatch = this->airSupplyStatus->AirCommandOutputOn != this->airSupplyStatus->AirCommandedOn;
 
 		this->cellLightStatus->Timestamp = timestamp;
-		this->cellLightStatus->CellLightsOutputOn = (this->fpgaData->DigitalOutputStates & 0x20) != 0;
+		// Polarity is swapped
+		this->cellLightStatus->CellLightsOutputOn = (this->fpgaData->DigitalOutputStates & 0x20) == 0;
 
 		this->cellLightWarning->Timestamp = timestamp;
 		this->cellLightWarning->CellLightsOutputMismatch = this->cellLightStatus->CellLightsOutputOn != this->cellLightStatus->CellLightsCommandedOn;
@@ -94,8 +96,9 @@ void DigitalInputOutput::processData() {
 		this->lastDITimestamp = this->fpgaData->DigitalInputTimestamp;
 
 		this->airSupplyStatus->Timestamp = timestamp;
-		// Need to swap polarity of these signals
+		// Polarity is swapped
 		this->airSupplyStatus->AirValveOpened = (this->fpgaData->DigitalInputStates & 0x0100) == 0;
+		// Polarity is swapped
 		this->airSupplyStatus->AirValveClosed = (this->fpgaData->DigitalInputStates & 0x0200) == 0;
 
 		this->airSupplyWarning->Timestamp = timestamp;
