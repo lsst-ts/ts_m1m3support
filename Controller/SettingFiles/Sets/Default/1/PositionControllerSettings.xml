@@ -6,11 +6,11 @@
     <RaiseLowerForceLimitHigh>200</RaiseLowerForceLimitHigh>
     <RaiseLowerTimeoutInSeconds>600</RaiseLowerTimeoutInSeconds>
     <ReferencePosition>
-        <HP1Encoder>31060</HP1Encoder>
-        <HP2Encoder>37229</HP2Encoder>
-        <HP3Encoder>42005</HP3Encoder>
-        <HP4Encoder>45788</HP4Encoder>
-        <HP5Encoder>31825</HP5Encoder>
-        <HP6Encoder>41766</HP6Encoder>
+        <HP1Encoder>31493</HP1Encoder>
+        <HP2Encoder>38181</HP2Encoder>
+        <HP3Encoder>41702</HP3Encoder>
+        <HP4Encoder>45527</HP4Encoder>
+        <HP5Encoder>32464</HP5Encoder>
+        <HP6Encoder>41499</HP6Encoder>
     </ReferencePosition>
 </PositionControllerSettings>

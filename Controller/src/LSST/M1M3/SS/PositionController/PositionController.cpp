@@ -171,7 +171,14 @@ bool PositionController::moveToReferencePosition() {
 
 bool PositionController::translate(double x, double y, double z, double rX, double rY, double rZ) {
 	Log.Info("PositionController: translate(%f, %f, %f, %f, %f, %f)", x, y, z, rX, rY, rZ);
-	return this->moveToAbsolute(this->hardpointActuatorData->XPosition + x, this->hardpointActuatorData->YPosition + y, this->hardpointActuatorData->ZPosition + z, this->hardpointActuatorData->XRotation + rX, this->hardpointActuatorData->YRotation + rY, this->hardpointActuatorData->ZRotation + rZ);
+	int32_t steps[6];
+	this->convertToSteps(steps, x, y, z, rX, rY, rZ);
+	int32_t encoderValues[6];
+	double stepsToEncoder = this->hardpointActuatorSettings->MicrometersPerStep / this->hardpointActuatorSettings->MicrometersPerEncoder;
+	for(int i = 0; i < HP_COUNT; ++i) {
+		encoderValues[i] = this->hardpointActuatorData->Encoder[i] + steps[i] * stepsToEncoder;
+	}
+	return this->moveToEncoder(encoderValues);
 }
 
 void PositionController::stopMotion() {

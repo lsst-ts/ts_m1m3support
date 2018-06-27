@@ -66,8 +66,7 @@ void DigitalInputOutput::processData() {
 		this->lastDOTimestamp = this->fpgaData->DigitalOutputTimestamp;
 
 		this->airSupplyStatus->Timestamp = timestamp;
-		// Polarity is swapped
-		this->airSupplyStatus->AirCommandOutputOn = (this->fpgaData->DigitalOutputStates & 0x10) == 0;
+		this->airSupplyStatus->AirCommandOutputOn = (this->fpgaData->DigitalOutputStates & 0x10) != 0;
 
 		this->airSupplyWarning->Timestamp = timestamp;
 		this->airSupplyWarning->CommandOutputMismatch = this->airSupplyStatus->AirCommandOutputOn != this->airSupplyStatus->AirCommandedOn;
@@ -156,16 +155,14 @@ void DigitalInputOutput::tryToggleHeartbeat() {
 void DigitalInputOutput::turnAirOn() {
 	Log.Info("DigitalInputOutput: turnAirOn()");
 	this->airSupplyStatus->AirCommandedOn = true;
-	// Polarity is swapped
-	uint16_t buffer[2] = { FPGAAddresses::AirSupplyValveControl, (uint16_t)(!this->airSupplyStatus->AirCommandedOn) };
+	uint16_t buffer[2] = { FPGAAddresses::AirSupplyValveControl, (uint16_t)this->airSupplyStatus->AirCommandedOn };
 	this->fpga->writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnAirOff() {
 	Log.Info("DigitalInputOutput: turnAirOff()");
 	this->airSupplyStatus->AirCommandedOn = false;
-	// Polarity is swapped
-	uint16_t buffer[2] = { FPGAAddresses::AirSupplyValveControl, (uint16_t)(!this->airSupplyStatus->AirCommandedOn) };
+	uint16_t buffer[2] = { FPGAAddresses::AirSupplyValveControl, (uint16_t)this->airSupplyStatus->AirCommandedOn };
 	this->fpga->writeCommandFIFO(buffer, 2, 0);
 }
 

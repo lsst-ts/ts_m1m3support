@@ -10,11 +10,11 @@
     <HP5EncoderOffset>-21824</HP5EncoderOffset>
     <HP6EncoderOffset>35572</HP6EncoderOffset>
     <PositionOffset>
-        <XPosition>+0.000667080</XPosition>
-        <YPosition>-0.001333109</YPosition>
-        <ZPosition>-0.014378586</ZPosition>
-        <XRotation>+0.000395251</XRotation>
-        <YRotation>+0.000008894</YRotation>
-        <ZRotation>-0.000351001</ZRotation>
+        <XPosition>+0.000592098</XPosition>
+        <YPosition>-0.001133089</YPosition>
+        <ZPosition>-0.014453649</ZPosition>
+        <XRotation>+0.000389421</XRotation>
+        <YRotation>-0.000009738</YRotation>
+        <ZRotation>-0.000344807</ZRotation>
     </PositionOffset>
 </HardpointActuatorSettings>
