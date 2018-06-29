@@ -24,6 +24,9 @@ SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerS
 	this->errorCodeData->ErrorCode = FaultCodes::NoFault;
 	this->errorCodeData->DetailedErrorCode = FaultCodes::NoFault;
 	this->publisher->logErrorCode();
+	for(int i = 0; i < this->safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
+		this->ilcCommunicationTimeoutData.push_back(0);
+	}
 }
 
 void SafetyController::clearErrorCode() {
@@ -105,6 +108,16 @@ void SafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool 
 void SafetyController::raiseOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->RaiseOperation.FaultOnTimeout, conditionFlag); }
 
 void SafetyController::lowerOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->LowerOperation.FaultOnTimeout, conditionFlag); }
+
+void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
+	this->ilcCommunicationTimeoutData.pop_front();
+	this->ilcCommunicationTimeoutData.push_back(conditionFlag ? 1 : 0);
+	int sum = 0;
+	for(std::list<int>::iterator i = this->ilcCommunicationTimeoutData.begin(); i != this->ilcCommunicationTimeoutData.end(); ++i) {
+		sum += (*i);
+	}
+	this->updateOverride(FaultCodes::ILCCommunicationTimeout, this->safetyControllerSettings->ILC.FaultOnCommunicationTimeout, sum >= this->safetyControllerSettings->ILC.CommunicationTimeoutCountThreshold);
+}
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {

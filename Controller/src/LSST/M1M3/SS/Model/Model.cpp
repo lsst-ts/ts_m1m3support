@@ -164,7 +164,7 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->ilc;
 	}
 	Log.Info("Model: Creating ILC");
-	this->ilc = new ILC(this->publisher, this->fpga, this->positionController, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings, hardpointMonitorApplicationSettings);
+	this->ilc = new ILC(this->publisher, this->fpga, this->positionController, ilcApplicationSettings, forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings, hardpointMonitorApplicationSettings, this->safetyController);
 
 	if (this->forceController) {
 		Log.Debug("Model: Deleting force controller");

@@ -21,6 +21,7 @@ class HardpointActuatorSettings;
 class ForceActuatorSettings;
 class M1M3SSPublisher;
 class ILCSubnetData;
+class SafetyController;
 
 class ILCResponseParser {
 private:
@@ -28,6 +29,7 @@ private:
 	ForceActuatorSettings* forceActuatorSettings;
 	M1M3SSPublisher* publisher;
 	ILCSubnetData* subnetData;
+	SafetyController* safetyController;
 
 	int32_t faExpectedResponses[156];
 	int32_t hpExpectedResponses[6];
@@ -59,7 +61,7 @@ private:
 
 public:
 	ILCResponseParser();
-	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData);
+	ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData, SafetyController* safetyController);
 
 	void parse(ModbusBuffer* buffer, uint8_t subnet);
 	void incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm);

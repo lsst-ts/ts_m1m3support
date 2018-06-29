@@ -1,16 +1,16 @@
 <PositionControllerSettings>
     <ForceToStepsCoefficient>-0.25</ForceToStepsCoefficient>
     <EncoderToStepsCoefficient>4.023064250411861614497528830313</EncoderToStepsCoefficient>
-    <MaxStepsPerLoop>50</MaxStepsPerLoop>
+    <MaxStepsPerLoop>60</MaxStepsPerLoop>
     <RaiseLowerForceLimitLow>-200</RaiseLowerForceLimitLow>
     <RaiseLowerForceLimitHigh>200</RaiseLowerForceLimitHigh>
     <RaiseLowerTimeoutInSeconds>600</RaiseLowerTimeoutInSeconds>
     <ReferencePosition>
-        <HP1Encoder>31493</HP1Encoder>
-        <HP2Encoder>38181</HP2Encoder>
-        <HP3Encoder>41702</HP3Encoder>
-        <HP4Encoder>45527</HP4Encoder>
-        <HP5Encoder>32464</HP5Encoder>
-        <HP6Encoder>41499</HP6Encoder>
+        <HP1Encoder>31659</HP1Encoder>
+        <HP2Encoder>38225</HP2Encoder>
+        <HP3Encoder>41580</HP3Encoder>
+        <HP4Encoder>45648</HP4Encoder>
+        <HP5Encoder>32419</HP5Encoder>
+        <HP6Encoder>41332</HP6Encoder>
     </ReferencePosition>
 </PositionControllerSettings>

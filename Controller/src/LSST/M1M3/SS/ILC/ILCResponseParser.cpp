@@ -13,6 +13,7 @@
 #include <ForceConverter.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ILCDataTypes.h>
+#include <SafetyController.h>
 #include <Timestamp.h>
 #include <ILCSubnetData.h>
 #include <SAL_m1m3C.h>
@@ -29,6 +30,7 @@ ILCResponseParser::ILCResponseParser() {
 	this->hardpointActuatorSettings = 0;
 	this->publisher = 0;
 	this->subnetData = 0;
+	this->safetyController = 0;
 	this->hardpointActuatorInfo = 0;
 	this->hardpointActuatorState = 0;
 	this->hardpointActuatorWarning = 0;
@@ -49,12 +51,13 @@ ILCResponseParser::ILCResponseParser() {
 	this->grabResponse = false;
 }
 
-ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData) {
+ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData, SafetyController* safetyController) {
 	Log.Debug("ILCResponseParser: ILCResponseParser()");
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->publisher = publisher;
 	this->subnetData = subnetData;
+	this->safetyController = safetyController;
 	this->hardpointActuatorInfo = this->publisher->getEventHardpointActuatorInfo();
 	this->hardpointActuatorState = this->publisher->getEventHardpointActuatorState();
 	this->hardpointActuatorWarning = this->publisher->getEventHardpointActuatorWarning();
@@ -274,6 +277,7 @@ void ILCResponseParser::clearResponses() {
 void ILCResponseParser::verifyResponses() {
 	double timestamp = this->publisher->getTimestamp();
 	bool warn = false;
+	bool anyTimeout = false;
 	for(int i = 0; i < FA_COUNT; i++) {
 		if (this->faExpectedResponses[i] != 0) {
 			warn = true;
@@ -282,6 +286,7 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
+		anyTimeout = true;
 		Log.Warn("ILCResponseParser: Force actuator response timeout");
 	}
 	warn = false;
@@ -293,6 +298,7 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
+		anyTimeout = true;
 		Log.Warn("ILCResponseParser: Hardpoint actuator response timeout");
 	}
 	warn = false;
@@ -305,8 +311,11 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
+		//anyTimeout = true;
 		//Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
 	}
+
+	this->safetyController->ilcCommunicationTimeout(anyTimeout);
 }
 
 void ILCResponseParser::grabNextResponse() {

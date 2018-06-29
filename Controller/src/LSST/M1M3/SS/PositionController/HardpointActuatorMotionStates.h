@@ -15,7 +15,8 @@ struct HardpointActuatorMotionStates {
 		Standby = 0,
 		Chasing = 1,
 		Stepping = 2,
-		Positioning = 3
+		QuickPositioning = 3,
+		FinePositioning = 4,
 	};
 };
 

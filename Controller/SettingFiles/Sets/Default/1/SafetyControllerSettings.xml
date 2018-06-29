@@ -86,4 +86,9 @@
         <FaultOnAngularAccelerationY>0</FaultOnAngularAccelerationY>
         <FaultOnAngularAccelerationZ>0</FaultOnAngularAccelerationZ>
     </AccelerometerSettings>
+    <ILCSettings>
+        <FaultOnCommunicationTimeout>1</FaultOnCommunicationTimeout>
+        <CommunicationTimeoutCountThreshold>3</CommunicationTimeoutCountThreshold>
+        <CommunicationTimeoutPeriod>5</CommunicationTimeoutPeriod>
+    </ILCSettings>
 </SafetyControllerSettings>
