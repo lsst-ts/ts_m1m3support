@@ -20,7 +20,8 @@ LoweringFaultState::LoweringFaultState(M1M3SSPublisher* publisher) : FaultState(
 States::Type LoweringFaultState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("LoweringFaultState: update()");
 	model->getPowerController()->setAllAuxPowerNetworks(false);
-	model->getDigitalInputOutput()->turnAirOff();
+	// TODO: Uncomment when its not so hot out
+	//model->getDigitalInputOutput()->turnAirOff();
 	FaultState::update(command, model);
 	return States::FaultState;
 }

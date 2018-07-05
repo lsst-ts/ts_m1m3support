@@ -52,9 +52,9 @@
     <ElevationLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitXTable.csv</ElevationLimitXTablePath>
     <ElevationLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitYTable.csv</ElevationLimitYTablePath>
     <ElevationLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitZTable.csv</ElevationLimitZTablePath>
-    <ForceLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitXTable.csv</ForceLimitXTablePath>
-    <ForceLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitYTable.csv</ForceLimitYTablePath>
-    <ForceLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitZTable.csv</ForceLimitZTablePath>
+    <ForceLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitXTableNone.csv</ForceLimitXTablePath>
+    <ForceLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitYTableNone.csv</ForceLimitYTablePath>
+    <ForceLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitZTableNone.csv</ForceLimitZTablePath>
     <OffsetLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitXTable.csv</OffsetLimitXTablePath>
     <OffsetLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitYTable.csv</OffsetLimitYTablePath>
     <OffsetLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitZTable.csv</OffsetLimitZTablePath>

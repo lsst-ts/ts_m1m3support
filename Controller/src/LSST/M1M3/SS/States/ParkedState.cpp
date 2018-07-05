@@ -58,7 +58,8 @@ States::Type ParkedState::disable(DisableCommand* command, Model* model) {
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
-	model->getDigitalInputOutput()->turnAirOff();
+	// TODO: Uncomment this when its not so hot outside
+	//model->getDigitalInputOutput()->turnAirOff();
 	model->getPowerController()->setAllAuxPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
 }

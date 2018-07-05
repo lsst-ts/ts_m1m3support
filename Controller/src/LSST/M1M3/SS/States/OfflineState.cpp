@@ -21,8 +21,10 @@ States::Type OfflineState::boot(BootCommand* command, Model* model) {
 	Log.Info("OfflineState: boot()");
 	States::Type newState = States::StandbyState;
 	model->publishRecommendedSettings();
-	model->getDigitalInputOutput()->turnAirOff();
-	model->getDigitalInputOutput()->turnCellLightsOff();
+	//model->getDigitalInputOutput()->turnAirOff();
+	//model->getDigitalInputOutput()->turnCellLightsOff();
+	model->getDigitalInputOutput()->turnCellLightsOn();
+	model->getDigitalInputOutput()->turnAirOn();
 	// TODO: May need to change power controller to act like digital input output
 //	model->getPowerController()->setBothPowerNetworks(false);
 	return newState;

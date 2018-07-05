@@ -129,6 +129,9 @@ bool PositionController::move(int32_t* steps) {
 	}
 	for(int i = 0; i < HP_COUNT; ++i) {
 		this->scaledMaxStepsPerLoop[i] = (int32_t)(this->positionControllerSettings->MaxStepsPerLoop /(maxLoopCycles/loopCycles[i]));
+		if (this->scaledMaxStepsPerLoop[i] == 0) {
+			this->scaledMaxStepsPerLoop[i] = 1;
+		}
 	}
 	this->publisher->tryLogHardpointActuatorState();
 	return true;
@@ -150,7 +153,23 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
 	for(int i = 0; i < HP_COUNT; i++) {
 		this->targetEncoderValues[i] = encoderValues[i];
 		this->stableEncoderCount[i] = 0;
-		this->hardpointActuatorData->StepsQueued[i] = (this->targetEncoderValues[i] - this->hardpointActuatorData->Encoder[i]) * this->positionControllerSettings->EncoderToStepsCoefficient;
+		int deltaEncoder = this->targetEncoderValues[i] - this->hardpointActuatorData->Encoder[i];
+		// If we overshoot our target encoder value we have to clear what appears to be quite a bit of backlash
+		// So lets not overshoot our target
+		if (deltaEncoder > 0) {
+			deltaEncoder -= 4;
+			// We are already very close to our target so lets not do anything during the quick positioning phase
+			if (deltaEncoder < 0) {
+				deltaEncoder = 0;
+			}
+		}
+		else if (deltaEncoder < 0) {
+			deltaEncoder += 4;
+			if (deltaEncoder > 0) {
+				deltaEncoder = 0;
+			}
+		}
+		this->hardpointActuatorData->StepsQueued[i] = deltaEncoder * this->positionControllerSettings->EncoderToStepsCoefficient;
 		this->hardpointActuatorState->MotionState[i] = this->hardpointActuatorData->StepsQueued[i] != 0 ? HardpointActuatorMotionStates::QuickPositioning : HardpointActuatorMotionStates::Standby;
 		loopCycles[i] = this->abs(this->hardpointActuatorData->StepsQueued[i]) / (double)this->positionControllerSettings->MaxStepsPerLoop;
 		if (loopCycles[i] > maxLoopCycles) {
@@ -159,6 +178,9 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
 	}
 	for(int i = 0; i < HP_COUNT; ++i) {
 		this->scaledMaxStepsPerLoop[i] = (int32_t)(this->positionControllerSettings->MaxStepsPerLoop /(maxLoopCycles/loopCycles[i]));
+		if (this->scaledMaxStepsPerLoop[i] == 0) {
+			this->scaledMaxStepsPerLoop[i] = 1;
+		}
 	}
 	this->publisher->tryLogHardpointActuatorState();
 	return true;

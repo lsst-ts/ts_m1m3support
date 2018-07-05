@@ -753,7 +753,7 @@ void ForceController::updateElevationForces() {
 				this->forceActuatorSettings->ElevationXTable[mIndex + 2] * elevationMatrix[2] +
 				this->forceActuatorSettings->ElevationXTable[mIndex + 3] * elevationMatrix[3] +
 				this->forceActuatorSettings->ElevationXTable[mIndex + 4] * elevationMatrix[4] +
-				this->forceActuatorSettings->ElevationXTable[mIndex + 5]);
+				this->forceActuatorSettings->ElevationXTable[mIndex + 5]) * this->forceActuatorState->SupportPercentage;
 			this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] ||
 				!Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedElevationForces->XForces[xIndex], this->appliedElevationForces->XForces + xIndex);
 		}
@@ -767,7 +767,7 @@ void ForceController::updateElevationForces() {
 				this->forceActuatorSettings->ElevationYTable[mIndex + 2] * elevationMatrix[2] +
 				this->forceActuatorSettings->ElevationYTable[mIndex + 3] * elevationMatrix[3] +
 				this->forceActuatorSettings->ElevationYTable[mIndex + 4] * elevationMatrix[4] +
-				this->forceActuatorSettings->ElevationYTable[mIndex + 5]);
+				this->forceActuatorSettings->ElevationYTable[mIndex + 5]) * this->forceActuatorState->SupportPercentage;
 			this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] ||
 				!Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedElevationForces->YForces[yIndex], this->appliedElevationForces->YForces + yIndex);
 		}
@@ -780,7 +780,7 @@ void ForceController::updateElevationForces() {
 			this->forceActuatorSettings->ElevationZTable[mIndex + 2] * elevationMatrix[2] +
 			this->forceActuatorSettings->ElevationZTable[mIndex + 3] * elevationMatrix[3] +
 			this->forceActuatorSettings->ElevationZTable[mIndex + 4] * elevationMatrix[4] +
-			this->forceActuatorSettings->ElevationZTable[mIndex + 5]);
+			this->forceActuatorSettings->ElevationZTable[mIndex + 5]) * this->forceActuatorState->SupportPercentage;
 		this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] ||
 			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedElevationForces->ZForces[zIndex], this->appliedElevationForces->ZForces + zIndex);
 		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ElevationForceWarning[zIndex];
@@ -1464,7 +1464,7 @@ void ForceController::sumAllForces() {
 				this->appliedOffsetForces->XForces[xIndex] +
 				this->appliedStaticForces->XForces[xIndex] +
 				this->appliedThermalForces->XForces[xIndex] +
-				this->appliedVelocityForces->XForces[xIndex]) * this->forceActuatorState->SupportPercentage;
+				this->appliedVelocityForces->XForces[xIndex]);
 			this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] ||
 				!Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedForces->XForces[xIndex], this->appliedForces->XForces + xIndex);
 		}
@@ -1480,7 +1480,7 @@ void ForceController::sumAllForces() {
 				this->appliedOffsetForces->YForces[yIndex] +
 				this->appliedStaticForces->YForces[yIndex] +
 				this->appliedThermalForces->YForces[yIndex] +
-				this->appliedVelocityForces->YForces[yIndex]) * this->forceActuatorState->SupportPercentage;
+				this->appliedVelocityForces->YForces[yIndex]);
 			this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] ||
 				!Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedForces->YForces[yIndex], this->appliedForces->YForces + yIndex);
 		}
@@ -1497,7 +1497,7 @@ void ForceController::sumAllForces() {
 			this->appliedOffsetForces->ZForces[zIndex] +
 			this->appliedStaticForces->ZForces[zIndex] +
 			this->appliedThermalForces->ZForces[zIndex] +
-			this->appliedVelocityForces->ZForces[zIndex]) * this->forceActuatorState->SupportPercentage;
+			this->appliedVelocityForces->ZForces[zIndex]);
 		this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] ||
 			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->ZForces[zIndex], this->appliedForces->ZForces + zIndex);
 		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ForceWarning[zIndex];

@@ -77,13 +77,6 @@ States::Type DisabledState::enable(EnableCommand* command, Model* model) {
 States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
 	Log.Info("DisabledState: standby()");
 	States::Type newState = States::StandbyState;
-	Log.Info("SetModeDisable");
-	model->getILC()->writeSetModeDisableBuffer();
-	model->getILC()->triggerModbus();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getPublisher()->tryLogForceActuatorState();
-	Log.Info("SetModeStandby");
 	model->getILC()->writeSetModeStandbyBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
