@@ -37,6 +37,8 @@ Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
 	this->lastErrorTimestamp = 0;
 	this->lastSampleTimestamp = 0;
 
+	this->errorCleared = false;
+
 	memset(this->gyroData, 0, sizeof(m1m3_GyroDataC));
 	memset(this->gyroWarning, 0, sizeof(m1m3_logevent_GyroWarningC));
 }
@@ -98,22 +100,17 @@ void Gyro::processData() {
 	// TODO: Handle limits, push to safety controller
 	Log.Trace("Gyro: processData()");
 	bool tryLogWarning = false;
-	if (this->fpgaData->GyroSampleTimestamp != this->lastSampleTimestamp) {
-		this->lastSampleTimestamp = this->fpgaData->GyroSampleTimestamp;
-		this->gyroData->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
-		this->gyroData->AngularVelocityX = this->fpgaData->GyroRawX + this->gyroSettings->AngularVelocityXOffset;
-		this->gyroData->AngularVelocityY = this->fpgaData->GyroRawY + this->gyroSettings->AngularVelocityYOffset;
-		this->gyroData->AngularVelocityZ = this->fpgaData->GyroRawZ + this->gyroSettings->AngularVelocityZOffset;
-		this->gyroData->SequenceNumber = this->fpgaData->GyroSequenceNumber;
-		this->gyroData->Temperature = this->fpgaData->GyroTemperature;
-		uint8_t status = this->fpgaData->GyroStatus;
-		this->gyroWarning->GyroXStatusWarning = (status & 0x01) == 0;
-		this->gyroWarning->GyroYStatusWarning = (status & 0x02) == 0;
-		this->gyroWarning->GyroZStatusWarning = (status & 0x04) == 0;
-		this->publisher->putGyroData();
+	if (this->fpgaData->GyroErrorTimestamp > this->lastErrorTimestamp) {
+		this->lastErrorTimestamp = this->fpgaData->GyroErrorTimestamp;
+		this->errorCleared = false;
+		this->gyroWarning->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroErrorTimestamp);
+		this->gyroWarning->InvalidHeaderWarning = this->fpgaData->GyroErrorCode == 1;
+		this->gyroWarning->CRCMismatchWarning = this->fpgaData->GyroErrorCode == 2 || this->fpgaData->GyroErrorCode == 4;
+		this->gyroWarning->IncompleteFrameWarning = this->fpgaData->GyroErrorCode == 3;
+		// TODO: Add Checksum Error
 		tryLogWarning = true;
 	}
-	if (this->fpgaData->GyroBITTimestamp != this->lastBITTimestamp) {
+	if (this->fpgaData->GyroBITTimestamp > this->lastBITTimestamp) {
 		this->lastBITTimestamp = this->fpgaData->GyroBITTimestamp;
 		this->gyroWarning->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroBITTimestamp);
 		uint8_t word0 = this->fpgaData->GyroBIT0;
@@ -164,14 +161,30 @@ void Gyro::processData() {
 		this->gyroWarning->MSYNCExternalTimingWarning = (word7 & 0x02) == 0;
 		tryLogWarning = true;
 	}
-	if (this->fpgaData->GyroErrorTimestamp != this->lastErrorTimestamp) {
-		this->lastErrorTimestamp = this->fpgaData->GyroErrorTimestamp;
-		this->gyroWarning->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroErrorTimestamp);
-		this->gyroWarning->InvalidHeaderWarning = this->fpgaData->GyroErrorCode == 1;
-		this->gyroWarning->CRCMismatchWarning = this->fpgaData->GyroErrorCode == 2 || this->fpgaData->GyroErrorCode == 4;
-		this->gyroWarning->IncompleteFrameWarning = this->fpgaData->GyroErrorCode == 3;
-		// TODO: Add Checksum Error
+	if (this->fpgaData->GyroSampleTimestamp > this->lastSampleTimestamp) {
+		this->lastSampleTimestamp = this->fpgaData->GyroSampleTimestamp;
+		this->gyroData->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
+		this->gyroData->AngularVelocityX = this->fpgaData->GyroRawX + this->gyroSettings->AngularVelocityXOffset;
+		this->gyroData->AngularVelocityY = this->fpgaData->GyroRawY + this->gyroSettings->AngularVelocityYOffset;
+		this->gyroData->AngularVelocityZ = this->fpgaData->GyroRawZ + this->gyroSettings->AngularVelocityZOffset;
+		this->gyroData->SequenceNumber = this->fpgaData->GyroSequenceNumber;
+		this->gyroData->Temperature = this->fpgaData->GyroTemperature;
+		uint8_t status = this->fpgaData->GyroStatus;
+		this->gyroWarning->GyroXStatusWarning = (status & 0x01) == 0;
+		this->gyroWarning->GyroYStatusWarning = (status & 0x02) == 0;
+		this->gyroWarning->GyroZStatusWarning = (status & 0x04) == 0;
+		this->publisher->putGyroData();
 		tryLogWarning = true;
+		if (!this->errorCleared && this->fpgaData->GyroSampleTimestamp > this->lastErrorTimestamp) {
+			this->lastErrorTimestamp = this->fpgaData->GyroErrorTimestamp;
+			this->errorCleared = true;
+			this->gyroWarning->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
+			this->gyroWarning->InvalidHeaderWarning = false;
+			this->gyroWarning->CRCMismatchWarning = false;
+			this->gyroWarning->IncompleteFrameWarning = false;
+			// TODO: Add Checksum Error
+			tryLogWarning = true;
+		}
 	}
 	if (tryLogWarning) {
 		this->publisher->tryLogGyroWarning();

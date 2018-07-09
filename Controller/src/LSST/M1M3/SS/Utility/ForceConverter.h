@@ -11,6 +11,7 @@
 #include <DataTypes.h>
 #include <cmath>
 #include <ForcesAndMoments.h>
+#include <DistributedForces.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -56,6 +57,8 @@ public:
 	}
 
 	static ForcesAndMoments calculateForcesAndMoments(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, float* xForces, float* yForces, float* zForces);
+
+	static DistributedForces calculateForceDistribution(ForceActuatorSettings* forceActuatorSettings, float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
 
 };
 

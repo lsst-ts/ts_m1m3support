@@ -34,7 +34,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
    fz(2, pidSettings->Fz, publisher),
    mx(3, pidSettings->Mx, publisher),
    my(4, pidSettings->My, publisher),
-   mz(5, pidSettings->Mz, publisher) {
+   mz(5, pidSettings->Mz, publisher),
+   offsetForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings) {
 	Log.Debug("ForceController: ForceController()");
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
@@ -217,6 +218,8 @@ bool ForceController::supportPercentageZeroed() {
 void ForceController::updateAppliedForces() {
 	Log.Trace("ForceController: updateAppliedForces()");
 
+	this->offsetForceComponent.update();
+
 	if (this->forceActuatorState->AccelerationForcesApplied) {
 		this->updateAccelerationForces();
 	}
@@ -385,6 +388,8 @@ void ForceController::updateAccelerationForces() {
 	}
 	this->setAppliedAccelerationForcesAndMoments();
 	this->setRejectedAccelerationForcesAndMoments();
+	this->appliedAccelerationForces->Timestamp = this->publisher->getTimestamp();
+	this->rejectedAccelerationForces->Timestamp = this->appliedAccelerationForces->Timestamp;
 	this->safetyController->forceControllerNotifyAccelerationForceClipping(rejectionRequired);
 	this->publisher->tryLogForceSetpointWarning();
 	if (rejectionRequired) {
@@ -662,6 +667,8 @@ void ForceController::updateBalanceForces() {
 	}
 	this->setAppliedBalanceForcesAndMoments();
 	this->setRejectedBalanceForcesAndMoments();
+	this->appliedBalanceForces->Timestamp = this->publisher->getTimestamp();
+	this->rejectedBalanceForces->Timestamp = this->appliedBalanceForces->Timestamp;
 	this->safetyController->forceControllerNotifyBalanceForceClipping(rejectionRequired);
 	this->publisher->tryLogForceSetpointWarning();
 	if (rejectionRequired) {
@@ -787,6 +794,8 @@ void ForceController::updateElevationForces() {
 	}
 	this->setAppliedElevationForcesAndMoments();
 	this->setRejectedElevationForcesAndMoments();
+	this->appliedElevationForces->Timestamp = this->publisher->getTimestamp();
+	this->rejectedElevationForces->Timestamp = this->appliedElevationForces->Timestamp;
 	this->safetyController->forceControllerNotifyElevationForceClipping(rejectionRequired);
 	this->publisher->tryLogForceSetpointWarning();
 	if (rejectionRequired) {
@@ -824,96 +833,17 @@ void ForceController::zeroElevationForces() {
 
 void ForceController::applyOffsetForces(float* x, float* y, float* z) {
 	Log.Info("ForceController: applyOffsetForces()");
-	bool rejectionRequired = false;
-	this->forceActuatorState->OffsetForcesApplied = true;
-	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
-	this->appliedOffsetForces->Timestamp = this->forceActuatorState->Timestamp;
-	this->rejectedOffsetForces->Timestamp = this->forceActuatorState->Timestamp;
-	for(int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		this->forceSetpointWarning->OffsetForceWarning[zIndex] = false;
-
-		if (xIndex != -1) {
-			float xLowFault = this->forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
-			float xHighFault = this->forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
-			this->rejectedOffsetForces->XForces[xIndex] = x[xIndex];
-			this->forceSetpointWarning->OffsetForceWarning[zIndex] = this->forceSetpointWarning->OffsetForceWarning[zIndex] ||
-				!Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedOffsetForces->XForces[xIndex], this->appliedOffsetForces->XForces + xIndex);
-		}
-
-		if (yIndex != -1) {
-			float yLowFault = this->forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
-			float yHighFault = this->forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
-			this->rejectedOffsetForces->YForces[yIndex] = y[yIndex];
-			this->forceSetpointWarning->OffsetForceWarning[zIndex] = this->forceSetpointWarning->OffsetForceWarning[zIndex] ||
-				!Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedOffsetForces->YForces[yIndex], this->appliedOffsetForces->YForces + yIndex);
-		}
-
-		float zLowFault = this->forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
-		float zHighFault = this->forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
-		this->rejectedOffsetForces->ZForces[zIndex] = z[zIndex];
-		this->forceSetpointWarning->OffsetForceWarning[zIndex] = this->forceSetpointWarning->OffsetForceWarning[zIndex] ||
-			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedOffsetForces->ZForces[zIndex], this->appliedOffsetForces->ZForces + zIndex);
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->OffsetForceWarning[zIndex];
-	}
-	this->setAppliedOffsetForcesAndMoments();
-	this->setRejectedOffsetForcesAndMoments();
-	this->safetyController->forceControllerNotifyOffsetForceClipping(rejectionRequired);
-	this->publisher->tryLogForceSetpointWarning();
-	if (rejectionRequired) {
-		this->publisher->logRejectedOffsetForces();
-	}
-	this->publisher->logAppliedOffsetForces();
-	this->publisher->tryLogForceActuatorState();
+	this->offsetForceComponent.applyOffsetForces(x, y, z);
 }
 
 void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
 	Log.Info("ForceController: applyOffsetForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
-	DistributedForces forces = this->calculateDistribution(xForce, yForce, zForce, xMoment, yMoment, zMoment);
-	float xForces[12];
-	float yForces[100];
-	float zForces[156];
-	for(int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		if (xIndex != -1) {
-			xForces[xIndex] = forces.XForces[zIndex];
-		}
-		if (yIndex != -1) {
-			yForces[yIndex] = forces.YForces[zIndex];
-		}
-		zForces[zIndex] = forces.ZForces[zIndex];
-	}
-	this->applyOffsetForces(xForces, yForces, zForces);
+	this->offsetForceComponent.applyOffsetForcesByMirrorForces(xForce, yForce, zForce, xMoment, yMoment, zMoment);
 }
 
 void ForceController::zeroOffsetForces() {
 	Log.Info("ForceController: zeroOffsetForces()");
-	this->forceActuatorState->OffsetForcesApplied = false;
-	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
-	this->appliedOffsetForces->Timestamp = this->forceActuatorState->Timestamp;
-	for(int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		if (xIndex != -1) {
-			this->appliedOffsetForces->XForces[xIndex] = 0;
-		}
-		if (yIndex != -1) {
-			this->appliedOffsetForces->YForces[yIndex] = 0;
-		}
-		this->appliedOffsetForces->ZForces[zIndex] = 0;
-		this->forceSetpointWarning->OffsetForceWarning[zIndex] = false;
-	}
-	this->setAppliedOffsetForcesAndMoments();
-	this->setRejectedOffsetForcesAndMoments();
-	this->safetyController->forceControllerNotifyOffsetForceClipping(false);
-	this->publisher->tryLogForceSetpointWarning();
-	this->publisher->tryLogAppliedOffsetForces();
-	this->publisher->tryLogForceActuatorState();
+	this->offsetForceComponent.disable();
 }
 
 void ForceController::applyStaticForces() {
@@ -1052,6 +982,8 @@ void ForceController::updateThermalForces() {
 	}
 	this->setAppliedThermalForcesAndMoments();
 	this->setRejectedThermalForcesAndMoments();
+	this->appliedThermalForces->Timestamp = this->publisher->getTimestamp();
+	this->rejectedThermalForces->Timestamp = this->appliedThermalForces->Timestamp;
 	this->safetyController->forceControllerNotifyThermalForceClipping(rejectionRequired);
 	this->publisher->tryLogForceSetpointWarning();
 	if (rejectionRequired) {
@@ -1150,6 +1082,8 @@ void ForceController::updateVelocityForces() {
 	}
 	this->setAppliedVelocityForcesAndMoments();
 	this->setRejectedVelocityForcesAndMoments();
+	this->appliedVelocityForces->Timestamp = this->publisher->getTimestamp();
+	this->rejectedVelocityForces->Timestamp = this->appliedVelocityForces->Timestamp;
 	this->safetyController->forceControllerNotifyVelocityForceClipping(rejectionRequired);
 	this->publisher->tryLogForceSetpointWarning();
 	if (rejectionRequired) {
@@ -1504,6 +1438,8 @@ void ForceController::sumAllForces() {
 	}
 	this->setAppliedForcesAndMoments();
 	this->setRejectedForcesAndMoments();
+	this->appliedForces->Timestamp = this->publisher->getTimestamp();
+	this->rejectedForces->Timestamp = this->appliedForces->Timestamp;
 	this->safetyController->forceControllerNotifyForceClipping(rejectionRequired);
 	this->publisher->tryLogForceSetpointWarning();
 	if (rejectionRequired) {
@@ -1567,6 +1503,8 @@ void ForceController::convertForcesToSetpoints() {
 
 		rejectionRequired = rejectionRequired || this->forceSetpointWarning->SafetyLimitWarning[pIndex];
 	}
+	this->appliedCylinderForces->Timestamp = this->publisher->getTimestamp();
+	this->rejectedCylinderForces->Timestamp = this->appliedCylinderForces->Timestamp;
 	this->safetyController->forceControllerNotifySafetyLimit(rejectionRequired);
 	if (rejectionRequired) {
 		this->publisher->logRejectedCylinderForces();
@@ -1579,9 +1517,9 @@ bool ForceController::checkMirrorMoments() {
 	float xMoment = this->appliedForces->Mx;
 	float yMoment = this->appliedForces->My;
 	float zMoment = this->appliedForces->Mz;
-	this->forceSetpointWarning->XMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentLowLimitPercentage, this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentHighLimitPercentage, xMoment);
-	this->forceSetpointWarning->YMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentLowLimitPercentage, this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentHighLimitPercentage, yMoment);
-	this->forceSetpointWarning->ZMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentLowLimitPercentage, this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentHighLimitPercentage, zMoment);
+	this->forceSetpointWarning->XMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentHighLimitPercentage, this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentLowLimitPercentage, xMoment);
+	this->forceSetpointWarning->YMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentHighLimitPercentage, this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentLowLimitPercentage, yMoment);
+	this->forceSetpointWarning->ZMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentHighLimitPercentage, this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentLowLimitPercentage, zMoment);
 	this->safetyController->forceControllerNotifyXMomentLimit(this->forceSetpointWarning->XMomentWarning);
 	this->safetyController->forceControllerNotifyYMomentLimit(this->forceSetpointWarning->YMomentWarning);
 	this->safetyController->forceControllerNotifyZMomentLimit(this->forceSetpointWarning->ZMomentWarning);

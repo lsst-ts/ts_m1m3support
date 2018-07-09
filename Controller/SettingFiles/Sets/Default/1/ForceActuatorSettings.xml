@@ -75,9 +75,9 @@
     <ForceActuatorNeighborsTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorNeighborsTable.csv</ForceActuatorNeighborsTablePath>
     <UseInclinometer>1</UseInclinometer>
     <MirrorWeight>166343.379</MirrorWeight>
-    <MirrorXMoment>-572069</MirrorXMoment>
-    <MirrorYMoment>-572069</MirrorYMoment>
-    <MirrorZMoment>-572069</MirrorZMoment>
+    <MirrorXMoment>-65311</MirrorXMoment>
+    <MirrorYMoment>-20000</MirrorYMoment>
+    <MirrorZMoment>-20000</MirrorZMoment>
     <SetpointXMomentLowLimitPercentage>-0.2</SetpointXMomentLowLimitPercentage>
     <SetpointXMomentHighLimitPercentage>1.2</SetpointXMomentHighLimitPercentage>
     <SetpointYMomentLowLimitPercentage>-0.2</SetpointYMomentLowLimitPercentage>

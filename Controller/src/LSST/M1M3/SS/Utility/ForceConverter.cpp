@@ -51,6 +51,35 @@ ForcesAndMoments ForceConverter::calculateForcesAndMoments(ForceActuatorApplicat
 	return fm;
 }
 
+DistributedForces ForceConverter::calculateForceDistribution(ForceActuatorSettings* forceActuatorSettings, float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
+	DistributedForces forces;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		forces.XForces[i] = 0;
+		forces.YForces[i] = 0;
+		forces.ZForces[i] = 0;
+		forces.XForces[i] += forceActuatorSettings->ForceDistributionXTable[i * 3 + 0] * xForce;
+		forces.YForces[i] += forceActuatorSettings->ForceDistributionXTable[i * 3 + 1] * xForce;
+		forces.ZForces[i] += forceActuatorSettings->ForceDistributionXTable[i * 3 + 2] * xForce;
+		forces.XForces[i] += forceActuatorSettings->ForceDistributionYTable[i * 3 + 0] * yForce;
+		forces.YForces[i] += forceActuatorSettings->ForceDistributionYTable[i * 3 + 1] * yForce;
+		forces.ZForces[i] += forceActuatorSettings->ForceDistributionYTable[i * 3 + 2] * yForce;
+		forces.XForces[i] += forceActuatorSettings->ForceDistributionZTable[i * 3 + 0] * zForce;
+		forces.YForces[i] += forceActuatorSettings->ForceDistributionZTable[i * 3 + 1] * zForce;
+		forces.ZForces[i] += forceActuatorSettings->ForceDistributionZTable[i * 3 + 2] * zForce;
+		// The moment table produces forces in millinewtons, need to multiply by 1000 to bring it up to newtons
+		forces.XForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 0] * xMoment * 1000.0;
+		forces.YForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 1] * xMoment * 1000.0;
+		forces.ZForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 2] * xMoment * 1000.0;
+		forces.XForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 0] * yMoment * 1000.0;
+		forces.YForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 1] * yMoment * 1000.0;
+		forces.ZForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 2] * yMoment * 1000.0;
+		forces.XForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 0] * zMoment * 1000.0;
+		forces.YForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 1] * zMoment * 1000.0;
+		forces.ZForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 2] * zMoment * 1000.0;
+	}
+	return forces;
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

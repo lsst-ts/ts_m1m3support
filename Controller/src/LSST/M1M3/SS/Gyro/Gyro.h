@@ -40,6 +40,8 @@ private:
 	uint64_t lastBITTimestamp;
 	uint64_t lastErrorTimestamp;
 
+	bool errorCleared;
+
 public:
 	/*!
 	 * Instantiates the gyro sensor.

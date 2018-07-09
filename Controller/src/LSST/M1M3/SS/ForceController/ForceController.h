@@ -16,6 +16,7 @@
 #include <DistributedForces.h>
 #include <PID.h>
 #include <vector>
+#include <OffsetForceComponent.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -44,6 +45,8 @@ private:
 	PIDSettings* pidSettings;
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
+
+	OffsetForceComponent offsetForceComponent;
 
 	m1m3_logevent_AppliedAberrationForcesC* appliedAberrationForces;
 	m1m3_logevent_AppliedAccelerationForcesC* appliedAccelerationForces;
@@ -131,7 +134,6 @@ public:
 
 	void applyElevationForces();
 	void updateElevationForces();
-	void updateElevationForces(float elevation);
 	void zeroElevationForces();
 
 	void applyOffsetForces(float* x, float* y, float* z);

@@ -582,7 +582,7 @@ void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffe
 	// 0x02 is reserved
 	this->hardpointActuatorWarning->LimitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
 	this->hardpointActuatorWarning->LimitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
-	this->hardpointActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->hardpointActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	int32_t offset = 0;
 	switch(map.ActuatorId) {
 	case 1: offset = this->hardpointActuatorSettings->HP1EncoderOffset; break;
@@ -630,7 +630,7 @@ void ILCResponseParser::parseSingleAxisForceDemandResponse(ModbusBuffer* buffer,
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
@@ -650,7 +650,7 @@ void ILCResponseParser::parseDualAxisForceDemandResponse(ModbusBuffer* buffer, I
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
 	float x = 0;
@@ -690,7 +690,7 @@ void ILCResponseParser::parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
@@ -710,7 +710,7 @@ void ILCResponseParser::parseDualAxisPneumaticForceStatusResponse(ModbusBuffer* 
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
 	float x = 0;
