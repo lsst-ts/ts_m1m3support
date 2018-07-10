@@ -21,6 +21,8 @@ namespace M1M3 {
 namespace SS {
 
 OffsetForceComponent::OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings) {
+	this->name = "Offset";
+
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -29,11 +31,12 @@ OffsetForceComponent::OffsetForceComponent(M1M3SSPublisher* publisher, SafetyCon
 	this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
 	this->appliedOffsetForces = this->publisher->getEventAppliedOffsetForces();
 	this->rejectedOffsetForces = this->publisher->getEventRejectedOffsetForces();
-	this->maxLimit = 5000.0;
+	this->maxRateOfChange = this->forceActuatorSettings->OffsetComponentSettings.MaxRateOfChange;
+	this->nearZeroValue = this->forceActuatorSettings->OffsetComponentSettings.NearZeroValue;
 }
 
 void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
-	Log.Trace("OffsetForceComponent: applyOffsetForces()");
+	Log.Info("OffsetForceComponent: applyOffsetForces()");
 	if (!this->enabled) {
 		this->enable();
 	}
@@ -51,7 +54,7 @@ void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
 }
 
 void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
-	Log.Trace("OffsetForceComponent: applyOffsetForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
+	Log.Info("OffsetForceComponent: applyOffsetForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
 	DistributedForces forces = ForceConverter::calculateForceDistribution(this->forceActuatorSettings, xForce, yForce, zForce, xMoment, yMoment, zMoment);
 	float xForces[12];
 	float yForces[100];
@@ -80,7 +83,7 @@ void OffsetForceComponent::postEnableDisableActions() {
 }
 
 void OffsetForceComponent::postUpdateActions() {
-	Log.Trace("ForceController: postUpdateActions()");
+	Log.Trace("OffsetForceController: postUpdateActions()");
 
 	bool rejectionRequired = false;
 	this->appliedOffsetForces->Timestamp = this->publisher->getTimestamp();

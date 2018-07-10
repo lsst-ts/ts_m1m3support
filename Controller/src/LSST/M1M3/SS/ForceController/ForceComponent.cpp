@@ -7,6 +7,7 @@
 
 #include <ForceComponent.h>
 #include <cstring>
+#include <cmath>
 #include <Log.h>
 
 namespace LSST {
@@ -14,9 +15,12 @@ namespace M1M3 {
 namespace SS {
 
 ForceComponent::ForceComponent() {
+	this->name = "UNDEFINED";
+
 	this->enabled = false;
 	this->disabling = false;
-	this->maxLimit = 15000.0;
+	this->maxRateOfChange = 15000.0;
+	this->nearZeroValue = 10.0;
 
 	memset(this->xCurrent, 0, sizeof(this->xCurrent));
 	memset(this->yCurrent, 0, sizeof(this->yCurrent));
@@ -35,7 +39,7 @@ bool ForceComponent::isEnabled() { return this->enabled; }
 
 void ForceComponent::enable() {
 	// Enable and set the target to 0N
-	Log.Info("Enabling Component");
+	Log.Info("%sForceComponent: enable()", this->name.c_str());
 	this->enabled = true;
 	memset(this->xTarget, 0, sizeof(this->xTarget));
 	memset(this->yTarget, 0, sizeof(this->yTarget));
@@ -45,7 +49,7 @@ void ForceComponent::enable() {
 
 void ForceComponent::disable() {
 	// Start disabling and driving to 0N
-	Log.Info("Disabling Component");
+	Log.Info("%sForceComponent: disable()", this->name.c_str());
 	this->disabling = true;
 	memset(this->xTarget, 0, sizeof(this->xTarget));
 	memset(this->yTarget, 0, sizeof(this->yTarget));
@@ -64,17 +68,17 @@ void ForceComponent::update() {
 		bool nearZero = true;
 		for(int i = 0; i < 156 && nearZero; ++i) {
 			if (i < 12) {
-				nearZero = nearZero && this->xCurrent[i] < 1.0 && this->xCurrent[i] > -1.0;
+				nearZero = nearZero && this->xCurrent[i] < this->nearZeroValue && this->xCurrent[i] > -this->nearZeroValue;
 			}
 
 			if (i < 100) {
-				nearZero = nearZero && this->yCurrent[i] < 1.0 && this->yCurrent[i] > -1.0;
+				nearZero = nearZero && this->yCurrent[i] < this->nearZeroValue && this->yCurrent[i] > -this->nearZeroValue;
 			}
 
-			nearZero = nearZero && this->zCurrent[i] < 1.0 && this->zCurrent[i] > -1.0;
+			nearZero = nearZero && this->zCurrent[i] < this->nearZeroValue && this->zCurrent[i] > -this->nearZeroValue;
 		}
 		if (nearZero) {
-			Log.Info("Component Disabled");
+			Log.Info("%sForceComponent: Is now disabled", this->name.c_str());
 			this->disabling = false;
 			this->enabled = false;
 			memset(this->xCurrent, 0, sizeof(this->xCurrent));
@@ -93,28 +97,27 @@ void ForceComponent::update() {
 		for(int i = 0; i < 156; ++i) {
 			if (i < 12) {
 				this->xOffset[i] = this->xTarget[i] - this->xCurrent[i];
-				if (this->xOffset[i] > largestDelta) {
-					largestDelta = this->xOffset[i];
+				if (std::abs(this->xOffset[i]) > largestDelta) {
+					largestDelta = std::abs(this->xOffset[i]);
 				}
 			}
 
 			if (i < 100) {
 				this->yOffset[i] = this->yTarget[i] - this->yCurrent[i];
-				if (this->yOffset[i] > largestDelta) {
-					largestDelta = this->yOffset[i];
+				if (std::abs(this->yOffset[i]) > largestDelta) {
+					largestDelta = std::abs(this->yOffset[i]);
 				}
 			}
 
 			this->zOffset[i] = this->zTarget[i] - this->zCurrent[i];
-			if (this->zOffset[i]> largestDelta) {
-				largestDelta = this->zOffset[i];
+			if (std::abs(this->zOffset[i]) > largestDelta) {
+				largestDelta = std::abs(this->zOffset[i]);
 			}
 		}
 		// Determine how many outer loop cycles it will take to drive the
 		// largest delta to 0N and use that as a scalar for all other
 		// actuator deltas.
-		float scalar = largestDelta / this->maxLimit;
-		Log.Info("Largest Delta %f, Scalar %f", largestDelta, scalar);
+		float scalar = largestDelta / this->maxRateOfChange;
 		if (scalar > 1) {
 			// If it is more than 1 outer loop cycle keep working, we aren't
 			// then we need to keep working!

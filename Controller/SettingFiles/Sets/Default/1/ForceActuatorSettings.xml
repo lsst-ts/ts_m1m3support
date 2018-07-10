@@ -94,4 +94,49 @@
 
     <RaiseIncrementPercentage>0.001</RaiseIncrementPercentage>
     <LowerDecrementPercentage>0.001</LowerDecrementPercentage>
+
+    <AberrationForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </AberrationForceComponent>
+    <AccelerationForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </AccelerationForceComponent>
+    <ActiveOpticForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </ActiveOpticForceComponent>
+    <AzimuthForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </AzimuthForceComponent>
+    <BalanceForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </BalanceForceComponent>
+    <ElevationForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </ElevationForceComponent>
+    <OffsetForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </OffsetForceComponent>
+    <StaticForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </StaticForceComponent>
+    <ThermalForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </ThermalForceComponent>
+    <VelocityForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </VelocityForceComponent>
+    <FinalForceComponent>
+        <MaxRateOfChange>40.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </FinalForceComponent>
 </ForceActuatorSettings>

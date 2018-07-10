@@ -113,6 +113,42 @@ void ForceActuatorSettings::load(const std::string &filename) {
 
 	this->RaiseIncrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/RaiseIncrementPercentage").node().child_value());
 	this->LowerDecrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());
+
+	this->AberrationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AberrationForceComponent/MaxRateOfChange").node().child_value());
+	this->AberrationComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AberrationForceComponent/NearZeroValue").node().child_value());
+
+	this->AccelerationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AccelerationForceComponent/MaxRateOfChange").node().child_value());
+	this->AccelerationComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AccelerationForceComponent/NearZeroValue").node().child_value());
+
+	this->ActiveOpticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/ActiveOpticForceComponent/MaxRateOfChange").node().child_value());
+	this->ActiveOpticComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/ActiveOpticForceComponent/NearZeroValue").node().child_value());
+
+	this->AzimuthComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AzimuthForceComponent/MaxRateOfChange").node().child_value());
+	this->AzimuthComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AzimuthForceComponent/NearZeroValue").node().child_value());
+
+	this->BalanceComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/BalanceForceComponent/MaxRateOfChange").node().child_value());
+	this->BalanceComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/BalanceForceComponent/NearZeroValue").node().child_value());
+
+	this->ElevationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/ElevationForceComponent/MaxRateOfChange").node().child_value());
+	this->ElevationComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/ElevationForceComponent/NearZeroValue").node().child_value());
+
+	this->TotalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/TotalForceComponent/MaxRateOfChange").node().child_value());
+	this->TotalComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/TotalForceComponent/NearZeroValue").node().child_value());
+
+	this->OffsetComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/OffsetForceComponent/MaxRateOfChange").node().child_value());
+	this->OffsetComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/OffsetForceComponent/NearZeroValue").node().child_value());
+
+	this->StaticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/StaticForceComponent/MaxRateOfChange").node().child_value());
+	this->StaticComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/StaticForceComponent/NearZeroValue").node().child_value());
+
+	this->ThermalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/ThermalForceComponent/MaxRateOfChange").node().child_value());
+	this->ThermalComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/ThermalForceComponent/NearZeroValue").node().child_value());
+
+	this->VelocityComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/VelocityForceComponent/MaxRateOfChange").node().child_value());
+	this->VelocityComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/VelocityForceComponent/NearZeroValue").node().child_value());
+
+	this->FinalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/FinalForceComponent/MaxRateOfChange").node().child_value());
+	this->FinalComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/FinalForceComponent/NearZeroValue").node().child_value());
 }
 
 bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {

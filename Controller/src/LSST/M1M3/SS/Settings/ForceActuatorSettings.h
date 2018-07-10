@@ -11,6 +11,7 @@
 #include <DataTypes.h>
 #include <ForceActuatorNeighbors.h>
 #include <ForceActuatorLimits.h>
+#include <ForceDomainModel.h>
 #include <Limit.h>
 #include <string>
 #include <vector>
@@ -112,6 +113,19 @@ public:
 
 	double RaiseIncrementPercentage;
 	double LowerDecrementPercentage;
+
+	ForceComponentSettings AberrationComponentSettings;
+	ForceComponentSettings AccelerationComponentSettings;
+	ForceComponentSettings ActiveOpticComponentSettings;
+	ForceComponentSettings AzimuthComponentSettings;
+	ForceComponentSettings BalanceComponentSettings;
+	ForceComponentSettings ElevationComponentSettings;
+	ForceComponentSettings TotalComponentSettings;
+	ForceComponentSettings OffsetComponentSettings;
+	ForceComponentSettings StaticComponentSettings;
+	ForceComponentSettings ThermalComponentSettings;
+	ForceComponentSettings VelocityComponentSettings;
+	ForceComponentSettings FinalComponentSettings;
 
 	void load(const std::string &filename);
 

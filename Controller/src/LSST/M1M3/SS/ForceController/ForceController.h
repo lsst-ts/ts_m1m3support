@@ -16,7 +16,17 @@
 #include <DistributedForces.h>
 #include <PID.h>
 #include <vector>
+#include <AberrationForceComponent.h>
+#include <AccelerationForceComponent.h>
+#include <ActiveOpticForceComponent.h>
+#include <AzimuthForceComponent.h>
+#include <BalanceForceComponent.h>
+#include <ElevationForceComponent.h>
 #include <OffsetForceComponent.h>
+#include <StaticForceComponent.h>
+#include <ThermalForceComponent.h>
+#include <VelocityForceComponent.h>
+#include <FinalForceComponent.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -33,47 +43,30 @@ private:
 	static double const sqrt2 = 1.4142135623730950488016887242097;
 	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
-	PID fx;
-	PID fy;
-	PID fz;
-	PID mx;
-	PID my;
-	PID mz;
-
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
 	PIDSettings* pidSettings;
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
 
+	AberrationForceComponent aberrationForceComponent;
+	AccelerationForceComponent accelerationForceComponent;
+	ActiveOpticForceComponent activeOpticForceComponent;
+	AzimuthForceComponent azimuthForceComponent;
+	BalanceForceComponent balanceForceComponent;
+	ElevationForceComponent elevationForceComponent;
 	OffsetForceComponent offsetForceComponent;
+	StaticForceComponent staticForceComponent;
+	ThermalForceComponent thermalForceComponent;
+	VelocityForceComponent velocityForceComponent;
+	FinalForceComponent finalForceComponent;
 
-	m1m3_logevent_AppliedAberrationForcesC* appliedAberrationForces;
-	m1m3_logevent_AppliedAccelerationForcesC* appliedAccelerationForces;
-	m1m3_logevent_AppliedActiveOpticForcesC* appliedActiveOpticForces;
-	m1m3_logevent_AppliedAzimuthForcesC* appliedAzimuthForces;
-	m1m3_logevent_AppliedBalanceForcesC* appliedBalanceForces;
 	m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces;
-	m1m3_logevent_AppliedElevationForcesC* appliedElevationForces;
 	m1m3_logevent_AppliedForcesC* appliedForces;
-	m1m3_logevent_AppliedOffsetForcesC* appliedOffsetForces;
-	m1m3_logevent_AppliedStaticForcesC* appliedStaticForces;
-	m1m3_logevent_AppliedThermalForcesC* appliedThermalForces;
-	m1m3_logevent_AppliedVelocityForcesC* appliedVelocityForces;
 	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
 	m1m3_logevent_ForceSetpointWarningC* forceSetpointWarning;
-	m1m3_logevent_RejectedAberrationForcesC* rejectedAberrationForces;
-	m1m3_logevent_RejectedAccelerationForcesC* rejectedAccelerationForces;
-	m1m3_logevent_RejectedActiveOpticForcesC* rejectedActiveOpticForces;
-	m1m3_logevent_RejectedAzimuthForcesC* rejectedAzimuthForces;
-	m1m3_logevent_RejectedBalanceForcesC* rejectedBalanceForces;
 	m1m3_logevent_RejectedCylinderForcesC* rejectedCylinderForces;
-	m1m3_logevent_RejectedElevationForcesC* rejectedElevationForces;
 	m1m3_logevent_RejectedForcesC* rejectedForces;
-	m1m3_logevent_RejectedOffsetForcesC* rejectedOffsetForces;
-	m1m3_logevent_RejectedStaticForcesC* rejectedStaticForces;
-	m1m3_logevent_RejectedThermalForcesC* rejectedThermalForces;
-	m1m3_logevent_RejectedVelocityForcesC* rejectedVelocityForces;
 
 	m1m3_logevent_ForceActuatorInfoC* forceActuatorInfo;
 	m1m3_ForceActuatorDataC* forceActuatorData;
@@ -152,32 +145,6 @@ public:
 	void zeroVelocityForces();
 
 private:
-	DistributedForces calculateDistribution(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
-
-	ForcesAndMoments calculateForcesAndMoments(float* xForces, float* yForces, float* zForces);
-	void setAppliedAberrationForcesAndMoments();
-	void setAppliedAccelerationForcesAndMoments();
-	void setAppliedActiveOpticForcesAndMoments();
-	void setAppliedAzimuthForcesAndMoments();
-	void setAppliedBalanceForcesAndMoments();
-	void setAppliedElevationForcesAndMoments();
-	void setAppliedForcesAndMoments();
-	void setAppliedOffsetForcesAndMoments();
-	void setAppliedStaticForcesAndMoments();
-	void setAppliedThermalForcesAndMoments();
-	void setAppliedVelocityForcesAndMoments();
-	void setRejectedAberrationForcesAndMoments();
-	void setRejectedAccelerationForcesAndMoments();
-	void setRejectedActiveOpticForcesAndMoments();
-	void setRejectedAzimuthForcesAndMoments();
-	void setRejectedBalanceForcesAndMoments();
-	void setRejectedElevationForcesAndMoments();
-	void setRejectedForcesAndMoments();
-	void setRejectedOffsetForcesAndMoments();
-	void setRejectedStaticForcesAndMoments();
-	void setRejectedThermalForcesAndMoments();
-	void setRejectedVelocityForcesAndMoments();
-
 	void sumAllForces();
 	void convertForcesToSetpoints();
 
@@ -185,8 +152,6 @@ private:
 	bool checkNearNeighbors();
 	bool checkMirrorWeight();
 	bool checkFarNeighbors();
-
-	PID* idToPID(int id);
 };
 
 } /* namespace SS */

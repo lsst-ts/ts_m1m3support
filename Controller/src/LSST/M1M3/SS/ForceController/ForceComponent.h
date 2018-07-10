@@ -8,15 +8,20 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 
+#include <string>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class ForceComponent {
 protected:
+	std::string name;
+
 	bool enabled;
 	bool disabling;
-	float maxLimit;
+	float maxRateOfChange;
+	float nearZeroValue;
 
 	float xCurrent[12];
 	float yCurrent[100];

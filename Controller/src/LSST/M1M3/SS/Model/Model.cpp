@@ -100,6 +100,8 @@ void Model::loadSettings(std::string settingsToApply) {
 	Log.Info("Model: loadSettings(%s)", settingsToApply.c_str());
 	this->settingReader->configure(settingsToApply);
 
+	this->publisher->getOuterLoopData()->SlewFlag = false;
+
 	Log.Info("Model: Loading ILC application settings");
 	ILCApplicationSettings* ilcApplicationSettings = this->settingReader->loadILCApplicationSettings();
 	Log.Info("Model: Loading force actuator application settings");
