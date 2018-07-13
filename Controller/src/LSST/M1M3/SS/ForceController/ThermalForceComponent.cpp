@@ -36,9 +36,14 @@ ThermalForceComponent::ThermalForceComponent(M1M3SSPublisher* publisher, SafetyC
 }
 
 void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
-	Log.Info("ThermalForceComponent: applyThermalForces()");
+	Log.Trace("ThermalForceComponent: applyThermalForces()");
 	if (!this->enabled) {
-		this->enable();
+		Log.Error("ThermalForceComponent: applyThermalForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("ThermalForceComponent: applyThermalForces() called when the component is disabling");
+		return;
 	}
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
@@ -54,7 +59,7 @@ void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
 }
 
 void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperature) {
-	Log.Info("ThermalForceComponent: applyThermalForcesByMirrorForces(%0.1f)", temperature);
+	Log.Trace("ThermalForceComponent: applyThermalForcesByMirrorForces(%0.1f)", temperature);
 	DistributedForces forces = ForceConverter::calculateForceFromTemperature(this->forceActuatorSettings, temperature);
 	float xForces[12];
 	float yForces[100];
@@ -75,7 +80,7 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
 }
 
 void ThermalForceComponent::postEnableDisableActions() {
-	Log.Info("ThermalForceComponent: postEnableDisableActions()");
+	Log.Debug("ThermalForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->ThermalForcesApplied = this->enabled;

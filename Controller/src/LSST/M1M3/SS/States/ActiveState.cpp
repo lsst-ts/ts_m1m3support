@@ -10,6 +10,7 @@
 #include <Publisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <ForceController.h>
 #include <Log.h>
 
 namespace LSST {
@@ -38,6 +39,18 @@ States::Type ActiveState::lowerM1M3(LowerM1M3Command* command, Model* model) {
 	States::Type newState = States::LoweringState;
 	model->getAutomaticOperationsController()->startLowerOperation();
 	return model->getSafetyController()->checkSafety(newState);
+}
+
+States::Type ActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) {
+	Log.Info("ActiveState: enableHardpointCorrections()");
+	model->getForceController()->applyBalanceForces();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) {
+	Log.Info("ActiveState: disableHardpointCorrections()");
+	model->getForceController()->zeroBalanceForces();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

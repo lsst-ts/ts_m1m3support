@@ -36,9 +36,14 @@ AccelerationForceComponent::AccelerationForceComponent(M1M3SSPublisher* publishe
 }
 
 void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, float* z) {
-	Log.Info("AccelerationForceComponent: applyAccelerationForces()");
+	Log.Trace("AccelerationForceComponent: applyAccelerationForces()");
 	if (!this->enabled) {
-		this->enable();
+		Log.Error("AccelerationForceComponent: applyAccelerationForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("AccelerationForceComponent: applyAccelerationForces() called when the component is disabling");
+		return;
 	}
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
@@ -54,7 +59,7 @@ void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, flo
 }
 
 void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(float angularAccelerationX, float angularAccelerationY, float angularAccelerationZ) {
-	Log.Info("AccelerationForceComponent: applyAccelerationForcesByAngularAccelerations(%0.1f, %0.1f, %0.1f)", angularAccelerationX, angularAccelerationY, angularAccelerationZ);
+	Log.Trace("AccelerationForceComponent: applyAccelerationForcesByAngularAccelerations(%0.1f, %0.1f, %0.1f)", angularAccelerationX, angularAccelerationY, angularAccelerationZ);
 	DistributedForces forces = ForceConverter::calculateForceFromAngularAcceleration(this->forceActuatorSettings, angularAccelerationX, angularAccelerationY, angularAccelerationZ);
 	float xForces[12];
 	float yForces[100];
@@ -75,7 +80,7 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
 }
 
 void AccelerationForceComponent::postEnableDisableActions() {
-	Log.Info("AccelerationForceComponent: postEnableDisableActions()");
+	Log.Debug("AccelerationForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->AccelerationForcesApplied = this->enabled;

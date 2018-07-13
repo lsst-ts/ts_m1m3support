@@ -67,9 +67,7 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* mod
 	States::Type newState = States::DisabledState;
 	// Stop any existing motion (chase and move commands)
 	model->getPositionController()->stopMotion();
-	// Clear any offset force
-	model->getForceController()->zeroOffsetForces();
-	model->getForceController()->processAppliedForces();
+	model->getForceController()->reset();
 	// Perform ILC state transition
 	model->getILC()->writeSetModeDisableBuffer();
 	model->getILC()->triggerModbus();

@@ -36,9 +36,14 @@ VelocityForceComponent::VelocityForceComponent(M1M3SSPublisher* publisher, Safet
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
-	Log.Info("VelocityForceComponent: applyVelocityForces()");
+	Log.Trace("VelocityForceComponent: applyVelocityForces()");
 	if (!this->enabled) {
-		this->enable();
+		Log.Error("VelocityForceComponent: applyVelocityForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("VelocityForceComponent: applyVelocityForces() called when the component is disabling");
+		return;
 	}
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
@@ -54,7 +59,7 @@ void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
 }
 
 void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY, float angularVelocityZ) {
-	Log.Info("VelocityForceComponent: applyVelocityForcesByMirrorForces(%0.1f, %0.1f, %0.1f)", angularVelocityX, angularVelocityY, angularVelocityZ);
+	Log.Trace("VelocityForceComponent: applyVelocityForcesByMirrorForces(%0.1f, %0.1f, %0.1f)", angularVelocityX, angularVelocityY, angularVelocityZ);
 	DistributedForces forces = ForceConverter::calculateForceFromAngularVelocity(this->forceActuatorSettings, angularVelocityX, angularVelocityY, angularVelocityZ);
 	float xForces[12];
 	float yForces[100];
@@ -75,7 +80,7 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
 }
 
 void VelocityForceComponent::postEnableDisableActions() {
-	Log.Info("VelocityForceComponent: postEnableDisableActions()");
+	Log.Debug("VelocityForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->VelocityForcesApplied = this->enabled;

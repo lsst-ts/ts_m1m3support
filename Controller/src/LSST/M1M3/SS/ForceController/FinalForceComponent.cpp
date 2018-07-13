@@ -44,11 +44,13 @@ FinalForceComponent::FinalForceComponent(M1M3SSPublisher* publisher, SafetyContr
 	this->appliedStaticForces = this->publisher->getEventAppliedStaticForces();
 	this->appliedThermalForces = this->publisher->getEventAppliedThermalForces();
 	this->appliedVelocityForces = this->publisher->getEventAppliedVelocityForces();
+
+	this->enable();
 }
 
 void FinalForceComponent::applyForces(float* x, float* y, float* z) {
 	Log.Trace("FinalForceComponent: applyForces()");
-	if (!this->enabled) {
+	if (!this->isEnabled()) {
 		this->enable();
 	}
 	for(int i = 0; i < 156; ++i) {
@@ -66,7 +68,7 @@ void FinalForceComponent::applyForces(float* x, float* y, float* z) {
 
 void FinalForceComponent::applyForcesByComponents() {
 	Log.Trace("FinalForceComponent: applyForcesByComponents()");
-	if (!this->enabled) {
+	if (!this->isEnabled()) {
 		this->enable();
 	}
 	for(int i = 0; i < 156; ++i) {

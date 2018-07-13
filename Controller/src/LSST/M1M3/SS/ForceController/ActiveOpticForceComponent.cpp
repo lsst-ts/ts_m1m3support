@@ -36,8 +36,13 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(M1M3SSPublisher* publisher,
 }
 
 void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
-	Log.Info("ActiveOpticForceComponent: applyActiveOpticForces()");
+	Log.Debug("ActiveOpticForceComponent: applyActiveOpticForces()");
 	if (!this->enabled) {
+		Log.Error("ActiveOpticForceComponent: applyActiveOpticForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("ActiveOpticForceComponent: applyActiveOpticForces() called when the component is disabling");
 		this->enable();
 	}
 	for(int i = 0; i < 156; ++i) {
@@ -46,13 +51,13 @@ void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
 }
 
 void ActiveOpticForceComponent::applyActiveOpticForcesByBendingModes(float* coefficients) {
-	Log.Info("ActiveOpticForceComponent: applyActiveOpticForcesByBendingModes()");
+	Log.Debug("ActiveOpticForceComponent: applyActiveOpticForcesByBendingModes()");
 	DistributedForces forces = ForceConverter::calculateForceFromBendingModes(this->forceActuatorSettings, coefficients);
 	this->applyActiveOpticForces(forces.ZForces);
 }
 
 void ActiveOpticForceComponent::postEnableDisableActions() {
-	Log.Info("ActiveOpticForceComponent: postEnableDisableActions()");
+	Log.Debug("ActiveOpticForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->ActiveOpticForcesApplied = this->enabled;

@@ -40,11 +40,14 @@ public:
 	virtual ~ForceComponent();
 
 	bool isEnabled();
+	bool isDisabling();
 
 	void enable();
 	void disable();
 
 	void update();
+
+	void reset();
 
 protected:
 	virtual void postEnableDisableActions();

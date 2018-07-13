@@ -44,9 +44,14 @@ BalanceForceComponent::BalanceForceComponent(M1M3SSPublisher* publisher, SafetyC
 }
 
 void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
-	Log.Info("BalanceForceComponent: applyBalanceForces()");
+	Log.Trace("BalanceForceComponent: applyBalanceForces()");
 	if (!this->enabled) {
-		this->enable();
+		Log.Error("BalanceForceComponent: applyBalanceForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("BalanceForceComponent: applyBalanceForces() called when the component is disabling");
+		return;
 	}
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
@@ -62,7 +67,7 @@ void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
 }
 
 void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
-	Log.Info("BalanceForceComponent: applyBalanceForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
+	Log.Trace("BalanceForceComponent: applyBalanceForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
 	float fx = this->fx.process(0, xForce);
 	float fy = this->fy.process(0, yForce);
 	float fz = this->fz.process(0, zForce);
@@ -91,7 +96,7 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
 }
 
 void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
-	Log.Info("BalanceForceComponent: updatePID()");
+	Log.Debug("BalanceForceComponent: updatePID()");
 	PID* pid = this->idToPID(id);
 	if (pid != 0) {
 		pid->updateParameters(parameters);
@@ -99,7 +104,7 @@ void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
 }
 
 void BalanceForceComponent::resetPID(int id) {
-	Log.Info("BalanceForceComponent: resetPID()");
+	Log.Debug("BalanceForceComponent: resetPID()");
 	PID* pid = this->idToPID(id);
 	if (pid != 0) {
 		pid->restoreInitialParameters();
@@ -107,7 +112,7 @@ void BalanceForceComponent::resetPID(int id) {
 }
 
 void BalanceForceComponent::resetPIDs() {
-	Log.Info("BalanceForceComponent: resetPIDs()");
+	Log.Debug("BalanceForceComponent: resetPIDs()");
 	this->fx.restoreInitialParameters();
 	this->fy.restoreInitialParameters();
 	this->fz.restoreInitialParameters();
@@ -117,7 +122,7 @@ void BalanceForceComponent::resetPIDs() {
 }
 
 void BalanceForceComponent::postEnableDisableActions() {
-	Log.Info("BalanceForceComponent: postEnableDisableActions()");
+	Log.Debug("BalanceForceComponent: postEnableDisableActions()");
 
 	if (this->enabled) {
 		this->resetPIDs();

@@ -36,9 +36,14 @@ StaticForceComponent::StaticForceComponent(M1M3SSPublisher* publisher, SafetyCon
 }
 
 void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z) {
-	Log.Info("StaticForceComponent: applyStaticForces()");
+	Log.Debug("StaticForceComponent: applyStaticForces()");
 	if (!this->enabled) {
-		this->enable();
+		Log.Error("StaticForceComponent: applyStaticForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("StaticForceComponent: applyStaticForces() called when the component is disabling");
+		return;
 	}
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
@@ -54,7 +59,7 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
 }
 
 void StaticForceComponent::postEnableDisableActions() {
-	Log.Info("StaticForceComponent: postEnableDisableActions()");
+	Log.Debug("StaticForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->StaticForcesApplied = this->enabled;

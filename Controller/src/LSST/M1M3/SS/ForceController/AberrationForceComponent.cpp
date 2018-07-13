@@ -36,8 +36,13 @@ AberrationForceComponent::AberrationForceComponent(M1M3SSPublisher* publisher, S
 }
 
 void AberrationForceComponent::applyAberrationForces(float* z) {
-	Log.Info("AberrationForceComponent: applyAberrationForces()");
+	Log.Debug("AberrationForceComponent: applyAberrationForces()");
 	if (!this->enabled) {
+		Log.Error("AberrationForceComponent: applyAberrationForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("AberrationForceComponent: applyAberrationForces() called when the component is disabling");
 		this->enable();
 	}
 	for(int i = 0; i < 156; ++i) {
@@ -46,13 +51,13 @@ void AberrationForceComponent::applyAberrationForces(float* z) {
 }
 
 void AberrationForceComponent::applyAberrationForcesByBendingModes(float* coefficients) {
-	Log.Info("AberrationForceComponent: applyAberrationForcesByBendingModes()");
+	Log.Debug("AberrationForceComponent: applyAberrationForcesByBendingModes()");
 	DistributedForces forces = ForceConverter::calculateForceFromBendingModes(this->forceActuatorSettings, coefficients);
 	this->applyAberrationForces(forces.ZForces);
 }
 
 void AberrationForceComponent::postEnableDisableActions() {
-	Log.Info("AberrationForceComponent: postEnableDisableActions()");
+	Log.Debug("AberrationForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->AberrationForcesApplied = this->enabled;

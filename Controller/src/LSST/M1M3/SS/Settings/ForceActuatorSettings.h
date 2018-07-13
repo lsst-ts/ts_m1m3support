@@ -94,7 +94,6 @@ public:
 	std::vector<ForceActuatorNeighbors> Neighbors;
 
 	bool UseInclinometer;
-	float MirrorWeight;
 	float MirrorXMoment;
 	float MirrorYMoment;
 	float MirrorZMoment;
@@ -120,7 +119,6 @@ public:
 	ForceComponentSettings AzimuthComponentSettings;
 	ForceComponentSettings BalanceComponentSettings;
 	ForceComponentSettings ElevationComponentSettings;
-	ForceComponentSettings TotalComponentSettings;
 	ForceComponentSettings OffsetComponentSettings;
 	ForceComponentSettings StaticComponentSettings;
 	ForceComponentSettings ThermalComponentSettings;
@@ -133,6 +131,7 @@ public:
 
 private:
 	void loadDisabledActuators(const std::string line);
+	void loadNearNeighborZTable(const std::string &filename);
 	void loadNeighborsTable(const std::string &filename);
 };
 

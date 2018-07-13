@@ -41,7 +41,7 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
 	this->forceController->zeroBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->applyStaticForces();
+	this->forceController->zeroStaticForces();
 	this->forceController->zeroThermalForces();
 	this->forceController->zeroVelocityForces();
 	this->forceController->zeroSupportPercentage();
@@ -80,10 +80,10 @@ void AutomaticOperationsController::completeRaiseOperation() {
 	// from the static supports to the force actuators and all hardpoints have completed their
 	// commanded motions
 	this->forceController->zeroAberrationForces();
-	//this->forceController->applyAccelerationForces();
+	this->forceController->applyAccelerationForces();
 	this->forceController->zeroActiveOpticForces();
 	this->forceController->applyAzimuthForces();
-	this->forceController->applyBalanceForces();
+	this->forceController->zeroBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
 	this->forceController->applyStaticForces();
@@ -113,7 +113,7 @@ void AutomaticOperationsController::abortRaiseM1M3() {
 	this->forceController->zeroBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->applyStaticForces();
+	this->forceController->zeroStaticForces();
 	this->forceController->zeroThermalForces();
 	this->forceController->zeroVelocityForces();
 	this->cachedTimestamp = this->publisher->getTimestamp();
@@ -131,7 +131,7 @@ void AutomaticOperationsController::startLowerOperation() {
 	this->forceController->zeroBalanceForces();
 	this->forceController->applyElevationForces();
 	this->forceController->zeroOffsetForces();
-	this->forceController->applyStaticForces();
+	this->forceController->zeroStaticForces();
 	this->forceController->zeroThermalForces();
 	this->forceController->zeroVelocityForces();
 	this->forceController->fillSupportPercentage();

@@ -36,25 +36,30 @@ ElevationForceComponent::ElevationForceComponent(M1M3SSPublisher* publisher, Saf
 }
 
 void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z) {
-	Log.Info("ElevationForceComponent: applyElevationForces()");
+	Log.Trace("ElevationForceComponent: applyElevationForces()");
 	if (!this->enabled) {
-		this->enable();
+		Log.Error("ElevationForceComponent: applyElevationForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("ElevationForceComponent: applyElevationForces() called when the component is disabling");
+		return;
 	}
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
-			this->xTarget[i] = x[i];
+			this->xTarget[i] = x[i] * this->forceActuatorState->SupportPercentage;
 		}
 
 		if (i < 100) {
-			this->yTarget[i] = y[i];
+			this->yTarget[i] = y[i] * this->forceActuatorState->SupportPercentage;
 		}
 
-		this->zTarget[i] = z[i];
+		this->zTarget[i] = z[i] * this->forceActuatorState->SupportPercentage;
 	}
 }
 
 void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevationAngle) {
-	Log.Info("ElevationForceComponent: applyElevationForcesByMirrorForces(%0.1f)", elevationAngle);
+	Log.Trace("ElevationForceComponent: applyElevationForcesByMirrorForces(%0.1f)", elevationAngle);
 	DistributedForces forces = ForceConverter::calculateForceFromElevationAngle(this->forceActuatorSettings, elevationAngle);
 	float xForces[12];
 	float yForces[100];
@@ -75,7 +80,7 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
 }
 
 void ElevationForceComponent::postEnableDisableActions() {
-	Log.Info("ElevationForceComponent: postEnableDisableActions()");
+	Log.Debug("ElevationForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->ElevationForcesApplied = this->enabled;

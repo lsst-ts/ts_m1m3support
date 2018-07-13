@@ -74,6 +74,18 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	memset(this->rejectedCylinderForces, 0, sizeof(m1m3_logevent_RejectedCylinderForcesC));
 	memset(this->rejectedForces, 0, sizeof(m1m3_logevent_RejectedForcesC));
 
+	this->aberrationForceComponent.reset();
+	this->accelerationForceComponent.reset();
+	this->activeOpticForceComponent.reset();
+	this->azimuthForceComponent.reset();
+	this->balanceForceComponent.reset();
+	this->elevationForceComponent.reset();
+	this->offsetForceComponent.reset();
+	this->staticForceComponent.reset();
+	this->thermalForceComponent.reset();
+	this->velocityForceComponent.reset();
+	this->finalForceComponent.reset();
+
 	double timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->Timestamp = timestamp;
 	this->forceSetpointWarning->Timestamp = timestamp;
@@ -81,14 +93,18 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->publisher->logForceActuatorState();
 	this->publisher->logForceSetpointWarning();
 
+
+	this->mirrorWeight = 0.0;
+	float* zForces = ForceConverter::calculateForceFromElevationAngle(this->forceActuatorSettings, 0.0).ZForces;
 	for(int i = 0; i < FA_COUNT; i++) {
+		this->mirrorWeight += zForces[i];
 		this->zero[i] = 0;
 		ForceActuatorNeighbors neighbors;
-		for(unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].NearIDs.size(); ++j) {
-			int32_t id = this->forceActuatorSettings->Neighbors[i].NearIDs[j];
+		for(unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
+			int32_t id = this->forceActuatorSettings->Neighbors[i].NearZIDs[j];
 			for(unsigned int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
 				if (this->forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
-					neighbors.NearIDs.push_back(k);
+					neighbors.NearZIDs.push_back(k);
 					break;
 				}
 			}
@@ -104,6 +120,21 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 		}
 		this->neighbors.push_back(neighbors);
 	}
+}
+
+void ForceController::reset() {
+	Log.Info("ForceController: reset()");
+	this->aberrationForceComponent.reset();
+	this->accelerationForceComponent.reset();
+	this->activeOpticForceComponent.reset();
+	this->azimuthForceComponent.reset();
+	this->balanceForceComponent.reset();
+	this->elevationForceComponent.reset();
+	this->offsetForceComponent.reset();
+	this->staticForceComponent.reset();
+	this->thermalForceComponent.reset();
+	this->velocityForceComponent.reset();
+	this->finalForceComponent.reset();
 }
 
 void ForceController::updateTMAElevationData(MTMount_AltC* tmaElevationData) {
@@ -148,15 +179,51 @@ bool ForceController::supportPercentageZeroed() {
 void ForceController::updateAppliedForces() {
 	Log.Trace("ForceController: updateAppliedForces()");
 
-	this->aberrationForceComponent.update();
-	this->accelerationForceComponent.update();
-	this->activeOpticForceComponent.update();
-	this->azimuthForceComponent.update();
-	this->balanceForceComponent.update();
-	this->offsetForceComponent.update();
-	this->staticForceComponent.update();
-	this->thermalForceComponent.update();
-	this->velocityForceComponent.update();
+	if (this->aberrationForceComponent.isEnabled() || this->aberrationForceComponent.isDisabling()) {
+		this->aberrationForceComponent.update();
+	}
+	if (this->accelerationForceComponent.isEnabled() || this->accelerationForceComponent.isDisabling()) {
+		if (this->accelerationForceComponent.isEnabled()) {
+			this->accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(this->accelerometerData->AngularAccelerationX, this->accelerometerData->AngularAccelerationY, this->accelerometerData->AngularAccelerationZ);
+		}
+		this->accelerationForceComponent.update();
+	}
+	if (this->activeOpticForceComponent.isEnabled() || this->activeOpticForceComponent.isDisabling()) {
+		this->activeOpticForceComponent.update();
+	}
+	if (this->azimuthForceComponent.isEnabled() || this->azimuthForceComponent.isDisabling()) {
+		this->azimuthForceComponent.update();
+	}
+	if (this->balanceForceComponent.isEnabled() || this->balanceForceComponent.isDisabling()) {
+		if (this->balanceForceComponent.isEnabled()) {
+			this->balanceForceComponent.applyBalanceForcesByMirrorForces(this->hardpointActuatorData->Fx, this->hardpointActuatorData->Fy, this->hardpointActuatorData->Fz, this->hardpointActuatorData->Mx, this->hardpointActuatorData->My, this->hardpointActuatorData->Mz);
+		}
+		this->balanceForceComponent.update();
+	}
+	if (this->elevationForceComponent.isEnabled() || this->elevationForceComponent.isDisabling()) {
+		if (this->elevationForceComponent.isEnabled()) {
+			double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->InclinometerAngle : this->tmaElevationData.Angle_Actual;
+			// Convert elevation angle to zenith angle (used by matrix)
+			elevationAngle = 90.0 - elevationAngle;
+			this->elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);
+		}
+		this->elevationForceComponent.update();
+	}
+	if (this->offsetForceComponent.isEnabled() || this->offsetForceComponent.isDisabling()) {
+		this->offsetForceComponent.update();
+	}
+	if (this->staticForceComponent.isEnabled() || this->staticForceComponent.isDisabling()) {
+		this->staticForceComponent.update();
+	}
+	if (this->thermalForceComponent.isEnabled() || this->thermalForceComponent.isDisabling()) {
+		this->thermalForceComponent.update();
+	}
+	if (this->velocityForceComponent.isEnabled() || this->velocityForceComponent.isDisabling()) {
+		if (this->velocityForceComponent.isEnabled()) {
+			this->velocityForceComponent.applyVelocityForcesByAngularVelocity(this->gyroData->AngularVelocityX, this->gyroData->AngularVelocityY, this->gyroData->AngularVelocityZ);
+		}
+		this->velocityForceComponent.update();
+	}
 }
 
 void ForceController::processAppliedForces() {
@@ -172,52 +239,69 @@ void ForceController::processAppliedForces() {
 
 void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
 	Log.Info("ForceController: applyAberrationForcesByBendingModes()");
+	if(!this->aberrationForceComponent.isEnabled()) {
+		this->aberrationForceComponent.enable();
+	}
 	this->aberrationForceComponent.applyAberrationForcesByBendingModes(coefficients);
 }
 
 void ForceController::applyAberrationForces(float* z) {
 	Log.Info("ForceController: applyAberrationForces()");
+	if (!this->aberrationForceComponent.isEnabled()) {
+		this->aberrationForceComponent.enable();
+	}
 	this->aberrationForceComponent.applyAberrationForces(z);
 }
 
 void ForceController::zeroAberrationForces() {
 	Log.Info("ForceController: zeroAberrationForces()");
-	this->aberrationForceComponent.disable();
+	if (this->aberrationForceComponent.isEnabled()) {
+		this->aberrationForceComponent.disable();
+	}
 }
 
 void ForceController::applyAccelerationForces() {
 	Log.Info("ForceController: applyAccelerationForces()");
-	this->accelerationForceComponent.enable();
-}
-
-void ForceController::updateAccelerationForces() {
-	Log.Trace("ForceController: updateAccelerationForces()");
-	this->accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(this->accelerometerData->AngularAccelerationX, this->accelerometerData->AngularAccelerationY, this->accelerometerData->AngularAccelerationZ);
+	if (!this->accelerationForceComponent.isEnabled()) {
+		this->accelerationForceComponent.enable();
+	}
 }
 
 void ForceController::zeroAccelerationForces() {
 	Log.Info("ForceController: zeroAccelerationForces()");
-	this->accelerationForceComponent.disable();
+	if (this->accelerationForceComponent.isEnabled()) {
+		this->accelerationForceComponent.disable();
+	}
 }
 
 void ForceController::applyActiveOpticForcesByBendingModes(float* coefficients) {
 	Log.Info("ForceController: applyActiveOpticForcesByBendingModes()");
+	if (!this->activeOpticForceComponent.isEnabled()) {
+		this->activeOpticForceComponent.enable();
+	}
 	this->activeOpticForceComponent.applyActiveOpticForcesByBendingModes(coefficients);
 }
 
 void ForceController::applyActiveOpticForces(float* z) {
 	Log.Info("ForceController: applyActiveOpticForces()");
+	if (!this->activeOpticForceComponent.isEnabled()) {
+		this->activeOpticForceComponent.enable();
+	}
 	this->activeOpticForceComponent.applyActiveOpticForces(z);
 }
 
 void ForceController::zeroActiveOpticForces() {
 	Log.Info("ForceController: zeroActiveOpticForces()");
-	this->activeOpticForceComponent.disable();
+	if (this->activeOpticForceComponent.isEnabled()) {
+		this->activeOpticForceComponent.disable();
+	}
 }
 
 void ForceController::applyAzimuthForces() {
 	Log.Info("ForceController: applyAzimuthForces()");
-	this->azimuthForceComponent.enable();
+	if (!this->azimuthForceComponent.isEnabled()) {
+		this->azimuthForceComponent.enable();
+	}
 }
 
 void ForceController::updateAzimuthForces(float azimuthAngle) {
@@ -227,22 +311,23 @@ void ForceController::updateAzimuthForces(float azimuthAngle) {
 
 void ForceController::zeroAzimuthForces() {
 	Log.Info("ForceController: zeroAzimuthForces()");
-	this->azimuthForceComponent.disable();
+	if (this->azimuthForceComponent.isEnabled()) {
+		this->azimuthForceComponent.disable();
+	}
 }
 
 void ForceController::applyBalanceForces() {
 	Log.Info("ForceController: applyBalanceForces()");
-	this->balanceForceComponent.enable();
-}
-
-void ForceController::updateBalanceForces() {
-	Log.Trace("ForceController: updateBalanceForces()");
-	this->balanceForceComponent.applyBalanceForcesByMirrorForces(this->hardpointActuatorData->Fx, this->hardpointActuatorData->Fy, this->hardpointActuatorData->Fz, this->hardpointActuatorData->Mx, this->hardpointActuatorData->My, this->hardpointActuatorData->Mz);
+	if (!this->balanceForceComponent.isEnabled()) {
+		this->balanceForceComponent.enable();
+	}
 }
 
 void ForceController::zeroBalanceForces() {
 	Log.Info("ForceController: zeroBalanceForces()");
-	this->balanceForceComponent.disable();
+	if (this->balanceForceComponent.isEnabled()) {
+		this->balanceForceComponent.disable();
+	}
 }
 
 void ForceController::updatePID(int id, PIDParameters parameters) {
@@ -262,76 +347,87 @@ void ForceController::resetPIDs() {
 
 void ForceController::applyElevationForces() {
 	Log.Info("ForceController: applyElevationForces()");
-	this->elevationForceComponent.enable();
-}
-
-void ForceController::updateElevationForces() {
-	Log.Trace("ForceController: updateElevationForces()");
-	double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->InclinometerAngle : this->tmaElevationData.Angle_Actual;
-	// Convert elevation angle to zenith angle (used be matrix)
-	elevationAngle = 90.0 - elevationAngle;
-	this->elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);
+	if (!this->elevationForceComponent.isEnabled()) {
+		this->elevationForceComponent.enable();
+	}
 }
 
 void ForceController::zeroElevationForces() {
 	Log.Info("ForceController: zeroElevationForces()");
-	this->elevationForceComponent.disable();
+	if (this->elevationForceComponent.isEnabled()) {
+		this->elevationForceComponent.disable();
+	}
 }
 
 void ForceController::applyOffsetForces(float* x, float* y, float* z) {
 	Log.Info("ForceController: applyOffsetForces()");
+	if (!this->offsetForceComponent.isEnabled()) {
+		this->offsetForceComponent.enable();
+	}
 	this->offsetForceComponent.applyOffsetForces(x, y, z);
 }
 
 void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
 	Log.Info("ForceController: applyOffsetForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
+	if (!this->offsetForceComponent.isEnabled()) {
+		this->offsetForceComponent.enable();
+	}
 	this->offsetForceComponent.applyOffsetForcesByMirrorForces(xForce, yForce, zForce, xMoment, yMoment, zMoment);
 }
 
 void ForceController::zeroOffsetForces() {
 	Log.Info("ForceController: zeroOffsetForces()");
-	this->offsetForceComponent.disable();
+	if (this->offsetForceComponent.isEnabled()) {
+		this->offsetForceComponent.disable();
+	}
 }
 
 void ForceController::applyStaticForces() {
 	Log.Info("ForceController: applyStaticForces()");
+	if (!this->staticForceComponent.isEnabled()) {
+		this->staticForceComponent.enable();
+	}
 	this->staticForceComponent.applyStaticForces(&this->forceActuatorSettings->StaticXTable, &this->forceActuatorSettings->StaticYTable, &this->forceActuatorSettings->StaticZTable);
 }
 
 void ForceController::zeroStaticForces() {
 	Log.Info("ForceController: zeroStaticForces()");
-	this->staticForceComponent.disable();
+	if (this->staticForceComponent.isEnabled()) {
+		this->staticForceComponent.disable();
+	}
 }
 
 void ForceController::applyThermalForces() {
 	Log.Info("ForceController: applyThermalForces()");
-	this->thermalForceComponent.enable();
+	if (!this->thermalForceComponent.isEnabled()) {
+		this->thermalForceComponent.enable();
+	}
 }
 
-void ForceController::updateThermalForces() {
+void ForceController::updateThermalForces(float temperature) {
 	Log.Trace("ForceController: updateThermalForces()");
-	float temperature = 0; // TODO: Update
 	this->thermalForceComponent.applyThermalForcesByMirrorTemperature(temperature);
 }
 
 void ForceController::zeroThermalForces() {
 	Log.Info("ForceController: zeroThermalForces()");
-	this->thermalForceComponent.disable();
+	if (this->thermalForceComponent.isEnabled()) {
+		this->thermalForceComponent.disable();
+	}
 }
 
 void ForceController::applyVelocityForces() {
 	Log.Info("ForceController: applyVelocityForces()");
-	this->velocityForceComponent.enable();
-}
-
-void ForceController::updateVelocityForces() {
-	Log.Trace("ForceController: updateVelocityForces()");
-	this->velocityForceComponent.applyVelocityForcesByAngularVelocity(this->gyroData->AngularVelocityX, this->gyroData->AngularVelocityY, this->gyroData->AngularVelocityZ);
+	if (!this->velocityForceComponent.isEnabled()) {
+		this->velocityForceComponent.enable();
+	}
 }
 
 void ForceController::zeroVelocityForces() {
 	Log.Info("ForceController: zeroVelocityForces()");
-	this->velocityForceComponent.disable();
+	if (this->velocityForceComponent.isEnabled()) {
+		this->velocityForceComponent.disable();
+	}
 }
 
 void ForceController::sumAllForces() {
@@ -422,70 +518,24 @@ bool ForceController::checkMirrorMoments() {
 
 bool ForceController::checkNearNeighbors() {
 	Log.Trace("ForceController: checkNearNeighbors()");
-	double globalX = 0;
-	double globalY = 0;
-	double globalZ = 0;
-	for(int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		if (xIndex != -1) {
-			globalX += this->appliedForces->XForces[xIndex];
-		}
-
-		if (yIndex != -1) {
-			globalY += this->appliedForces->YForces[yIndex];
-		}
-
-		globalZ += this->appliedForces->ZForces[zIndex];
-	}
-	double globalForce = sqrt(globalX * globalX + globalY * globalY + globalZ * globalZ);
-	double globalAverageForce = globalForce / FA_COUNT;
+	float nominalZ = this->mirrorWeight / (float)FA_COUNT;
 	bool warningChanged = false;
 	this->forceSetpointWarning->AnyNearNeighborWarning = false;
 	for(int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		double nearX = 0;
-		double nearY = 0;
-		double nearZ = 0;
-		int nearNeighbors = this->neighbors[zIndex].NearIDs.size();
+		float nearZ = 0;
+		int nearNeighbors = this->neighbors[zIndex].NearZIDs.size();
 		for(int j = 0; j < nearNeighbors; ++j) {
-			int neighborZIndex = this->neighbors[zIndex].NearIDs[j];
-			int neighborXIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[neighborZIndex];
-			int neighborYIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[neighborZIndex];
-
-			if (neighborXIndex != -1) {
-				nearX += this->appliedForces->XForces[neighborXIndex];
-			}
-
-			if (neighborYIndex != -1) {
-				nearY += this->appliedForces->YForces[neighborYIndex];
-			}
+			int neighborZIndex = this->neighbors[zIndex].NearZIDs[j];
 
 			nearZ += this->appliedForces->ZForces[neighborZIndex];
 		}
-		nearX /= nearNeighbors;
-		nearY /= nearNeighbors;
 		nearZ /= nearNeighbors;
-		double x = 0;
-		double y = 0;
-		double z = 0;
+		float deltaZ = 0;
 
-		if (xIndex != -1) {
-			x = this->appliedForces->XForces[xIndex] - nearX;
-		}
+		deltaZ = std::abs(this->appliedForces->ZForces[zIndex] - nearZ);
 
-		if (yIndex != -1) {
-			y = this->appliedForces->YForces[yIndex] - nearY;
-		}
-
-		z = this->appliedForces->ZForces[zIndex] - nearZ;
-
-		double magnitudeDifference = sqrt(x * x + y * y + z * z);
 		bool previousWarning = this->forceSetpointWarning->NearNeighborWarning[zIndex];
-		this->forceSetpointWarning->NearNeighborWarning[zIndex] = magnitudeDifference > (globalAverageForce * this->forceActuatorSettings->SetpointNearNeighborLimitPercentage);
+		this->forceSetpointWarning->NearNeighborWarning[zIndex] = deltaZ > (nominalZ * this->forceActuatorSettings->SetpointNearNeighborLimitPercentage);
 		this->forceSetpointWarning->AnyNearNeighborWarning = this->forceSetpointWarning->AnyNearNeighborWarning || this->forceSetpointWarning->NearNeighborWarning[zIndex];
 		warningChanged = warningChanged || (this->forceSetpointWarning->NearNeighborWarning[zIndex] != previousWarning);
 	}
@@ -509,7 +559,7 @@ bool ForceController::checkMirrorWeight() {
 	}
 	float globalForce = x + y + z;
 	bool previousWarning = this->forceSetpointWarning->MagnitudeWarning;
-	this->forceSetpointWarning->MagnitudeWarning = globalForce > (this->forceActuatorSettings->MirrorWeight * this->forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
+	this->forceSetpointWarning->MagnitudeWarning = globalForce > (this->mirrorWeight * this->forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
 	this->safetyController->forceControllerNotifyMagnitudeLimit(this->forceSetpointWarning->MagnitudeWarning);
 	return this->forceSetpointWarning->MagnitudeWarning != previousWarning;
 }

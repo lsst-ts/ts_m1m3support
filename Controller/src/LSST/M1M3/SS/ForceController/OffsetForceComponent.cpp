@@ -36,8 +36,13 @@ OffsetForceComponent::OffsetForceComponent(M1M3SSPublisher* publisher, SafetyCon
 }
 
 void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
-	Log.Info("OffsetForceComponent: applyOffsetForces()");
+	Log.Debug("OffsetForceComponent: applyOffsetForces()");
 	if (!this->enabled) {
+		Log.Error("OffsetForceComponent: applyOffsetForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("ThermalOffsetComponent: applyOffsetForces() called when the component is disabling");
 		this->enable();
 	}
 	for(int i = 0; i < 156; ++i) {
@@ -54,7 +59,7 @@ void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
 }
 
 void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment) {
-	Log.Info("OffsetForceComponent: applyOffsetForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
+	Log.Debug("OffsetForceComponent: applyOffsetForcesByMirrorForces(%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f)", xForce, yForce, zForce, xMoment, yMoment, zMoment);
 	DistributedForces forces = ForceConverter::calculateForceDistribution(this->forceActuatorSettings, xForce, yForce, zForce, xMoment, yMoment, zMoment);
 	float xForces[12];
 	float yForces[100];
@@ -75,7 +80,7 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
 }
 
 void OffsetForceComponent::postEnableDisableActions() {
-	Log.Info("OffsetForceComponent: postEnableDisableActions()");
+	Log.Debug("OffsetForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->OffsetForcesApplied = this->enabled;

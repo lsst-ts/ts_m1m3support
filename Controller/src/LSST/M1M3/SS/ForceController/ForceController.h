@@ -84,11 +84,14 @@ private:
 	std::vector<ForceActuatorNeighbors> neighbors;
 
 	float zero[156];
+	float mirrorWeight;
 
 	static int32_t toInt24(float force) { return (int32_t)(force * 1000.0); }
 
 public:
 	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController);
+
+	void reset();
 
 	void updateTMAElevationData(MTMount_AltC* tmaElevationData);
 
@@ -107,7 +110,6 @@ public:
 	void zeroAberrationForces();
 
 	void applyAccelerationForces();
-	void updateAccelerationForces();
 	void zeroAccelerationForces();
 
 	void applyActiveOpticForcesByBendingModes(float* coefficients);
@@ -119,14 +121,12 @@ public:
 	void zeroAzimuthForces();
 
 	void applyBalanceForces();
-	void updateBalanceForces();
 	void zeroBalanceForces();
 	void updatePID(int id, PIDParameters parameters);
 	void resetPID(int id);
 	void resetPIDs();
 
 	void applyElevationForces();
-	void updateElevationForces();
 	void zeroElevationForces();
 
 	void applyOffsetForces(float* x, float* y, float* z);
@@ -137,11 +137,10 @@ public:
 	void zeroStaticForces();
 
 	void applyThermalForces();
-	void updateThermalForces();
+	void updateThermalForces(float temperature);
 	void zeroThermalForces();
 
 	void applyVelocityForces();
-	void updateVelocityForces();
 	void zeroVelocityForces();
 
 private:

@@ -36,9 +36,14 @@ AzimuthForceComponent::AzimuthForceComponent(M1M3SSPublisher* publisher, SafetyC
 }
 
 void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
-	Log.Info("AzimuthForceComponent: applyAzimuthForces()");
+	Log.Trace("AzimuthForceComponent: applyAzimuthForces()");
 	if (!this->enabled) {
-		this->enable();
+		Log.Error("AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
+		return;
+	}
+	if (this->disabling) {
+		Log.Warn("AzimuthForceComponent: applyAzimuthForces() called when the component is disabling");
+		return;
 	}
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
@@ -54,7 +59,7 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
 }
 
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
-	Log.Info("AzimuthForceComponent: applyAzimuthForcesByMirrorForces(%0.1f)", azimuthAngle);
+	Log.Trace("AzimuthForceComponent: applyAzimuthForcesByMirrorForces(%0.1f)", azimuthAngle);
 	DistributedForces forces = ForceConverter::calculateForceFromAzimuthAngle(this->forceActuatorSettings, azimuthAngle);
 	float xForces[12];
 	float yForces[100];
@@ -75,7 +80,7 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
 }
 
 void AzimuthForceComponent::postEnableDisableActions() {
-	Log.Info("AzimuthForceComponent: postEnableDisableActions()");
+	Log.Debug("AzimuthForceComponent: postEnableDisableActions()");
 
 	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->AzimuthForcesApplied = this->enabled;

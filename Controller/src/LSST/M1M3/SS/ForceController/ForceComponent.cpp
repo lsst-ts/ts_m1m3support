@@ -22,25 +22,19 @@ ForceComponent::ForceComponent() {
 	this->maxRateOfChange = 15000.0;
 	this->nearZeroValue = 10.0;
 
-	memset(this->xCurrent, 0, sizeof(this->xCurrent));
-	memset(this->yCurrent, 0, sizeof(this->yCurrent));
-	memset(this->zCurrent, 0, sizeof(this->zCurrent));
-	memset(this->xTarget, 0, sizeof(this->xTarget));
-	memset(this->yTarget, 0, sizeof(this->yTarget));
-	memset(this->zTarget, 0, sizeof(this->zTarget));
-	memset(this->xOffset, 0, sizeof(this->xOffset));
-	memset(this->yOffset, 0, sizeof(this->yOffset));
-	memset(this->zOffset, 0, sizeof(this->zOffset));
+	this->reset();
 }
 
 ForceComponent::~ForceComponent() { }
 
 bool ForceComponent::isEnabled() { return this->enabled; }
+bool ForceComponent::isDisabling() { return this->disabling; }
 
 void ForceComponent::enable() {
 	// Enable and set the target to 0N
-	Log.Info("%sForceComponent: enable()", this->name.c_str());
+	Log.Debug("%sForceComponent: enable()", this->name.c_str());
 	this->enabled = true;
+	this->disabling = false;
 	memset(this->xTarget, 0, sizeof(this->xTarget));
 	memset(this->yTarget, 0, sizeof(this->yTarget));
 	memset(this->zTarget, 0, sizeof(this->zTarget));
@@ -49,7 +43,8 @@ void ForceComponent::enable() {
 
 void ForceComponent::disable() {
 	// Start disabling and driving to 0N
-	Log.Info("%sForceComponent: disable()", this->name.c_str());
+	Log.Debug("%sForceComponent: disable()", this->name.c_str());
+	this->enabled = false;
 	this->disabling = true;
 	memset(this->xTarget, 0, sizeof(this->xTarget));
 	memset(this->yTarget, 0, sizeof(this->yTarget));
@@ -78,16 +73,17 @@ void ForceComponent::update() {
 			nearZero = nearZero && this->zCurrent[i] < this->nearZeroValue && this->zCurrent[i] > -this->nearZeroValue;
 		}
 		if (nearZero) {
-			Log.Info("%sForceComponent: Is now disabled", this->name.c_str());
+			Log.Debug("%sForceComponent: disabled()", this->name.c_str());
 			this->disabling = false;
 			this->enabled = false;
 			memset(this->xCurrent, 0, sizeof(this->xCurrent));
 			memset(this->yCurrent, 0, sizeof(this->yCurrent));
 			memset(this->zCurrent, 0, sizeof(this->zCurrent));
 			this->postEnableDisableActions();
+			this->postUpdateActions();
 		}
 	}
-	if (this->enabled) {
+	if (this->enabled || this->disabling) {
 		// If this force component is enabled then we need to keep trying
 		// to drive this force component to it's target value.
 		// To do this we need to find the vector with the largest delta
@@ -155,6 +151,23 @@ void ForceComponent::update() {
 		}
 		this->postUpdateActions();
 	}
+}
+
+void ForceComponent::reset() {
+	this->disabling = false;
+	this->enabled = false;
+	this->postEnableDisableActions();
+
+	memset(this->xCurrent, 0, sizeof(this->xCurrent));
+	memset(this->yCurrent, 0, sizeof(this->yCurrent));
+	memset(this->zCurrent, 0, sizeof(this->zCurrent));
+	memset(this->xTarget, 0, sizeof(this->xTarget));
+	memset(this->yTarget, 0, sizeof(this->yTarget));
+	memset(this->zTarget, 0, sizeof(this->zTarget));
+	memset(this->xOffset, 0, sizeof(this->xOffset));
+	memset(this->yOffset, 0, sizeof(this->yOffset));
+	memset(this->zOffset, 0, sizeof(this->zOffset));
+	this->postUpdateActions();
 }
 
 void ForceComponent::postUpdateActions() {
