@@ -80,7 +80,7 @@ void AutomaticOperationsController::completeRaiseOperation() {
 	// from the static supports to the force actuators and all hardpoints have completed their
 	// commanded motions
 	this->forceController->zeroAberrationForces();
-	this->forceController->applyAccelerationForces();
+	this->forceController->zeroAccelerationForces();
 	this->forceController->zeroActiveOpticForces();
 	this->forceController->applyAzimuthForces();
 	this->forceController->zeroBalanceForces();
@@ -88,7 +88,7 @@ void AutomaticOperationsController::completeRaiseOperation() {
 	this->forceController->zeroOffsetForces();
 	this->forceController->applyStaticForces();
 	this->forceController->applyThermalForces();
-	this->forceController->applyVelocityForces();
+	this->forceController->zeroVelocityForces();
 	this->forceController->fillSupportPercentage();
 }
 
