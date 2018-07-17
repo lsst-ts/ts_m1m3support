@@ -112,6 +112,7 @@ public:
 
 	double RaiseIncrementPercentage;
 	double LowerDecrementPercentage;
+	float RaiseLowerFollowingErrorLimit;
 
 	ForceComponentSettings AberrationComponentSettings;
 	ForceComponentSettings AccelerationComponentSettings;

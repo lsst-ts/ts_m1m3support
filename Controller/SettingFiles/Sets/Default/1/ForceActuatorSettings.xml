@@ -94,6 +94,7 @@
 
     <RaiseIncrementPercentage>0.001</RaiseIncrementPercentage>
     <LowerDecrementPercentage>0.001</LowerDecrementPercentage>
+    <RaiseLowerFollowingErrorLimit>50</RaiseLowerFollowingErrorLimit>
 
     <AberrationForceComponent>
         <MaxRateOfChange>10.0</MaxRateOfChange>

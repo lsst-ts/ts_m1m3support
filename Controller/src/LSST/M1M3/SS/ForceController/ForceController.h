@@ -101,6 +101,7 @@ public:
 	void fillSupportPercentage();
 	bool supportPercentageFilled();
 	bool supportPercentageZeroed();
+	bool followingErrorInTolerance();
 
 	void updateAppliedForces();
 	void processAppliedForces();

@@ -118,6 +118,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
 
 	this->RaiseIncrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/RaiseIncrementPercentage").node().child_value());
 	this->LowerDecrementPercentage = boost::lexical_cast<double>(doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());
+	this->RaiseLowerFollowingErrorLimit = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/RaiseLowerFollowingErrorLimit").node().child_value());
 
 	this->AberrationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AberrationForceComponent/MaxRateOfChange").node().child_value());
 	this->AberrationComponentSettings.NearZeroValue = boost::lexical_cast<float>(doc.select_node("//ForceActuatorSettings/AberrationForceComponent/NearZeroValue").node().child_value());

@@ -53,8 +53,9 @@ void AutomaticOperationsController::tryIncrementingSupportPercentage() {
 	if (!this->forceController->supportPercentageFilled()) {
 		// We are still in the process of transfering the support force from the static supports
 		// to the force actuators
-		if (this->positionController->forcesInTolerance()) {
-			// The forces on the hardpoints are within tolerance, we can continue to transfer the
+		if (this->positionController->forcesInTolerance() && this->forceController->followingErrorInTolerance()) {
+			// The forces on the hardpoints are within tolerance and
+			// the force actuators are following their setpoints, we can continue to transfer the
 			// support force from the static supports to the force actuators
 			this->forceController->incSupportPercentage();
 			if (this->forceController->supportPercentageFilled()) {

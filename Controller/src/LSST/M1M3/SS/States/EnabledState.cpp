@@ -22,6 +22,7 @@
 #include <Gyro.h>
 #include <Log.h>
 #include <FPGA.h>
+#include <SAL_m1m3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -70,6 +71,17 @@ States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* comman
 States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) {
 	Log.Trace("EnabledState: storeTMAElevationSample()");
 	model->getForceController()->updateTMAElevationData(command->getData());
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
+	// TODO: Remove, this is a test command that has been taken for toggling boost valve control
+	m1m3_logevent_ForceActuatorStateC* forceActuatorState = model->getPublisher()->getEventForceActuatorState();
+	m1m3_OuterLoopDataC* outerLoop = model->getPublisher()->getOuterLoopData();
+	Log.Info("EnabledState: toggleBoostValve to %d", !forceActuatorState->SlewFlag);
+	forceActuatorState->SlewFlag = !forceActuatorState->SlewFlag;
+	outerLoop->SlewFlag = forceActuatorState->SlewFlag;
+
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

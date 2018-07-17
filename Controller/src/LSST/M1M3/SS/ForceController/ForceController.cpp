@@ -176,6 +176,19 @@ bool ForceController::supportPercentageZeroed() {
 	return this->forceActuatorState->SupportPercentage <= 0.0;
 }
 
+bool ForceController::followingErrorInTolerance() {
+	Log.Trace("ForceController: followingErrorInTolerance()");
+	float limit = this->forceActuatorSettings->RaiseLowerFollowingErrorLimit;
+	for(int i = 0; i < FA_COUNT; ++i) {
+		if ((i < FA_X_COUNT && !Range::InRange(-limit, limit, this->forceActuatorData->XForce[i] - this->appliedForces->XForces[i])) ||
+			(i < FA_Y_COUNT && !Range::InRange(-limit, limit, this->forceActuatorData->YForce[i] - this->appliedForces->YForces[i])) ||
+			(!Range::InRange(-limit, limit, this->forceActuatorData->ZForce[i] - this->appliedForces->ZForces[i]))) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void ForceController::updateAppliedForces() {
 	Log.Trace("ForceController: updateAppliedForces()");
 
