@@ -105,7 +105,7 @@
         <NearZeroValue>1.0</NearZeroValue>
     </AccelerationForceComponent>
     <ActiveOpticForceComponent>
-        <MaxRateOfChange>105.0</MaxRateOfChange>
+        <MaxRateOfChange>10.0</MaxRateOfChange>
         <NearZeroValue>1.0</NearZeroValue>
     </ActiveOpticForceComponent>
     <AzimuthForceComponent>
