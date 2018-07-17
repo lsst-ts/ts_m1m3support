@@ -82,7 +82,7 @@ void DigitalInputOutput::processData() {
 		this->interlockStatus->HeartbeatOutputState = (this->fpgaData->DigitalOutputStates & 0x01) != 0;
 
 		this->interlockWarning->Timestamp = timestamp;
-		this->interlockWarning->HeartbeatStateOutputMismatch = this->interlockStatus->HeartbeatOutputState == this->interlockStatus->HeartbeatCommandedState;
+		this->interlockWarning->HeartbeatStateOutputMismatch = this->interlockStatus->HeartbeatOutputState != this->interlockStatus->HeartbeatCommandedState;
 
 		if (this->safetyController) {
 			this->safetyController->airControllerNotifyCommandOutputMismatch(this->airSupplyWarning->CommandOutputMismatch);

@@ -39,6 +39,7 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	ilc->writeControlListBuffer();
 	ilc->triggerModbus();
 	model->getDigitalInputOutput()->tryToggleHeartbeat();
+	usleep(1000);
 	model->getFPGA()->pullTelemetry();
 	model->getAccelerometer()->processData();
 	model->getDigitalInputOutput()->processData();
