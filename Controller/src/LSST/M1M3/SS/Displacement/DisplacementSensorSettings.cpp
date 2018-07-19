@@ -35,6 +35,12 @@ void DisplacementSensorSettings::load(const std::string &filename) {
 	this->N6Offset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/N6Offset").node().child_value());
 	this->N7Offset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/N7Offset").node().child_value());
 	this->N8Offset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/N8Offset").node().child_value());
+	this->XPositionOffset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/XPositionOffset").node().child_value());
+	this->YPositionOffset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/YPositionOffset").node().child_value());
+	this->ZPositionOffset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/ZPositionOffset").node().child_value());
+	this->XRotationOffset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/XRotationOffset").node().child_value());
+	this->YRotationOffset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/YRotationOffset").node().child_value());
+	this->ZRotationOffset = boost::lexical_cast<double>(doc.select_node("//DisplacementSensorSettings/ZRotationOffset").node().child_value());
 }
 
 } /* namespace SS */

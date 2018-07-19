@@ -67,16 +67,15 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* mod
 	States::Type newState = States::DisabledState;
 	// Stop any existing motion (chase and move commands)
 	model->getPositionController()->stopMotion();
-	// Clear any offset force
-	model->getForceController()->zeroOffsetForces();
-	model->getForceController()->processAppliedForces();
+	model->getForceController()->reset();
 	// Perform ILC state transition
 	model->getILC()->writeSetModeDisableBuffer();
 	model->getILC()->triggerModbus();
 	model->getILC()->waitForAllSubnets(5000);
 	model->getILC()->readAll();
 	model->getILC()->verifyResponses();
-	model->getDigitalInputOutput()->turnAirOff();
+	// TODO: Uncomment this later when its not so hot outside
+	//model->getDigitalInputOutput()->turnAirOff();
 	model->getPowerController()->setAllAuxPowerNetworks(false);
 	return model->getSafetyController()->checkSafety(newState);
 }

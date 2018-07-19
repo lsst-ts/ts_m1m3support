@@ -16,10 +16,12 @@ namespace SS {
 
 class AccelerometerSettings {
 public:
-	double VoltsToMetersPerSecondSqrd;
-	double AngularAccelerationXDistance;
-	double AngularAccelerationYDistance;
-	double AngularAccelerationZDistance;
+	float GsToMetersPerSecondSqrd;
+	float AngularAccelerationXDistance;
+	float AngularAccelerationYDistance;
+	float AngularAccelerationZDistance;
+	float AccelerometerBias[8];
+	float AccelerometerSensitivity[8];
 	float AccelerometerOffsets[8];
 	float AccelerometerScalars[8];
 

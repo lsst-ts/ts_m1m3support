@@ -12,7 +12,7 @@
 #include <vector>
 
 struct ForceActuatorNeighbors {
-	std::vector<int32_t> NearIDs;
+	std::vector<int32_t> NearZIDs;
 	std::vector<int32_t> FarIDs;
 };
 

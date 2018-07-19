@@ -45,6 +45,7 @@ class HardpointActuatorApplicationSettings;
 class HardpointActuatorSettings;
 class HardpointMonitorApplicationSettings;
 class PositionController;
+class SafetyController;
 
 /*!
  * The ILC class used to communicate with the M1M3's 5 subnets.
@@ -53,6 +54,7 @@ class ILC {
 private:
 	M1M3SSPublisher* publisher;
 	FPGA* fpga;
+	SafetyController* safetyController;
 	ILCSubnetData subnetData;
 	ILCMessageFactory ilcMessageFactory;
 	ILCResponseParser responseParser;
@@ -82,6 +84,7 @@ private:
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
 	m1m3_ForceActuatorDataC* forceActuatorData;
+	m1m3_logevent_HardpointActuatorInfoC* hardpointActuatorInfo;
 	PositionController* positionController;
 
 	int8_t hpStepCommand[6];
@@ -93,7 +96,7 @@ private:
 	int32_t controlListToggle;
 
 public:
-	ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
+	ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController);
 	virtual ~ILC();
 
 	void programILC(int32_t actuatorId, std::string filePath);

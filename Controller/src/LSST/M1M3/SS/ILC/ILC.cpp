@@ -33,10 +33,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
+ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController)
  : subnetData(forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
    ilcMessageFactory(ilcApplicationSettings),
-   responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData),
+   responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData, safetyController),
    busListSetADCChannelOffsetAndSensitivity(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
    busListSetADCScanRate(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
    busListSetBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo()),
@@ -48,10 +48,10 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
    busListReadBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory),
    busListReportDCAID(&this->subnetData, &this->ilcMessageFactory),
    busListReportDCAStatus(&this->subnetData, &this->ilcMessageFactory),
-   busListChangeILCModeDisabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Disabled),
-   busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled),
-   busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby),
-   busListChangeILCModeClearFaults(&this->subnetData, &this->ilcMessageFactory, ILCModes::ClearFaults),
+   busListChangeILCModeDisabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Disabled, ILCModes::Enabled),
+   busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled, ILCModes::Enabled),
+   busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby, ILCModes::Standby),
+   busListChangeILCModeClearFaults(&this->subnetData, &this->ilcMessageFactory, ILCModes::ClearFaults, ILCModes::ClearFaults),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
    busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
    busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
@@ -59,11 +59,13 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
 	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
 	this->fpga = fpga;
+	this->safetyController = safetyController;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceActuatorData = this->publisher->getForceActuatorData();
+	this->hardpointActuatorInfo = this->publisher->getEventHardpointActuatorInfo();
 	this->controlListToggle = 0;
 	this->positionController = positionController;
 }
@@ -288,48 +290,56 @@ void ILC::flushAll() {
 }
 
 void ILC::calculateHPPostion() {
+	double displacement[] = {
+			((this->hardpointActuatorData->Encoder[0] - this->hardpointActuatorInfo->ReferencePosition[0]) * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
+			((this->hardpointActuatorData->Encoder[1] - this->hardpointActuatorInfo->ReferencePosition[1]) * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
+			((this->hardpointActuatorData->Encoder[2] - this->hardpointActuatorInfo->ReferencePosition[2]) * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
+			((this->hardpointActuatorData->Encoder[3] - this->hardpointActuatorInfo->ReferencePosition[3]) * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
+			((this->hardpointActuatorData->Encoder[4] - this->hardpointActuatorInfo->ReferencePosition[4]) * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
+			((this->hardpointActuatorData->Encoder[5] - this->hardpointActuatorInfo->ReferencePosition[5]) * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
+	};
 	this->hardpointActuatorData->XPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[2] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[3] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[4] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[2] * displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[3] * displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[4] * displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * displacement[1];
 	this->hardpointActuatorData->YPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[7] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[8] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[9] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[10] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[7] * displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[8] * displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[9] * displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[10] * displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * displacement[1];
 	this->hardpointActuatorData->ZPosition =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[13] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[14] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[15] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[16] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[13] * displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[14] * displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[15] * displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[16] * displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * displacement[1];
 	this->hardpointActuatorData->XRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[19] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[20] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[21] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[22] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[19] * displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[20] * displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[21] * displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[22] * displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * displacement[1];
 	this->hardpointActuatorData->YRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[25] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[26] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[27] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[28] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[25] * displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[26] * displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[27] * displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[28] * displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * displacement[1];
 	this->hardpointActuatorData->ZRotation =
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * this->hardpointActuatorData->Displacement[2] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[31] * this->hardpointActuatorData->Displacement[3] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[32] * this->hardpointActuatorData->Displacement[4] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * this->hardpointActuatorData->Displacement[5] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * this->hardpointActuatorData->Displacement[0] +
-			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * this->hardpointActuatorData->Displacement[1];
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * displacement[2] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[31] * displacement[3] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[32] * displacement[4] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * displacement[5] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * displacement[0] +
+			this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * displacement[1];
 }
 
 void ILC::calculateHPMirrorForces() {

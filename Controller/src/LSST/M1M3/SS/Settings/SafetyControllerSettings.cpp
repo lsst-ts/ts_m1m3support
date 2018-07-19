@@ -88,6 +88,10 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->RaiseOperation.FaultOnTimeout = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/RaiseOperationSettings/FaultOnTimeout").node().child_value()) != 0;
 
 	this->LowerOperation.FaultOnTimeout = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/LowerOperationSettings/FaultOnTimeout").node().child_value()) != 0;
+
+	this->ILC.FaultOnCommunicationTimeout = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/FaultOnCommunicationTimeout").node().child_value()) != 0;
+	this->ILC.CommunicationTimeoutCountThreshold = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/CommunicationTimeoutCountThreshold").node().child_value());
+	this->ILC.CommunicationTimeoutPeriod = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/CommunicationTimeoutPeriod").node().child_value());
 }
 
 } /* namespace SS */

@@ -52,9 +52,9 @@
     <ElevationLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitXTable.csv</ElevationLimitXTablePath>
     <ElevationLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitYTable.csv</ElevationLimitYTablePath>
     <ElevationLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitZTable.csv</ElevationLimitZTablePath>
-    <ForceLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitXTable.csv</ForceLimitXTablePath>
-    <ForceLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitYTable.csv</ForceLimitYTablePath>
-    <ForceLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitZTable.csv</ForceLimitZTablePath>
+    <ForceLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitXTableNone.csv</ForceLimitXTablePath>
+    <ForceLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitYTableNone.csv</ForceLimitYTablePath>
+    <ForceLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitZTableNone.csv</ForceLimitZTablePath>
     <OffsetLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitXTable.csv</OffsetLimitXTablePath>
     <OffsetLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitYTable.csv</OffsetLimitYTablePath>
     <OffsetLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitZTable.csv</OffsetLimitZTablePath>
@@ -72,12 +72,12 @@
 
 
     <ForceActuatorLimitsTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorLimitsTable.csv</ForceActuatorLimitsTablePath>
+    <ForceActuatorNearZNeighborsTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorNearNeighborZTable.csv</ForceActuatorNearZNeighborsTablePath>
     <ForceActuatorNeighborsTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorNeighborsTable.csv</ForceActuatorNeighborsTablePath>
     <UseInclinometer>1</UseInclinometer>
-    <MirrorWeight>166343.379</MirrorWeight>
-    <MirrorXMoment>-572069</MirrorXMoment>
-    <MirrorYMoment>-572069</MirrorYMoment>
-    <MirrorZMoment>-572069</MirrorZMoment>
+    <MirrorXMoment>-65311</MirrorXMoment>
+    <MirrorYMoment>-20000</MirrorYMoment>
+    <MirrorZMoment>-20000</MirrorZMoment>
     <SetpointXMomentLowLimitPercentage>-0.2</SetpointXMomentLowLimitPercentage>
     <SetpointXMomentHighLimitPercentage>1.2</SetpointXMomentHighLimitPercentage>
     <SetpointYMomentLowLimitPercentage>-0.2</SetpointYMomentLowLimitPercentage>
@@ -94,4 +94,50 @@
 
     <RaiseIncrementPercentage>0.001</RaiseIncrementPercentage>
     <LowerDecrementPercentage>0.001</LowerDecrementPercentage>
+    <RaiseLowerFollowingErrorLimit>50</RaiseLowerFollowingErrorLimit>
+
+    <AberrationForceComponent>
+        <MaxRateOfChange>10.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </AberrationForceComponent>
+    <AccelerationForceComponent>
+        <MaxRateOfChange>105.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </AccelerationForceComponent>
+    <ActiveOpticForceComponent>
+        <MaxRateOfChange>10.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </ActiveOpticForceComponent>
+    <AzimuthForceComponent>
+        <MaxRateOfChange>105.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </AzimuthForceComponent>
+    <BalanceForceComponent>
+        <MaxRateOfChange>5.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </BalanceForceComponent>
+    <ElevationForceComponent>
+        <MaxRateOfChange>105.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </ElevationForceComponent>
+    <OffsetForceComponent>
+        <MaxRateOfChange>105.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </OffsetForceComponent>
+    <StaticForceComponent>
+        <MaxRateOfChange>105.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </StaticForceComponent>
+    <ThermalForceComponent>
+        <MaxRateOfChange>10.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </ThermalForceComponent>
+    <VelocityForceComponent>
+        <MaxRateOfChange>105.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </VelocityForceComponent>
+    <FinalForceComponent>
+        <MaxRateOfChange>315.0</MaxRateOfChange>
+        <NearZeroValue>1.0</NearZeroValue>
+    </FinalForceComponent>
 </ForceActuatorSettings>

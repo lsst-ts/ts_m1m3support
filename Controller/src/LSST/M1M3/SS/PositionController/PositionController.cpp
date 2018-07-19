@@ -33,6 +33,7 @@ PositionController::PositionController(PositionControllerSettings* positionContr
 		this->hardpointActuatorData->StepsCommanded[i] = 0;
 		this->scaledMaxStepsPerLoop[i] = this->positionControllerSettings->MaxStepsPerLoop;
 		this->targetEncoderValues[i] = 0;
+		this->stableEncoderCount[i] = 0;
 	}
 	this->publisher->logHardpointActuatorState();
 }
@@ -127,7 +128,10 @@ bool PositionController::move(int32_t* steps) {
 		}
 	}
 	for(int i = 0; i < HP_COUNT; ++i) {
-		this->scaledMaxStepsPerLoop[i] = (int32_t)(this->positionControllerSettings->MaxStepsPerLoop/(maxLoopCycles/loopCycles[i]));
+		this->scaledMaxStepsPerLoop[i] = (int32_t)(this->positionControllerSettings->MaxStepsPerLoop /(maxLoopCycles/loopCycles[i]));
+		if (this->scaledMaxStepsPerLoop[i] == 0) {
+			this->scaledMaxStepsPerLoop[i] = 1;
+		}
 	}
 	this->publisher->tryLogHardpointActuatorState();
 	return true;
@@ -144,9 +148,39 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
 		return false;
 	}
 	this->hardpointActuatorState->Timestamp = this->publisher->getTimestamp();
-	for(int i = 0; i < HP_COUNT; ++i) {
+	double loopCycles[6];
+	double maxLoopCycles = 0;
+	for(int i = 0; i < HP_COUNT; i++) {
 		this->targetEncoderValues[i] = encoderValues[i];
-		this->hardpointActuatorState->MotionState[i] = encoderValues[0] != this->hardpointActuatorData->Encoder[0] ? HardpointActuatorMotionStates::Positioning : HardpointActuatorMotionStates::Standby;
+		this->stableEncoderCount[i] = 0;
+		int deltaEncoder = this->targetEncoderValues[i] - this->hardpointActuatorData->Encoder[i];
+		// If we overshoot our target encoder value we have to clear what appears to be quite a bit of backlash
+		// So lets not overshoot our target
+		if (deltaEncoder > 0) {
+			deltaEncoder -= 4;
+			// We are already very close to our target so lets not do anything during the quick positioning phase
+			if (deltaEncoder < 0) {
+				deltaEncoder = 0;
+			}
+		}
+		else if (deltaEncoder < 0) {
+			deltaEncoder += 4;
+			if (deltaEncoder > 0) {
+				deltaEncoder = 0;
+			}
+		}
+		this->hardpointActuatorData->StepsQueued[i] = deltaEncoder * this->positionControllerSettings->EncoderToStepsCoefficient;
+		this->hardpointActuatorState->MotionState[i] = this->hardpointActuatorData->StepsQueued[i] != 0 ? HardpointActuatorMotionStates::QuickPositioning : HardpointActuatorMotionStates::Standby;
+		loopCycles[i] = this->abs(this->hardpointActuatorData->StepsQueued[i]) / (double)this->positionControllerSettings->MaxStepsPerLoop;
+		if (loopCycles[i] > maxLoopCycles) {
+			maxLoopCycles = loopCycles[i];
+		}
+	}
+	for(int i = 0; i < HP_COUNT; ++i) {
+		this->scaledMaxStepsPerLoop[i] = (int32_t)(this->positionControllerSettings->MaxStepsPerLoop /(maxLoopCycles/loopCycles[i]));
+		if (this->scaledMaxStepsPerLoop[i] == 0) {
+			this->scaledMaxStepsPerLoop[i] = 1;
+		}
 	}
 	this->publisher->tryLogHardpointActuatorState();
 	return true;
@@ -173,7 +207,12 @@ bool PositionController::translate(double x, double y, double z, double rX, doub
 	Log.Info("PositionController: translate(%f, %f, %f, %f, %f, %f)", x, y, z, rX, rY, rZ);
 	int32_t steps[6];
 	this->convertToSteps(steps, x, y, z, rX, rY, rZ);
-	return this->move(steps);
+	int32_t encoderValues[6];
+	double stepsToEncoder = this->hardpointActuatorSettings->MicrometersPerStep / this->hardpointActuatorSettings->MicrometersPerEncoder;
+	for(int i = 0; i < HP_COUNT; ++i) {
+		encoderValues[i] = this->hardpointActuatorData->Encoder[i] + steps[i] * stepsToEncoder;
+	}
+	return this->moveToEncoder(encoderValues);
 }
 
 void PositionController::stopMotion() {
@@ -215,23 +254,38 @@ void PositionController::updateSteps() {
 				}
 				break;
 			}
-			case HardpointActuatorMotionStates::Positioning:
+			case HardpointActuatorMotionStates::QuickPositioning:
+			{
+				int32_t moveSteps = Range::CoerceIntoRange(-this->scaledMaxStepsPerLoop[i], this->scaledMaxStepsPerLoop[i], this->hardpointActuatorData->StepsQueued[i]);
+				this->hardpointActuatorData->StepsQueued[i] -= moveSteps;
+				this->hardpointActuatorData->StepsCommanded[i] = (int16_t)moveSteps;
+				if(this->hardpointActuatorData->StepsQueued[i] == 0 && this->hardpointActuatorData->StepsCommanded[i] == 0) {
+					publishState = true;
+					this->hardpointActuatorState->MotionState[i] = HardpointActuatorMotionStates::FinePositioning;
+				}
+				break;
+			}
+			case HardpointActuatorMotionStates::FinePositioning:
 			{
 				int32_t deltaEncoder = this->targetEncoderValues[i] - this->hardpointActuatorData->Encoder[i];
 				int32_t encoderSteps = (int32_t)(deltaEncoder * this->positionControllerSettings->EncoderToStepsCoefficient);
 				if (deltaEncoder <= 2 && deltaEncoder >= -2) {
 					if (deltaEncoder < 0) {
 						encoderSteps = -1;
+						this->stableEncoderCount[i] = 0;
 					}
 					else if (deltaEncoder > 0) {
 						encoderSteps = 1;
+						this->stableEncoderCount[i] = 0;
+
 					}
 					else {
 						encoderSteps = 0;
+						this->stableEncoderCount[i]++;
 					}
 				}
 				this->hardpointActuatorData->StepsCommanded[i] = Range::CoerceIntoRange(-this->positionControllerSettings->MaxStepsPerLoop, this->positionControllerSettings->MaxStepsPerLoop, encoderSteps);
-				if (deltaEncoder == 0) {
+				if (deltaEncoder == 0 && this->stableEncoderCount[i] >= 2) {
 					publishState = true;
 					this->hardpointActuatorData->StepsCommanded[i] = 0;
 					this->hardpointActuatorState->MotionState[i] = HardpointActuatorMotionStates::Standby;

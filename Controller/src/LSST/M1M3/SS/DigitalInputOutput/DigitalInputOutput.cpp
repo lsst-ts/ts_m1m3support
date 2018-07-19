@@ -72,7 +72,8 @@ void DigitalInputOutput::processData() {
 		this->airSupplyWarning->CommandOutputMismatch = this->airSupplyStatus->AirCommandOutputOn != this->airSupplyStatus->AirCommandedOn;
 
 		this->cellLightStatus->Timestamp = timestamp;
-		this->cellLightStatus->CellLightsOutputOn = (this->fpgaData->DigitalOutputStates & 0x20) != 0;
+		// Polarity is swapped
+		this->cellLightStatus->CellLightsOutputOn = (this->fpgaData->DigitalOutputStates & 0x20) == 0;
 
 		this->cellLightWarning->Timestamp = timestamp;
 		this->cellLightWarning->CellLightsOutputMismatch = this->cellLightStatus->CellLightsOutputOn != this->cellLightStatus->CellLightsCommandedOn;
@@ -81,7 +82,7 @@ void DigitalInputOutput::processData() {
 		this->interlockStatus->HeartbeatOutputState = (this->fpgaData->DigitalOutputStates & 0x01) != 0;
 
 		this->interlockWarning->Timestamp = timestamp;
-		this->interlockWarning->HeartbeatStateOutputMismatch = this->interlockStatus->HeartbeatOutputState == this->interlockStatus->HeartbeatCommandedState;
+		this->interlockWarning->HeartbeatStateOutputMismatch = this->interlockStatus->HeartbeatOutputState != this->interlockStatus->HeartbeatCommandedState;
 
 		if (this->safetyController) {
 			this->safetyController->airControllerNotifyCommandOutputMismatch(this->airSupplyWarning->CommandOutputMismatch);
@@ -94,8 +95,10 @@ void DigitalInputOutput::processData() {
 		this->lastDITimestamp = this->fpgaData->DigitalInputTimestamp;
 
 		this->airSupplyStatus->Timestamp = timestamp;
-		this->airSupplyStatus->AirValveOpened = (this->fpgaData->DigitalInputStates & 0x0100) != 0;
-		this->airSupplyStatus->AirValveClosed = (this->fpgaData->DigitalInputStates & 0x0200) != 0;
+		// Polarity is swapped
+		this->airSupplyStatus->AirValveOpened = (this->fpgaData->DigitalInputStates & 0x0100) == 0;
+		// Polarity is swapped
+		this->airSupplyStatus->AirValveClosed = (this->fpgaData->DigitalInputStates & 0x0200) == 0;
 
 		this->airSupplyWarning->Timestamp = timestamp;
 		this->airSupplyWarning->CommandSensorMismatch =
@@ -166,14 +169,16 @@ void DigitalInputOutput::turnAirOff() {
 void DigitalInputOutput::turnCellLightsOn() {
 	Log.Info("DigitalInputOutput: turnCellLightsOn()");
 	this->cellLightStatus->CellLightsCommandedOn = true;
-	uint16_t buffer[2] = { FPGAAddresses::MirrorCellLightControl, (uint16_t)this->cellLightStatus->CellLightsCommandedOn };
+	// Polarity is swapped
+	uint16_t buffer[2] = { FPGAAddresses::MirrorCellLightControl, (uint16_t)(!this->cellLightStatus->CellLightsCommandedOn) };
 	this->fpga->writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnCellLightsOff() {
 	Log.Info("DigitalInputOutput: turnCellLightsOff()");
 	this->cellLightStatus->CellLightsCommandedOn = false;
-	uint16_t buffer[2] = { FPGAAddresses::MirrorCellLightControl, (uint16_t)this->cellLightStatus->CellLightsCommandedOn };
+	// Polarity is swapped
+	uint16_t buffer[2] = { FPGAAddresses::MirrorCellLightControl, (uint16_t)(!this->cellLightStatus->CellLightsCommandedOn) };
 	this->fpga->writeCommandFIFO(buffer, 2, 0);
 }
 

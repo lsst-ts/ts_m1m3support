@@ -11,6 +11,7 @@
 #include <DataTypes.h>
 #include <cmath>
 #include <ForcesAndMoments.h>
+#include <DistributedForces.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -56,6 +57,15 @@ public:
 	}
 
 	static ForcesAndMoments calculateForcesAndMoments(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, float* xForces, float* yForces, float* zForces);
+	static ForcesAndMoments calculateForcesAndMoments(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, float* zForces);
+
+	static DistributedForces calculateForceFromBendingModes(ForceActuatorSettings* forceActuatorSettings, float* coefficients);
+	static DistributedForces calculateForceFromAngularAcceleration(ForceActuatorSettings* forceActuatorSettings, float angularAccelerationX, float angularAccelerationY, float angularAccelerationZ);
+	static DistributedForces calculateForceFromAngularVelocity(ForceActuatorSettings* forceActuatorSettings, float angularVelocityX, float angularVelocityY, float angularVelocityZ);
+	static DistributedForces calculateForceFromAzimuthAngle(ForceActuatorSettings* forceActuatorSettings, float azimuthAngle);
+	static DistributedForces calculateForceFromElevationAngle(ForceActuatorSettings* forceActuatorSettings, float elevationAngle);
+	static DistributedForces calculateForceFromTemperature(ForceActuatorSettings* forceActuatorSettings, float temperature);
+	static DistributedForces calculateForceDistribution(ForceActuatorSettings* forceActuatorSettings, float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
 
 };
 

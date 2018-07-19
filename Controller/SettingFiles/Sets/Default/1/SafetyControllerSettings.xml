@@ -43,7 +43,7 @@
         <FaultOnXMomentLimit>0</FaultOnXMomentLimit>
         <FaultOnYMomentLimit>0</FaultOnYMomentLimit>
         <FaultOnZMomentLimit>0</FaultOnZMomentLimit>
-        <FaultOnNearNeighborCheck>0</FaultOnNearNeighborCheck>
+        <FaultOnNearNeighborCheck>1</FaultOnNearNeighborCheck>
         <FaultOnMagnitudeLimit>0</FaultOnMagnitudeLimit>
         <FaultOnFarNeighborCheck>0</FaultOnFarNeighborCheck>
         <FaultOnElevationForceClipping>0</FaultOnElevationForceClipping>
@@ -86,4 +86,9 @@
         <FaultOnAngularAccelerationY>0</FaultOnAngularAccelerationY>
         <FaultOnAngularAccelerationZ>0</FaultOnAngularAccelerationZ>
     </AccelerometerSettings>
+    <ILCSettings>
+        <FaultOnCommunicationTimeout>1</FaultOnCommunicationTimeout>
+        <CommunicationTimeoutCountThreshold>3</CommunicationTimeoutCountThreshold>
+        <CommunicationTimeoutPeriod>5</CommunicationTimeoutPeriod>
+    </ILCSettings>
 </SafetyControllerSettings>

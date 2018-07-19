@@ -13,6 +13,7 @@
 #include <ForceConverter.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ILCDataTypes.h>
+#include <SafetyController.h>
 #include <Timestamp.h>
 #include <ILCSubnetData.h>
 #include <SAL_m1m3C.h>
@@ -29,6 +30,7 @@ ILCResponseParser::ILCResponseParser() {
 	this->hardpointActuatorSettings = 0;
 	this->publisher = 0;
 	this->subnetData = 0;
+	this->safetyController = 0;
 	this->hardpointActuatorInfo = 0;
 	this->hardpointActuatorState = 0;
 	this->hardpointActuatorWarning = 0;
@@ -49,12 +51,13 @@ ILCResponseParser::ILCResponseParser() {
 	this->grabResponse = false;
 }
 
-ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData) {
+ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData, SafetyController* safetyController) {
 	Log.Debug("ILCResponseParser: ILCResponseParser()");
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->publisher = publisher;
 	this->subnetData = subnetData;
+	this->safetyController = safetyController;
 	this->hardpointActuatorInfo = this->publisher->getEventHardpointActuatorInfo();
 	this->hardpointActuatorState = this->publisher->getEventHardpointActuatorState();
 	this->hardpointActuatorWarning = this->publisher->getEventHardpointActuatorWarning();
@@ -212,10 +215,10 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 						case 145:
 						case 146:
 						case 193:
-						case 208:
-						case 209:
 						case 235:
-						case 238:
+						case 247:
+						case 248:
+						case 249:
 						case 250: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 						default:
 							Log.Warn("ILCResponseParser: Unknown HM function %d on subnet %d", (int)function, subnet);
@@ -274,6 +277,7 @@ void ILCResponseParser::clearResponses() {
 void ILCResponseParser::verifyResponses() {
 	double timestamp = this->publisher->getTimestamp();
 	bool warn = false;
+	bool anyTimeout = false;
 	for(int i = 0; i < FA_COUNT; i++) {
 		if (this->faExpectedResponses[i] != 0) {
 			warn = true;
@@ -282,6 +286,7 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
+		anyTimeout = true;
 		Log.Warn("ILCResponseParser: Force actuator response timeout");
 	}
 	warn = false;
@@ -293,6 +298,7 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
+		anyTimeout = true;
 		Log.Warn("ILCResponseParser: Hardpoint actuator response timeout");
 	}
 	warn = false;
@@ -305,8 +311,11 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
-		//Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
+		anyTimeout = true;
+		Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
 	}
+
+	this->safetyController->ilcCommunicationTimeout(anyTimeout);
 }
 
 void ILCResponseParser::grabNextResponse() {
@@ -573,7 +582,7 @@ void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffe
 	// 0x02 is reserved
 	this->hardpointActuatorWarning->LimitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
 	this->hardpointActuatorWarning->LimitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
-	this->hardpointActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->hardpointActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	int32_t offset = 0;
 	switch(map.ActuatorId) {
 	case 1: offset = this->hardpointActuatorSettings->HP1EncoderOffset; break;
@@ -621,7 +630,7 @@ void ILCResponseParser::parseSingleAxisForceDemandResponse(ModbusBuffer* buffer,
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
@@ -641,7 +650,7 @@ void ILCResponseParser::parseDualAxisForceDemandResponse(ModbusBuffer* buffer, I
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
 	float x = 0;
@@ -681,7 +690,7 @@ void ILCResponseParser::parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
@@ -701,7 +710,7 @@ void ILCResponseParser::parseDualAxisPneumaticForceStatusResponse(ModbusBuffer* 
 	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
+	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
 	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
 	this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
 	float x = 0;
@@ -825,10 +834,10 @@ void ILCResponseParser::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer,
 
 void ILCResponseParser::parseReadHMPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorData->BreakawayPressure[dataIndex] = buffer->readSGL();
 	this->hardpointMonitorData->PressureSensor1[dataIndex] = buffer->readSGL();
 	this->hardpointMonitorData->PressureSensor2[dataIndex] = buffer->readSGL();
 	this->hardpointMonitorData->PressureSensor3[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->BreakawayPressure[dataIndex] = buffer->readSGL();
 	buffer->skipToNextFrame();
 }
 

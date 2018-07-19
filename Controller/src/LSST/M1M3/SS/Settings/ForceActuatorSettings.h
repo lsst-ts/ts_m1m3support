@@ -11,6 +11,7 @@
 #include <DataTypes.h>
 #include <ForceActuatorNeighbors.h>
 #include <ForceActuatorLimits.h>
+#include <ForceDomainModel.h>
 #include <Limit.h>
 #include <string>
 #include <vector>
@@ -93,7 +94,6 @@ public:
 	std::vector<ForceActuatorNeighbors> Neighbors;
 
 	bool UseInclinometer;
-	float MirrorWeight;
 	float MirrorXMoment;
 	float MirrorYMoment;
 	float MirrorZMoment;
@@ -112,6 +112,19 @@ public:
 
 	double RaiseIncrementPercentage;
 	double LowerDecrementPercentage;
+	float RaiseLowerFollowingErrorLimit;
+
+	ForceComponentSettings AberrationComponentSettings;
+	ForceComponentSettings AccelerationComponentSettings;
+	ForceComponentSettings ActiveOpticComponentSettings;
+	ForceComponentSettings AzimuthComponentSettings;
+	ForceComponentSettings BalanceComponentSettings;
+	ForceComponentSettings ElevationComponentSettings;
+	ForceComponentSettings OffsetComponentSettings;
+	ForceComponentSettings StaticComponentSettings;
+	ForceComponentSettings ThermalComponentSettings;
+	ForceComponentSettings VelocityComponentSettings;
+	ForceComponentSettings FinalComponentSettings;
 
 	void load(const std::string &filename);
 
@@ -119,6 +132,7 @@ public:
 
 private:
 	void loadDisabledActuators(const std::string line);
+	void loadNearNeighborZTable(const std::string &filename);
 	void loadNeighborsTable(const std::string &filename);
 };
 

@@ -22,6 +22,7 @@ public:
 	virtual States::Type update(UpdateCommand* command, Model* model);
 	States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model);
 	States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model);
+	States::Type testAir(TestAirCommand* command, Model* model);
 };
 
 } /* namespace SS */

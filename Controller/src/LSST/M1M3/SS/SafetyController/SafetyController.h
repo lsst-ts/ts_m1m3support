@@ -11,6 +11,7 @@
 #include <FaultCodes.h>
 #include <StateTypes.h>
 #include <SAL_m1m3C.h>
+#include <list>
 
 namespace LSST {
 namespace M1M3 {
@@ -25,6 +26,8 @@ private:
 	SafetyControllerSettings* safetyControllerSettings;
 
 	m1m3_logevent_ErrorCodeC* errorCodeData;
+
+	std::list<int> ilcCommunicationTimeoutData;
 
 public:
 	SafetyController(M1M3SSPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
@@ -102,6 +105,8 @@ public:
 	void raiseOperationTimeout(bool conditionFlag);
 
 	void lowerOperationTimeout(bool conditionFlag);
+
+	void ilcCommunicationTimeout(bool conditionFlag);
 
 	States::Type checkSafety(States::Type preferredNextState);
 

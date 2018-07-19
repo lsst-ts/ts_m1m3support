@@ -17,6 +17,7 @@
 #include <PowerControllerSafetySettings.h>
 #include <RaiseOperationSafetySettings.h>
 #include <LowerOperationSafetySettings.h>
+#include <ILCSafetySettings.h>
 #include <string>
 
 namespace LSST {
@@ -34,6 +35,7 @@ public:
 	PowerControllerSafetySettings PowerController;
 	RaiseOperationSafetySettings RaiseOperation;
 	LowerOperationSafetySettings LowerOperation;
+	ILCSafetySettings ILC;
 
 	void load(const std::string &filename);
 };

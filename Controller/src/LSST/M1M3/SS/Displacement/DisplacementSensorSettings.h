@@ -35,6 +35,12 @@ public:
 	double N6Offset;
 	double N7Offset;
 	double N8Offset;
+	double XPositionOffset;
+	double YPositionOffset;
+	double ZPositionOffset;
+	double XRotationOffset;
+	double YRotationOffset;
+	double ZRotationOffset;
 
 	void load(const std::string &filename);
 };
