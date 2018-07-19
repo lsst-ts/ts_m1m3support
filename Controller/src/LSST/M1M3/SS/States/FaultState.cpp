@@ -35,6 +35,7 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
 	ilc->writeFreezeSensorListBuffer();
 	ilc->triggerModbus();
 	model->getDigitalInputOutput()->tryToggleHeartbeat();
+	usleep(1000);
 	model->getFPGA()->pullTelemetry();
 	model->getAccelerometer()->processData();
 	model->getDigitalInputOutput()->processData();
