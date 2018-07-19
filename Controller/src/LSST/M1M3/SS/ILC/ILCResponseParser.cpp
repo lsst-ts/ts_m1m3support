@@ -215,10 +215,10 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 						case 145:
 						case 146:
 						case 193:
-						case 208:
-						case 209:
 						case 235:
-						case 238:
+						case 247:
+						case 248:
+						case 249:
 						case 250: this->parseErrorResponse(buffer, timestamp, map.ActuatorId); break;
 						default:
 							Log.Warn("ILCResponseParser: Unknown HM function %d on subnet %d", (int)function, subnet);
@@ -311,8 +311,8 @@ void ILCResponseParser::verifyResponses() {
 		}
 	}
 	if (warn) {
-		//anyTimeout = true;
-		//Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
+		anyTimeout = true;
+		Log.Warn("ILCResponseParser: Hardpoint monitor response timeout");
 	}
 
 	this->safetyController->ilcCommunicationTimeout(anyTimeout);
@@ -834,10 +834,10 @@ void ILCResponseParser::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer,
 
 void ILCResponseParser::parseReadHMPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorData->BreakawayPressure[dataIndex] = buffer->readSGL();
 	this->hardpointMonitorData->PressureSensor1[dataIndex] = buffer->readSGL();
 	this->hardpointMonitorData->PressureSensor2[dataIndex] = buffer->readSGL();
 	this->hardpointMonitorData->PressureSensor3[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->BreakawayPressure[dataIndex] = buffer->readSGL();
 	buffer->skipToNextFrame();
 }
 

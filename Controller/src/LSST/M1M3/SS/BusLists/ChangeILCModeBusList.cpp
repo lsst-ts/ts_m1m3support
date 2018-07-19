@@ -14,7 +14,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode)
+ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode, ILCModes::Type hmMode)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("ChangeILCModeBusList: ChangeILCModeBusList()");
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
@@ -42,7 +42,7 @@ ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessage
 			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
 			bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
 			if (!disabled) {
-				this->ilcMessageFactory->changeILCMode(&this->buffer, address, mode);
+				this->ilcMessageFactory->changeILCMode(&this->buffer, address, hmMode);
 				this->expectedHMResponses[dataIndex] = 1;
 			}
 		}

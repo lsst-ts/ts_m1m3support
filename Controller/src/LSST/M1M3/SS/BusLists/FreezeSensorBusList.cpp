@@ -65,16 +65,18 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 				}
 			}
 		}
-		for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
-			uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
-			int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
-			bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
-			if (!disabled) {
-				this->ilcMessageFactory->reportLVDT(&this->buffer, address);
-				this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
-				this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
-				this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-				this->expectedHMResponses[dataIndex] = 4;
+		if (this->subnetData->getHMCount(subnetIndex) > 0) {
+			for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
+				uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+				int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
+				bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+				if (!disabled) {
+					this->ilcMessageFactory->reportLVDT(&this->buffer, address);
+					this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
+					this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
+					this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
+					this->expectedHMResponses[dataIndex] = 4;
+				}
 			}
 		}
 		this->endSubnet();

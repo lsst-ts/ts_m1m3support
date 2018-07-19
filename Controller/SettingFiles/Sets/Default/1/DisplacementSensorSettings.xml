@@ -17,10 +17,10 @@
     <N7Offset>0</N7Offset>
     <N8Offset>0</N8Offset>
     <!-- Captured at 25.1 degC -->
-    <XPositionOffset>-0.023647529</XPositionOffset>
-    <YPositionOffset>-0.018994114</YPositionOffset>
-    <ZPositionOffset>-0.030695893</ZPositionOffset>
-    <XRotationOffset>-0.000005479</XRotationOffset>
-    <YRotationOffset>+0.000162798</YRotationOffset>
-    <ZRotationOffset>+0.000775031</ZRotationOffset>
+    <XPositionOffset>-0.023489874</XPositionOffset>
+    <YPositionOffset>-0.018959229</YPositionOffset>
+    <ZPositionOffset>-0.030661468</ZPositionOffset>
+    <XRotationOffset>+0.000014123</XRotationOffset>
+    <YRotationOffset>+0.000155955</YRotationOffset>
+    <ZRotationOffset>+0.000814204</ZRotationOffset>
 </DisplacementSensorSettings>
