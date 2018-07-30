@@ -144,6 +144,7 @@ void AutomaticOperationsController::tryDecrementSupportPercentage() {
 	if (!this->forceController->supportPercentageZeroed()) {
 		// We are still in the process of transfering the support force from the static supports
 		// to the force actuators
+		// TODO: Does it matter if the following error is bad when we are trying to lower the mirror?
 		if (this->positionController->forcesInTolerance()) {
 			// The forces on the hardpoints are within tolerance, we can continue to transfer the
 			// support force from the static supports to the force actuators

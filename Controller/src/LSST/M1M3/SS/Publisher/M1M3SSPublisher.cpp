@@ -846,6 +846,7 @@ void M1M3SSPublisher::logForceSetpointWarning() {
 	this->eventForceSetpointWarning.AnyStaticForceWarning = false;
 	this->eventForceSetpointWarning.AnyAberrationForceWarning = false;
 	this->eventForceSetpointWarning.AnyOffsetForceWarning = false;
+	this->eventForceSetpointWarning.AnyForceWarning = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
 		this->eventForceSetpointWarning.AnySafetyLimitWarning = this->eventForceSetpointWarning.AnySafetyLimitWarning ||
 				this->eventForceSetpointWarning.SafetyLimitWarning[i];
@@ -873,6 +874,8 @@ void M1M3SSPublisher::logForceSetpointWarning() {
 				this->eventForceSetpointWarning.AberrationForceWarning[i];
 		this->eventForceSetpointWarning.AnyOffsetForceWarning = this->eventForceSetpointWarning.AnyOffsetForceWarning ||
 				this->eventForceSetpointWarning.OffsetForceWarning[i];
+		this->eventForceSetpointWarning.AnyForceWarning = this->eventForceSetpointWarning.AnyForceWarning ||
+				this->eventForceSetpointWarning.ForceWarning[i];
 	}
 	this->eventForceSetpointWarning.AnyWarning =
 		this->eventForceSetpointWarning.AnySafetyLimitWarning ||
@@ -893,7 +896,8 @@ void M1M3SSPublisher::logForceSetpointWarning() {
 		this->eventForceSetpointWarning.AnyStaticForceWarning ||
 		this->eventForceSetpointWarning.AberrationNetForceWarning ||
 		this->eventForceSetpointWarning.AnyAberrationForceWarning ||
-		this->eventForceSetpointWarning.AnyOffsetForceWarning;
+		this->eventForceSetpointWarning.AnyOffsetForceWarning ||
+		this->eventForceSetpointWarning.AnyForceWarning;
 	this->m1m3SAL->logEvent_ForceSetpointWarning(&this->eventForceSetpointWarning, 0);
 	this->previousEventForceSetpointWarning = this->eventForceSetpointWarning;
 }
@@ -920,7 +924,8 @@ void M1M3SSPublisher::tryLogForceSetpointWarning() {
 			this->eventForceSetpointWarning.ActiveOpticForceWarning[i] != this->previousEventForceSetpointWarning.ActiveOpticForceWarning[i] ||
 			this->eventForceSetpointWarning.StaticForceWarning[i] != this->previousEventForceSetpointWarning.StaticForceWarning[i] ||
 			this->eventForceSetpointWarning.AberrationForceWarning[i] != this->previousEventForceSetpointWarning.AberrationForceWarning[i] ||
-			this->eventForceSetpointWarning.OffsetForceWarning[i] != this->previousEventForceSetpointWarning.OffsetForceWarning[i];
+			this->eventForceSetpointWarning.OffsetForceWarning[i] != this->previousEventForceSetpointWarning.OffsetForceWarning[i] ||
+			this->eventForceSetpointWarning.ForceWarning[i] != this->previousEventForceSetpointWarning.ForceWarning[i];
 	}
 	if (changeDetected) {
 		this->logForceSetpointWarning();

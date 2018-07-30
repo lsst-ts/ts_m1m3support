@@ -240,6 +240,19 @@ void ILCMessageFactory::reportLVDT(ModbusBuffer* buffer, uint8_t address) {
 	buffer->writeWaitForRx(this->ilcApplicationSettings->ReportLVDT);
 }
 
+void ILCMessageFactory::nopReportLVDT(ModbusBuffer* buffer, uint8_t address) {
+	// We require a means to create a nop instruction for reading LVDTs at 10Hz. If we don't do this then
+	// we would have to constantly calculate the buffer size. If we instead fill it with nop then we don't
+	buffer->writeLength(0); // Address
+	buffer->writeLength(0); // Function Code
+	buffer->writeLength(0); // CRC MSB
+	buffer->writeLength(0); // CRC LSB
+	buffer->writeLength(0); // End of Frame
+	buffer->writeLength(0); // Wait for Rx
+}
+
+
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

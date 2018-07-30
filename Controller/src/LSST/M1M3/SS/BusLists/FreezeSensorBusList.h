@@ -22,6 +22,8 @@ private:
 	int32_t freezeSensorCommandIndex[5];
 	int32_t faStatusCommandIndex[5];
 	int32_t roundRobinFAReportServerStatusIndex[5];
+	int32_t hmLVDTCommandIndex[5];
+	int32_t lvdtSampleClock;
 
 public:
 	FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData);

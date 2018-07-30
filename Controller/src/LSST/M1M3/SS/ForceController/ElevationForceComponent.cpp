@@ -90,33 +90,37 @@ void ElevationForceComponent::postEnableDisableActions() {
 void ElevationForceComponent::postUpdateActions() {
 	Log.Trace("ElevationForceController: postUpdateActions()");
 
+	bool notInRange = false;
 	bool rejectionRequired = false;
 	this->appliedElevationForces->Timestamp = this->publisher->getTimestamp();
 	this->rejectedElevationForces->Timestamp = this->appliedElevationForces->Timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+
+		this->forceSetpointWarning->ElevationForceWarning[zIndex] = false;
+
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->ElevationLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->ElevationLimitXTable[xIndex].HighFault;
 			this->rejectedElevationForces->XForces[xIndex] = this->xCurrent[xIndex];
-			this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] ||
-				!Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedElevationForces->XForces[xIndex], this->appliedElevationForces->XForces + xIndex);
+			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedElevationForces->XForces[xIndex], this->appliedElevationForces->XForces + xIndex);
+			this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] || notInRange;
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->ElevationLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->ElevationLimitYTable[yIndex].HighFault;
 			this->rejectedElevationForces->YForces[yIndex] = this->yCurrent[yIndex];
-			this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] ||
-				!Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedElevationForces->YForces[yIndex], this->appliedElevationForces->YForces + yIndex);
+			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedElevationForces->YForces[yIndex], this->appliedElevationForces->YForces + yIndex);
+			this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] || notInRange;
 		}
 
 		float zLowFault = this->forceActuatorSettings->ElevationLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->ElevationLimitZTable[zIndex].HighFault;
 		this->rejectedElevationForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] ||
-			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedElevationForces->ZForces[zIndex], this->appliedElevationForces->ZForces + zIndex);
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedElevationForces->ZForces[zIndex], this->appliedElevationForces->ZForces + zIndex);
+		this->forceSetpointWarning->ElevationForceWarning[zIndex] = this->forceSetpointWarning->ElevationForceWarning[zIndex] || notInRange;
 		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ElevationForceWarning[zIndex];
 	}
 

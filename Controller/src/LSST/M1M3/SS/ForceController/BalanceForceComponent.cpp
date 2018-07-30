@@ -136,33 +136,37 @@ void BalanceForceComponent::postEnableDisableActions() {
 void BalanceForceComponent::postUpdateActions() {
 	Log.Trace("BalanceForceController: postUpdateActions()");
 
+	bool notInRange = false;
 	bool rejectionRequired = false;
 	this->appliedBalanceForces->Timestamp = this->publisher->getTimestamp();
 	this->rejectedBalanceForces->Timestamp = this->appliedBalanceForces->Timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+
+		this->forceSetpointWarning->BalanceForceWarning[zIndex] = false;
+
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->BalanceLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->BalanceLimitXTable[xIndex].HighFault;
 			this->rejectedBalanceForces->XForces[xIndex] = this->xCurrent[xIndex];
-			this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] ||
-				!Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedBalanceForces->XForces[xIndex], this->appliedBalanceForces->XForces + xIndex);
+			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedBalanceForces->XForces[xIndex], this->appliedBalanceForces->XForces + xIndex);
+			this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] || notInRange;
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->BalanceLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->BalanceLimitYTable[yIndex].HighFault;
 			this->rejectedBalanceForces->YForces[yIndex] = this->yCurrent[yIndex];
-			this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] ||
-				!Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedBalanceForces->YForces[yIndex], this->appliedBalanceForces->YForces + yIndex);
+			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedBalanceForces->YForces[yIndex], this->appliedBalanceForces->YForces + yIndex);
+			this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] || notInRange;
 		}
 
 		float zLowFault = this->forceActuatorSettings->BalanceLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->BalanceLimitZTable[zIndex].HighFault;
 		this->rejectedBalanceForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] ||
-			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedBalanceForces->ZForces[zIndex], this->appliedBalanceForces->ZForces + zIndex);
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedBalanceForces->ZForces[zIndex], this->appliedBalanceForces->ZForces + zIndex);
+		this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] || notInRange;
 		rejectionRequired = rejectionRequired || this->forceSetpointWarning->BalanceForceWarning[zIndex];
 	}
 

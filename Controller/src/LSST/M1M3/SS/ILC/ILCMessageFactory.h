@@ -49,6 +49,7 @@ public:
 	void reportDCAID(ModbusBuffer* buffer, uint8_t address);
 	void reportDCAStatus(ModbusBuffer* buffer, uint8_t address);
 	void reportLVDT(ModbusBuffer* buffer, uint8_t address);
+	void nopReportLVDT(ModbusBuffer* buffer, uint8_t address);
 };
 
 } /* namespace SS */

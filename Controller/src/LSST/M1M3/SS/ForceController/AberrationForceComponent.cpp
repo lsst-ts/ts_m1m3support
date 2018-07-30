@@ -67,15 +67,20 @@ void AberrationForceComponent::postEnableDisableActions() {
 void AberrationForceComponent::postUpdateActions() {
 	Log.Trace("AberrationForceController: postUpdateActions()");
 
+	bool notInRange = false;
 	bool rejectionRequired = false;
 	this->appliedAberrationForces->Timestamp = this->publisher->getTimestamp();
 	this->rejectedAberrationForces->Timestamp = this->appliedAberrationForces->Timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		float zLowFault = this->forceActuatorSettings->AberrationLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->AberrationLimitZTable[zIndex].HighFault;
+
+		this->forceSetpointWarning->AberrationForceWarning[zIndex] = false;
+
 		this->rejectedAberrationForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		this->forceSetpointWarning->AberrationForceWarning[zIndex] = this->forceSetpointWarning->AberrationForceWarning[zIndex] ||
-			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedAberrationForces->ZForces[zIndex], this->appliedAberrationForces->ZForces + zIndex);
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedAberrationForces->ZForces[zIndex], this->appliedAberrationForces->ZForces + zIndex);
+		this->forceSetpointWarning->AberrationForceWarning[zIndex] = this->forceSetpointWarning->AberrationForceWarning[zIndex] || notInRange;
+
 		rejectionRequired = rejectionRequired || this->forceSetpointWarning->AberrationForceWarning[zIndex];
 	}
 

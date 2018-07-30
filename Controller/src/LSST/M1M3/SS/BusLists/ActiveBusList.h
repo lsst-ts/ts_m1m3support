@@ -27,6 +27,8 @@ private:
 	int32_t hpFreezeCommandIndex[5];
 	int32_t faStatusCommandIndex[5];
 	int32_t roundRobinFAReportServerStatusIndex[5];
+	int32_t hmLVDTCommandIndex[5];
+	int32_t lvdtSampleClock;
 
 public:
 	ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceActuatorData, m1m3_HardpointActuatorDataC* hardpointActuatorData, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces);

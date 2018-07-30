@@ -19,6 +19,7 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("FreezeSensorBusList: FreezeSensorBusList()");
 	this->outerLoopData = outerLoopData;
+	this->lvdtSampleClock = 0;
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->freezeSensorCommandIndex[subnetIndex] = -1;
 		this->faStatusCommandIndex[subnetIndex] = -1;
@@ -71,11 +72,20 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 				int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
 				bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
 				if (!disabled) {
-					this->ilcMessageFactory->reportLVDT(&this->buffer, address);
 					this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
 					this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
 					this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-					this->expectedHMResponses[dataIndex] = 4;
+					this->expectedHMResponses[dataIndex] = 3;
+				}
+			}
+		}
+		if (this->subnetData->getHMCount(subnetIndex) > 0) {
+			this->hmLVDTCommandIndex[subnetIndex] = this->buffer.getIndex();
+			for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
+				uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+				bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+				if (!disabled) {
+					this->ilcMessageFactory->nopReportLVDT(&this->buffer, address);
 				}
 			}
 		}
@@ -110,6 +120,28 @@ void FreezeSensorBusList::update() {
 			this->buffer.setIndex(this->faStatusCommandIndex[subnetIndex]);
 			this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
 			this->expectedFAResponses[dataIndex] = 2;
+		}
+		if (this->subnetData->getHMCount(subnetIndex) > 0) {
+			this->buffer.setIndex(this->hmLVDTCommandIndex[subnetIndex]);
+			for(int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
+				uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+				int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
+				bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+				if (!disabled) {
+					if (this->lvdtSampleClock == 0) {
+						this->ilcMessageFactory->reportLVDT(&this->buffer, address);
+						this->expectedHMResponses[dataIndex] = 4;
+					}
+					else {
+						this->ilcMessageFactory->nopReportLVDT(&this->buffer, address);
+						this->expectedHMResponses[dataIndex] = 3;
+					}
+				}
+			}
+			this->lvdtSampleClock--;
+			if (this->lvdtSampleClock < 0) {
+				this->lvdtSampleClock = 4;
+			}
 		}
 	}
 }

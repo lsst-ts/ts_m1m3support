@@ -67,15 +67,19 @@ void ActiveOpticForceComponent::postEnableDisableActions() {
 void ActiveOpticForceComponent::postUpdateActions() {
 	Log.Trace("ActiveOpticForceController: postUpdateActions()");
 
+	bool notInRange = false;
 	bool rejectionRequired = false;
 	this->appliedActiveOpticForces->Timestamp = this->publisher->getTimestamp();
 	this->rejectedActiveOpticForces->Timestamp = this->appliedActiveOpticForces->Timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		float zLowFault = this->forceActuatorSettings->ActiveOpticLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->ActiveOpticLimitZTable[zIndex].HighFault;
+
+		this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] = false;
+
 		this->rejectedActiveOpticForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] = this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] ||
-			!Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedActiveOpticForces->ZForces[zIndex], this->appliedActiveOpticForces->ZForces + zIndex);
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedActiveOpticForces->ZForces[zIndex], this->appliedActiveOpticForces->ZForces + zIndex);
+		this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] = this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] || notInRange;
 		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ActiveOpticForceWarning[zIndex];
 	}
 
