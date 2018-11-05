@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LowerM1M3Command::LowerM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_LowerM1M3C* data) {
+LowerM1M3Command::LowerM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_lowerM1M3C* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.LowerM1M3 = data->LowerM1M3;
+	this->data.lowerM1M3 = data->lowerM1M3;
 }
 
 bool LowerM1M3Command::validate() {
-	if (!this->data.LowerM1M3) {
-		this->publisher->logCommandRejectionWarning("LowerM1M3", "The field LowerM1M3 is not TRUE.");
+	if (!this->data.lowerM1M3) {
+		this->publisher->logCommandRejectionWarning("lowerM1M3", "The field lowerM1M3 is not TRUE.");
 	}
-	return this->data.LowerM1M3;
+	return this->data.lowerM1M3;
 }
 
 void LowerM1M3Command::execute() {

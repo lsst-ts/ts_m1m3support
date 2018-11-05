@@ -27,8 +27,7 @@ StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher) :
 		activeEngineeringState(publisher),
 		loweringEngineeringState(publisher),
 		faultState(publisher),
-		loweringFaultState(publisher),
-		profileHardpointCorrectionState(publisher) {
+		loweringFaultState(publisher) {
 	Log.Debug("StaticStateFactory: StaticStateFactor()");
 }
 
@@ -50,7 +49,6 @@ State* StaticStateFactory::create(States::Type state) {
 	case States::LoweringEngineeringState: return &this->loweringEngineeringState;
 	case States::FaultState: return &this->faultState;
 	case States::LoweringFaultState: return &this->loweringFaultState;
-	case States::ProfileHardpointCorrectionState: return &this->profileHardpointCorrectionState;
 	default: return 0;
 	}
 }

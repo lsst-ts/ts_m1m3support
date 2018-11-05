@@ -9,7 +9,7 @@
 #define UPDATEPIDCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -20,12 +20,12 @@ class UpdatePIDCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	m1m3_command_UpdatePIDC data;
+	MTM1M3_command_updatePIDC data;
 
 public:
-	UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_UpdatePIDC* data);
+	UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_updatePIDC* data);
 
-	m1m3_command_UpdatePIDC* getData() { return &this->data; }
+	MTM1M3_command_updatePIDC* getData() { return &this->data; }
 
 	bool validate();
 	void execute();

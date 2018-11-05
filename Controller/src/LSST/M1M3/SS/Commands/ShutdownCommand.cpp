@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ShutdownC* data) {
+ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_shutdownC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Shutdown = data->Shutdown;
+	this->data.shutdown = data->shutdown;
 }
 
 bool ShutdownCommand::validate() {
-	if (!this->data.Shutdown) {
-		this->publisher->logCommandRejectionWarning("Shutdown", "The field Shutdown is not TRUE.");
+	if (!this->data.shutdown) {
+		this->publisher->logCommandRejectionWarning("shutdown", "The field shutdown is not TRUE.");
 	}
-	return this->data.Shutdown;
+	return this->data.shutdown;
 }
 
 void ShutdownCommand::execute() {

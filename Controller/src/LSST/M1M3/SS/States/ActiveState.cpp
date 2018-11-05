@@ -7,7 +7,7 @@
 
 #include <ActiveState.h>
 #include <Model.h>
-#include <Publisher.h>
+#include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
 #include <ForceController.h>

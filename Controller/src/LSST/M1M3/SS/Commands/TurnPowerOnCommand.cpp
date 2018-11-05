@@ -13,39 +13,39 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnPowerOnCommand::TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnPowerOnC* data) {
+TurnPowerOnCommand::TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOnC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.TurnPowerNetworkAOn = data->TurnPowerNetworkAOn;
-	this->data.TurnPowerNetworkBOn = data->TurnPowerNetworkBOn;
-	this->data.TurnPowerNetworkCOn = data->TurnPowerNetworkCOn;
-	this->data.TurnPowerNetworkDOn = data->TurnPowerNetworkDOn;
-	this->data.TurnAuxPowerNetworkAOn = data->TurnAuxPowerNetworkAOn;
-	this->data.TurnAuxPowerNetworkBOn = data->TurnAuxPowerNetworkBOn;
-	this->data.TurnAuxPowerNetworkCOn = data->TurnAuxPowerNetworkCOn;
-	this->data.TurnAuxPowerNetworkDOn = data->TurnAuxPowerNetworkDOn;
+	this->data.turnPowerNetworkAOn = data->turnPowerNetworkAOn;
+	this->data.turnPowerNetworkBOn = data->turnPowerNetworkBOn;
+	this->data.turnPowerNetworkCOn = data->turnPowerNetworkCOn;
+	this->data.turnPowerNetworkDOn = data->turnPowerNetworkDOn;
+	this->data.turnAuxPowerNetworkAOn = data->turnAuxPowerNetworkAOn;
+	this->data.turnAuxPowerNetworkBOn = data->turnAuxPowerNetworkBOn;
+	this->data.turnAuxPowerNetworkCOn = data->turnAuxPowerNetworkCOn;
+	this->data.turnAuxPowerNetworkDOn = data->turnAuxPowerNetworkDOn;
 }
 
 bool TurnPowerOnCommand::validate() {
-	if (!(this->data.TurnPowerNetworkAOn ||
-			this->data.TurnPowerNetworkBOn ||
-			this->data.TurnPowerNetworkCOn ||
-			this->data.TurnPowerNetworkDOn ||
-			this->data.TurnAuxPowerNetworkAOn ||
-			this->data.TurnAuxPowerNetworkBOn ||
-			this->data.TurnAuxPowerNetworkCOn ||
-			this->data.TurnAuxPowerNetworkDOn)) {
-		this->publisher->logCommandRejectionWarning("TurnPowerOn", "At least one field is not TRUE.");
+	if (!(this->data.turnPowerNetworkAOn ||
+			this->data.turnPowerNetworkBOn ||
+			this->data.turnPowerNetworkCOn ||
+			this->data.turnPowerNetworkDOn ||
+			this->data.turnAuxPowerNetworkAOn ||
+			this->data.turnAuxPowerNetworkBOn ||
+			this->data.turnAuxPowerNetworkCOn ||
+			this->data.turnAuxPowerNetworkDOn)) {
+		this->publisher->logCommandRejectionWarning("turnPowerOn", "At least one field is not TRUE.");
 	}
-	return this->data.TurnPowerNetworkAOn ||
-			this->data.TurnPowerNetworkBOn ||
-			this->data.TurnPowerNetworkCOn ||
-			this->data.TurnPowerNetworkDOn ||
-			this->data.TurnAuxPowerNetworkAOn ||
-			this->data.TurnAuxPowerNetworkBOn ||
-			this->data.TurnAuxPowerNetworkCOn ||
-			this->data.TurnAuxPowerNetworkDOn;
+	return this->data.turnPowerNetworkAOn ||
+			this->data.turnPowerNetworkBOn ||
+			this->data.turnPowerNetworkCOn ||
+			this->data.turnPowerNetworkDOn ||
+			this->data.turnAuxPowerNetworkAOn ||
+			this->data.turnAuxPowerNetworkBOn ||
+			this->data.turnAuxPowerNetworkCOn ||
+			this->data.turnAuxPowerNetworkDOn;
 }
 
 void TurnPowerOnCommand::execute() {

@@ -9,7 +9,7 @@
 #define RESETPIDCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -20,12 +20,12 @@ class ResetPIDCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	m1m3_command_ResetPIDC data;
+	MTM1M3_command_resetPIDC data;
 
 public:
-	ResetPIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ResetPIDC* data);
+	ResetPIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_resetPIDC* data);
 
-	m1m3_command_ResetPIDC* getData() { return &this->data; }
+	MTM1M3_command_resetPIDC* getData() { return &this->data; }
 
 	bool validate();
 	void execute();

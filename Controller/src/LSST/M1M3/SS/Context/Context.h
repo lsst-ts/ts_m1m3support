@@ -55,8 +55,6 @@ class TurnPowerOnCommand;
 class TurnPowerOffCommand;
 class EnableHardpointCorrectionsCommand;
 class DisableHardpointCorrectionsCommand;
-class RunMirrorForceProfileCommand;
-class AbortProfileCommand;
 class ApplyOffsetForcesByMirrorForceCommand;
 class UpdatePIDCommand;
 class ResetPIDCommand;
@@ -119,8 +117,6 @@ public:
 	void turnPowerOff(TurnPowerOffCommand* command);
 	void enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
 	void disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
-	void runMirrorForceProfile(RunMirrorForceProfileCommand* command);
-	void abortProfile(AbortProfileCommand* command);
 	void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
 	void updatePID(UpdatePIDCommand* command);
 	void resetPID(ResetPIDCommand* command);

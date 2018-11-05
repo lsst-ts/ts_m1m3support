@@ -33,7 +33,7 @@ States::Type StandbyState::update(UpdateCommand* command, Model* model) {
 States::Type StandbyState::start(StartCommand* command, Model* model) {
 	Log.Info("StandbyState: start()");
 	States::Type newState = States::DisabledState;
-	model->loadSettings(command->getData()->SettingsToApply);
+	model->loadSettings(command->getData()->settingsToApply);
 	PowerController* powerController = model->getPowerController();
 	ILC* ilc = model->getILC();
 	DigitalInputOutput* digitalInputOutput = model->getDigitalInputOutput();

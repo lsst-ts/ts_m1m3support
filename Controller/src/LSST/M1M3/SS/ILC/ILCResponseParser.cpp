@@ -16,7 +16,7 @@
 #include <SafetyController.h>
 #include <Timestamp.h>
 #include <ILCSubnetData.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <cmath>
 #include <cstring>
 #include <Log.h>
@@ -77,30 +77,30 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
 	this->modbusResponse = this->publisher->getEventModbusResponse();
 	this->grabResponse = false;
 
-	this->forceWarning->Timestamp = 0;
-	this->forceWarning->AnyWarning = false;
-	this->forceWarning->AnyPrimaryAxisMeasuredForceWarning= false;
-	this->forceWarning->AnySecondaryAxisMeasuredForceWarning = false;
-	this->forceWarning->AnyPrimaryAxisFollowingErrorWarning = false;
-	this->forceWarning->AnySecondaryAxisFollowingErrorWarning = false;
+	this->forceWarning->timestamp = 0;
+	this->forceWarning->anyWarning = false;
+	this->forceWarning->anyPrimaryAxisMeasuredForceWarning= false;
+	this->forceWarning->anySecondaryAxisMeasuredForceWarning = false;
+	this->forceWarning->anyPrimaryAxisFollowingErrorWarning = false;
+	this->forceWarning->anySecondaryAxisFollowingErrorWarning = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
-		this->forceWarning->PrimaryAxisMeasuredForceWarning[i] = false;
-		this->forceWarning->SecondaryAxisMeasuredForceWarning[i] = false;
-		this->forceWarning->PrimaryAxisFollowingErrorWarning[i] = false;
-		this->forceWarning->SecondaryAxisFollowingErrorWarning[i] = false;
+		this->forceWarning->primaryAxisMeasuredForceWarning[i] = false;
+		this->forceWarning->secondaryAxisMeasuredForceWarning[i] = false;
+		this->forceWarning->primaryAxisFollowingErrorWarning[i] = false;
+		this->forceWarning->secondaryAxisFollowingErrorWarning[i] = false;
 	}
 
-	this->ilcWarning->Timestamp = 0;
-	this->ilcWarning->ActuatorId = -1;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = 0;
+	this->ilcWarning->actuatorId = -1;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 
 	memset(this->faExpectedResponses, 0, sizeof(this->faExpectedResponses));
 	memset(this->hpExpectedResponses, 0, sizeof(this->hpExpectedResponses));
@@ -113,16 +113,16 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
 	uint64_t c = buffer->readLength();
 	uint64_t d = buffer->readLength();
 	double globalTimestamp = Timestamp::fromRaw((a << 48) | (b << 32) | (c << 16) | d);
-	this->forceActuatorState->Timestamp = globalTimestamp;
-	this->forceActuatorWarning->Timestamp = globalTimestamp;
-	this->forceWarning->Timestamp = globalTimestamp;
-	this->forceActuatorData->Timestamp = globalTimestamp;
-	this->hardpointActuatorState->Timestamp = globalTimestamp;
-	this->hardpointActuatorWarning->Timestamp = globalTimestamp;
-	this->hardpointActuatorData->Timestamp = globalTimestamp;
-	this->hardpointMonitorState->Timestamp = globalTimestamp;
-	this->hardpointMonitorWarning->Timestamp = globalTimestamp;
-	this->hardpointMonitorData->Timestamp = globalTimestamp;
+	this->forceActuatorState->timestamp = globalTimestamp;
+	this->forceActuatorWarning->timestamp = globalTimestamp;
+	this->forceWarning->timestamp = globalTimestamp;
+	this->forceActuatorData->timestamp = globalTimestamp;
+	this->hardpointActuatorState->timestamp = globalTimestamp;
+	this->hardpointActuatorWarning->timestamp = globalTimestamp;
+	this->hardpointActuatorData->timestamp = globalTimestamp;
+	this->hardpointMonitorState->timestamp = globalTimestamp;
+	this->hardpointMonitorWarning->timestamp = globalTimestamp;
+	this->hardpointMonitorData->timestamp = globalTimestamp;
 	while(!buffer->endOfBuffer()) {
 		uint16_t length = 0;
 		double timestamp = 0;
@@ -281,7 +281,7 @@ void ILCResponseParser::verifyResponses() {
 	for(int i = 0; i < FA_COUNT; i++) {
 		if (this->faExpectedResponses[i] != 0) {
 			warn = true;
-			this->warnResponseTimeout(timestamp, this->forceActuatorInfo->ReferenceId[i]);
+			this->warnResponseTimeout(timestamp, this->forceActuatorInfo->referenceId[i]);
 			this->faExpectedResponses[i] = 0;
 		}
 	}
@@ -293,7 +293,7 @@ void ILCResponseParser::verifyResponses() {
 	for(int i = 0; i < HP_COUNT; i++) {
 		if (this->hpExpectedResponses[i] != 0) {
 			warn = true;
-			this->warnResponseTimeout(timestamp, this->hardpointActuatorInfo->ReferenceId[i]);
+			this->warnResponseTimeout(timestamp, this->hardpointActuatorInfo->referenceId[i]);
 			this->hpExpectedResponses[i] = 0;
 		}
 	}
@@ -305,7 +305,7 @@ void ILCResponseParser::verifyResponses() {
 	for(int i = 0; i < HM_COUNT; ++i) {
 		if (this->hmExpectedResponses[i] != 0) {
 			warn = true;
-			this->warnResponseTimeout(timestamp, this->hardpointMonitorInfo->ReferenceId[i]);
+			this->warnResponseTimeout(timestamp, this->hardpointMonitorInfo->referenceId[i]);
 			this->hmExpectedResponses[i] = 0;
 
 		}
@@ -343,15 +343,15 @@ bool ILCResponseParser::validateCRC(ModbusBuffer* buffer, uint16_t* length, doub
 
 void ILCResponseParser::parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp, bool valid) {
 	this->grabResponse = false;
-	this->modbusResponse->Timestamp = timestamp;
-	this->modbusResponse->ResponseValid = valid;
-	this->modbusResponse->Address = buffer->readU8();
-	this->modbusResponse->FunctionCode = buffer->readU8();
-	this->modbusResponse->DataLength = length - 4;
-	for(uint16_t i = 0; i < this->modbusResponse->DataLength; ++i) {
-		this->modbusResponse->Data[i] = buffer->readU8();
+	this->modbusResponse->timestamp = timestamp;
+	this->modbusResponse->responseValid = valid;
+	this->modbusResponse->address = buffer->readU8();
+	this->modbusResponse->functionCode = buffer->readU8();
+	this->modbusResponse->dataLength = length - 4;
+	for(uint16_t i = 0; i < this->modbusResponse->dataLength; ++i) {
+		this->modbusResponse->data[i] = buffer->readU8();
 	}
-	this->modbusResponse->CRC = buffer->readCRC();
+	this->modbusResponse->crc = buffer->readCRC();
 	buffer->skipToNextFrame();
 	this->publisher->logModbusResponse();
 }
@@ -379,13 +379,13 @@ void ILCResponseParser::parseErrorResponse(ModbusBuffer* buffer, double timestam
 void ILCResponseParser::parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	uint8_t length = buffer->readU8();
-	this->hardpointActuatorInfo->ILCUniqueId[dataIndex] = buffer->readU48();
-	this->hardpointActuatorInfo->ILCApplicationType[dataIndex] = buffer->readU8();
-	this->hardpointActuatorInfo->NetworkNodeType[dataIndex] = buffer->readU8();
-	this->hardpointActuatorInfo->ILCSelectedOptions[dataIndex] = buffer->readU8();
-	this->hardpointActuatorInfo->NetworkNodeOptions[dataIndex] = buffer->readU8();
-	this->hardpointActuatorInfo->MajorRevision[dataIndex] = buffer->readU8();
-	this->hardpointActuatorInfo->MinorRevision[dataIndex] = buffer->readU8();
+	this->hardpointActuatorInfo->ilcUniqueId[dataIndex] = buffer->readU48();
+	this->hardpointActuatorInfo->ilcApplicationType[dataIndex] = buffer->readU8();
+	this->hardpointActuatorInfo->networkNodeType[dataIndex] = buffer->readU8();
+	this->hardpointActuatorInfo->ilcSelectedOptions[dataIndex] = buffer->readU8();
+	this->hardpointActuatorInfo->networkNodeOptions[dataIndex] = buffer->readU8();
+	this->hardpointActuatorInfo->majorRevision[dataIndex] = buffer->readU8();
+	this->hardpointActuatorInfo->minorRevision[dataIndex] = buffer->readU8();
 	buffer->incIndex(length - 12);
 	buffer->skipToNextFrame();
 }
@@ -393,13 +393,13 @@ void ILCResponseParser::parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCM
 void ILCResponseParser::parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	uint8_t length = buffer->readU8();
-	this->forceActuatorInfo->ILCUniqueId[dataIndex] = buffer->readU48();
-	this->forceActuatorInfo->ILCApplicationType[dataIndex] = buffer->readU8();
-	this->forceActuatorInfo->NetworkNodeType[dataIndex] = buffer->readU8();
-	this->forceActuatorInfo->ILCSelectedOptions[dataIndex] = buffer->readU8();
-	this->forceActuatorInfo->NetworkNodeOptions[dataIndex] = buffer->readU8();
-	this->forceActuatorInfo->MajorRevision[dataIndex] = buffer->readU8();
-	this->forceActuatorInfo->MinorRevision[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->ilcUniqueId[dataIndex] = buffer->readU48();
+	this->forceActuatorInfo->ilcApplicationType[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->networkNodeType[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->ilcSelectedOptions[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->networkNodeOptions[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->majorRevision[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->minorRevision[dataIndex] = buffer->readU8();
 	buffer->incIndex(length - 12);
 	buffer->skipToNextFrame();
 }
@@ -407,31 +407,31 @@ void ILCResponseParser::parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCM
 void ILCResponseParser::parseReportHMServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	uint8_t length = buffer->readU8();
-	this->hardpointMonitorInfo->ILCUniqueId[dataIndex] = buffer->readU48();
-	this->hardpointMonitorInfo->ILCApplicationType[dataIndex] = buffer->readU8();
-	this->hardpointMonitorInfo->NetworkNodeType[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->ilcUniqueId[dataIndex] = buffer->readU48();
+	this->hardpointMonitorInfo->ilcApplicationType[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->networkNodeType[dataIndex] = buffer->readU8();
 	buffer->readU8(); // ILCSelectedOptions
 	buffer->readU8(); // NetworkNodeOptions
-	this->hardpointMonitorInfo->MajorRevision[dataIndex] = buffer->readU8();
-	this->hardpointMonitorInfo->MinorRevision[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->majorRevision[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->minorRevision[dataIndex] = buffer->readU8();
 	buffer->incIndex(length - 12);
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseReportHPServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointActuatorState->ILCState[dataIndex] = buffer->readU8();
+	this->hardpointActuatorState->ilcState[dataIndex] = buffer->readU8();
 	uint16_t ilcStatus = buffer->readU16();
-	this->hardpointActuatorWarning->MajorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
-	this->hardpointActuatorWarning->MinorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
+	this->hardpointActuatorWarning->majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
+	this->hardpointActuatorWarning->minorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
 	// 0x0004 is reserved
-	this->hardpointActuatorWarning->FaultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
-	this->hardpointActuatorWarning->MainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
-	this->hardpointActuatorWarning->BackupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
+	this->hardpointActuatorWarning->faultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
+	this->hardpointActuatorWarning->mainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
+	this->hardpointActuatorWarning->backupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
 	// 0x0040 is reserved
 	// 0x0080 is reserved
-	this->hardpointActuatorWarning->LimitSwitch1Operated[dataIndex] = (ilcStatus & 0x0100) != 0;
-	this->hardpointActuatorWarning->LimitSwitch2Operated[dataIndex] = (ilcStatus & 0x0200) != 0;
+	this->hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (ilcStatus & 0x0100) != 0;
+	this->hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (ilcStatus & 0x0200) != 0;
 	// 0x0400 is reserved
 	// 0x0800 is reserved
 	// 0x1000 is reserved
@@ -439,35 +439,35 @@ void ILCResponseParser::parseReportHPServerStatusResponse(ModbusBuffer* buffer, 
 	// 0x4000 is DCA (FA only)
 	// 0x8000 is reserved
 	uint16_t ilcFaults = buffer->readU16();
-	this->hardpointActuatorWarning->UniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
-	this->hardpointActuatorWarning->ApplicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
-	this->hardpointActuatorWarning->ApplicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
-	this->hardpointActuatorWarning->ApplicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
-	this->hardpointActuatorWarning->OneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
-	this->hardpointActuatorWarning->OneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
-	this->hardpointActuatorWarning->OneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
+	this->hardpointActuatorWarning->uniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
+	this->hardpointActuatorWarning->applicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
+	this->hardpointActuatorWarning->applicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
+	this->hardpointActuatorWarning->applicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
+	this->hardpointActuatorWarning->oneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
+	this->hardpointActuatorWarning->oneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
+	this->hardpointActuatorWarning->oneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
 	// 0x0080 is reserved
-	this->hardpointActuatorWarning->WatchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
-	this->hardpointActuatorWarning->BrownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
-	this->hardpointActuatorWarning->EventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
-	this->hardpointActuatorWarning->MotorDriverFault[dataIndex] = (ilcFaults & 0x0800) != 0;
-	this->hardpointActuatorWarning->SSRPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
-	this->hardpointActuatorWarning->AuxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
-	this->hardpointActuatorWarning->SMCPowerFault[dataIndex] = (ilcFaults & 0x4000) != 0;
+	this->hardpointActuatorWarning->watchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
+	this->hardpointActuatorWarning->brownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
+	this->hardpointActuatorWarning->eventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
+	this->hardpointActuatorWarning->motorDriverFault[dataIndex] = (ilcFaults & 0x0800) != 0;
+	this->hardpointActuatorWarning->ssrPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
+	this->hardpointActuatorWarning->auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
+	this->hardpointActuatorWarning->smcPowerFault[dataIndex] = (ilcFaults & 0x4000) != 0;
 	// 0x8000 is reserved
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseReportFAServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->forceActuatorState->ILCState[dataIndex] = buffer->readU8();
+	this->forceActuatorState->ilcState[dataIndex] = buffer->readU8();
 	uint16_t ilcStatus = buffer->readU16();
-	this->forceActuatorWarning->MajorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
-	this->forceActuatorWarning->MinorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
+	this->forceActuatorWarning->majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
+	this->forceActuatorWarning->minorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
 	// 0x0004 is reserved
-	this->forceActuatorWarning->FaultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
-	this->forceActuatorWarning->MainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
-	this->forceActuatorWarning->BackupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
+	this->forceActuatorWarning->faultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
+	this->forceActuatorWarning->mainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
+	this->forceActuatorWarning->backupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
 	// 0x0040 is reserved
 	// 0x0080 is reserved
 	// 0x0100 is limit switch (HP only)
@@ -475,24 +475,24 @@ void ILCResponseParser::parseReportFAServerStatusResponse(ModbusBuffer* buffer, 
 	// 0x0400 is reserved
 	// 0x0800 is reserved
 	// 0x1000 is reserved
-	this->forceActuatorWarning->MezzanineError[dataIndex] = (ilcStatus & 0x2000) != 0;
-	this->forceActuatorWarning->MezzanineBootloaderActive[dataIndex] = (ilcStatus & 0x4000) != 0;
+	this->forceActuatorWarning->mezzanineError[dataIndex] = (ilcStatus & 0x2000) != 0;
+	this->forceActuatorWarning->mezzanineBootloaderActive[dataIndex] = (ilcStatus & 0x4000) != 0;
 	// 0x8000 is reserved
 	uint16_t ilcFaults = buffer->readU16();
-	this->forceActuatorWarning->UniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
-	this->forceActuatorWarning->ApplicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
-	this->forceActuatorWarning->ApplicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
-	this->forceActuatorWarning->ApplicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
-	this->forceActuatorWarning->OneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
-	this->forceActuatorWarning->OneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
-	this->forceActuatorWarning->OneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
+	this->forceActuatorWarning->uniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
+	this->forceActuatorWarning->applicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
+	this->forceActuatorWarning->applicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
+	this->forceActuatorWarning->applicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
+	this->forceActuatorWarning->oneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
+	this->forceActuatorWarning->oneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
+	this->forceActuatorWarning->oneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
 	// 0x0080 is reserved
-	this->forceActuatorWarning->WatchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
-	this->forceActuatorWarning->BrownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
-	this->forceActuatorWarning->EventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
+	this->forceActuatorWarning->watchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
+	this->forceActuatorWarning->brownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
+	this->forceActuatorWarning->eventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
 	// 0x0800 is Motor Driver (HP only)
-	this->forceActuatorWarning->SSRPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
-	this->forceActuatorWarning->AuxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
+	this->forceActuatorWarning->ssrPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
+	this->forceActuatorWarning->auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
 	// 0x4000 is SMC Power (HP only)
 	// 0x8000 is reserved
 	buffer->skipToNextFrame();
@@ -500,12 +500,12 @@ void ILCResponseParser::parseReportFAServerStatusResponse(ModbusBuffer* buffer, 
 
 void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorState->ILCState[dataIndex] = buffer->readU8();
+	this->hardpointMonitorState->ilcState[dataIndex] = buffer->readU8();
 	uint16_t ilcStatus = buffer->readU16();
-	this->hardpointMonitorWarning->MajorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
-	this->hardpointMonitorWarning->MinorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
+	this->hardpointMonitorWarning->majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
+	this->hardpointMonitorWarning->minorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
 	// 0x0004 is reserved
-	this->hardpointMonitorWarning->FaultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
+	this->hardpointMonitorWarning->faultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
 	// 0x0010 is main calibration error (not used by HM)
 	// 0x0020 is backup calibration error (not used by HM)
 	// 0x0040 is reserved
@@ -519,20 +519,20 @@ void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, 
 	// 0x4000 is DCA firmware update (FA only)
 	// 0x8000 is reserved
 	uint16_t ilcFaults = buffer->readU16();
-	this->hardpointMonitorWarning->UniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
-	this->hardpointMonitorWarning->ApplicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
-	this->hardpointMonitorWarning->ApplicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
-	this->hardpointMonitorWarning->ApplicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
-	this->hardpointMonitorWarning->OneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
-	this->hardpointMonitorWarning->OneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
-	this->hardpointMonitorWarning->OneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
+	this->hardpointMonitorWarning->uniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
+	this->hardpointMonitorWarning->applicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
+	this->hardpointMonitorWarning->applicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
+	this->hardpointMonitorWarning->applicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
+	this->hardpointMonitorWarning->oneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
+	this->hardpointMonitorWarning->oneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
+	this->hardpointMonitorWarning->oneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
 	// 0x0080 is reserved
-	this->hardpointMonitorWarning->WatchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
-	this->hardpointMonitorWarning->BrownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
-	this->hardpointMonitorWarning->EventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
+	this->hardpointMonitorWarning->watchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
+	this->hardpointMonitorWarning->brownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
+	this->hardpointMonitorWarning->eventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
 	// 0x0800 is Motor Driver (HP only)
-	this->hardpointMonitorWarning->SSRPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
-	this->hardpointMonitorWarning->AuxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
+	this->hardpointMonitorWarning->ssrPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
+	this->hardpointMonitorWarning->auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
 	// 0x4000 is SMC Power (HP only)
 	// 0x8000 is reserved
 	buffer->skipToNextFrame();
@@ -540,21 +540,21 @@ void ILCResponseParser::parseReportHMServerStatusResponse(ModbusBuffer* buffer, 
 
 void ILCResponseParser::parseChangeHPILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointActuatorState->ILCState[dataIndex] = buffer->readU16();
+	this->hardpointActuatorState->ilcState[dataIndex] = buffer->readU16();
 	//buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseChangeFAILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->forceActuatorState->ILCState[dataIndex] = buffer->readU16();
+	this->forceActuatorState->ilcState[dataIndex] = buffer->readU16();
 	//buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseChangeHMILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorState->ILCState[dataIndex] = buffer->readU16();
+	this->hardpointMonitorState->ilcState[dataIndex] = buffer->readU16();
 	//buffer->readU8();
 	buffer->skipToNextFrame();
 }
@@ -562,27 +562,27 @@ void ILCResponseParser::parseChangeHMILCModeResponse(ModbusBuffer* buffer, ILCMa
 void ILCResponseParser::parseStepMotorResponse(ModbusBuffer* buffer, ILCMap map, double timestamp) {
 	int32_t dataIndex = map.DataIndex;
 	uint8_t status = buffer->readU8();
-	this->hardpointActuatorData->Timestamp = timestamp;
-	this->hardpointActuatorWarning->Timestamp = timestamp;
-	this->hardpointActuatorWarning->ILCFault[dataIndex] = (status & 0x01) != 0;
+	this->hardpointActuatorData->timestamp = timestamp;
+	this->hardpointActuatorWarning->timestamp = timestamp;
+	this->hardpointActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
 	// 0x02 is reserved
-	this->hardpointActuatorWarning->LimitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
-	this->hardpointActuatorWarning->LimitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
-	this->hardpointActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter == ((status & 0xF0) >> 4);
-	this->hardpointActuatorData->Encoder[dataIndex] = buffer->readI32();
-	this->hardpointActuatorData->MeasuredForce[dataIndex] = buffer->readSGL();
-	this->hardpointActuatorData->Displacement[dataIndex] = (this->hardpointActuatorData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
+	this->hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
+	this->hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
+	this->hardpointActuatorWarning->broadcastCounterWarning[dataIndex] = this->outerLoopData->broadcastCounter == ((status & 0xF0) >> 4);
+	this->hardpointActuatorData->encoder[dataIndex] = buffer->readI32();
+	this->hardpointActuatorData->measuredForce[dataIndex] = buffer->readSGL();
+	this->hardpointActuatorData->displacement[dataIndex] = (this->hardpointActuatorData->encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	uint8_t status = buffer->readU8();
-	this->hardpointActuatorWarning->ILCFault[dataIndex] = (status & 0x01) != 0;
+	this->hardpointActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
 	// 0x02 is reserved
-	this->hardpointActuatorWarning->LimitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
-	this->hardpointActuatorWarning->LimitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
-	this->hardpointActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
+	this->hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
+	this->hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
+	this->hardpointActuatorWarning->broadcastCounterWarning[dataIndex] = this->outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
 	int32_t offset = 0;
 	switch(map.ActuatorId) {
 	case 1: offset = this->hardpointActuatorSettings->HP1EncoderOffset; break;
@@ -594,10 +594,10 @@ void ILCResponseParser::parseElectromechanicalForceAndStatusResponse(ModbusBuffe
 	}
 	// Encoder value needs to be swapped to keep with the theme of extension is positive
 	// retaction is negative
-	this->hardpointActuatorData->Encoder[dataIndex] = -buffer->readI32() + offset;
+	this->hardpointActuatorData->encoder[dataIndex] = -buffer->readI32() + offset;
 	// Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
-	this->hardpointActuatorData->MeasuredForce[dataIndex] = -buffer->readSGL();
-	this->hardpointActuatorData->Displacement[dataIndex] = (this->hardpointActuatorData->Encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
+	this->hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
+	this->hardpointActuatorData->displacement[dataIndex] = (this->hardpointActuatorData->encoder[dataIndex] * this->hardpointActuatorSettings->MicrometersPerEncoder) / (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
 	buffer->skipToNextFrame();
 }
 
@@ -607,8 +607,8 @@ void ILCResponseParser::parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer,
 
 void ILCResponseParser::parseReadBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->forceActuatorInfo->MezzaninePrimaryCylinderGain[dataIndex] = buffer->readSGL();
-	this->forceActuatorInfo->MezzanineSecondaryCylinderGain[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->mezzaninePrimaryCylinderGain[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->mezzanineSecondaryCylinderGain[dataIndex] = buffer->readSGL();
 	buffer->skipToNextFrame();
 }
 
@@ -626,17 +626,17 @@ void ILCResponseParser::parseForceDemandResponse(ModbusBuffer* buffer, uint8_t a
 void ILCResponseParser::parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	uint8_t status = buffer->readU8();
-	this->forceActuatorWarning->ILCFault[dataIndex] = (status & 0x01) != 0;
-	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
+	this->forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
+	this->forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
-	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
+	this->forceActuatorWarning->broadcastCounterWarning[dataIndex] = this->outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+	this->forceActuatorData->primaryCylinderForces[dataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
 	float z = 0;
-	ForceConverter::saaToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[dataIndex], &x, &y, &z);
-	this->forceActuatorData->ZForce[dataIndex] = z;
+	ForceConverter::saaToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], 0.0, &x, &y, &z);
+	this->forceActuatorData->zForces[dataIndex] = z;
 	buffer->skipToNextFrame();
 }
 
@@ -646,29 +646,29 @@ void ILCResponseParser::parseDualAxisForceDemandResponse(ModbusBuffer* buffer, I
 	int xIndex = map.XDataIndex;
 	int yIndex = map.YDataIndex;
 	uint8_t status = buffer->readU8();
-	this->forceActuatorWarning->ILCFault[dataIndex] = (status & 0x01) != 0;
-	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
+	this->forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
+	this->forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
-	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
-	this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
+	this->forceActuatorWarning->broadcastCounterWarning[dataIndex] = this->outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+	this->forceActuatorData->primaryCylinderForces[dataIndex] = buffer->readSGL();
+	this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
 	float z = 0;
-	switch(this->forceActuatorInfo->ActuatorOrientation[dataIndex]) {
-	case ForceActuatorOrientations::PositiveX: ForceConverter::daaPositiveXToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
-	case ForceActuatorOrientations::NegativeX: ForceConverter::daaNegativeXToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
-	case ForceActuatorOrientations::PositiveY: ForceConverter::daaPositiveYToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
-	case ForceActuatorOrientations::NegativeY: ForceConverter::daaNegativeYToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
+	switch(this->forceActuatorInfo->actuatorOrientation[dataIndex]) {
+	case ForceActuatorOrientations::PositiveX: ForceConverter::daaPositiveXToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
+	case ForceActuatorOrientations::NegativeX: ForceConverter::daaNegativeXToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
+	case ForceActuatorOrientations::PositiveY: ForceConverter::daaPositiveYToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
+	case ForceActuatorOrientations::NegativeY: ForceConverter::daaNegativeYToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
 	}
 	if (xIndex != -1) {
-		this->forceActuatorData->XForce[xIndex] = x;
+		this->forceActuatorData->xForces[xIndex] = x;
 	}
 	if (yIndex != -1) {
-		this->forceActuatorData->YForce[yIndex] = y;
+		this->forceActuatorData->yForces[yIndex] = y;
 	}
-	this->forceActuatorData->ZForce[dataIndex] = z;
+	this->forceActuatorData->zForces[dataIndex] = z;
 	buffer->skipToNextFrame();
 }
 
@@ -686,17 +686,17 @@ void ILCResponseParser::parsePneumaticForceStatusResponse(ModbusBuffer* buffer, 
 void ILCResponseParser::parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	uint8_t status = buffer->readU8();
-	this->forceActuatorWarning->ILCFault[dataIndex] = (status & 0x01) != 0;
-	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
+	this->forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
+	this->forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
-	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
+	this->forceActuatorWarning->broadcastCounterWarning[dataIndex] = this->outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+	this->forceActuatorData->primaryCylinderForces[dataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
 	float z = 0;
-	ForceConverter::saaToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[dataIndex], &x, &y, &z);
-	this->forceActuatorData->ZForce[dataIndex] = z;
+	ForceConverter::saaToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], 0.0, &x, &y, &z);
+	this->forceActuatorData->xForces[dataIndex] = z;
 	buffer->skipToNextFrame();
 }
 
@@ -706,41 +706,41 @@ void ILCResponseParser::parseDualAxisPneumaticForceStatusResponse(ModbusBuffer* 
 	int xIndex = map.XDataIndex;
 	int yIndex = map.YDataIndex;
 	uint8_t status = buffer->readU8();
-	this->forceActuatorWarning->ILCFault[dataIndex] = (status & 0x01) != 0;
-	this->forceActuatorWarning->MezzanineError[dataIndex] = (status & 0x02) != 0;
+	this->forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
+	this->forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
 	// 0x04 is reserved
 	// 0x08 is reserved
-	this->forceActuatorWarning->BroadcastCounterWarning[dataIndex] = this->outerLoopData->BroadcastCounter != ((status & 0xF0) >> 4);
-	this->forceActuatorData->PrimaryCylinderForce[dataIndex] = buffer->readSGL();
-	this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
+	this->forceActuatorWarning->broadcastCounterWarning[dataIndex] = this->outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+	this->forceActuatorData->primaryCylinderForces[dataIndex] = buffer->readSGL();
+	this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex] = buffer->readSGL();
 	float x = 0;
 	float y = 0;
 	float z = 0;
-	switch(this->forceActuatorInfo->ActuatorOrientation[dataIndex]) {
-	case ForceActuatorOrientations::PositiveX: ForceConverter::daaPositiveXToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
-	case ForceActuatorOrientations::NegativeX: ForceConverter::daaNegativeXToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
-	case ForceActuatorOrientations::PositiveY: ForceConverter::daaPositiveYToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
-	case ForceActuatorOrientations::NegativeY: ForceConverter::daaNegativeYToMirror(this->forceActuatorData->PrimaryCylinderForce[dataIndex], this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex], &x, &y, &z); break;
+	switch(this->forceActuatorInfo->actuatorOrientation[dataIndex]) {
+	case ForceActuatorOrientations::PositiveX: ForceConverter::daaPositiveXToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
+	case ForceActuatorOrientations::NegativeX: ForceConverter::daaNegativeXToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
+	case ForceActuatorOrientations::PositiveY: ForceConverter::daaPositiveYToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
+	case ForceActuatorOrientations::NegativeY: ForceConverter::daaNegativeYToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex], &x, &y, &z); break;
 	}
 	if (xIndex != -1) {
-		this->forceActuatorData->XForce[xIndex] = x;
+		this->forceActuatorData->xForces[xIndex] = x;
 	}
 	if (yIndex != -1) {
-		this->forceActuatorData->YForce[yIndex] = y;
+		this->forceActuatorData->yForces[yIndex] = y;
 	}
-	this->forceActuatorData->ZForce[dataIndex] = z;
+	this->forceActuatorData->zForces[dataIndex] = z;
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseSetHPADCScanRateResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointActuatorInfo->ADCScanRate[dataIndex] = buffer->readU8();
+	this->hardpointActuatorInfo->adcScanRate[dataIndex] = buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseSetFAADCScanRateResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->forceActuatorInfo->ADCScanRate[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->adcScanRate[dataIndex] = buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
@@ -768,25 +768,25 @@ void ILCResponseParser::parseReadHPCalibrationResponse(ModbusBuffer* buffer, ILC
 	int32_t dataIndex = map.DataIndex;
 	buffer->readSGL(); // Main Coefficient K1
 	buffer->readSGL(); // Main Coefficient K2
-	this->hardpointActuatorInfo->MainLoadCellCoefficient[dataIndex] = buffer->readSGL();
+	this->hardpointActuatorInfo->mainLoadCellCoefficient[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Main Coefficient K4
-	this->hardpointActuatorInfo->MainLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->hardpointActuatorInfo->mainLoadCellOffset[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Main Offset Channel 2
 	buffer->readSGL(); // Main Offset Channel 3
 	buffer->readSGL(); // Main Offset Channel 4
-	this->hardpointActuatorInfo->MainLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->hardpointActuatorInfo->mainLoadCellSensitivity[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Main Sensitivity Channel 2
 	buffer->readSGL(); // Main Sensitivity Channel 3
 	buffer->readSGL(); // Main Sensitivity Channel 4
 	buffer->readSGL(); // Backup Coefficient K1
 	buffer->readSGL(); // Backup Coefficient K2
-	this->hardpointActuatorInfo->BackupLoadCellCoefficient[dataIndex] = buffer->readSGL();
+	this->hardpointActuatorInfo->backupLoadCellCoefficient[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Backup Coefficient K4
-	this->hardpointActuatorInfo->BackupLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->hardpointActuatorInfo->backupLoadCellOffset[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Backup Offset Channel 2
 	buffer->readSGL(); // Backup Offset Channel 3
 	buffer->readSGL(); // Backup Offset Channel 4
-	this->hardpointActuatorInfo->BackupLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->hardpointActuatorInfo->backupLoadCellSensitivity[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Backup Sensitivity Channel 2
 	buffer->readSGL(); // Backup Sensitivity Channel 3
 	buffer->readSGL(); // Backup Sensitivity Channel 4
@@ -795,30 +795,30 @@ void ILCResponseParser::parseReadHPCalibrationResponse(ModbusBuffer* buffer, ILC
 
 void ILCResponseParser::parseReadFACalibrationResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->forceActuatorInfo->MainPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-	this->forceActuatorInfo->MainSecondaryCylinderCoefficient[dataIndex] = this->forceActuatorInfo->MainPrimaryCylinderCoefficient[dataIndex];
+	this->forceActuatorInfo->mainPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->mainSecondaryCylinderCoefficient[dataIndex] = this->forceActuatorInfo->mainPrimaryCylinderCoefficient[dataIndex];
 	buffer->readSGL(); // Main Coefficient K2
 	buffer->readSGL(); // Main Coefficient K3
 	buffer->readSGL(); // Main Coefficient K4
-	this->forceActuatorInfo->MainPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-	this->forceActuatorInfo->MainSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->mainPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->mainSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Main Offset Channel 3
 	buffer->readSGL(); // Main Offset Channel 4
-	this->forceActuatorInfo->MainPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-	this->forceActuatorInfo->MainSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->mainPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->mainSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Main Sensitivity Channel 3
 	buffer->readSGL(); // Main Sensitivity Channel 4
-	this->forceActuatorInfo->BackupPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-	this->forceActuatorInfo->BackupSecondaryCylinderCoefficient[dataIndex] = this->forceActuatorInfo->BackupPrimaryCylinderCoefficient[dataIndex];
+	this->forceActuatorInfo->backupPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->backupSecondaryCylinderCoefficient[dataIndex] = this->forceActuatorInfo->backupPrimaryCylinderCoefficient[dataIndex];
 	buffer->readSGL(); // Backup Coefficient K2
 	buffer->readSGL(); // Backup Coefficient K3
 	buffer->readSGL(); // Backup Coefficient K4
-	this->forceActuatorInfo->BackupPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-	this->forceActuatorInfo->BackupSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->backupPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->backupSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Backup Offset Channel 3
 	buffer->readSGL(); // Backup Offset Channel 4
-	this->forceActuatorInfo->BackupPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-	this->forceActuatorInfo->BackupSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->backupPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+	this->forceActuatorInfo->backupSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
 	buffer->readSGL(); // Backup Sensitivity Channel 3
 	buffer->readSGL(); // Backup Sensitivity Channel 4
 	buffer->skipToNextFrame();
@@ -834,28 +834,28 @@ void ILCResponseParser::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer,
 
 void ILCResponseParser::parseReadHMPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorData->PressureSensor1[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorData->PressureSensor2[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorData->PressureSensor3[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorData->BreakawayPressure[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->pressureSensor1[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->pressureSensor2[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->pressureSensor3[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->breakawayPressure[dataIndex] = buffer->readSGL();
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseReportDCAIDResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->forceActuatorInfo->MezzanineUniqueId[dataIndex] = buffer->readU48();
-	this->forceActuatorInfo->MezzanineFirmwareType[dataIndex] = buffer->readU8();
-	this->forceActuatorInfo->MezzanineMajorRevision[dataIndex] = buffer->readU8();
-	this->forceActuatorInfo->MezzanineMinorRevision[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->mezzanineUniqueId[dataIndex] = buffer->readU48();
+	this->forceActuatorInfo->mezzanineFirmwareType[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->mezzanineMajorRevision[dataIndex] = buffer->readU8();
+	this->forceActuatorInfo->mezzanineMinorRevision[dataIndex] = buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorInfo->MezzanineUniqueId[dataIndex] = buffer->readU48();
-	this->hardpointMonitorInfo->MezzanineFirmwareType[dataIndex] = buffer->readU8();
-	this->hardpointMonitorInfo->MezzanineMajorRevision[dataIndex] = buffer->readU8();
-	this->hardpointMonitorInfo->MezzanineMinorRevision[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->mezzanineUniqueId[dataIndex] = buffer->readU48();
+	this->hardpointMonitorInfo->mezzanineFirmwareType[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->mezzanineMajorRevision[dataIndex] = buffer->readU8();
+	this->hardpointMonitorInfo->mezzanineMinorRevision[dataIndex] = buffer->readU8();
 	buffer->skipToNextFrame();
 }
 
@@ -863,71 +863,71 @@ void ILCResponseParser::parseReportDCAStatusResponse(ModbusBuffer* buffer, ILCMa
 	int32_t dataIndex = map.DataIndex;
 	uint16_t status = buffer->readU16();
 	// 0x0001 is DCA Outputs Enabled (wont report)
-	this->forceActuatorWarning->MezzaninePowerFault[dataIndex] = (status & 0x0002) != 0;
-	this->forceActuatorWarning->MezzanineCurrentAmp1Fault[dataIndex] = (status & 0x0004) != 0;
-	this->forceActuatorWarning->MezzanineCurrentAmp2Fault[dataIndex] = (status & 0x0008) != 0;
-	this->forceActuatorWarning->MezzanineUniqueIdCRCError[dataIndex] = (status & 0x0010) != 0;
+	this->forceActuatorWarning->mezzaninePowerFault[dataIndex] = (status & 0x0002) != 0;
+	this->forceActuatorWarning->mezzanineCurrentAmp1Fault[dataIndex] = (status & 0x0004) != 0;
+	this->forceActuatorWarning->mezzanineCurrentAmp2Fault[dataIndex] = (status & 0x0008) != 0;
+	this->forceActuatorWarning->mezzanineUniqueIdCRCError[dataIndex] = (status & 0x0010) != 0;
 	// 0x0020 is reserved
-	this->forceActuatorWarning->MezzanineMainCalibrationError[dataIndex] = (status & 0x0040) != 0;
-	this->forceActuatorWarning->MezzanineBackupCalibrationError[dataIndex] = (status & 0x0080) != 0;
-	this->forceActuatorWarning->MezzanineEventTrapReset[dataIndex] = (status & 0x0100) != 0;
+	this->forceActuatorWarning->mezzanineMainCalibrationError[dataIndex] = (status & 0x0040) != 0;
+	this->forceActuatorWarning->mezzanineBackupCalibrationError[dataIndex] = (status & 0x0080) != 0;
+	this->forceActuatorWarning->mezzanineEventTrapReset[dataIndex] = (status & 0x0100) != 0;
 	// 0x0200 is reserved
 	// 0x0400 is reserved
 	// 0x0800 is reserved
-	this->forceActuatorWarning->MezzanineApplicationMissing[dataIndex] = (status & 0x1000) != 0;
-	this->forceActuatorWarning->MezzanineApplicationCRCMismatch[dataIndex] = (status & 0x2000) != 0;
+	this->forceActuatorWarning->mezzanineApplicationMissing[dataIndex] = (status & 0x1000) != 0;
+	this->forceActuatorWarning->mezzanineApplicationCRCMismatch[dataIndex] = (status & 0x2000) != 0;
 	// 0x4000 is reserved
-	this->forceActuatorWarning->MezzanineBootloaderActive[dataIndex] = (status & 0x8000) != 0;
+	this->forceActuatorWarning->mezzanineBootloaderActive[dataIndex] = (status & 0x8000) != 0;
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	uint16_t status = buffer->readU16();
-	this->hardpointMonitorWarning->MezzanineS1AInterface1Fault[dataIndex] = (status & 0x0001) != 0;
-	this->hardpointMonitorWarning->MezzanineS1ALVDT1Fault[dataIndex] = (status & 0x0002) != 0;
-	this->hardpointMonitorWarning->MezzanineS1AInterface2Fault[dataIndex] = (status & 0x0004) != 0;
-	this->hardpointMonitorWarning->MezzanineS1ALVDT2Fault[dataIndex] = (status & 0x0008) != 0;
-	this->hardpointMonitorWarning->MezzanineUniqueIdCRCError[dataIndex] = (status & 0x0010) != 0;
+	this->hardpointMonitorWarning->mezzanineS1AInterface1Fault[dataIndex] = (status & 0x0001) != 0;
+	this->hardpointMonitorWarning->mezzanineS1ALVDT1Fault[dataIndex] = (status & 0x0002) != 0;
+	this->hardpointMonitorWarning->mezzanineS1AInterface2Fault[dataIndex] = (status & 0x0004) != 0;
+	this->hardpointMonitorWarning->mezzanineS1ALVDT2Fault[dataIndex] = (status & 0x0008) != 0;
+	this->hardpointMonitorWarning->mezzanineUniqueIdCRCError[dataIndex] = (status & 0x0010) != 0;
 	// 0x0020 is reserved
 	// 0x0040 is reserved
 	// 0x0080 is reserved
-	this->hardpointMonitorWarning->MezzanineEventTrapReset[dataIndex] = (status & 0x0100) != 0;
+	this->hardpointMonitorWarning->mezzanineEventTrapReset[dataIndex] = (status & 0x0100) != 0;
 	// 0x0200 is reserved
-	this->hardpointMonitorWarning->MezzanineDCPRS422ChipFault[dataIndex] = (status & 0x0400) != 0;
+	this->hardpointMonitorWarning->mezzanineDCPRS422ChipFault[dataIndex] = (status & 0x0400) != 0;
 	// 0x0800 is reserved
-	this->hardpointMonitorWarning->MezzanineApplicationMissing[dataIndex] = (status & 0x1000) != 0;
-	this->hardpointMonitorWarning->MezzanineApplicationCRCMismatch[dataIndex] = (status & 0x2000) != 0;
+	this->hardpointMonitorWarning->mezzanineApplicationMissing[dataIndex] = (status & 0x1000) != 0;
+	this->hardpointMonitorWarning->mezzanineApplicationCRCMismatch[dataIndex] = (status & 0x2000) != 0;
 	// 0x4000 is reserved
-	this->hardpointMonitorWarning->MezzanineBootloaderActive[dataIndex] = (status & 0x8000) != 0;
+	this->hardpointMonitorWarning->mezzanineBootloaderActive[dataIndex] = (status & 0x8000) != 0;
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
-	this->hardpointMonitorData->BreakawayLVDT[dataIndex] = buffer->readSGL();
-	this->hardpointMonitorData->DisplacementLVDT[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->breakawayLVDT[dataIndex] = buffer->readSGL();
+	this->hardpointMonitorData->displacementLVDT[dataIndex] = buffer->readSGL();
 	buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::checkForceActuatorMeasuredForce(ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	int32_t secondaryDataIndex = map.SecondaryDataIndex;
-	float primaryForce = this->forceActuatorData->PrimaryCylinderForce[dataIndex];
+	float primaryForce = this->forceActuatorData->primaryCylinderForces[dataIndex];
 	float primaryLowLimit = this->forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].LowFault;
 	float primaryHighLimit = this->forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].HighFault;
 	bool primaryLimitWarning = primaryForce < primaryLowLimit || primaryForce > primaryHighLimit;
-	bool previousPrimaryLimit = this->forceWarning->PrimaryAxisMeasuredForceWarning[dataIndex];
-	this->forceWarning->PrimaryAxisMeasuredForceWarning[dataIndex] = primaryLimitWarning;
+	bool previousPrimaryLimit = this->forceWarning->primaryAxisMeasuredForceWarning[dataIndex];
+	this->forceWarning->primaryAxisMeasuredForceWarning[dataIndex] = primaryLimitWarning;
 	bool anyChange = primaryLimitWarning != previousPrimaryLimit;
 
 	if (secondaryDataIndex != -1) {
-		float secondaryForce = this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex];
+		float secondaryForce = this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex];
 		float secondaryLowLimit = this->forceActuatorSettings->MeasuredSecondaryCylinderLimitTable[secondaryDataIndex].LowFault;
 		float secondaryHighLimit = this->forceActuatorSettings->MeasuredSecondaryCylinderLimitTable[secondaryDataIndex].HighFault;
 		bool secondaryLimitWarning = secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit;
-		bool previousSecondaryLimit = this->forceWarning->SecondaryAxisMeasuredForceWarning[dataIndex];
-		this->forceWarning->SecondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
+		bool previousSecondaryLimit = this->forceWarning->secondaryAxisMeasuredForceWarning[dataIndex];
+		this->forceWarning->secondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
 		anyChange = anyChange || secondaryLimitWarning !=  previousSecondaryLimit;
 	}
 
@@ -941,23 +941,23 @@ void ILCResponseParser::checkForceActuatorFollowingError(ILCMap map) {
 	int32_t dataIndex = map.DataIndex;
 	int32_t secondaryDataIndex = map.SecondaryDataIndex;
 
-	float primaryForce = this->forceActuatorData->PrimaryCylinderForce[dataIndex];
-	float primarySetpoint = this->appliedCylinderForces->PrimaryCylinderForces[dataIndex] / 1000.0;
+	float primaryForce = this->forceActuatorData->primaryCylinderForces[dataIndex];
+	float primarySetpoint = this->appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0;
 	float primaryLimit = this->forceActuatorSettings->FollowingErrorPrimaryCylinderLimitTable[dataIndex].HighFault;
 	float primaryFollowingError = primaryForce - primarySetpoint;
 	bool primaryLimitWarning = std::abs(primaryFollowingError) > primaryLimit;
-	bool previousPrimaryWarning = this->forceWarning->PrimaryAxisFollowingErrorWarning[dataIndex];
-	this->forceWarning->PrimaryAxisFollowingErrorWarning[dataIndex] = primaryLimitWarning;
+	bool previousPrimaryWarning = this->forceWarning->primaryAxisFollowingErrorWarning[dataIndex];
+	this->forceWarning->primaryAxisFollowingErrorWarning[dataIndex] = primaryLimitWarning;
 	bool anyChange = primaryLimitWarning != previousPrimaryWarning;
 
 	if (secondaryDataIndex != -1) {
-		float secondaryForce = this->forceActuatorData->SecondaryCylinderForce[secondaryDataIndex];
-		float secondarySetpoint = this->appliedCylinderForces->SecondaryCylinderForces[secondaryDataIndex] / 1000.0;
+		float secondaryForce = this->forceActuatorData->secondaryCylinderForces[secondaryDataIndex];
+		float secondarySetpoint = this->appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0;
 		float secondaryLimit = this->forceActuatorSettings->FollowingErrorSecondaryCylinderLimitTable[secondaryDataIndex].HighFault;
 		float secondaryFollowingError = secondaryForce - secondarySetpoint;
 		bool secondaryLimitWarning = std::abs(secondaryFollowingError) > secondaryLimit;
-		bool previousSecondaryWarning = this->forceWarning->SecondaryAxisFollowingErrorWarning[dataIndex];
-		this->forceWarning->SecondaryAxisFollowingErrorWarning[dataIndex] = secondaryLimitWarning;
+		bool previousSecondaryWarning = this->forceWarning->secondaryAxisFollowingErrorWarning[dataIndex];
+		this->forceWarning->secondaryAxisFollowingErrorWarning[dataIndex] = secondaryLimitWarning;
 		anyChange = anyChange || secondaryLimitWarning != previousSecondaryWarning;
 	}
 
@@ -967,157 +967,157 @@ void ILCResponseParser::checkForceActuatorFollowingError(ILCMap map) {
 }
 
 void ILCResponseParser::publishForceActuatorForceWarning() {
-	this->forceWarning->Timestamp = this->publisher->getTimestamp();
-	this->forceWarning->AnyPrimaryAxisMeasuredForceWarning = false;
-	this->forceWarning->AnySecondaryAxisMeasuredForceWarning = false;
-	this->forceWarning->AnyPrimaryAxisFollowingErrorWarning = false;
-	this->forceWarning->AnySecondaryAxisFollowingErrorWarning = false;
+	this->forceWarning->timestamp = this->publisher->getTimestamp();
+	this->forceWarning->anyPrimaryAxisMeasuredForceWarning = false;
+	this->forceWarning->anySecondaryAxisMeasuredForceWarning = false;
+	this->forceWarning->anyPrimaryAxisFollowingErrorWarning = false;
+	this->forceWarning->anySecondaryAxisFollowingErrorWarning = false;
 	for(int i = 0; i < FA_COUNT; ++i) {
-		this->forceWarning->AnyPrimaryAxisMeasuredForceWarning = this->forceWarning->AnyPrimaryAxisMeasuredForceWarning || this->forceWarning->PrimaryAxisMeasuredForceWarning[i];
-		this->forceWarning->AnySecondaryAxisMeasuredForceWarning = this->forceWarning->AnySecondaryAxisMeasuredForceWarning || this->forceWarning->SecondaryAxisMeasuredForceWarning[i];
-		this->forceWarning->AnyPrimaryAxisFollowingErrorWarning = this->forceWarning->AnyPrimaryAxisFollowingErrorWarning || this->forceWarning->PrimaryAxisFollowingErrorWarning[i];
-		this->forceWarning->AnySecondaryAxisFollowingErrorWarning = this->forceWarning->AnySecondaryAxisFollowingErrorWarning || this->forceWarning->SecondaryAxisFollowingErrorWarning[i];
+		this->forceWarning->anyPrimaryAxisMeasuredForceWarning = this->forceWarning->anyPrimaryAxisMeasuredForceWarning || this->forceWarning->primaryAxisMeasuredForceWarning[i];
+		this->forceWarning->anySecondaryAxisMeasuredForceWarning = this->forceWarning->anySecondaryAxisMeasuredForceWarning || this->forceWarning->secondaryAxisMeasuredForceWarning[i];
+		this->forceWarning->anyPrimaryAxisFollowingErrorWarning = this->forceWarning->anyPrimaryAxisFollowingErrorWarning || this->forceWarning->primaryAxisFollowingErrorWarning[i];
+		this->forceWarning->anySecondaryAxisFollowingErrorWarning = this->forceWarning->anySecondaryAxisFollowingErrorWarning || this->forceWarning->secondaryAxisFollowingErrorWarning[i];
 	}
-	this->forceWarning->AnyWarning =
-			this->forceWarning->AnyPrimaryAxisMeasuredForceWarning ||
-			this->forceWarning->AnySecondaryAxisMeasuredForceWarning ||
-			this->forceWarning->AnyPrimaryAxisFollowingErrorWarning ||
-			this->forceWarning->AnySecondaryAxisFollowingErrorWarning;
+	this->forceWarning->anyWarning =
+			this->forceWarning->anyPrimaryAxisMeasuredForceWarning ||
+			this->forceWarning->anySecondaryAxisMeasuredForceWarning ||
+			this->forceWarning->anyPrimaryAxisFollowingErrorWarning ||
+			this->forceWarning->anySecondaryAxisFollowingErrorWarning;
 	this->publisher->logForceActuatorForceWarning();
 }
 
 void ILCResponseParser::warnResponseTimeout(double timestamp, int32_t actuatorId) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = actuatorId;
-	this->ilcWarning->ResponseTimeout = true;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = actuatorId;
+	this->ilcWarning->responseTimeout = true;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnInvalidCRC(double timestamp) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = -1;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = true;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = -1;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = true;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnIllegalFunction(double timestamp, int32_t actuatorId) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = actuatorId;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = true;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = actuatorId;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = true;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnIllegalDataValue(double timestamp, int32_t actuatorId) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = actuatorId;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = true;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = actuatorId;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = true;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnInvalidLength(double timestamp, int32_t actuatorId) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = actuatorId;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = true;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = actuatorId;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = true;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnUnknownSubnet(double timestamp) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = -1;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = true;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = -1;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = true;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnUnknownAddress(double timestamp, int32_t actuatorId) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = actuatorId;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = true;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = actuatorId;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = true;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnUnknownFunction(double timestamp, int32_t actuatorId) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = actuatorId;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = true;
-	this->ilcWarning->UnknownProblem = false;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = actuatorId;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = true;
+	this->ilcWarning->unknownProblem = false;
 	this->publisher->logILCWarning();
 }
 
 void ILCResponseParser::warnUnknownProblem(double timestamp, int32_t actuatorId) {
-	this->ilcWarning->Timestamp = timestamp;
-	this->ilcWarning->ActuatorId = actuatorId;
-	this->ilcWarning->ResponseTimeout = false;
-	this->ilcWarning->InvalidCRC = false;
-	this->ilcWarning->IllegalFunction = false;
-	this->ilcWarning->IllegalDataValue = false;
-	this->ilcWarning->InvalidLength = false;
-	this->ilcWarning->UnknownSubnet = false;
-	this->ilcWarning->UnknownAddress = false;
-	this->ilcWarning->UnknownFunction = false;
-	this->ilcWarning->UnknownProblem = true;
+	this->ilcWarning->timestamp = timestamp;
+	this->ilcWarning->actuatorId = actuatorId;
+	this->ilcWarning->responseTimeout = false;
+	this->ilcWarning->invalidCRC = false;
+	this->ilcWarning->illegalFunction = false;
+	this->ilcWarning->illegalDataValue = false;
+	this->ilcWarning->invalidLength = false;
+	this->ilcWarning->unknownSubnet = false;
+	this->ilcWarning->unknownAddress = false;
+	this->ilcWarning->unknownFunction = false;
+	this->ilcWarning->unknownProblem = true;
 	this->publisher->logILCWarning();
 }
 

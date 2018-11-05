@@ -9,7 +9,7 @@
 #define TURNPOWERONCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -20,12 +20,12 @@ class TurnPowerOnCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	m1m3_command_TurnPowerOnC data;
+	MTM1M3_command_turnPowerOnC data;
 
 public:
-	TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnPowerOnC* data);
+	TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOnC* data);
 
-	m1m3_command_TurnPowerOnC* getData() { return &this->data; }
+	MTM1M3_command_turnPowerOnC* getData() { return &this->data; }
 
 	bool validate();
 	void execute();

@@ -21,8 +21,9 @@
 #include <FPGA.h>
 #include <CommandTypes.h>
 #include <SettingReader.h>
-#include <SAL_m1m3.h>
+#include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
+#include <SAL_MTMountC.h>
 #include <Timestamp.h>
 #include <FPGAAddresses.h>
 #include <SafetyController.h>
@@ -44,11 +45,13 @@ int main() {
 	Log.SetLevel(Levels::Info);
 	Log.Info("Main: Creating setting reader");
 	SettingReader settingReader = SettingReader("/usr/ts_M1M3Support/SettingFiles/Base/", "/usr/ts_M1M3Support/SettingFiles/Sets/");
-	Log.Info("Main: Initializing M1M3 SAL");
-	SAL_m1m3 m1m3SAL = SAL_m1m3();
+	Log.Info("Main: Initializing MTM1M3 SAL");
+	SAL_MTM1M3 m1m3SAL = SAL_MTM1M3();
 	m1m3SAL.setDebugLevel(0);
 	Log.Info("Main: Initializing MTMount SAL");
 	SAL_MTMount mtMountSAL = SAL_MTMount();
+	MTMount_AzC tmaAzimuth;
+	MTMount_AltC tmaElevation;
 	Log.Info("Main: Creating publisher");
 	M1M3SSPublisher publisher = M1M3SSPublisher(&m1m3SAL);
 	Log.Info("Main: Creating fpga");
@@ -85,7 +88,7 @@ int main() {
 	Log.Info("Main: Creating digital input output");
 	DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings, &fpga, &publisher);
 	Log.Info("Main: Creating model");
-	Model model = Model(&settingReader, &publisher, &fpga, &expansionFPGA, &digitalInputOutput);
+	Model model = Model(&settingReader, &publisher, &fpga, &expansionFPGA, &digitalInputOutput, &tmaElevation, &tmaAzimuth);
 	Log.Info("Main: Creating context");
 	Context context = Context(&stateFactory, &model);
 	Log.Info("Main: Creating command factory");

@@ -10,18 +10,18 @@
 
 #include <DataTypes.h>
 
-struct m1m3_PowerSupplyDataC;
-struct m1m3_logevent_PowerStatusC;
-struct m1m3_logevent_PowerSupplyStatusC;
-struct m1m3_logevent_PowerWarningC;
+struct MTM1M3_powerSupplyDataC;
+struct MTM1M3_logevent_powerStatusC;
+struct MTM1M3_logevent_powerSupplyStatusC;
+struct MTM1M3_logevent_powerWarningC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class FPGA;
+class IFPGA;
 struct SupportFPGAData;
-class ExpansionFPGA;
+class IExpansionFPGA;
 class M1M3SSPublisher;
 class SafetyController;
 
@@ -30,16 +30,16 @@ class SafetyController;
  */
 class PowerController {
 private:
-	FPGA* fpga;
+	IFPGA* fpga;
 	SupportFPGAData* fpgaData;
-	ExpansionFPGA* expansionFPGA;
+	IExpansionFPGA* expansionFPGA;
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
 
-	m1m3_PowerSupplyDataC* powerSupplyData;
-	m1m3_logevent_PowerStatusC* powerStatus;
-	m1m3_logevent_PowerSupplyStatusC* powerSupplyStatus;
-	m1m3_logevent_PowerWarningC* powerWarning;
+	MTM1M3_powerSupplyDataC* powerSupplyData;
+	MTM1M3_logevent_powerStatusC* powerStatus;
+	MTM1M3_logevent_powerSupplyStatusC* powerSupplyStatus;
+	MTM1M3_logevent_powerWarningC* powerWarning;
 
 	uint64_t lastPowerTimestamp;
 
@@ -51,7 +51,7 @@ public:
 	 * @param[in] publisher The publisher.
 	 * @param[in] safetyController The safety controller.
 	 */
-	PowerController(FPGA* fpga, ExpansionFPGA* expansionFPGA, M1M3SSPublisher* publisher, SafetyController* safetyController);
+	PowerController(IFPGA* fpga, IExpansionFPGA* expansionFPGA, M1M3SSPublisher* publisher, SafetyController* safetyController);
 
 	/*!
 	 * Processes currently available power data and publish it.

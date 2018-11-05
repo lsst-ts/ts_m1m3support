@@ -9,7 +9,10 @@
 #define POSITIONCONTROLLER_H_
 
 #include <DataTypes.h>
-#include <SAL_m1m3C.h>
+
+struct MTM1M3_hardpointActuatorDataC;
+struct MTM1M3_logevent_hardpointActuatorStateC;
+struct MTM1M3_logevent_hardpointActuatorInfoC;
 
 namespace LSST {
 namespace M1M3 {
@@ -25,9 +28,9 @@ private:
 	HardpointActuatorSettings* hardpointActuatorSettings;
 	M1M3SSPublisher* publisher;
 
-	m1m3_HardpointActuatorDataC* hardpointActuatorData;
-	m1m3_logevent_HardpointActuatorStateC* hardpointActuatorState;
-	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo;
+	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
+	MTM1M3_logevent_hardpointActuatorStateC* hardpointActuatorState;
+	MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
 
 	int32_t scaledMaxStepsPerLoop[6];
 	int32_t targetEncoderValues[6];

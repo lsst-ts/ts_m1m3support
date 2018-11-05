@@ -8,8 +8,7 @@
 #ifndef FPGA_H_
 #define FPGA_H_
 
-#include <NiFpga.h>
-#include <SupportFPGAData.h>
+#include <IFPGA.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -18,7 +17,7 @@ namespace SS {
 /*!
  * The class used to communicate with the FPGA.
  */
-class FPGA {
+class FPGA: public IFPGA {
 private:
 	uint32_t session;
 	size_t remaining;

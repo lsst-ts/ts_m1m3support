@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnableHardpointCorrectionsCommand::EnableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnableHardpointCorrectionsC* data) {
+EnableHardpointCorrectionsCommand::EnableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.EnableHardpointCorrections = data->EnableHardpointCorrections;
+	this->data.enableHardpointCorrections = data->enableHardpointCorrections;
 }
 
 bool EnableHardpointCorrectionsCommand::validate() {
-	if (!this->data.EnableHardpointCorrections) {
-		this->publisher->logCommandRejectionWarning("EnableHardpointCorrections", "The field EnableHardpointCorrections is not TRUE.");
+	if (!this->data.enableHardpointCorrections) {
+		this->publisher->logCommandRejectionWarning("enableHardpointCorrections", "The field enableHardpointCorrections is not TRUE.");
 	}
-	return this->data.EnableHardpointCorrections;
+	return this->data.enableHardpointCorrections;
 }
 
 void EnableHardpointCorrectionsCommand::execute() {

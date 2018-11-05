@@ -8,7 +8,7 @@
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyControllerSettings.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <Log.h>
 
 namespace LSST {
@@ -20,9 +20,9 @@ SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerS
 	this->publisher = publisher;
 	this->safetyControllerSettings = safetyControllerSettings;
 	this->errorCodeData = this->publisher->getEventErrorCode();
-	this->errorCodeData->Timestamp = this->publisher->getTimestamp();
-	this->errorCodeData->ErrorCode = FaultCodes::NoFault;
-	this->errorCodeData->DetailedErrorCode = FaultCodes::NoFault;
+//	this->errorCodeData->timestamp = this->publisher->getTimestamp();
+	this->errorCodeData->errorCode = FaultCodes::NoFault;
+//	this->errorCodeData->DetailedErrorCode = FaultCodes::NoFault;
 	this->publisher->logErrorCode();
 	for(int i = 0; i < this->safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
 		this->ilcCommunicationTimeoutData.push_back(0);
@@ -31,9 +31,9 @@ SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerS
 
 void SafetyController::clearErrorCode() {
 	Log.Info("SafetyController: clearErrorCode()");
-	this->errorCodeData->Timestamp = this->publisher->getTimestamp();
-	this->errorCodeData->DetailedErrorCode= FaultCodes::NoFault;
-	this->errorCodeData->ErrorCode= FaultCodes::NoFault;
+//	this->errorCodeData->timestamp = this->publisher->getTimestamp();
+//	this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
+	this->errorCodeData->errorCode= FaultCodes::NoFault;
 	this->publisher->logErrorCode();
 }
 
@@ -120,10 +120,11 @@ void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
 }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
-	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {
+//	if (this->errorCodeData->detailedErrorCode != FaultCodes::NoFault) {
+	if (this->errorCodeData->errorCode != FaultCodes::NoFault) {
 		this->publisher->logErrorCode();
-		this->errorCodeData->DetailedErrorCode= FaultCodes::NoFault;
-		this->errorCodeData->ErrorCode= FaultCodes::NoFault;
+//		this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
+		this->errorCodeData->errorCode= FaultCodes::NoFault;
 		return States::LoweringFaultState;
 	}
 	return preferredNextState;
@@ -131,10 +132,12 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 
 void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {
 	bool faultConditionExists = enabledFlag && conditionFlag;
-	if (faultConditionExists && this->errorCodeData->DetailedErrorCode == FaultCodes::NoFault) {
-		this->errorCodeData->Timestamp = this->publisher->getTimestamp();
-		this->errorCodeData->DetailedErrorCode = (int32_t)faultCode;
-		this->errorCodeData->ErrorCode = (int32_t)(((int64_t)faultCode) >> 32);
+//	if (faultConditionExists && this->errorCodeData->detailedErrorCode == FaultCodes::NoFault) {
+	if (faultConditionExists && this->errorCodeData->errorCode == FaultCodes::NoFault) {
+//		this->errorCodeData->timestamp = this->publisher->getTimestamp();
+//		this->errorCodeData->detailedErrorCode = (int32_t)faultCode;
+		this->errorCodeData->errorCode = (int32_t)(((int64_t)faultCode) >> 32);
+		Log.Warn("SafetyController: Fault Code %d", faultCode);
 	}
 }
 

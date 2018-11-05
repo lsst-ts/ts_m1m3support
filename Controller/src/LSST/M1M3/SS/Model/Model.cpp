@@ -15,7 +15,7 @@
 #include <ILCApplicationSettings.h>
 #include <U16ArrayUtilities.h>
 #include <iostream>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceController.h>
 #include <RecommendedApplicationSettings.h>
@@ -31,6 +31,7 @@
 #include <Gyro.h>
 #include <Log.h>
 #include <DigitalInputOutput.h>
+#include <SAL_MTMountC.h>
 
 using namespace std;
 
@@ -38,7 +39,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput) {
+Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput, MTMount_AltC* tmaAlt, MTMount_AzC* tmaAz) {
 	Log.Debug("Model: Model()");
 	this->settingReader = settingReader;
 	this->publisher = publisher;
@@ -56,6 +57,8 @@ Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpg
 	this->automaticOperationsController = 0;
 	this->gyro = 0;
 	this->cachedTimestamp = 0;
+	this->tmaElevation = tmaAlt;
+	this->tmaAzimuth = tmaAz;
 	pthread_mutex_init(&this->mutex, NULL);
 	pthread_mutex_lock(&this->mutex);
 }
@@ -100,7 +103,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	Log.Info("Model: loadSettings(%s)", settingsToApply.c_str());
 	this->settingReader->configure(settingsToApply);
 
-	this->publisher->getOuterLoopData()->SlewFlag = false;
+	this->publisher->getOuterLoopData()->slewFlag = false;
 
 	Log.Info("Model: Loading ILC application settings");
 	ILCApplicationSettings* ilcApplicationSettings = this->settingReader->loadILCApplicationSettings();
@@ -173,7 +176,7 @@ void Model::loadSettings(std::string settingsToApply) {
 		delete this->forceController;
 	}
 	Log.Info("Model: Creating force controller");
-	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings, this->publisher, this->safetyController);
+	this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings, this->publisher, this->safetyController, this->tmaElevation, this->tmaAzimuth);
 
 	Log.Info("Model: Updating digital input output");
 	this->digitalInputOutput->setSafetyController(this->safetyController);
@@ -226,34 +229,34 @@ void Model::publishFPGAData() {
 void Model::publishStateChange(States::Type newState) {
 	Log.Debug("Model: publishStateChange(%d)", newState);
 	uint64_t state = (uint64_t)newState;
-	double timestamp = this->publisher->getTimestamp();
-	m1m3_logevent_SummaryStateC* summaryStateData = this->publisher->getEventSummaryState();
-	summaryStateData->Timestamp = timestamp;
-	summaryStateData->SummaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
+//	double timestamp = this->publisher->getTimestamp();
+	MTM1M3_logevent_summaryStateC* summaryStateData = this->publisher->getEventSummaryState();
+//	summaryStateData->timestamp = timestamp;
+	summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
 	this->publisher->logSummaryState();
-	m1m3_logevent_DetailedStateC* detailedStateData = this->publisher->getEventDetailedState();
-	detailedStateData->Timestamp = timestamp;
-	detailedStateData->DetailedState = (int32_t)(state & 0x00000000FFFFFFFF);
+	MTM1M3_logevent_detailedStateC* detailedStateData = this->publisher->getEventDetailedState();
+//	detailedStateData->timestamp = timestamp;
+	detailedStateData->detailedState = (int32_t)(state & 0x00000000FFFFFFFF);
 	this->publisher->logDetailedState();
 }
 
 void Model::publishRecommendedSettings() {
 	Log.Debug("Model: publishRecommendedSettings()");
 	RecommendedApplicationSettings* recommendedApplicationSettings = this->settingReader->loadRecommendedApplicationSettings();
-	m1m3_logevent_SettingVersionsC* data = this->publisher->getEventSettingVersions();
-	data->Timestamp = this->publisher->getTimestamp();
-	data->RecommendedSettingsVersion = "";
+	MTM1M3_logevent_settingVersionsC* data = this->publisher->getEventSettingVersions();
+//	data->timestamp = this->publisher->getTimestamp();
+	data->recommendedSettingVersion = "";
 	for(uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
-		data->RecommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
+		data->recommendedSettingVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
 	}
 	this->publisher->logSettingVersions();
 }
 
 void Model::publishOuterLoop(double executionTime) {
 	Log.Trace("Model: publishOuterLoop()");
-	m1m3_OuterLoopDataC* data = this->publisher->getOuterLoopData();
-	data->Timestamp = this->publisher->getTimestamp();
-	data->ExecutionTime = executionTime;
+	MTM1M3_outerLoopDataC* data = this->publisher->getOuterLoopData();
+	data->timestamp = this->publisher->getTimestamp();
+	data->executionTime = executionTime;
 	this->publisher->putOuterLoopData();
 }
 
@@ -268,48 +271,48 @@ void Model::waitForShutdown() {
 
 void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings) {
 	Log.Debug("Model: populateForceActuatorInfo()");
-	m1m3_logevent_ForceActuatorInfoC* forceInfo = this->publisher->getEventForceActuatorInfo();
+	MTM1M3_logevent_forceActuatorInfoC* forceInfo = this->publisher->getEventForceActuatorInfo();
 	for(int i = 0; i < FA_COUNT; i++) {
 		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
-		forceInfo->ReferenceId[row.Index] = row.ActuatorID;
-		forceInfo->ModbusSubnet[row.Index] = row.Subnet;
-		forceInfo->ModbusAddress[row.Index] = row.Address;
-		forceInfo->ActuatorType[row.Index] = row.Type;
-		forceInfo->ActuatorOrientation[row.Index] = row.Orientation;
-		forceInfo->XPosition[row.Index] = row.XPosition;
-		forceInfo->YPosition[row.Index] = row.YPosition;
-		forceInfo->ZPosition[row.Index] = row.ZPosition;
+		forceInfo->referenceId[row.Index] = row.ActuatorID;
+		forceInfo->modbusSubnet[row.Index] = row.Subnet;
+		forceInfo->modbusAddress[row.Index] = row.Address;
+		forceInfo->actuatorType[row.Index] = row.Type;
+		forceInfo->actuatorOrientation[row.Index] = row.Orientation;
+		forceInfo->xPosition[row.Index] = row.XPosition;
+		forceInfo->yPosition[row.Index] = row.YPosition;
+		forceInfo->zPosition[row.Index] = row.ZPosition;
 	}
 }
 
 void Model::populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, PositionControllerSettings* positionControllerSettings) {
 	Log.Debug("Model: populateHardpointActuatorInfo()");
-	m1m3_logevent_HardpointActuatorInfoC* hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
+	MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
 	for(int i = 0; i < HP_COUNT; i++) {
 		HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
-		hardpointInfo->ReferenceId[row.Index] = row.ActuatorID;
-		hardpointInfo->ModbusSubnet[row.Index] = row.Subnet;
-		hardpointInfo->ModbusAddress[row.Index] = row.Address;
-		hardpointInfo->XPosition[row.Index] = row.XPosition;
-		hardpointInfo->YPosition[row.Index] = row.YPosition;
-		hardpointInfo->ZPosition[row.Index] = row.ZPosition;
+		hardpointInfo->referenceId[row.Index] = row.ActuatorID;
+		hardpointInfo->modbusSubnet[row.Index] = row.Subnet;
+		hardpointInfo->modbusAddress[row.Index] = row.Address;
+		hardpointInfo->xPosition[row.Index] = row.XPosition;
+		hardpointInfo->yPosition[row.Index] = row.YPosition;
+		hardpointInfo->zPosition[row.Index] = row.ZPosition;
 	}
-	hardpointInfo->ReferencePosition[0] = positionControllerSettings->ReferencePositionEncoder1;
-	hardpointInfo->ReferencePosition[1] = positionControllerSettings->ReferencePositionEncoder2;
-	hardpointInfo->ReferencePosition[2] = positionControllerSettings->ReferencePositionEncoder3;
-	hardpointInfo->ReferencePosition[3] = positionControllerSettings->ReferencePositionEncoder4;
-	hardpointInfo->ReferencePosition[4] = positionControllerSettings->ReferencePositionEncoder5;
-	hardpointInfo->ReferencePosition[5] = positionControllerSettings->ReferencePositionEncoder6;
+	hardpointInfo->referencePosition[0] = positionControllerSettings->ReferencePositionEncoder1;
+	hardpointInfo->referencePosition[1] = positionControllerSettings->ReferencePositionEncoder2;
+	hardpointInfo->referencePosition[2] = positionControllerSettings->ReferencePositionEncoder3;
+	hardpointInfo->referencePosition[3] = positionControllerSettings->ReferencePositionEncoder4;
+	hardpointInfo->referencePosition[4] = positionControllerSettings->ReferencePositionEncoder5;
+	hardpointInfo->referencePosition[5] = positionControllerSettings->ReferencePositionEncoder6;
 }
 
 void Model::populateHardpointMonitorInfo(HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
 	Log.Debug("Model: populateHardpointMonitorInfo()");
-	m1m3_logevent_HardpointMonitorInfoC* hardpointMonitorInfo = this->publisher->getEventHardpointMonitorInfo();
+	MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo = this->publisher->getEventHardpointMonitorInfo();
 	for(int i = 0; i < HM_COUNT; i++) {
 		HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
-		hardpointMonitorInfo->ReferenceId[row.Index] = row.ActuatorID;
-		hardpointMonitorInfo->ModbusSubnet[row.Index] = row.Subnet;
-		hardpointMonitorInfo->ModbusAddress[row.Index] = row.Address;
+		hardpointMonitorInfo->referenceId[row.Index] = row.ActuatorID;
+		hardpointMonitorInfo->modbusSubnet[row.Index] = row.Subnet;
+		hardpointMonitorInfo->modbusAddress[row.Index] = row.Address;
 	}
 }
 

@@ -11,15 +11,15 @@
 #include <DataTypes.h>
 #include <string>
 
-struct m1m3_GyroDataC;
-struct m1m3_logevent_GyroWarningC;
+struct MTM1M3_gyroDataC;
+struct MTM1M3_logevent_gyroWarningC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class GyroSettings;
-class FPGA;
+class IFPGA;
 struct SupportFPGAData;
 class M1M3SSPublisher;
 
@@ -29,12 +29,12 @@ class M1M3SSPublisher;
 class Gyro {
 private:
 	GyroSettings* gyroSettings;
-	FPGA* fpga;
+	IFPGA* fpga;
 	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 
-	m1m3_GyroDataC* gyroData;
-	m1m3_logevent_GyroWarningC* gyroWarning;
+	MTM1M3_gyroDataC* gyroData;
+	MTM1M3_logevent_gyroWarningC* gyroWarning;
 
 	uint64_t lastSampleTimestamp;
 	uint64_t lastBITTimestamp;
@@ -49,7 +49,7 @@ public:
 	 * @param[in] fpga The fpga.
 	 * @param[in] publisher The publisher.
 	 */
-	Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher);
+	Gyro(GyroSettings* gyroSettings, IFPGA* fpga, M1M3SSPublisher* publisher);
 
 	/*!
 	 * Executes a built in test.

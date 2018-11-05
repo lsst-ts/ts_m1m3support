@@ -51,36 +51,36 @@ States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand* c
 
 States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
 	Log.Info("%s: moveHardpointActuators()", this->name.c_str());
-	if (!model->getPositionController()->move(command->getData()->Steps)) {
-		model->getPublisher()->logCommandRejectionWarning("MoveHardpointActuators", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+	if (!model->getPositionController()->move(command->getData()->steps)) {
+		model->getPublisher()->logCommandRejectionWarning("moveHardpointActuators", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) {
 	Log.Info("%s: enableHardpointChase()", this->name.c_str());
-	if (!model->getPositionController()->enableChase(command->getData()->HardpointActuator)) {
-		model->getPublisher()->logCommandRejectionWarning("EnableHardpointChase", "At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
+	if (!model->getPositionController()->enableChase(command->getData()->hardpointActuator)) {
+		model->getPublisher()->logCommandRejectionWarning("enableHardpointChase", "At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command, Model* model) {
 	Log.Info("%s: disableHardpointChase()", this->name.c_str());
-	model->getPositionController()->disableChase(command->getData()->HardpointActuator);
+	model->getPositionController()->disableChase(command->getData()->hardpointActuator);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) {
 	Log.Info("%s: applyOffsetForces()", this->name.c_str());
-	model->getForceController()->applyOffsetForces(command->getData()->XForces, command->getData()->YForces, command->getData()->ZForces);
+	model->getForceController()->applyOffsetForces(command->getData()->xForces, command->getData()->yForces, command->getData()->zForces);
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) {
 	Log.Info("%s: applyOffsetForcesByMirrorForce()", this->name.c_str());
-	model->getForceController()->applyOffsetForcesByMirrorForces(command->getData()->XForce, command->getData()->YForce, command->getData()->ZForce, command->getData()->XMoment, command->getData()->YMoment, command->getData()->ZMoment);
+	model->getForceController()->applyOffsetForcesByMirrorForces(command->getData()->xForce, command->getData()->yForce, command->getData()->zForce, command->getData()->xMoment, command->getData()->yMoment, command->getData()->zMoment);
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -106,28 +106,28 @@ States::Type EngineeringState::turnLightsOff(TurnLightsOffCommand* command, Mode
 
 States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command, Model* model) {
 	Log.Info("%s: turnPowerOn()", this->name.c_str());
-	if (command->getData()->TurnPowerNetworkAOn) {
+	if (command->getData()->turnPowerNetworkAOn) {
 		model->getPowerController()->setPowerNetworkA(true);
 	}
-	if (command->getData()->TurnPowerNetworkBOn) {
+	if (command->getData()->turnPowerNetworkBOn) {
 		model->getPowerController()->setPowerNetworkB(true);
 	}
-	if (command->getData()->TurnPowerNetworkCOn) {
+	if (command->getData()->turnPowerNetworkCOn) {
 		model->getPowerController()->setPowerNetworkC(true);
 	}
-	if (command->getData()->TurnPowerNetworkDOn) {
+	if (command->getData()->turnPowerNetworkDOn) {
 		model->getPowerController()->setPowerNetworkD(true);
 	}
-	if (command->getData()->TurnAuxPowerNetworkAOn) {
+	if (command->getData()->turnAuxPowerNetworkAOn) {
 		model->getPowerController()->setAuxPowerNetworkA(true);
 	}
-	if (command->getData()->TurnAuxPowerNetworkBOn) {
+	if (command->getData()->turnAuxPowerNetworkBOn) {
 		model->getPowerController()->setAuxPowerNetworkB(true);
 	}
-	if (command->getData()->TurnAuxPowerNetworkCOn) {
+	if (command->getData()->turnAuxPowerNetworkCOn) {
 		model->getPowerController()->setAuxPowerNetworkC(true);
 	}
-	if (command->getData()->TurnAuxPowerNetworkDOn) {
+	if (command->getData()->turnAuxPowerNetworkDOn) {
 		model->getPowerController()->setAuxPowerNetworkD(true);
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
@@ -135,28 +135,28 @@ States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command, Model* m
 
 States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command, Model* model) {
 	Log.Info("%s: turnPowerOff()", this->name.c_str());
-	if (command->getData()->TurnPowerNetworkAOff) {
+	if (command->getData()->turnPowerNetworkAOff) {
 		model->getPowerController()->setPowerNetworkA(false);
 	}
-	if (command->getData()->TurnPowerNetworkBOff) {
+	if (command->getData()->turnPowerNetworkBOff) {
 		model->getPowerController()->setPowerNetworkB(false);
 	}
-	if (command->getData()->TurnPowerNetworkCOff) {
+	if (command->getData()->turnPowerNetworkCOff) {
 		model->getPowerController()->setPowerNetworkC(false);
 	}
-	if (command->getData()->TurnPowerNetworkDOff) {
+	if (command->getData()->turnPowerNetworkDOff) {
 		model->getPowerController()->setPowerNetworkD(false);
 	}
-	if (command->getData()->TurnAuxPowerNetworkAOff) {
+	if (command->getData()->turnAuxPowerNetworkAOff) {
 		model->getPowerController()->setAuxPowerNetworkA(false);
 	}
-	if (command->getData()->TurnAuxPowerNetworkBOff) {
+	if (command->getData()->turnAuxPowerNetworkBOff) {
 		model->getPowerController()->setAuxPowerNetworkB(false);
 	}
-	if (command->getData()->TurnAuxPowerNetworkCOff) {
+	if (command->getData()->turnAuxPowerNetworkCOff) {
 		model->getPowerController()->setAuxPowerNetworkC(false);
 	}
-	if (command->getData()->TurnAuxPowerNetworkDOff) {
+	if (command->getData()->turnAuxPowerNetworkDOff) {
 		model->getPowerController()->setAuxPowerNetworkD(false);
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
@@ -164,7 +164,7 @@ States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command, Model*
 
 States::Type EngineeringState::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
 	Log.Info("%s: modbusTransmit()", this->name.c_str());
-	model->getILC()->modbusTransmit(command->getData()->ActuatorId, command->getData()->FunctionCode, command->getData()->DataLength, command->getData()->Data);
+	model->getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode, command->getData()->dataLength, command->getData()->data);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

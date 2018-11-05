@@ -7,12 +7,12 @@
 
 #include <Gyro.h>
 #include <GyroSettings.h>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
 #include <Timestamp.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <Log.h>
 
 #include <boost/lexical_cast.hpp>
@@ -23,7 +23,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
+Gyro::Gyro(GyroSettings* gyroSettings, IFPGA* fpga, M1M3SSPublisher* publisher) {
 	Log.Debug("Gyro: Gyro()");
 	this->gyroSettings = gyroSettings;
 	this->fpga = fpga;
@@ -39,8 +39,8 @@ Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
 
 	this->errorCleared = false;
 
-	memset(this->gyroData, 0, sizeof(m1m3_GyroDataC));
-	memset(this->gyroWarning, 0, sizeof(m1m3_logevent_GyroWarningC));
+	memset(this->gyroData, 0, sizeof(MTM1M3_gyroDataC));
+	memset(this->gyroWarning, 0, sizeof(MTM1M3_logevent_gyroWarningC));
 }
 
 void Gyro::bit() {
@@ -103,85 +103,85 @@ void Gyro::processData() {
 	if (this->fpgaData->GyroErrorTimestamp > this->lastErrorTimestamp) {
 		this->lastErrorTimestamp = this->fpgaData->GyroErrorTimestamp;
 		this->errorCleared = false;
-		this->gyroWarning->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroErrorTimestamp);
-		this->gyroWarning->InvalidHeaderWarning = this->fpgaData->GyroErrorCode == 1;
-		this->gyroWarning->CRCMismatchWarning = this->fpgaData->GyroErrorCode == 2 || this->fpgaData->GyroErrorCode == 4;
-		this->gyroWarning->IncompleteFrameWarning = this->fpgaData->GyroErrorCode == 3;
+		this->gyroWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroErrorTimestamp);
+		this->gyroWarning->invalidHeaderWarning = this->fpgaData->GyroErrorCode == 1;
+		this->gyroWarning->crcMismatchWarning = this->fpgaData->GyroErrorCode == 2 || this->fpgaData->GyroErrorCode == 4;
+		this->gyroWarning->incompleteFrameWarning = this->fpgaData->GyroErrorCode == 3;
 		// TODO: Add Checksum Error
 		tryLogWarning = true;
 	}
 	if (this->fpgaData->GyroBITTimestamp > this->lastBITTimestamp) {
 		this->lastBITTimestamp = this->fpgaData->GyroBITTimestamp;
-		this->gyroWarning->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroBITTimestamp);
+		this->gyroWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroBITTimestamp);
 		uint8_t word0 = this->fpgaData->GyroBIT0;
-		this->gyroWarning->GyroXSLDWarning = (word0 & 0x01) == 0;
-		this->gyroWarning->GyroXMODDACWarning = (word0 & 0x02) == 0;
-		this->gyroWarning->GyroXPhaseWarning = (word0 & 0x04) == 0;
-		this->gyroWarning->GyroXFlashWarning = (word0 & 0x08) == 0;
-		this->gyroWarning->GyroYSLDWarning = (word0 & 0x10) == 0;
-		this->gyroWarning->GyroYMODDACWarning = (word0 & 0x20) == 0;
-		this->gyroWarning->GyroYPhaseWarning = (word0 & 0x40) == 0;
+		this->gyroWarning->gyroXSLDWarning = (word0 & 0x01) == 0;
+		this->gyroWarning->gyroXMODDACWarning = (word0 & 0x02) == 0;
+		this->gyroWarning->gyroXPhaseWarning = (word0 & 0x04) == 0;
+		this->gyroWarning->gyroXFlashWarning = (word0 & 0x08) == 0;
+		this->gyroWarning->gyroYSLDWarning = (word0 & 0x10) == 0;
+		this->gyroWarning->gyroYMODDACWarning = (word0 & 0x20) == 0;
+		this->gyroWarning->gyroYPhaseWarning = (word0 & 0x40) == 0;
 		uint8_t word1 = this->fpgaData->GyroBIT1;
-		this->gyroWarning->GyroYFlashWarning = (word1 & 0x01) == 0;
-		this->gyroWarning->GyroZSLDWarning = (word1 & 0x02) == 0;
-		this->gyroWarning->GyroZMODDACWarning = (word1 & 0x04) == 0;
-		this->gyroWarning->GyroZPhaseWarning = (word1 & 0x08) == 0;
+		this->gyroWarning->gyroYFlashWarning = (word1 & 0x01) == 0;
+		this->gyroWarning->gyroZSLDWarning = (word1 & 0x02) == 0;
+		this->gyroWarning->gyroZMODDACWarning = (word1 & 0x04) == 0;
+		this->gyroWarning->gyroZPhaseWarning = (word1 & 0x08) == 0;
 		uint8_t word2 = this->fpgaData->GyroBIT2;
-		this->gyroWarning->GyroXSLDTemperatureStatusWarning = (word2 & 0x04) == 0;
-		this->gyroWarning->GyroYSLDTemperatureStatusWarning = (word2 & 0x10) == 0;
-		this->gyroWarning->GyroZSLDTemperatureStatusWarning = (word2 & 0x40) == 0;
+		this->gyroWarning->gyroXSLDTemperatureStatusWarning = (word2 & 0x04) == 0;
+		this->gyroWarning->gyroYSLDTemperatureStatusWarning = (word2 & 0x10) == 0;
+		this->gyroWarning->gyroZSLDTemperatureStatusWarning = (word2 & 0x40) == 0;
 		uint8_t word3 = this->fpgaData->GyroBIT3;
-		this->gyroWarning->GCBTemperatureStatusWarning = (word3 & 0x08) == 0;
-		this->gyroWarning->TemperatureStatusWarning = (word3 & 0x10) == 0;
-		this->gyroWarning->GCBDSPSPIFlashStatusWarning = (word3 & 0x20) == 0;
-		this->gyroWarning->GCBFPGASPIFlashStatusWarning = (word3 & 0x40) == 0;
+		this->gyroWarning->gcbTemperatureStatusWarning = (word3 & 0x08) == 0;
+		this->gyroWarning->temperatureStatusWarning = (word3 & 0x10) == 0;
+		this->gyroWarning->gcbDSPSPIFlashStatusWarning = (word3 & 0x20) == 0;
+		this->gyroWarning->gcbFPGASPIFlashStatusWarning = (word3 & 0x40) == 0;
 		uint8_t word4 = this->fpgaData->GyroBIT4;
-		this->gyroWarning->DSPSPIFlashStatusWarning = (word4 & 0x01) == 0;
-		this->gyroWarning->FPGASPIFlashStatusWarning = (word4 & 0x02) == 0;
-		this->gyroWarning->GCB1_2VStatusWarning = (word4 & 0x04) == 0;
-		this->gyroWarning->GCB3_3VStatusWarning = (word4 & 0x08) == 0;
-		this->gyroWarning->GCB5VStatusWarning = (word4 & 0x10) == 0;
-		this->gyroWarning->V1_2StatusWarning = (word4 & 0x20) == 0;
-		this->gyroWarning->V3_3StatusWarning = (word4 & 0x40) == 0;
+		this->gyroWarning->dspSPIFlashStatusWarning = (word4 & 0x01) == 0;
+		this->gyroWarning->fpgaSPIFlashStatusWarning = (word4 & 0x02) == 0;
+		this->gyroWarning->gcb1_2VStatusWarning = (word4 & 0x04) == 0;
+		this->gyroWarning->gcb3_3VStatusWarning = (word4 & 0x08) == 0;
+		this->gyroWarning->gcb5VStatusWarning = (word4 & 0x10) == 0;
+		this->gyroWarning->v1_2StatusWarning = (word4 & 0x20) == 0;
+		this->gyroWarning->v3_3StatusWarning = (word4 & 0x40) == 0;
 		uint8_t word5 = this->fpgaData->GyroBIT5;
-		this->gyroWarning->V5StatusWarning = (word5 & 0x01) == 0;
-		this->gyroWarning->GCBFPGAStatusWarning = (word5 & 0x04) == 0;
-		this->gyroWarning->FPGAStatusWarning = (word5 & 0x08) == 0;
-		this->gyroWarning->HiSpeedSPORTStatusWarning = (word5 & 0x10) == 0;
-		this->gyroWarning->AuxSPORTStatusWarning = (word5 & 0x20) == 0;
-		this->gyroWarning->SufficientSoftwareResourcesWarning = (word5 & 0x40) == 0;
+		this->gyroWarning->v5StatusWarning = (word5 & 0x01) == 0;
+		this->gyroWarning->gcbFPGAStatusWarning = (word5 & 0x04) == 0;
+		this->gyroWarning->fpgaStatusWarning = (word5 & 0x08) == 0;
+		this->gyroWarning->hiSpeedSPORTStatusWarning = (word5 & 0x10) == 0;
+		this->gyroWarning->auxSPORTStatusWarning = (word5 & 0x20) == 0;
+		this->gyroWarning->sufficientSoftwareResourcesWarning = (word5 & 0x40) == 0;
 		uint8_t word6 = this->fpgaData->GyroBIT6;
-		this->gyroWarning->GyroEOVoltsPositiveWarning = (word6 & 0x01) == 0;
-		this->gyroWarning->GyroEOVoltsNegativeWarning = (word6 & 0x02) == 0;
-		this->gyroWarning->GyroXVoltsWarning = (word6 & 0x04) == 0;
-		this->gyroWarning->GyroYVoltsWarning = (word6 & 0x08) == 0;
-		this->gyroWarning->GyroZVoltsWarning = (word6 & 0x10) == 0;
+		this->gyroWarning->gyroEOVoltsPositiveWarning = (word6 & 0x01) == 0;
+		this->gyroWarning->gyroEOVoltsNegativeWarning = (word6 & 0x02) == 0;
+		this->gyroWarning->gyroXVoltsWarning = (word6 & 0x04) == 0;
+		this->gyroWarning->gyroYVoltsWarning = (word6 & 0x08) == 0;
+		this->gyroWarning->gyroZVoltsWarning = (word6 & 0x10) == 0;
 		uint8_t word7 = this->fpgaData->GyroBIT7;
-		this->gyroWarning->GCBADCCommsWarning = (word7 & 0x01) == 0;
-		this->gyroWarning->MSYNCExternalTimingWarning = (word7 & 0x02) == 0;
+		this->gyroWarning->gcbADCCommsWarning = (word7 & 0x01) == 0;
+		this->gyroWarning->mSyncExternalTimingWarning = (word7 & 0x02) == 0;
 		tryLogWarning = true;
 	}
 	if (this->fpgaData->GyroSampleTimestamp > this->lastSampleTimestamp) {
 		this->lastSampleTimestamp = this->fpgaData->GyroSampleTimestamp;
-		this->gyroData->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
-		this->gyroData->AngularVelocityX = this->fpgaData->GyroRawX + this->gyroSettings->AngularVelocityXOffset;
-		this->gyroData->AngularVelocityY = this->fpgaData->GyroRawY + this->gyroSettings->AngularVelocityYOffset;
-		this->gyroData->AngularVelocityZ = this->fpgaData->GyroRawZ + this->gyroSettings->AngularVelocityZOffset;
-		this->gyroData->SequenceNumber = this->fpgaData->GyroSequenceNumber;
-		this->gyroData->Temperature = this->fpgaData->GyroTemperature;
+		this->gyroData->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
+		this->gyroData->angularVelocityX = this->fpgaData->GyroRawX + this->gyroSettings->AngularVelocityXOffset;
+		this->gyroData->angularVelocityY = this->fpgaData->GyroRawY + this->gyroSettings->AngularVelocityYOffset;
+		this->gyroData->angularVelocityZ = this->fpgaData->GyroRawZ + this->gyroSettings->AngularVelocityZOffset;
+		this->gyroData->sequenceNumber = this->fpgaData->GyroSequenceNumber;
+		this->gyroData->temperature = this->fpgaData->GyroTemperature;
 		uint8_t status = this->fpgaData->GyroStatus;
-		this->gyroWarning->GyroXStatusWarning = (status & 0x01) == 0;
-		this->gyroWarning->GyroYStatusWarning = (status & 0x02) == 0;
-		this->gyroWarning->GyroZStatusWarning = (status & 0x04) == 0;
+		this->gyroWarning->gyroXStatusWarning = (status & 0x01) == 0;
+		this->gyroWarning->gyroYStatusWarning = (status & 0x02) == 0;
+		this->gyroWarning->gyroZStatusWarning = (status & 0x04) == 0;
 		this->publisher->putGyroData();
 		tryLogWarning = true;
 		if (!this->errorCleared && this->fpgaData->GyroSampleTimestamp > this->lastErrorTimestamp) {
 			this->lastErrorTimestamp = this->fpgaData->GyroErrorTimestamp;
 			this->errorCleared = true;
-			this->gyroWarning->Timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
-			this->gyroWarning->InvalidHeaderWarning = false;
-			this->gyroWarning->CRCMismatchWarning = false;
-			this->gyroWarning->IncompleteFrameWarning = false;
+			this->gyroWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
+			this->gyroWarning->invalidHeaderWarning = false;
+			this->gyroWarning->crcMismatchWarning = false;
+			this->gyroWarning->incompleteFrameWarning = false;
 			// TODO: Add Checksum Error
 			tryLogWarning = true;
 		}

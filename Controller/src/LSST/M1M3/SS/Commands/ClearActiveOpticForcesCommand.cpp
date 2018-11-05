@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ClearActiveOpticForcesC* data) {
+ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearActiveOpticForcesC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ClearActiveOpticForces = data->ClearActiveOpticForces;
+	this->data.clearActiveOpticForces = data->clearActiveOpticForces;
 }
 
 bool ClearActiveOpticForcesCommand::validate() {
-	if (!this->data.ClearActiveOpticForces) {
-		this->publisher->logCommandRejectionWarning("ClearActiveOpticForces", "The field ClearActiveOpticForces is not TRUE.");
+	if (!this->data.clearActiveOpticForces) {
+		this->publisher->logCommandRejectionWarning("clearActiveOpticForces", "The field clearActiveOpticForces is not TRUE.");
 	}
-	return this->data.ClearActiveOpticForces;
+	return this->data.clearActiveOpticForces;
 }
 
 void ClearActiveOpticForcesCommand::execute() {

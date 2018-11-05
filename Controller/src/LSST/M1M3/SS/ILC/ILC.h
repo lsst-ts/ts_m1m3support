@@ -28,15 +28,18 @@
 #include <RaisedBusList.h>
 #include <ActiveBusList.h>
 #include <ILCResponseParser.h>
-#include <SAL_m1m3C.h>
 #include <FirmwareUpdate.h>
+
+struct MTM1M3_hardpointActuatorDataC;
+struct MTM1M3_forceActuatorDataC;
+struct MTM1M3_logevent_hardpointActuatorInfoC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class M1M3SSPublisher;
-class FPGA;
+class IFPGA;
 class IBusList;
 class ILCApplicationSettings;
 class ForceActuatorApplicationSettings;
@@ -53,7 +56,7 @@ class SafetyController;
 class ILC {
 private:
 	M1M3SSPublisher* publisher;
-	FPGA* fpga;
+	IFPGA* fpga;
 	SafetyController* safetyController;
 	ILCSubnetData subnetData;
 	ILCMessageFactory ilcMessageFactory;
@@ -80,11 +83,11 @@ private:
 	FirmwareUpdate firmwareUpdate;
 
 	HardpointActuatorSettings* hardpointActuatorSettings;
-	m1m3_HardpointActuatorDataC* hardpointActuatorData;
+	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
-	m1m3_ForceActuatorDataC* forceActuatorData;
-	m1m3_logevent_HardpointActuatorInfoC* hardpointActuatorInfo;
+	MTM1M3_forceActuatorDataC* forceActuatorData;
+	MTM1M3_logevent_hardpointActuatorInfoC* hardpointActuatorInfo;
 	PositionController* positionController;
 
 	int8_t hpStepCommand[6];
@@ -96,7 +99,7 @@ private:
 	int32_t controlListToggle;
 
 public:
-	ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController);
+	ILC(M1M3SSPublisher* publisher, IFPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController);
 	virtual ~ILC();
 
 	void programILC(int32_t actuatorId, std::string filePath);

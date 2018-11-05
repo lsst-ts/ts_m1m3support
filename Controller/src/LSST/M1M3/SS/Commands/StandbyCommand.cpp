@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_StandbyC* data) {
+StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_standbyC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Standby = data->Standby;
+	this->data.value = data->value;
 }
 
 bool StandbyCommand::validate() {
-	if (!this->data.Standby) {
-		this->publisher->logCommandRejectionWarning("Standby", "The field Standby is not TRUE.");
+	if (!this->data.value) {
+		this->publisher->logCommandRejectionWarning("standby", "The field value is not TRUE.");
 	}
-	return this->data.Standby;
+	return this->data.value;
 }
 
 void StandbyCommand::execute() {

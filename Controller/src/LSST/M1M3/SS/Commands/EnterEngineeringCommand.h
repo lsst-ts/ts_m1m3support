@@ -9,7 +9,7 @@
 #define ENTERENGINEERINGCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -20,12 +20,12 @@ class EnterEngineeringCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	m1m3_command_EnterEngineeringC data;
+	MTM1M3_command_enterEngineeringC data;
 
 public:
-	EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnterEngineeringC* data);
+	EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data);
 
-	m1m3_command_EnterEngineeringC* getData() { return &this->data; }
+	MTM1M3_command_enterEngineeringC* getData() { return &this->data; }
 
 	bool validate();
 	void execute();

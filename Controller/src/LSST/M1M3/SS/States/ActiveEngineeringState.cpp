@@ -32,7 +32,6 @@
 #include <TurnPowerOffCommand.h>
 #include <AutomaticOperationsController.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
-#include <RunMirrorForceProfileCommand.h>
 #include <PIDParameters.h>
 #include <UpdatePIDCommand.h>
 #include <ResetPIDCommand.h>
@@ -80,14 +79,14 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
 
 States::Type ActiveEngineeringState::applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: applyAberrationForcesByBendingModes()");
-	model->getForceController()->applyAberrationForcesByBendingModes(command->getData()->Coefficients);
+	model->getForceController()->applyAberrationForcesByBendingModes(command->getData()->coefficients);
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::applyAberrationForces(ApplyAberrationForcesCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: applyAberrationForces()");
-	model->getForceController()->applyAberrationForces(command->getData()->ZForces);
+	model->getForceController()->applyAberrationForces(command->getData()->zForces);
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -101,14 +100,14 @@ States::Type ActiveEngineeringState::clearAberrationForces(ClearAberrationForces
 
 States::Type ActiveEngineeringState::applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: applyActiveOpticForcesByBendingModes()");
-	model->getForceController()->applyActiveOpticForcesByBendingModes(command->getData()->Coefficients);
+	model->getForceController()->applyActiveOpticForcesByBendingModes(command->getData()->coefficients);
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: applyActiveOpticForces()");
-	model->getForceController()->applyActiveOpticForces(command->getData()->ZForces);
+	model->getForceController()->applyActiveOpticForces(command->getData()->zForces);
 	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -122,18 +121,18 @@ States::Type ActiveEngineeringState::clearActiveOpticForces(ClearActiveOpticForc
 
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command, Model* model) {
 	Log.Info("ActiveEngineeringState: translateM1M3()");
-	if (!model->getPositionController()->translate(command->getData()->XTranslation, command->getData()->YTranslation, command->getData()->ZTranslation,
-			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation)) {
-		model->getPublisher()->logCommandRejectionWarning("TranslateM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+	if (!model->getPositionController()->translate(command->getData()->xTranslation, command->getData()->yTranslation, command->getData()->zTranslation,
+			command->getData()->xRotation, command->getData()->yRotation, command->getData()->zRotation)) {
+		model->getPublisher()->logCommandRejectionWarning("translateM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, Model* model) {
 	Log.Info("ActiveEngineeringState: positionM1M3()");
-	if (!model->getPositionController()->moveToAbsolute(command->getData()->XPosition, command->getData()->YPosition, command->getData()->ZPosition,
-			command->getData()->XRotation, command->getData()->YRotation, command->getData()->ZRotation)) {
-		model->getPublisher()->logCommandRejectionWarning("PositionM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+	if (!model->getPositionController()->moveToAbsolute(command->getData()->xPosition, command->getData()->yPosition, command->getData()->zPosition,
+			command->getData()->xRotation, command->getData()->yRotation, command->getData()->zRotation)) {
+		model->getPublisher()->logCommandRejectionWarning("positionM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -150,27 +149,21 @@ States::Type ActiveEngineeringState::disableHardpointCorrections(DisableHardpoin
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model) {
-	Log.Info("ActiveEngineeringState: runMirrorForceProfile()");
-	model->getProfileController()->setupMirrorForceProfile(command->getData()->XForce, command->getData()->YForce, command->getData()->ZForce, command->getData()->XMoment, command->getData()->YMoment, command->getData()->ZMoment);
-	return model->getSafetyController()->checkSafety(States::ProfileHardpointCorrectionState);
-}
-
 States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: updatePID()");
 	PIDParameters parameters;
-	parameters.Timestep = command->getData()->Timestep;
-	parameters.P = command->getData()->P;
-	parameters.I = command->getData()->I;
-	parameters.D = command->getData()->D;
-	parameters.N = command->getData()->N;
-	model->getForceController()->updatePID(command->getData()->PID, parameters);
+	parameters.Timestep = command->getData()->timestep;
+	parameters.P = command->getData()->p;
+	parameters.I = command->getData()->i;
+	parameters.D = command->getData()->d;
+	parameters.N = command->getData()->n;
+	model->getForceController()->updatePID(command->getData()->pid, parameters);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::resetPID(ResetPIDCommand* command, Model* model) {
 	Log.Info("ActiveEngineeringState: resetPID()");
-	model->getForceController()->resetPID(command->getData()->PID);
+	model->getForceController()->resetPID(command->getData()->pid);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

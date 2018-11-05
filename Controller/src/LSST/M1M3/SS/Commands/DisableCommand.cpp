@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_DisableC* data) {
+DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Disable = data->Disable;
+	this->data.value = data->value;
 }
 
 bool DisableCommand::validate() {
-	if (!this->data.Disable) {
-		this->publisher->logCommandRejectionWarning("Disable", "The field Disable is not TRUE.");
+	if (!this->data.value) {
+		this->publisher->logCommandRejectionWarning("disable", "The field value is not TRUE.");
 	}
-	return this->data.Disable;
+	return this->data.value;
 }
 
 void DisableCommand::execute() {

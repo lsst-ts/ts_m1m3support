@@ -10,7 +10,11 @@
 
 #include <ForceComponent.h>
 #include <PID.h>
-#include <SAL_m1m3C.h>
+
+struct MTM1M3_logevent_forceActuatorStateC;
+struct MTM1M3_logevent_forceSetpointWarningC;
+struct MTM1M3_logevent_appliedBalanceForcesC;
+struct MTM1M3_logevent_rejectedBalanceForcesC;
 
 namespace LSST {
 namespace M1M3 {
@@ -37,10 +41,10 @@ private:
 	PID my;
 	PID mz;
 
-	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
-	m1m3_logevent_ForceSetpointWarningC* forceSetpointWarning;
-	m1m3_logevent_AppliedBalanceForcesC* appliedBalanceForces;
-	m1m3_logevent_RejectedBalanceForcesC* rejectedBalanceForces;
+	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_appliedBalanceForcesC* appliedBalanceForces;
+	MTM1M3_logevent_rejectedBalanceForcesC* rejectedBalanceForces;
 
 public:
 	BalanceForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);

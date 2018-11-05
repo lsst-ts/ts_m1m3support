@@ -31,7 +31,6 @@ public:
 	States::Type positionM1M3(PositionM1M3Command* command, Model* model);
 	States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
 	States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
-	States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model);
 	States::Type updatePID(UpdatePIDCommand* command, Model* model);
 	States::Type resetPID(ResetPIDCommand* command, Model* model);
 };

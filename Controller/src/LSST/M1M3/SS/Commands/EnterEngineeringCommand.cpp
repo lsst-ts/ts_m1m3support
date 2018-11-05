@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnterEngineeringC* data) {
+EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.EnterEngineering = data->EnterEngineering;
+	this->data.enterEngineering = data->enterEngineering;
 }
 
 bool EnterEngineeringCommand::validate() {
-	if (!this->data.EnterEngineering) {
-		this->publisher->logCommandRejectionWarning("EnterEngineering", "The field EnterEngineering is not TRUE.");
+	if (!this->data.enterEngineering) {
+		this->publisher->logCommandRejectionWarning("enterEngineering", "The field enterEngineering is not TRUE.");
 	}
-	return this->data.EnterEngineering;
+	return this->data.enterEngineering;
 }
 
 void EnterEngineeringCommand::execute() {

@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnLightsOffCommand::TurnLightsOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnLightsOffC* data) {
+TurnLightsOffCommand::TurnLightsOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnLightsOffC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.TurnLightsOff = data->TurnLightsOff;
+	this->data.turnLightsOff = data->turnLightsOff;
 }
 
 bool TurnLightsOffCommand::validate() {
-	if (!this->data.TurnLightsOff) {
-		this->publisher->logCommandRejectionWarning("TurnLightsOff", "The field TurnLightsOff is not TRUE.");
+	if (!this->data.turnLightsOff) {
+		this->publisher->logCommandRejectionWarning("turnLightsOff", "The field turnLightsOff is not TRUE.");
 	}
-	return this->data.TurnLightsOff;
+	return this->data.turnLightsOff;
 }
 
 void TurnLightsOffCommand::execute() {

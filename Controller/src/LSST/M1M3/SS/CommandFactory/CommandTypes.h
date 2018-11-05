@@ -56,13 +56,11 @@ struct Commands {
 		TurnPowerOffCommand = 36,
 		EnableHardpointCorrectionsCommand = 37,
 		DisableHardpointCorrectionsCommand = 38,
-		RunMirrorForceProfileCommand = 39,
-		AbortProfileCommand = 40,
-		ApplyOffsetForcesByMirrorForceCommand = 41,
-		UpdatePIDCommand = 42,
-		ResetPIDCommand = 43,
-		ProgramILCCommand = 44,
-		ModbusTransmitCommand = 45
+		ApplyOffsetForcesByMirrorForceCommand = 39,
+		UpdatePIDCommand = 40,
+		ResetPIDCommand = 41,
+		ProgramILCCommand = 42,
+		ModbusTransmitCommand = 43
 	};
 };
 

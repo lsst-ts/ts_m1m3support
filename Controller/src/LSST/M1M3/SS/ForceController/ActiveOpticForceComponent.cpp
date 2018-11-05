@@ -6,6 +6,7 @@
  */
 
 #include <ActiveOpticForceComponent.h>
+#include <SAL_MTM1M3C.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -59,8 +60,8 @@ void ActiveOpticForceComponent::applyActiveOpticForcesByBendingModes(float* coef
 void ActiveOpticForceComponent::postEnableDisableActions() {
 	Log.Debug("ActiveOpticForceComponent: postEnableDisableActions()");
 
-	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
-	this->forceActuatorState->ActiveOpticForcesApplied = this->enabled;
+	this->forceActuatorState->timestamp = this->publisher->getTimestamp();
+	this->forceActuatorState->activeOpticForcesApplied = this->enabled;
 	this->publisher->tryLogForceActuatorState();
 }
 
@@ -69,37 +70,37 @@ void ActiveOpticForceComponent::postUpdateActions() {
 
 	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedActiveOpticForces->Timestamp = this->publisher->getTimestamp();
-	this->rejectedActiveOpticForces->Timestamp = this->appliedActiveOpticForces->Timestamp;
+	this->appliedActiveOpticForces->timestamp = this->publisher->getTimestamp();
+	this->rejectedActiveOpticForces->timestamp = this->appliedActiveOpticForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		float zLowFault = this->forceActuatorSettings->ActiveOpticLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->ActiveOpticLimitZTable[zIndex].HighFault;
 
-		this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] = false;
+		this->forceSetpointWarning->activeOpticForceWarning[zIndex] = false;
 
-		this->rejectedActiveOpticForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedActiveOpticForces->ZForces[zIndex], this->appliedActiveOpticForces->ZForces + zIndex);
-		this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] = this->forceSetpointWarning->ActiveOpticForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ActiveOpticForceWarning[zIndex];
+		this->rejectedActiveOpticForces->zForces[zIndex] = this->zCurrent[zIndex];
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedActiveOpticForces->zForces[zIndex], this->appliedActiveOpticForces->zForces + zIndex);
+		this->forceSetpointWarning->activeOpticForceWarning[zIndex] = this->forceSetpointWarning->activeOpticForceWarning[zIndex] || notInRange;
+		rejectionRequired = rejectionRequired || this->forceSetpointWarning->activeOpticForceWarning[zIndex];
 	}
 
-	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedActiveOpticForces->ZForces);
-	this->appliedActiveOpticForces->Fz = fm.Fz;
-	this->appliedActiveOpticForces->Mx = fm.Mx;
-	this->appliedActiveOpticForces->My = fm.My;
+	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedActiveOpticForces->zForces);
+	this->appliedActiveOpticForces->fZ = fm.Fz;
+	this->appliedActiveOpticForces->mX = fm.Mx;
+	this->appliedActiveOpticForces->mY = fm.My;
 
-	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedActiveOpticForces->ZForces);
-	this->rejectedActiveOpticForces->Fz = fm.Fz;
-	this->rejectedActiveOpticForces->Mx = fm.Mx;
-	this->rejectedActiveOpticForces->My = fm.My;
+	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedActiveOpticForces->zForces);
+	this->rejectedActiveOpticForces->fZ = fm.Fz;
+	this->rejectedActiveOpticForces->mX = fm.Mx;
+	this->rejectedActiveOpticForces->mY = fm.My;
 
-	this->forceSetpointWarning->ActiveOpticNetForceWarning =
-			!Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->Fz) ||
-			!Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->Mx) ||
-			!Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->My);
+	this->forceSetpointWarning->activeOpticNetForceWarning =
+			!Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->fZ) ||
+			!Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->mX) ||
+			!Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->mY);
 
 	this->safetyController->forceControllerNotifyActiveOpticForceClipping(rejectionRequired);
-	this->safetyController->forceControllerNotifyActiveOpticNetForceCheck(this->forceSetpointWarning->ActiveOpticNetForceWarning);
+	this->safetyController->forceControllerNotifyActiveOpticNetForceCheck(this->forceSetpointWarning->activeOpticNetForceWarning);
 
 	this->publisher->tryLogForceSetpointWarning();
 	if (rejectionRequired) {

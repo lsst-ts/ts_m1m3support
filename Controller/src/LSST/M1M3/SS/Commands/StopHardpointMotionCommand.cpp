@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_StopHardpointMotionC* data) {
+StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_stopHardpointMotionC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.StopHardpointMotion = data->StopHardpointMotion;
+	this->data.stopHardpointMotion = data->stopHardpointMotion;
 }
 
 bool StopHardpointMotionCommand::validate() {
-	if (!this->data.StopHardpointMotion) {
-		this->publisher->logCommandRejectionWarning("StopHardpointMotion", "The field StopHardpointMotion is not TRUE.");
+	if (!this->data.stopHardpointMotion) {
+		this->publisher->logCommandRejectionWarning("stopHardpointMotion", "The field stopHardpointMotion is not TRUE.");
 	}
-	return this->data.StopHardpointMotion;
+	return this->data.stopHardpointMotion;
 }
 
 void StopHardpointMotionCommand::execute() {

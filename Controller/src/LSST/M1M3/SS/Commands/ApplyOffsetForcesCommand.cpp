@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyOffsetForcesC* data) {
+ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyOffsetForcesC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
 	for(int i = 0; i < FA_COUNT; i++) {
 		if (i < FA_X_COUNT) {
-			this->data.XForces[i] = data->XForces[i];
+			this->data.xForces[i] = data->xForces[i];
 		}
 		if (i < FA_Y_COUNT) {
-			this->data.YForces[i] = data->YForces[i];
+			this->data.yForces[i] = data->yForces[i];
 		}
-		this->data.ZForces[i] = data->ZForces[i];
+		this->data.zForces[i] = data->zForces[i];
 	}
 }
 

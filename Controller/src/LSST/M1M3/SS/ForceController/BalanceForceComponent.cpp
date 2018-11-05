@@ -6,6 +6,7 @@
  */
 
 #include <BalanceForceComponent.h>
+#include <SAL_MTM1M3C.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -128,8 +129,8 @@ void BalanceForceComponent::postEnableDisableActions() {
 		this->resetPIDs();
 	}
 
-	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
-	this->forceActuatorState->BalanceForcesApplied = this->enabled;
+	this->forceActuatorState->timestamp = this->publisher->getTimestamp();
+	this->forceActuatorState->balanceForcesApplied = this->enabled;
 	this->publisher->tryLogForceActuatorState();
 }
 
@@ -138,55 +139,55 @@ void BalanceForceComponent::postUpdateActions() {
 
 	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedBalanceForces->Timestamp = this->publisher->getTimestamp();
-	this->rejectedBalanceForces->Timestamp = this->appliedBalanceForces->Timestamp;
+	this->appliedBalanceForces->timestamp = this->publisher->getTimestamp();
+	this->rejectedBalanceForces->timestamp = this->appliedBalanceForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
-		this->forceSetpointWarning->BalanceForceWarning[zIndex] = false;
+		this->forceSetpointWarning->balanceForceWarning[zIndex] = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->BalanceLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->BalanceLimitXTable[xIndex].HighFault;
-			this->rejectedBalanceForces->XForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedBalanceForces->XForces[xIndex], this->appliedBalanceForces->XForces + xIndex);
-			this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] || notInRange;
+			this->rejectedBalanceForces->xForces[xIndex] = this->xCurrent[xIndex];
+			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedBalanceForces->xForces[xIndex], this->appliedBalanceForces->xForces + xIndex);
+			this->forceSetpointWarning->balanceForceWarning[zIndex] = this->forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->BalanceLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->BalanceLimitYTable[yIndex].HighFault;
-			this->rejectedBalanceForces->YForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedBalanceForces->YForces[yIndex], this->appliedBalanceForces->YForces + yIndex);
-			this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] || notInRange;
+			this->rejectedBalanceForces->yForces[yIndex] = this->yCurrent[yIndex];
+			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedBalanceForces->yForces[yIndex], this->appliedBalanceForces->yForces + yIndex);
+			this->forceSetpointWarning->balanceForceWarning[zIndex] = this->forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
 		}
 
 		float zLowFault = this->forceActuatorSettings->BalanceLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->BalanceLimitZTable[zIndex].HighFault;
-		this->rejectedBalanceForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedBalanceForces->ZForces[zIndex], this->appliedBalanceForces->ZForces + zIndex);
-		this->forceSetpointWarning->BalanceForceWarning[zIndex] = this->forceSetpointWarning->BalanceForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->BalanceForceWarning[zIndex];
+		this->rejectedBalanceForces->zForces[zIndex] = this->zCurrent[zIndex];
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedBalanceForces->zForces[zIndex], this->appliedBalanceForces->zForces + zIndex);
+		this->forceSetpointWarning->balanceForceWarning[zIndex] = this->forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
+		rejectionRequired = rejectionRequired || this->forceSetpointWarning->balanceForceWarning[zIndex];
 	}
 
-	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedBalanceForces->XForces, this->appliedBalanceForces->YForces, this->appliedBalanceForces->ZForces);
-	this->appliedBalanceForces->Fx = fm.Fx;
-	this->appliedBalanceForces->Fy = fm.Fy;
-	this->appliedBalanceForces->Fz = fm.Fz;
-	this->appliedBalanceForces->Mx = fm.Mx;
-	this->appliedBalanceForces->My = fm.My;
-	this->appliedBalanceForces->Mz = fm.Mz;
-	this->appliedBalanceForces->ForceMagnitude = fm.ForceMagnitude;
+	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedBalanceForces->xForces, this->appliedBalanceForces->yForces, this->appliedBalanceForces->zForces);
+	this->appliedBalanceForces->fX = fm.Fx;
+	this->appliedBalanceForces->fY = fm.Fy;
+	this->appliedBalanceForces->fZ = fm.Fz;
+	this->appliedBalanceForces->mX = fm.Mx;
+	this->appliedBalanceForces->mY = fm.My;
+	this->appliedBalanceForces->mZ = fm.Mz;
+	this->appliedBalanceForces->forceMagnitude = fm.ForceMagnitude;
 
-	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedBalanceForces->XForces, this->rejectedBalanceForces->YForces, this->rejectedBalanceForces->ZForces);
-	this->rejectedBalanceForces->Fx = fm.Fx;
-	this->rejectedBalanceForces->Fy = fm.Fy;
-	this->rejectedBalanceForces->Fz = fm.Fz;
-	this->rejectedBalanceForces->Mx = fm.Mx;
-	this->rejectedBalanceForces->My = fm.My;
-	this->rejectedBalanceForces->Mz = fm.Mz;
-	this->rejectedBalanceForces->ForceMagnitude = fm.ForceMagnitude;
+	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedBalanceForces->xForces, this->rejectedBalanceForces->yForces, this->rejectedBalanceForces->zForces);
+	this->rejectedBalanceForces->fX = fm.Fx;
+	this->rejectedBalanceForces->fY = fm.Fy;
+	this->rejectedBalanceForces->fZ = fm.Fz;
+	this->rejectedBalanceForces->mX = fm.Mx;
+	this->rejectedBalanceForces->mY = fm.My;
+	this->rejectedBalanceForces->mZ = fm.Mz;
+	this->rejectedBalanceForces->forceMagnitude = fm.ForceMagnitude;
 
 	this->safetyController->forceControllerNotifyBalanceForceClipping(rejectionRequired);
 

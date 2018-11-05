@@ -295,20 +295,6 @@ void Context::disableHardpointCorrections(DisableHardpointCorrectionsCommand* co
 	this->stateFactory->destroy(state);
 }
 
-void Context::runMirrorForceProfile(RunMirrorForceProfileCommand* command) {
-	Log.Debug("Context: runMirrorForceProfile()");
-	State* state = this->stateFactory->create(this->currentState);
-	this->updateCurrentStateIfRequired(state->runMirrorForceProfile(command, this->model));
-	this->stateFactory->destroy(state);
-}
-
-void Context::abortProfile(AbortProfileCommand* command) {
-	Log.Debug("Context: abortProfile()");
-	State* state = this->stateFactory->create(this->currentState);
-	this->updateCurrentStateIfRequired(state->abortProfile(command, this->model));
-	this->stateFactory->destroy(state);
-}
-
 void Context::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command) {
 	Log.Debug("Context: applyOffsetForcesByMirrorForce()");
 	State* state = this->stateFactory->create(this->currentState);

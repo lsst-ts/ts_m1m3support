@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnAirOnC* data) {
+TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnAirOnC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.TurnAirOn = data->TurnAirOn;
+	this->data.turnAirOn = data->turnAirOn;
 }
 
 bool TurnAirOnCommand::validate() {
-	if (!this->data.TurnAirOn) {
-		this->publisher->logCommandRejectionWarning("TurnAirOn", "The field TurnAirOn is not TRUE.");
+	if (!this->data.turnAirOn) {
+		this->publisher->logCommandRejectionWarning("turnAirOn", "The field turnAirOn is not TRUE.");
 	}
-	return this->data.TurnAirOn;
+	return this->data.turnAirOn;
 }
 
 void TurnAirOnCommand::execute() {

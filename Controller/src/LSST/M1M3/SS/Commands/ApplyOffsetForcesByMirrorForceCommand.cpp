@@ -13,16 +13,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyOffsetForcesByMirrorForceC* data) {
+ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.XForce = data->XForce;
-	this->data.YForce = data->YForce;
-	this->data.ZForce = data->ZForce;
-	this->data.XMoment = data->XMoment;
-	this->data.YMoment = data->YMoment;
-	this->data.ZMoment = data->ZMoment;
+	this->data.xForce = data->xForce;
+	this->data.yForce = data->yForce;
+	this->data.zForce = data->zForce;
+	this->data.xMoment = data->xMoment;
+	this->data.yMoment = data->yMoment;
+	this->data.zMoment = data->zMoment;
 }
 
 bool ApplyOffsetForcesByMirrorForceCommand::validate() {

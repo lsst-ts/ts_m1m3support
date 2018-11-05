@@ -13,19 +13,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaiseM1M3Command::RaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_RaiseM1M3C* data) {
+RaiseM1M3Command::RaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_raiseM1M3C* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.RaiseM1M3 = data->RaiseM1M3;
-	this->data.BypassReferencePosition = data->BypassReferencePosition;
+	this->data.raiseM1M3 = data->raiseM1M3;
+	this->data.bypassReferencePosition = data->bypassReferencePosition;
 }
 
 bool RaiseM1M3Command::validate() {
-	if (!this->data.RaiseM1M3) {
-		this->publisher->logCommandRejectionWarning("RaiseM1M3", "The field RaiseM1M3 is not TRUE.");
+	if (!this->data.raiseM1M3) {
+		this->publisher->logCommandRejectionWarning("raiseM1M3", "The field raiseM1M3 is not TRUE.");
 	}
-	return this->data.RaiseM1M3;
+	return this->data.raiseM1M3;
 }
 
 void RaiseM1M3Command::execute() {

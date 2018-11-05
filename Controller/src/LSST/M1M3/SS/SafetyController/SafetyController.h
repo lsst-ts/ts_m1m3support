@@ -10,8 +10,9 @@
 
 #include <FaultCodes.h>
 #include <StateTypes.h>
-#include <SAL_m1m3C.h>
 #include <list>
+
+struct MTM1M3_logevent_errorCodeC;
 
 namespace LSST {
 namespace M1M3 {
@@ -25,7 +26,7 @@ private:
 	M1M3SSPublisher* publisher;
 	SafetyControllerSettings* safetyControllerSettings;
 
-	m1m3_logevent_ErrorCodeC* errorCodeData;
+	MTM1M3_logevent_errorCodeC* errorCodeData;
 
 	std::list<int> ilcCommunicationTimeoutData;
 

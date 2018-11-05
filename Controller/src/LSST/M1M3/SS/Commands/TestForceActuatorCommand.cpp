@@ -13,24 +13,24 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestForceActuatorCommand::TestForceActuatorCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestForceActuatorC* data) {
+TestForceActuatorCommand::TestForceActuatorCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testForceActuatorC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ForceActuator = data->ForceActuator;
+	this->data.forceActuator = data->forceActuator;
 }
 
 bool TestForceActuatorCommand::validate() {
-	if (!((this->data.ForceActuator >= 101 && this->data.ForceActuator <= 143) ||
-			(this->data.ForceActuator >= 207 && this->data.ForceActuator <= 243) ||
-			(this->data.ForceActuator >= 301 && this->data.ForceActuator <= 343) ||
-			(this->data.ForceActuator >= 407 && this->data.ForceActuator <= 443)) ) {
-		this->publisher->logCommandRejectionWarning("TestForceActuator", "The field ForceActuator must be in range [101, 143] or [207, 243] or [301, 343] or [407, 443].");
+	if (!((this->data.forceActuator >= 101 && this->data.forceActuator <= 143) ||
+			(this->data.forceActuator >= 207 && this->data.forceActuator <= 243) ||
+			(this->data.forceActuator >= 301 && this->data.forceActuator <= 343) ||
+			(this->data.forceActuator >= 407 && this->data.forceActuator <= 443)) ) {
+		this->publisher->logCommandRejectionWarning("testForceActuator", "The field forceActuator must be in range [101, 143] or [207, 243] or [301, 343] or [407, 443].");
 	}
-	return (this->data.ForceActuator >= 101 && this->data.ForceActuator <= 143) ||
-			(this->data.ForceActuator >= 207 && this->data.ForceActuator <= 243) ||
-			(this->data.ForceActuator >= 301 && this->data.ForceActuator <= 343) ||
-			(this->data.ForceActuator >= 407 && this->data.ForceActuator <= 443);
+	return (this->data.forceActuator >= 101 && this->data.forceActuator <= 143) ||
+			(this->data.forceActuator >= 207 && this->data.forceActuator <= 243) ||
+			(this->data.forceActuator >= 301 && this->data.forceActuator <= 343) ||
+			(this->data.forceActuator >= 407 && this->data.forceActuator <= 443);
 }
 
 void TestForceActuatorCommand::execute() {

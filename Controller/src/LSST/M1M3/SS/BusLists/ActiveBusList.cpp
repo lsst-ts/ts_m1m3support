@@ -10,7 +10,7 @@
 #include <ILCMessageFactory.h>
 #include <RoundRobin.h>
 #include <ForceConverter.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <cstring>
 #include <Log.h>
 
@@ -18,7 +18,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData, m1m3_ForceActuatorDataC* forceActuatorData, m1m3_HardpointActuatorDataC* hardpointActuatorData, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces)
+ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("RaisedBusList: RaisedBusList()");
 	this->outerLoopData = outerLoopData;
@@ -49,14 +49,14 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 				int32_t secondaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
 				if (address <= 16) {
-					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
+					saaPrimary[address - 1] = this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
 				}
 				else {
-					daaPrimary[address - 17] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
-					daaSecondary[address - 17] = this->appliedCylinderForces->SecondaryCylinderForces[secondaryDataIndex];
+					daaPrimary[address - 17] = this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+					daaSecondary[address - 17] = this->appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
 				}
 			}
-			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->BroadcastCounter, this->outerLoopData->SlewFlag, saaPrimary, daaPrimary, daaSecondary);
+			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->broadcastCounter, this->outerLoopData->slewFlag, saaPrimary, daaPrimary, daaSecondary);
 			this->buffer.writeTimestamp();
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
@@ -80,7 +80,7 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 		}
 		if (this->subnetData->getHPCount(subnetIndex) > 0) {
 			this->hpFreezeCommandIndex[subnetIndex] = this->buffer.getIndex();
-			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->broadcastCounter);
 			this->buffer.writeTimestamp();
 			for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
 				uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
@@ -120,7 +120,7 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 }
 
 void ActiveBusList::update() {
-	this->outerLoopData->BroadcastCounter = RoundRobin::BroadcastCounter(this->outerLoopData->BroadcastCounter);
+	this->outerLoopData->broadcastCounter = RoundRobin::BroadcastCounter(this->outerLoopData->broadcastCounter);
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		if (this->subnetData->getFACount(subnetIndex) > 0) {
 			int32_t saaPrimary[16];
@@ -135,15 +135,15 @@ void ActiveBusList::update() {
 				int32_t secondaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
 				if (address <= 16) {
-					saaPrimary[address - 1] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
+					saaPrimary[address - 1] = this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
 				}
 				else {
-					daaPrimary[address - 17] = this->appliedCylinderForces->PrimaryCylinderForces[primaryDataIndex];
-					daaSecondary[address - 17] = this->appliedCylinderForces->SecondaryCylinderForces[secondaryDataIndex];
+					daaPrimary[address - 17] = this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+					daaSecondary[address - 17] = this->appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
 				}
 			}
 			this->buffer.setIndex(this->setForceCommandIndex[subnetIndex]);
-			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->BroadcastCounter, this->outerLoopData->SlewFlag, saaPrimary, daaPrimary, daaSecondary);
+			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->broadcastCounter, this->outerLoopData->slewFlag, saaPrimary, daaPrimary, daaSecondary);
 
 			int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
@@ -163,7 +163,7 @@ void ActiveBusList::update() {
 		}
 		if (this->subnetData->getHPCount(subnetIndex) > 0) {
 			this->buffer.setIndex(this->hpFreezeCommandIndex[subnetIndex]);
-			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->broadcastCounter);
 		}
 		if (this->subnetData->getHMCount(subnetIndex) > 0) {
 			this->buffer.setIndex(this->hmLVDTCommandIndex[subnetIndex]);

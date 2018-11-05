@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitEngineeringCommand::ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ExitEngineeringC* data) {
+ExitEngineeringCommand::ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_exitEngineeringC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ExitEngineering = data->ExitEngineering;
+	this->data.exitEngineering = data->exitEngineering;
 }
 
 bool ExitEngineeringCommand::validate() {
-	if (!this->data.ExitEngineering) {
-		this->publisher->logCommandRejectionWarning("ExitEngineering", "The field ExitEngineering is not TRUE.");
+	if (!this->data.exitEngineering) {
+		this->publisher->logCommandRejectionWarning("exitEngineering", "The field exitEngineering is not TRUE.");
 	}
-	return this->data.ExitEngineering;
+	return this->data.exitEngineering;
 }
 
 void ExitEngineeringCommand::execute() {

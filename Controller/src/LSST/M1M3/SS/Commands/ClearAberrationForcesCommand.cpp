@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ClearAberrationForcesC* data) {
+ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearAberrationForcesC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ClearAberrationForces = data->ClearAberrationForces;
+	this->data.clearAberrationForces = data->clearAberrationForces;
 }
 
 bool ClearAberrationForcesCommand::validate() {
-	if (!this->data.ClearAberrationForces) {
-		this->publisher->logCommandRejectionWarning("ClearAberrationForces", "The field ClearAberrationForces is not TRUE.");
+	if (!this->data.clearAberrationForces) {
+		this->publisher->logCommandRejectionWarning("clearAberrationForces", "The field clearAberrationForces is not TRUE.");
 	}
-	return this->data.ClearAberrationForces;
+	return this->data.clearAberrationForces;
 }
 
 void ClearAberrationForcesCommand::execute() {

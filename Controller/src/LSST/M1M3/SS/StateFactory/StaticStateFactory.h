@@ -23,7 +23,6 @@
 #include <LoweringEngineeringState.h>
 #include <FaultState.h>
 #include <LoweringFaultState.h>
-#include <ProfileHardpointCorrectionState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -48,7 +47,6 @@ private:
 	LoweringEngineeringState loweringEngineeringState;
 	FaultState faultState;
 	LoweringFaultState loweringFaultState;
-	ProfileHardpointCorrectionState profileHardpointCorrectionState;
 
 public:
 	StaticStateFactory(M1M3SSPublisher* publisher);

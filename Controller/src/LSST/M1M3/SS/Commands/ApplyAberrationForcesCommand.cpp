@@ -13,12 +13,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyAberrationForcesC* data) {
+ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyAberrationForcesC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
 	for(int i = 0; i < FA_COUNT; i++) {
-		this->data.ZForces[i] = data->ZForces[i];
+		this->data.zForces[i] = data->zForces[i];
 	}
 }
 

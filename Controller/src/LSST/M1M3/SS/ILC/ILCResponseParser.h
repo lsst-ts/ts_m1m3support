@@ -10,7 +10,24 @@
 
 #include <DataTypes.h>
 #include <ILCDataTypes.h>
-#include <SAL_m1m3C.h>
+
+struct MTM1M3_logevent_hardpointActuatorInfoC;
+struct MTM1M3_logevent_hardpointActuatorStateC;
+struct MTM1M3_logevent_hardpointActuatorWarningC;
+struct MTM1M3_hardpointActuatorDataC;
+struct MTM1M3_logevent_forceActuatorInfoC;
+struct MTM1M3_logevent_forceActuatorStateC;
+struct MTM1M3_logevent_forceActuatorWarningC;
+struct MTM1M3_logevent_forceActuatorForceWarningC;
+struct MTM1M3_logevent_appliedCylinderForcesC;
+struct MTM1M3_forceActuatorDataC;
+struct MTM1M3_logevent_hardpointMonitorInfoC;
+struct MTM1M3_logevent_hardpointMonitorStateC;
+struct MTM1M3_logevent_hardpointMonitorWarningC;
+struct MTM1M3_hardpointMonitorDataC;
+struct MTM1M3_logevent_ilcWarningC;
+struct MTM1M3_outerLoopDataC;
+struct MTM1M3_logevent_modbusResponseC;
 
 namespace LSST {
 namespace M1M3 {
@@ -35,29 +52,29 @@ private:
 	int32_t hpExpectedResponses[6];
 	int32_t hmExpectedResponses[6];
 
-	m1m3_logevent_HardpointActuatorInfoC* hardpointActuatorInfo;
-	m1m3_logevent_HardpointActuatorStateC* hardpointActuatorState;
-	m1m3_logevent_HardpointActuatorWarningC* hardpointActuatorWarning;
-	m1m3_HardpointActuatorDataC* hardpointActuatorData;
+	MTM1M3_logevent_hardpointActuatorInfoC* hardpointActuatorInfo;
+	MTM1M3_logevent_hardpointActuatorStateC* hardpointActuatorState;
+	MTM1M3_logevent_hardpointActuatorWarningC* hardpointActuatorWarning;
+	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
 
-	m1m3_logevent_ForceActuatorInfoC* forceActuatorInfo;
-	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
-	m1m3_logevent_ForceActuatorWarningC* forceActuatorWarning;
-	m1m3_logevent_ForceActuatorForceWarningC* forceWarning;
-	m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces;
-	m1m3_ForceActuatorDataC* forceActuatorData;
+	MTM1M3_logevent_forceActuatorInfoC* forceActuatorInfo;
+	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+	MTM1M3_logevent_forceActuatorForceWarningC* forceWarning;
+	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
+	MTM1M3_forceActuatorDataC* forceActuatorData;
 
-	m1m3_logevent_HardpointMonitorInfoC* hardpointMonitorInfo;
-	m1m3_logevent_HardpointMonitorStateC* hardpointMonitorState;
-	m1m3_logevent_HardpointMonitorWarningC* hardpointMonitorWarning;
-	m1m3_HardpointMonitorDataC* hardpointMonitorData;
+	MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo;
+	MTM1M3_logevent_hardpointMonitorStateC* hardpointMonitorState;
+	MTM1M3_logevent_hardpointMonitorWarningC* hardpointMonitorWarning;
+	MTM1M3_hardpointMonitorDataC* hardpointMonitorData;
 
-	m1m3_logevent_ILCWarningC* ilcWarning;
+	MTM1M3_logevent_ilcWarningC* ilcWarning;
 
-	m1m3_OuterLoopDataC* outerLoopData;
+	MTM1M3_outerLoopDataC* outerLoopData;
 
 	bool grabResponse;
-	m1m3_logevent_ModbusResponseC* modbusResponse;
+	MTM1M3_logevent_modbusResponseC* modbusResponse;
 
 public:
 	ILCResponseParser();

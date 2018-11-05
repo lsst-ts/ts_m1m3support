@@ -8,14 +8,15 @@
 #include <SetADCScanRateBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 #include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_HardpointActuatorInfoC* hardpointInfo)
+SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("SetADCScanRateBusList: SetADCScanRateBusList()");
 	this->forceInfo = forceInfo;
@@ -27,7 +28,7 @@ SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessa
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
 			bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
 			if (!disabled) {
-				this->ilcMessageFactory->setADCScanRate(&this->buffer, address, this->forceInfo->ADCScanRate[dataIndex]);
+				this->ilcMessageFactory->setADCScanRate(&this->buffer, address, (uint8_t)this->forceInfo->adcScanRate[dataIndex]);
 				this->expectedFAResponses[dataIndex] = 1;
 			}
 		}
@@ -36,7 +37,7 @@ SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessa
 			int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
 			bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
 			if (!disabled) {
-				this->ilcMessageFactory->setADCScanRate(&this->buffer, address, this->hardpointInfo->ADCScanRate[dataIndex]);
+				this->ilcMessageFactory->setADCScanRate(&this->buffer, address, this->hardpointInfo->adcScanRate[dataIndex]);
 				this->expectedHPResponses[dataIndex] = 1;
 			}
 		}

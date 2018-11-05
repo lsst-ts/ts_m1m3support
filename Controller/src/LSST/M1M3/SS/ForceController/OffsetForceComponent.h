@@ -9,7 +9,11 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_OFFSETFORCECOMPONENT_H_
 
 #include <ForceComponent.h>
-#include <SAL_m1m3C.h>
+
+struct MTM1M3_logevent_forceActuatorStateC;
+struct MTM1M3_logevent_forceSetpointWarningC;
+struct MTM1M3_logevent_appliedOffsetForcesC;
+struct MTM1M3_logevent_rejectedOffsetForcesC;
 
 namespace LSST {
 namespace M1M3 {
@@ -27,10 +31,10 @@ private:
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
 
-	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
-	m1m3_logevent_ForceSetpointWarningC* forceSetpointWarning;
-	m1m3_logevent_AppliedOffsetForcesC* appliedOffsetForces;
-	m1m3_logevent_RejectedOffsetForcesC* rejectedOffsetForces;
+	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_appliedOffsetForcesC* appliedOffsetForces;
+	MTM1M3_logevent_rejectedOffsetForcesC* rejectedOffsetForces;
 
 public:
 	OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);

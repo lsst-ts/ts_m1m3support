@@ -60,8 +60,6 @@ States::Type State::turnPowerOn(TurnPowerOnCommand* command, Model* model) { ret
 States::Type State::turnPowerOff(TurnPowerOffCommand* command, Model* model) { return this->rejectCommandInvalidState("TurnPowerOff"); }
 States::Type State::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("EnableHardpointCorrections"); }
 States::Type State::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) { return this->rejectCommandInvalidState("DisableHardpointCorrections"); }
-States::Type State::runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model) { return this->rejectCommandInvalidState("RunMirrorForceProfile"); }
-States::Type State::abortProfile(AbortProfileCommand* command, Model* model) { return this->rejectCommandInvalidState("AbortProfile"); }
 States::Type State::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyOffsetForcesByMirrorForce"); }
 States::Type State::updatePID(UpdatePIDCommand* command, Model* model) { return this->rejectCommandInvalidState("UpdatePID"); }
 States::Type State::resetPID(ResetPIDCommand* command, Model* model) { return this->rejectCommandInvalidState("ResetPID"); }

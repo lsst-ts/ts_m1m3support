@@ -13,16 +13,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ModbusTransmitCommand::ModbusTransmitCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ModbusTransmitC* data) {
+ModbusTransmitCommand::ModbusTransmitCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_modbusTransmitC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ActuatorId = data->ActuatorId;
-	this->data.FunctionCode = data->FunctionCode;
+	this->data.actuatorId = data->actuatorId;
+	this->data.functionCode = data->functionCode;
 	for(int i = 0; i < 252; i++) {
-		this->data.Data[i] = data->Data[i];
+		this->data.data[i] = data->data[i];
 	}
-	this->data.DataLength = data->DataLength;
+	this->data.dataLength = data->dataLength;
 }
 
 bool ModbusTransmitCommand::validate() {

@@ -13,12 +13,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyActiveOpticForcesByBendingModesCommand::ApplyActiveOpticForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyActiveOpticForcesByBendingModesC* data) {
+ApplyActiveOpticForcesByBendingModesCommand::ApplyActiveOpticForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyActiveOpticForcesByBendingModesC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
 	for(int i = 0; i < BENDING_MODES; i++) {
-		this->data.Coefficients[i] = data->Coefficients[i];
+		this->data.coefficients[i] = data->coefficients[i];
 	}
 }
 

@@ -10,8 +10,8 @@
 
 #include <DataTypes.h>
 
-struct m1m3_IMSDataC;
-struct m1m3_logevent_DisplacementSensorWarningC;
+struct MTM1M3_imsDataC;
+struct MTM1M3_logevent_displacementSensorWarningC;
 
 namespace LSST {
 namespace M1M3 {
@@ -32,8 +32,8 @@ private:
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
 
-	m1m3_IMSDataC* imsData;
-	m1m3_logevent_DisplacementSensorWarningC* displacementWarning;
+	MTM1M3_imsDataC* imsData;
+	MTM1M3_logevent_displacementSensorWarningC* displacementWarning;
 
 	uint64_t lastSampleTimestamp;
 	uint64_t lastErrorTimestamp;

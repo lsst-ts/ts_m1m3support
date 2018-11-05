@@ -13,16 +13,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TranslateM1M3Command::TranslateM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TranslateM1M3C* data) {
+TranslateM1M3Command::TranslateM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_translateM1M3C* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.XTranslation = data->XTranslation;
-	this->data.YTranslation = data->YTranslation;
-	this->data.ZTranslation = data->ZTranslation;
-	this->data.XRotation = data->XRotation;
-	this->data.YRotation = data->YRotation;
-	this->data.ZRotation = data->ZRotation;
+	this->data.xTranslation = data->xTranslation;
+	this->data.yTranslation = data->yTranslation;
+	this->data.zTranslation = data->zTranslation;
+	this->data.xRotation = data->xRotation;
+	this->data.yRotation = data->yRotation;
+	this->data.zRotation = data->zRotation;
 }
 
 bool TranslateM1M3Command::validate() {

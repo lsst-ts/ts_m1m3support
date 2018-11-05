@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestAirC* data) {
+TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testAirC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.TestAir = data->TestAir;
+	this->data.testAir = data->testAir;
 }
 
 bool TestAirCommand::validate() {
-	if (!this->data.TestAir) {
-		this->publisher->logCommandRejectionWarning("TestAir", "The field TestAir is not TRUE.");
+	if (!this->data.testAir) {
+		this->publisher->logCommandRejectionWarning("testAir", "The field testAir is not TRUE.");
 	}
-	return this->data.TestAir;
+	return this->data.testAir;
 }
 
 void TestAirCommand::execute() {

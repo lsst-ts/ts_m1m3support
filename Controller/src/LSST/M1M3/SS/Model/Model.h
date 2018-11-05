@@ -8,10 +8,12 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 
-#include <ProfileController.h>
 #include <StateTypes.h>
 #include <pthread.h>
 #include <string>
+
+struct MTMount_AltC;
+struct MTMount_AzC;
 
 namespace LSST {
 namespace M1M3 {
@@ -19,8 +21,8 @@ namespace SS {
 
 class SettingReader;
 class M1M3SSPublisher;
-class FPGA;
-class ExpansionFPGA;
+class IFPGA;
+class IExpansionFPGA;
 class Displacement;
 class Inclinometer;
 class ILC;
@@ -47,8 +49,8 @@ class Model {
 private:
 	SettingReader* settingReader;
 	M1M3SSPublisher* publisher;
-	FPGA* fpga;
-	ExpansionFPGA* expansionFPGA;
+	IFPGA* fpga;
+	IExpansionFPGA* expansionFPGA;
 	Displacement* displacement;
 	Inclinometer* inclinometer;
 	ILC* ilc;
@@ -59,21 +61,22 @@ private:
 	PowerController* powerController;
 	AutomaticOperationsController* automaticOperationsController;
 	Gyro* gyro;
-	ProfileController profileController;
 	DigitalInputOutput* digitalInputOutput;
+	MTMount_AltC* tmaElevation;
+	MTMount_AzC* tmaAzimuth;
 
 	pthread_mutex_t mutex;
 
 	double cachedTimestamp;
 
 public:
-	Model(SettingReader* settingReader, M1M3SSPublisher* publisher, FPGA* fpga, ExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput);
+	Model(SettingReader* settingReader, M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput, MTMount_AltC* tmaAlt, MTMount_AzC* tmaAz);
 	virtual ~Model();
 
 	inline SettingReader* getSettingReader() { return this->settingReader; }
 	inline M1M3SSPublisher* getPublisher() { return this->publisher; }
-	inline FPGA* getFPGA() { return this->fpga; }
-	inline ExpansionFPGA* getExpansionFPGA() { return this->expansionFPGA; }
+	inline IFPGA* getFPGA() { return this->fpga; }
+	inline IExpansionFPGA* getExpansionFPGA() { return this->expansionFPGA; }
 	inline Displacement* getDisplacement() { return this->displacement; }
 	inline Inclinometer* getInclinometer() { return this->inclinometer; }
 	inline ILC* getILC() { return this->ilc; }
@@ -85,7 +88,6 @@ public:
 	inline PowerController* getPowerController() { return this->powerController; }
 	inline AutomaticOperationsController* getAutomaticOperationsController() { return this->automaticOperationsController; }
 	inline Gyro* getGyro() { return this->gyro; }
-	inline ProfileController* getProfileController() { return &this->profileController; }
 
 	void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
 	double getCachedTimestamp() { return this->cachedTimestamp; }

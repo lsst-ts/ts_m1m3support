@@ -9,7 +9,9 @@
 #define PID_H_
 
 #include <PIDParameters.h>
-#include <SAL_m1m3C.h>
+
+struct MTM1M3_logevent_pidInfoC;
+struct MTM1M3_pidDataC;
 
 namespace LSST {
 namespace M1M3 {
@@ -22,8 +24,8 @@ private:
 	int id;
 	PIDParameters initialParameters;
 	M1M3SSPublisher* publisher;
-	m1m3_logevent_PIDInfoC* pidInfo;
-	m1m3_PIDDataC* pidData;
+	MTM1M3_logevent_pidInfoC* pidInfo;
+	MTM1M3_pidDataC* pidData;
 
 public:
 	PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher);

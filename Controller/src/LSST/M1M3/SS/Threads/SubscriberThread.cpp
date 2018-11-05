@@ -64,8 +64,6 @@ void SubscriberThread::run() {
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandTurnPowerOff());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandEnableHardpointCorrections());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandDisableHardpointCorrections());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandRunMirrorForceProfile());
-		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandAbortProfile());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandApplyOffsetForcesByMirrorForce());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandUpdatePID());
 		this->enqueueCommandIfAvailable(this->subscriber->tryAcceptCommandResetPID());

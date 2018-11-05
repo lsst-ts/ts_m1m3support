@@ -57,8 +57,6 @@ class TurnPowerOnCommand;
 class TurnPowerOffCommand;
 class EnableHardpointCorrectionsCommand;
 class DisableHardpointCorrectionsCommand;
-class RunMirrorForceProfileCommand;
-class AbortProfileCommand;
 class ApplyOffsetForcesByMirrorForceCommand;
 class UpdatePIDCommand;
 class ResetPIDCommand;
@@ -115,8 +113,6 @@ public:
 	virtual States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
 	virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
 	virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
-	virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model);
-	virtual States::Type abortProfile(AbortProfileCommand* command, Model* model);
 	virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model);
 	virtual States::Type updatePID(UpdatePIDCommand* command, Model* model);
 	virtual States::Type resetPID(ResetPIDCommand* command, Model* model);

@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ClearOffsetForcesC* data) {
+ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearOffsetForcesC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ClearOffsetForces = data->ClearOffsetForces;
+	this->data.clearOffsetForces = data->clearOffsetForces;
 }
 
 bool ClearOffsetForcesCommand::validate() {
-	if (!this->data.ClearOffsetForces) {
-		this->publisher->logCommandRejectionWarning("ClearOffsetForces", "The field ClearOffsetForces is not TRUE.");
+	if (!this->data.clearOffsetForces) {
+		this->publisher->logCommandRejectionWarning("clearOffsetForces", "The field clearOffsetForces is not TRUE.");
 	}
-	return this->data.ClearOffsetForces;
+	return this->data.clearOffsetForces;
 }
 
 void ClearOffsetForcesCommand::execute() {

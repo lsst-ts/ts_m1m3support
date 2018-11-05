@@ -10,8 +10,8 @@
 
 #include <DataTypes.h>
 
-struct m1m3_InclinometerDataC;
-struct m1m3_logevent_InclinometerSensorWarningC;
+struct MTM1M3_inclinometerDataC;
+struct MTM1M3_logevent_inclinometerSensorWarningC;
 
 namespace LSST {
 namespace M1M3 {
@@ -32,8 +32,8 @@ private:
 	SafetyController* safetyController;
 	InclinometerSettings* inclinometerSettings;
 
-	m1m3_InclinometerDataC* inclinometerData;
-	m1m3_logevent_InclinometerSensorWarningC* inclinometerWarning;
+	MTM1M3_inclinometerDataC* inclinometerData;
+	MTM1M3_logevent_inclinometerSensorWarningC* inclinometerWarning;
 
 	uint64_t lastSampleTimestamp;
 	uint64_t lastErrorTimestamp;

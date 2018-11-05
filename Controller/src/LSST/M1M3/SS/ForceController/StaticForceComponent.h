@@ -9,8 +9,12 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_STATICFORCECOMPONENT_H_
 
 #include <ForceComponent.h>
-#include <SAL_m1m3C.h>
 #include <vector>
+
+struct MTM1M3_logevent_forceActuatorStateC;
+struct MTM1M3_logevent_forceSetpointWarningC;
+struct MTM1M3_logevent_appliedStaticForcesC;
+struct MTM1M3_logevent_rejectedStaticForcesC;
 
 namespace LSST {
 namespace M1M3 {
@@ -28,10 +32,10 @@ private:
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
 
-	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
-	m1m3_logevent_ForceSetpointWarningC* forceSetpointWarning;
-	m1m3_logevent_AppliedStaticForcesC* appliedStaticForces;
-	m1m3_logevent_RejectedStaticForcesC* rejectedStaticForces;
+	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_appliedStaticForcesC* appliedStaticForces;
+	MTM1M3_logevent_rejectedStaticForcesC* rejectedStaticForces;
 
 public:
 	StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);

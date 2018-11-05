@@ -12,7 +12,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <CRC.h>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <ModbusBuffer.h>
 #include <DataTypes.h>
 #include <FPGAAddresses.h>
@@ -23,7 +23,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FirmwareUpdate::FirmwareUpdate(FPGA* fpga, ILCSubnetData* subnetData) {
+FirmwareUpdate::FirmwareUpdate(IFPGA* fpga, ILCSubnetData* subnetData) {
 	this->fpga = fpga;
 	this->subnetData = subnetData;
 	this->desiredState = 255;
