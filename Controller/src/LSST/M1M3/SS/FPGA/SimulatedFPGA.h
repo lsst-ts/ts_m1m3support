@@ -9,28 +9,48 @@
 #define LSST_M1M3_SS_FPGA_SIMULATEDFPGA_H_
 
 #include <IFPGA.h>
+#include <queue>
+#include <ILCSubnetData.h>
 
-struct MTMount_AltC;
-struct MTMount_AzC;
+struct MTMount_ElevationC;
+struct MTMount_AzimuthC;
 struct MTM1M3_logevent_appliedCylinderForcesC;
+struct MTM1M3_logevent_forceActuatorInfoC;
+struct MTM1M3_hardpointActuatorDataC;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class M1M3SSPublisher;
+class ForceActuatorApplicationSettings;
 
 class SimulatedFPGA: public IFPGA {
 private:
 	M1M3SSPublisher* publisher;
 	SupportFPGAData supportFPGAData;
-	MTMount_AltC* tmaElevation;
-	MTMount_AzC* tmaAzimuth;
+	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+	MTMount_ElevationC* tmaElevation;
+	MTMount_AzimuthC* tmaAzimuth;
 	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
+	MTM1M3_logevent_forceActuatorInfoC* forceActuatorInfo;
+	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
 	int lastRequest;
+	std::queue<uint16_t> u8Response;
+	std::queue<uint16_t> u16Response;
+	std::queue<uint16_t> subnetAResponse;
+	std::queue<uint16_t> subnetBResponse;
+	std::queue<uint16_t> subnetCResponse;
+	std::queue<uint16_t> subnetDResponse;
+	std::queue<uint16_t> subnetEResponse;
+
+	std::queue<uint16_t> crcVector;
+	void writeModbus(std::queue<uint16_t>* response, uint16_t data);
+	void writeModbusCRC(std::queue<uint16_t>* response);
+	uint16_t readModbus(uint16_t data);
 
 public:
-	SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_AltC* tmaElevation, MTMount_AzC* tmaAzimuth);
+	SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_ElevationC* tmaElevation, MTMount_AzimuthC* tmaAzimuth, ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
 	SupportFPGAData* getSupportFPGAData() { return &this->supportFPGAData; }
 

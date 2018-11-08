@@ -6,7 +6,7 @@
  */
 
 #include <PPSThread.h>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <M1M3SSPublisher.h>
 #include <Log.h>
 #include <Timestamp.h>
@@ -16,7 +16,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PPSThread::PPSThread(FPGA* fpga, M1M3SSPublisher* publisher) {
+PPSThread::PPSThread(IFPGA* fpga, M1M3SSPublisher* publisher) {
 	this->fpga = fpga;
 	this->publisher = publisher;
 	this->keepRunning = true;

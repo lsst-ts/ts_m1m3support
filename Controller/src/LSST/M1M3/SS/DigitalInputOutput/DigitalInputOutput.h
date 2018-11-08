@@ -22,7 +22,7 @@ namespace M1M3 {
 namespace SS {
 
 class InterlockApplicationSettings;
-class FPGA;
+class IFPGA;
 struct SupportFPGAData;
 class M1M3SSPublisher;
 class SafetyController;
@@ -33,7 +33,7 @@ class SafetyController;
 class DigitalInputOutput {
 private:
 	InterlockApplicationSettings* interlockApplicationSettings;
-	FPGA* fpga;
+	IFPGA* fpga;
 	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
@@ -57,7 +57,7 @@ public:
 	 * @param[in] fpga The fpga.
 	 * @param[in] publisher The publisher.
 	 */
-	DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings, FPGA* fpga, M1M3SSPublisher* publisher);
+	DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings, IFPGA* fpga, M1M3SSPublisher* publisher);
 
 	/*!
 	 * Sets the safety controller.

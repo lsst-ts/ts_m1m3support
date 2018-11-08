@@ -7,7 +7,7 @@
 
 #include <DigitalInputOutput.h>
 #include <InterlockApplicationSettings.h>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
@@ -23,7 +23,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DigitalInputOutput::DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
+DigitalInputOutput::DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings, IFPGA* fpga, M1M3SSPublisher* publisher) {
 	Log.Debug("DigitalInputOutput: DigitalInputOutput()");
 	this->interlockApplicationSettings = interlockApplicationSettings;
 	this->fpga = fpga;

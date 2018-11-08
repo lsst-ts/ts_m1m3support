@@ -6,6 +6,8 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
+#define SIMULATOR 1
+
 #include <iostream>
 #include <pthread.h>
 #include <CommandFactory.h>
@@ -19,6 +21,7 @@
 #include <ControllerThread.h>
 #include <OuterLoopClockThread.h>
 #include <FPGA.h>
+#include <SimulatedFPGA.h>
 #include <CommandTypes.h>
 #include <SettingReader.h>
 #include <SAL_MTM1M3.h>
@@ -30,6 +33,7 @@
 #include <DigitalInputOutput.h>
 #include <cstring>
 #include <ExpansionFPGA.h>
+#include <SimulatedExpansionFPGA.h>
 #include <PPSThread.h>
 
 #include <Log.h>
@@ -50,33 +54,51 @@ int main() {
 	m1m3SAL.setDebugLevel(0);
 	Log.Info("Main: Initializing MTMount SAL");
 	SAL_MTMount mtMountSAL = SAL_MTMount();
-	MTMount_AzC tmaAzimuth;
-	MTMount_AltC tmaElevation;
+	MTMount_AzimuthC tmaAzimuth;
+	MTMount_ElevationC tmaElevation;
 	Log.Info("Main: Creating publisher");
 	M1M3SSPublisher publisher = M1M3SSPublisher(&m1m3SAL);
-	Log.Info("Main: Creating fpga");
-	FPGA fpga = FPGA();
-	if (fpga.isErrorCode(fpga.initialize())) {
+	FPGA realFPGA = FPGA();
+	SimulatedFPGA simulatedFPGA = SimulatedFPGA(&publisher, &tmaElevation, &tmaAzimuth, settingReader.loadForceActuatorApplicationSettings());
+	IFPGA* fpga;
+	if (SIMULATOR == 0) {
+		Log.Info("Main: Creating FPGA");
+		fpga = &realFPGA;
+	}
+	else {
+		Log.Info("Main: Creating simulated FPGA");
+		fpga = &simulatedFPGA;
+	}
+	if (fpga->isErrorCode(fpga->initialize())) {
 		Log.Fatal("Main: Error initializing FPGA");
 		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
 	}
-	if (fpga.isErrorCode(fpga.open())) {
+	if (fpga->isErrorCode(fpga->open())) {
 		Log.Fatal("Main: Error opening FPGA");
-		fpga.finalize();
+		fpga->finalize();
 		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
 	}
 	Log.Info("Main: Load expansion FPGA application settings");
 	ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings = settingReader.loadExpansionFPGAApplicationSettings();
-	Log.Info("Main: Create expansion FPGA");
-	ExpansionFPGA expansionFPGA = ExpansionFPGA(expansionFPGAApplicationSettings);
-	if (expansionFPGA.isErrorCode(expansionFPGA.open())) {
+	ExpansionFPGA realExpansionFPGA = ExpansionFPGA(expansionFPGAApplicationSettings);
+	SimulatedExpansionFPGA simulatedExpansionFPGA = SimulatedExpansionFPGA();
+	IExpansionFPGA* expansionFPGA;
+	if (SIMULATOR == 0) {
+		Log.Info("Main: Create expansion FPGA");
+		expansionFPGA = &realExpansionFPGA;
+	}
+	else {
+		Log.Info("Main: Creating simulated expansion FPGA");
+		expansionFPGA = &simulatedExpansionFPGA;
+	}
+	if (expansionFPGA->isErrorCode(expansionFPGA->open())) {
 		Log.Fatal("Main: Error opening expansion FPGA");
-		fpga.close();
-		fpga.finalize();
+		fpga->close();
+		fpga->finalize();
 		mtMountSAL.salShutdown();
 		m1m3SAL.salShutdown();
 		return -1;
@@ -86,9 +108,9 @@ int main() {
 	Log.Info("Main: Load interlock application settings");
 	InterlockApplicationSettings* interlockApplicationSettings = settingReader.loadInterlockApplicationSettings();
 	Log.Info("Main: Creating digital input output");
-	DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings, &fpga, &publisher);
+	DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings, fpga, &publisher);
 	Log.Info("Main: Creating model");
-	Model model = Model(&settingReader, &publisher, &fpga, &expansionFPGA, &digitalInputOutput, &tmaElevation, &tmaAzimuth);
+	Model model = Model(&settingReader, &publisher, fpga, expansionFPGA, &digitalInputOutput, &tmaElevation, &tmaAzimuth);
 	Log.Info("Main: Creating context");
 	Context context = Context(&stateFactory, &model);
 	Log.Info("Main: Creating command factory");
@@ -102,9 +124,9 @@ int main() {
 	Log.Info("Main: Creating controller thread");
 	ControllerThread controllerThread = ControllerThread(&controller);
 	Log.Info("Main: Creating outer loop clock thread");
-	OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, &fpga, &publisher);
+	OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, fpga, &publisher);
 	Log.Info("Main: Creating pps thread");
-	PPSThread ppsThread = PPSThread(&fpga, &publisher);
+	PPSThread ppsThread = PPSThread(fpga, &publisher);
 	Log.Info("Main: Queuing boot command");
 	controller.enqueue(commandFactory.create(Commands::BootCommand));
 
@@ -194,15 +216,15 @@ int main() {
 
 	pthread_attr_destroy(&threadAttribute);
 
-	if (expansionFPGA.isErrorCode(expansionFPGA.close())) {
+	if (expansionFPGA->isErrorCode(expansionFPGA->close())) {
 		Log.Error("Main: Error closing expansion FPGA");
 	}
 
-	if (fpga.isErrorCode(fpga.close())) {
+	if (fpga->isErrorCode(fpga->close())) {
 		Log.Error("Main: Error closing FPGA");
 	}
 
-	if (fpga.isErrorCode(fpga.finalize())) {
+	if (fpga->isErrorCode(fpga->finalize())) {
 		Log.Error("Main: Error finalizing FPGA");
 	}
 

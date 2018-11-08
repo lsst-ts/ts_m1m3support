@@ -1915,7 +1915,8 @@ void M1M3SSPublisher::logSettingVersions() {
 }
 
 void M1M3SSPublisher::tryLogSettingVersions() {
-	if (this->eventSettingVersions.recommendedSettingVersion.compare(this->previousEventSettingVersions.recommendedSettingVersion) != 0) {
+	if (this->eventSettingVersions.recommendedSettingsLabels.compare(this->previousEventSettingVersions.recommendedSettingsLabels) != 0 ||
+		this->eventSettingVersions.recommendedSettingsVersion.compare(this->previousEventSettingVersions.recommendedSettingsVersion) != 0) {
 		this->logSettingVersions();
 	}
 }

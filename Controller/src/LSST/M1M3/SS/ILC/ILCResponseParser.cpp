@@ -696,7 +696,7 @@ void ILCResponseParser::parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer
 	float y = 0;
 	float z = 0;
 	ForceConverter::saaToMirror(this->forceActuatorData->primaryCylinderForces[dataIndex], 0.0, &x, &y, &z);
-	this->forceActuatorData->xForces[dataIndex] = z;
+	this->forceActuatorData->zForces[dataIndex] = z;
 	buffer->skipToNextFrame();
 }
 

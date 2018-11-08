@@ -60,8 +60,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_MTM1M3* m1m3SAL, SAL_MTMount* mtMountSAL,
 	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_resetPID");
 	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_programILC");
 	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
-	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Az");
-	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Alt");
+	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Azimuth");
+	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Elevation");
 }
 
 Command* M1M3SSSubscriber::tryAcceptCommandStart() {
@@ -385,7 +385,7 @@ Command* M1M3SSSubscriber::tryAcceptCommandModbusTransmit() {
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
-	int32_t result = this->mtMountSAL->getSample_Az(&this->tmaAzimuth);
+	int32_t result = this->mtMountSAL->getSample_Azimuth(&this->tmaAzimuth);
 	if (result == 0) {
 		return this->commandFactory->create(Commands::TMAAzimuthSampleCommand, &this->tmaAzimuth, 0);
 	}
@@ -393,7 +393,7 @@ Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAElevation() {
-	int32_t result = this->mtMountSAL->getSample_Alt(&this->tmaElevation);
+	int32_t result = this->mtMountSAL->getSample_Elevation(&this->tmaElevation);
 	if (result == 0) {
 		return this->commandFactory->create(Commands::TMAElevationSampleCommand, &this->tmaElevation, 0);
 	}

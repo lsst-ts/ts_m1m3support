@@ -92,8 +92,8 @@ private:
 	MTM1M3_accelerometerDataC* accelerometerData;
 	MTM1M3_gyroDataC* gyroData;
 
-	MTMount_AzC* tmaAzimuthData;
-	MTMount_AltC* tmaElevationData;
+	MTMount_AzimuthC* tmaAzimuthData;
+	MTMount_ElevationC* tmaElevationData;
 
 	std::vector<ForceActuatorNeighbors> neighbors;
 
@@ -103,11 +103,11 @@ private:
 	static int32_t toInt24(float force) { return (int32_t)(force * 1000.0); }
 
 public:
-	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, MTMount_AltC* tmaAlt, MTMount_AzC* tmaAz);
+	ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, MTMount_ElevationC* tmaAlt, MTMount_AzimuthC* tmaAz);
 
 	void reset();
 
-	void updateTMAElevationData(MTMount_AltC* tmaElevationData);
+	void updateTMAElevationData(MTMount_ElevationC* tmaElevationData);
 
 	void incSupportPercentage();
 	void decSupportPercentage();

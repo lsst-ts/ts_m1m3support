@@ -69,8 +69,8 @@ private:
 	MTM1M3_command_resetPIDC resetPIDData;
 	MTM1M3_command_programILCC programILCData;
 	MTM1M3_command_modbusTransmitC modbusTransmitData;
-	MTMount_AzC tmaAzimuth;
-	MTMount_AltC tmaElevation;
+	MTMount_AzimuthC tmaAzimuth;
+	MTMount_ElevationC tmaElevation;
 
 
 public:

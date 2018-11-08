@@ -1,0 +1,12 @@
+<HardpointActuatorSettings>
+    <HardpointDisplacementToMirrorPositionTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/HardpointDisplacementToMirrorPositionTable.csv</HardpointDisplacementToMirrorPositionTablePath>
+    <MirrorPositionToHardpointDisplacementTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/MirrorPositionToHardpointDisplacementTable.csv</MirrorPositionToHardpointDisplacementTablePath>
+    <MicrometersPerStep>0.0607</MicrometersPerStep>
+    <MicrometersPerEncoder>0.2442</MicrometersPerEncoder>
+    <HP1EncoderOffset>0</HP1EncoderOffset>
+    <HP2EncoderOffset>0</HP2EncoderOffset>
+    <HP3EncoderOffset>0</HP3EncoderOffset>
+    <HP4EncoderOffset>0</HP4EncoderOffset>
+    <HP5EncoderOffset>0</HP5EncoderOffset>
+    <HP6EncoderOffset>0</HP6EncoderOffset>
+</HardpointActuatorSettings>

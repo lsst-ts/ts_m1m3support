@@ -18,7 +18,7 @@ namespace SS {
 
 class CommandFactory;
 class Controller;
-class FPGA;
+class IFPGA;
 class M1M3SSPublisher;
 
 /*!
@@ -29,14 +29,14 @@ class OuterLoopClockThread: public IThread {
 private:
 	CommandFactory* commandFactory;
 	Controller* controller;
-	FPGA* fpga;
+	IFPGA* fpga;
 	M1M3SSPublisher* publisher;
 	uint16_t timestampUpdateBuffer[5];
 	bool keepRunning;
 	pthread_mutex_t updateMutex;
 
 public:
-	OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, FPGA* fpga, M1M3SSPublisher* publisher);
+	OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, IFPGA* fpga, M1M3SSPublisher* publisher);
 	~OuterLoopClockThread();
 
 	void run();

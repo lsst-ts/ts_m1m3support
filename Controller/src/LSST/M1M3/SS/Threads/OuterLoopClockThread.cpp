@@ -8,7 +8,7 @@
 #include <OuterLoopClockThread.h>
 #include <CommandFactory.h>
 #include <Controller.h>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <Command.h>
 #include <M1M3SSPublisher.h>
@@ -19,7 +19,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OuterLoopClockThread::OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, FPGA* fpga, M1M3SSPublisher* publisher) {
+OuterLoopClockThread::OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, IFPGA* fpga, M1M3SSPublisher* publisher) {
 	this->commandFactory = commandFactory;
 	this->controller = controller;
 	this->fpga = fpga;

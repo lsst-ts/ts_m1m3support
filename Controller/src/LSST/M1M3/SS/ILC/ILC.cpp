@@ -378,6 +378,11 @@ void ILC::verifyResponses() {
 	this->responseParser.verifyResponses();
 }
 
+void ILC::publishForceActuatorState() {
+	this->publisher->getEventForceActuatorState()->timestamp = this->publisher->getTimestamp();
+	this->publisher->tryLogForceActuatorState();
+}
+
 void ILC::publishForceActuatorInfo() {
 	this->publisher->getEventForceActuatorInfo()->timestamp = this->publisher->getTimestamp();
 	this->publisher->logForceActuatorInfo();

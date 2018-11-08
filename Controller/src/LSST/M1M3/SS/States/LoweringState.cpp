@@ -10,6 +10,7 @@
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <ILC.h>
 #include <Log.h>
 
 namespace LSST {
@@ -31,6 +32,7 @@ States::Type LoweringState::update(UpdateCommand* command, Model* model) {
 	else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
 		model->getAutomaticOperationsController()->timeoutLowerOperation();
 	}
+	model->getILC()->publishForceActuatorState();
 	this->stopTimer();
 	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(newState);

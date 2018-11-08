@@ -23,6 +23,9 @@ public:
 	States::Type lowerM1M3(LowerM1M3Command* command, Model* model);
 	States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
 	States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
+	States::Type applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command, Model* model);
+	States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model);
+	States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model);
 };
 
 } /* namespace SS */

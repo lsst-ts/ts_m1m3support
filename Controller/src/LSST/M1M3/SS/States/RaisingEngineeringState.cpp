@@ -9,6 +9,7 @@
 #include <Model.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <ILC.h>
 #include <Log.h>
 
 namespace LSST {
@@ -31,6 +32,7 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* mode
 		model->getAutomaticOperationsController()->timeoutRaiseOperation();
 	}
 	this->stopTimer();
+	model->getILC()->publishForceActuatorState();
 	model->publishOuterLoop(this->getTimer());
 	return model->getSafetyController()->checkSafety(newState);
 }

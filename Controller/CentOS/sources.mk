@@ -8,18 +8,18 @@ C++_SRCS :=
 OBJ_SRCS := 
 CC_SRCS := 
 ASM_SRCS := 
-C_SRCS := 
 CPP_SRCS := 
+C_SRCS := 
 O_SRCS := 
 S_UPPER_SRCS := 
 CC_DEPS := 
 C++_DEPS := 
 EXECUTABLES := 
-OBJS := 
 C_UPPER_DEPS := 
 CXX_DEPS := 
-C_DEPS := 
+OBJS := 
 CPP_DEPS := 
+C_DEPS := 
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
@@ -45,7 +45,6 @@ src/LSST/M1M3/SS/Model \
 src/LSST/M1M3/SS/PID \
 src/LSST/M1M3/SS/PositionController \
 src/LSST/M1M3/SS/PowerController \
-src/LSST/M1M3/SS/ProfileController \
 src/LSST/M1M3/SS/Publisher \
 src/LSST/M1M3/SS/SafetyController \
 src/LSST/M1M3/SS/Settings \

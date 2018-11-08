@@ -16,7 +16,6 @@ RM := rm -rf
 -include src/LSST/M1M3/SS/Settings/subdir.mk
 -include src/LSST/M1M3/SS/SafetyController/subdir.mk
 -include src/LSST/M1M3/SS/Publisher/subdir.mk
--include src/LSST/M1M3/SS/ProfileController/subdir.mk
 -include src/LSST/M1M3/SS/PowerController/subdir.mk
 -include src/LSST/M1M3/SS/PositionController/subdir.mk
 -include src/LSST/M1M3/SS/PID/subdir.mk
@@ -56,11 +55,11 @@ endif
 ifneq ($(strip $(CXX_DEPS)),)
 -include $(CXX_DEPS)
 endif
-ifneq ($(strip $(C_DEPS)),)
--include $(C_DEPS)
-endif
 ifneq ($(strip $(CPP_DEPS)),)
 -include $(CPP_DEPS)
+endif
+ifneq ($(strip $(C_DEPS)),)
+-include $(C_DEPS)
 endif
 endif
 
@@ -74,14 +73,14 @@ all: ts_M1M3Support
 # Tool invocations
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: Cross G++ Linker'
-	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: GCC C++ Linker'
+	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(C_DEPS)$(CPP_DEPS) ts_M1M3Support
+	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) ts_M1M3Support
 	-@echo ' '
 
 .PHONY: all clean dependents

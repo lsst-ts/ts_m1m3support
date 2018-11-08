@@ -39,7 +39,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput, MTMount_AltC* tmaAlt, MTMount_AzC* tmaAz) {
+Model::Model(SettingReader* settingReader, M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput, MTMount_ElevationC* tmaAlt, MTMount_AzimuthC* tmaAz) {
 	Log.Debug("Model: Model()");
 	this->settingReader = settingReader;
 	this->publisher = publisher;
@@ -245,9 +245,10 @@ void Model::publishRecommendedSettings() {
 	RecommendedApplicationSettings* recommendedApplicationSettings = this->settingReader->loadRecommendedApplicationSettings();
 	MTM1M3_logevent_settingVersionsC* data = this->publisher->getEventSettingVersions();
 //	data->timestamp = this->publisher->getTimestamp();
-	data->recommendedSettingVersion = "";
+	data->recommendedSettingsLabels = "";
+	data->recommendedSettingsVersion = "";
 	for(uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
-		data->recommendedSettingVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
+		data->recommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
 	}
 	this->publisher->logSettingVersions();
 }

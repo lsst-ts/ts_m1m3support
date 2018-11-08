@@ -7,6 +7,7 @@
 
 #include <StandbyState.h>
 #include <ILC.h>
+#include <IFPGA.h>
 #include <DigitalInputOutput.h>
 #include <Model.h>
 #include <SafetyController.h>
@@ -26,7 +27,9 @@ StandbyState::StandbyState(M1M3SSPublisher* publisher) : State(publisher, "Stand
 
 States::Type StandbyState::update(UpdateCommand* command, Model* model) {
 	Log.Trace("StandbyState: update()");
+	model->getFPGA()->pullTelemetry();
 	model->getDigitalInputOutput()->tryToggleHeartbeat();
+	model->getDigitalInputOutput()->processData();
 	return States::NoStateTransition;
 }
 

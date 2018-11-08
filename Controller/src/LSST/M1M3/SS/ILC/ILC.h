@@ -141,6 +141,7 @@ public:
 	void clearResponses();
 	void verifyResponses();
 
+	void publishForceActuatorState();
 	void publishForceActuatorInfo();
 	void publishForceActuatorStatus();
 	void publishForceActuatorData();

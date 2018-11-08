@@ -8,6 +8,7 @@
 #ifndef LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
 #define LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
 
+#include <NiFpga.h>
 #include <IExpansionFPGA.h>
 
 namespace LSST {

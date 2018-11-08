@@ -9,6 +9,7 @@
 #include <Timestamp.h>
 #include <string.h>
 #include <iostream>
+#include <Log.h>
 
 using namespace std;
 

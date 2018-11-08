@@ -4,7 +4,6 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/LSST/M1M3/SS/Commands/AbortProfileCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/AbortRaiseM1M3Command.cpp \
 ../src/LSST/M1M3/SS/Commands/ApplyAberrationForcesByBendingModesCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/ApplyAberrationForcesCommand.cpp \
@@ -32,7 +31,6 @@ CPP_SRCS += \
 ../src/LSST/M1M3/SS/Commands/ProgramILCCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/RaiseM1M3Command.cpp \
 ../src/LSST/M1M3/SS/Commands/ResetPIDCommand.cpp \
-../src/LSST/M1M3/SS/Commands/RunMirrorForceProfileCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/ShutdownCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/StandbyCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/StartCommand.cpp \
@@ -53,7 +51,6 @@ CPP_SRCS += \
 ../src/LSST/M1M3/SS/Commands/UpdatePIDCommand.cpp 
 
 OBJS += \
-./src/LSST/M1M3/SS/Commands/AbortProfileCommand.o \
 ./src/LSST/M1M3/SS/Commands/AbortRaiseM1M3Command.o \
 ./src/LSST/M1M3/SS/Commands/ApplyAberrationForcesByBendingModesCommand.o \
 ./src/LSST/M1M3/SS/Commands/ApplyAberrationForcesCommand.o \
@@ -81,7 +78,6 @@ OBJS += \
 ./src/LSST/M1M3/SS/Commands/ProgramILCCommand.o \
 ./src/LSST/M1M3/SS/Commands/RaiseM1M3Command.o \
 ./src/LSST/M1M3/SS/Commands/ResetPIDCommand.o \
-./src/LSST/M1M3/SS/Commands/RunMirrorForceProfileCommand.o \
 ./src/LSST/M1M3/SS/Commands/ShutdownCommand.o \
 ./src/LSST/M1M3/SS/Commands/StandbyCommand.o \
 ./src/LSST/M1M3/SS/Commands/StartCommand.o \
@@ -102,7 +98,6 @@ OBJS += \
 ./src/LSST/M1M3/SS/Commands/UpdatePIDCommand.o 
 
 CPP_DEPS += \
-./src/LSST/M1M3/SS/Commands/AbortProfileCommand.d \
 ./src/LSST/M1M3/SS/Commands/AbortRaiseM1M3Command.d \
 ./src/LSST/M1M3/SS/Commands/ApplyAberrationForcesByBendingModesCommand.d \
 ./src/LSST/M1M3/SS/Commands/ApplyAberrationForcesCommand.d \
@@ -130,7 +125,6 @@ CPP_DEPS += \
 ./src/LSST/M1M3/SS/Commands/ProgramILCCommand.d \
 ./src/LSST/M1M3/SS/Commands/RaiseM1M3Command.d \
 ./src/LSST/M1M3/SS/Commands/ResetPIDCommand.d \
-./src/LSST/M1M3/SS/Commands/RunMirrorForceProfileCommand.d \
 ./src/LSST/M1M3/SS/Commands/ShutdownCommand.d \
 ./src/LSST/M1M3/SS/Commands/StandbyCommand.d \
 ./src/LSST/M1M3/SS/Commands/StartCommand.d \
@@ -154,8 +148,8 @@ CPP_DEPS += \
 # Each subdirectory must supply rules for building sources it contributes
 src/LSST/M1M3/SS/Commands/%.o: ../src/LSST/M1M3/SS/Commands/%.cpp
 	@echo 'Building file: $<'
-	@echo 'Invoking: Cross G++ Compiler'
-	g++ -I"../../../boost_1_65_1" -I"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/examples/include" -I"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/examples" -I"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include" -I"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include/sys" -I"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include/dcps/C++/SACPP" -I"../../../ts_sal/test/m1m3/cpp/src" -I"../../../ts_sal/test/m1m3/cpp" -I"../../../ts_sal/test/MTMount/cpp/src" -I"../../../ts_sal/lsstsal/include" -I"../../../ts_sal/test/MTMount/cpp" -I"../../../ts_sal/test" -I../../../ts_sal/test/include -I"../src/LSST/M1M3/SS/DigitalInputOutput" -I"../src/LSST/M1M3/SS/FirmwareUpdate" -I"../src/LSST/M1M3/SS/Accelerometer" -I"../src/LSST/M1M3/SS/AutomaticOperationsController" -I"../src/LSST/M1M3/SS/BusLists" -I"../src/LSST/M1M3/SS/CommandFactory" -I"../src/LSST/M1M3/SS/Displacement" -I"../src/LSST/M1M3/SS/Inclinometer" -I"../src/LSST/M1M3/SS/ForceController" -I"../src/LSST/M1M3/SS/Commands" -I"../src/LSST/M1M3/SS/Context" -I"../src/LSST/M1M3/SS/Controller" -I"../src/LSST/M1M3/SS/FPGA" -I"../src/LSST/M1M3/SS/Gyro" -I"../src/LSST/M1M3/SS/ILC" -I"../src/LSST/M1M3/SS/Include" -I"../src/LSST/M1M3/SS/Logging" -I"../src/LSST/M1M3/SS/Modbus" -I"../src/LSST/M1M3/SS/Model" -I"../src/LSST/M1M3/SS/PID" -I"../src/LSST/M1M3/SS/PositionController" -I"../src/LSST/M1M3/SS/PowerController" -I"../src/LSST/M1M3/SS/ProfileController" -I"../src/LSST/M1M3/SS/Publisher" -I"../src/LSST/M1M3/SS/SafetyController" -I"../src/LSST/M1M3/SS/Settings" -I"../src/LSST/M1M3/SS/StateFactory" -I"../src/LSST/M1M3/SS/States" -I"../src/LSST/M1M3/SS/Subscriber" -I"../src/LSST/M1M3/SS/Threads" -I"../src/LSST/M1M3/SS/Utility" -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I"../../../boost_1_65_1" -I"../../../ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux/examples/include" -I"../../../ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux/examples" -I"../../../ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux/include" -I"../../../ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux/include/sys" -I"../../../ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux/include/dcps/C++/SACPP" -I"../../../ts_sal/test/MTM1M3/cpp/src" -I"../../../ts_sal/test/MTM1M3/cpp" -I"../../../ts_sal/test/MTMount/cpp/src" -I"../../../ts_sal/lsstsal/include" -I"../../../ts_sal/test/MTMount/cpp" -I"../../../ts_sal/test" -I../../../ts_sal/test/include -I"../src/LSST/M1M3/SS/DigitalInputOutput" -I"../src/LSST/M1M3/SS/FirmwareUpdate" -I"../src/LSST/M1M3/SS/Accelerometer" -I"../src/LSST/M1M3/SS/AutomaticOperationsController" -I"../src/LSST/M1M3/SS/BusLists" -I"../src/LSST/M1M3/SS/CommandFactory" -I"../src/LSST/M1M3/SS/Displacement" -I"../src/LSST/M1M3/SS/Inclinometer" -I"../src/LSST/M1M3/SS/ForceController" -I"../src/LSST/M1M3/SS/Commands" -I"../src/LSST/M1M3/SS/Context" -I"../src/LSST/M1M3/SS/Controller" -I"../src/LSST/M1M3/SS/FPGA" -I"../src/LSST/M1M3/SS/Gyro" -I"../src/LSST/M1M3/SS/ILC" -I"../src/LSST/M1M3/SS/Include" -I"../src/LSST/M1M3/SS/Logging" -I"../src/LSST/M1M3/SS/Modbus" -I"../src/LSST/M1M3/SS/Model" -I"../src/LSST/M1M3/SS/PID" -I"../src/LSST/M1M3/SS/PositionController" -I"../src/LSST/M1M3/SS/PowerController" -I"../src/LSST/M1M3/SS/Publisher" -I"../src/LSST/M1M3/SS/SafetyController" -I"../src/LSST/M1M3/SS/Settings" -I"../src/LSST/M1M3/SS/StateFactory" -I"../src/LSST/M1M3/SS/States" -I"../src/LSST/M1M3/SS/Subscriber" -I"../src/LSST/M1M3/SS/Threads" -I"../src/LSST/M1M3/SS/Utility" -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

@@ -136,8 +136,10 @@ void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFl
 	if (faultConditionExists && this->errorCodeData->errorCode == FaultCodes::NoFault) {
 //		this->errorCodeData->timestamp = this->publisher->getTimestamp();
 //		this->errorCodeData->detailedErrorCode = (int32_t)faultCode;
-		this->errorCodeData->errorCode = (int32_t)(((int64_t)faultCode) >> 32);
-		Log.Warn("SafetyController: Fault Code %d", faultCode);
+		int errorCode = (int)(((int64_t)faultCode) >> 32);
+		int detailCode = (int)faultCode;
+		this->errorCodeData->errorCode = errorCode;
+		Log.Warn("SafetyController: Error Code %d DetailedCode %d", errorCode, detailCode);
 	}
 }
 

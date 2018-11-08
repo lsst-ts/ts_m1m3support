@@ -12,8 +12,8 @@
 #include <pthread.h>
 #include <string>
 
-struct MTMount_AltC;
-struct MTMount_AzC;
+struct MTMount_ElevationC;
+struct MTMount_AzimuthC;
 
 namespace LSST {
 namespace M1M3 {
@@ -62,15 +62,15 @@ private:
 	AutomaticOperationsController* automaticOperationsController;
 	Gyro* gyro;
 	DigitalInputOutput* digitalInputOutput;
-	MTMount_AltC* tmaElevation;
-	MTMount_AzC* tmaAzimuth;
+	MTMount_ElevationC* tmaElevation;
+	MTMount_AzimuthC* tmaAzimuth;
 
 	pthread_mutex_t mutex;
 
 	double cachedTimestamp;
 
 public:
-	Model(SettingReader* settingReader, M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput, MTMount_AltC* tmaAlt, MTMount_AzC* tmaAz);
+	Model(SettingReader* settingReader, M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput, MTMount_ElevationC* tmaAlt, MTMount_AzimuthC* tmaAz);
 	virtual ~Model();
 
 	inline SettingReader* getSettingReader() { return this->settingReader; }

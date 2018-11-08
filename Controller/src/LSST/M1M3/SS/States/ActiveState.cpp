@@ -11,6 +11,9 @@
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
 #include <ForceController.h>
+#include <ApplyActiveOpticForcesByBendingModesCommand.h>
+#include <ApplyActiveOpticForcesCommand.h>
+#include <ClearActiveOpticForcesCommand.h>
 #include <Log.h>
 
 namespace LSST {
@@ -50,6 +53,27 @@ States::Type ActiveState::enableHardpointCorrections(EnableHardpointCorrectionsC
 States::Type ActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) {
 	Log.Info("ActiveState: disableHardpointCorrections()");
 	model->getForceController()->zeroBalanceForces();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveState::applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command, Model* model) {
+	Log.Info("ActiveState: applyActiveOpticForcesByBendingModes()");
+	model->getForceController()->applyActiveOpticForcesByBendingModes(command->getData()->coefficients);
+	model->getForceController()->processAppliedForces();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveState::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model) {
+	Log.Info("ActiveState: applyActiveOpticForces()");
+	model->getForceController()->applyActiveOpticForces(command->getData()->zForces);
+	model->getForceController()->processAppliedForces();
+	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveState::clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model) {
+	Log.Info("ActiveState: clearActiveOpticForces()");
+	model->getForceController()->zeroActiveOpticForces();
+	model->getForceController()->processAppliedForces();
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
