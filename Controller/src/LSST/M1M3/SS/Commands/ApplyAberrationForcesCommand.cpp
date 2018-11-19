@@ -13,33 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyAberrationForcesC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	for(int i = 0; i < FA_COUNT; i++) {
-		this->data.zForces[i] = data->zForces[i];
-	}
-}
-
-bool ApplyAberrationForcesCommand::validate() {
-	return true;
-}
+ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyAberrationForcesC* data)
+ : SALCommand(context, publisher, commandID, data) { }
 
 void ApplyAberrationForcesCommand::execute() {
 	this->context->applyAberrationForces(this);
 }
 
-void ApplyAberrationForcesCommand::ackInProgress() {
-	this->publisher->ackCommandApplyAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void ApplyAberrationForcesCommand::ackComplete() {
-	this->publisher->ackCommandApplyAberrationForces(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void ApplyAberrationForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandApplyAberrationForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void ApplyAberrationForcesCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandApplyAberrationForces(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

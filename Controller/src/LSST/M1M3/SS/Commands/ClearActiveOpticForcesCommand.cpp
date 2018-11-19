@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearActiveOpticForcesC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.clearActiveOpticForces = data->clearActiveOpticForces;
-}
-
-bool ClearActiveOpticForcesCommand::validate() {
-	if (!this->data.clearActiveOpticForces) {
-		this->publisher->logCommandRejectionWarning("clearActiveOpticForces", "The field clearActiveOpticForces is not TRUE.");
-	}
-	return this->data.clearActiveOpticForces;
-}
+ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearActiveOpticForcesC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void ClearActiveOpticForcesCommand::execute() {
 	this->context->clearActiveOpticForces(this);
 }
 
-void ClearActiveOpticForcesCommand::ackInProgress() {
-	this->publisher->ackCommandClearActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void ClearActiveOpticForcesCommand::ackComplete() {
-	this->publisher->ackCommandClearActiveOpticForces(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void ClearActiveOpticForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandClearActiveOpticForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void ClearActiveOpticForcesCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandClearActiveOpticForces(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

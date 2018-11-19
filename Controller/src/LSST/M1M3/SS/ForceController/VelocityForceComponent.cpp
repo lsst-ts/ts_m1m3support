@@ -15,6 +15,8 @@
 #include <ForcesAndMoments.h>
 #include <ForceConverter.h>
 #include <DistributedForces.h>
+#include <SALEnumerations.h>
+#include <BitHelper.h>
 #include <Log.h>
 
 namespace LSST {
@@ -29,7 +31,7 @@ VelocityForceComponent::VelocityForceComponent(M1M3SSPublisher* publisher, Safet
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceActuatorState = this->publisher->getEventForceActuatorState();
-	this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
+	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
 	this->appliedVelocityForces = this->publisher->getEventAppliedVelocityForces();
 	this->rejectedVelocityForces = this->publisher->getEventRejectedVelocityForces();
 	this->maxRateOfChange = this->forceActuatorSettings->VelocityComponentSettings.MaxRateOfChange;
@@ -83,7 +85,6 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
 void VelocityForceComponent::postEnableDisableActions() {
 	Log.Debug("VelocityForceComponent: postEnableDisableActions()");
 
-	this->forceActuatorState->timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->velocityForcesApplied = this->enabled;
 	this->publisher->tryLogForceActuatorState();
 }
@@ -91,38 +92,32 @@ void VelocityForceComponent::postEnableDisableActions() {
 void VelocityForceComponent::postUpdateActions() {
 	Log.Trace("VelocityForceController: postUpdateActions()");
 
-	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedVelocityForces->timestamp = this->publisher->getTimestamp();
-	this->rejectedVelocityForces->timestamp = this->appliedVelocityForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		this->forceSetpointWarning->velocityForceWarning[zIndex] = false;
+		bool clipping = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->VelocityLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->VelocityLimitXTable[xIndex].HighFault;
 			this->rejectedVelocityForces->xForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedVelocityForces->xForces[xIndex], this->appliedVelocityForces->xForces + xIndex);
-			this->forceSetpointWarning->velocityForceWarning[zIndex] = this->forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedVelocityForces->xForces[xIndex], this->appliedVelocityForces->xForces + xIndex);
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->VelocityLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->VelocityLimitYTable[yIndex].HighFault;
 			this->rejectedVelocityForces->yForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedVelocityForces->yForces[yIndex], this->appliedVelocityForces->yForces + yIndex);
-			this->forceSetpointWarning->velocityForceWarning[zIndex] = this->forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedVelocityForces->yForces[yIndex], this->appliedVelocityForces->yForces + yIndex);
 		}
 
 		float zLowFault = this->forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->VelocityLimitZTable[zIndex].HighFault;
 		this->rejectedVelocityForces->zForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedVelocityForces->zForces[zIndex], this->appliedVelocityForces->zForces + zIndex);
-		this->forceSetpointWarning->velocityForceWarning[zIndex] = this->forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->velocityForceWarning[zIndex];
+		clipping = clipping || !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedVelocityForces->zForces[zIndex], this->appliedVelocityForces->zForces + zIndex);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointVelocityForceClipped, clipping);
+		rejectionRequired = rejectionRequired || clipping;
 	}
 
 	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedVelocityForces->xForces, this->appliedVelocityForces->yForces, this->appliedVelocityForces->zForces);
@@ -145,7 +140,7 @@ void VelocityForceComponent::postUpdateActions() {
 
 	this->safetyController->forceControllerNotifyVelocityForceClipping(rejectionRequired);
 
-	this->publisher->tryLogForceSetpointWarning();
+	this->publisher->tryLogForceActuatorWarning();
 	if (rejectionRequired) {
 		this->publisher->logRejectedVelocityForces();
 	}

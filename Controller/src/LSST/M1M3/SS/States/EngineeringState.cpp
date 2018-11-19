@@ -52,7 +52,7 @@ States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand* c
 States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
 	Log.Info("%s: moveHardpointActuators()", this->name.c_str());
 	if (!model->getPositionController()->move(command->getData()->steps)) {
-		model->getPublisher()->logCommandRejectionWarning("moveHardpointActuators", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+		command->ackAlreadyInProgress("At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -60,7 +60,7 @@ States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsComm
 States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) {
 	Log.Info("%s: enableHardpointChase()", this->name.c_str());
 	if (!model->getPositionController()->enableChase(command->getData()->hardpointActuator)) {
-		model->getPublisher()->logCommandRejectionWarning("enableHardpointChase", "At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
+		command->ackAlreadyInProgress("At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }

@@ -13,33 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyActiveOpticForcesC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	for(int i = 0; i < FA_COUNT; i++) {
-		this->data.zForces[i] = data->zForces[i];
-	}
-}
-
-bool ApplyActiveOpticForcesCommand::validate() {
-	return true;
-}
+ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyActiveOpticForcesC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void ApplyActiveOpticForcesCommand::execute() {
 	this->context->applyActiveOpticForces(this);
 }
 
-void ApplyActiveOpticForcesCommand::ackInProgress() {
-	this->publisher->ackCommandApplyActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void ApplyActiveOpticForcesCommand::ackComplete() {
-	this->publisher->ackCommandApplyActiveOpticForces(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void ApplyActiveOpticForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandApplyActiveOpticForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void ApplyActiveOpticForcesCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandApplyActiveOpticForces(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearOffsetForcesC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.clearOffsetForces = data->clearOffsetForces;
-}
-
-bool ClearOffsetForcesCommand::validate() {
-	if (!this->data.clearOffsetForces) {
-		this->publisher->logCommandRejectionWarning("clearOffsetForces", "The field clearOffsetForces is not TRUE.");
-	}
-	return this->data.clearOffsetForces;
-}
+ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearOffsetForcesC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void ClearOffsetForcesCommand::execute() {
 	this->context->clearOffsetForces(this);
 }
 
-void ClearOffsetForcesCommand::ackInProgress() {
-	this->publisher->ackCommandClearOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void ClearOffsetForcesCommand::ackComplete() {
-	this->publisher->ackCommandClearOffsetForces(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void ClearOffsetForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandClearOffsetForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void ClearOffsetForcesCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandClearOffsetForces(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

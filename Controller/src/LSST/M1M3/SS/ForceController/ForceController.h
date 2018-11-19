@@ -30,10 +30,10 @@
 struct MTM1M3_logevent_appliedCylinderForcesC;
 struct MTM1M3_logevent_appliedForcesC;
 struct MTM1M3_logevent_forceActuatorStateC;
-struct MTM1M3_logevent_forceSetpointWarningC;
+struct MTM1M3_logevent_forceActuatorWarningC;
 struct MTM1M3_logevent_rejectedCylinderForcesC;
 struct MTM1M3_logevent_rejectedForcesC;
-struct MTM1M3_logevent_forceActuatorInfoC;
+struct MTM1M3_logevent_forceActuatorPositionInfoC;
 struct MTM1M3_forceActuatorDataC;
 struct MTM1M3_inclinometerDataC;
 struct MTM1M3_pidDataC;
@@ -78,11 +78,11 @@ private:
 	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
 	MTM1M3_logevent_appliedForcesC* appliedForces;
 	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
 	MTM1M3_logevent_rejectedCylinderForcesC* rejectedCylinderForces;
 	MTM1M3_logevent_rejectedForcesC* rejectedForces;
 
-	MTM1M3_logevent_forceActuatorInfoC* forceActuatorInfo;
+	MTM1M3_logevent_forceActuatorPositionInfoC* forceActuatorPositionInfo;
 	MTM1M3_forceActuatorDataC* forceActuatorData;
 
 	MTM1M3_inclinometerDataC* inclinometerData;

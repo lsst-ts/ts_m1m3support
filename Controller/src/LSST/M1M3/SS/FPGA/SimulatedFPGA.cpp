@@ -28,7 +28,6 @@ SimulatedFPGA::SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_ElevationC* tma
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->tmaAzimuth = tmaAzimuth;
 	this->appliedCylinderForces = this->publisher->getEventAppliedCylinderForces();
-	this->forceActuatorInfo = this->publisher->getEventForceActuatorInfo();
 	this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
 	this->lastRequest = -1;
 	memset(&this->supportFPGAData, 0, sizeof(SupportFPGAData));
@@ -343,8 +342,6 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 							break;
 						}
 					}
-					int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-					int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 					int pIndex = zIndex;
 					int sIndex = this->forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
 					switch(function) {

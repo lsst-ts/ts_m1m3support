@@ -76,6 +76,9 @@ private:
 public:
 	M1M3SSSubscriber(SAL_MTM1M3* m1m3SAL, SAL_MTMount* mtMountSAL, CommandFactory* commandFactory);
 
+	void initCommand(std::string topic);
+	void initTelemetry(std::string topic);
+
 	Command* tryAcceptCommandStart();
 	Command* tryAcceptCommandEnable();
 	Command* tryAcceptCommandDisable();

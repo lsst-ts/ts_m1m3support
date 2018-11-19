@@ -22,7 +22,6 @@ namespace SS {
  */
 class UpdateCommand: public Command {
 private:
-	Context* context;
 	pthread_mutex_t* updateMutex;
 
 public:

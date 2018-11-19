@@ -19,8 +19,6 @@ namespace SS {
 
 class TMAAzimuthSampleCommand: public Command {
 private:
-	Context* context;
-
 	MTMount_AzimuthC data;
 
 public:

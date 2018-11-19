@@ -103,7 +103,7 @@ void Model::loadSettings(std::string settingsToApply) {
 	Log.Info("Model: loadSettings(%s)", settingsToApply.c_str());
 	this->settingReader->configure(settingsToApply);
 
-	this->publisher->getOuterLoopData()->slewFlag = false;
+	this->publisher->getEventForceActuatorState()->slewFlag = false;
 
 	Log.Info("Model: Loading ILC application settings");
 	ILCApplicationSettings* ilcApplicationSettings = this->settingReader->loadILCApplicationSettings();
@@ -272,17 +272,19 @@ void Model::waitForShutdown() {
 
 void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings) {
 	Log.Debug("Model: populateForceActuatorInfo()");
-	MTM1M3_logevent_forceActuatorInfoC* forceInfo = this->publisher->getEventForceActuatorInfo();
+	MTM1M3_logevent_forceActuatorIdInfoC* idInfo = this->publisher->getEventForceActuatorIdInfo();
+	MTM1M3_logevent_forceActuatorPositionInfoC* positionInfo = this->publisher->getEventForceActuatorPositionInfo();
+	MTM1M3_logevent_forceActuatorILCInfoC* ilcInfo = this->publisher->getEventForceActuatorILCInfo();
 	for(int i = 0; i < FA_COUNT; i++) {
 		ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
-		forceInfo->referenceId[row.Index] = row.ActuatorID;
-		forceInfo->modbusSubnet[row.Index] = row.Subnet;
-		forceInfo->modbusAddress[row.Index] = row.Address;
-		forceInfo->actuatorType[row.Index] = row.Type;
-		forceInfo->actuatorOrientation[row.Index] = row.Orientation;
-		forceInfo->xPosition[row.Index] = row.XPosition;
-		forceInfo->yPosition[row.Index] = row.YPosition;
-		forceInfo->zPosition[row.Index] = row.ZPosition;
+		idInfo->zDataReferenceId[row.Index] = row.ActuatorID;
+		ilcInfo->modbusSubnet[row.Index] = row.Subnet;
+		ilcInfo->modbusAddress[row.Index] = row.Address;
+		positionInfo->actuatorType[row.Index] = row.Type;
+		positionInfo->actuatorOrientation[row.Index] = row.Orientation;
+		positionInfo->xPosition[row.Index] = row.XPosition;
+		positionInfo->yPosition[row.Index] = row.YPosition;
+		positionInfo->zPosition[row.Index] = row.ZPosition;
 	}
 }
 

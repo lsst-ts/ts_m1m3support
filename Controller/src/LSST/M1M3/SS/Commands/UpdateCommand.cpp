@@ -15,7 +15,6 @@ namespace SS {
 UpdateCommand::UpdateCommand(Context* context, pthread_mutex_t* updateMutex) {
 	this->context = context;
 	this->updateMutex = updateMutex;
-	this->commandID = -1;
 
 	// Lock the update mutex to prevent the outer loop clock
 	// thread from executing.

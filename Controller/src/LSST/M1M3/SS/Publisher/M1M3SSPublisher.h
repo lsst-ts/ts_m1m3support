@@ -30,7 +30,7 @@ private:
 	MTM1M3_inclinometerDataC inclinometerData;
 	MTM1M3_outerLoopDataC outerLoopData;
 	MTM1M3_pidDataC pidData;
-	MTM1M3_powerSupplyDataC powerSupplyData;
+	MTM1M3_powerDataC powerData;
 
 	MTM1M3_logevent_accelerometerWarningC eventAccelerometerWarning;
 	MTM1M3_logevent_airSupplyStatusC eventAirSupplyStatus;
@@ -50,15 +50,17 @@ private:
 	MTM1M3_logevent_appliedVelocityForcesC eventAppliedVelocityForces;
 	MTM1M3_logevent_cellLightStatusC eventCellLightStatus;
 	MTM1M3_logevent_cellLightWarningC eventCellLightWarning;
-	MTM1M3_logevent_commandRejectionWarningC eventCommandRejectionWarning;
 	MTM1M3_logevent_detailedStateC eventDetailedState;
 	MTM1M3_logevent_displacementSensorWarningC eventDisplacementSensorWarning;
 	MTM1M3_logevent_errorCodeC eventErrorCode;
-	MTM1M3_logevent_forceActuatorForceWarningC eventForceActuatorForceWarning;
-	MTM1M3_logevent_forceActuatorInfoC eventForceActuatorInfo;
+	MTM1M3_logevent_forceActuatorBackupCalibrationInfoC eventForceActuatorBackupCalibrationInfo;
+	MTM1M3_logevent_forceActuatorIdInfoC eventForceActuatorIdInfo;
+	MTM1M3_logevent_forceActuatorILCInfoC eventForceActuatorILCInfo;
+	MTM1M3_logevent_forceActuatorMainCalibrationInfoC eventForceActuatorMainCalibrationInfo;
+	MTM1M3_logevent_forceActuatorMezzanineCalibrationInfoC eventForceActuatorMezzanineCalibrationInfo;
+	MTM1M3_logevent_forceActuatorPositionInfoC eventForceActuatorPositionInfo;
 	MTM1M3_logevent_forceActuatorStateC eventForceActuatorState;
 	MTM1M3_logevent_forceActuatorWarningC eventForceActuatorWarning;
-	MTM1M3_logevent_forceSetpointWarningC eventForceSetpointWarning;
 	MTM1M3_logevent_gyroWarningC eventGyroWarning;
 	MTM1M3_logevent_hardpointActuatorInfoC eventHardpointActuatorInfo;
 	MTM1M3_logevent_hardpointActuatorStateC eventHardpointActuatorState;
@@ -66,14 +68,13 @@ private:
 	MTM1M3_logevent_hardpointMonitorInfoC eventHardpointMonitorInfo;
 	MTM1M3_logevent_hardpointMonitorStateC eventHardpointMonitorState;
 	MTM1M3_logevent_hardpointMonitorWarningC eventHardpointMonitorWarning;
-	MTM1M3_logevent_ilcWarningC eventILCWarning;
 	MTM1M3_logevent_inclinometerSensorWarningC eventInclinometerSensorWarning;
 	MTM1M3_logevent_interlockStatusC eventInterlockStatus;
 	MTM1M3_logevent_interlockWarningC eventInterlockWarning;
 	MTM1M3_logevent_modbusResponseC eventModbusResponse;
+	MTM1M3_logevent_modbusWarningC eventModbusWarning;
 	MTM1M3_logevent_pidInfoC eventPIDInfo;
 	MTM1M3_logevent_powerStatusC eventPowerStatus;
-	MTM1M3_logevent_powerSupplyStatusC eventPowerSupplyStatus;
 	MTM1M3_logevent_powerWarningC eventPowerWarning;
 	MTM1M3_logevent_rejectedAberrationForcesC eventRejectedAberrationForces;
 	MTM1M3_logevent_rejectedAccelerationForcesC eventRejectedAccelerationForces;
@@ -88,7 +89,6 @@ private:
 	MTM1M3_logevent_rejectedThermalForcesC eventRejectedThermalForces;
 	MTM1M3_logevent_rejectedVelocityForcesC eventRejectedVelocityForces;
 	MTM1M3_logevent_settingVersionsC eventSettingVersions;
-	MTM1M3_logevent_settingsAppliedC eventSettingsApplied;
 	MTM1M3_logevent_summaryStateC eventSummaryState;
 
 	MTM1M3_logevent_accelerometerWarningC previousEventAccelerometerWarning;
@@ -109,15 +109,17 @@ private:
 	MTM1M3_logevent_appliedVelocityForcesC previousEventAppliedVelocityForces;
 	MTM1M3_logevent_cellLightStatusC previousEventCellLightStatus;
 	MTM1M3_logevent_cellLightWarningC previousEventCellLightWarning;
-	MTM1M3_logevent_commandRejectionWarningC previousEventCommandRejectionWarning;
 	MTM1M3_logevent_detailedStateC previousEventDetailedState;
 	MTM1M3_logevent_displacementSensorWarningC previousEventDisplacementSensorWarning;
 	MTM1M3_logevent_errorCodeC previousEventErrorCode;
-	MTM1M3_logevent_forceActuatorForceWarningC previousEventForceActuatorForceWarning;
-	MTM1M3_logevent_forceActuatorInfoC previousEventForceActuatorInfo;
+	MTM1M3_logevent_forceActuatorBackupCalibrationInfoC previousEventForceActuatorBackupCalibrationInfo;
+	MTM1M3_logevent_forceActuatorIdInfoC previousEventForceActuatorIdInfo;
+	MTM1M3_logevent_forceActuatorILCInfoC previousEventForceActuatorILCInfo;
+	MTM1M3_logevent_forceActuatorMainCalibrationInfoC previousEventForceActuatorMainCalibrationInfo;
+	MTM1M3_logevent_forceActuatorMezzanineCalibrationInfoC previousEventForceActuatorMezzanineCalibrationInfo;
+	MTM1M3_logevent_forceActuatorPositionInfoC previousEventForceActuatorPositionInfo;
 	MTM1M3_logevent_forceActuatorStateC previousEventForceActuatorState;
 	MTM1M3_logevent_forceActuatorWarningC previousEventForceActuatorWarning;
-	MTM1M3_logevent_forceSetpointWarningC previousEventForceSetpointWarning;
 	MTM1M3_logevent_gyroWarningC previousEventGyroWarning;
 	MTM1M3_logevent_hardpointActuatorInfoC previousEventHardpointActuatorInfo;
 	MTM1M3_logevent_hardpointActuatorStateC previousEventHardpointActuatorState;
@@ -125,14 +127,13 @@ private:
 	MTM1M3_logevent_hardpointMonitorInfoC previousEventHardpointMonitorInfo;
 	MTM1M3_logevent_hardpointMonitorStateC previousEventHardpointMonitorState;
 	MTM1M3_logevent_hardpointMonitorWarningC previousEventHardpointMonitorWarning;
-	MTM1M3_logevent_ilcWarningC previousEventILCWarning;
 	MTM1M3_logevent_inclinometerSensorWarningC previousEventInclinometerSensorWarning;
 	MTM1M3_logevent_interlockStatusC previousEventInterlockStatus;
 	MTM1M3_logevent_interlockWarningC previousEventInterlockWarning;
 	MTM1M3_logevent_modbusResponseC previousEventModbusResponse;
+	MTM1M3_logevent_modbusWarningC previousEventModbusWarning;
 	MTM1M3_logevent_pidInfoC previousEventPIDInfo;
 	MTM1M3_logevent_powerStatusC previousEventPowerStatus;
-	MTM1M3_logevent_powerSupplyStatusC previousEventPowerSupplyStatus;
 	MTM1M3_logevent_powerWarningC previousEventPowerWarning;
 	MTM1M3_logevent_rejectedAberrationForcesC previousEventRejectedAberrationForces;
 	MTM1M3_logevent_rejectedAccelerationForcesC previousEventRejectedAccelerationForces;
@@ -147,11 +148,13 @@ private:
 	MTM1M3_logevent_rejectedThermalForcesC previousEventRejectedThermalForces;
 	MTM1M3_logevent_rejectedVelocityForcesC previousEventRejectedVelocityForces;
 	MTM1M3_logevent_settingVersionsC previousEventSettingVersions;
-	MTM1M3_logevent_settingsAppliedC previousEventSettingsApplied;
 	MTM1M3_logevent_summaryStateC previousEventSummaryState;
 
 public:
 	M1M3SSPublisher(SAL_MTM1M3* m1m3SAL);
+
+	void initEvent(std::string topic);
+	void initTelemetry(std::string topic);
 
 	MTM1M3_accelerometerDataC* getAccelerometerData() { return &this->accelerometerData; }
 	MTM1M3_forceActuatorDataC* getForceActuatorData() { return &this->forceActuatorData; }
@@ -162,7 +165,7 @@ public:
 	MTM1M3_inclinometerDataC* getInclinometerData() { return &this->inclinometerData; }
 	MTM1M3_outerLoopDataC* getOuterLoopData() { return &this->outerLoopData; }
 	MTM1M3_pidDataC* getPIDData() { return &this->pidData; }
-	MTM1M3_powerSupplyDataC* getPowerSupplyData() { return &this->powerSupplyData; }
+	MTM1M3_powerDataC* getPowerData() { return &this->powerData; }
 
 	MTM1M3_logevent_accelerometerWarningC* getEventAccelerometerWarning() { return &this->eventAccelerometerWarning; }
 	MTM1M3_logevent_airSupplyStatusC* getEventAirSupplyStatus() { return &this->eventAirSupplyStatus; }
@@ -182,15 +185,17 @@ public:
 	MTM1M3_logevent_appliedVelocityForcesC* getEventAppliedVelocityForces() { return &this->eventAppliedVelocityForces; }
 	MTM1M3_logevent_cellLightStatusC* getEventCellLightStatus() { return &this->eventCellLightStatus; }
 	MTM1M3_logevent_cellLightWarningC* getEventCellLightWarning() { return &this->eventCellLightWarning; }
-	MTM1M3_logevent_commandRejectionWarningC* getEventCommandRejectionWarning() { return &this->eventCommandRejectionWarning; }
 	MTM1M3_logevent_detailedStateC* getEventDetailedState() { return &this->eventDetailedState; }
 	MTM1M3_logevent_displacementSensorWarningC* getEventDisplacementSensorWarning() { return &this->eventDisplacementSensorWarning; }
 	MTM1M3_logevent_errorCodeC* getEventErrorCode() { return &this->eventErrorCode; }
-	MTM1M3_logevent_forceActuatorForceWarningC* getEventForceActuatorForceWarning() { return &this->eventForceActuatorForceWarning; }
-	MTM1M3_logevent_forceActuatorInfoC* getEventForceActuatorInfo() { return &this->eventForceActuatorInfo; }
+	MTM1M3_logevent_forceActuatorBackupCalibrationInfoC* getEventForceActuatorBackupCalibrationInfo() { return &this->eventForceActuatorBackupCalibrationInfo; }
+	MTM1M3_logevent_forceActuatorIdInfoC* getEventForceActuatorIdInfo() { return &this->eventForceActuatorIdInfo; }
+	MTM1M3_logevent_forceActuatorILCInfoC* getEventForceActuatorILCInfo() { return &this->eventForceActuatorILCInfo; }
+	MTM1M3_logevent_forceActuatorMainCalibrationInfoC* getEventForceActuatorMainCalibrationInfo() { return &this->eventForceActuatorMainCalibrationInfo; }
+	MTM1M3_logevent_forceActuatorMezzanineCalibrationInfoC* getEventForceActuatorMezzanineCalibrationInfo() { return &this->eventForceActuatorMezzanineCalibrationInfo; }
+	MTM1M3_logevent_forceActuatorPositionInfoC* getEventForceActuatorPositionInfo() { return &this->eventForceActuatorPositionInfo; }
 	MTM1M3_logevent_forceActuatorStateC* getEventForceActuatorState() { return &this->eventForceActuatorState; }
 	MTM1M3_logevent_forceActuatorWarningC* getEventForceActuatorWarning() { return &this->eventForceActuatorWarning; }
-	MTM1M3_logevent_forceSetpointWarningC* getEventForceSetpointWarning() { return &this->eventForceSetpointWarning; }
 	MTM1M3_logevent_gyroWarningC* getEventGyroWarning() { return &this->eventGyroWarning; }
 	MTM1M3_logevent_hardpointActuatorInfoC* getEventHardpointActuatorInfo() { return &this->eventHardpointActuatorInfo; }
 	MTM1M3_logevent_hardpointActuatorStateC* getEventHardpointActuatorState() { return &this->eventHardpointActuatorState; }
@@ -198,14 +203,13 @@ public:
 	MTM1M3_logevent_hardpointMonitorInfoC* getEventHardpointMonitorInfo() { return &this->eventHardpointMonitorInfo; }
 	MTM1M3_logevent_hardpointMonitorStateC* getEventHardpointMonitorState() { return &this->eventHardpointMonitorState; }
 	MTM1M3_logevent_hardpointMonitorWarningC* getEventHardpointMonitorWarning() { return &this->eventHardpointMonitorWarning; }
-	MTM1M3_logevent_ilcWarningC* getEventILCWarning(){ return &this->eventILCWarning; }
 	MTM1M3_logevent_inclinometerSensorWarningC* getEventInclinometerSensorWarning() { return &this->eventInclinometerSensorWarning; }
 	MTM1M3_logevent_interlockStatusC* getEventInterlockStatus() { return &this->eventInterlockStatus; }
 	MTM1M3_logevent_interlockWarningC* getEventInterlockWarning() { return &this->eventInterlockWarning; }
 	MTM1M3_logevent_modbusResponseC* getEventModbusResponse() { return &this->eventModbusResponse; }
+	MTM1M3_logevent_modbusWarningC* getEventModbusWarning() { return &this->eventModbusWarning; }
 	MTM1M3_logevent_pidInfoC* getEventPIDInfo() { return &this->eventPIDInfo; }
 	MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &this->eventPowerStatus; }
-	MTM1M3_logevent_powerSupplyStatusC* getEventPowerSupplyStatus() { return &this->eventPowerSupplyStatus; }
 	MTM1M3_logevent_powerWarningC* getEventPowerWarning() { return &this->eventPowerWarning; }
 	MTM1M3_logevent_rejectedAberrationForcesC* getEventRejectedAberrationForces() { return &this->eventRejectedAberrationForces; }
 	MTM1M3_logevent_rejectedAccelerationForcesC* getEventRejectedAccelerationForces() { return &this->eventRejectedAccelerationForces; }
@@ -220,7 +224,6 @@ public:
 	MTM1M3_logevent_rejectedThermalForcesC* getEventRejectedThermalForces() { return &this->eventRejectedThermalForces; }
 	MTM1M3_logevent_rejectedVelocityForcesC* getEventRejectedVelocityForces() { return &this->eventRejectedVelocityForces; }
 	MTM1M3_logevent_settingVersionsC* getEventSettingVersions() { return &this->eventSettingVersions; }
-	MTM1M3_logevent_settingsAppliedC* getEventSettingsApplied() { return &this->eventSettingsApplied; }
 	MTM1M3_logevent_summaryStateC* getEventSummaryState() { return &this->eventSummaryState; }
 
 	double getTimestamp();
@@ -234,7 +237,7 @@ public:
 	void putInclinometerData();
 	void putOuterLoopData();
 	void putPIDData();
-	void putPowerSupplyData();
+	void putPowerData();
 
 	void logAccelerometerWarning();
 	void tryLogAccelerometerWarning();
@@ -272,26 +275,28 @@ public:
 	void tryLogCellLightStatus();
 	void logCellLightWarning();
 	void tryLogCellLightWarning();
-	void logCommandRejectionWarning();
-	void tryLogCommandRejectionWarning();
-	void logCommandRejectionWarning(std::string command, std::string reason);
-	void tryLogCommandRejectionWarning(std::string command, std::string reason);
 	void logDetailedState();
 	void tryLogDetailedState();
 	void logDisplacementSensorWarning();
 	void tryLogDisplacementSensorWarning();
 	void logErrorCode();
 	void tryLogErrorCode();
-	void logForceActuatorForceWarning();
-	void tryLogForceActuatorForceWarning();
-	void logForceActuatorInfo();
-	void tryLogForceActuatorInfo();
+	void logForceActuatorBackupCalibrationInfo();
+	void tryLogForceActuatorBackupCalibrationInfo();
+	void logForceActuatorIdInfo();
+	void tryLogForceActuatorIdInfo();
+	void logForceActuatorILCInfo();
+	void tryLogForceActuatorILCInfo();
+	void logForceActuatorMainCalibrationInfo();
+	void tryLogForceActuatorMainCalibrationInfo();
+	void logForceActuatorMezzanineCalibrationInfo();
+	void tryLogForceActuatorMezzanineCalibrationInfo();
+	void logForceActuatorPositionInfo();
+	void tryLogForceActuatorPositionInfo();
 	void logForceActuatorState();
 	void tryLogForceActuatorState();
 	void logForceActuatorWarning();
 	void tryLogForceActuatorWarning();
-	void logForceSetpointWarning();
-	void tryLogForceSetpointWarning();
 	void logGyroWarning();
 	void tryLogGyroWarning();
 	void logHardpointActuatorInfo();
@@ -306,8 +311,6 @@ public:
 	void tryLogHardpointMonitorState();
 	void logHardpointMonitorWarning();
 	void tryLogHardpointMonitorWarning();
-	void logILCWarning();
-	void tryLogILCWarning();
 	void logInclinometerSensorWarning();
 	void tryLogInclinometerSensorWarning();
 	void logInterlockStatus();
@@ -316,12 +319,12 @@ public:
 	void tryLogInterlockWarning();
 	void logModbusResponse();
 	void tryLogModbusResponse();
+	void logModbusWarning();
+	void tryLogModbusWarning();
 	void logPIDInfo();
 	void tryLogPIDInfo();
 	void logPowerStatus();
 	void tryLogPowerStatus();
-	void logPowerSupplyStatus();
-	void tryLogPowerSupplyStatus();
 	void logPowerWarning();
 	void tryLogPowerWarning();
 	void logRejectedAberrationForces();
@@ -349,52 +352,50 @@ public:
 	void logRejectedVelocityForces();
 	void tryLogRejectedVelocityForces();
 	void logSettingVersions();
-	void tryLogSettingVersions();
-	void logSettingsApplied();
-	void tryLogSettingsApplied();
+	void tryLogSettingVersions();;
 	void logSummaryState();
 	void tryLogSummaryState();
 
-	void ackCommandStart(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandEnable(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandDisable(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandStandby(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandShutdown(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandApplyActiveOpticForcesByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandApplyActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandClearActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandApplyAberrationForcesByBendingModes(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandApplyAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandClearAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandExitEngineering(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTestAir(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTurnPowerOn(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandEnableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandDisableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandApplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandUpdatePID(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandResetPID(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandProgramILC(int32_t commandID, int32_t ackCode, std::string description);
-	void ackCommandModbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
+	void ackCommandStart(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandEnable(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandDisable(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandStandby(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandShutdown(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTurnAirOn(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTurnAirOff(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandApplyOffsetForces(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandClearOffsetForces(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandRaiseM1M3(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandLowerM1M3(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandApplyActiveOpticForcesByBendingModes(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandApplyActiveOpticForces(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandClearActiveOpticForces(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandApplyAberrationForcesByBendingModes(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandApplyAberrationForces(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandClearAberrationForces(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandEnterEngineering(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandExitEngineering(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTestAir(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTestHardpoint(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTestForceActuator(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandMoveHardpointActuators(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandEnableHardpointChase(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandDisableHardpointChase(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandAbortRaiseM1M3(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTranslateM1M3(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandStopHardpointMotion(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandPositionM1M3(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTurnLightsOn(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTurnLightsOff(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTurnPowerOn(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandTurnPowerOff(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandEnableHardpointCorrections(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandDisableHardpointCorrections(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandApplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandUpdatePID(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandResetPID(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandProgramILC(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
+	void ackCommandModbusTransmit(int32_t commandID, int32_t ackCode, int32_t errorCode, std::string description);
 };
 
 } /* namespace SS */

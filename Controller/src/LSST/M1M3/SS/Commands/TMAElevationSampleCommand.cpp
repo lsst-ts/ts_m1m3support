@@ -15,7 +15,6 @@ namespace SS {
 
 TMAElevationSampleCommand::TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data) {
 	this->context = context;
-	this->commandID = -1;
 	memcpy(&this->data, data, sizeof(MTMount_ElevationC));
 }
 

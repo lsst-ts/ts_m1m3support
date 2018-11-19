@@ -15,6 +15,8 @@
 #include <ForcesAndMoments.h>
 #include <ForceConverter.h>
 #include <DistributedForces.h>
+#include <SALEnumerations.h>
+#include <BitHelper.h>
 #include <Log.h>
 
 namespace LSST {
@@ -29,7 +31,7 @@ AccelerationForceComponent::AccelerationForceComponent(M1M3SSPublisher* publishe
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceActuatorState = this->publisher->getEventForceActuatorState();
-	this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
+	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
 	this->appliedAccelerationForces = this->publisher->getEventAppliedAccelerationForces();
 	this->rejectedAccelerationForces = this->publisher->getEventRejectedAccelerationForces();
 	this->maxRateOfChange = this->forceActuatorSettings->AccelerationComponentSettings.MaxRateOfChange;
@@ -83,7 +85,6 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
 void AccelerationForceComponent::postEnableDisableActions() {
 	Log.Debug("AccelerationForceComponent: postEnableDisableActions()");
 
-	this->forceActuatorState->timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->accelerationForcesApplied = this->enabled;
 	this->publisher->tryLogForceActuatorState();
 }
@@ -91,38 +92,33 @@ void AccelerationForceComponent::postEnableDisableActions() {
 void AccelerationForceComponent::postUpdateActions() {
 	Log.Trace("AccelerationForceController: postUpdateActions()");
 
-	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedAccelerationForces->timestamp = this->publisher->getTimestamp();
-	this->rejectedAccelerationForces->timestamp = this->appliedAccelerationForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		this->forceSetpointWarning->accelerationForceWarning[zIndex] = false;
+		bool clipping = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->AccelerationLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->AccelerationLimitXTable[xIndex].HighFault;
 			this->rejectedAccelerationForces->xForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedAccelerationForces->xForces[xIndex], this->appliedAccelerationForces->xForces + xIndex);
-			this->forceSetpointWarning->accelerationForceWarning[zIndex] = this->forceSetpointWarning->accelerationForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedAccelerationForces->xForces[xIndex], this->appliedAccelerationForces->xForces + xIndex);
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->AccelerationLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->AccelerationLimitYTable[yIndex].HighFault;
 			this->rejectedAccelerationForces->yForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedAccelerationForces->yForces[yIndex], this->appliedAccelerationForces->yForces + yIndex);
-			this->forceSetpointWarning->accelerationForceWarning[zIndex] = this->forceSetpointWarning->accelerationForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedAccelerationForces->yForces[yIndex], this->appliedAccelerationForces->yForces + yIndex);
 		}
 
 		float zLowFault = this->forceActuatorSettings->AccelerationLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->AccelerationLimitZTable[zIndex].HighFault;
 		this->rejectedAccelerationForces->zForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedAccelerationForces->zForces[zIndex], this->appliedAccelerationForces->zForces + zIndex);
-		this->forceSetpointWarning->accelerationForceWarning[zIndex] = this->forceSetpointWarning->accelerationForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->accelerationForceWarning[zIndex];
+		clipping = clipping || !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedAccelerationForces->zForces[zIndex], this->appliedAccelerationForces->zForces + zIndex);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointAccelerationForceClipped, clipping);
+
+		rejectionRequired = rejectionRequired || clipping;
 	}
 
 	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedAccelerationForces->xForces, this->appliedAccelerationForces->yForces, this->appliedAccelerationForces->zForces);
@@ -145,7 +141,7 @@ void AccelerationForceComponent::postUpdateActions() {
 
 	this->safetyController->forceControllerNotifyAccelerationForceClipping(rejectionRequired);
 
-	this->publisher->tryLogForceSetpointWarning();
+	this->publisher->tryLogForceActuatorWarning();
 	if (rejectionRequired) {
 		this->publisher->logRejectedAccelerationForces();
 	}

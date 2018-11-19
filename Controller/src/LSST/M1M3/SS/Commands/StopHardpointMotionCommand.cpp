@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_stopHardpointMotionC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.stopHardpointMotion = data->stopHardpointMotion;
-}
-
-bool StopHardpointMotionCommand::validate() {
-	if (!this->data.stopHardpointMotion) {
-		this->publisher->logCommandRejectionWarning("stopHardpointMotion", "The field stopHardpointMotion is not TRUE.");
-	}
-	return this->data.stopHardpointMotion;
-}
+StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_stopHardpointMotionC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void StopHardpointMotionCommand::execute() {
 	this->context->stopHardpointMotion(this);
 }
 
-void StopHardpointMotionCommand::ackInProgress() {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void StopHardpointMotionCommand::ackComplete() {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void StopHardpointMotionCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void StopHardpointMotionCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandStopHardpointMotion(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

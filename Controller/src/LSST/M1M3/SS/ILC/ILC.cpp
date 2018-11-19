@@ -37,9 +37,6 @@ ILC::ILC(M1M3SSPublisher* publisher, IFPGA* fpga, PositionController* positionCo
  : subnetData(forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
    ilcMessageFactory(ilcApplicationSettings),
    responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData, safetyController),
-   busListSetADCChannelOffsetAndSensitivity(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
-   busListSetADCScanRate(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo(), publisher->getEventHardpointActuatorInfo()),
-   busListSetBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory, publisher->getEventForceActuatorInfo()),
    busListReset(&this->subnetData, &this->ilcMessageFactory),
    busListReportServerID(&this->subnetData, &this->ilcMessageFactory),
    busListReportServerStatus(&this->subnetData, &this->ilcMessageFactory),
@@ -53,8 +50,8 @@ ILC::ILC(M1M3SSPublisher* publisher, IFPGA* fpga, PositionController* positionCo
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby, ILCModes::Standby),
    busListChangeILCModeClearFaults(&this->subnetData, &this->ilcMessageFactory, ILCModes::ClearFaults, ILCModes::ClearFaults),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
-   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
-   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
+   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventAppliedCylinderForces(), publisher->getEventForceActuatorState()),
+   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventAppliedCylinderForces(), publisher->getEventForceActuatorState()),
    firmwareUpdate(fpga, &this->subnetData) {
 	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
@@ -109,21 +106,6 @@ void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataL
 	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	this->waitForSubnet(subnet, 5000);
 	this->read(subnet);
-}
-
-void ILC::writeCalibrationDataBuffer() {
-	Log.Debug("ILC: writeCalibrationDataBuffer()");
-	this->writeBusList(&this->busListSetADCChannelOffsetAndSensitivity);
-}
-
-void ILC::writeSetADCScanRateBuffer() {
-	Log.Debug("ILC: writeSetADCScanRateBuffer()");
-	this->writeBusList(&this->busListSetADCScanRate);
-}
-
-void ILC::writeSetBoostValveDCAGainBuffer() {
-	Log.Debug("ILC: writeSetBoostValveDCAGainBuffer()");
-	this->writeBusList(&this->busListSetBoostValveDCAGains);
 }
 
 void ILC::writeResetBuffer() {
@@ -379,13 +361,11 @@ void ILC::verifyResponses() {
 }
 
 void ILC::publishForceActuatorState() {
-	this->publisher->getEventForceActuatorState()->timestamp = this->publisher->getTimestamp();
 	this->publisher->tryLogForceActuatorState();
 }
 
 void ILC::publishForceActuatorInfo() {
-	this->publisher->getEventForceActuatorInfo()->timestamp = this->publisher->getTimestamp();
-	this->publisher->logForceActuatorInfo();
+
 }
 
 void ILC::publishForceActuatorStatus() {
@@ -397,7 +377,6 @@ void ILC::publishForceActuatorData() {
 }
 
 void ILC::publishHardpointActuatorInfo() {
-	this->publisher->getEventHardpointActuatorInfo()->timestamp = this->publisher->getTimestamp();
 	this->publisher->logHardpointActuatorInfo();
 }
 
@@ -410,7 +389,6 @@ void ILC::publishHardpointData() {
 }
 
 void ILC::publishHardpointMonitorInfo() {
-	this->publisher->getEventHardpointMonitorInfo()->timestamp = this->publisher->getTimestamp();
 	this->publisher->logHardpointMonitorInfo();
 }
 

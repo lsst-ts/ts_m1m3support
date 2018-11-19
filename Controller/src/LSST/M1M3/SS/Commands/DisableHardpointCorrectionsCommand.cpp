@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointCorrectionsC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.disableHardpointCorrections = data->disableHardpointCorrections;
-}
-
-bool DisableHardpointCorrectionsCommand::validate() {
-	if (!this->data.disableHardpointCorrections) {
-		this->publisher->logCommandRejectionWarning("disableHardpointCorrections", "The field disableHardpointCorrections is not TRUE.");
-	}
-	return this->data.disableHardpointCorrections;
-}
+DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointCorrectionsC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void DisableHardpointCorrectionsCommand::execute() {
 	this->context->disableHardpointCorrections(this);
 }
 
-void DisableHardpointCorrectionsCommand::ackInProgress() {
-	this->publisher->ackCommandDisableHardpointCorrections(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void DisableHardpointCorrectionsCommand::ackComplete() {
-	this->publisher->ackCommandDisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
-}
-
-void DisableHardpointCorrectionsCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandDisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void DisableHardpointCorrectionsCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandDisableHardpointCorrections(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

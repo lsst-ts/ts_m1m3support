@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnAirOnC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.turnAirOn = data->turnAirOn;
-}
-
-bool TurnAirOnCommand::validate() {
-	if (!this->data.turnAirOn) {
-		this->publisher->logCommandRejectionWarning("turnAirOn", "The field turnAirOn is not TRUE.");
-	}
-	return this->data.turnAirOn;
-}
+TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnAirOnC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void TurnAirOnCommand::execute() {
 	this->context->turnAirOn(this);
 }
 
-void TurnAirOnCommand::ackInProgress() {
-	this->publisher->ackCommandTurnAirOn(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void TurnAirOnCommand::ackComplete() {
-	this->publisher->ackCommandTurnAirOn(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void TurnAirOnCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnAirOn(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void TurnAirOnCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandTurnAirOn(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

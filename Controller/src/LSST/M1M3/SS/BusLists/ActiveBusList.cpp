@@ -18,14 +18,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces)
+ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces, MTM1M3_logevent_forceActuatorStateC* forceActuatorState)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("RaisedBusList: RaisedBusList()");
 	this->outerLoopData = outerLoopData;
 	this->forceActuatorData = forceActuatorData;
 	this->appliedCylinderForces = appliedCylinderForces;
 	this->hardpointActuatorData = hardpointActuatorData;
-	this->forceInfo = forceInfo;
+	this->forceActuatorState = forceActuatorState;
 	this->lvdtSampleClock = 0;
 	for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->setForceCommandIndex[subnetIndex] = -1;
@@ -56,7 +56,7 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 					daaSecondary[address - 17] = this->appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
 				}
 			}
-			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->broadcastCounter, this->outerLoopData->slewFlag, saaPrimary, daaPrimary, daaSecondary);
+			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->broadcastCounter, this->forceActuatorState->slewFlag, saaPrimary, daaPrimary, daaSecondary);
 			this->buffer.writeTimestamp();
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
@@ -143,7 +143,7 @@ void ActiveBusList::update() {
 				}
 			}
 			this->buffer.setIndex(this->setForceCommandIndex[subnetIndex]);
-			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->broadcastCounter, this->outerLoopData->slewFlag, saaPrimary, daaPrimary, daaSecondary);
+			this->ilcMessageFactory->broadcastForceDemand(&this->buffer, this->outerLoopData->broadcastCounter, this->forceActuatorState->slewFlag, saaPrimary, daaPrimary, daaSecondary);
 
 			int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
 			int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;

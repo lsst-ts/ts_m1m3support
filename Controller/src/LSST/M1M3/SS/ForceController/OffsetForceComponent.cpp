@@ -15,6 +15,8 @@
 #include <ForcesAndMoments.h>
 #include <ForceConverter.h>
 #include <DistributedForces.h>
+#include <SALEnumerations.h>
+#include <BitHelper.h>
 #include <Log.h>
 
 namespace LSST {
@@ -29,7 +31,7 @@ OffsetForceComponent::OffsetForceComponent(M1M3SSPublisher* publisher, SafetyCon
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceActuatorState = this->publisher->getEventForceActuatorState();
-	this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
+	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
 	this->appliedOffsetForces = this->publisher->getEventAppliedOffsetForces();
 	this->rejectedOffsetForces = this->publisher->getEventRejectedOffsetForces();
 	this->maxRateOfChange = this->forceActuatorSettings->OffsetComponentSettings.MaxRateOfChange;
@@ -83,7 +85,6 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
 void OffsetForceComponent::postEnableDisableActions() {
 	Log.Debug("OffsetForceComponent: postEnableDisableActions()");
 
-	this->forceActuatorState->timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->offsetForcesApplied = this->enabled;
 	this->publisher->tryLogForceActuatorState();
 }
@@ -91,38 +92,32 @@ void OffsetForceComponent::postEnableDisableActions() {
 void OffsetForceComponent::postUpdateActions() {
 	Log.Trace("OffsetForceController: postUpdateActions()");
 
-	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedOffsetForces->timestamp = this->publisher->getTimestamp();
-	this->rejectedOffsetForces->timestamp = this->appliedOffsetForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		this->forceSetpointWarning->offsetForceWarning[zIndex] = false;
+		bool clipping = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
 			this->rejectedOffsetForces->xForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedOffsetForces->xForces[xIndex], this->appliedOffsetForces->xForces + xIndex);
-			this->forceSetpointWarning->offsetForceWarning[zIndex] = this->forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedOffsetForces->xForces[xIndex], this->appliedOffsetForces->xForces + xIndex);
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
 			this->rejectedOffsetForces->yForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedOffsetForces->yForces[yIndex], this->appliedOffsetForces->yForces + yIndex);
-			this->forceSetpointWarning->offsetForceWarning[zIndex] = this->forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedOffsetForces->yForces[yIndex], this->appliedOffsetForces->yForces + yIndex);
 		}
 
 		float zLowFault = this->forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
 		this->rejectedOffsetForces->zForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedOffsetForces->zForces[zIndex], this->appliedOffsetForces->zForces + zIndex);
-		this->forceSetpointWarning->offsetForceWarning[zIndex] = this->forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->offsetForceWarning[zIndex];
+		clipping = clipping || !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedOffsetForces->zForces[zIndex], this->appliedOffsetForces->zForces + zIndex);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointOffsetForceClipped, clipping);
+		rejectionRequired = rejectionRequired || clipping;
 	}
 
 	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedOffsetForces->xForces, this->appliedOffsetForces->yForces, this->appliedOffsetForces->zForces);
@@ -145,7 +140,7 @@ void OffsetForceComponent::postUpdateActions() {
 
 	this->safetyController->forceControllerNotifyOffsetForceClipping(rejectionRequired);
 
-	this->publisher->tryLogForceSetpointWarning();
+	this->publisher->tryLogForceActuatorWarning();
 	if (rejectionRequired) {
 		this->publisher->logRejectedOffsetForces();
 	}

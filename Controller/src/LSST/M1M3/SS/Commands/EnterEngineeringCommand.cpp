@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.enterEngineering = data->enterEngineering;
-}
-
-bool EnterEngineeringCommand::validate() {
-	if (!this->data.enterEngineering) {
-		this->publisher->logCommandRejectionWarning("enterEngineering", "The field enterEngineering is not TRUE.");
-	}
-	return this->data.enterEngineering;
-}
+EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void EnterEngineeringCommand::execute() {
 	this->context->enterEngineering(this);
 }
 
-void EnterEngineeringCommand::ackInProgress() {
-	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void EnterEngineeringCommand::ackComplete() {
-	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_COMPLETE, "Completed");
-}
-
-void EnterEngineeringCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void EnterEngineeringCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandEnterEngineering(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

@@ -8,7 +8,7 @@
 #ifndef MODBUSTRANSMITCOMMAND_H_
 #define MODBUSTRANSMITCOMMAND_H_
 
-#include <Command.h>
+#include <SALCommand.h>
 #include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
@@ -16,22 +16,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ModbusTransmitCommand: public Command {
-private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_modbusTransmitC data;
-
+class ModbusTransmitCommand: public SALCommand<MTM1M3_command_modbusTransmitC> {
 public:
 	ModbusTransmitCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_modbusTransmitC* data);
 
-	MTM1M3_command_modbusTransmitC* getData() { return &this->data; }
-
-	bool validate();
 	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+	void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

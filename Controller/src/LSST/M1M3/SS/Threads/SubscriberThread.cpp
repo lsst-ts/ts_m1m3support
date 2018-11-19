@@ -88,7 +88,6 @@ void SubscriberThread::enqueueCommandIfAvailable(Command* command) {
 			this->controller->unlock();
 		}
 		else {
-			command->ackFailed("Validation");
 			this->commandFactory->destroy(command);
 		}
 	}

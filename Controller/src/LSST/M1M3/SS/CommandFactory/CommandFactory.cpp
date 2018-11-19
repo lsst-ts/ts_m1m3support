@@ -115,7 +115,7 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 }
 
 void CommandFactory::destroy(Command* command) {
-	Log.Trace("CommandFactory: destroy(%d)", command->getCommandID());
+	Log.Trace("CommandFactory: destroy()");
 	if (command) {
 		delete command;
 	}

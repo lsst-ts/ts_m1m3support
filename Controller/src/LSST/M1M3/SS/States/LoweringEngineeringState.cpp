@@ -38,13 +38,13 @@ States::Type LoweringEngineeringState::update(UpdateCommand* command, Model* mod
 	return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type LoweringEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) { return this->rejectCommandInvalidState("StopHardpointMotion"); }
-States::Type LoweringEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) { return this->rejectCommandInvalidState("MoveHardpointActuators"); }
-States::Type LoweringEngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) { return this->rejectCommandInvalidState("EnableHardpointChase"); }
-States::Type LoweringEngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command, Model* model) { return this->rejectCommandInvalidState("DisableHardpointChase"); }
-States::Type LoweringEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyOffsetForces"); }
-States::Type LoweringEngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) { return this->rejectCommandInvalidState("ApplyOffsetForcesByMirrorForce"); }
-States::Type LoweringEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) { return this->rejectCommandInvalidState("ClearOffsetForces"); }
+States::Type LoweringEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
+States::Type LoweringEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
+States::Type LoweringEngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
+States::Type LoweringEngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
+States::Type LoweringEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
+States::Type LoweringEngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
+States::Type LoweringEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

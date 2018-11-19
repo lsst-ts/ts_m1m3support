@@ -12,7 +12,6 @@
 #include <ILCSubnetData.h>
 #include <ModbusBuffer.h>
 #include <ILCMessageFactory.h>
-#include <SetADCChanneOffsetAndSensitivityBusList.h>
 #include <ChangeILCModeBusList.h>
 #include <ReadBoostValveDCAGainBusList.h>
 #include <ReadCalibrationBusList.h>
@@ -22,8 +21,6 @@
 #include <ReportServerIDBusList.h>
 #include <ReportServerStatusBusList.h>
 #include <ResetBustList.h>
-#include <SetADCScanRateBusList.h>
-#include <SetBoostValveDCAGainBusList.h>
 #include <FreezeSensorBusList.h>
 #include <RaisedBusList.h>
 #include <ActiveBusList.h>
@@ -62,9 +59,6 @@ private:
 	ILCMessageFactory ilcMessageFactory;
 	ILCResponseParser responseParser;
 
-	SetADCChanneOffsetAndSensitivityBusList busListSetADCChannelOffsetAndSensitivity;
-	SetADCScanRateBusList busListSetADCScanRate;
-	SetBoostValveDCAGainBusList busListSetBoostValveDCAGains;
 	ResetBustList busListReset;
 	ReportServerIDBusList busListReportServerID;
 	ReportServerStatusBusList busListReportServerStatus;
@@ -105,9 +99,6 @@ public:
 	void programILC(int32_t actuatorId, std::string filePath);
 	void modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data);
 
-	void writeCalibrationDataBuffer();
-	void writeSetADCScanRateBuffer();
-	void writeSetBoostValveDCAGainBuffer();
 	void writeResetBuffer();
 	void writeReportServerIDBuffer();
 	void writeReportServerStatusBuffer();

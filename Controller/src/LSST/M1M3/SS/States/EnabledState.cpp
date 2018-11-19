@@ -75,17 +75,6 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* co
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
-	// TODO: Remove, this is a test command that has been taken for toggling boost valve control
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState = model->getPublisher()->getEventForceActuatorState();
-	MTM1M3_outerLoopDataC* outerLoop = model->getPublisher()->getOuterLoopData();
-	Log.Info("EnabledState: toggleBoostValve to %d", !forceActuatorState->slewFlag);
-	forceActuatorState->slewFlag = !forceActuatorState->slewFlag;
-	outerLoop->slewFlag = forceActuatorState->slewFlag;
-
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

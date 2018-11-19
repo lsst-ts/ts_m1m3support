@@ -10,9 +10,8 @@
 
 #include <DataTypes.h>
 
-struct MTM1M3_powerSupplyDataC;
+struct MTM1M3_powerDataC;
 struct MTM1M3_logevent_powerStatusC;
-struct MTM1M3_logevent_powerSupplyStatusC;
 struct MTM1M3_logevent_powerWarningC;
 
 namespace LSST {
@@ -36,9 +35,8 @@ private:
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
 
-	MTM1M3_powerSupplyDataC* powerSupplyData;
+	MTM1M3_powerDataC* powerData;
 	MTM1M3_logevent_powerStatusC* powerStatus;
-	MTM1M3_logevent_powerSupplyStatusC* powerSupplyStatus;
 	MTM1M3_logevent_powerWarningC* powerWarning;
 
 	uint64_t lastPowerTimestamp;

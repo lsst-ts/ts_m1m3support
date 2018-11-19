@@ -18,6 +18,7 @@ namespace SS {
 
 class Model;
 class M1M3SSPublisher;
+class Command;
 class BootCommand;
 class StartCommand;
 class EnableCommand;
@@ -125,7 +126,7 @@ protected:
 	double getCurrentTimer();
 	double getTimer();
 
-	States::Type rejectCommandInvalidState(std::string command);
+	States::Type rejectCommandInvalidState(Command* command);
 };
 
 } /* namespace SS */

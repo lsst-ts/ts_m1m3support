@@ -19,8 +19,6 @@ namespace SS {
 
 class TMAElevationSampleCommand: public Command {
 private:
-	Context* context;
-
 	MTMount_ElevationC data;
 
 public:

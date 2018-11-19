@@ -12,7 +12,7 @@
 #include <vector>
 
 struct MTM1M3_logevent_forceActuatorStateC;
-struct MTM1M3_logevent_forceSetpointWarningC;
+struct MTM1M3_logevent_forceActuatorWarningC;
 struct MTM1M3_logevent_appliedStaticForcesC;
 struct MTM1M3_logevent_rejectedStaticForcesC;
 
@@ -33,7 +33,7 @@ private:
 	ForceActuatorSettings* forceActuatorSettings;
 
 	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
 	MTM1M3_logevent_appliedStaticForcesC* appliedStaticForces;
 	MTM1M3_logevent_rejectedStaticForcesC* rejectedStaticForces;
 

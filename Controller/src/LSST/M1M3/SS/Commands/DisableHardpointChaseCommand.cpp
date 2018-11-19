@@ -13,34 +13,23 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointChaseC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.hardpointActuator = data->hardpointActuator;
-}
+DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointChaseC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 bool DisableHardpointChaseCommand::validate() {
 	if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
-		this->publisher->logCommandRejectionWarning("disableHardpointChase", "The field hardpointActuator must be in range [1, 6].");
+		this->ackInvalidParameter("The field hardpointActuator must be in range [1, 6].");
+		return false;
 	}
-	return this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6;
+	return true;
 }
 
 void DisableHardpointChaseCommand::execute() {
 	this->context->disableHardpointChase(this);
 }
 
-void DisableHardpointChaseCommand::ackInProgress() {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void DisableHardpointChaseCommand::ackComplete() {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
-}
-
-void DisableHardpointChaseCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void DisableHardpointChaseCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandDisableHardpointChase(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

@@ -13,19 +13,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnPowerOffCommand::TurnPowerOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOffC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.turnPowerNetworkAOff = data->turnPowerNetworkAOff;
-	this->data.turnPowerNetworkBOff = data->turnPowerNetworkBOff;
-	this->data.turnPowerNetworkCOff = data->turnPowerNetworkCOff;
-	this->data.turnPowerNetworkDOff = data->turnPowerNetworkDOff;
-	this->data.turnAuxPowerNetworkAOff = data->turnAuxPowerNetworkAOff;
-	this->data.turnAuxPowerNetworkBOff = data->turnAuxPowerNetworkBOff;
-	this->data.turnAuxPowerNetworkCOff = data->turnAuxPowerNetworkCOff;
-	this->data.turnAuxPowerNetworkDOff = data->turnAuxPowerNetworkDOff;
-}
+TurnPowerOffCommand::TurnPowerOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOffC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 bool TurnPowerOffCommand::validate() {
 	if (!(this->data.turnPowerNetworkAOff ||
@@ -36,32 +25,18 @@ bool TurnPowerOffCommand::validate() {
 			this->data.turnAuxPowerNetworkBOff ||
 			this->data.turnAuxPowerNetworkCOff ||
 			this->data.turnAuxPowerNetworkDOff)) {
-		this->publisher->logCommandRejectionWarning("turnPowerOff", "At least one field is not TRUE.");
+		this->ackInvalidParameter("At least one field is not TRUE.");
+		return false;
 	}
-	return this->data.turnPowerNetworkAOff ||
-			this->data.turnPowerNetworkBOff ||
-			this->data.turnPowerNetworkCOff ||
-			this->data.turnPowerNetworkDOff ||
-			this->data.turnAuxPowerNetworkAOff ||
-			this->data.turnAuxPowerNetworkBOff ||
-			this->data.turnAuxPowerNetworkCOff ||
-			this->data.turnAuxPowerNetworkDOff;
+	return true;
 }
 
 void TurnPowerOffCommand::execute() {
 	this->context->turnPowerOff(this);
 }
 
-void TurnPowerOffCommand::ackInProgress() {
-	this->publisher->ackCommandTurnPowerOff(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void TurnPowerOffCommand::ackComplete() {
-	this->publisher->ackCommandTurnPowerOff(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void TurnPowerOffCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnPowerOff(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void TurnPowerOffCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandTurnPowerOff(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

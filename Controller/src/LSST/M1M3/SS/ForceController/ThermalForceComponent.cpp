@@ -15,6 +15,8 @@
 #include <ForcesAndMoments.h>
 #include <ForceConverter.h>
 #include <DistributedForces.h>
+#include <SALEnumerations.h>
+#include <BitHelper.h>
 #include <Log.h>
 
 namespace LSST {
@@ -29,7 +31,7 @@ ThermalForceComponent::ThermalForceComponent(M1M3SSPublisher* publisher, SafetyC
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceActuatorState = this->publisher->getEventForceActuatorState();
-	this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
+	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
 	this->appliedThermalForces = this->publisher->getEventAppliedThermalForces();
 	this->rejectedThermalForces = this->publisher->getEventRejectedThermalForces();
 	this->maxRateOfChange = this->forceActuatorSettings->ThermalComponentSettings.MaxRateOfChange;
@@ -83,7 +85,6 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
 void ThermalForceComponent::postEnableDisableActions() {
 	Log.Debug("ThermalForceComponent: postEnableDisableActions()");
 
-	this->forceActuatorState->timestamp = this->publisher->getTimestamp();
 	this->forceActuatorState->thermalForcesApplied = this->enabled;
 	this->publisher->tryLogForceActuatorState();
 }
@@ -91,38 +92,32 @@ void ThermalForceComponent::postEnableDisableActions() {
 void ThermalForceComponent::postUpdateActions() {
 	Log.Trace("ThermalForceController: postUpdateActions()");
 
-	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedThermalForces->timestamp = this->publisher->getTimestamp();
-	this->rejectedThermalForces->timestamp = this->appliedThermalForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		this->forceSetpointWarning->thermalForceWarning[zIndex] = false;
+		bool clipping = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->ThermalLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->ThermalLimitXTable[xIndex].HighFault;
 			this->rejectedThermalForces->xForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedThermalForces->xForces[xIndex], this->appliedThermalForces->xForces + xIndex);
-			this->forceSetpointWarning->thermalForceWarning[zIndex] = this->forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedThermalForces->xForces[xIndex], this->appliedThermalForces->xForces + xIndex);
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->ThermalLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->ThermalLimitYTable[yIndex].HighFault;
 			this->rejectedThermalForces->yForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedThermalForces->yForces[yIndex], this->appliedThermalForces->yForces + yIndex);
-			this->forceSetpointWarning->thermalForceWarning[zIndex] = this->forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedThermalForces->yForces[yIndex], this->appliedThermalForces->yForces + yIndex);
 		}
 
 		float zLowFault = this->forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->ThermalLimitZTable[zIndex].HighFault;
 		this->rejectedThermalForces->zForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedThermalForces->zForces[zIndex], this->appliedThermalForces->zForces + zIndex);
-		this->forceSetpointWarning->thermalForceWarning[zIndex] = this->forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->thermalForceWarning[zIndex];
+		clipping = clipping || !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedThermalForces->zForces[zIndex], this->appliedThermalForces->zForces + zIndex);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointThermalForceClipped, clipping);
+		rejectionRequired = rejectionRequired || clipping;
 	}
 
 	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedThermalForces->xForces, this->appliedThermalForces->yForces, this->appliedThermalForces->zForces);
@@ -145,7 +140,7 @@ void ThermalForceComponent::postUpdateActions() {
 
 	this->safetyController->forceControllerNotifyThermalForceClipping(rejectionRequired);
 
-	this->publisher->tryLogForceSetpointWarning();
+	this->publisher->tryLogForceActuatorWarning();
 	if (rejectionRequired) {
 		this->publisher->logRejectedThermalForces();
 	}

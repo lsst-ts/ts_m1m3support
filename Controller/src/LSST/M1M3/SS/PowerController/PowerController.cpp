@@ -30,16 +30,14 @@ PowerController::PowerController(IFPGA* fpga, IExpansionFPGA* expansionFPGA, M1M
 	this->publisher = publisher;
 	this->safetyController = safetyController;
 
-	this->powerSupplyData = this->publisher->getPowerSupplyData();
+	this->powerData = this->publisher->getPowerData();
 	this->powerStatus = this->publisher->getEventPowerStatus();
-	this->powerSupplyStatus = this->publisher->getEventPowerSupplyStatus();
 	this->powerWarning = this->publisher->getEventPowerWarning();
 
 	this->lastPowerTimestamp = 0;
 
-	memset(this->powerSupplyData, 0, sizeof(MTM1M3_powerSupplyDataC));
+	memset(this->powerData, 0, sizeof(MTM1M3_powerDataC));
 	memset(this->powerStatus, 0, sizeof(MTM1M3_logevent_powerStatusC));
-	memset(this->powerSupplyStatus, 0, sizeof(MTM1M3_logevent_powerSupplyStatusC));
 	memset(this->powerWarning, 0, sizeof(MTM1M3_logevent_powerWarningC));
 }
 
@@ -49,41 +47,22 @@ void PowerController::processData() {
 	Log.Trace("PowerController: processData()");
 	if (this->fpgaData->PowerSupplyTimestamp != this->lastPowerTimestamp) {
 		this->lastPowerTimestamp = this->fpgaData->PowerSupplyTimestamp;
-		double timestamp = Timestamp::fromFPGA(this->fpgaData->PowerSupplyTimestamp);
-		this->powerStatus->timestamp = timestamp;
-		this->powerStatus->auxPowerNetworkAOutputOn = (this->fpgaData->PowerSupplyStates & 0x01) != 0;
-		this->powerStatus->auxPowerNetworkBOutputOn = (this->fpgaData->PowerSupplyStates & 0x02) != 0;
-		this->powerStatus->auxPowerNetworkCOutputOn = (this->fpgaData->PowerSupplyStates & 0x04) != 0;
-		this->powerStatus->auxPowerNetworkDOutputOn = (this->fpgaData->PowerSupplyStates & 0x08) != 0;
-		this->powerStatus->powerNetworkAOutputOn = (this->fpgaData->PowerSupplyStates & 0x10) != 0;
-		this->powerStatus->powerNetworkBOutputOn = (this->fpgaData->PowerSupplyStates & 0x20) != 0;
-		this->powerStatus->powerNetworkCOutputOn = (this->fpgaData->PowerSupplyStates & 0x40) != 0;
-		this->powerStatus->powerNetworkDOutputOn = (this->fpgaData->PowerSupplyStates & 0x80) != 0;
-		this->publisher->tryLogPowerStatus();
-		this->powerWarning->timestamp = timestamp;
-		this->powerWarning->auxPowerNetworkAOutputMismatch = this->powerStatus->auxPowerNetworkACommandedOn != this->powerStatus->auxPowerNetworkAOutputOn;
-		this->powerWarning->auxPowerNetworkBOutputMismatch = this->powerStatus->auxPowerNetworkBCommandedOn != this->powerStatus->auxPowerNetworkBOutputOn;
-		this->powerWarning->auxPowerNetworkCOutputMismatch = this->powerStatus->auxPowerNetworkCCommandedOn != this->powerStatus->auxPowerNetworkCOutputOn;
-		this->powerWarning->auxPowerNetworkDOutputMismatch = this->powerStatus->auxPowerNetworkDCommandedOn != this->powerStatus->auxPowerNetworkDOutputOn;
-		this->powerWarning->powerNetworkAOutputMismatch = this->powerStatus->powerNetworkACommandedOn != this->powerStatus->powerNetworkAOutputOn;
-		this->powerWarning->powerNetworkBOutputMismatch = this->powerStatus->powerNetworkBCommandedOn != this->powerStatus->powerNetworkBOutputOn;
-		this->powerWarning->powerNetworkCOutputMismatch = this->powerStatus->powerNetworkCCommandedOn != this->powerStatus->powerNetworkCOutputOn;
-		this->powerWarning->powerNetworkDOutputMismatch = this->powerStatus->powerNetworkDCommandedOn != this->powerStatus->powerNetworkDOutputOn;
+		this->powerWarning->powerSystemFlags = 0;
 		this->publisher->tryLogPowerWarning();
 	}
 	double timestamp = this->publisher->getTimestamp();
 	this->expansionFPGA->sample();
 	float sample[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 	this->expansionFPGA->readSlot1(sample);
-	this->powerSupplyData->timestamp = timestamp;
-	this->powerSupplyData->powerNetworkACurrent = sample[0];
-	this->powerSupplyData->powerNetworkBCurrent = sample[1];
-	this->powerSupplyData->powerNetworkCCurrent = sample[2];
-	this->powerSupplyData->powerNetworkDCurrent = sample[3];
-	this->powerSupplyData->lightPowerNetworkCurrent = sample[4];
-	this->powerSupplyData->controlsPowerNetworkCurrent = sample[5];
+	this->powerData->timestamp = timestamp;
+	this->powerData->powerNetworkACurrent = sample[0];
+	this->powerData->powerNetworkBCurrent = sample[1];
+	this->powerData->powerNetworkCCurrent = sample[2];
+	this->powerData->powerNetworkDCurrent = sample[3];
+	this->powerData->lightPowerNetworkCurrent = sample[4];
+	this->powerData->controlsPowerNetworkCurrent = sample[5];
 	// TODO: Add readSlot2!
-	this->publisher->putPowerSupplyData();
+	this->publisher->putPowerData();
 }
 
 void PowerController::setBothPowerNetworks(bool on) {

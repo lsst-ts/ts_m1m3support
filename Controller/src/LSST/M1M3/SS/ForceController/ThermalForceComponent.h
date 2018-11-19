@@ -11,7 +11,7 @@
 #include <ForceComponent.h>
 
 struct MTM1M3_logevent_forceActuatorStateC;
-struct MTM1M3_logevent_forceSetpointWarningC;
+struct MTM1M3_logevent_forceActuatorWarningC;
 struct MTM1M3_logevent_appliedThermalForcesC;
 struct MTM1M3_logevent_rejectedThermalForcesC;
 
@@ -32,7 +32,7 @@ private:
 	ForceActuatorSettings* forceActuatorSettings;
 
 	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
 	MTM1M3_logevent_appliedThermalForcesC* appliedThermalForces;
 	MTM1M3_logevent_rejectedThermalForcesC* rejectedThermalForces;
 

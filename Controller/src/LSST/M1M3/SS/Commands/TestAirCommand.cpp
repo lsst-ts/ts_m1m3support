@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testAirC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.testAir = data->testAir;
-}
-
-bool TestAirCommand::validate() {
-	if (!this->data.testAir) {
-		this->publisher->logCommandRejectionWarning("testAir", "The field testAir is not TRUE.");
-	}
-	return this->data.testAir;
-}
+TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testAirC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void TestAirCommand::execute() {
 	this->context->testAir(this);
 }
 
-void TestAirCommand::ackInProgress() {
-	this->publisher->ackCommandTestAir(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void TestAirCommand::ackComplete() {
-	this->publisher->ackCommandTestAir(this->commandID, ACK_COMPLETE, "Completed");
-}
-
-void TestAirCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTestAir(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void TestAirCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandTestAir(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

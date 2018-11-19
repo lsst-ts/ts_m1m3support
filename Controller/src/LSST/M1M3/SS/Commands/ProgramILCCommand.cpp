@@ -13,32 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_programILCC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.actuatorId = data->actuatorId;
-	this->data.filePath = data->filePath;
-}
-
-bool ProgramILCCommand::validate() {
-	return true;
-}
+ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_programILCC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void ProgramILCCommand::execute() {
 	this->context->programILC(this);
 }
 
-void ProgramILCCommand::ackInProgress() {
-	this->publisher->ackCommandProgramILC(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void ProgramILCCommand::ackComplete() {
-	this->publisher->ackCommandProgramILC(this->commandID, ACK_COMPLETE, "Completed");
-}
-
-void ProgramILCCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandProgramILC(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void ProgramILCCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandProgramILC(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

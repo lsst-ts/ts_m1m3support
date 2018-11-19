@@ -15,6 +15,8 @@
 #include <Timestamp.h>
 #include <Range.h>
 #include <SAL_MTM1M3C.h>
+#include <SALEnumerations.h>
+#include <BitHelper.h>
 #include <Log.h>
 
 #include <cstring>
@@ -60,74 +62,39 @@ void DigitalInputOutput::processData() {
 	// TODO: Handle no data available
 	Log.Trace("DigitalInputOutput: processData()");
 	bool tryPublish = false;
-	double timestamp = Timestamp::fromFPGA(Range::Max(this->fpgaData->DigitalOutputTimestamp, this->fpgaData->DigitalInputTimestamp));
 	if (this->fpgaData->DigitalOutputTimestamp != this->lastDOTimestamp) {
 		tryPublish = true;
 		this->lastDOTimestamp = this->fpgaData->DigitalOutputTimestamp;
-
-		this->airSupplyStatus->timestamp = timestamp;
-		this->airSupplyStatus->airCommandOutputOn = (this->fpgaData->DigitalOutputStates & 0x10) != 0;
-
-		this->airSupplyWarning->timestamp = timestamp;
-		this->airSupplyWarning->commandOutputMismatch = this->airSupplyStatus->airCommandOutputOn != this->airSupplyStatus->airCommandedOn;
-
-		this->cellLightStatus->timestamp = timestamp;
-		// Polarity is swapped
-		this->cellLightStatus->cellLightsOutputOn = (this->fpgaData->DigitalOutputStates & 0x20) == 0;
-
-		this->cellLightWarning->timestamp = timestamp;
-		this->cellLightWarning->cellLightsOutputMismatch = this->cellLightStatus->cellLightsOutputOn != this->cellLightStatus->cellLightsCommandedOn;
-
-		this->interlockStatus->timestamp = timestamp;
-		this->interlockStatus->heartbeatOutputState = (this->fpgaData->DigitalOutputStates & 0x01) != 0;
-
-		this->interlockWarning->timestamp = timestamp;
-		this->interlockWarning->heartbeatStateOutputMismatch = this->interlockStatus->heartbeatOutputState != this->interlockStatus->heartbeatCommandedState;
-
-		if (this->safetyController) {
-			this->safetyController->airControllerNotifyCommandOutputMismatch(this->airSupplyWarning->commandOutputMismatch);
-			this->safetyController->cellLightNotifyOutputMismatch(this->cellLightWarning->cellLightsOutputMismatch);
-			this->safetyController->interlockNotifyHeartbeatStateOutputMismatch(this->interlockWarning->heartbeatStateOutputMismatch);
-		}
 	}
 	if (this->fpgaData->DigitalInputTimestamp != this->lastDITimestamp) {
 		tryPublish = true;
 		this->lastDITimestamp = this->fpgaData->DigitalInputTimestamp;
 
-		this->airSupplyStatus->timestamp = timestamp;
 		// Polarity is swapped
 		this->airSupplyStatus->airValveOpened = (this->fpgaData->DigitalInputStates & 0x0100) == 0;
 		// Polarity is swapped
 		this->airSupplyStatus->airValveClosed = (this->fpgaData->DigitalInputStates & 0x0200) == 0;
+		BitHelper::set(&this->airSupplyWarning->airSupplyFlags, AirSupplyFlags::AirValveSensorMismatch, 				(this->airSupplyStatus->airCommandedOn && (!this->airSupplyStatus->airValveOpened || this->airSupplyStatus->airValveClosed)) || (!this->airSupplyStatus->airCommandedOn && (this->airSupplyStatus->airValveOpened || !this->airSupplyStatus->airValveClosed)));
 
-		this->airSupplyWarning->timestamp = timestamp;
-		this->airSupplyWarning->commandSensorMismatch =
-				(this->airSupplyStatus->airCommandedOn && (!this->airSupplyStatus->airValveOpened || this->airSupplyStatus->airValveClosed)) ||
-				(!this->airSupplyStatus->airCommandedOn && (this->airSupplyStatus->airValveOpened || !this->airSupplyStatus->airValveClosed));
-
-		this->cellLightStatus->timestamp = timestamp;
 		this->cellLightStatus->cellLightsOn = (this->fpgaData->DigitalInputStates & 0x0400) != 0;
+		BitHelper::set(&this->cellLightWarning->cellLightFlags, CellLightFlags::CellLightSensorMismatch, this->cellLightStatus->cellLightsCommandedOn != this->cellLightStatus->cellLightsOn);
 
-		this->cellLightWarning->timestamp = timestamp;
-		this->cellLightWarning->cellLightsSensorMismatch = this->cellLightStatus->cellLightsCommandedOn != this->cellLightStatus->cellLightsOn;
-
-		this->interlockWarning->timestamp = timestamp;
-		this->interlockWarning->auxPowerNetworksOff = (this->fpgaData->DigitalInputStates & 0x0001) == 0;
-		this->interlockWarning->thermalEquipmentOff = (this->fpgaData->DigitalInputStates & 0x0002) == 0;
-		this->interlockWarning->airSupplyOff = (this->fpgaData->DigitalInputStates & 0x0008) == 0;
-		this->interlockWarning->cabinetDoorOpen = (this->fpgaData->DigitalInputStates & 0x0010) == 0;
-		this->interlockWarning->tmaMotionStop = (this->fpgaData->DigitalInputStates & 0x0040) == 0;
-		this->interlockWarning->gisHeartbeatLost = (this->fpgaData->DigitalInputStates & 0x0080) == 0;
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AuxPowerNetworksOff, (this->fpgaData->DigitalInputStates & 0x0001));
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::ThermalEquipmentOff, (this->fpgaData->DigitalInputStates & 0x0002));
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AirSupplyOff, (this->fpgaData->DigitalInputStates & 0x0008));
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::CabinetDoorOpen, (this->fpgaData->DigitalInputStates & 0x0010));
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::TMAMotionStop, (this->fpgaData->DigitalInputStates & 0x0040));
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::GISHeartbeatLost, (this->fpgaData->DigitalInputStates & 0x0080));
 
 		if (this->safetyController) {
-			this->safetyController->airControllerNotifyCommandSensorMismatch(this->airSupplyWarning->commandSensorMismatch);
-			this->safetyController->cellLightNotifySensorMismatch(this->cellLightWarning->cellLightsSensorMismatch);
-			this->safetyController->interlockNotifyAuxPowerNetworksOff(this->interlockWarning->auxPowerNetworksOff);
-			this->safetyController->interlockNotifyThermalEquipmentOff(this->interlockWarning->thermalEquipmentOff);
-			this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->airSupplyOff);
-			this->safetyController->interlockNotifyCabinetDoorOpen(this->interlockWarning->cabinetDoorOpen);
-			this->safetyController->interlockNotifyTMAMotionStop(this->interlockWarning->tmaMotionStop);
-			this->safetyController->interlockNotifyGISHeartbeatLost(this->interlockWarning->gisHeartbeatLost);
+			this->safetyController->airControllerNotifyCommandSensorMismatch(BitHelper::get(this->airSupplyWarning->airSupplyFlags, AirSupplyFlags::AirValveSensorMismatch));
+			this->safetyController->cellLightNotifySensorMismatch(BitHelper::get(this->cellLightWarning->cellLightFlags, CellLightFlags::CellLightSensorMismatch));
+			this->safetyController->interlockNotifyAuxPowerNetworksOff(BitHelper::get(this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AuxPowerNetworksOff));
+			this->safetyController->interlockNotifyThermalEquipmentOff(BitHelper::get(this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::ThermalEquipmentOff));
+			this->safetyController->interlockNotifyAirSupplyOff(BitHelper::get(this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AirSupplyOff));
+			this->safetyController->interlockNotifyCabinetDoorOpen(BitHelper::get(this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::CabinetDoorOpen));
+			this->safetyController->interlockNotifyTMAMotionStop(BitHelper::get(this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::TMAMotionStop));
+			this->safetyController->interlockNotifyGISHeartbeatLost(BitHelper::get(this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::GISHeartbeatLost));
 		}
 	}
 	if (tryPublish) {

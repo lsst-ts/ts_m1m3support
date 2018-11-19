@@ -100,7 +100,6 @@ void PID::calculateIntermediateValues() {
 }
 
 void PID::publishInfo() {
-	this->pidInfo->timestamp = this->publisher->getTimestamp();
 	this->publisher->logPIDInfo();
 }
 

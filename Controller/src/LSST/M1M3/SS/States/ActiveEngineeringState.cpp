@@ -123,7 +123,7 @@ States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command
 	Log.Info("ActiveEngineeringState: translateM1M3()");
 	if (!model->getPositionController()->translate(command->getData()->xTranslation, command->getData()->yTranslation, command->getData()->zTranslation,
 			command->getData()->xRotation, command->getData()->yRotation, command->getData()->zRotation)) {
-		model->getPublisher()->logCommandRejectionWarning("translateM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+		command->ackAlreadyInProgress("At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -132,7 +132,7 @@ States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, 
 	Log.Info("ActiveEngineeringState: positionM1M3()");
 	if (!model->getPositionController()->moveToAbsolute(command->getData()->xPosition, command->getData()->yPosition, command->getData()->zPosition,
 			command->getData()->xRotation, command->getData()->yRotation, command->getData()->zRotation)) {
-		model->getPublisher()->logCommandRejectionWarning("positionM1M3", "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+		command->ackAlreadyInProgress("At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
 	}
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }

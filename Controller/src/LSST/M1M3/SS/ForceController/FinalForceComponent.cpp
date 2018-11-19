@@ -14,6 +14,8 @@
 #include <ForcesAndMoments.h>
 #include <ForceConverter.h>
 #include <DistributedForces.h>
+#include <SALEnumerations.h>
+#include <BitHelper.h>
 #include <Log.h>
 
 namespace LSST {
@@ -28,7 +30,7 @@ FinalForceComponent::FinalForceComponent(M1M3SSPublisher* publisher, SafetyContr
 	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 	this->forceActuatorSettings = forceActuatorSettings;
 	this->forceActuatorState = this->publisher->getEventForceActuatorState();
-	this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
+	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
 	this->appliedForces = this->publisher->getEventAppliedForces();
 	this->rejectedForces = this->publisher->getEventRejectedForces();
 	this->maxRateOfChange = this->forceActuatorSettings->FinalComponentSettings.MaxRateOfChange;
@@ -117,38 +119,32 @@ void FinalForceComponent::postEnableDisableActions() {
 void FinalForceComponent::postUpdateActions() {
 	Log.Trace("FinalForceController: postUpdateActions()");
 
-	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedForces->timestamp = this->publisher->getTimestamp();
-	this->rejectedForces->timestamp = this->appliedForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-
-		this->forceSetpointWarning->forceWarning[zIndex] = false;
+		bool clipping = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->ForceLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->ForceLimitXTable[xIndex].HighFault;
 			this->rejectedForces->xForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedForces->xForces[xIndex], this->appliedForces->xForces + xIndex);
-			this->forceSetpointWarning->forceWarning[zIndex] = this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedForces->xForces[xIndex], this->appliedForces->xForces + xIndex);
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->ForceLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->ForceLimitYTable[yIndex].HighFault;
 			this->rejectedForces->yForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedForces->yForces[yIndex], this->appliedForces->yForces + yIndex);
-			this->forceSetpointWarning->forceWarning[zIndex] = this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
+			clipping = clipping || !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedForces->yForces[yIndex], this->appliedForces->yForces + yIndex);
 		}
 
 		float zLowFault = this->forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->ForceLimitZTable[zIndex].HighFault;
 		this->rejectedForces->zForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->zForces[zIndex], this->appliedForces->zForces + zIndex);
-		this->forceSetpointWarning->forceWarning[zIndex] = this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->forceWarning[zIndex];
+		clipping = clipping || !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->zForces[zIndex], this->appliedForces->zForces + zIndex);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointFinalForceClipped, clipping);
+		rejectionRequired = rejectionRequired || clipping;
 	}
 
 	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedForces->xForces, this->appliedForces->yForces, this->appliedForces->zForces);
@@ -171,7 +167,7 @@ void FinalForceComponent::postUpdateActions() {
 
 	this->safetyController->forceControllerNotifyForceClipping(rejectionRequired);
 
-	this->publisher->tryLogForceSetpointWarning();
+	this->publisher->tryLogForceActuatorWarning();
 	if (rejectionRequired) {
 		this->publisher->logRejectedForces();
 	}

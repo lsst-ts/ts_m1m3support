@@ -20,48 +20,58 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_MTM1M3* m1m3SAL, SAL_MTMount* mtMountSAL,
 	this->m1m3SAL = m1m3SAL;
 	this->mtMountSAL = mtMountSAL;
 	this->commandFactory = commandFactory;
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_start");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_enable");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_disable");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_standby");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_shutdown");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOn");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOff");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForces");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_clearOffsetForces");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_raiseM1M3");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_lowerM1M3");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_applyAberrationForcesByBendingModes");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_applyAberrationForces");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_clearAberrationForces");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForcesByBendingModes");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForces");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActievOpticForces");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_exitEngineering");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_testAir");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_testHardpoint");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_testForceActuator");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_moveHardpointActuators");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_enableHardpointChase");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_disableHardpointChase");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_abortRaiseM1M3");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_translateM1M3");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_stopHardpointMotion");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_positionM1M3");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_turnLightsOn");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_turnLightsOff");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_turnPowerOn");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_turnPowerOff");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_enableHardpointCorrections");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_disableHardpointCorrections");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForcesByMirrorForce");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_updatePID");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_resetPID");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_programILC");
-	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
-	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Azimuth");
-	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Elevation");
+	this->initCommand("MTM1M3_command_start");
+	this->initCommand("MTM1M3_command_enable");
+	this->initCommand("MTM1M3_command_disable");
+	this->initCommand("MTM1M3_command_standby");
+	this->initCommand("MTM1M3_command_shutdown");
+	this->initCommand("MTM1M3_command_turnAirOn");
+	this->initCommand("MTM1M3_command_turnAirOff");
+	this->initCommand("MTM1M3_command_applyOffsetForces");
+	this->initCommand("MTM1M3_command_clearOffsetForces");
+	this->initCommand("MTM1M3_command_raiseM1M3");
+	this->initCommand("MTM1M3_command_lowerM1M3");
+	this->initCommand("MTM1M3_command_applyAberrationForcesByBendingModes");
+	this->initCommand("MTM1M3_command_applyAberrationForces");
+	this->initCommand("MTM1M3_command_clearAberrationForces");
+	this->initCommand("MTM1M3_command_applyActiveOpticForcesByBendingModes");
+	this->initCommand("MTM1M3_command_applyActiveOpticForces");
+	this->initCommand("MTM1M3_command_clearActiveOpticForces");
+	this->initCommand("MTM1M3_command_enterEngineering");
+	this->initCommand("MTM1M3_command_exitEngineering");
+	this->initCommand("MTM1M3_command_testAir");
+	this->initCommand("MTM1M3_command_testHardpoint");
+	this->initCommand("MTM1M3_command_testForceActuator");
+	this->initCommand("MTM1M3_command_moveHardpointActuators");
+	this->initCommand("MTM1M3_command_enableHardpointChase");
+	this->initCommand("MTM1M3_command_disableHardpointChase");
+	this->initCommand("MTM1M3_command_abortRaiseM1M3");
+	this->initCommand("MTM1M3_command_translateM1M3");
+	this->initCommand("MTM1M3_command_stopHardpointMotion");
+	this->initCommand("MTM1M3_command_positionM1M3");
+	this->initCommand("MTM1M3_command_turnLightsOn");
+	this->initCommand("MTM1M3_command_turnLightsOff");
+	this->initCommand("MTM1M3_command_turnPowerOn");
+	this->initCommand("MTM1M3_command_turnPowerOff");
+	this->initCommand("MTM1M3_command_enableHardpointCorrections");
+	this->initCommand("MTM1M3_command_disableHardpointCorrections");
+	this->initCommand("MTM1M3_command_applyOffsetForcesByMirrorForce");
+	this->initCommand("MTM1M3_command_updatePID");
+	this->initCommand("MTM1M3_command_resetPID");
+	this->initCommand("MTM1M3_command_programILC");
+	this->initCommand("MTM1M3_command_modbusTransmit");
+	this->initTelemetry("MTMount_Azimuth");
+	this->initTelemetry("MTMount_Elevation");
+}
+
+void M1M3SSSubscriber::initCommand(std::string topic) {
+	Log.Debug("M1M3SSSubscriber: initCommand(%s)", topic.c_str());
+	this->m1m3SAL->salProcessor((char*)topic.c_str());
+}
+
+void M1M3SSSubscriber::initTelemetry(std::string topic) {
+	Log.Debug("M1M3SSSubscriber: initTelemetry(%s)", topic.c_str());
+	this->mtMountSAL->salTelemetrySub((char*)topic.c_str());
 }
 
 Command* M1M3SSSubscriber::tryAcceptCommandStart() {

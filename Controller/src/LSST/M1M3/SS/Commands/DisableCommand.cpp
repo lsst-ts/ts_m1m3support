@@ -13,34 +13,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableC* data) {
-	this->context = context;
-	this->publisher = publisher;
-	this->commandID = commandID;
-	this->data.value = data->value;
-}
-
-bool DisableCommand::validate() {
-	if (!this->data.value) {
-		this->publisher->logCommandRejectionWarning("disable", "The field value is not TRUE.");
-	}
-	return this->data.value;
-}
+DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableC* data)
+	: SALCommand(context, publisher, commandID, data) { }
 
 void DisableCommand::execute() {
 	this->context->disable(this);
 }
 
-void DisableCommand::ackInProgress() {
-	this->publisher->ackCommandDisable(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void DisableCommand::ackComplete() {
-	this->publisher->ackCommandDisable(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void DisableCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandDisable(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+void DisableCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
+	this->publisher->ackCommandDisable(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

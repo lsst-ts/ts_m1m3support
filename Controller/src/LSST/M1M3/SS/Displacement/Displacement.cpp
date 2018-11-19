@@ -12,6 +12,8 @@
 #include <SafetyController.h>
 #include <Timestamp.h>
 #include <SAL_MTM1M3C.h>
+#include <SALEnumerations.h>
+#include <BitHelper.h>
 #include <Log.h>
 
 #include <cstring>
@@ -45,32 +47,31 @@ void Displacement::processData() {
 	if (this->fpgaData->DisplacementErrorTimestamp > this->lastErrorTimestamp) {
 		this->lastErrorTimestamp = this->fpgaData->DisplacementErrorTimestamp;
 		this->errorCleared = false;
-		this->displacementWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->DisplacementErrorTimestamp);
-		this->displacementWarning->anyWarning = this->fpgaData->DisplacementErrorCode != 0;
-		this->displacementWarning->unknownProblem = this->fpgaData->DisplacementErrorCode == 1;
-		this->displacementWarning->invalidResponse = this->fpgaData->DisplacementErrorCode == 2;
-		this->displacementWarning->responseTimeout = this->fpgaData->DisplacementErrorCode == 3;
-		this->displacementWarning->sensorReportsInvalidCommand = this->fpgaData->DisplacementErrorCode == 4;
-		this->displacementWarning->sensorReportsCommunicationTimeoutError = this->fpgaData->DisplacementErrorCode == 5;
-		this->displacementWarning->sensorReportsDataLengthError = this->fpgaData->DisplacementErrorCode == 6;
-		this->displacementWarning->sensorReportsNumberOfParametersError = this->fpgaData->DisplacementErrorCode == 7;
-		this->displacementWarning->sensorReportsParameterError = this->fpgaData->DisplacementErrorCode == 8;
-		this->displacementWarning->sensorReportsCommunicationError = this->fpgaData->DisplacementErrorCode == 9;
-		this->displacementWarning->sensorReportsIDNumberError = this->fpgaData->DisplacementErrorCode == 10;
-		this->displacementWarning->sensorReportsExpansionLineError = this->fpgaData->DisplacementErrorCode == 11;
-		this->displacementWarning->sensorReportsWriteControlError = this->fpgaData->DisplacementErrorCode == 12;
-		this->safetyController->displacementNotifyUnknownProblem(this->displacementWarning->unknownProblem);
-		this->safetyController->displacementNotifyInvalidResponse(this->displacementWarning->invalidResponse);
-		this->safetyController->displacementNotifyResponseTimeoutError(this->displacementWarning->responseTimeout);
-		this->safetyController->displacementNotifySensorReportsInvalidCommand(this->displacementWarning->sensorReportsInvalidCommand);
-		this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(this->displacementWarning->sensorReportsCommunicationTimeoutError);
-		this->safetyController->displacementNotifySensorReportsDataLengthError(this->displacementWarning->sensorReportsDataLengthError);
-		this->safetyController->displacementNotifySensorReportsNumberOfParametersError(this->displacementWarning->sensorReportsNumberOfParametersError);
-		this->safetyController->displacementNotifySensorReportsParameterError(this->displacementWarning->sensorReportsParameterError);
-		this->safetyController->displacementNotifySensorReportsCommunicationError(this->displacementWarning->sensorReportsCommunicationError);
-		this->safetyController->displacementNotifySensorReportsIDNumberError(this->displacementWarning->sensorReportsIDNumberError);
-		this->safetyController->displacementNotifySensorReportsExpansionLineError(this->displacementWarning->sensorReportsExpansionLineError);
-		this->safetyController->displacementNotifySensorReportsWriteControlError(this->displacementWarning->sensorReportsWriteControlError);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::UnknownProblem, this->fpgaData->DisplacementErrorCode == 1);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::InvalidResponse, this->fpgaData->DisplacementErrorCode == 2);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::ResponseTimeout, this->fpgaData->DisplacementErrorCode == 3);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsInvalidCommand, this->fpgaData->DisplacementErrorCode == 4);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsCommunicationTimeoutError, this->fpgaData->DisplacementErrorCode == 5);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsDataLengthError, this->fpgaData->DisplacementErrorCode == 6);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsNumberOfParametersError, this->fpgaData->DisplacementErrorCode == 7);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsParameterError, this->fpgaData->DisplacementErrorCode == 8);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsCommunicationError, this->fpgaData->DisplacementErrorCode == 9);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsIDNumberError, this->fpgaData->DisplacementErrorCode == 10);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsExpansionLineError, this->fpgaData->DisplacementErrorCode == 11);
+		BitHelper::set(&this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsWriteControlError, this->fpgaData->DisplacementErrorCode == 12);
+
+		this->safetyController->displacementNotifyUnknownProblem(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::UnknownProblem));
+		this->safetyController->displacementNotifyInvalidResponse(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::InvalidResponse));
+		this->safetyController->displacementNotifyResponseTimeoutError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::ResponseTimeout));
+		this->safetyController->displacementNotifySensorReportsInvalidCommand(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsInvalidCommand));
+		this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsCommunicationTimeoutError));
+		this->safetyController->displacementNotifySensorReportsDataLengthError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsDataLengthError));
+		this->safetyController->displacementNotifySensorReportsNumberOfParametersError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsNumberOfParametersError));
+		this->safetyController->displacementNotifySensorReportsParameterError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsParameterError));
+		this->safetyController->displacementNotifySensorReportsCommunicationError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsCommunicationError));
+		this->safetyController->displacementNotifySensorReportsIDNumberError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsIDNumberError));
+		this->safetyController->displacementNotifySensorReportsExpansionLineError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsExpansionLineError));
+		this->safetyController->displacementNotifySensorReportsWriteControlError(BitHelper::get(this->displacementWarning->displacementSensorFlags, DisplacementSensorFlags::SensorReportsWriteControlError));
 		this->publisher->tryLogDisplacementSensorWarning();
 	}
 	if (this->fpgaData->DisplacementSampleTimestamp > this->lastSampleTimestamp) {
@@ -163,31 +164,19 @@ void Displacement::processData() {
 		this->publisher->putIMSData();
 		if (!this->errorCleared && this->fpgaData->DisplacementSampleTimestamp > this->fpgaData->DisplacementErrorTimestamp) {
 			this->errorCleared = true;
-			this->displacementWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->DisplacementSampleTimestamp);
-			this->displacementWarning->unknownProblem = false;
-			this->displacementWarning->invalidResponse = false;
-			this->displacementWarning->responseTimeout = false;
-			this->displacementWarning->sensorReportsInvalidCommand = false;
-			this->displacementWarning->sensorReportsCommunicationTimeoutError = false;
-			this->displacementWarning->sensorReportsDataLengthError = false;
-			this->displacementWarning->sensorReportsNumberOfParametersError = false;
-			this->displacementWarning->sensorReportsParameterError = false;
-			this->displacementWarning->sensorReportsCommunicationError = false;
-			this->displacementWarning->sensorReportsIDNumberError = false;
-			this->displacementWarning->sensorReportsExpansionLineError = false;
-			this->displacementWarning->sensorReportsWriteControlError = false;
-			this->safetyController->displacementNotifyUnknownProblem(this->displacementWarning->unknownProblem);
-			this->safetyController->displacementNotifyInvalidResponse(this->displacementWarning->invalidResponse);
-			this->safetyController->displacementNotifyResponseTimeoutError(this->displacementWarning->responseTimeout);
-			this->safetyController->displacementNotifySensorReportsInvalidCommand(this->displacementWarning->sensorReportsInvalidCommand);
-			this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(this->displacementWarning->sensorReportsCommunicationTimeoutError);
-			this->safetyController->displacementNotifySensorReportsDataLengthError(this->displacementWarning->sensorReportsDataLengthError);
-			this->safetyController->displacementNotifySensorReportsNumberOfParametersError(this->displacementWarning->sensorReportsNumberOfParametersError);
-			this->safetyController->displacementNotifySensorReportsParameterError(this->displacementWarning->sensorReportsParameterError);
-			this->safetyController->displacementNotifySensorReportsCommunicationError(this->displacementWarning->sensorReportsCommunicationError);
-			this->safetyController->displacementNotifySensorReportsIDNumberError(this->displacementWarning->sensorReportsIDNumberError);
-			this->safetyController->displacementNotifySensorReportsExpansionLineError(this->displacementWarning->sensorReportsExpansionLineError);
-			this->safetyController->displacementNotifySensorReportsWriteControlError(this->displacementWarning->sensorReportsWriteControlError);
+			this->displacementWarning->displacementSensorFlags = 0;
+			this->safetyController->displacementNotifyUnknownProblem(false);
+			this->safetyController->displacementNotifyInvalidResponse(false);
+			this->safetyController->displacementNotifyResponseTimeoutError(false);
+			this->safetyController->displacementNotifySensorReportsInvalidCommand(false);
+			this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(false);
+			this->safetyController->displacementNotifySensorReportsDataLengthError(false);
+			this->safetyController->displacementNotifySensorReportsNumberOfParametersError(false);
+			this->safetyController->displacementNotifySensorReportsParameterError(false);
+			this->safetyController->displacementNotifySensorReportsCommunicationError(false);
+			this->safetyController->displacementNotifySensorReportsIDNumberError(false);
+			this->safetyController->displacementNotifySensorReportsExpansionLineError(false);
+			this->safetyController->displacementNotifySensorReportsWriteControlError(false);
 			this->publisher->tryLogDisplacementSensorWarning();
 		}
 	}

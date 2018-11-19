@@ -12,7 +12,7 @@
 #include <PID.h>
 
 struct MTM1M3_logevent_forceActuatorStateC;
-struct MTM1M3_logevent_forceSetpointWarningC;
+struct MTM1M3_logevent_forceActuatorWarningC;
 struct MTM1M3_logevent_appliedBalanceForcesC;
 struct MTM1M3_logevent_rejectedBalanceForcesC;
 
@@ -42,7 +42,7 @@ private:
 	PID mz;
 
 	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
 	MTM1M3_logevent_appliedBalanceForcesC* appliedBalanceForces;
 	MTM1M3_logevent_rejectedBalanceForcesC* rejectedBalanceForces;
 

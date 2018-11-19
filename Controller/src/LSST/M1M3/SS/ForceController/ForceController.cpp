@@ -19,6 +19,8 @@
 #include <vector>
 #include <Log.h>
 #include <unistd.h>
+#include <BitHelper.h>
+#include <SALEnumerations.h>
 #include <ForceConverter.h>
 
 #include <iostream>
@@ -50,11 +52,11 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->appliedCylinderForces = this->publisher->getEventAppliedCylinderForces();
 	this->appliedForces = this->publisher->getEventAppliedForces();
 	this->forceActuatorState = this->publisher->getEventForceActuatorState();
-	this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
+	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
 	this->rejectedCylinderForces = this->publisher->getEventRejectedCylinderForces();
 	this->rejectedForces = this->publisher->getEventRejectedForces();
 
-	this->forceActuatorInfo = this->publisher->getEventForceActuatorInfo();
+	this->forceActuatorPositionInfo = this->publisher->getEventForceActuatorPositionInfo();
 	this->inclinometerData = this->publisher->getInclinometerData();
 	this->forceActuatorData = this->publisher->getForceActuatorData();
 
@@ -72,7 +74,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 
 	memset(this->appliedForces, 0, sizeof(MTM1M3_logevent_appliedForcesC));
 	memset(this->forceActuatorState, 0, sizeof(MTM1M3_logevent_forceActuatorStateC));
-	memset(this->forceSetpointWarning, 0, sizeof(MTM1M3_logevent_forceSetpointWarningC));
+	memset(this->forceActuatorWarning, 0, sizeof(MTM1M3_logevent_forceActuatorWarningC));
 	memset(this->rejectedCylinderForces, 0, sizeof(MTM1M3_logevent_rejectedCylinderForcesC));
 	memset(this->rejectedForces, 0, sizeof(MTM1M3_logevent_rejectedForcesC));
 
@@ -88,12 +90,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->velocityForceComponent.reset();
 	this->finalForceComponent.reset();
 
-	double timestamp = this->publisher->getTimestamp();
-	this->forceActuatorState->timestamp = timestamp;
-	this->forceSetpointWarning->timestamp = timestamp;
-
 	this->publisher->logForceActuatorState();
-	this->publisher->logForceSetpointWarning();
+	this->publisher->logForceActuatorWarning();
 
 
 	this->mirrorWeight = 0.0;
@@ -249,7 +247,7 @@ void ForceController::processAppliedForces() {
 	this->checkNearNeighbors();
 	this->checkMirrorWeight();
 	this->checkFarNeighbors();
-	this->publisher->tryLogForceSetpointWarning();
+	this->publisher->tryLogForceActuatorWarning();
 }
 
 void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
@@ -458,13 +456,12 @@ void ForceController::convertForcesToSetpoints() {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
 		int sIndex = this->forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[pIndex];
-
-		this->forceSetpointWarning->safetyLimitWarning[pIndex] = false;
+		bool clipping = false;
 
 		if (sIndex != -1) {
 			float secondaryLowFault = this->forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].LowFault;
 			float secondaryHighFault = this->forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].HighFault;
-			switch(this->forceActuatorInfo->actuatorOrientation[pIndex]) {
+			switch(this->forceActuatorPositionInfo->actuatorOrientation[pIndex]) {
 			case ForceActuatorOrientations::PositiveY:
 				this->rejectedCylinderForces->secondaryCylinderForces[sIndex] = toInt24(this->appliedForces->yForces[yIndex] * sqrt2);
 				break;
@@ -478,13 +475,13 @@ void ForceController::convertForcesToSetpoints() {
 				this->rejectedCylinderForces->secondaryCylinderForces[sIndex] = toInt24(-this->appliedForces->yForces[yIndex] * sqrt2);
 				break;
 			}
-			this->forceSetpointWarning->safetyLimitWarning[pIndex] = this->forceSetpointWarning->safetyLimitWarning[pIndex] ||
+			clipping = clipping ||
 				!Range::InRangeAndCoerce((int)secondaryLowFault, (int)secondaryHighFault, this->rejectedCylinderForces->secondaryCylinderForces[sIndex], this->appliedCylinderForces->secondaryCylinderForces + sIndex);
 		}
 
 		float primaryLowFault = this->forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].LowFault;
 		float primaryHighFault = this->forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].HighFault;
-		switch(this->forceActuatorInfo->actuatorOrientation[pIndex]) {
+		switch(this->forceActuatorPositionInfo->actuatorOrientation[pIndex]) {
 		case ForceActuatorOrientations::PositiveY:
 			this->rejectedCylinderForces->primaryCylinderForces[pIndex] = toInt24(this->appliedForces->zForces[pIndex] - this->appliedForces->yForces[yIndex]);
 			break;
@@ -501,13 +498,12 @@ void ForceController::convertForcesToSetpoints() {
 			this->rejectedCylinderForces->primaryCylinderForces[pIndex] = toInt24(this->appliedForces->zForces[pIndex] - -this->appliedForces->yForces[yIndex]);
 			break;
 		}
-		this->forceSetpointWarning->safetyLimitWarning[pIndex] = this->forceSetpointWarning->safetyLimitWarning[pIndex] ||
+		clipping = clipping ||
 			!Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault, this->rejectedCylinderForces->primaryCylinderForces[pIndex], this->appliedCylinderForces->primaryCylinderForces + pIndex);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + pIndex, ForceActuatorFlags::ForceSetpointCylinderForceClipped, clipping);
 
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->safetyLimitWarning[pIndex];
+		rejectionRequired = rejectionRequired || clipping;
 	}
-	this->appliedCylinderForces->timestamp = this->publisher->getTimestamp();
-	this->rejectedCylinderForces->timestamp = this->appliedCylinderForces->timestamp;
 	this->safetyController->forceControllerNotifySafetyLimit(rejectionRequired);
 	if (rejectionRequired) {
 		this->publisher->logRejectedCylinderForces();
@@ -520,22 +516,21 @@ bool ForceController::checkMirrorMoments() {
 	float xMoment = this->appliedForces->mX;
 	float yMoment = this->appliedForces->mY;
 	float zMoment = this->appliedForces->mZ;
-	this->forceSetpointWarning->xMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentHighLimitPercentage, this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentLowLimitPercentage, xMoment);
-	this->forceSetpointWarning->yMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentHighLimitPercentage, this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentLowLimitPercentage, yMoment);
-	this->forceSetpointWarning->zMomentWarning = !Range::InRange(this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentHighLimitPercentage, this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentLowLimitPercentage, zMoment);
-	this->safetyController->forceControllerNotifyXMomentLimit(this->forceSetpointWarning->xMomentWarning);
-	this->safetyController->forceControllerNotifyYMomentLimit(this->forceSetpointWarning->yMomentWarning);
-	this->safetyController->forceControllerNotifyZMomentLimit(this->forceSetpointWarning->zMomentWarning);
-	return this->forceSetpointWarning->xMomentWarning ||
-			this->forceSetpointWarning->yMomentWarning ||
-			this->forceSetpointWarning->zMomentWarning;
+	BitHelper::set(&this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointXMomentWarning, !Range::InRange(this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentHighLimitPercentage, this->forceActuatorSettings->MirrorXMoment * this->forceActuatorSettings->SetpointXMomentLowLimitPercentage, xMoment));
+	BitHelper::set(&this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointYMomentWarning, !Range::InRange(this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentHighLimitPercentage, this->forceActuatorSettings->MirrorYMoment * this->forceActuatorSettings->SetpointYMomentLowLimitPercentage, yMoment));
+	BitHelper::set(&this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointZMomentWarning, !Range::InRange(this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentHighLimitPercentage, this->forceActuatorSettings->MirrorZMoment * this->forceActuatorSettings->SetpointZMomentLowLimitPercentage, zMoment));
+	this->safetyController->forceControllerNotifyXMomentLimit(BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointXMomentWarning));
+	this->safetyController->forceControllerNotifyYMomentLimit(BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointYMomentWarning));
+	this->safetyController->forceControllerNotifyZMomentLimit(BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointZMomentWarning));
+	return BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointXMomentWarning) ||
+			BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointYMomentWarning) ||
+			BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointZMomentWarning);
 }
 
 bool ForceController::checkNearNeighbors() {
 	Log.Trace("ForceController: checkNearNeighbors()");
 	float nominalZ = this->mirrorWeight / (float)FA_COUNT;
-	bool warningChanged = false;
-	this->forceSetpointWarning->anyNearNeighborWarning = false;
+	bool anyWarning = false;
 	for(int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
 		float nearZ = 0;
 		int nearNeighbors = this->neighbors[zIndex].NearZIDs.size();
@@ -549,13 +544,11 @@ bool ForceController::checkNearNeighbors() {
 
 		deltaZ = std::abs(this->appliedForces->zForces[zIndex] - nearZ);
 
-		bool previousWarning = this->forceSetpointWarning->nearNeighborWarning[zIndex];
-		this->forceSetpointWarning->nearNeighborWarning[zIndex] = deltaZ > (nominalZ * this->forceActuatorSettings->SetpointNearNeighborLimitPercentage);
-		this->forceSetpointWarning->anyNearNeighborWarning = this->forceSetpointWarning->anyNearNeighborWarning || this->forceSetpointWarning->nearNeighborWarning[zIndex];
-		warningChanged = warningChanged || (this->forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointNearNeighborLimitExceeded, deltaZ > (nominalZ * this->forceActuatorSettings->SetpointNearNeighborLimitPercentage));
+		anyWarning = anyWarning || BitHelper::get(this->forceActuatorWarning->forceActuatorFlags[zIndex], ForceActuatorFlags::ForceSetpointNearNeighborLimitExceeded);
 	}
-	this->safetyController->forceControllerNotifyNearNeighborCheck(this->forceSetpointWarning->anyNearNeighborWarning);
-	return warningChanged;
+	this->safetyController->forceControllerNotifyNearNeighborCheck(anyWarning);
+	return anyWarning;
 }
 
 bool ForceController::checkMirrorWeight() {
@@ -573,10 +566,9 @@ bool ForceController::checkMirrorWeight() {
 		z += abs(this->appliedForces->zForces[i]);
 	}
 	float globalForce = x + y + z;
-	bool previousWarning = this->forceSetpointWarning->magnitudeWarning;
-	this->forceSetpointWarning->magnitudeWarning = globalForce > (this->mirrorWeight * this->forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
-	this->safetyController->forceControllerNotifyMagnitudeLimit(this->forceSetpointWarning->magnitudeWarning);
-	return this->forceSetpointWarning->magnitudeWarning != previousWarning;
+	BitHelper::set(&this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointMagnitudeWarning, globalForce > (this->mirrorWeight * this->forceActuatorSettings->SetpointMirrorWeightLimitPercentage));
+	this->safetyController->forceControllerNotifyMagnitudeLimit(BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointMagnitudeWarning));
+	return BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointMagnitudeWarning);
 }
 
 bool ForceController::checkFarNeighbors() {
@@ -590,8 +582,7 @@ bool ForceController::checkFarNeighbors() {
 	if (tolerance < 1) {
 		tolerance = 1;
 	}
-	bool warningChanged = false;
-	this->forceSetpointWarning->anyFarNeighborWarning = false;
+	bool anyWarning = false;
 	for(int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -626,13 +617,11 @@ bool ForceController::checkFarNeighbors() {
 		}
 		float magnitude = sqrt(x * x + y * y + z * z);
 		float magnitudeAverage = magnitude / (farNeighbors + 1.0);
-		bool previousWarning = this->forceSetpointWarning->farNeighborWarning[zIndex];
-		this->forceSetpointWarning->farNeighborWarning[zIndex] = !Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce);
-		this->forceSetpointWarning->anyFarNeighborWarning = this->forceSetpointWarning->anyFarNeighborWarning || this->forceSetpointWarning->farNeighborWarning[zIndex];
-		warningChanged = warningChanged || (this->forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning);
+		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointFarNeighborLimitExceeded, !Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce));
+		anyWarning = anyWarning || BitHelper::get(this->forceActuatorWarning->forceActuatorFlags[zIndex], ForceActuatorFlags::ForceSetpointFarNeighborLimitExceeded);
 	}
-	this->safetyController->forceControllerNotifyFarNeighborCheck(this->forceSetpointWarning->anyFarNeighborWarning);
-	return warningChanged;
+	this->safetyController->forceControllerNotifyFarNeighborCheck(anyWarning);
+	return anyWarning;
 }
 
 } /* namespace SS */

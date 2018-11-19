@@ -15,7 +15,6 @@
 struct MTMount_ElevationC;
 struct MTMount_AzimuthC;
 struct MTM1M3_logevent_appliedCylinderForcesC;
-struct MTM1M3_logevent_forceActuatorInfoC;
 struct MTM1M3_hardpointActuatorDataC;
 
 namespace LSST {
@@ -33,7 +32,6 @@ private:
 	MTMount_ElevationC* tmaElevation;
 	MTMount_AzimuthC* tmaAzimuth;
 	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
-	MTM1M3_logevent_forceActuatorInfoC* forceActuatorInfo;
 	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
 	int lastRequest;
 	std::queue<uint16_t> u8Response;

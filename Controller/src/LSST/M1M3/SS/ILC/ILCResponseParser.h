@@ -11,21 +11,25 @@
 #include <DataTypes.h>
 #include <ILCDataTypes.h>
 
+struct MTM1M3_logevent_modbusWarningC;
 struct MTM1M3_logevent_hardpointActuatorInfoC;
 struct MTM1M3_logevent_hardpointActuatorStateC;
 struct MTM1M3_logevent_hardpointActuatorWarningC;
 struct MTM1M3_hardpointActuatorDataC;
-struct MTM1M3_logevent_forceActuatorInfoC;
+struct MTM1M3_logevent_forceActuatorBackupCalibrationInfoC;
+struct MTM1M3_logevent_forceActuatorILCInfoC;
+struct MTM1M3_logevent_forceActuatorIdInfoC;
+struct MTM1M3_logevent_forceActuatorMainCalibrationInfoC;
+struct MTM1M3_logevent_forceActuatorMezzanineCalibrationInfoC;
+struct MTM1M3_logevent_forceActuatorPositionInfoC;
 struct MTM1M3_logevent_forceActuatorStateC;
 struct MTM1M3_logevent_forceActuatorWarningC;
-struct MTM1M3_logevent_forceActuatorForceWarningC;
 struct MTM1M3_logevent_appliedCylinderForcesC;
 struct MTM1M3_forceActuatorDataC;
 struct MTM1M3_logevent_hardpointMonitorInfoC;
 struct MTM1M3_logevent_hardpointMonitorStateC;
 struct MTM1M3_logevent_hardpointMonitorWarningC;
 struct MTM1M3_hardpointMonitorDataC;
-struct MTM1M3_logevent_ilcWarningC;
 struct MTM1M3_outerLoopDataC;
 struct MTM1M3_logevent_modbusResponseC;
 
@@ -52,15 +56,21 @@ private:
 	int32_t hpExpectedResponses[6];
 	int32_t hmExpectedResponses[6];
 
+	MTM1M3_logevent_modbusWarningC* modbusWarning;
+
 	MTM1M3_logevent_hardpointActuatorInfoC* hardpointActuatorInfo;
 	MTM1M3_logevent_hardpointActuatorStateC* hardpointActuatorState;
 	MTM1M3_logevent_hardpointActuatorWarningC* hardpointActuatorWarning;
 	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
 
-	MTM1M3_logevent_forceActuatorInfoC* forceActuatorInfo;
+	MTM1M3_logevent_forceActuatorBackupCalibrationInfoC* forceActuatorBackupCalibrationInfo;
+	MTM1M3_logevent_forceActuatorILCInfoC* forceActuatorILCInfo;
+	MTM1M3_logevent_forceActuatorIdInfoC* forceActuatorIdInfo;
+	MTM1M3_logevent_forceActuatorMainCalibrationInfoC* forceActuatorMainCalibrationInfo;
+	MTM1M3_logevent_forceActuatorMezzanineCalibrationInfoC* forceActuatorMezzanineCalibrationInfo;
+	MTM1M3_logevent_forceActuatorPositionInfoC* forceActuatorPositionInfo;
 	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
 	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_forceActuatorForceWarningC* forceWarning;
 	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
 	MTM1M3_forceActuatorDataC* forceActuatorData;
 
@@ -68,8 +78,6 @@ private:
 	MTM1M3_logevent_hardpointMonitorStateC* hardpointMonitorState;
 	MTM1M3_logevent_hardpointMonitorWarningC* hardpointMonitorWarning;
 	MTM1M3_hardpointMonitorDataC* hardpointMonitorData;
-
-	MTM1M3_logevent_ilcWarningC* ilcWarning;
 
 	MTM1M3_outerLoopDataC* outerLoopData;
 
@@ -89,7 +97,9 @@ public:
 private:
 	bool validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
 	void parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp, bool valid);
-	void parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId);
+	void parseHPErrorResponse(ModbusBuffer* buffer, int32_t subnet, int32_t dataIndex);
+	void parseFAErrorResponse(ModbusBuffer* buffer, int32_t subnet, int32_t dataIndex);
+	void parseHMErrorResponse(ModbusBuffer* buffer, int32_t subnet, int32_t dataIndex);
 	void parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCMap map);
 	void parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map);
 	void parseReportHMServerIDResponse(ModbusBuffer* buffer, ILCMap map);
@@ -128,18 +138,6 @@ private:
 
 	void checkForceActuatorMeasuredForce(ILCMap map);
 	void checkForceActuatorFollowingError(ILCMap map);
-
-	void publishForceActuatorForceWarning();
-
-	void warnResponseTimeout(double timestamp, int32_t actuatorId);
-	void warnInvalidCRC(double timestamp);
-	void warnIllegalFunction(double timestamp, int32_t actuatorId);
-	void warnIllegalDataValue(double timestamp, int32_t actuatorId);
-	void warnInvalidLength(double timestamp, int32_t actuatorId);
-	void warnUnknownSubnet(double timestamp);
-	void warnUnknownAddress(double timestamp, int32_t actuatorId);
-	void warnUnknownFunction(double timestamp, int32_t actuatorId);
-	void warnUnknownProblem(double timestamp, int32_t actuatorId);
 };
 
 } /* namespace SS */

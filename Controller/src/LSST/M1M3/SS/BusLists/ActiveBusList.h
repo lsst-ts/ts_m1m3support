@@ -21,7 +21,7 @@ private:
 	MTM1M3_forceActuatorDataC* forceActuatorData;
 	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
 	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
-	MTM1M3_logevent_forceActuatorInfoC* forceInfo;
+	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
 
 	int32_t setForceCommandIndex[5];
 	int32_t hpFreezeCommandIndex[5];
@@ -31,7 +31,7 @@ private:
 	int32_t lvdtSampleClock;
 
 public:
-	ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces);
+	ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces, MTM1M3_logevent_forceActuatorStateC* forceActuatorState);
 
 	void update();
 };
