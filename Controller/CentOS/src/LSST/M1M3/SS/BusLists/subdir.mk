@@ -17,10 +17,7 @@ CPP_SRCS += \
 ../src/LSST/M1M3/SS/BusLists/ReportDCAStatusBusList.cpp \
 ../src/LSST/M1M3/SS/BusLists/ReportServerIDBusList.cpp \
 ../src/LSST/M1M3/SS/BusLists/ReportServerStatusBusList.cpp \
-../src/LSST/M1M3/SS/BusLists/ResetBustList.cpp \
-../src/LSST/M1M3/SS/BusLists/SetADCChanneOffsetAndSensitivityBusList.cpp \
-../src/LSST/M1M3/SS/BusLists/SetADCScanRateBusList.cpp \
-../src/LSST/M1M3/SS/BusLists/SetBoostValveDCAGainBusList.cpp 
+../src/LSST/M1M3/SS/BusLists/ResetBustList.cpp 
 
 OBJS += \
 ./src/LSST/M1M3/SS/BusLists/ActiveBusList.o \
@@ -36,10 +33,7 @@ OBJS += \
 ./src/LSST/M1M3/SS/BusLists/ReportDCAStatusBusList.o \
 ./src/LSST/M1M3/SS/BusLists/ReportServerIDBusList.o \
 ./src/LSST/M1M3/SS/BusLists/ReportServerStatusBusList.o \
-./src/LSST/M1M3/SS/BusLists/ResetBustList.o \
-./src/LSST/M1M3/SS/BusLists/SetADCChanneOffsetAndSensitivityBusList.o \
-./src/LSST/M1M3/SS/BusLists/SetADCScanRateBusList.o \
-./src/LSST/M1M3/SS/BusLists/SetBoostValveDCAGainBusList.o 
+./src/LSST/M1M3/SS/BusLists/ResetBustList.o 
 
 CPP_DEPS += \
 ./src/LSST/M1M3/SS/BusLists/ActiveBusList.d \
@@ -55,10 +49,7 @@ CPP_DEPS += \
 ./src/LSST/M1M3/SS/BusLists/ReportDCAStatusBusList.d \
 ./src/LSST/M1M3/SS/BusLists/ReportServerIDBusList.d \
 ./src/LSST/M1M3/SS/BusLists/ReportServerStatusBusList.d \
-./src/LSST/M1M3/SS/BusLists/ResetBustList.d \
-./src/LSST/M1M3/SS/BusLists/SetADCChanneOffsetAndSensitivityBusList.d \
-./src/LSST/M1M3/SS/BusLists/SetADCScanRateBusList.d \
-./src/LSST/M1M3/SS/BusLists/SetBoostValveDCAGainBusList.d 
+./src/LSST/M1M3/SS/BusLists/ResetBustList.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

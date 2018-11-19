@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/LSST/M1M3/SS/Include/SALEnumerations.cpp \
 ../src/LSST/M1M3/SS/Include/pugixml.cpp 
 
 OBJS += \
+./src/LSST/M1M3/SS/Include/SALEnumerations.o \
 ./src/LSST/M1M3/SS/Include/pugixml.o 
 
 CPP_DEPS += \
+./src/LSST/M1M3/SS/Include/SALEnumerations.d \
 ./src/LSST/M1M3/SS/Include/pugixml.d 
 
 

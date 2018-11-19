@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/LSST/M1M3/SS/Utility/BitHelper.cpp \
 ../src/LSST/M1M3/SS/Utility/CRC.cpp \
 ../src/LSST/M1M3/SS/Utility/Checksum.cpp \
 ../src/LSST/M1M3/SS/Utility/ForceConverter.cpp \
@@ -12,6 +13,7 @@ CPP_SRCS += \
 ../src/LSST/M1M3/SS/Utility/U8ArrayUtilities.cpp 
 
 OBJS += \
+./src/LSST/M1M3/SS/Utility/BitHelper.o \
 ./src/LSST/M1M3/SS/Utility/CRC.o \
 ./src/LSST/M1M3/SS/Utility/Checksum.o \
 ./src/LSST/M1M3/SS/Utility/ForceConverter.o \
@@ -20,6 +22,7 @@ OBJS += \
 ./src/LSST/M1M3/SS/Utility/U8ArrayUtilities.o 
 
 CPP_DEPS += \
+./src/LSST/M1M3/SS/Utility/BitHelper.d \
 ./src/LSST/M1M3/SS/Utility/CRC.d \
 ./src/LSST/M1M3/SS/Utility/Checksum.d \
 ./src/LSST/M1M3/SS/Utility/ForceConverter.d \

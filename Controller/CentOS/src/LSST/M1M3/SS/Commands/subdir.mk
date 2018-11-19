@@ -31,6 +31,7 @@ CPP_SRCS += \
 ../src/LSST/M1M3/SS/Commands/ProgramILCCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/RaiseM1M3Command.cpp \
 ../src/LSST/M1M3/SS/Commands/ResetPIDCommand.cpp \
+../src/LSST/M1M3/SS/Commands/SALCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/ShutdownCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/StandbyCommand.cpp \
 ../src/LSST/M1M3/SS/Commands/StartCommand.cpp \
@@ -78,6 +79,7 @@ OBJS += \
 ./src/LSST/M1M3/SS/Commands/ProgramILCCommand.o \
 ./src/LSST/M1M3/SS/Commands/RaiseM1M3Command.o \
 ./src/LSST/M1M3/SS/Commands/ResetPIDCommand.o \
+./src/LSST/M1M3/SS/Commands/SALCommand.o \
 ./src/LSST/M1M3/SS/Commands/ShutdownCommand.o \
 ./src/LSST/M1M3/SS/Commands/StandbyCommand.o \
 ./src/LSST/M1M3/SS/Commands/StartCommand.o \
@@ -125,6 +127,7 @@ CPP_DEPS += \
 ./src/LSST/M1M3/SS/Commands/ProgramILCCommand.d \
 ./src/LSST/M1M3/SS/Commands/RaiseM1M3Command.d \
 ./src/LSST/M1M3/SS/Commands/ResetPIDCommand.d \
+./src/LSST/M1M3/SS/Commands/SALCommand.d \
 ./src/LSST/M1M3/SS/Commands/ShutdownCommand.d \
 ./src/LSST/M1M3/SS/Commands/StandbyCommand.d \
 ./src/LSST/M1M3/SS/Commands/StartCommand.d \
