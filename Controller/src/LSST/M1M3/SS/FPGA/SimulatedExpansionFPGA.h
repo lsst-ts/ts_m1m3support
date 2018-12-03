@@ -11,11 +11,17 @@
 #include <NiFpga.h>
 #include <IExpansionFPGA.h>
 
+#define RND_CNT 50
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 class SimulatedExpansionFPGA: public IExpansionFPGA {
+private:
+	float rnd[RND_CNT];
+	int rndIndex;
+	float getRnd();
 public:
 	SimulatedExpansionFPGA();
 

@@ -44,6 +44,7 @@ M1M3SSPublisher::M1M3SSPublisher(SAL_MTM1M3* m1m3SAL) {
 	this->initEvent("MTM1M3_logevent_appliedCylinderForces");
 	this->initEvent("MTM1M3_logevent_appliedElevationForces");
 	this->initEvent("MTM1M3_logevent_appliedForces");
+	this->initEvent("MTM1M3_logevent_appliedHardpointSteps");
 	this->initEvent("MTM1M3_logevent_appliedOffsetForces");
 	this->initEvent("MTM1M3_logevent_appliedSettingsMatchStart");
 	this->initEvent("MTM1M3_logevent_appliedStaticForces");
@@ -324,6 +325,24 @@ void M1M3SSPublisher::tryLogAppliedForces() {
 	}
 	if (changeDetected) {
 		this->logAppliedForces();
+	}
+}
+
+void M1M3SSPublisher::logAppliedHardpointSteps() {
+	this->m1m3SAL->logEvent_appliedHardpointSteps(&this->eventAppliedHardpointSteps, 0);
+	this->previousEventAppliedHardpointSteps = this->eventAppliedHardpointSteps;
+}
+
+void M1M3SSPublisher::tryLogAppliedHardpointSteps() {
+	bool changeDetected = false;
+	for(int i = 0; i < HP_COUNT && !changeDetected; ++i) {
+		changeDetected = changeDetected ||
+			this->eventAppliedHardpointSteps.targetEncoderValues[i] != this->previousEventAppliedHardpointSteps.targetEncoderValues[i] ||
+			this->eventAppliedHardpointSteps.queuedSteps[i] != this->previousEventAppliedHardpointSteps.queuedSteps[i] ||
+			this->eventAppliedHardpointSteps.commandedSteps[i] != this->previousEventAppliedHardpointSteps.commandedSteps[i];
+	}
+	if (changeDetected) {
+		this->logAppliedHardpointSteps();
 	}
 }
 

@@ -18,13 +18,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces, MTM1M3_logevent_forceActuatorStateC* forceActuatorState)
+ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_logevent_appliedHardpointStepsC* appliedHardpointSteps, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces, MTM1M3_logevent_forceActuatorStateC* forceActuatorState)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("RaisedBusList: RaisedBusList()");
 	this->outerLoopData = outerLoopData;
 	this->forceActuatorData = forceActuatorData;
 	this->appliedCylinderForces = appliedCylinderForces;
-	this->hardpointActuatorData = hardpointActuatorData;
+	this->appliedHardpointSteps = appliedHardpointSteps;
 	this->forceActuatorState = forceActuatorState;
 	this->lvdtSampleClock = 0;
 	for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {

@@ -6,6 +6,7 @@
  */
 
 #include <SimulatedExpansionFPGA.h>
+#include <cstdlib>
 #include <Log.h>
 
 namespace LSST {
@@ -14,6 +15,19 @@ namespace SS {
 
 SimulatedExpansionFPGA::SimulatedExpansionFPGA() {
 	Log.Debug("SimulatedExpansionFPGA: SimulatedExpansionFPGA()");
+
+	for(int i = 0; i < RND_CNT; ++i) {
+		this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
+	}
+	this->rndIndex = 0;
+}
+
+float SimulatedExpansionFPGA::getRnd() {
+	++this->rndIndex;
+	if (this->rndIndex > RND_CNT) {
+		this->rndIndex = 0;
+	}
+	return this->rnd[rndIndex];
 }
 
 int32_t SimulatedExpansionFPGA::initialize() {
@@ -45,12 +59,12 @@ int32_t SimulatedExpansionFPGA::sample() {
 }
 
 int32_t SimulatedExpansionFPGA::readSlot1(float* data) {
-	data[0] = 1.1;
-	data[1] = 1.2;
-	data[2] = 1.3;
-	data[3] = 1.4;
-	data[4] = 1.5;
-	data[5] = 1.6;
+	data[0] = 1.0 + this->getRnd() * 0.5;
+	data[1] = 1.0 + this->getRnd() * 0.5;
+	data[2] = 1.0 + this->getRnd() * 0.5;
+	data[3] = 1.0 + this->getRnd() * 0.5;
+	data[4] = 1.0 + this->getRnd() * 0.5;
+	data[5] = 1.0 + this->getRnd() * 0.5;
 	return 0;
 }
 

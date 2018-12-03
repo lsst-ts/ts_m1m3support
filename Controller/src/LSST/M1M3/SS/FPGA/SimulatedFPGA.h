@@ -12,10 +12,14 @@
 #include <queue>
 #include <ILCSubnetData.h>
 
+#define RND_CNT 50
+
 struct MTMount_ElevationC;
 struct MTMount_AzimuthC;
 struct MTM1M3_logevent_appliedCylinderForcesC;
+struct MTM1M3_logevent_appliedHardpointStepsC;
 struct MTM1M3_hardpointActuatorDataC;
+struct MTM1M3_outerLoopDataC;
 
 namespace LSST {
 namespace M1M3 {
@@ -32,7 +36,9 @@ private:
 	MTMount_ElevationC* tmaElevation;
 	MTMount_AzimuthC* tmaAzimuth;
 	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
+	MTM1M3_logevent_appliedHardpointStepsC* appliedHardpointSteps;
 	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
+	MTM1M3_outerLoopDataC* outerLoopData;
 	int lastRequest;
 	std::queue<uint16_t> u8Response;
 	std::queue<uint16_t> u16Response;
@@ -46,6 +52,10 @@ private:
 	void writeModbus(std::queue<uint16_t>* response, uint16_t data);
 	void writeModbusCRC(std::queue<uint16_t>* response);
 	uint16_t readModbus(uint16_t data);
+
+	float rnd[RND_CNT];
+	int rndIndex;
+	float getRnd();
 
 public:
 	SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_ElevationC* tmaElevation, MTMount_AzimuthC* tmaAzimuth, ForceActuatorApplicationSettings* forceActuatorApplicationSettings);

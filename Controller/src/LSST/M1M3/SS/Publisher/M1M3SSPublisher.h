@@ -43,6 +43,7 @@ private:
 	MTM1M3_logevent_appliedCylinderForcesC eventAppliedCylinderForces;
 	MTM1M3_logevent_appliedElevationForcesC eventAppliedElevationForces;
 	MTM1M3_logevent_appliedForcesC eventAppliedForces;
+	MTM1M3_logevent_appliedHardpointStepsC eventAppliedHardpointSteps;
 	MTM1M3_logevent_appliedOffsetForcesC eventAppliedOffsetForces;
 	MTM1M3_logevent_appliedSettingsMatchStartC eventAppliedSettingsMatchStart;
 	MTM1M3_logevent_appliedStaticForcesC eventAppliedStaticForces;
@@ -102,6 +103,7 @@ private:
 	MTM1M3_logevent_appliedCylinderForcesC previousEventAppliedCylinderForces;
 	MTM1M3_logevent_appliedElevationForcesC previousEventAppliedElevationForces;
 	MTM1M3_logevent_appliedForcesC previousEventAppliedForces;
+	MTM1M3_logevent_appliedHardpointStepsC previousEventAppliedHardpointSteps;
 	MTM1M3_logevent_appliedOffsetForcesC previousEventAppliedOffsetForces;
 	MTM1M3_logevent_appliedSettingsMatchStartC previousEventAppliedSettingsMatchStart;
 	MTM1M3_logevent_appliedStaticForcesC previousEventAppliedStaticForces;
@@ -178,6 +180,7 @@ public:
 	MTM1M3_logevent_appliedCylinderForcesC* getEventAppliedCylinderForces() { return &this->eventAppliedCylinderForces; }
 	MTM1M3_logevent_appliedElevationForcesC* getEventAppliedElevationForces() { return &this->eventAppliedElevationForces; }
 	MTM1M3_logevent_appliedForcesC* getEventAppliedForces() { return &this->eventAppliedForces; }
+	MTM1M3_logevent_appliedHardpointStepsC* getEventAppliedHardpointSteps() { return &this->eventAppliedHardpointSteps; }
 	MTM1M3_logevent_appliedOffsetForcesC* getEventAppliedOffsetForces() { return &this->eventAppliedOffsetForces; }
 	MTM1M3_logevent_appliedSettingsMatchStartC* getEventAppliedSettingsMatchStart() { return &this->eventAppliedSettingsMatchStart; }
 	MTM1M3_logevent_appliedStaticForcesC* getEventAppliedStaticForces() { return &this->eventAppliedStaticForces; }
@@ -261,6 +264,8 @@ public:
 	void tryLogAppliedElevationForces();
 	void logAppliedForces();
 	void tryLogAppliedForces();
+	void logAppliedHardpointSteps();
+	void tryLogAppliedHardpointSteps();
 	void logAppliedOffsetForces();
 	void tryLogAppliedOffsetForces();
 	void logAppliedSettingsMatchStart();

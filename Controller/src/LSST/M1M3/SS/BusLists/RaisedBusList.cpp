@@ -18,13 +18,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces, MTM1M3_logevent_forceActuatorStateC* forceActuatorState)
+RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_logevent_appliedHardpointStepsC* appliedHardpointSteps, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces, MTM1M3_logevent_forceActuatorStateC* forceActuatorState)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("RaisedBusList: RaisedBusList()");
 	this->outerLoopData = outerLoopData;
 	this->forceActuatorData = forceActuatorData;
 	this->appliedCylinderForces = appliedCylinderForces;
-	this->hardpointActuatorData = hardpointActuatorData;
+	this->appliedHardpointSteps = appliedHardpointSteps;
 	this->forceActuatorState = forceActuatorState;
 	this->lvdtSampleClock = 0;
 	for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
@@ -86,7 +86,7 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 				int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
 				// Steps are swapped because negative steps extend and positive steps retract
 				// This doesn't match what most people would expect so we are swapping it
-				steps[address - 1] = -this->hardpointActuatorData->stepsCommanded[dataIndex];
+				steps[address - 1] = -this->appliedHardpointSteps->commandedSteps[dataIndex];
 			}
 			this->ilcMessageFactory->broadcastStepMotor(&this->buffer, this->outerLoopData->broadcastCounter, steps);
 			this->buffer.writeTimestamp();
@@ -177,7 +177,7 @@ void RaisedBusList::update() {
 				int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
 				// Steps are swapped because negative steps extend and positive steps retract
 				// This doesn't match what most people would expect so we are swapping it
-				steps[address - 1] = -this->hardpointActuatorData->stepsCommanded[dataIndex];
+				steps[address - 1] = -this->appliedHardpointSteps->commandedSteps[dataIndex];
 			}
 			this->buffer.setIndex(this->moveStepCommandIndex[subnetIndex]);
 			this->ilcMessageFactory->broadcastStepMotor(&this->buffer, this->outerLoopData->broadcastCounter, steps);

@@ -50,8 +50,8 @@ ILC::ILC(M1M3SSPublisher* publisher, IFPGA* fpga, PositionController* positionCo
    busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby, ILCModes::Standby),
    busListChangeILCModeClearFaults(&this->subnetData, &this->ilcMessageFactory, ILCModes::ClearFaults, ILCModes::ClearFaults),
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
-   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventAppliedCylinderForces(), publisher->getEventForceActuatorState()),
-   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventAppliedCylinderForces(), publisher->getEventForceActuatorState()),
+   busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getEventAppliedHardpointSteps(), publisher->getEventAppliedCylinderForces(), publisher->getEventForceActuatorState()),
+   busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getEventAppliedHardpointSteps(), publisher->getEventAppliedCylinderForces(), publisher->getEventForceActuatorState()),
    firmwareUpdate(fpga, &this->subnetData) {
 	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
@@ -365,7 +365,12 @@ void ILC::publishForceActuatorState() {
 }
 
 void ILC::publishForceActuatorInfo() {
-
+	this->publisher->logForceActuatorBackupCalibrationInfo();
+	this->publisher->logForceActuatorILCInfo();
+	this->publisher->logForceActuatorIdInfo();
+	this->publisher->logForceActuatorMainCalibrationInfo();
+	this->publisher->logForceActuatorMezzanineCalibrationInfo();
+	this->publisher->logForceActuatorPositionInfo();
 }
 
 void ILC::publishForceActuatorStatus() {

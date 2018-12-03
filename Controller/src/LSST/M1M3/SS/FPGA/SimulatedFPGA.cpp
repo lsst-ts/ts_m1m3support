@@ -15,6 +15,7 @@
 #include <CRC.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <unistd.h>
+#include <cstdlib>
 #include <Log.h>
 
 namespace LSST {
@@ -29,6 +30,8 @@ SimulatedFPGA::SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_ElevationC* tma
 	this->tmaAzimuth = tmaAzimuth;
 	this->appliedCylinderForces = this->publisher->getEventAppliedCylinderForces();
 	this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
+	this->appliedHardpointSteps = this->publisher->getEventAppliedHardpointSteps();
+	this->outerLoopData = this->publisher->getOuterLoopData();
 	this->lastRequest = -1;
 	memset(&this->supportFPGAData, 0, sizeof(SupportFPGAData));
 	this->supportFPGAData.DigitalInputStates = 0x0001 | 0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
@@ -38,6 +41,18 @@ SimulatedFPGA::SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_ElevationC* tma
 	this->hardpointActuatorData->encoder[3] = 27424;
 	this->hardpointActuatorData->encoder[4] = 17560;
 	this->hardpointActuatorData->encoder[5] = 23546;
+	for(int i = 0; i < RND_CNT; ++i) {
+		this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
+	}
+	this->rndIndex = 0;
+}
+
+float SimulatedFPGA::getRnd() {
+	++this->rndIndex;
+	if (this->rndIndex > RND_CNT) {
+		this->rndIndex = 0;
+	}
+	return this->rnd[rndIndex];
 }
 
 int32_t SimulatedFPGA::initialize() {
@@ -101,7 +116,7 @@ void SimulatedFPGA::pullTelemetry() {
 	this->supportFPGAData.InclinometerErrorTimestamp = 0;
 	this->supportFPGAData.InclinometerErrorCode = 0;
 	this->supportFPGAData.InclinometerSampleTimestamp = timestamp;
-	this->supportFPGAData.InclinometerAngleRaw = (int32_t)this->tmaElevation->Elevation_Angle_Actual * 1000.0;
+	this->supportFPGAData.InclinometerAngleRaw = (int32_t)(this->tmaElevation->Elevation_Angle_Actual * 1000.0) + (this->getRnd() * 5.0);
 	this->supportFPGAData.DisplacementTxBytes = 0;
 	this->supportFPGAData.DisplacementRxBytes = 0;
 	this->supportFPGAData.DisplacementTxFrames = 0;
@@ -109,24 +124,24 @@ void SimulatedFPGA::pullTelemetry() {
 	this->supportFPGAData.DisplacementErrorTimestamp = 0;
 	this->supportFPGAData.DisplacementErrorCode = 0;
 	this->supportFPGAData.DisplacementSampleTimestamp = timestamp;
-	this->supportFPGAData.DisplacementRaw1 = 0;
-	this->supportFPGAData.DisplacementRaw2 = 0;
-	this->supportFPGAData.DisplacementRaw3 = 0;
-	this->supportFPGAData.DisplacementRaw4 = 0;
-	this->supportFPGAData.DisplacementRaw5 = 0;
-	this->supportFPGAData.DisplacementRaw6 = 0;
-	this->supportFPGAData.DisplacementRaw7 = 0;
-	this->supportFPGAData.DisplacementRaw8 = 0;
+	this->supportFPGAData.DisplacementRaw1 = (int32_t)(this->getRnd() + 10) * 1000.0;
+	this->supportFPGAData.DisplacementRaw2 = (int32_t)(this->getRnd() + 20) * 1000.0;
+	this->supportFPGAData.DisplacementRaw3 = (int32_t)(this->getRnd() + 30) * 1000.0;
+	this->supportFPGAData.DisplacementRaw4 = (int32_t)(this->getRnd() + 40) * 1000.0;
+	this->supportFPGAData.DisplacementRaw5 = (int32_t)(this->getRnd() + 50) * 1000.0;
+	this->supportFPGAData.DisplacementRaw6 = (int32_t)(this->getRnd() + 60) * 1000.0;
+	this->supportFPGAData.DisplacementRaw7 = (int32_t)(this->getRnd() + 70) * 1000.0;
+	this->supportFPGAData.DisplacementRaw8 = (int32_t)(this->getRnd() + 80) * 1000.0;
 	this->supportFPGAData.AccelerometerSampleCount++;
 	this->supportFPGAData.AccelerometerSampleTimestamp = timestamp;
-	this->supportFPGAData.AccelerometerRaw1 = 0;
-	this->supportFPGAData.AccelerometerRaw2 = 0;
-	this->supportFPGAData.AccelerometerRaw3 = 0;
-	this->supportFPGAData.AccelerometerRaw4 = 0;
-	this->supportFPGAData.AccelerometerRaw5 = 0;
-	this->supportFPGAData.AccelerometerRaw6 = 0;
-	this->supportFPGAData.AccelerometerRaw7 = 0;
-	this->supportFPGAData.AccelerometerRaw8 = 0;
+	this->supportFPGAData.AccelerometerRaw1 = this->getRnd() * 0.01;
+	this->supportFPGAData.AccelerometerRaw2 = this->getRnd() * 0.01;
+	this->supportFPGAData.AccelerometerRaw3 = this->getRnd() * 0.01;
+	this->supportFPGAData.AccelerometerRaw4 = this->getRnd() * 0.01;
+	this->supportFPGAData.AccelerometerRaw5 = this->getRnd() * 0.01;
+	this->supportFPGAData.AccelerometerRaw6 = this->getRnd() * 0.01;
+	this->supportFPGAData.AccelerometerRaw7 = this->getRnd() * 0.01;
+	this->supportFPGAData.AccelerometerRaw8 = this->getRnd() * 0.01;
 	this->supportFPGAData.GyroTxBytes = 0;
 	this->supportFPGAData.GyroRxBytes = 0;
 	this->supportFPGAData.GyroTxFrames = 0;
@@ -134,15 +149,15 @@ void SimulatedFPGA::pullTelemetry() {
 	this->supportFPGAData.GyroErrorTimestamp = 0;
 	this->supportFPGAData.GyroErrorCode = 0;
 	this->supportFPGAData.GyroSampleTimestamp = timestamp;
-	this->supportFPGAData.GyroRawX = 0;
-	this->supportFPGAData.GyroRawY = 0;
-	this->supportFPGAData.GyroRawZ = 0;
+	this->supportFPGAData.GyroRawX = this->getRnd() * 0.01;
+	this->supportFPGAData.GyroRawY = this->getRnd() * 0.01;
+	this->supportFPGAData.GyroRawZ = this->getRnd() * 0.01;
 	this->supportFPGAData.GyroStatus = 0x7F;
 	this->supportFPGAData.GyroSequenceNumber++;
 	if (this->supportFPGAData.GyroSequenceNumber > 127) {
 		this->supportFPGAData.GyroSequenceNumber = 0;
 	}
-	this->supportFPGAData.GyroTemperature = 0;
+	this->supportFPGAData.GyroTemperature = 24 + int(this->getRnd() * 2);
 	this->supportFPGAData.GyroBITTimestamp = timestamp;
 	this->supportFPGAData.GyroBIT0 = 0x7F;
 	this->supportFPGAData.GyroBIT1 = 0x7F;
@@ -233,8 +248,8 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 		}
 		case FPGAAddresses::AirSupplyValveControl: {
 			int state = data[i++];
-			this->supportFPGAData.DigitalOutputStates = (this->supportFPGAData.DigitalOutputStates & 0xEF) | (state ? 0x10 : 0x00);
-			this->supportFPGAData.DigitalInputStates = (this->supportFPGAData.DigitalInputStates & 0xFCFF) | (state ? 0x0100 : 0x0200);
+			this->supportFPGAData.DigitalOutputStates = (this->supportFPGAData.DigitalOutputStates & 0xEF) | (state ? 0x00 : 0x10);
+			this->supportFPGAData.DigitalInputStates = (this->supportFPGAData.DigitalInputStates & 0xFCFF) | (state ? 0x0200 : 0x0100);
 			break;
 		}
 		case FPGAAddresses::MirrorCellLightControl: {
@@ -415,9 +430,9 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 						uint16_t word3 = this->readModbus(data[i++]);
 						this->writeModbus(response, address); // Write Address
 						this->writeModbus(response, function); // Write Function
-						this->writeModbus(response, 0); // TODO: Write ILC Status (Broadcast Counter)
+						this->writeModbus(response, (uint8_t)this->outerLoopData->broadcastCounter); // Write ILC Status
 						uint8_t buffer[4];
-						float force = ((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0;
+						float force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) + (this->getRnd() * 0.5);
 						memcpy(buffer, &force, 4);
 						this->writeModbus(response, buffer[3]);
 						this->writeModbus(response, buffer[2]);
@@ -427,7 +442,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 							word1 = this->readModbus(data[i++]);
 							word2 = this->readModbus(data[i++]);
 							word3 = this->readModbus(data[i++]);
-							force = ((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0;
+							force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) + (this->getRnd() * 0.5);
 							memcpy(buffer, &force, 4);
 							this->writeModbus(response, buffer[3]);
 							this->writeModbus(response, buffer[2]);
@@ -440,16 +455,16 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 					case 76: { // Force And Status
 						this->writeModbus(response, address); // Write Address
 						this->writeModbus(response, function); // Write Function
-						this->writeModbus(response, 0); // TODO: Write ILC Status (Broadcast Counter)
+						this->writeModbus(response, (uint8_t)this->outerLoopData->broadcastCounter); // Write ILC Status
 						uint8_t buffer[4];
-						float force = ((float)this->appliedCylinderForces->primaryCylinderForces[pIndex]) / 1000.0; // Update to Primary Cylinder Force
+						float force = (((float)this->appliedCylinderForces->primaryCylinderForces[pIndex]) / 1000.0) + (this->getRnd() * 0.5); // Update to Primary Cylinder Force
 						memcpy(buffer, &force, 4);
 						this->writeModbus(response, buffer[3]);
 						this->writeModbus(response, buffer[2]);
 						this->writeModbus(response, buffer[1]);
 						this->writeModbus(response, buffer[0]); // Write Primary Cylinder Force
 						if (address > 16) {
-							force = ((float)this->appliedCylinderForces->secondaryCylinderForces[sIndex]) / 1000.0; // Update to Secondary Cylinder Force
+							force = (((float)this->appliedCylinderForces->secondaryCylinderForces[sIndex]) / 1000.0) + (this->getRnd() * 0.5); // Update to Secondary Cylinder Force
 							memcpy(buffer, &force, 4);
 							this->writeModbus(response, buffer[3]);
 							this->writeModbus(response, buffer[2]);
@@ -580,7 +595,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 						int steps = data[i++]; // Read Steps
 						this->writeModbus(response, address); // Write Address
 						this->writeModbus(response, function); // Write Function
-						this->writeModbus(response, 0); // TODO: Write ILC Status (Broadcast Counter)
+						this->writeModbus(response, (uint8_t)this->outerLoopData->broadcastCounter); // Write ILC Status
 						// Number of steps issued / 4 + current encoder
 						// The encoder is also inverted after being received to match axis direction
 						// So we have to also invert the encoder here to counteract that
@@ -596,7 +611,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 						this->writeModbus(response, (encoder >> 8) & 0xFF);
 						this->writeModbus(response, encoder & 0xFF); // Write Encoder
 						uint8_t buffer[4];
-						float force = 0.0;
+						float force = this->getRnd() * 8.0;
 						memcpy(buffer, &force, 4);
 						this->writeModbus(response, buffer[3]);
 						this->writeModbus(response, buffer[2]);
@@ -606,10 +621,10 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 						break;
 					}
 					case 67: { // Force And Status
-						int steps = this->hardpointActuatorData->stepsCommanded[address - 1];
+						int steps = this->appliedHardpointSteps->commandedSteps[address - 1];
 						this->writeModbus(response, address); // Write Address
 						this->writeModbus(response, function); // Write Function
-						this->writeModbus(response, 0); // TODO: Write ILC Status (Broadcast Counter)
+						this->writeModbus(response, (uint8_t)this->outerLoopData->broadcastCounter); // Write ILC Status
 						// Number of steps issued / 4 + current encoder
 						// The encoder is also inverted after being received to match axis direction
 						// So we have to also invert the encoder here to counteract that
@@ -628,7 +643,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
 						this->writeModbus(response, (encoder >> 8) & 0xFF);
 						this->writeModbus(response, encoder & 0xFF); // Write Encoder
 						uint8_t buffer[4];
-						float force = 0.0;
+						float force = this->getRnd() * 8.0;
 						memcpy(buffer, &force, 4);
 						this->writeModbus(response, buffer[3]);
 						this->writeModbus(response, buffer[2]);

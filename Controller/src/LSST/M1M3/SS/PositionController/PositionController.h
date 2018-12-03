@@ -11,6 +11,7 @@
 #include <DataTypes.h>
 
 struct MTM1M3_hardpointActuatorDataC;
+struct MTM1M3_logevent_appliedHardpointStepsC;
 struct MTM1M3_logevent_hardpointActuatorStateC;
 struct MTM1M3_logevent_hardpointActuatorInfoC;
 
@@ -29,11 +30,11 @@ private:
 	M1M3SSPublisher* publisher;
 
 	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
+	MTM1M3_logevent_appliedHardpointStepsC* appliedHardpointSteps;
 	MTM1M3_logevent_hardpointActuatorStateC* hardpointActuatorState;
 	MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
 
 	int32_t scaledMaxStepsPerLoop[6];
-	int32_t targetEncoderValues[6];
 	int32_t stableEncoderCount[6];
 
 public:

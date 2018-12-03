@@ -17,8 +17,8 @@ EnableHardpointChaseCommand::EnableHardpointChaseCommand(Context* context, M1M3S
 	: SALCommand(context, publisher, commandID, data) { }
 
 bool EnableHardpointChaseCommand::validate() {
-	if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
-		this->ackInvalidParameter("The field hardpointActuator must be in range [1, 6].");
+	if (!(this->data.hardpointActuator >= 0 && this->data.hardpointActuator <= 5)) {
+		this->ackInvalidParameter("The field hardpointActuator must be in range [0, 5].");
 		return false;
 	}
 	return true;

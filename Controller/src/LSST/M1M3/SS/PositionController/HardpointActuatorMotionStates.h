@@ -12,11 +12,11 @@
 
 struct HardpointActuatorMotionStates {
 	enum Type {
-		Standby = 0,
-		Chasing = 1,
-		Stepping = 2,
-		QuickPositioning = 3,
-		FinePositioning = 4,
+		Standby = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Standby,
+		Chasing = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Chasing,
+		Stepping = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Stepping,
+		QuickPositioning = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_QuickPositioning,
+		FinePositioning = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_FinePositioning,
 	};
 };
 

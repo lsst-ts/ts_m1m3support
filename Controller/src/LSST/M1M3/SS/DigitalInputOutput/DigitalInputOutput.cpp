@@ -79,12 +79,12 @@ void DigitalInputOutput::processData() {
 		this->cellLightStatus->cellLightsOn = (this->fpgaData->DigitalInputStates & 0x0400) != 0;
 		BitHelper::set(&this->cellLightWarning->cellLightFlags, CellLightFlags::CellLightSensorMismatch, this->cellLightStatus->cellLightsCommandedOn != this->cellLightStatus->cellLightsOn);
 
-		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AuxPowerNetworksOff, (this->fpgaData->DigitalInputStates & 0x0001));
-		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::ThermalEquipmentOff, (this->fpgaData->DigitalInputStates & 0x0002));
-		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AirSupplyOff, (this->fpgaData->DigitalInputStates & 0x0008));
-		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::CabinetDoorOpen, (this->fpgaData->DigitalInputStates & 0x0010));
-		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::TMAMotionStop, (this->fpgaData->DigitalInputStates & 0x0040));
-		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::GISHeartbeatLost, (this->fpgaData->DigitalInputStates & 0x0080));
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AuxPowerNetworksOff, (this->fpgaData->DigitalInputStates & 0x0001) == 0);
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::ThermalEquipmentOff, (this->fpgaData->DigitalInputStates & 0x0002) == 0);
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::AirSupplyOff, (this->fpgaData->DigitalInputStates & 0x0008) == 0);
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::CabinetDoorOpen, (this->fpgaData->DigitalInputStates & 0x0010) == 0);
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::TMAMotionStop, (this->fpgaData->DigitalInputStates & 0x0040) == 0);
+		BitHelper::set(&this->interlockWarning->interlockSystemFlags, InterlockSystemFlags::GISHeartbeatLost, (this->fpgaData->DigitalInputStates & 0x0080) == 0);
 
 		if (this->safetyController) {
 			this->safetyController->airControllerNotifyCommandSensorMismatch(BitHelper::get(this->airSupplyWarning->airSupplyFlags, AirSupplyFlags::AirValveSensorMismatch));
