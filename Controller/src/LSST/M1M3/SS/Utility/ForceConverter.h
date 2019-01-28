@@ -20,11 +20,10 @@ namespace SS {
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class ForceConverter {
-private:
-	static double const sqrt2 = 1.4142135623730950488016887242097;
-	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
+#define sqrt2           1.41421356237309504880168872420970
+#define reciprocalSqrt2 0.70710678118654752440084436210485
 
+class ForceConverter {
 public:
 	static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
 		*xForce = secondaryCylinder * reciprocalSqrt2;
