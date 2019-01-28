@@ -295,6 +295,7 @@
 									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Commands&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Context&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Controller&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Domain&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/FPGA&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/Gyro&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../src/LSST/M1M3/SS/ILC&quot;"/>

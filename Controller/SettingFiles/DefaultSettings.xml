@@ -1,0 +1,95 @@
+<Settings>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="0" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="1" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="2" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="3" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="4" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="5" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="6" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageToCorrectedVoltage" index="7" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="0" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="1" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="2" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="3" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="4" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="5" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="6" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="CorrectedVoltageToLinearAcceleration" index="7" m="1" b="0"/>
+	<Setting model="AccelerometerSystem" field="LinearAccelerationToAngularAcceleration" index="0" distance="1"/>
+	<Setting model="AccelerometerSystem" field="LinearAccelerationToAngularAcceleration" index="1" distance="1"/>
+	<Setting model="AccelerometerSystem" field="LinearAccelerationToAngularAcceleration" index="2" distance="1"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="0" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="1" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="2" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="3" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="4" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="5" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="6" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="RawVoltageLimit" index="7" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="AngularAccelerationLimit" index="0" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="AngularAccelerationLimit" index="1" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="AccelerometerSystem" field="AngularAccelerationLimit" index="2" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	
+	<Setting model="AirSystem" field="AirValveOpenedSensor" bitSet="8"/>
+	<Setting model="AirSystem" field="AirValveClosedSensor" bitSet="9"/>
+	<Setting model="AirSystem" field="AirCommandedOpenAirValveOpenedSensorLimit" warningNotEqual="true" period="50" faultPeriod="50"/>
+	<Setting model="AirSystem" field="AirCommandedOpenAirValveClosedSensorLimit" warningNotEqual="false" period="50" faultPeriod="50"/>
+	<Setting model="AirSystem" field="AirCommandedClosedAirValveOpenedSensorLimit" warningNotEqual="false" period="50" faultPeriod="50"/>
+	<Setting model="AirSystem" field="AirCommandedClosedAirValveClosedSensorLimit" warningNotEqual="true" period="50" faultPeriod="50"/>
+	<Setting model="AirSystem" field="AirValveCommandBit" value="4"/>
+	
+	<Setting model="GyroSystem" field="RawAngularVelocityToAngularVelocity" index="0" m="1" b="0"/>
+	<Setting model="GyroSystem" field="RawAngularVelocityToAngularVelocity" index="1" m="1" b="0"/>
+	<Setting model="GyroSystem" field="RawAngularVelocityToAngularVelocity" index="2" m="1" b="0"/>
+	<Setting model="GyroSystem" field="RawAngularVelocityLimit" index="0" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="GyroSystem" field="RawAngularVelocityLimit" index="1" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="GyroSystem" field="RawAngularVelocityLimit" index="2" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="GyroSystem" field="AngularVelocityLimit" index="0" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="GyroSystem" field="AngularVelocityLimit" index="0" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="GyroSystem" field="AngularVelocityLimit" index="0" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="GyroSystem" field="TemperatureLimit" warningNotInRangeLow="0" warningNotInRangeHigh="0" faultNotInRangeLow="0" faultNotInRangeHigh="0"/>
+	<Setting model="GyroSystem" field="StatusFlagLimit" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="0" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="1" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="2" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="3" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="4" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="5" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="6" warningNotEqual="127"/>
+	<Setting model="GyroSystem" field="BITFlagLimit" index="7" warningNotEqual="127"/>
+	
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="0" m="-0.0001" b="50"/>
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="1" m="-0.0001" b="50"/>
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="2" m="-0.0001" b="50"/>
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="3" m="-0.0001" b="50"/>
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="4" m="-0.0001" b="50"/>
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="5" m="+0.0001" b="0"/>
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="6" m="-0.0001" b="50"/>
+	<Setting model="IMSSystem" field="RawDisplacementToDisplacement" index="7" m="+0.0001" b="0"/>
+	<Setting model="IMSSystem" field="DisplacementToRawPositionFilePath" value=""/>
+	<Setting model="IMSSystem" field="RawPositionToPosition" index="0" m="0.001" b="0"/>
+	<Setting model="IMSSystem" field="RawPositionToPosition" index="1" m="0.001" b="0"/>
+	<Setting model="IMSSystem" field="RawPositionToPosition" index="2" m="0.001" b="0"/>
+	<Setting model="IMSSystem" field="RawPositionToPosition" index="3" m="0.001" b="0"/>
+	<Setting model="IMSSystem" field="RawPositionToPosition" index="4" m="0.001" b="0"/>
+	<Setting model="IMSSystem" field="RawPositionToPosition" index="5" m="0.001" b="0"/>
+	
+	<Setting model="InterlockSystem" field="AuxPowerNetworkOff" notBitSet="0"/>
+	<Setting model="InterlockSystem" field="ThermalEquipmentOff" notBitSet="1"/>
+	<Setting model="InterlockSystem" field="AirSupplyOff" notBitSet="3"/>
+	<Setting model="InterlockSystem" field="CabinetDoorOpen" notBitSet="4"/>
+	<Setting model="InterlockSystem" field="TMAMotionStop" notBitSet="6"/>
+	<Setting model="InterlockSystem" field="GISHeartbeatLost" notBitSet="7"/>
+	<Setting model="InterlockSystem" field="AuxPowerNetworkOffLimit" faultNotEqual="false"/>
+	<Setting model="InterlockSystem" field="ThermalEquipmentOffLimit" faultNotEqual="false"/>
+	<Setting model="InterlockSystem" field="AirSupplyOffLimit" faultNotEqual="false"/>
+	<Setting model="InterlockSystem" field="CabinetDoorOpenLimit" faultNotEqual="false"/>
+	<Setting model="InterlockSystem" field="TMAMotionStopLimit" faultNotEqual="false"/>
+	<Setting model="InterlockSystem" field="GISHeartbeatLostLimit" faultNotEqual="false"/>
+	<Setting model="InterlockSystem" field="HeartbeatCommandBit" value="0"/>
+	
+	<Setting model="LightSystem" field="LightSensor" bitSet="10"/>
+	<Setting model="LightSystem" field="LightOnLightSensorLimit" warningNotEqual="true" period="25" warningPeriod"25"/>
+	<Setting model="LightSystem" field="LightOffLightSensorLimit" warningNotEqual="false" period="25" warningPeriod"25"/>
+	<Setting model="LightSystem" field="LightCommandBit" value="5"/>
+</Settings>

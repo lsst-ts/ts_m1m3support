@@ -29,6 +29,7 @@ RM := rm -rf
 -include src/LSST/M1M3/SS/ForceController/subdir.mk
 -include src/LSST/M1M3/SS/FirmwareUpdate/subdir.mk
 -include src/LSST/M1M3/SS/FPGA/subdir.mk
+-include src/LSST/M1M3/SS/Domain/subdir.mk
 -include src/LSST/M1M3/SS/Displacement/subdir.mk
 -include src/LSST/M1M3/SS/DigitalInputOutput/subdir.mk
 -include src/LSST/M1M3/SS/Controller/subdir.mk

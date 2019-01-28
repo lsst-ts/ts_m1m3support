@@ -5,128 +5,69 @@
  *      Author: ccontaxis
  */
 
+#include <queue>
+#include <Functions.h>
+#include <LimitDefinitions.h>
+
 #ifndef LSST_M1M3_SS_DOMAIN_DOMAIN_H_
 #define LSST_M1M3_SS_DOMAIN_DOMAIN_H_
 
-#define LIMIT_NONE                                             0
-#define LIMIT_LOW_FAULT                                        1
-#define LIMIT_LOW_WARNING                                      2
-#define LIMIT_OK                                               3
-#define LIMIT_HIGH_WARNING                                     4
-#define LIMIT_HIGH_FAULT                                       5
+using namespace LSST::M1M3::SS;
 
-struct Limit {
-	enum Type {
-		None = 0,
-		Ok = 0,
-		Warning = 1,
-		LowWarning = 1,
-		HighWarning = 1,
-		Fault = 2,
-		LowFault = 2,
-		HighFault = 2
-	};
+#define ACCELEROMETER_COUNT                                 8
+#define ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT       3
+#define ACCELEROMETER_1X                                    0
+#define ACCELEROMETER_1Y                                    1
+#define ACCELEROMETER_2X                                    2
+#define ACCELEROMETER_2Y                                    3
+#define ACCELEROMETER_3X                                    4
+#define ACCELEROMETER_3Y                                    5
+#define ACCELEROMETER_4X                                    6
+#define ACCELEROMETER_4Y                                    7
+#define ACCELEROMETER_ANGULAR_ACCELERATION_X                0
+#define ACCELEROMETER_ANGULAR_ACCELERATION_Y                1
+#define ACCELEROMETER_ANGULAR_ACCELERATION_Z                2
+
+struct AccelerometerSettings {
+	LinearFunction<float> RawVoltageToCorrectedVoltage[ACCELEROMETER_COUNT];
+	LinearFunction<float> CorrectedVoltageToLinearAcceleration[ACCELEROMETER_COUNT];
+	AngularAccelerationFunction LinearAccelerationToAngularAcceleration[ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT];
+	NotInRangeLimitDefinition<float> RawVoltageLimit[ACCELEROMETER_COUNT];
+	NotInRangeLimitDefinition<float> AngularAccelerationLimit[ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT];
 };
 
-template <class a> class LimitDefinition {
-public:
-	virtual ~LimitDefinition();
-
-	virtual Limit check(a value) { return Limit::None; }
-};
-
-template <class a> class LimitEvaluator {
-private:
-	LimitDefinition<a> initialStrategy;
-	LimitDefinition<a> currentStrategy;
-public:
-	LimitEvaluator(LimitDefinition<a> initialStrategy) {
-		this->initialStrategy = initialStrategy;
-		this->reset();
-	}
-
-	void reset() { this->currentStrategy = this->initialStrategy; }
-	void changeStrategy(LimitDefinition<a> newStrategy) { this->currentStrategy = newStrategy; }
-	Limit check(a value) { return this->currentStrategy.check(value); }
-};
-
-template <class a> class ValueCorrection {
-public:
-	virtual ~ValueCorrection();
-
-	virtual a Process(a value) { return value; }
-};
-
-#define DC_ACCELEROMETER_COUNT                                 8
-#define DC_ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT       3
-#define DC_ACCELEROMETER_1X                                    0
-#define DC_ACCELEROMETER_1Y                                    1
-#define DC_ACCELEROMETER_2X                                    2
-#define DC_ACCELEROMETER_2Y                                    3
-#define DC_ACCELEROMETER_3X                                    4
-#define DC_ACCELEROMETER_3Y                                    5
-#define DC_ACCELEROMETER_4X                                    6
-#define DC_ACCELEROMETER_4Y                                    7
-#define DC_ACCELEROMETER_ANGULAR_ACCELERATION_X                0
-#define DC_ACCELEROMETER_ANGULAR_ACCELERATION_Y                1
-#define DC_ACCELEROMETER_ANGULAR_ACCELERATION_Z                2
-
-struct DCAccelerometerSettings {
-	LimitEvaluator<float> RawAccelerometerLimits[DC_ACCELEROMETER_COUNT];
-	LimitEvaluator<float> AccelerometerLimits[DC_ACCELEROMETER_COUNT];
-	LimitEvaluator<float> AngularAccelerationLimits[DC_ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT];
-	ValueCorrection<float> RawAccelerometerCorrections[DC_ACCELEROMETER_COUNT];
-	ValueCorrection<float> AccelerometerCorrections[DC_ACCELEROMETER_COUNT];
-	ValueCorrection<float> AngularAccelerationCorrections[DC_ACCELEROMETER_COUNT];
-};
-
-struct DCAccelerometerData {
+struct AccelerometerData {
 	double SampleTimestamp;
-	float RawAccelerometerValues[DC_ACCELEROMETER_COUNT];
-	float AccelerometerValues[DC_ACCELEROMETER_COUNT];
-	float AngularAccelerationValues[DC_ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT];
+	float RawVoltage[ACCELEROMETER_COUNT];
+	float CorrectedVoltage[ACCELEROMETER_COUNT];
+	float LinearAcceleration[ACCELEROMETER_COUNT];
+	float AngularAcceleration[ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT];
+	Limit RawVoltageLimit[ACCELEROMETER_COUNT];
+	Limit AngularAccelerationLimit[ACCELEROMETER_ANGULAR_ACCELERATION_AXIS_COUNT];
 };
 
-#define DI_MASK_INTERLOCK_AUX_POWER_NETWORKS_OFF               0x0001
-#define DI_MASK_INTERLOCK_THERMAL_EQUIPMENT_OFF                0x0002
-#define DI_MASK_INTERLOCK_AIR_SUPPLY_OFF                       0x0008
-#define DI_MASK_INTERLOCK_CABINET_DOOR_OPEN                    0x0010
-#define DI_MASK_INTERLOCK_TMA_MOTION_STOP                      0x0040
-#define DI_MASK_INTERLOCK_GIS_HEARTBEAT_LOST                   0x0080
-#define DI_MASK_AIR_VALVE_OPENED                               0x0100
-#define DI_MASK_AIR_VALVE_CLOSED                               0x0200
-#define DI_MASK_CELL_LIGHTS_ON                                 0x0400
-
-
-struct DISettings {
-	LimitEvaluator<int> InterlockAuxPowerNetworkOffLimit;
-	LimitEvaluator<int> InterlockAirSupplyOffLimit;
-	LimitEvaluator<int> InterlockCabinetDoorOpenLimit;
-	LimitEvaluator<int> InterlockTMAMotionStopLimit;
-	LimitEvaluator<int> InterlockGISHeartbeatLostLimit;
-	LimitEvaluator<int> AirValveOpenedLimit;
-	LimitEvaluator<int> AirValveClosedLimit;
-	LimitEvaluator<int> CellLightsOnLimit;
+struct AirSystemSettings {
+	BitSetFunction AirValveOpenedSensor;
+	BitSetFunction AirValveClosedSensor;
+	NotEqualLimitDefinition<bool> AirCommandedOpenAirValveOpenedSensorLimit;
+	NotEqualLimitDefinition<bool> AirCommandedOpenAirValveClosedSensorLimit;
+	NotEqualLimitDefinition<bool> AirCommandedClosedAirValveOpenedSensorLimit;
+	NotEqualLimitDefinition<bool> AirCommandedClosedAirValveClosedSensorLimit;
+	TimedLimitDefinition AirCommandedOpenAirValveOpenedSensorLimitTimed;
+	TimedLimitDefinition AirCommandedOpenAirValveClosedSensorLimitTimed;
+	TimedLimitDefinition AirCommandedClosedAirValveOpenedSensorLimitTimed;
+	TimedLimitDefinition AirCommandedClosedAirValveClosedSensorLimitTimed;
+	int AirValveCommandBit;
 };
 
-struct DIData {
+struct AirSystemData {
 	double SampleTimestamp;
-	int DIState;
-};
-
-#define DO_MASK_HEARTBEAT_OUTPUT_ON                            0x01
-#define DO_MASK_AIR_OUTPUT_ON                                  0x10
-#define DO_MASK_CELL_LIGHTS_OUTPUT_ON                          0x20
-
-struct DOSettings {
-	LimitEvaluator<int> HeartbeatOutputLimit;
-	LimitEvaluator<int> AirOutputOnLimit;
-	LimitEvaluator<int> CellLightsOnLimit;
-};
-
-struct DOData {
-	double SampleTimestamp;
-	int DOState;
+	unsigned long RawSample;
+	bool AirValveOpenedSensor;
+	bool AirValveClosedSensor;
+	Limit AirValveOpenedSensorLimit;
+	Limit AirValveClosedSensorLimit;
+	bool AirValveCommandedOpen;
 };
 
 #define GYRO_AXIS_COUNT                                        3
@@ -147,22 +88,78 @@ struct DOData {
 #define GYRO_ERROR_CRC_MISMATCH                                2
 #define GYRO_ERROR_INCOMPLETE_FRAME                            3
 
-struct GyroSettings {
-	LimitEvaluator<float> AngularVelocityLimits[GYRO_AXIS_COUNT];
-	LimitEvaluator<float> TemperatureLimits;
-	LimitEvaluator<int> AxisStatusFlagLimit;
-	LimitEvaluator<int> BITValueLimits[GYRO_BIT_WORD_COUNT];
-	ValueCorrection<float> AngularVelocityCorrections[GYRO_AXIS_COUNT];
+struct GyroSystemSettings {
+	LinearFunction<float> RawAngularVelocityToAngularVelocity[GYRO_AXIS_COUNT];
+	NotInRangeLimitDefinition<float> RawAngularVelocityLimit[GYRO_AXIS_COUNT];
+	NotInRangeLimitDefinition<float> AngularVelocityLimit[GYRO_AXIS_COUNT];
+	NotInRangeLimitDefinition<int> TemperatureLimit;
+	NotEqualLimitDefinition<int> StatusFlagLimit;
+	NotEqualLimitDefinition<int> BITFlagLimit[GYRO_BIT_WORD_COUNT];
 };
 
-struct GyroData {
+struct GyroSystemData {
 	double SampleTimestamp;
-	float AngularVelocityValues[GYRO_AXIS_COUNT];
+	float RawAngularVelocity[GYRO_AXIS_COUNT];
+	float AngularVelocity[GYRO_AXIS_COUNT];
 	int SequenceNumber;
 	int Temperature;
 	int StatusFlag;
 	double BITTimestamp;
-	int BITValues[GYRO_BIT_WORD_COUNT];
+	int BITFlag[GYRO_BIT_WORD_COUNT];
+	Limit RawAngularVelocityLimit[GYRO_AXIS_COUNT];
+	Limit AngularVelocityLimit[GYRO_AXIS_COUNT];
+	Limit TemperatureLimit;
+	Limit StatusFlagLimit;
+	Limit BITFlagLimit[GYRO_BIT_WORD_COUNT];
+};
+
+struct InterlockSystemSettings {
+	NotBitSetFunction AuxPowerNetworkOff;
+	NotBitSetFunction ThermalEquipmentOff;
+	NotBitSetFunction AirSupplyOff;
+	NotBitSetFunction CabinetDoorOpen;
+	NotBitSetFunction TMAMotionStop;
+	NotBitSetFunction GISHeartbeatLost;
+	NotBitSetLimitDefinition AuxPowerNetworkOffLimit;
+	NotBitSetLimitDefinition ThermalEquipmentOffLimit;
+	NotBitSetLimitDefinition AirSupplyOffLimit;
+	NotBitSetLimitDefinition CabinetDoorOpenLimit;
+	NotBitSetLimitDefinition TMAMotionStopLimit;
+	NotBitSetLimitDefinition GISHeartbeatLostLimit;
+	int HeartbeatCommandBit;
+};
+
+struct InterlockSystemData {
+	double SampleTimestamp;
+	unsigned long RawSample;
+	bool AuxPowerNetworkOff;
+	bool ThermalEquipmentOff;
+	bool AirSupplyOff;
+	bool CabinetDoorOpen;
+	bool TMAMotionStop;
+	bool GISHeartbeatLost;
+	Limit AuxPowerNetworkOffLimit;
+	Limit ThermalEquipmentOffLimit;
+	Limit AirSupplyOffLimit;
+	Limit CabinetDoorOpenLimit;
+	Limit TMAMotionStopLimit;
+	Limit GISHeartbeatLostLimit;
+	bool HeartbeatCommandedHigh;
+};
+
+struct LightSystemSettings {
+	NotEqualLimitDefinition<bool> LightOnLightSensorLimit;
+	NotEqualLimitDefinition<bool> LightOffLightSensorLimit;
+	TimedLimitDefinition LightOnLightSensorLimitTimed;
+	TimedLimitDefinition LightOffLightSensorLimitTimed;
+	int LightCommandBit;
+};
+
+struct LightSystemData {
+	double SampleTimestamp;
+	unsigned long RawSample;
+	Limit LightSensorLimit;
+	bool LightCommandedOn;
 };
 
 #define IMS_SENSOR_COUNT                                       8
@@ -195,18 +192,26 @@ struct GyroData {
 #define IMS_ERROR_SENSOR_REPORTS_EXPANSION_LINE_ERROR          11
 #define IMS_ERROR_SENSOR_REPORTS_WRITE_CONTROL_ERROR           12
 
-struct IMSSettings {
-	LimitDefinition<float> RawDisplacementLimits[IMS_SENSOR_COUNT];
-	LimitDefinition<float> MirrorPositionLimits[IMS_AXIS_COUNT];
-	ValueCorrection<float> RawDisplacementCorrections[IMS_SENSOR_COUNT];
-	ValueCorrection<float> MirrorPositionCorrections[IMS_AXIS_COUNT];
+struct IMSSystemSettings {
+	LinearFunction<float> RawDisplacementToDisplacement[IMS_SENSOR_COUNT];
+	Matrix1x8Function DisplacementToRawPosition[IMS_AXIS_COUNT];
+	LinearFunction<float> RawPositionToPosition[IMS_AXIS_COUNT];
+	NotInRangeLimitDefinition<int> RawDisplacementLimit[IMS_SENSOR_COUNT];
+	NotInRangeLimitDefinition<float> PositionLimit[IMS_AXIS_COUNT];
+	NotEqualLimitDefinition<int> ErrorCodeLimit;
 };
 
-struct IMSData {
+struct IMSSystemData {
 	double SampleTimestamp;
-	float RawDisplacementValues[IMS_SENSOR_COUNT];
-	float MirrorPositionValues[IMS_AXIS_COUNT];
-	int ErrorFlags;
+	int RawDisplacement[IMS_SENSOR_COUNT];
+	float Displacement[IMS_SENSOR_COUNT];
+	float RawPosition[IMS_AXIS_COUNT];
+	float Position[IMS_AXIS_COUNT];
+	double ErrorTimestamp;
+	int ErrorCode;
+	Limit RawDisplacementLimit[IMS_SENSOR_COUNT];
+	Limit PositionLimit[IMS_AXIS_COUNT];
+	Limit ErrorCodeLimit;
 };
 
 #define INCLINOMETER_ERROR_NONE                                0
@@ -219,15 +224,21 @@ struct IMSData {
 #define INCLINOMETER_ERROR_SENSOR_REPORTS_ILLEGAL_FUNCTION     7
 #define INCLINOMETER_ERROR_SENSOR_REPORTS_ILLEGAL_DATA_ADDRESS 8
 
-struct InclinometerSettings {
-	LimitDefinition<float> InclinometerLimit;
-	ValueCorrection<float> InclinometerCorrection;
+struct InclinometerSystemSettings {
+	LinearFunction<float> RawInclinomterToInclinometer;
+	NotInRangeLimitDefinition<float> RawInclinometerLimit;
+	NotInRangeLimitDefinition<float> InclinometerLimit;
+	NotEqualLimitDefinition<int> ErrorCodeLimit;
 };
 
-struct InclinometerData {
+struct InclinometerSystemData {
 	double SampleTimestamp;
+	float RawInclinometerAngle;
 	float InclinometerAngle;
 	int ErrorFlags;
+	Limit RawInclinometerLimit;
+	Limit InclinometerLimit;
+	Limit ErrorCodeLimit;
 };
 
 #endif /* LSST_M1M3_SS_DOMAIN_DOMAIN_H_ */

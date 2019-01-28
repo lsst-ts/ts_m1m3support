@@ -35,7 +35,6 @@
 #include <ExpansionFPGA.h>
 #include <SimulatedExpansionFPGA.h>
 #include <PPSThread.h>
-
 #include <Log.h>
 
 using namespace std;
@@ -244,3 +243,4 @@ void* runThread(void* data) {
 	thread->run();
 	return 0;
 }
+

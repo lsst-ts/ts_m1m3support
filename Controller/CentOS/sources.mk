@@ -32,6 +32,7 @@ src/LSST/M1M3/SS/Context \
 src/LSST/M1M3/SS/Controller \
 src/LSST/M1M3/SS/DigitalInputOutput \
 src/LSST/M1M3/SS/Displacement \
+src/LSST/M1M3/SS/Domain \
 src/LSST/M1M3/SS/FPGA \
 src/LSST/M1M3/SS/FirmwareUpdate \
 src/LSST/M1M3/SS/ForceController \
