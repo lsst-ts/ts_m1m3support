@@ -52,11 +52,11 @@ class M1M3SSPublisher;
 class SafetyController;
 class PIDSettings;
 
+#define sqrt2           1.41421356237309504880168872420970
+#define reciprocalSqrt2 0.70710678118654752440084436210485
+
 class ForceController {
 private:
-	static double const sqrt2 = 1.4142135623730950488016887242097;
-	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
-
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
 	PIDSettings* pidSettings;
