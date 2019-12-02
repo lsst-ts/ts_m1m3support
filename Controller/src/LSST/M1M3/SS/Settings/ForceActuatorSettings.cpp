@@ -20,7 +20,11 @@ namespace SS {
 
 void ForceActuatorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
+	if (!load_file_xml_parse_result) {
+		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
+		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
+	}
 	this->loadDisabledActuators(doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc.select_node("//ForceActuatorSettings/AccelerationYTablePath").node().child_value());

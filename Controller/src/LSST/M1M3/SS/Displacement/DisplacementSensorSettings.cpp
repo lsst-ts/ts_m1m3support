@@ -10,6 +10,7 @@
 #include <pugixml.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -17,7 +18,11 @@ namespace SS {
 
 void DisplacementSensorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
+	if (!load_file_xml_parse_result) {
+		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
+		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
+	}
 	TableLoader::loadTable(1, 1, 8, &this->ConverterMatrix, doc.select_node("//DisplacementSensorSettings/PositionTablePath").node().child_value());
 	this->N1Port = boost::lexical_cast<int32_t>(doc.select_node("//DisplacementSensorSettings/N1Port").node().child_value());
 	this->N2Port = boost::lexical_cast<int32_t>(doc.select_node("//DisplacementSensorSettings/N2Port").node().child_value());

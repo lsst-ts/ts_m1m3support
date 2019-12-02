@@ -22,7 +22,11 @@ namespace SS {
 
 void ForceActuatorApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
+	if (!load_file_xml_parse_result) {
+		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
+		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
+	}
 	this->loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath").node().child_value());
 	this->XIndexToZIndex.clear();
 	this->YIndexToZIndex.clear();

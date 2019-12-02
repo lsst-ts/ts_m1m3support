@@ -8,6 +8,7 @@
 #include <ExpansionFPGAApplicationSettings.h>
 #include <pugixml.hpp>
 #include <boost/lexical_cast.hpp>
+#include <Log.h>
 
 using namespace pugi;
 
@@ -17,7 +18,11 @@ namespace SS {
 
 void ExpansionFPGAApplicationSettings::load(const std::string &filename) {
 	xml_document doc;
-	doc.load_file(filename.c_str());
+	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
+	if (!load_file_xml_parse_result) {
+		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
+		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
+	}
 	this->Enabled = boost::lexical_cast<uint32_t>(doc.select_node("//ExpansionFPGAApplicationSettings/Enabled").node().child_value()) != 0;
 	this->Resource = doc.select_node("//ExpansionFPGAApplicationSettings/Resource").node().child_value();
 }

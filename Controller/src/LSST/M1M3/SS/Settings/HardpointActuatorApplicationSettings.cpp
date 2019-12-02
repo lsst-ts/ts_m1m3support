@@ -14,6 +14,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <stdio.h>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -21,7 +22,11 @@ namespace SS {
 
 void HardpointActuatorApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
+	if (!load_file_xml_parse_result) {
+		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
+		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
+	}
 	pugi::xpath_node node = doc.select_node("//HardpointActuatorApplicationSettings/HardpointActuatorTablePath");
 
 	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
