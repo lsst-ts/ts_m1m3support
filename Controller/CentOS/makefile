@@ -1,9 +1,3 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
-
--include ../makefile.init
-
 RM := rm -rf
 
 # All of the sources participating in the build are defined here
@@ -64,8 +58,6 @@ ifneq ($(strip $(C_DEPS)),)
 endif
 endif
 
--include ../makefile.defs
-
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
@@ -75,7 +67,7 @@ all: ts_M1M3Support
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -85,5 +77,3 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
-
--include ../makefile.targets
