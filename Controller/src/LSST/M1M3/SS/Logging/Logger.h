@@ -59,7 +59,8 @@ struct Loggers {
 		States                        = 1 << 27,
 		Subscriber                    = 1 << 28,
 		Threads                       = 1 << 29,
-		Utility                       = 1 << 30
+		Utility                       = 1 << 30,
+		SetttingsReader               = 1 << 31,
 	};
 };
 

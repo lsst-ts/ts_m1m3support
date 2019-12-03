@@ -6,9 +6,9 @@
  */
 
 #include <ILCApplicationSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <boost/lexical_cast.hpp>
-#include <Log.h>
 
 using namespace pugi;
 
@@ -18,11 +18,7 @@ namespace SS {
 
 void ILCApplicationSettings::load(const std::string &filename) {
 	xml_document doc;
-	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
-	if (!load_file_xml_parse_result) {
-		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
-		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
-	}
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->ReportServerID = boost::lexical_cast<uint32_t>(doc.select_node("//ILCApplicationSettings/Timings/ReportServerID").node().child_value());
 	this->ReportServerStatus = boost::lexical_cast<uint32_t>(doc.select_node("//ILCApplicationSettings/Timings/ReportServerStatus").node().child_value());
 	this->ChangeILCMode = boost::lexical_cast<uint32_t>(doc.select_node("//ILCApplicationSettings/Timings/ChangeILCMode").node().child_value());

@@ -12,6 +12,7 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <TableLoader.h>
+#include <SettingReader.h>
 #include <Log.h>
 
 namespace LSST {
@@ -20,11 +21,7 @@ namespace SS {
 
 void ForceActuatorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
-	if (!load_file_xml_parse_result) {
-		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
-		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
-	}
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->loadDisabledActuators(doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc.select_node("//ForceActuatorSettings/AccelerationYTablePath").node().child_value());

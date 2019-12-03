@@ -26,6 +26,8 @@
 #include <PIDSettings.h>
 #include <InclinometerSettings.h>
 #include <string>
+#include <pugixml.hpp>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -58,8 +60,8 @@ private:
 
 public:
 	SettingReader(std::string basePath, std::string setsPath);
-
 	void configure(std::string settingsToApply);
+	static void ReadXMLDocumentFromDisk(pugi::xml_document &, const char*);
 	AliasApplicationSettings* loadAliasApplicationSettings();
 	ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
 	ForceActuatorSettings* loadForceActuatorSettings();

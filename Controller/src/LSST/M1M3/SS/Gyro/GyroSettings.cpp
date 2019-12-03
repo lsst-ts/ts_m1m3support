@@ -6,10 +6,10 @@
  */
 
 #include <GyroSettings.h>
+#include <SettingReader.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include <pugixml.hpp>
-#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -17,11 +17,7 @@ namespace SS {
 
 void GyroSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
-	if (!load_file_xml_parse_result) {
-		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
-		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
-	}
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->DataRate = boost::lexical_cast<int>(doc.select_node("//GyroSettings/DataRate").node().child_value());
 	this->AngularVelocityXOffset = boost::lexical_cast<float>(doc.select_node("//GyroSettings/AngularVelocityXOffset").node().child_value());
 	this->AngularVelocityYOffset = boost::lexical_cast<float>(doc.select_node("//GyroSettings/AngularVelocityYOffset").node().child_value());

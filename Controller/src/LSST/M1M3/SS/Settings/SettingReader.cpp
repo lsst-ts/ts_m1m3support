@@ -154,6 +154,16 @@ std::string SettingReader::getSetPath(std::string file) {
 	return this->setsPath + this->currentSet + "/" + this->currentVersion + "/" + file;
 }
 
+void SettingReader::ReadXMLDocumentFromDisk(pugi::xml_document &doc, const char* filename) {
+	pugi::xml_parse_result result = doc.load_file(filename);
+	if (!result) {
+		Log.Fatal("Settings file %s could not be loaded", filename);
+		Log.Fatal("Error description: %s", result.description());
+	} else {
+		Log.Debug("Settings loaded: %s", result.description());
+	}
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

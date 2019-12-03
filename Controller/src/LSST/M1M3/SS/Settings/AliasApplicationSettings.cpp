@@ -6,6 +6,7 @@
  */
 
 #include <AliasApplicationSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <boost/tokenizer.hpp>
 #include <Log.h>
@@ -16,11 +17,7 @@ namespace SS {
 
 void AliasApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
-	if (!load_file_xml_parse_result) {
-		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
-		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
-	}
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	pugi::xpath_node_set nodes = doc.select_nodes("//AliasApplicationSettings/Aliases/Alias");
 
 	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;

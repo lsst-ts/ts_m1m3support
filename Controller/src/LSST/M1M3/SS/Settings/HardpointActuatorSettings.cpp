@@ -6,10 +6,10 @@
  */
 
 #include <HardpointActuatorSettings.h>
+#include <SettingReader.h>
 #include <TableLoader.h>
 #include <boost/lexical_cast.hpp>
 #include <pugixml.hpp>
-#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -17,11 +17,7 @@ namespace SS {
 
 void HardpointActuatorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
-	if (!load_file_xml_parse_result) {
-		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
-		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
-	}
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	TableLoader::loadTable(1, 1, 6, &this->HardpointDisplacementToMirrorPosition, doc.select_node("//HardpointActuatorSettings/HardpointDisplacementToMirrorPositionTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 6, &this->MirrorPositionToHardpointDisplacement, doc.select_node("//HardpointActuatorSettings/MirrorPositionToHardpointDisplacementTablePath").node().child_value());
 	this->MicrometersPerStep = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/MicrometersPerStep").node().child_value());

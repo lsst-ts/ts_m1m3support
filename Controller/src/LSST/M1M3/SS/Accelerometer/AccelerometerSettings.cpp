@@ -6,9 +6,9 @@
  */
 
 #include <AccelerometerSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <boost/lexical_cast.hpp>
-#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -16,11 +16,7 @@ namespace SS {
 
 void AccelerometerSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	pugi::xml_parse_result load_file_xml_parse_result = doc.load_file(filename.c_str());
-	if (!load_file_xml_parse_result) {
-		Log.Fatal("Settings file %s could not be loaded", filename.c_str());
-		Log.Fatal("Error description: %s", load_file_xml_parse_result.description());
-	}
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->GsToMetersPerSecondSqrd = boost::lexical_cast<float>(doc.select_node("//AccelerometerSettings/GsToMetersPerSecondSqrd").node().child_value());
 	this->AngularAccelerationXDistance = boost::lexical_cast<float>(doc.select_node("//AccelerometerSettings/AngularAccelerationXDistance").node().child_value());
 	this->AngularAccelerationYDistance = boost::lexical_cast<float>(doc.select_node("//AccelerometerSettings/AngularAccelerationYDistance").node().child_value());
