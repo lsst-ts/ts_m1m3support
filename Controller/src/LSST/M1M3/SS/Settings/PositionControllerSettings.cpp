@@ -6,6 +6,7 @@
  */
 
 #include <PositionControllerSettings.h>
+#include <SettingReader.h>
 #include <boost/lexical_cast.hpp>
 #include <pugixml.hpp>
 
@@ -15,7 +16,7 @@ namespace SS {
 
 void PositionControllerSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->ForceToStepsCoefficient = boost::lexical_cast<double>(doc.select_node("//PositionControllerSettings/ForceToStepsCoefficient").node().child_value());
 	this->EncoderToStepsCoefficient = boost::lexical_cast<double>(doc.select_node("//PositionControllerSettings/EncoderToStepsCoefficient").node().child_value());
 	this->MaxStepsPerLoop = boost::lexical_cast<int32_t>(doc.select_node("//PositionControllerSettings/MaxStepsPerLoop").node().child_value());

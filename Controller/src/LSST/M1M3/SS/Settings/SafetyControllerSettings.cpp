@@ -6,8 +6,10 @@
  */
 
 #include <SafetyControllerSettings.h>
+#include <SettingReader.h>
 #include <boost/lexical_cast.hpp>
 #include <pugixml.hpp>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -15,7 +17,7 @@ namespace SS {
 
 void SafetyControllerSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 
 	this->AirController.FaultOnCommandOutputMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/AirControllerSettings/FaultOnCommandOutputMismatch").node().child_value()) != 0;
 	this->AirController.FaultOnCommandSensorMismatch = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/AirControllerSettings/FaultOnCommandSensorMismatch").node().child_value()) != 0;

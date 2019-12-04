@@ -6,6 +6,7 @@
  */
 
 #include <AccelerometerSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -15,8 +16,7 @@ namespace SS {
 
 void AccelerometerSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
-
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->GsToMetersPerSecondSqrd = boost::lexical_cast<float>(doc.select_node("//AccelerometerSettings/GsToMetersPerSecondSqrd").node().child_value());
 	this->AngularAccelerationXDistance = boost::lexical_cast<float>(doc.select_node("//AccelerometerSettings/AngularAccelerationXDistance").node().child_value());
 	this->AngularAccelerationYDistance = boost::lexical_cast<float>(doc.select_node("//AccelerometerSettings/AngularAccelerationYDistance").node().child_value());

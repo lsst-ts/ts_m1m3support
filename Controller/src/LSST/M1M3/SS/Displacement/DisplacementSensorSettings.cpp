@@ -6,6 +6,7 @@
  */
 
 #include <DisplacementSensorSettings.h>
+#include <SettingReader.h>
 #include <TableLoader.h>
 #include <pugixml.hpp>
 #include <boost/tokenizer.hpp>
@@ -17,7 +18,7 @@ namespace SS {
 
 void DisplacementSensorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	TableLoader::loadTable(1, 1, 8, &this->ConverterMatrix, doc.select_node("//DisplacementSensorSettings/PositionTablePath").node().child_value());
 	this->N1Port = boost::lexical_cast<int32_t>(doc.select_node("//DisplacementSensorSettings/N1Port").node().child_value());
 	this->N2Port = boost::lexical_cast<int32_t>(doc.select_node("//DisplacementSensorSettings/N2Port").node().child_value());

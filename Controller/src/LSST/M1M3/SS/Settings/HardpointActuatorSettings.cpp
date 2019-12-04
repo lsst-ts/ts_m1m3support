@@ -6,6 +6,7 @@
  */
 
 #include <HardpointActuatorSettings.h>
+#include <SettingReader.h>
 #include <TableLoader.h>
 #include <boost/lexical_cast.hpp>
 #include <pugixml.hpp>
@@ -16,7 +17,7 @@ namespace SS {
 
 void HardpointActuatorSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	TableLoader::loadTable(1, 1, 6, &this->HardpointDisplacementToMirrorPosition, doc.select_node("//HardpointActuatorSettings/HardpointDisplacementToMirrorPositionTablePath").node().child_value());
 	TableLoader::loadTable(1, 1, 6, &this->MirrorPositionToHardpointDisplacement, doc.select_node("//HardpointActuatorSettings/MirrorPositionToHardpointDisplacementTablePath").node().child_value());
 	this->MicrometersPerStep = boost::lexical_cast<double>(doc.select_node("//HardpointActuatorSettings/MicrometersPerStep").node().child_value());

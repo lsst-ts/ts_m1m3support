@@ -6,6 +6,7 @@
  */
 
 #include <ExpansionFPGAApplicationSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -17,7 +18,7 @@ namespace SS {
 
 void ExpansionFPGAApplicationSettings::load(const std::string &filename) {
 	xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->Enabled = boost::lexical_cast<uint32_t>(doc.select_node("//ExpansionFPGAApplicationSettings/Enabled").node().child_value()) != 0;
 	this->Resource = doc.select_node("//ExpansionFPGAApplicationSettings/Resource").node().child_value();
 }

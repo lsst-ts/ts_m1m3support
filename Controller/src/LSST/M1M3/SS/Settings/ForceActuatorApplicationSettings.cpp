@@ -6,6 +6,7 @@
  */
 
 #include <ForceActuatorApplicationSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <string>
 #include <fstream>
@@ -14,7 +15,6 @@
 #include <boost/algorithm/string.hpp>
 #include <stdio.h>
 #include <TableLoader.h>
-#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -22,7 +22,7 @@ namespace SS {
 
 void ForceActuatorApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath").node().child_value());
 	this->XIndexToZIndex.clear();
 	this->YIndexToZIndex.clear();

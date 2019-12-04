@@ -6,6 +6,7 @@
  */
 
 #include <InclinometerSettings.h>
+#include <SettingReader.h>
 #include <boost/lexical_cast.hpp>
 #include <pugixml.hpp>
 
@@ -15,7 +16,7 @@ namespace SS {
 
 void InclinometerSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->Offset = boost::lexical_cast<float>(doc.select_node("//InclinometerSettings/Offset").node().child_value());
 	this->FaultLow = boost::lexical_cast<float>(doc.select_node("//InclinometerSettings/Limits/FaultLow").node().child_value());
 	this->WarningLow = boost::lexical_cast<float>(doc.select_node("//InclinometerSettings/Limits/WarningLow").node().child_value());

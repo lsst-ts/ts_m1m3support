@@ -6,6 +6,7 @@
  */
 
 #include <RecommendedApplicationSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 
 using namespace pugi;
@@ -16,7 +17,7 @@ namespace SS {
 
 void RecommendedApplicationSettings::load(const std::string &filename) {
 	xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	xpath_node_set nodes = doc.select_nodes("//RecommendedApplicationSettings/RecommendedSettings/RecommendedSetting");
 	this->RecommendedSettings.clear();
 	for(xpath_node_set::const_iterator node = nodes.begin(); node != nodes.end(); ++node) {

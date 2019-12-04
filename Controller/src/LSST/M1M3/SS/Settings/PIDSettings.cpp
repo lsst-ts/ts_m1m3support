@@ -6,6 +6,7 @@
  */
 
 #include <PIDSettings.h>
+#include <SettingReader.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 #include <pugixml.hpp>
@@ -16,7 +17,7 @@ namespace SS {
 
 void PIDSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->Fx.Timestep = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/Timestep").node().child_value());
 	this->Fx.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/P").node().child_value());
 	this->Fx.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/I").node().child_value());

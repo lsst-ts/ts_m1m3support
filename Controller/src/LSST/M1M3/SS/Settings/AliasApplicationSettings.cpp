@@ -6,8 +6,10 @@
  */
 
 #include <AliasApplicationSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <boost/tokenizer.hpp>
+#include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -15,7 +17,7 @@ namespace SS {
 
 void AliasApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	pugi::xpath_node_set nodes = doc.select_nodes("//AliasApplicationSettings/Aliases/Alias");
 
 	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;

@@ -6,6 +6,7 @@
  */
 
 #include <InterlockApplicationSettings.h>
+#include <SettingReader.h>
 #include <boost/lexical_cast.hpp>
 #include <pugixml.hpp>
 
@@ -15,8 +16,7 @@ namespace SS {
 
 void InterlockApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
-
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	this->HeartbeatPeriodInSeconds = boost::lexical_cast<double>(doc.select_node("//InterlockApplicationSettings/HeartbeatPeriodInSeconds").node().child_value());
 }
 

@@ -6,6 +6,7 @@
  */
 
 #include <HardpointMonitorApplicationSettings.h>
+#include <SettingReader.h>
 #include <pugixml.hpp>
 #include <fstream>
 #include <boost/tokenizer.hpp>
@@ -18,7 +19,7 @@ namespace SS {
 
 void HardpointMonitorApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+	SettingReader::ReadXMLDocumentFromDisk(doc, filename.c_str());
 	pugi::xpath_node node = doc.select_node("//HardpointMonitorApplicationSettings/HardpointMonitorTablePath");
 
 	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
