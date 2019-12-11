@@ -16,12 +16,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TranslateM1M3Command: public SALCommand<MTM1M3_command_translateM1M3C> {
-public:
-	TranslateM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_translateM1M3C* data);
+class TranslateM1M3Command : public SALCommand<MTM1M3_command_translateM1M3C> {
+   public:
+    TranslateM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_translateM1M3C* data);
 
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

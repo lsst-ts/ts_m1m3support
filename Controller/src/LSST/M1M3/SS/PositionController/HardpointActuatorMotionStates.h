@@ -11,13 +11,13 @@
 #include <ccpp_sal_MTM1M3.h> // Provides access to enumerations
 
 struct HardpointActuatorMotionStates {
-	enum Type {
-		Standby = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Standby,
-		Chasing = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Chasing,
-		Stepping = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Stepping,
-		QuickPositioning = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_QuickPositioning,
-		FinePositioning = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_FinePositioning,
-	};
+    enum Type {
+        Standby = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Standby,
+        Chasing = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Chasing,
+        Stepping = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_Stepping,
+        QuickPositioning = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_QuickPositioning,
+        FinePositioning = MTM1M3::MTM1M3_shared_HardpointActuatorMotionStates_FinePositioning,
+    };
 };
 
 #endif /* HARDPOINTACTUATORMOTIONSTATES_H_ */

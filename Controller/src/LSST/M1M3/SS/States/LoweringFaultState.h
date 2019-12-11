@@ -18,11 +18,11 @@ class M1M3SSPublisher;
 class UpdateCommand;
 class Model;
 
-class LoweringFaultState: public FaultState {
-public:
-	LoweringFaultState(M1M3SSPublisher* publisher);
+class LoweringFaultState : public FaultState {
+   public:
+    LoweringFaultState(M1M3SSPublisher* publisher);
 
-	States::Type update(UpdateCommand* command, Model* model);
+    States::Type update(UpdateCommand* command, Model* model);
 };
 
 } /* namespace SS */

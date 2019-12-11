@@ -13,11 +13,11 @@ namespace M1M3 {
 namespace SS {
 
 struct PIDParameters {
-	double Timestep;
-	double P;
-	double I;
-	double D;
-	double N;
+    double Timestep;
+    double P;
+    double I;
+    double D;
+    double N;
 };
 
 } /* namespace SS */

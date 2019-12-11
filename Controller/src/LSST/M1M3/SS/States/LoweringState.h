@@ -14,11 +14,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class LoweringState: public EnabledState {
-public:
-	LoweringState(M1M3SSPublisher* publisher);
+class LoweringState : public EnabledState {
+   public:
+    LoweringState(M1M3SSPublisher* publisher);
 
-	States::Type update(UpdateCommand* command, Model* model);
+    States::Type update(UpdateCommand* command, Model* model);
 };
 
 } /* namespace SS */

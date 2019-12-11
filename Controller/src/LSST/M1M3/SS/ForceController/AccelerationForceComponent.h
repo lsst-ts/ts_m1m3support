@@ -24,27 +24,27 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class AccelerationForceComponent: public ForceComponent {
-private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+class AccelerationForceComponent : public ForceComponent {
+   private:
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_appliedAccelerationForcesC* appliedAccelerationForces;
-	MTM1M3_logevent_rejectedAccelerationForcesC* rejectedAccelerationForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+    MTM1M3_logevent_appliedAccelerationForcesC* appliedAccelerationForces;
+    MTM1M3_logevent_rejectedAccelerationForcesC* rejectedAccelerationForces;
 
-public:
-	AccelerationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+   public:
+    AccelerationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
-	void applyAccelerationForces(float* x, float* y, float* z);
-	void applyAccelerationForcesByAngularAccelerations(float angularAccelerationX, float angularAccelerationY, float angularAccelerationZ);
+    void applyAccelerationForces(float* x, float* y, float* z);
+    void applyAccelerationForcesByAngularAccelerations(float angularAccelerationX, float angularAccelerationY, float angularAccelerationZ);
 
-protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+   protected:
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

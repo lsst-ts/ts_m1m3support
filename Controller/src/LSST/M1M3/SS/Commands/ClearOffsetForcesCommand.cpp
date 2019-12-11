@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearOffsetForcesC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+  : SALCommand(context, publisher, commandID, data) {}
 
 void ClearOffsetForcesCommand::execute() {
-	this->context->clearOffsetForces(this);
+    this->context->clearOffsetForces(this);
 }
 
 void ClearOffsetForcesCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandClearOffsetForces(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandClearOffsetForces(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

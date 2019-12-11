@@ -11,10 +11,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Command::~Command() { }
+Command::~Command() {}
 
 bool Command::validate() { return true; }
-void Command::execute() { }
+void Command::execute() {}
 void Command::ackInProgress() { this->ack(301, 0, "In-Progress"); }
 void Command::ackComplete() { this->ack(303, 0, "Complete"); }
 void Command::ackNotPermitted(int32_t errorCode, std::string reason) { this->ack(-300, errorCode, "Not Permitted: " + reason); }
@@ -25,7 +25,7 @@ void Command::ackInvalidParameter(std::string reason) { this->ackFailed(-321, re
 void Command::ackAlreadyInProgress(std::string reason) { this->ackFailed(-322, reason); }
 void Command::ackExecutionBlocked(std::string reason) { this->ackFailed(-323, reason); }
 void Command::ackAlreadyInState(std::string reason) { this->ackFailed(-324, reason); }
-void Command::ack(int32_t ackCode, int32_t errorCode, std::string description) { }
+void Command::ack(int32_t ackCode, int32_t errorCode, std::string description) {}
 
 } /* namespace SS */
 } /* namespace M1M3 */

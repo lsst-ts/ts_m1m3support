@@ -13,9 +13,9 @@ namespace M1M3 {
 namespace SS {
 
 struct ILCSafetySettings {
-	bool FaultOnCommunicationTimeout;
-	int CommunicationTimeoutCountThreshold;
-	int CommunicationTimeoutPeriod;
+    bool FaultOnCommunicationTimeout;
+    int CommunicationTimeoutCountThreshold;
+    int CommunicationTimeoutPeriod;
 };
 
 } /* namespace SS */

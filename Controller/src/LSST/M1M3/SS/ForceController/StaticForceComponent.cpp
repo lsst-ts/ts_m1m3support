@@ -24,106 +24,106 @@ namespace M1M3 {
 namespace SS {
 
 StaticForceComponent::StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings) {
-	this->name = "Static";
+    this->name = "Static";
 
-	this->publisher = publisher;
-	this->safetyController = safetyController;
-	this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-	this->forceActuatorSettings = forceActuatorSettings;
-	this->forceActuatorState = this->publisher->getEventForceActuatorState();
-	this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
-	this->appliedStaticForces = this->publisher->getEventAppliedStaticForces();
-	this->rejectedStaticForces = this->publisher->getEventRejectedStaticForces();
-	this->maxRateOfChange = this->forceActuatorSettings->StaticComponentSettings.MaxRateOfChange;
-	this->nearZeroValue = this->forceActuatorSettings->StaticComponentSettings.NearZeroValue;
+    this->publisher = publisher;
+    this->safetyController = safetyController;
+    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    this->forceActuatorSettings = forceActuatorSettings;
+    this->forceActuatorState = this->publisher->getEventForceActuatorState();
+    this->forceActuatorWarning = this->publisher->getEventForceActuatorWarning();
+    this->appliedStaticForces = this->publisher->getEventAppliedStaticForces();
+    this->rejectedStaticForces = this->publisher->getEventRejectedStaticForces();
+    this->maxRateOfChange = this->forceActuatorSettings->StaticComponentSettings.MaxRateOfChange;
+    this->nearZeroValue = this->forceActuatorSettings->StaticComponentSettings.NearZeroValue;
 }
 
 void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z) {
-	Log.Debug("StaticForceComponent: applyStaticForces()");
-	if (!this->enabled) {
-		Log.Error("StaticForceComponent: applyStaticForces() called when the component is not applied");
-		return;
-	}
-	if (this->disabling) {
-		Log.Warn("StaticForceComponent: applyStaticForces() called when the component is disabling");
-		return;
-	}
-	for(int i = 0; i < 156; ++i) {
-		if (i < 12) {
-			this->xTarget[i] = (*x)[i];
-		}
+    Log.Debug("StaticForceComponent: applyStaticForces()");
+    if (!this->enabled) {
+        Log.Error("StaticForceComponent: applyStaticForces() called when the component is not applied");
+        return;
+    }
+    if (this->disabling) {
+        Log.Warn("StaticForceComponent: applyStaticForces() called when the component is disabling");
+        return;
+    }
+    for (int i = 0; i < 156; ++i) {
+        if (i < 12) {
+            this->xTarget[i] = (*x)[i];
+        }
 
-		if (i < 100) {
-			this->yTarget[i] = (*y)[i];
-		}
+        if (i < 100) {
+            this->yTarget[i] = (*y)[i];
+        }
 
-		this->zTarget[i] = (*z)[i];
-	}
+        this->zTarget[i] = (*z)[i];
+    }
 }
 
 void StaticForceComponent::postEnableDisableActions() {
-	Log.Debug("StaticForceComponent: postEnableDisableActions()");
+    Log.Debug("StaticForceComponent: postEnableDisableActions()");
 
-	this->forceActuatorState->staticForcesApplied = this->enabled;
-	this->publisher->tryLogForceActuatorState();
+    this->forceActuatorState->staticForcesApplied = this->enabled;
+    this->publisher->tryLogForceActuatorState();
 }
 
 void StaticForceComponent::postUpdateActions() {
-	Log.Trace("StaticForceController: postUpdateActions()");
+    Log.Trace("StaticForceController: postUpdateActions()");
 
-	bool rejectionRequired = false;
-	for(int zIndex = 0; zIndex < 156; ++zIndex) {
-		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-		bool clipping = false;
+    bool rejectionRequired = false;
+    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        bool clipping = false;
 
-		if (xIndex != -1) {
-			float xLowFault = this->forceActuatorSettings->StaticLimitXTable[xIndex].LowFault;
-			float xHighFault = this->forceActuatorSettings->StaticLimitXTable[xIndex].HighFault;
-			this->rejectedStaticForces->xForces[xIndex] = this->xCurrent[xIndex];
-			clipping = clipping || !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedStaticForces->xForces[xIndex], this->appliedStaticForces->xForces + xIndex);
-		}
+        if (xIndex != -1) {
+            float xLowFault = this->forceActuatorSettings->StaticLimitXTable[xIndex].LowFault;
+            float xHighFault = this->forceActuatorSettings->StaticLimitXTable[xIndex].HighFault;
+            this->rejectedStaticForces->xForces[xIndex] = this->xCurrent[xIndex];
+            clipping = clipping || !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedStaticForces->xForces[xIndex], this->appliedStaticForces->xForces + xIndex);
+        }
 
-		if (yIndex != -1) {
-			float yLowFault = this->forceActuatorSettings->StaticLimitYTable[yIndex].LowFault;
-			float yHighFault = this->forceActuatorSettings->StaticLimitYTable[yIndex].HighFault;
-			this->rejectedStaticForces->yForces[yIndex] = this->yCurrent[yIndex];
-			clipping = clipping || !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedStaticForces->yForces[yIndex], this->appliedStaticForces->yForces + yIndex);
-		}
+        if (yIndex != -1) {
+            float yLowFault = this->forceActuatorSettings->StaticLimitYTable[yIndex].LowFault;
+            float yHighFault = this->forceActuatorSettings->StaticLimitYTable[yIndex].HighFault;
+            this->rejectedStaticForces->yForces[yIndex] = this->yCurrent[yIndex];
+            clipping = clipping || !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedStaticForces->yForces[yIndex], this->appliedStaticForces->yForces + yIndex);
+        }
 
-		float zLowFault = this->forceActuatorSettings->StaticLimitZTable[zIndex].LowFault;
-		float zHighFault = this->forceActuatorSettings->StaticLimitZTable[zIndex].HighFault;
-		this->rejectedStaticForces->zForces[zIndex] = this->zCurrent[zIndex];
-		clipping = clipping || !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedStaticForces->zForces[zIndex], this->appliedStaticForces->zForces + zIndex);
-		BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointStaticForceClipped, clipping);
-		rejectionRequired = rejectionRequired || clipping;
-	}
+        float zLowFault = this->forceActuatorSettings->StaticLimitZTable[zIndex].LowFault;
+        float zHighFault = this->forceActuatorSettings->StaticLimitZTable[zIndex].HighFault;
+        this->rejectedStaticForces->zForces[zIndex] = this->zCurrent[zIndex];
+        clipping = clipping || !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedStaticForces->zForces[zIndex], this->appliedStaticForces->zForces + zIndex);
+        BitHelper::set(this->forceActuatorWarning->forceActuatorFlags + zIndex, ForceActuatorFlags::ForceSetpointStaticForceClipped, clipping);
+        rejectionRequired = rejectionRequired || clipping;
+    }
 
-	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedStaticForces->xForces, this->appliedStaticForces->yForces, this->appliedStaticForces->zForces);
-	this->appliedStaticForces->fX = fm.Fx;
-	this->appliedStaticForces->fY = fm.Fy;
-	this->appliedStaticForces->fZ = fm.Fz;
-	this->appliedStaticForces->mX = fm.Mx;
-	this->appliedStaticForces->mY = fm.My;
-	this->appliedStaticForces->mZ = fm.Mz;
-	this->appliedStaticForces->forceMagnitude = fm.ForceMagnitude;
+    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedStaticForces->xForces, this->appliedStaticForces->yForces, this->appliedStaticForces->zForces);
+    this->appliedStaticForces->fX = fm.Fx;
+    this->appliedStaticForces->fY = fm.Fy;
+    this->appliedStaticForces->fZ = fm.Fz;
+    this->appliedStaticForces->mX = fm.Mx;
+    this->appliedStaticForces->mY = fm.My;
+    this->appliedStaticForces->mZ = fm.Mz;
+    this->appliedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
-	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedStaticForces->xForces, this->rejectedStaticForces->yForces, this->rejectedStaticForces->zForces);
-	this->rejectedStaticForces->fX = fm.Fx;
-	this->rejectedStaticForces->fY = fm.Fy;
-	this->rejectedStaticForces->fZ = fm.Fz;
-	this->rejectedStaticForces->mX = fm.Mx;
-	this->rejectedStaticForces->mY = fm.My;
-	this->rejectedStaticForces->mZ = fm.Mz;
-	this->rejectedStaticForces->forceMagnitude = fm.ForceMagnitude;
+    fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedStaticForces->xForces, this->rejectedStaticForces->yForces, this->rejectedStaticForces->zForces);
+    this->rejectedStaticForces->fX = fm.Fx;
+    this->rejectedStaticForces->fY = fm.Fy;
+    this->rejectedStaticForces->fZ = fm.Fz;
+    this->rejectedStaticForces->mX = fm.Mx;
+    this->rejectedStaticForces->mY = fm.My;
+    this->rejectedStaticForces->mZ = fm.Mz;
+    this->rejectedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
-	this->safetyController->forceControllerNotifyStaticForceClipping(rejectionRequired);
+    this->safetyController->forceControllerNotifyStaticForceClipping(rejectionRequired);
 
-	this->publisher->tryLogForceActuatorWarning();
-	if (rejectionRequired) {
-		this->publisher->logRejectedStaticForces();
-	}
-	this->publisher->logAppliedStaticForces();
+    this->publisher->tryLogForceActuatorWarning();
+    if (rejectionRequired) {
+        this->publisher->logRejectedStaticForces();
+    }
+    this->publisher->logAppliedStaticForces();
 }
 
 } /* namespace SS */

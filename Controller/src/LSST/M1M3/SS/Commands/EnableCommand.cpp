@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+  : SALCommand(context, publisher, commandID, data) {}
 
 void EnableCommand::execute() {
-	this->context->enable(this);
+    this->context->enable(this);
 }
 
 void EnableCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandEnable(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandEnable(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

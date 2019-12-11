@@ -17,25 +17,26 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SimulatedExpansionFPGA: public IExpansionFPGA {
-private:
-	float rnd[RND_CNT];
-	int rndIndex;
-	float getRnd();
-public:
-	SimulatedExpansionFPGA();
+class SimulatedExpansionFPGA : public IExpansionFPGA {
+   private:
+    float rnd[RND_CNT];
+    int rndIndex;
+    float getRnd();
 
-	int32_t initialize();
-	int32_t open();
-	int32_t close();
-	int32_t finalize();
+   public:
+    SimulatedExpansionFPGA();
 
-	bool isErrorCode(int32_t status);
+    int32_t initialize();
+    int32_t open();
+    int32_t close();
+    int32_t finalize();
 
-	int32_t sample();
+    bool isErrorCode(int32_t status);
 
-	int32_t readSlot1(float* data);
-	int32_t readSlot2(uint32_t* data);
+    int32_t sample();
+
+    int32_t readSlot1(float* data);
+    int32_t readSlot2(uint32_t* data);
 };
 
 } /* namespace SS */

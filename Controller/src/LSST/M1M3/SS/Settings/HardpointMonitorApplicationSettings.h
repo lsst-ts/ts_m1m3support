@@ -17,10 +17,10 @@ namespace M1M3 {
 namespace SS {
 
 class HardpointMonitorApplicationSettings {
-public:
-	std::vector<HardpointMonitorTableRow> Table;
+   public:
+    std::vector<HardpointMonitorTableRow> Table;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

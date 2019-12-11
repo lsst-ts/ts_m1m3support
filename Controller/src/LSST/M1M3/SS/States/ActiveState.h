@@ -14,18 +14,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ActiveState: public EnabledState {
-public:
-	ActiveState(M1M3SSPublisher* publisher);
+class ActiveState : public EnabledState {
+   public:
+    ActiveState(M1M3SSPublisher* publisher);
 
-	States::Type update(UpdateCommand* command, Model* model);
-	States::Type enterEngineering(EnterEngineeringCommand* command, Model* model);
-	States::Type lowerM1M3(LowerM1M3Command* command, Model* model);
-	States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
-	States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
-	States::Type applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command, Model* model);
-	States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model);
-	States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model);
+    States::Type update(UpdateCommand* command, Model* model);
+    States::Type enterEngineering(EnterEngineeringCommand* command, Model* model);
+    States::Type lowerM1M3(LowerM1M3Command* command, Model* model);
+    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
+    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
+    States::Type applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command, Model* model);
+    States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model);
+    States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model);
 };
 
 } /* namespace SS */

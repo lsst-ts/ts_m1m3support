@@ -24,27 +24,27 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class OffsetForceComponent: public ForceComponent {
-private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+class OffsetForceComponent : public ForceComponent {
+   private:
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_appliedOffsetForcesC* appliedOffsetForces;
-	MTM1M3_logevent_rejectedOffsetForcesC* rejectedOffsetForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+    MTM1M3_logevent_appliedOffsetForcesC* appliedOffsetForces;
+    MTM1M3_logevent_rejectedOffsetForcesC* rejectedOffsetForces;
 
-public:
-	OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+   public:
+    OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
-	void applyOffsetForces(float* x, float* y, float* z);
-	void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
+    void applyOffsetForces(float* x, float* y, float* z);
+    void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
 
-protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+   protected:
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

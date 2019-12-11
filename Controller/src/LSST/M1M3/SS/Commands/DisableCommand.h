@@ -21,12 +21,12 @@ namespace SS {
  * machine from the enabled state to the disabled state.
  * This is an external command and can be issued via SAL.
  */
-class DisableCommand: public SALCommand<MTM1M3_command_disableC> {
-public:
-	DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableC* data);
+class DisableCommand : public SALCommand<MTM1M3_command_disableC> {
+   public:
+    DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableC* data);
 
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

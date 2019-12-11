@@ -21,13 +21,13 @@ namespace SS {
  * machine from the standby state to the disabled state.
  * This is an external command and can be issued via SAL.
  */
-class StartCommand: public SALCommand<MTM1M3_command_startC> {
-public:
-	StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_startC* data);
+class StartCommand : public SALCommand<MTM1M3_command_startC> {
+   public:
+    StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_startC* data);
 
-	bool validate();
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    bool validate();
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

@@ -17,30 +17,29 @@ namespace M1M3 {
 namespace SS {
 
 PPSThread::PPSThread(IFPGA* fpga, M1M3SSPublisher* publisher) {
-	this->fpga = fpga;
-	this->publisher = publisher;
-	this->keepRunning = true;
+    this->fpga = fpga;
+    this->publisher = publisher;
+    this->keepRunning = true;
 }
 
 void PPSThread::run() {
-	Log.Info("PPSThread: Start");
-	while(this->keepRunning) {
-		if (this->fpga->waitForPPS(2500) == 0) {
-			this->fpga->ackPPS();
-			uint64_t timestamp = Timestamp::toFPGA(this->publisher->getTimestamp());
-			if (this->keepRunning) {
-				this->fpga->writeTimestampFIFO(timestamp);
-			}
-		}
-		else {
-			Log.Warn("PPSThread: Failed to receive pps");
-		}
-	}
-	Log.Info("PPSThread: Completed");
+    Log.Info("PPSThread: Start");
+    while (this->keepRunning) {
+        if (this->fpga->waitForPPS(2500) == 0) {
+            this->fpga->ackPPS();
+            uint64_t timestamp = Timestamp::toFPGA(this->publisher->getTimestamp());
+            if (this->keepRunning) {
+                this->fpga->writeTimestampFIFO(timestamp);
+            }
+        } else {
+            Log.Warn("PPSThread: Failed to receive pps");
+        }
+    }
+    Log.Info("PPSThread: Completed");
 }
 
 void PPSThread::stop() {
-	this->keepRunning = false;
+    this->keepRunning = false;
 }
 
 } /* namespace SS */

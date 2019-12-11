@@ -14,9 +14,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ResetBustList: public BusList {
-public:
-	ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+class ResetBustList : public BusList {
+   public:
+    ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 
 } /* namespace SS */

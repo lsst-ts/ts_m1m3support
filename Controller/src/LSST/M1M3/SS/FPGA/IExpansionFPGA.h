@@ -15,21 +15,21 @@ namespace M1M3 {
 namespace SS {
 
 class IExpansionFPGA {
-public:
-	IExpansionFPGA();
-	virtual ~IExpansionFPGA();
+   public:
+    IExpansionFPGA();
+    virtual ~IExpansionFPGA();
 
-	virtual int32_t initialize();
-	virtual int32_t open();
-	virtual int32_t close();
-	virtual int32_t finalize();
+    virtual int32_t initialize();
+    virtual int32_t open();
+    virtual int32_t close();
+    virtual int32_t finalize();
 
-	virtual bool isErrorCode(int32_t status);
+    virtual bool isErrorCode(int32_t status);
 
-	virtual int32_t sample();
+    virtual int32_t sample();
 
-	virtual int32_t readSlot1(float* data);
-	virtual int32_t readSlot2(uint32_t* data);
+    virtual int32_t readSlot1(float* data);
+    virtual int32_t readSlot2(uint32_t* data);
 };
 
 } /* namespace SS */

@@ -14,9 +14,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ReadCalibrationBusList: public BusList {
-public:
-	ReadCalibrationBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+class ReadCalibrationBusList : public BusList {
+   public:
+    ReadCalibrationBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 
 } /* namespace SS */

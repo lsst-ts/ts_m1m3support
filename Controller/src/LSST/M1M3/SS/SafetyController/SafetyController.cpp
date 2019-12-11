@@ -16,25 +16,25 @@ namespace M1M3 {
 namespace SS {
 
 SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerSettings* safetyControllerSettings) {
-	Log.Debug("SafetyController: SafetyController()");
-	this->publisher = publisher;
-	this->safetyControllerSettings = safetyControllerSettings;
-	this->errorCodeData = this->publisher->getEventErrorCode();
-//	this->errorCodeData->timestamp = this->publisher->getTimestamp();
-	this->errorCodeData->errorCode = FaultCodes::NoFault;
-//	this->errorCodeData->DetailedErrorCode = FaultCodes::NoFault;
-	this->publisher->logErrorCode();
-	for(int i = 0; i < this->safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
-		this->ilcCommunicationTimeoutData.push_back(0);
-	}
+    Log.Debug("SafetyController: SafetyController()");
+    this->publisher = publisher;
+    this->safetyControllerSettings = safetyControllerSettings;
+    this->errorCodeData = this->publisher->getEventErrorCode();
+    //	this->errorCodeData->timestamp = this->publisher->getTimestamp();
+    this->errorCodeData->errorCode = FaultCodes::NoFault;
+    //	this->errorCodeData->DetailedErrorCode = FaultCodes::NoFault;
+    this->publisher->logErrorCode();
+    for (int i = 0; i < this->safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
+        this->ilcCommunicationTimeoutData.push_back(0);
+    }
 }
 
 void SafetyController::clearErrorCode() {
-	Log.Info("SafetyController: clearErrorCode()");
-//	this->errorCodeData->timestamp = this->publisher->getTimestamp();
-//	this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
-	this->errorCodeData->errorCode= FaultCodes::NoFault;
-	this->publisher->logErrorCode();
+    Log.Info("SafetyController: clearErrorCode()");
+    //	this->errorCodeData->timestamp = this->publisher->getTimestamp();
+    //	this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
+    this->errorCodeData->errorCode = FaultCodes::NoFault;
+    this->publisher->logErrorCode();
 }
 
 void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) { this->updateOverride(FaultCodes::AirControllerCommandOutputMismatch, this->safetyControllerSettings->AirController.FaultOnCommandOutputMismatch, conditionFlag); }
@@ -110,37 +110,37 @@ void SafetyController::raiseOperationTimeout(bool conditionFlag) { this->updateO
 void SafetyController::lowerOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->LowerOperation.FaultOnTimeout, conditionFlag); }
 
 void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
-	this->ilcCommunicationTimeoutData.pop_front();
-	this->ilcCommunicationTimeoutData.push_back(conditionFlag ? 1 : 0);
-	int sum = 0;
-	for(std::list<int>::iterator i = this->ilcCommunicationTimeoutData.begin(); i != this->ilcCommunicationTimeoutData.end(); ++i) {
-		sum += (*i);
-	}
-	this->updateOverride(FaultCodes::ILCCommunicationTimeout, this->safetyControllerSettings->ILC.FaultOnCommunicationTimeout, sum >= this->safetyControllerSettings->ILC.CommunicationTimeoutCountThreshold);
+    this->ilcCommunicationTimeoutData.pop_front();
+    this->ilcCommunicationTimeoutData.push_back(conditionFlag ? 1 : 0);
+    int sum = 0;
+    for (std::list<int>::iterator i = this->ilcCommunicationTimeoutData.begin(); i != this->ilcCommunicationTimeoutData.end(); ++i) {
+        sum += (*i);
+    }
+    this->updateOverride(FaultCodes::ILCCommunicationTimeout, this->safetyControllerSettings->ILC.FaultOnCommunicationTimeout, sum >= this->safetyControllerSettings->ILC.CommunicationTimeoutCountThreshold);
 }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
-//	if (this->errorCodeData->detailedErrorCode != FaultCodes::NoFault) {
-	if (this->errorCodeData->errorCode != FaultCodes::NoFault) {
-		this->publisher->logErrorCode();
-//		this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
-		this->errorCodeData->errorCode= FaultCodes::NoFault;
-		return States::LoweringFaultState;
-	}
-	return preferredNextState;
+    //	if (this->errorCodeData->detailedErrorCode != FaultCodes::NoFault) {
+    if (this->errorCodeData->errorCode != FaultCodes::NoFault) {
+        this->publisher->logErrorCode();
+        //		this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
+        this->errorCodeData->errorCode = FaultCodes::NoFault;
+        return States::LoweringFaultState;
+    }
+    return preferredNextState;
 }
 
 void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {
-	bool faultConditionExists = enabledFlag && conditionFlag;
-//	if (faultConditionExists && this->errorCodeData->detailedErrorCode == FaultCodes::NoFault) {
-	if (faultConditionExists && this->errorCodeData->errorCode == FaultCodes::NoFault) {
-//		this->errorCodeData->timestamp = this->publisher->getTimestamp();
-//		this->errorCodeData->detailedErrorCode = (int32_t)faultCode;
-		int errorCode = (int)(((int64_t)faultCode) >> 32);
-		int detailCode = (int)faultCode;
-		this->errorCodeData->errorCode = errorCode;
-		Log.Warn("SafetyController: Error Code %d DetailedCode %d", errorCode, detailCode);
-	}
+    bool faultConditionExists = enabledFlag && conditionFlag;
+    //	if (faultConditionExists && this->errorCodeData->detailedErrorCode == FaultCodes::NoFault) {
+    if (faultConditionExists && this->errorCodeData->errorCode == FaultCodes::NoFault) {
+        //		this->errorCodeData->timestamp = this->publisher->getTimestamp();
+        //		this->errorCodeData->detailedErrorCode = (int32_t)faultCode;
+        int errorCode = (int)(((int64_t)faultCode) >> 32);
+        int detailCode = (int)faultCode;
+        this->errorCodeData->errorCode = errorCode;
+        Log.Warn("SafetyController: Error Code %d DetailedCode %d", errorCode, detailCode);
+    }
 }
 
 } /* namespace SS */

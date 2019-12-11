@@ -22,23 +22,23 @@ class CommandFactory;
  * The main controller for the application.
  */
 class Controller {
-private:
-	CommandFactory* commandFactory;
-	pthread_mutex_t mutex;
-	std::queue<Command*> queue;
+   private:
+    CommandFactory* commandFactory;
+    pthread_mutex_t mutex;
+    std::queue<Command*> queue;
 
-public:
-	Controller(CommandFactory* commandFactory);
-	~Controller();
+   public:
+    Controller(CommandFactory* commandFactory);
+    ~Controller();
 
-	void lock();
-	void unlock();
+    void lock();
+    void unlock();
 
-	void clear();
+    void clear();
 
-	void enqueue(Command* command);
-	Command* dequeue();
-	void execute(Command* command);
+    void enqueue(Command* command);
+    Command* dequeue();
+    void execute(Command* command);
 };
 
 } /* namespace SS */

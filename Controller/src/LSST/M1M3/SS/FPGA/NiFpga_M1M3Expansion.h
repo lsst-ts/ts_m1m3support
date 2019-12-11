@@ -7,7 +7,7 @@
 #define __NiFpga_M1M3Expansion_h__
 
 #ifndef NiFpga_Version
-   #define NiFpga_Version 1600
+#define NiFpga_Version 1600
 #endif
 
 #include "NiFpga.h"
@@ -26,24 +26,20 @@
  */
 static const char* const NiFpga_M1M3Expansion_Signature = "B0AE4278BEACC85330A5DB1C38E9AE71";
 
-typedef enum
-{
-   NiFpga_M1M3Expansion_IndicatorU32_Slot2 = 0x18000,
+typedef enum {
+    NiFpga_M1M3Expansion_IndicatorU32_Slot2 = 0x18000,
 } NiFpga_M1M3Expansion_IndicatorU32;
 
-typedef enum
-{
-   NiFpga_M1M3Expansion_ControlBool_Sample = 0x1800A,
+typedef enum {
+    NiFpga_M1M3Expansion_ControlBool_Sample = 0x1800A,
 } NiFpga_M1M3Expansion_ControlBool;
 
-typedef enum
-{
-   NiFpga_M1M3Expansion_IndicatorArraySgl_Slot1 = 0x18004,
+typedef enum {
+    NiFpga_M1M3Expansion_IndicatorArraySgl_Slot1 = 0x18004,
 } NiFpga_M1M3Expansion_IndicatorArraySgl;
 
-typedef enum
-{
-   NiFpga_M1M3Expansion_IndicatorArraySglSize_Slot1 = 6,
+typedef enum {
+    NiFpga_M1M3Expansion_IndicatorArraySglSize_Slot1 = 6,
 } NiFpga_M1M3Expansion_IndicatorArraySglSize;
 
 #endif

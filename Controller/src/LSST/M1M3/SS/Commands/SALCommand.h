@@ -14,21 +14,22 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-template<class topic> class SALCommand: public Command {
-protected:
-	int32_t commandID;
-	M1M3SSPublisher* publisher;
-	topic data;
+template <class topic>
+class SALCommand : public Command {
+   protected:
+    int32_t commandID;
+    M1M3SSPublisher* publisher;
+    topic data;
 
-public:
-	SALCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, topic* data) {
-		this->context = context;
-		this->publisher = publisher;
-		this->commandID = commandID;
-		this->data = *data;
-	}
+   public:
+    SALCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, topic* data) {
+        this->context = context;
+        this->publisher = publisher;
+        this->commandID = commandID;
+        this->data = *data;
+    }
 
-	topic* getData() { return &this->data; }
+    topic* getData() { return &this->data; }
 };
 
 } /* namespace SS */

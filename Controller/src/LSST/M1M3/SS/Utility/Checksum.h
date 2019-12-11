@@ -15,8 +15,8 @@ namespace M1M3 {
 namespace SS {
 
 class Checksum {
-public:
-	static uint8_t checksum8(uint8_t* buffer, int32_t startIndex, int32_t length);
+   public:
+    static uint8_t checksum8(uint8_t* buffer, int32_t startIndex, int32_t length);
 };
 
 } /* namespace SS */

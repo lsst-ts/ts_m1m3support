@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_stopHardpointMotionC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+  : SALCommand(context, publisher, commandID, data) {}
 
 void StopHardpointMotionCommand::execute() {
-	this->context->stopHardpointMotion(this);
+    this->context->stopHardpointMotion(this);
 }
 
 void StopHardpointMotionCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandStopHardpointMotion(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

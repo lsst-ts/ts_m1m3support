@@ -24,27 +24,27 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class VelocityForceComponent: public ForceComponent {
-private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+class VelocityForceComponent : public ForceComponent {
+   private:
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_appliedVelocityForcesC* appliedVelocityForces;
-	MTM1M3_logevent_rejectedVelocityForcesC* rejectedVelocityForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+    MTM1M3_logevent_appliedVelocityForcesC* appliedVelocityForces;
+    MTM1M3_logevent_rejectedVelocityForcesC* rejectedVelocityForces;
 
-public:
-	VelocityForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+   public:
+    VelocityForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
-	void applyVelocityForces(float* x, float* y, float* z);
-	void applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY, float angularVelocityZ);
+    void applyVelocityForces(float* x, float* y, float* z);
+    void applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY, float angularVelocityZ);
 
-protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+   protected:
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

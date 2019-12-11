@@ -15,10 +15,10 @@ namespace M1M3 {
 namespace SS {
 
 class InterlockApplicationSettings {
-public:
-	double HeartbeatPeriodInSeconds;
+   public:
+    double HeartbeatPeriodInSeconds;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

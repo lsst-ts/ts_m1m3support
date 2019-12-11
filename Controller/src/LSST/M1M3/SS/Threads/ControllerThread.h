@@ -19,16 +19,16 @@ class Controller;
 /*!
  * The controller thread is responsible for executing commands.
  */
-class ControllerThread: public IThread {
-private:
-	Controller* controller;
-	bool keepRunning;
+class ControllerThread : public IThread {
+   private:
+    Controller* controller;
+    bool keepRunning;
 
-public:
-	ControllerThread(Controller* controller);
+   public:
+    ControllerThread(Controller* controller);
 
-	void run();
-	void stop();
+    void run();
+    void stop();
 };
 
 } /* namespace SS */

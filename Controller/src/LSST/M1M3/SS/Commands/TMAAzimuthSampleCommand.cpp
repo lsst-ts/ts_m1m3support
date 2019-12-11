@@ -14,12 +14,12 @@ namespace M1M3 {
 namespace SS {
 
 TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data) {
-	this->context = context;
-	memcpy(&this->data, data, sizeof(MTMount_AzimuthC));
+    this->context = context;
+    memcpy(&this->data, data, sizeof(MTMount_AzimuthC));
 }
 
 void TMAAzimuthSampleCommand::execute() {
-	this->context->storeTMAAzimuthSample(this);
+    this->context->storeTMAAzimuthSample(this);
 }
 
 } /* namespace SS */

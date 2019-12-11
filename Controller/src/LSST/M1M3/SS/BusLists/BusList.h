@@ -19,30 +19,30 @@ namespace SS {
 class ILCMessageFactory;
 class ILCSubnetData;
 
-class BusList: public IBusList {
-protected:
-	ILCSubnetData* subnetData;
-	ILCMessageFactory* ilcMessageFactory;
+class BusList : public IBusList {
+   protected:
+    ILCSubnetData* subnetData;
+    ILCMessageFactory* ilcMessageFactory;
 
-	ModbusBuffer buffer;
-	int32_t expectedHPResponses[HP_COUNT];
-	int32_t expectedFAResponses[FA_COUNT];
-	int32_t expectedHMResponses[HM_COUNT];
-	int32_t subnetStartIndex;
+    ModbusBuffer buffer;
+    int32_t expectedHPResponses[HP_COUNT];
+    int32_t expectedFAResponses[FA_COUNT];
+    int32_t expectedHMResponses[HM_COUNT];
+    int32_t subnetStartIndex;
 
-public:
-	BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+   public:
+    BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
-	int32_t getLength() { return this->buffer.getLength(); }
-	uint16_t* getBuffer() { return this->buffer.getBuffer(); }
+    int32_t getLength() { return this->buffer.getLength(); }
+    uint16_t* getBuffer() { return this->buffer.getBuffer(); }
 
-	int32_t* getExpectedHPResponses() { return this->expectedHPResponses; }
-	int32_t* getExpectedFAResponses() { return this->expectedFAResponses; }
-	int32_t* getExpectedHMResponses() { return this->expectedHMResponses; }
+    int32_t* getExpectedHPResponses() { return this->expectedHPResponses; }
+    int32_t* getExpectedFAResponses() { return this->expectedFAResponses; }
+    int32_t* getExpectedHMResponses() { return this->expectedHMResponses; }
 
-protected:
-	void startSubnet(uint8_t subnet);
-	void endSubnet();
+   protected:
+    void startSubnet(uint8_t subnet);
+    void endSubnet();
 };
 
 } /* namespace SS */

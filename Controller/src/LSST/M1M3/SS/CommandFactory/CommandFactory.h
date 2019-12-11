@@ -25,32 +25,32 @@ class Command;
  * memory leak will occur.
  */
 class CommandFactory {
-private:
-	M1M3SSPublisher* publisher;
-	Context* context;
+   private:
+    M1M3SSPublisher* publisher;
+    Context* context;
 
-public:
-	/*!
+   public:
+    /*!
 	 * Instantiates the command factory.
 	 * @param[in] publisher The publisher that will be provided to the commands created by this factory.
 	 * @param[in] context The context that will be provided to the commands created by this factory.
 	 */
-	CommandFactory(M1M3SSPublisher* publisher, Context* context);
+    CommandFactory(M1M3SSPublisher* publisher, Context* context);
 
-	/*!
+    /*!
 	 * Creates a command.
 	 * This command is dynamically allocated and must be destroyed.
 	 * @param[in] commandType The type of command to create.
 	 * @param[in] data The data for the command.
 	 * @param[in] commandID The command ID (optional).
 	 */
-	Command* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
-	/*!
+    Command* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
+    /*!
 	 * Destroys a command created by this factory.
 	 * Commands created by this factory are dynamically allocated and therefore must be cleaned up.
 	 * @param[in] command The command to destroy.
 	 */
-	void destroy(Command* command);
+    void destroy(Command* command);
 };
 
 } /* namespace SS */

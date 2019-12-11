@@ -16,12 +16,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ClearOffsetForcesCommand: public SALCommand<MTM1M3_command_clearOffsetForcesC> {
-public:
-	ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearOffsetForcesC* data);
+class ClearOffsetForcesCommand : public SALCommand<MTM1M3_command_clearOffsetForcesC> {
+   public:
+    ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearOffsetForcesC* data);
 
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

@@ -16,12 +16,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class EnterEngineeringCommand: public SALCommand<MTM1M3_command_enterEngineeringC> {
-public:
-	EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data);
+class EnterEngineeringCommand : public SALCommand<MTM1M3_command_enterEngineeringC> {
+   public:
+    EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data);
 
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

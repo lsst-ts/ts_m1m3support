@@ -17,10 +17,10 @@ namespace M1M3 {
 namespace SS {
 
 class HardpointActuatorApplicationSettings {
-public:
-	std::vector<HardpointActuatorTableRow> Table;
+   public:
+    std::vector<HardpointActuatorTableRow> Table;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

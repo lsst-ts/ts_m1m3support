@@ -12,8 +12,7 @@ namespace M1M3 {
 namespace SS {
 
 BitHelper::BitHelper() {
-	// TODO Auto-generated constructor stub
-
+    // TODO Auto-generated constructor stub
 }
 
 } /* namespace SS */

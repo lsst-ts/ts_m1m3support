@@ -13,13 +13,13 @@ namespace M1M3 {
 namespace SS {
 
 struct ForcesAndMoments {
-	float Fx;
-	float Fy;
-	float Fz;
-	float Mx;
-	float My;
-	float Mz;
-	float ForceMagnitude;
+    float Fx;
+    float Fy;
+    float Fz;
+    float Mx;
+    float My;
+    float Mz;
+    float ForceMagnitude;
 };
 
 } /* namespace SS */

@@ -13,8 +13,8 @@ namespace M1M3 {
 namespace SS {
 
 struct CellLightsSafetySettings {
-	bool FaultOnOutputMismatch;
-	bool FaultOnSensorMismatch;
+    bool FaultOnOutputMismatch;
+    bool FaultOnSensorMismatch;
 };
 
 } /* namespace SS */

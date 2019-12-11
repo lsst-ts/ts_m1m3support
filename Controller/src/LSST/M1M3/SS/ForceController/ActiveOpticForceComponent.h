@@ -24,27 +24,27 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class ActiveOpticForceComponent: public ForceComponent {
-private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+class ActiveOpticForceComponent : public ForceComponent {
+   private:
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_appliedActiveOpticForcesC* appliedActiveOpticForces;
-	MTM1M3_logevent_rejectedActiveOpticForcesC* rejectedActiveOpticForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+    MTM1M3_logevent_appliedActiveOpticForcesC* appliedActiveOpticForces;
+    MTM1M3_logevent_rejectedActiveOpticForcesC* rejectedActiveOpticForces;
 
-public:
-	ActiveOpticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+   public:
+    ActiveOpticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
-	void applyActiveOpticForces(float* z);
-	void applyActiveOpticForcesByBendingModes(float* coefficients);
+    void applyActiveOpticForces(float* z);
+    void applyActiveOpticForcesByBendingModes(float* coefficients);
 
-protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+   protected:
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

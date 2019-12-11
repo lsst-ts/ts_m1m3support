@@ -28,6 +28,7 @@
 
 # Other
 *.stackdump
+.vscode/
 
 /RemoteSystemsTemp*
 /Windows-Release

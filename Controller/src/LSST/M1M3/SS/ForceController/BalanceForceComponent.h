@@ -26,42 +26,42 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 class PIDSettings;
 
-class BalanceForceComponent: public ForceComponent {
-private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
-	PIDSettings* pidSettings;
+class BalanceForceComponent : public ForceComponent {
+   private:
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
+    PIDSettings* pidSettings;
 
-	PID fx;
-	PID fy;
-	PID fz;
-	PID mx;
-	PID my;
-	PID mz;
+    PID fx;
+    PID fy;
+    PID fz;
+    PID mx;
+    PID my;
+    PID mz;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_appliedBalanceForcesC* appliedBalanceForces;
-	MTM1M3_logevent_rejectedBalanceForcesC* rejectedBalanceForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+    MTM1M3_logevent_appliedBalanceForcesC* appliedBalanceForces;
+    MTM1M3_logevent_rejectedBalanceForcesC* rejectedBalanceForces;
 
-public:
-	BalanceForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
+   public:
+    BalanceForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
 
-	void applyBalanceForces(float* x, float* y, float* z);
-	void applyBalanceForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
+    void applyBalanceForces(float* x, float* y, float* z);
+    void applyBalanceForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
 
-	void updatePID(int id, PIDParameters parameters);
-	void resetPID(int id);
-	void resetPIDs();
+    void updatePID(int id, PIDParameters parameters);
+    void resetPID(int id);
+    void resetPIDs();
 
-protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+   protected:
+    void postEnableDisableActions();
+    void postUpdateActions();
 
-private:
-	PID* idToPID(int id);
+   private:
+    PID* idToPID(int id);
 };
 
 } /* namespace SS */

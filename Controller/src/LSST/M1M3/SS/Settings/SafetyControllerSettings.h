@@ -25,19 +25,19 @@ namespace M1M3 {
 namespace SS {
 
 class SafetyControllerSettings {
-public:
-	AirControllerSafetySettings AirController;
-	DisplacementSafetySettings Displacement;
-	InclinometerSafetySettings Inclinometer;
-	InterlockControllerSafetySettings Interlock;
-	ForceControllerSafetySettings ForceController;
-	CellLightsSafetySettings CellLights;
-	PowerControllerSafetySettings PowerController;
-	RaiseOperationSafetySettings RaiseOperation;
-	LowerOperationSafetySettings LowerOperation;
-	ILCSafetySettings ILC;
+   public:
+    AirControllerSafetySettings AirController;
+    DisplacementSafetySettings Displacement;
+    InclinometerSafetySettings Inclinometer;
+    InterlockControllerSafetySettings Interlock;
+    ForceControllerSafetySettings ForceController;
+    CellLightsSafetySettings CellLights;
+    PowerControllerSafetySettings PowerController;
+    RaiseOperationSafetySettings RaiseOperation;
+    LowerOperationSafetySettings LowerOperation;
+    ILCSafetySettings ILC;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

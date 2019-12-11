@@ -14,19 +14,19 @@ namespace M1M3 {
 namespace SS {
 
 StartCommand::StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_startC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+  : SALCommand(context, publisher, commandID, data) {}
 
 bool StartCommand::validate() {
-	// TODO : Check folder exists
-	return true;
+    // TODO : Check folder exists
+    return true;
 }
 
 void StartCommand::execute() {
-	this->context->start(this);
+    this->context->start(this);
 }
 
 void StartCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandStart(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandStart(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

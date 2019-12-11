@@ -23,27 +23,27 @@ class M1M3SSPublisher;
  * The class used to process accelerometer data.
  */
 class Accelerometer {
-private:
-	AccelerometerSettings* accelerometerSettings;
-	SupportFPGAData* fpgaData;
-	M1M3SSPublisher* publisher;
+   private:
+    AccelerometerSettings* accelerometerSettings;
+    SupportFPGAData* fpgaData;
+    M1M3SSPublisher* publisher;
 
-	MTM1M3_accelerometerDataC* accelerometerData;
-	MTM1M3_logevent_accelerometerWarningC* accelerometerWarning;
+    MTM1M3_accelerometerDataC* accelerometerData;
+    MTM1M3_logevent_accelerometerWarningC* accelerometerWarning;
 
-public:
-	/*!
+   public:
+    /*!
 	 * Instantiates the accelerometer.
 	 * @param[in] accelerometerSettings The accelerometer settings.
 	 * @param[in] fpgaData The fpga data.
 	 * @param[in] publisher The publisher.
 	 */
-	Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher);
+    Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher);
 
-	/*!
+    /*!
 	 * Processes currently available accelerometer data and publish it.
 	 */
-	void processData();
+    void processData();
 };
 
 } /* namespace SS */
