@@ -358,7 +358,6 @@ class M1M3SSPublisher {
     void tryLogRejectedVelocityForces();
     void logSettingVersions();
     void tryLogSettingVersions();
-    ;
     void logSummaryState();
     void tryLogSummaryState();
 
