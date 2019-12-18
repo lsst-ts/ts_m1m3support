@@ -48,7 +48,7 @@ struct ILCApplicationStats {
 };
 
 class FirmwareUpdate {
-   private:
+private:
     std::vector<char> appData;
     std::vector<IntelHexLine> hexData;
     ILCApplicationStats appStats;
@@ -56,7 +56,7 @@ class FirmwareUpdate {
     ILCSubnetData* subnetData;
     int desiredState;
 
-   public:
+public:
     FirmwareUpdate(IFPGA* fpga, ILCSubnetData* subnetData);
 
     bool Program(int actuatorId, std::string filePath);

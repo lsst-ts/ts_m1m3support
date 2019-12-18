@@ -16,14 +16,14 @@ namespace M1M3 {
 namespace SS {
 
 class ModbusBuffer {
-   private:
+private:
     uint16_t buffer[5120];
     uint8_t floatPointBuffer[8];
     uint8_t stringBuffer[256];
     int32_t index;
     int32_t length;
 
-   public:
+public:
     ModbusBuffer();
     virtual ~ModbusBuffer();
 

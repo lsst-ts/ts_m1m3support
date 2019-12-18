@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 ReadBoostValveDCAGainBusList::ReadBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
-  : BusList(subnetData, ilcMessageFactory) {
+        : BusList(subnetData, ilcMessageFactory) {
     Log.Debug("ReadBoostValveDCAGainBusList: ReadBoostValveDCAGainBusList()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);

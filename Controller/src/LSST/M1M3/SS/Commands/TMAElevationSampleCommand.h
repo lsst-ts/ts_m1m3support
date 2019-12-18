@@ -18,10 +18,10 @@ namespace M1M3 {
 namespace SS {
 
 class TMAElevationSampleCommand : public Command {
-   private:
+private:
     MTMount_ElevationC data;
 
-   public:
+public:
     TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data);
 
     MTMount_ElevationC* getData() { return &this->data; }

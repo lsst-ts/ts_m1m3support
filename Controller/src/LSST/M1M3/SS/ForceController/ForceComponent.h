@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class ForceComponent {
-   protected:
+protected:
     std::string name;
 
     bool enabled;
@@ -35,7 +35,7 @@ class ForceComponent {
     float yOffset[100];
     float zOffset[156];
 
-   public:
+public:
     ForceComponent();
     virtual ~ForceComponent();
 
@@ -49,7 +49,7 @@ class ForceComponent {
 
     void reset();
 
-   protected:
+protected:
     virtual void postEnableDisableActions();
     virtual void postUpdateActions();
 };

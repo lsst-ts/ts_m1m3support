@@ -22,12 +22,12 @@ class CommandFactory;
  * The main controller for the application.
  */
 class Controller {
-   private:
+private:
     CommandFactory* commandFactory;
     pthread_mutex_t mutex;
     std::queue<Command*> queue;
 
-   public:
+public:
     Controller(CommandFactory* commandFactory);
     ~Controller();
 

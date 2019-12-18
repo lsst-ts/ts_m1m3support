@@ -35,7 +35,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class FinalForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -57,13 +57,13 @@ class FinalForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedThermalForcesC* appliedThermalForces;
     MTM1M3_logevent_appliedVelocityForcesC* appliedVelocityForces;
 
-   public:
+public:
     FinalForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyForces(float* x, float* y, float* z);
     void applyForcesByComponents();
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

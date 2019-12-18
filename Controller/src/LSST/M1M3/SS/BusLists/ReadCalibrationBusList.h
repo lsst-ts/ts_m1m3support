@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class ReadCalibrationBusList : public BusList {
-   public:
+public:
     ReadCalibrationBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

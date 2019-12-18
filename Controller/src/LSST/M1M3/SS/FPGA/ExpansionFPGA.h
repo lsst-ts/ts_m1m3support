@@ -17,12 +17,12 @@ namespace SS {
 class ExpansionFPGAApplicationSettings;
 
 class ExpansionFPGA : public IExpansionFPGA {
-   private:
+private:
     ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;
     uint32_t session;
     size_t remaining;
 
-   public:
+public:
     ExpansionFPGA(ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings);
 
     int32_t initialize();

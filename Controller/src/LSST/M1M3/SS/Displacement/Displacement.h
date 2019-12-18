@@ -26,7 +26,7 @@ class SafetyController;
  * The class used to process displacement data.
  */
 class Displacement {
-   private:
+private:
     DisplacementSensorSettings* displacementSensorSettings;
     SupportFPGAData* fpgaData;
     M1M3SSPublisher* publisher;
@@ -39,7 +39,7 @@ class Displacement {
     uint64_t lastErrorTimestamp;
     bool errorCleared;
 
-   public:
+public:
     /*!
 	 * Instantiates the displacement sensor.
 	 * @param[in] displacementSensorSettings The displacement settings.

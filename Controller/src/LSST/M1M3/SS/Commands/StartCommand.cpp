@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 StartCommand::StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_startC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 bool StartCommand::validate() {
     // TODO : Check folder exists

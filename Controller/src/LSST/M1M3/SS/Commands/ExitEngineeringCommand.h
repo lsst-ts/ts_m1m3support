@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class ExitEngineeringCommand : public SALCommand<MTM1M3_command_exitEngineeringC> {
-   public:
+public:
     ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_exitEngineeringC* data);
 
     void execute();

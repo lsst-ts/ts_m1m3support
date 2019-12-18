@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class BitHelper {
-   public:
+public:
     BitHelper();
 
     static inline void set(unsigned long long* data, int32_t bit, bool value) {

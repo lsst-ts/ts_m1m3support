@@ -16,7 +16,7 @@ namespace M1M3 {
 namespace SS {
 
 FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData)
-  : BusList(subnetData, ilcMessageFactory) {
+        : BusList(subnetData, ilcMessageFactory) {
     Log.Debug("FreezeSensorBusList: FreezeSensorBusList()");
     this->outerLoopData = outerLoopData;
     this->lvdtSampleClock = 0;

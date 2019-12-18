@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 ApplyActiveOpticForcesByBendingModesCommand::ApplyActiveOpticForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyActiveOpticForcesByBendingModesC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ApplyActiveOpticForcesByBendingModesCommand::execute() {
     this->context->applyActiveOpticForcesByBendingModes(this);

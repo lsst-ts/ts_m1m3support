@@ -26,7 +26,7 @@ class InclinometerSettings;
  * The class used to process inclinometer data.
  */
 class Inclinometer {
-   private:
+private:
     SupportFPGAData* fpgaData;
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
@@ -39,7 +39,7 @@ class Inclinometer {
     uint64_t lastErrorTimestamp;
     bool errorCleared;
 
-   public:
+public:
     /*!
 	 * Instantiates the inclinometer.
 	 * @param[in] fpgaData The fpga data.

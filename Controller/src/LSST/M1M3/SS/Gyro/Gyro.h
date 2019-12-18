@@ -27,7 +27,7 @@ class M1M3SSPublisher;
  * The class used to process gyro data.
  */
 class Gyro {
-   private:
+private:
     GyroSettings* gyroSettings;
     IFPGA* fpga;
     SupportFPGAData* fpgaData;
@@ -42,7 +42,7 @@ class Gyro {
 
     bool errorCleared;
 
-   public:
+public:
     /*!
 	 * Instantiates the gyro sensor.
 	 * @param[in] gyroSettings The gyro settings.
@@ -92,7 +92,7 @@ class Gyro {
 	 */
     void processData();
 
-   private:
+private:
     /*!
 	 * Writes a command to the gyro.
 	 * @param[in] command The command.

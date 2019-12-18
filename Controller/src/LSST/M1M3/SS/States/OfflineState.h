@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class OfflineState : public State {
-   public:
+public:
     OfflineState(M1M3SSPublisher* publisher);
 
     virtual States::Type boot(BootCommand* command, Model* model);

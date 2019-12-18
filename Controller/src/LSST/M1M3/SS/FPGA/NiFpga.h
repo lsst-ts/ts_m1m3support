@@ -113,7 +113,7 @@
 /* VxWorks (at least 6.3 and earlier) did not have stdint.h. */
 #include <types/vxTypes.h>
 #elif NiFpga_C99 || NiFpga_Gcc /* GCC (at least since 3.0) has a stdint.h. */ \
-  || defined(HAVE_STDINT_H)
+        || defined(HAVE_STDINT_H)
 /* Assume that stdint.h can be included. */
 #include <stdint.h>
 #elif NiFpga_Msvc || NiFpga_Cvi
@@ -533,8 +533,8 @@ static NiFpga_Inline NiFpga_Bool NiFpga_IsNotError(const NiFpga_Status status) {
  * @return the resulting status
  */
 static NiFpga_Inline NiFpga_Status NiFpga_MergeStatus(
-  NiFpga_Status* const status,
-  const NiFpga_Status newStatus) {
+        NiFpga_Status* const status,
+        const NiFpga_Status newStatus) {
     if (!status)
         return NiFpga_Status_InvalidParameter;
     if (NiFpga_IsNotError(*status) && (*status == NiFpga_Status_Success || NiFpga_IsError(newStatus)))
@@ -1974,13 +1974,13 @@ NiFpga_Status NiFpga_WriteFifoDbl(NiFpga_Session session,
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsBool(
-  NiFpga_Session session,
-  uint32_t fifo,
-  NiFpga_Bool** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        NiFpga_Bool** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of signed 8-bit
@@ -2008,13 +2008,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsBool(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsI8(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int8_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int8_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of unsigned 8-bit
@@ -2042,13 +2042,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsI8(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsU8(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint8_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint8_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of signed 16-bit
@@ -2076,13 +2076,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsU8(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsI16(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int16_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int16_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of unsigned 16-bit
@@ -2110,13 +2110,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsI16(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsU16(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint16_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint16_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of signed 32-bit
@@ -2144,13 +2144,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsU16(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsI32(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int32_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int32_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of unsigned 32-bit
@@ -2178,13 +2178,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsI32(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsU32(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint32_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint32_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of signed 64-bit
@@ -2212,13 +2212,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsU32(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsI64(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int64_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int64_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of unsigned 64-bit
@@ -2246,13 +2246,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsI64(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsU64(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint64_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint64_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of single-precision
@@ -2280,13 +2280,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsU64(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsSgl(
-  NiFpga_Session session,
-  uint32_t fifo,
-  float** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        float** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for reading from a target-to-host FIFO of double-precision
@@ -2314,13 +2314,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsSgl(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoReadElementsDbl(
-  NiFpga_Session session,
-  uint32_t fifo,
-  double** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        double** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of booleans.
@@ -2347,13 +2347,13 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsDbl(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsBool(
-  NiFpga_Session session,
-  uint32_t fifo,
-  NiFpga_Bool** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        NiFpga_Bool** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of signed 8-bit
@@ -2381,13 +2381,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsBool(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsI8(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int8_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int8_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of unsigned 8-bit
@@ -2415,13 +2415,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsI8(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsU8(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint8_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint8_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of signed 16-bit
@@ -2449,13 +2449,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsU8(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsI16(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int16_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int16_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of unsigned 16-bit
@@ -2483,13 +2483,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsI16(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsU16(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint16_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint16_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of signed 32-bit
@@ -2517,13 +2517,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsU16(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsI32(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int32_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int32_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of unsigned 32-bit
@@ -2551,13 +2551,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsI32(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsU32(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint32_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint32_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of signed 64-bit
@@ -2585,13 +2585,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsU32(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsI64(
-  NiFpga_Session session,
-  uint32_t fifo,
-  int64_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        int64_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of unsigned 64-bit
@@ -2619,13 +2619,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsI64(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsU64(
-  NiFpga_Session session,
-  uint32_t fifo,
-  uint64_t** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        uint64_t** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of single-precision
@@ -2653,13 +2653,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsU64(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsSgl(
-  NiFpga_Session session,
-  uint32_t fifo,
-  float** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        float** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Acquires elements for writing to a host-to-target FIFO of single-precision
@@ -2687,13 +2687,13 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsSgl(
  * @return result of the call
  */
 NiFpga_Status NiFpga_AcquireFifoWriteElementsDbl(
-  NiFpga_Session session,
-  uint32_t fifo,
-  double** elements,
-  size_t elementsRequested,
-  uint32_t timeout,
-  size_t* elementsAcquired,
-  size_t* elementsRemaining);
+        NiFpga_Session session,
+        uint32_t fifo,
+        double** elements,
+        size_t elementsRequested,
+        uint32_t timeout,
+        size_t* elementsAcquired,
+        size_t* elementsRemaining);
 
 /**
  * Releases previously acquired FIFO elements.

@@ -31,7 +31,7 @@ namespace SS {
 class M1M3SSPublisher;
 
 class StaticStateFactory {
-   private:
+private:
     OfflineState offlineState;
     StandbyState standbyState;
     DisabledState disabledState;
@@ -48,7 +48,7 @@ class StaticStateFactory {
     FaultState faultState;
     LoweringFaultState loweringFaultState;
 
-   public:
+public:
     StaticStateFactory(M1M3SSPublisher* publisher);
 
     State* create(States::Type state);

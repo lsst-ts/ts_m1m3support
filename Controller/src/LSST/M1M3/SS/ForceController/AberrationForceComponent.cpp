@@ -96,8 +96,8 @@ void AberrationForceComponent::postUpdateActions() {
 
     BitHelper::set(&this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointNetAberrationForceWarning,
                    !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance, this->forceActuatorSettings->NetAberrationForceTolerance, this->appliedAberrationForces->fZ) ||
-                     !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance, this->forceActuatorSettings->NetAberrationForceTolerance, this->appliedAberrationForces->mX) ||
-                     !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance, this->forceActuatorSettings->NetAberrationForceTolerance, this->appliedAberrationForces->mY));
+                           !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance, this->forceActuatorSettings->NetAberrationForceTolerance, this->appliedAberrationForces->mX) ||
+                           !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance, this->forceActuatorSettings->NetAberrationForceTolerance, this->appliedAberrationForces->mY));
 
     this->safetyController->forceControllerNotifyAberrationForceClipping(rejectionRequired);
     this->safetyController->forceControllerNotifyAberrationNetForceCheck(BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointNetAberrationForceWarning));

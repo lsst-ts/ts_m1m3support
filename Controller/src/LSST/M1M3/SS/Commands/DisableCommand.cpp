@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void DisableCommand::execute() {
     this->context->disable(this);

@@ -16,7 +16,7 @@ namespace M1M3 {
 namespace SS {
 
 class FreezeSensorBusList : public BusList {
-   private:
+private:
     MTM1M3_outerLoopDataC* outerLoopData;
 
     int32_t freezeSensorCommandIndex[5];
@@ -25,7 +25,7 @@ class FreezeSensorBusList : public BusList {
     int32_t hmLVDTCommandIndex[5];
     int32_t lvdtSampleClock;
 
-   public:
+public:
     FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData);
 
     void update();

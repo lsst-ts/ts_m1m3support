@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class CRC {
-   public:
+public:
     static uint16_t modbus(uint8_t* buffer, int32_t startIndex, int32_t length);
     static uint16_t modbus(uint16_t* buffer, int32_t startIndex, int32_t length);
     static uint32_t crc32(uint8_t* buffer, int32_t startIndex, int32_t length);

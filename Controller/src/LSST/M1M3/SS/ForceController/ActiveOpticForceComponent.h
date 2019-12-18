@@ -25,7 +25,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class ActiveOpticForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -36,13 +36,13 @@ class ActiveOpticForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedActiveOpticForcesC* appliedActiveOpticForces;
     MTM1M3_logevent_rejectedActiveOpticForcesC* rejectedActiveOpticForces;
 
-   public:
+public:
     ActiveOpticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyActiveOpticForces(float* z);
     void applyActiveOpticForcesByBendingModes(float* coefficients);
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

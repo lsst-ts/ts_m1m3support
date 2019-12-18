@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class ApplyOffsetForcesByMirrorForceCommand : public SALCommand<MTM1M3_command_applyOffsetForcesByMirrorForceC> {
-   public:
+public:
     ApplyOffsetForcesByMirrorForceCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data);
 
     void execute();

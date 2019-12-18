@@ -25,7 +25,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class AberrationForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -36,13 +36,13 @@ class AberrationForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedAberrationForcesC* appliedAberrationForces;
     MTM1M3_logevent_rejectedAberrationForcesC* rejectedAberrationForces;
 
-   public:
+public:
     AberrationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyAberrationForces(float* z);
     void applyAberrationForcesByBendingModes(float* coefficients);
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

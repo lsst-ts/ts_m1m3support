@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 AbortRaiseM1M3Command::AbortRaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_abortRaiseM1M3C* data)
-  : SALCommand<MTM1M3_command_abortRaiseM1M3C>(context, publisher, commandID, data) {}
+        : SALCommand<MTM1M3_command_abortRaiseM1M3C>(context, publisher, commandID, data) {}
 
 void AbortRaiseM1M3Command::execute() {
     this->context->abortRaiseM1M3(this);

@@ -18,10 +18,10 @@ class ModbusBuffer;
 struct ILCApplicationSettings;
 
 class ILCMessageFactory {
-   private:
+private:
     ILCApplicationSettings* ilcApplicationSettings;
 
-   public:
+public:
     ILCMessageFactory(ILCApplicationSettings* ilcApplicationSettings);
 
     void reportServerID(ModbusBuffer* buffer, uint8_t address);

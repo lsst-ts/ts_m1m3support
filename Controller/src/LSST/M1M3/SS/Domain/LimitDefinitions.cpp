@@ -36,7 +36,7 @@ Limit::Type LimitDefinition<a>::check(a value) {
 }
 
 TimedLimitDefinition::TimedLimitDefinition()
-  : LimitDefinition<Limit::Type>() {
+        : LimitDefinition<Limit::Type>() {
     this->update(false, false, 0, 0, 0);
 }
 
@@ -88,7 +88,7 @@ Limit::Type TimedLimitDefinition::check(Limit::Type value) {
 
 template <class a>
 EqualLimitDefinition<a>::EqualLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a());
 }
 
@@ -111,7 +111,7 @@ Limit::Type EqualLimitDefinition<a>::check(a value) {
 
 template <class a>
 NotEqualLimitDefinition<a>::NotEqualLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a());
 }
 
@@ -134,7 +134,7 @@ Limit::Type NotEqualLimitDefinition<a>::check(a value) {
 
 template <class a>
 LessThanLimitDefinition<a>::LessThanLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a());
 }
 
@@ -157,7 +157,7 @@ Limit::Type LessThanLimitDefinition<a>::check(a value) {
 
 template <class a>
 LessThanEqualLimitDefinition<a>::LessThanEqualLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a());
 }
 
@@ -180,7 +180,7 @@ Limit::Type LessThanEqualLimitDefinition<a>::check(a value) {
 
 template <class a>
 GreaterThanLimitDefinition<a>::GreaterThanLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a());
 }
 
@@ -203,7 +203,7 @@ Limit::Type GreaterThanLimitDefinition<a>::check(a value) {
 
 template <class a>
 GreaterThanEqualLimitDefinition<a>::GreaterThanEqualLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a());
 }
 
@@ -226,7 +226,7 @@ Limit::Type GreaterThanEqualLimitDefinition<a>::check(a value) {
 
 template <class a>
 InRangeLimitDefinition<a>::InRangeLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a(), a(), a());
 }
 
@@ -251,7 +251,7 @@ Limit::Type InRangeLimitDefinition<a>::check(a value) {
 
 template <class a>
 NotInRangeLimitDefinition<a>::NotInRangeLimitDefinition()
-  : LimitDefinition<a>() {
+        : LimitDefinition<a>() {
     this->update(false, false, a(), a(), a(), a());
 }
 
@@ -275,7 +275,7 @@ Limit::Type NotInRangeLimitDefinition<a>::check(a value) {
 }
 
 BitSetLimitDefinition::BitSetLimitDefinition()
-  : LimitDefinition<unsigned long>() {
+        : LimitDefinition<unsigned long>() {
     this->update(false, false, 0, 0);
 }
 
@@ -295,7 +295,7 @@ Limit::Type BitSetLimitDefinition::check(unsigned long value) {
 }
 
 NotBitSetLimitDefinition::NotBitSetLimitDefinition()
-  : LimitDefinition<unsigned long>() {
+        : LimitDefinition<unsigned long>() {
     this->update(false, false, 0, 0);
 }
 

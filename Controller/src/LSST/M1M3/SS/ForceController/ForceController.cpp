@@ -31,17 +31,17 @@ namespace M1M3 {
 namespace SS {
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, MTMount_ElevationC* tmaAlt, MTMount_AzimuthC* tmaAz)
-  : aberrationForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    accelerationForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    activeOpticForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    azimuthForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    balanceForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings, pidSettings),
-    elevationForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    offsetForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    staticForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    thermalForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    velocityForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-    finalForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings) {
+        : aberrationForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          accelerationForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          activeOpticForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          azimuthForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          balanceForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings, pidSettings),
+          elevationForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          offsetForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          staticForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          thermalForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          velocityForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          finalForceComponent(publisher, safetyController, forceActuatorApplicationSettings, forceActuatorSettings) {
     Log.Debug("ForceController: ForceController()");
     this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     this->forceActuatorSettings = forceActuatorSettings;

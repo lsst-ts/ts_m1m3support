@@ -45,7 +45,7 @@ class ILCSubnetData;
 class SafetyController;
 
 class ILCResponseParser {
-   private:
+private:
     HardpointActuatorSettings* hardpointActuatorSettings;
     ForceActuatorSettings* forceActuatorSettings;
     M1M3SSPublisher* publisher;
@@ -84,7 +84,7 @@ class ILCResponseParser {
     bool grabResponse;
     MTM1M3_logevent_modbusResponseC* modbusResponse;
 
-   public:
+public:
     ILCResponseParser();
     ILCResponseParser(ForceActuatorSettings* forceActuatorSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher, ILCSubnetData* subnetData, SafetyController* safetyController);
 
@@ -94,7 +94,7 @@ class ILCResponseParser {
     void verifyResponses();
     void grabNextResponse();
 
-   private:
+private:
     bool validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
     void parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp, bool valid);
     void parseHPErrorResponse(ModbusBuffer* buffer, int32_t subnet, int32_t dataIndex);

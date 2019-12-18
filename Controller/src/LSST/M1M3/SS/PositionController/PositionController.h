@@ -24,7 +24,7 @@ class HardpointActuatorSettings;
 class M1M3SSPublisher;
 
 class PositionController {
-   private:
+private:
     PositionControllerSettings* positionControllerSettings;
     HardpointActuatorSettings* hardpointActuatorSettings;
     M1M3SSPublisher* publisher;
@@ -37,7 +37,7 @@ class PositionController {
     int32_t scaledMaxStepsPerLoop[6];
     int32_t stableEncoderCount[6];
 
-   public:
+public:
     PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher);
 
     double getRaiseLowerTimeout();
@@ -59,7 +59,7 @@ class PositionController {
 
     void updateSteps();
 
-   private:
+private:
     void convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
     int32_t abs(int32_t x);
 };

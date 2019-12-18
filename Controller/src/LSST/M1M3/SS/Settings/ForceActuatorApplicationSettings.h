@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class ForceActuatorApplicationSettings {
-   public:
+public:
     std::vector<int32_t> XIndexToZIndex;
     std::vector<int32_t> YIndexToZIndex;
     std::vector<int32_t> SecondaryCylinderIndexToZIndex;
@@ -28,7 +28,7 @@ class ForceActuatorApplicationSettings {
 
     void load(const std::string& filename);
 
-   private:
+private:
     void loadForceActuatorTable(const std::string& filename);
 };
 

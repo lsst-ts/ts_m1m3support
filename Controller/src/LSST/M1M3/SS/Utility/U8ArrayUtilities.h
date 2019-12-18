@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class U8ArrayUtilities {
-   public:
+public:
     virtual ~U8ArrayUtilities();
 
     inline static int8_t I8(uint8_t* buffer, int32_t index) {

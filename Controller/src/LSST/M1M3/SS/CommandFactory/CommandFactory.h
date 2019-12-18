@@ -25,11 +25,11 @@ class Command;
  * memory leak will occur.
  */
 class CommandFactory {
-   private:
+private:
     M1M3SSPublisher* publisher;
     Context* context;
 
-   public:
+public:
     /*!
 	 * Instantiates the command factory.
 	 * @param[in] publisher The publisher that will be provided to the commands created by this factory.

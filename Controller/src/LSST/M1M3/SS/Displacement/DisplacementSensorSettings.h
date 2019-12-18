@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class DisplacementSensorSettings {
-   public:
+public:
     std::vector<double> ConverterMatrix;
     int32_t N1Port;
     int32_t N2Port;

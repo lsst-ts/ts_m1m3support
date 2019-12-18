@@ -29,7 +29,7 @@ class M1M3SSPublisher;
 class ForceActuatorApplicationSettings;
 
 class SimulatedFPGA : public IFPGA {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SupportFPGAData supportFPGAData;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -57,7 +57,7 @@ class SimulatedFPGA : public IFPGA {
     int rndIndex;
     float getRnd();
 
-   public:
+public:
     SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_ElevationC* tmaElevation, MTMount_AzimuthC* tmaAzimuth, ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     SupportFPGAData* getSupportFPGAData() { return &this->supportFPGAData; }

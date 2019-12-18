@@ -27,7 +27,7 @@ class ForceActuatorSettings;
 class PIDSettings;
 
 class BalanceForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -46,7 +46,7 @@ class BalanceForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedBalanceForcesC* appliedBalanceForces;
     MTM1M3_logevent_rejectedBalanceForcesC* rejectedBalanceForces;
 
-   public:
+public:
     BalanceForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
 
     void applyBalanceForces(float* x, float* y, float* z);
@@ -56,11 +56,11 @@ class BalanceForceComponent : public ForceComponent {
     void resetPID(int id);
     void resetPIDs();
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 
-   private:
+private:
     PID* idToPID(int id);
 };
 

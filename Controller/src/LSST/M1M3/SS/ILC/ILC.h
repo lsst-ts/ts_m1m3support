@@ -51,7 +51,7 @@ class SafetyController;
  * The ILC class used to communicate with the M1M3's 5 subnets.
  */
 class ILC {
-   private:
+private:
     M1M3SSPublisher* publisher;
     IFPGA* fpga;
     SafetyController* safetyController;
@@ -92,7 +92,7 @@ class ILC {
 
     int32_t controlListToggle;
 
-   public:
+public:
     ILC(M1M3SSPublisher* publisher, IFPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController);
     virtual ~ILC();
 
@@ -143,7 +143,7 @@ class ILC {
     void publishHardpointMonitorStatus();
     void publishHardpointMonitorData();
 
-   private:
+private:
     uint8_t subnetToRxAddress(uint8_t subnet);
     uint8_t subnetToTxAddress(uint8_t subnet);
 

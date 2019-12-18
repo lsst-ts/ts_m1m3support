@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class IExpansionFPGA {
-   public:
+public:
     IExpansionFPGA();
     virtual ~IExpansionFPGA();
 

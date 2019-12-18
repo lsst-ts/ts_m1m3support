@@ -65,13 +65,13 @@ class ProgramILCCommand;
 class ModbusTransmitCommand;
 
 class State {
-   protected:
+protected:
     M1M3SSPublisher* publisher;
     std::string name;
     timespec startTime;
     timespec stopTime;
 
-   public:
+public:
     State(M1M3SSPublisher* publisher, std::string name);
     virtual ~State();
 
@@ -120,7 +120,7 @@ class State {
     virtual States::Type programILC(ProgramILCCommand* command, Model* model);
     virtual States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model);
 
-   protected:
+protected:
     void startTimer();
     void stopTimer();
     double getCurrentTimer();

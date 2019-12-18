@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_moveHardpointActuatorsC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 bool MoveHardpointActuatorsCommand::validate() {
     if (this->data.steps[0] == 0 && this->data.steps[1] == 0 && this->data.steps[2] == 0 && this->data.steps[3] == 0 && this->data.steps[4] == 0 && this->data.steps[5] == 0) {

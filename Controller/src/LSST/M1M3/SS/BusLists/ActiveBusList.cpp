@@ -19,7 +19,7 @@ namespace M1M3 {
 namespace SS {
 
 ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_logevent_appliedHardpointStepsC* appliedHardpointSteps, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces, MTM1M3_logevent_forceActuatorStateC* forceActuatorState)
-  : BusList(subnetData, ilcMessageFactory) {
+        : BusList(subnetData, ilcMessageFactory) {
     Log.Debug("RaisedBusList: RaisedBusList()");
     this->outerLoopData = outerLoopData;
     this->forceActuatorData = forceActuatorData;

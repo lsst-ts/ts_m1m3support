@@ -65,10 +65,10 @@ struct Loggers {
 };
 
 class Logger {
-   private:
+private:
     Levels::Type LOGGER_LEVEL;
 
-   public:
+public:
     void SetLevel(Levels::Type level);
 
     void Trace(const char* format, ...);
@@ -78,7 +78,7 @@ class Logger {
     void Error(const char* format, ...);
     void Fatal(const char* format, ...);
 
-   private:
+private:
     void log(const char* color, const char* level, const char* message);
 };
 

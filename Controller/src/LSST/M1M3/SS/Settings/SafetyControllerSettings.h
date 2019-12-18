@@ -25,7 +25,7 @@ namespace M1M3 {
 namespace SS {
 
 class SafetyControllerSettings {
-   public:
+public:
     AirControllerSafetySettings AirController;
     DisplacementSafetySettings Displacement;
     InclinometerSafetySettings Inclinometer;

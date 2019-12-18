@@ -31,7 +31,7 @@ class SafetyController;
  * The class used to process digital inputs and outputs.
  */
 class DigitalInputOutput {
-   private:
+private:
     InterlockApplicationSettings* interlockApplicationSettings;
     IFPGA* fpga;
     SupportFPGAData* fpgaData;
@@ -50,7 +50,7 @@ class DigitalInputOutput {
 
     double lastToggleTimestamp;
 
-   public:
+public:
     /*!
 	 * Instantiates the accelerometer.
 	 * @param[in] accelerometerSettings The accelerometer settings.

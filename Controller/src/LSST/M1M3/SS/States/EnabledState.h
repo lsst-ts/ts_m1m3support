@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class EnabledState : public State {
-   public:
+public:
     EnabledState(M1M3SSPublisher* publisher);
     EnabledState(M1M3SSPublisher* publisher, std::string name);
 

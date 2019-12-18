@@ -25,7 +25,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class AzimuthForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -36,13 +36,13 @@ class AzimuthForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedAzimuthForcesC* appliedAzimuthForces;
     MTM1M3_logevent_rejectedAzimuthForcesC* rejectedAzimuthForces;
 
-   public:
+public:
     AzimuthForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyAzimuthForces(float* x, float* y, float* z);
     void applyAzimuthForcesByAzimuthAngle(float azimuthAngle);
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

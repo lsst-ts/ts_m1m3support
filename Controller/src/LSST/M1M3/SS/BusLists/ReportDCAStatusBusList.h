@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class ReportDCAStatusBusList : public BusList {
-   public:
+public:
     ReportDCAStatusBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

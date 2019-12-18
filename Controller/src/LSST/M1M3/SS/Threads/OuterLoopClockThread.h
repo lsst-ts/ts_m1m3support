@@ -26,7 +26,7 @@ class M1M3SSPublisher;
  * the outer loop execution timing.
  */
 class OuterLoopClockThread : public IThread {
-   private:
+private:
     CommandFactory* commandFactory;
     Controller* controller;
     IFPGA* fpga;
@@ -35,7 +35,7 @@ class OuterLoopClockThread : public IThread {
     bool keepRunning;
     pthread_mutex_t updateMutex;
 
-   public:
+public:
     OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, IFPGA* fpga, M1M3SSPublisher* publisher);
     ~OuterLoopClockThread();
 

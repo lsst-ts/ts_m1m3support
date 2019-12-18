@@ -68,14 +68,14 @@ class ModbusTransmitCommand;
  * based functionality.
  */
 class Context {
-   private:
+private:
     StaticStateFactory* stateFactory;
     Model* model;
     States::Type currentState;
 
     void updateCurrentStateIfRequired(States::Type potentialNewState);
 
-   public:
+public:
     Context(StaticStateFactory* stateFactory, Model* model);
 
     void boot(BootCommand* command);

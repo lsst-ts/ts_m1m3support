@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class IBusList {
-   public:
+public:
     virtual ~IBusList();
 
     virtual int32_t getLength();

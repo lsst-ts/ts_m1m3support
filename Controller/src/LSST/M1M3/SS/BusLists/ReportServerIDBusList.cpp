@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 ReportServerIDBusList::ReportServerIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
-  : BusList(subnetData, ilcMessageFactory) {
+        : BusList(subnetData, ilcMessageFactory) {
     Log.Debug("ReportServerIDBusList: ReportServerIDBusList()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);

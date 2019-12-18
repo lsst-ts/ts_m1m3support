@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_standbyC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void StandbyCommand::execute() {
     this->context->standby(this);

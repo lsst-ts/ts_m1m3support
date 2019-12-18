@@ -18,12 +18,12 @@ namespace M1M3 {
 namespace SS {
 
 class SimulatedExpansionFPGA : public IExpansionFPGA {
-   private:
+private:
     float rnd[RND_CNT];
     int rndIndex;
     float getRnd();
 
-   public:
+public:
     SimulatedExpansionFPGA();
 
     int32_t initialize();

@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 EnableHardpointChaseCommand::EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableHardpointChaseC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 bool EnableHardpointChaseCommand::validate() {
     if (!(this->data.hardpointActuator >= 0 && this->data.hardpointActuator <= 5)) {

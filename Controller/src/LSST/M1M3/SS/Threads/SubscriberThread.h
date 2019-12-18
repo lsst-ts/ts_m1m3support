@@ -24,20 +24,20 @@ class CommandFactory;
  * The subscriber thread is responsible for accepting commands.
  */
 class SubscriberThread : public IThread {
-   private:
+private:
     M1M3SSSubscriber* subscriber;
     Controller* controller;
     M1M3SSPublisher* publisher;
     CommandFactory* commandFactory;
     bool keepRunning;
 
-   public:
+public:
     SubscriberThread(M1M3SSSubscriber* subscriber, Controller* controller, M1M3SSPublisher* publisher, CommandFactory* commandFactory);
 
     void run();
     void stop();
 
-   private:
+private:
     void enqueueCommandIfAvailable(Command* command);
 };
 

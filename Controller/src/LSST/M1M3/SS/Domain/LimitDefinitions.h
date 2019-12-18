@@ -25,11 +25,11 @@ struct Limit {
 
 template <class a>
 class LimitDefinition {
-   protected:
+protected:
     bool hasFaultLevel;
     bool hasWarningLevel;
 
-   public:
+public:
     LimitDefinition();
     virtual ~LimitDefinition();
 
@@ -41,7 +41,7 @@ class LimitDefinition {
 };
 
 class TimedLimitDefinition : public LimitDefinition<Limit::Type> {
-   protected:
+protected:
     int period;
     int warningPeriod;
     int faultPeriod;
@@ -49,7 +49,7 @@ class TimedLimitDefinition : public LimitDefinition<Limit::Type> {
     int warningCount;
     int faultCount;
 
-   public:
+public:
     TimedLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, int period, int warningPeriod, int faultPeriod);
@@ -61,11 +61,11 @@ class TimedLimitDefinition : public LimitDefinition<Limit::Type> {
 
 template <class a>
 class EqualLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a warningLevel;
     a faultLevel;
 
-   public:
+public:
     EqualLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a warningLevel, a faultLevel);
@@ -75,11 +75,11 @@ class EqualLimitDefinition : public LimitDefinition<a> {
 
 template <class a>
 class NotEqualLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a warningLevel;
     a faultLevel;
 
-   public:
+public:
     NotEqualLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a warningLevel, a faultLevel);
@@ -89,11 +89,11 @@ class NotEqualLimitDefinition : public LimitDefinition<a> {
 
 template <class a>
 class LessThanLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a warningLevel;
     a faultLevel;
 
-   public:
+public:
     LessThanLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a warningLevel, a faultLevel);
@@ -103,11 +103,11 @@ class LessThanLimitDefinition : public LimitDefinition<a> {
 
 template <class a>
 class LessThanEqualLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a warningLevel;
     a faultLevel;
 
-   public:
+public:
     LessThanEqualLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a warningLevel, a faultLevel);
@@ -117,11 +117,11 @@ class LessThanEqualLimitDefinition : public LimitDefinition<a> {
 
 template <class a>
 class GreaterThanLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a warningLevel;
     a faultLevel;
 
-   public:
+public:
     GreaterThanLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a warningLevel, a faultLevel);
@@ -131,11 +131,11 @@ class GreaterThanLimitDefinition : public LimitDefinition<a> {
 
 template <class a>
 class GreaterThanEqualLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a warningLevel;
     a faultLevel;
 
-   public:
+public:
     GreaterThanEqualLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a warningLevel, a faultLevel);
@@ -145,13 +145,13 @@ class GreaterThanEqualLimitDefinition : public LimitDefinition<a> {
 
 template <class a>
 class InRangeLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a lowWarningLevel;
     a highWarningLevel;
     a lowFaultLevel;
     a highFaultLevel;
 
-   public:
+public:
     InRangeLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a lowWarningLevel, a highWarningLevel, a lowFaultLevel, a highFaultLevel);
@@ -161,13 +161,13 @@ class InRangeLimitDefinition : public LimitDefinition<a> {
 
 template <class a>
 class NotInRangeLimitDefinition : public LimitDefinition<a> {
-   protected:
+protected:
     a lowWarningLevel;
     a highWarningLevel;
     a lowFaultLevel;
     a highFaultLevel;
 
-   public:
+public:
     NotInRangeLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, a lowWarningLevel, a highWarningLevel, a lowFaultLevel, a highFaultLevel);
@@ -176,11 +176,11 @@ class NotInRangeLimitDefinition : public LimitDefinition<a> {
 };
 
 class BitSetLimitDefinition : public LimitDefinition<unsigned long> {
-   protected:
+protected:
     unsigned long warningMask;
     unsigned long faultMask;
 
-   public:
+public:
     BitSetLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, int warningBit, int faultBit);
@@ -189,11 +189,11 @@ class BitSetLimitDefinition : public LimitDefinition<unsigned long> {
 };
 
 class NotBitSetLimitDefinition : public LimitDefinition<unsigned long> {
-   protected:
+protected:
     unsigned long warningMask;
     unsigned long faultMask;
 
-   public:
+public:
     NotBitSetLimitDefinition();
 
     void update(bool hasWarningLevel, bool hasFaultLevel, int warningBit, int faultBit);

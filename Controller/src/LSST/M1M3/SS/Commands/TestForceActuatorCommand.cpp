@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 TestForceActuatorCommand::TestForceActuatorCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testForceActuatorC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 bool TestForceActuatorCommand::validate() {
     if (!((this->data.forceActuator >= 101 && this->data.forceActuator <= 143) ||

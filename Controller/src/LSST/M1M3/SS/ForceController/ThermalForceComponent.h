@@ -25,7 +25,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class ThermalForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -36,13 +36,13 @@ class ThermalForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedThermalForcesC* appliedThermalForces;
     MTM1M3_logevent_rejectedThermalForcesC* rejectedThermalForces;
 
-   public:
+public:
     ThermalForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyThermalForces(float* x, float* y, float* z);
     void applyThermalForcesByMirrorTemperature(float temperature);
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

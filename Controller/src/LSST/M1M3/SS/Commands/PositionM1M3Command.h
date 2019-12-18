@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class PositionM1M3Command : public SALCommand<MTM1M3_command_positionM1M3C> {
-   public:
+public:
     PositionM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_positionM1M3C* data);
 
     void execute();

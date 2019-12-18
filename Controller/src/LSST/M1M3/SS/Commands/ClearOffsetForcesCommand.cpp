@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearOffsetForcesC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ClearOffsetForcesCommand::execute() {
     this->context->clearOffsetForces(this);

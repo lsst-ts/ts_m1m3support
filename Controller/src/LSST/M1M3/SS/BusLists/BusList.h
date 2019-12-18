@@ -20,7 +20,7 @@ class ILCMessageFactory;
 class ILCSubnetData;
 
 class BusList : public IBusList {
-   protected:
+protected:
     ILCSubnetData* subnetData;
     ILCMessageFactory* ilcMessageFactory;
 
@@ -30,7 +30,7 @@ class BusList : public IBusList {
     int32_t expectedHMResponses[HM_COUNT];
     int32_t subnetStartIndex;
 
-   public:
+public:
     BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     int32_t getLength() { return this->buffer.getLength(); }
@@ -40,7 +40,7 @@ class BusList : public IBusList {
     int32_t* getExpectedFAResponses() { return this->expectedFAResponses; }
     int32_t* getExpectedHMResponses() { return this->expectedHMResponses; }
 
-   protected:
+protected:
     void startSubnet(uint8_t subnet);
     void endSubnet();
 };

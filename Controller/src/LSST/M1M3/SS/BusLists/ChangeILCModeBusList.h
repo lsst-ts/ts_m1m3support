@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class ChangeILCModeBusList : public BusList {
-   public:
+public:
     ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode, ILCModes::Type hmMode);
 };
 

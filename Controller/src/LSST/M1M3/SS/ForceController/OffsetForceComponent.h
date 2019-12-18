@@ -25,7 +25,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class OffsetForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -36,13 +36,13 @@ class OffsetForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedOffsetForcesC* appliedOffsetForces;
     MTM1M3_logevent_rejectedOffsetForcesC* rejectedOffsetForces;
 
-   public:
+public:
     OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyOffsetForces(float* x, float* y, float* z);
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

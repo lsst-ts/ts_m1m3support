@@ -14,7 +14,7 @@ namespace SS {
 
 template <class iType, class rType>
 class Function {
-   public:
+public:
     virtual ~Function();
 
     virtual rType evaluate(iType x);
@@ -22,11 +22,11 @@ class Function {
 
 template <class iType>
 class LinearFunction : public Function<iType, iType> {
-   protected:
+protected:
     iType m;
     iType b;
 
-   public:
+public:
     LinearFunction();
 
     void update(iType m, iType b);
@@ -36,12 +36,12 @@ class LinearFunction : public Function<iType, iType> {
 
 template <class iType>
 class Poly2Function : public Function<iType, iType> {
-   protected:
+protected:
     iType a;
     iType b;
     iType c;
 
-   public:
+public:
     Poly2Function();
 
     void update(iType a, iType b, iType c);
@@ -51,13 +51,13 @@ class Poly2Function : public Function<iType, iType> {
 
 template <class iType>
 class Poly3Function : public Function<iType, iType> {
-   protected:
+protected:
     iType a;
     iType b;
     iType c;
     iType d;
 
-   public:
+public:
     Poly3Function();
 
     void update(iType a, iType b, iType c, iType d);
@@ -67,14 +67,14 @@ class Poly3Function : public Function<iType, iType> {
 
 template <class iType>
 class Poly4Function : public Function<iType, iType> {
-   protected:
+protected:
     iType a;
     iType b;
     iType c;
     iType d;
     iType e;
 
-   public:
+public:
     Poly4Function();
 
     void update(iType a, iType b, iType c, iType d, iType e);
@@ -84,7 +84,7 @@ class Poly4Function : public Function<iType, iType> {
 
 template <class iType>
 class Poly5Function : public Function<iType, iType> {
-   protected:
+protected:
     iType a;
     iType b;
     iType c;
@@ -92,7 +92,7 @@ class Poly5Function : public Function<iType, iType> {
     iType e;
     iType f;
 
-   public:
+public:
     Poly5Function();
 
     void update(iType a, iType b, iType c, iType d, iType e, iType f);
@@ -101,10 +101,10 @@ class Poly5Function : public Function<iType, iType> {
 };
 
 class BitSetFunction : public Function<unsigned long, bool> {
-   protected:
+protected:
     unsigned long bitMask;
 
-   public:
+public:
     BitSetFunction();
 
     void update(int bit);
@@ -113,10 +113,10 @@ class BitSetFunction : public Function<unsigned long, bool> {
 };
 
 class NotBitSetFunction : public Function<unsigned long, bool> {
-   protected:
+protected:
     unsigned long bitMask;
 
-   public:
+public:
     NotBitSetFunction();
 
     void update(int bit);
@@ -136,7 +136,7 @@ struct Matrix1x8FunctionInput {
 };
 
 class Matrix1x8Function : public Function<Matrix1x8FunctionInput, float> {
-   protected:
+protected:
     float a;
     float b;
     float c;
@@ -146,7 +146,7 @@ class Matrix1x8Function : public Function<Matrix1x8FunctionInput, float> {
     float g;
     float h;
 
-   public:
+public:
     Matrix1x8Function();
 
     void update(float a, float b, float c, float d, float e, float f, float g, float h);
@@ -166,27 +166,27 @@ struct AngularAccelerationFunctionInput {
 };
 
 class AngularAccelerationFunction : public Function<AngularAccelerationFunctionInput, float> {
-   protected:
+protected:
     float distance;
 
-   public:
+public:
     AngularAccelerationFunction();
 
     void update(float distance);
 };
 
 class AngularAccelerationXFunction : public AngularAccelerationFunction {
-   public:
+public:
     float evaluate(AngularAccelerationFunctionInput x);
 };
 
 class AngularAccelerationYFunction : public AngularAccelerationFunction {
-   public:
+public:
     float evaluate(AngularAccelerationFunctionInput x);
 };
 
 class AngularAccelerationZFunction : public AngularAccelerationFunction {
-   public:
+public:
     float evaluate(AngularAccelerationFunctionInput x);
 };
 

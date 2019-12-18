@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class HardpointActuatorSettings {
-   public:
+public:
     std::vector<double> HardpointDisplacementToMirrorPosition;
     std::vector<double> MirrorPositionToHardpointDisplacement;
     double MicrometersPerStep;

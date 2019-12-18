@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class HardpointActuatorApplicationSettings {
-   public:
+public:
     std::vector<HardpointActuatorTableRow> Table;
 
     void load(const std::string& filename);

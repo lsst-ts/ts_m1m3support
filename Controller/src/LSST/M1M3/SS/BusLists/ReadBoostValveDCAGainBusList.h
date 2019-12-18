@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class ReadBoostValveDCAGainBusList : public BusList {
-   public:
+public:
     ReadBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 

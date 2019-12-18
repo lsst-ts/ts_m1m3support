@@ -22,7 +22,7 @@ class M1M3SSPublisher;
 class SafetyControllerSettings;
 
 class SafetyController {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyControllerSettings* safetyControllerSettings;
 
@@ -30,7 +30,7 @@ class SafetyController {
 
     std::list<int> ilcCommunicationTimeoutData;
 
-   public:
+public:
     SafetyController(M1M3SSPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
 
     void clearErrorCode();
@@ -111,7 +111,7 @@ class SafetyController {
 
     States::Type checkSafety(States::Type preferredNextState);
 
-   private:
+private:
     void updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag);
 };
 

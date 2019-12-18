@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class RoundRobin {
-   public:
+public:
     static int32_t Inc(int32_t index, int32_t limit) { return (index + 1) < limit ? (index + 1) : 0; }
 
     static uint8_t BroadcastCounter(uint8_t broadcastCounter) { return (broadcastCounter + 1) < 16 ? (broadcastCounter + 1) : 0; }

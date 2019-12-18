@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnAirOnC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void TurnAirOnCommand::execute() {
     this->context->turnAirOn(this);

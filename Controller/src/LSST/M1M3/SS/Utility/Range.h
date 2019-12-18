@@ -13,7 +13,7 @@ namespace M1M3 {
 namespace SS {
 
 class Range {
-   public:
+public:
     static uint64_t Max(uint64_t a, uint64_t b) { return a >= b ? a : b; }
 
     static bool InRange(float min, float max, float value) { return value >= min && value <= max; }

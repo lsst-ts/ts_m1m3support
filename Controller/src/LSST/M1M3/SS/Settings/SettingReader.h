@@ -34,7 +34,7 @@ namespace M1M3 {
 namespace SS {
 
 class SettingReader {
-   private:
+private:
     AliasApplicationSettings aliasApplicationSettings;
     ForceActuatorApplicationSettings forceActuatorApplicationSettings;
     ForceActuatorSettings forceActuatorSettings;
@@ -58,7 +58,7 @@ class SettingReader {
     std::string currentSet;
     std::string currentVersion;
 
-   public:
+public:
     SettingReader(std::string basePath, std::string setsPath);
     void configure(std::string settingsToApply);
     static void ReadXMLDocumentFromDisk(pugi::xml_document&, const char*);
@@ -80,7 +80,7 @@ class SettingReader {
     PIDSettings* loadPIDSettings();
     InclinometerSettings* loadInclinometerSettings();
 
-   private:
+private:
     std::string getBasePath(std::string file);
     std::string getSetPath(std::string file);
 };

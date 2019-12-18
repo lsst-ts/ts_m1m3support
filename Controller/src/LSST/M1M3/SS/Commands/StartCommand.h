@@ -22,7 +22,7 @@ namespace SS {
  * This is an external command and can be issued via SAL.
  */
 class StartCommand : public SALCommand<MTM1M3_command_startC> {
-   public:
+public:
     StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_startC* data);
 
     bool validate();

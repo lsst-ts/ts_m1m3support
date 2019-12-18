@@ -20,14 +20,14 @@ namespace SS {
 class M1M3SSPublisher;
 
 class PID {
-   private:
+private:
     int id;
     PIDParameters initialParameters;
     M1M3SSPublisher* publisher;
     MTM1M3_logevent_pidInfoC* pidInfo;
     MTM1M3_pidDataC* pidData;
 
-   public:
+public:
     PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher);
 
     void updateParameters(PIDParameters parameters);
@@ -38,7 +38,7 @@ class PID {
 
     void publishTelemetry();
 
-   private:
+private:
     void calculateIntermediateValues();
 
     void publishInfo();

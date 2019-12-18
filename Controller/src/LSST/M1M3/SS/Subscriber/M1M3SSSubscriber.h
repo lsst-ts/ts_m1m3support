@@ -25,7 +25,7 @@ class Command;
  * A subscriber that utilizes the SAL.
  */
 class M1M3SSSubscriber {
-   private:
+private:
     SAL_MTM1M3* m1m3SAL;
     SAL_MTMount* mtMountSAL;
     CommandFactory* commandFactory;
@@ -72,7 +72,7 @@ class M1M3SSSubscriber {
     MTMount_AzimuthC tmaAzimuth;
     MTMount_ElevationC tmaElevation;
 
-   public:
+public:
     M1M3SSSubscriber(SAL_MTM1M3* m1m3SAL, SAL_MTMount* mtMountSAL, CommandFactory* commandFactory);
 
     void initCommand(std::string topic);

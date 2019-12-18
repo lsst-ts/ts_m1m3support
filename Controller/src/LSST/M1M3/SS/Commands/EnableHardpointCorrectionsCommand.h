@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class EnableHardpointCorrectionsCommand : public SALCommand<MTM1M3_command_enableHardpointCorrectionsC> {
-   public:
+public:
     EnableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC* data);
 
     void execute();

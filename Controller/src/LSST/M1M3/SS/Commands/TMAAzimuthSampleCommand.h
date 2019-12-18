@@ -18,10 +18,10 @@ namespace M1M3 {
 namespace SS {
 
 class TMAAzimuthSampleCommand : public Command {
-   private:
+private:
     MTMount_AzimuthC data;
 
-   public:
+public:
     TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data);
 
     MTMount_AzimuthC* getData() { return &this->data; }

@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 TestHardpointCommand::TestHardpointCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testHardpointC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 bool TestHardpointCommand::validate() {
     if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {

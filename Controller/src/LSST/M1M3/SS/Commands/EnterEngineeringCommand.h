@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class EnterEngineeringCommand : public SALCommand<MTM1M3_command_enterEngineeringC> {
-   public:
+public:
     EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data);
 
     void execute();

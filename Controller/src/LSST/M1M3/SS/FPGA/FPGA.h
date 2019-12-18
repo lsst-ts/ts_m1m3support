@@ -18,7 +18,7 @@ namespace SS {
  * The class used to communicate with the FPGA.
  */
 class FPGA : public IFPGA {
-   private:
+private:
     uint32_t session;
     size_t remaining;
     uint16_t u16Buffer[1];
@@ -27,7 +27,7 @@ class FPGA : public IFPGA {
     NiFpga_IrqContext ppsIRQContext;
     SupportFPGAData supportFPGAData;
 
-   public:
+public:
     FPGA();
     virtual ~FPGA();
 

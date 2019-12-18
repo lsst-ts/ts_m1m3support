@@ -93,8 +93,8 @@ void ActiveOpticForceComponent::postUpdateActions() {
 
     BitHelper::set(&this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointNetActiveOpticForceWarning,
                    !Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->fZ) ||
-                     !Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->mX) ||
-                     !Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->mY));
+                           !Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->mX) ||
+                           !Range::InRange(-this->forceActuatorSettings->NetActiveOpticForceTolerance, this->forceActuatorSettings->NetActiveOpticForceTolerance, this->appliedActiveOpticForces->mY));
 
     this->safetyController->forceControllerNotifyActiveOpticForceClipping(rejectionRequired);
     this->safetyController->forceControllerNotifyActiveOpticNetForceCheck(BitHelper::get(this->forceActuatorWarning->globalWarningFlags, GlobalActuatorFlags::ForceSetpointNetActiveOpticForceWarning));

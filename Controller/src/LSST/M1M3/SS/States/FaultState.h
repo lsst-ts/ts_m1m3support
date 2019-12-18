@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class FaultState : public State {
-   public:
+public:
     FaultState(M1M3SSPublisher* publisher);
     FaultState(M1M3SSPublisher* publisher, std::string name);
 

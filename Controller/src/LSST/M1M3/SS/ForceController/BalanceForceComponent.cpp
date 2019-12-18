@@ -25,12 +25,12 @@ namespace M1M3 {
 namespace SS {
 
 BalanceForceComponent::BalanceForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
-  : fx(0, pidSettings->Fx, publisher),
-    fy(1, pidSettings->Fy, publisher),
-    fz(2, pidSettings->Fz, publisher),
-    mx(3, pidSettings->Mx, publisher),
-    my(4, pidSettings->My, publisher),
-    mz(5, pidSettings->Mz, publisher) {
+        : fx(0, pidSettings->Fx, publisher),
+          fy(1, pidSettings->Fy, publisher),
+          fz(2, pidSettings->Fz, publisher),
+          mx(3, pidSettings->Mx, publisher),
+          my(4, pidSettings->My, publisher),
+          mz(5, pidSettings->Mz, publisher) {
     this->name = "Balance";
 
     this->publisher = publisher;

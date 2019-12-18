@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class TurnPowerOffCommand : public SALCommand<MTM1M3_command_turnPowerOffC> {
-   public:
+public:
     TurnPowerOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOffC* data);
 
     bool validate();

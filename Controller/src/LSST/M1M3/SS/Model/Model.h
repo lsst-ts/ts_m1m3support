@@ -46,7 +46,7 @@ class InclinometerSettings;
 class PositionControllerSettings;
 
 class Model {
-   private:
+private:
     SettingReader* settingReader;
     M1M3SSPublisher* publisher;
     IFPGA* fpga;
@@ -69,7 +69,7 @@ class Model {
 
     double cachedTimestamp;
 
-   public:
+public:
     Model(SettingReader* settingReader, M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA, DigitalInputOutput* digitalInputOutput, MTMount_ElevationC* tmaAlt, MTMount_AzimuthC* tmaAz);
     virtual ~Model();
 
@@ -104,7 +104,7 @@ class Model {
     void shutdown();
     void waitForShutdown();
 
-   private:
+private:
     void populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
     void populateHardpointActuatorInfo(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, PositionControllerSettings* positionControllerSettings);
     void populateHardpointMonitorInfo(HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);

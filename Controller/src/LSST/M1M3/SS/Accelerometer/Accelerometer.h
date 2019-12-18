@@ -23,12 +23,12 @@ class M1M3SSPublisher;
  * The class used to process accelerometer data.
  */
 class Accelerometer {
-   public:
+public:
     Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher);
     ~Accelerometer() = default;
     void processData();
 
-   private:
+private:
     AccelerometerSettings* accelerometerSettings = nullptr;
     SupportFPGAData* fpgaData = nullptr;
     M1M3SSPublisher* publisher = nullptr;

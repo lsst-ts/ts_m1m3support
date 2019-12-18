@@ -18,7 +18,7 @@ namespace M1M3 {
 namespace SS {
 
 class TableLoader {
-   public:
+public:
     static void loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<double>* data, const std::string& filename);
     static void loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<float>* data, const std::string& filename);
     static void loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<int32_t>* data, const std::string& filename);

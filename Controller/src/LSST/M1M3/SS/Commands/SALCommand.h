@@ -16,12 +16,12 @@ namespace SS {
 
 template <class topic>
 class SALCommand : public Command {
-   protected:
+protected:
     int32_t commandID;
     M1M3SSPublisher* publisher;
     topic data;
 
-   public:
+public:
     SALCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, topic* data) {
         this->context = context;
         this->publisher = publisher;

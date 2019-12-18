@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class MoveHardpointActuatorsCommand : public SALCommand<MTM1M3_command_moveHardpointActuatorsC> {
-   public:
+public:
     MoveHardpointActuatorsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_moveHardpointActuatorsC* data);
 
     bool validate();

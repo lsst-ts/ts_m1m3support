@@ -16,7 +16,7 @@ namespace M1M3 {
 namespace SS {
 
 class PositionControllerSettings {
-   public:
+public:
     double ForceToStepsCoefficient;
     double EncoderToStepsCoefficient;
     int32_t MaxStepsPerLoop;

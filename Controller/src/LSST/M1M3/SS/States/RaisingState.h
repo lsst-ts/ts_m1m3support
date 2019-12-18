@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class RaisingState : public EnabledState {
-   public:
+public:
     RaisingState(M1M3SSPublisher* publisher);
 
     States::Type update(UpdateCommand* command, Model* model);

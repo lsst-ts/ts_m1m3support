@@ -18,7 +18,7 @@ namespace M1M3 {
 namespace SS {
 
 class M1M3SSPublisher {
-   private:
+private:
     SAL_MTM1M3* m1m3SAL;
 
     MTM1M3_accelerometerDataC accelerometerData;
@@ -152,7 +152,7 @@ class M1M3SSPublisher {
     MTM1M3_logevent_settingVersionsC previousEventSettingVersions;
     MTM1M3_logevent_summaryStateC previousEventSummaryState;
 
-   public:
+public:
     M1M3SSPublisher(SAL_MTM1M3* m1m3SAL);
 
     void initEvent(std::string topic);

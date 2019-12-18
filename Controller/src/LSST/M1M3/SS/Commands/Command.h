@@ -19,10 +19,10 @@ class Context;
 class M1M3SSPublisher;
 
 class Command {
-   protected:
+protected:
     Context* context;
 
-   public:
+public:
     virtual ~Command();
 
     /*!

@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 PositionM1M3Command::PositionM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_positionM1M3C* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void PositionM1M3Command::execute() {
     this->context->positionM1M3(this);

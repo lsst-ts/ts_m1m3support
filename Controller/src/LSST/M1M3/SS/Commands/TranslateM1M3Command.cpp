@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 TranslateM1M3Command::TranslateM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_translateM1M3C* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void TranslateM1M3Command::execute() {
     this->context->translateM1M3(this);

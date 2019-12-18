@@ -17,7 +17,7 @@ namespace SS {
  * on its own thread.
  */
 class IThread {
-   public:
+public:
     virtual ~IThread();
 
     /*!

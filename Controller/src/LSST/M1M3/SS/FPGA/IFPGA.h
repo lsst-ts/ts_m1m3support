@@ -16,7 +16,7 @@ namespace M1M3 {
 namespace SS {
 
 class IFPGA {
-   public:
+public:
     IFPGA();
     virtual ~IFPGA();
 

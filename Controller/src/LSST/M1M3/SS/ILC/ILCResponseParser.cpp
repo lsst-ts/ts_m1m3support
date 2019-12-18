@@ -540,13 +540,13 @@ void ILCResponseParser::parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCM
     uint64_t majorRevision = buffer->readU8();
     uint64_t minorRevision = buffer->readU8();
     this->forceActuatorILCInfo->ilcStatus[dataIndex] =
-      (0xFFFF000000000000 & this->forceActuatorILCInfo->ilcStatus[dataIndex]) |
-      (ilcApplicationType << 0) |
-      (networkNodeType << 8) |
-      (ilcSelectedOptions << 16) |
-      (networkNodeOptions << 24) |
-      (majorRevision << 32) |
-      (minorRevision << 40);
+            (0xFFFF000000000000 & this->forceActuatorILCInfo->ilcStatus[dataIndex]) |
+            (ilcApplicationType << 0) |
+            (networkNodeType << 8) |
+            (ilcSelectedOptions << 16) |
+            (networkNodeOptions << 24) |
+            (majorRevision << 32) |
+            (minorRevision << 40);
     buffer->incIndex(length - 12);
     buffer->skipToNextFrame();
 }
@@ -919,8 +919,8 @@ void ILCResponseParser::parseSetFAADCScanRateResponse(ModbusBuffer* buffer, ILCM
     int32_t dataIndex = map.DataIndex;
     uint64_t adcScanRate = buffer->readU8();
     this->forceActuatorILCInfo->ilcStatus[dataIndex] =
-      (0x0000FFFFFFFFFFFF & this->forceActuatorILCInfo->ilcStatus[dataIndex]) |
-      (adcScanRate << 48);
+            (0x0000FFFFFFFFFFFF & this->forceActuatorILCInfo->ilcStatus[dataIndex]) |
+            (adcScanRate << 48);
     buffer->skipToNextFrame();
 }
 
@@ -1028,9 +1028,9 @@ void ILCResponseParser::parseReportDCAIDResponse(ModbusBuffer* buffer, ILCMap ma
     uint64_t mezzanineMajorRevision = buffer->readU8();
     uint64_t mezzanineMinorRevision = buffer->readU8();
     this->forceActuatorILCInfo->mezzanineStatus[dataIndex] =
-      (mezzanineFirmwareType << 0) |
-      (mezzanineMajorRevision << 8) |
-      (mezzanineMinorRevision << 16);
+            (mezzanineFirmwareType << 0) |
+            (mezzanineMajorRevision << 8) |
+            (mezzanineMinorRevision << 16);
     buffer->skipToNextFrame();
 }
 

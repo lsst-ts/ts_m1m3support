@@ -17,7 +17,7 @@ namespace M1M3 {
 namespace SS {
 
 class UpdatePIDCommand : public SALCommand<MTM1M3_command_updatePIDC> {
-   public:
+public:
     UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_updatePIDC* data);
 
     bool validate();

@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class AccelerometerSettings {
-   public:
+public:
     AccelerometerSettings() = default;
     ~AccelerometerSettings() = default;
     void load(const std::string& filename);

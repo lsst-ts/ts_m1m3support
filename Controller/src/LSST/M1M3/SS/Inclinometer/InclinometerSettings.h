@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class InclinometerSettings {
-   public:
+public:
     float Offset;
     float FaultLow;
     float WarningLow;

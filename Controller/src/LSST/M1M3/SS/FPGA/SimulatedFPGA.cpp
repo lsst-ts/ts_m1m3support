@@ -339,9 +339,9 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                     while ((data[i] & 0xF000) != 0x2000) {
                         ++i;
                     }
-                    i--; // Shift to CRC for the remainder of the time
-                         // However broadcasts are followed by a timestamp
-                         // so only shift 1
+                    i--;    // Shift to CRC for the remainder of the time
+                            // However broadcasts are followed by a timestamp
+                            // so only shift 1
                 } else if (address == 0 && function == 0) {
                     // This is a special nop, read until 0xF000 != 0
                     while (data[i] == 0) {

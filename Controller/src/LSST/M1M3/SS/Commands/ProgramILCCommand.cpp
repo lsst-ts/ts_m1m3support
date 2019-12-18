@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_programILCC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ProgramILCCommand::execute() {
     this->context->programILC(this);

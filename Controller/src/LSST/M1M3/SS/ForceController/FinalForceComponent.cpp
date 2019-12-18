@@ -76,39 +76,39 @@ void FinalForceComponent::applyForcesByComponents() {
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] =
-              (this->appliedAccelerationForces->xForces[i] +
-               this->appliedAzimuthForces->xForces[i] +
-               this->appliedBalanceForces->xForces[i] +
-               this->appliedElevationForces->xForces[i] +
-               this->appliedOffsetForces->xForces[i] +
-               this->appliedStaticForces->xForces[i] +
-               this->appliedThermalForces->xForces[i] +
-               this->appliedVelocityForces->xForces[i]);
+                    (this->appliedAccelerationForces->xForces[i] +
+                     this->appliedAzimuthForces->xForces[i] +
+                     this->appliedBalanceForces->xForces[i] +
+                     this->appliedElevationForces->xForces[i] +
+                     this->appliedOffsetForces->xForces[i] +
+                     this->appliedStaticForces->xForces[i] +
+                     this->appliedThermalForces->xForces[i] +
+                     this->appliedVelocityForces->xForces[i]);
         }
 
         if (i < 100) {
             this->yTarget[i] =
-              (this->appliedAccelerationForces->yForces[i] +
-               this->appliedAzimuthForces->yForces[i] +
-               this->appliedBalanceForces->yForces[i] +
-               this->appliedElevationForces->yForces[i] +
-               this->appliedOffsetForces->yForces[i] +
-               this->appliedStaticForces->yForces[i] +
-               this->appliedThermalForces->yForces[i] +
-               this->appliedVelocityForces->yForces[i]);
+                    (this->appliedAccelerationForces->yForces[i] +
+                     this->appliedAzimuthForces->yForces[i] +
+                     this->appliedBalanceForces->yForces[i] +
+                     this->appliedElevationForces->yForces[i] +
+                     this->appliedOffsetForces->yForces[i] +
+                     this->appliedStaticForces->yForces[i] +
+                     this->appliedThermalForces->yForces[i] +
+                     this->appliedVelocityForces->yForces[i]);
         }
 
         this->zTarget[i] =
-          (this->appliedAberrationForces->zForces[i] +
-           this->appliedAccelerationForces->zForces[i] +
-           this->appliedActiveOpticForces->zForces[i] +
-           this->appliedAzimuthForces->zForces[i] +
-           this->appliedBalanceForces->zForces[i] +
-           this->appliedElevationForces->zForces[i] +
-           this->appliedOffsetForces->zForces[i] +
-           this->appliedStaticForces->zForces[i] +
-           this->appliedThermalForces->zForces[i] +
-           this->appliedVelocityForces->zForces[i]);
+                (this->appliedAberrationForces->zForces[i] +
+                 this->appliedAccelerationForces->zForces[i] +
+                 this->appliedActiveOpticForces->zForces[i] +
+                 this->appliedAzimuthForces->zForces[i] +
+                 this->appliedBalanceForces->zForces[i] +
+                 this->appliedElevationForces->zForces[i] +
+                 this->appliedOffsetForces->zForces[i] +
+                 this->appliedStaticForces->zForces[i] +
+                 this->appliedThermalForces->zForces[i] +
+                 this->appliedVelocityForces->zForces[i]);
     }
 }
 

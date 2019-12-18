@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class DisabledState : public State {
-   public:
+public:
     DisabledState(M1M3SSPublisher* publisher);
 
     States::Type update(UpdateCommand* command, Model* model);

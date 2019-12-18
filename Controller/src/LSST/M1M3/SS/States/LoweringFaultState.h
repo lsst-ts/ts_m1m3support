@@ -19,7 +19,7 @@ class UpdateCommand;
 class Model;
 
 class LoweringFaultState : public FaultState {
-   public:
+public:
     LoweringFaultState(M1M3SSPublisher* publisher);
 
     States::Type update(UpdateCommand* command, Model* model);

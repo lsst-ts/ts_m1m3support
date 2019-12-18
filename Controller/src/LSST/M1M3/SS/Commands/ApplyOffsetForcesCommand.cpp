@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyOffsetForcesC* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ApplyOffsetForcesCommand::execute() {
     this->context->applyOffsetForces(this);

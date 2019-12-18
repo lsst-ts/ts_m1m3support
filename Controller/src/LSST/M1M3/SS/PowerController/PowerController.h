@@ -28,7 +28,7 @@ class SafetyController;
  * The class used to control and process power data.
  */
 class PowerController {
-   private:
+private:
     IFPGA* fpga;
     SupportFPGAData* fpgaData;
     IExpansionFPGA* expansionFPGA;
@@ -41,7 +41,7 @@ class PowerController {
 
     uint64_t lastPowerTimestamp;
 
-   public:
+public:
     /*!
 	 * Instantiates the power controller.
 	 * @param[in] fpga The fpga.

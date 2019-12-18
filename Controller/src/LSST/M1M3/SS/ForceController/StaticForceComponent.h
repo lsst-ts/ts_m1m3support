@@ -26,7 +26,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class StaticForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -37,12 +37,12 @@ class StaticForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedStaticForcesC* appliedStaticForces;
     MTM1M3_logevent_rejectedStaticForcesC* rejectedStaticForces;
 
-   public:
+public:
     StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

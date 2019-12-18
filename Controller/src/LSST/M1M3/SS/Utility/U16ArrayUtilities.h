@@ -15,7 +15,7 @@ namespace M1M3 {
 namespace SS {
 
 class U16ArrayUtilities {
-   public:
+public:
     virtual ~U16ArrayUtilities();
 
     static uint64_t u64(uint16_t* buffer, int32_t index) {

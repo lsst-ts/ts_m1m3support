@@ -25,7 +25,7 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class ElevationForceComponent : public ForceComponent {
-   private:
+private:
     M1M3SSPublisher* publisher;
     SafetyController* safetyController;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
@@ -36,13 +36,13 @@ class ElevationForceComponent : public ForceComponent {
     MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
     MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
 
-   public:
+public:
     ElevationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
     void applyElevationForces(float* x, float* y, float* z);
     void applyElevationForcesByElevationAngle(float elevationAngle);
 
-   protected:
+protected:
     void postEnableDisableActions();
     void postUpdateActions();
 };

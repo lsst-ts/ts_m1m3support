@@ -19,13 +19,13 @@ class IFPGA;
 class M1M3SSPublisher;
 
 class PPSThread : public IThread {
-   private:
+private:
     IFPGA* fpga;
     M1M3SSPublisher* publisher;
     uint16_t timestampUpdateBuffer[5];
     bool keepRunning;
 
-   public:
+public:
     PPSThread(IFPGA* fpga, M1M3SSPublisher* publisher);
 
     void run();

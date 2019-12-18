@@ -14,7 +14,7 @@ namespace M1M3 {
 namespace SS {
 
 LowerM1M3Command::LowerM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_lowerM1M3C* data)
-  : SALCommand(context, publisher, commandID, data) {}
+        : SALCommand(context, publisher, commandID, data) {}
 
 void LowerM1M3Command::execute() {
     this->context->lowerM1M3(this);

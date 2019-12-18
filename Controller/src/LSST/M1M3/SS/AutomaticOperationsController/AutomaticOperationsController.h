@@ -19,7 +19,7 @@ class M1M3SSPublisher;
 class PowerController;
 
 class AutomaticOperationsController {
-   private:
+private:
     PositionController* positionController;
     ForceController* forceController;
     SafetyController* safetyController;
@@ -28,7 +28,7 @@ class AutomaticOperationsController {
     double cachedTimestamp;
     bool bypassMoveToReference;
 
-   public:
+public:
     AutomaticOperationsController(PositionController* positionController, ForceController* forceController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController);
 
     void startRaiseOperation(bool bypassMoveToReference);

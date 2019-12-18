@@ -24,7 +24,7 @@ class ForceActuatorSettings;
 #define reciprocalSqrt2 0.70710678118654752440084436210485
 
 class ForceConverter {
-   public:
+public:
     static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
         *xForce = secondaryCylinder * reciprocalSqrt2;
         *yForce = 0;

@@ -20,11 +20,11 @@ class Controller;
  * The controller thread is responsible for executing commands.
  */
 class ControllerThread : public IThread {
-   private:
+private:
     Controller* controller;
     bool keepRunning;
 
-   public:
+public:
     ControllerThread(Controller* controller);
 
     void run();

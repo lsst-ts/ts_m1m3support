@@ -273,7 +273,7 @@ PUGI__NS_END
 #ifdef PUGIXML_COMPACT
 PUGI__NS_BEGIN
 class compact_hash_table {
-   public:
+public:
     compact_hash_table() : _items(0), _capacity(0), _count(0) {
     }
 
@@ -346,7 +346,7 @@ class compact_hash_table {
         return true;
     }
 
-   private:
+private:
     struct item_t {
         const void* key;
         void* value;
@@ -468,11 +468,11 @@ struct xml_memory_page {
 
 static const size_t xml_memory_page_size =
 #ifdef PUGIXML_MEMORY_PAGE_SIZE
-  (PUGIXML_MEMORY_PAGE_SIZE)
+        (PUGIXML_MEMORY_PAGE_SIZE)
 #else
-  32768
+        32768
 #endif
-  - sizeof(xml_memory_page);
+        - sizeof(xml_memory_page);
 
 struct xml_memory_string_header {
     uint16_t page_offset; // offset from page->data
@@ -706,7 +706,7 @@ static const uintptr_t compact_alignment_log2 = 2;
 static const uintptr_t compact_alignment = 1 << compact_alignment_log2;
 
 class compact_header {
-   public:
+public:
     compact_header(xml_memory_page* page, unsigned int flags) {
         PUGI__STATIC_ASSERT(xml_memory_block_alignment == compact_alignment);
 
@@ -737,7 +737,7 @@ class compact_header {
         return const_cast<xml_memory_page*>(reinterpret_cast<const xml_memory_page*>(static_cast<const void*>(page)));
     }
 
-   private:
+private:
     unsigned char _page;
     unsigned char _flags;
 };
@@ -760,7 +760,7 @@ PUGI__FN_NO_INLINE void compact_set_value(const void* object, T* value) {
 
 template <typename T, int header_offset, int start = -126>
 class compact_pointer {
-   public:
+public:
     compact_pointer() : _data(0) {
     }
 
@@ -804,13 +804,13 @@ class compact_pointer {
         return *this;
     }
 
-   private:
+private:
     unsigned char _data;
 };
 
 template <typename T, int header_offset>
 class compact_pointer_parent {
-   public:
+public:
     compact_pointer_parent() : _data(0) {
     }
 
@@ -866,13 +866,13 @@ class compact_pointer_parent {
         return *this;
     }
 
-   private:
+private:
     uint16_t _data;
 };
 
 template <int header_offset, int base_offset>
 class compact_string {
-   public:
+public:
     compact_string() : _data(0) {
     }
 
@@ -936,7 +936,7 @@ class compact_string {
             return 0;
     }
 
-   private:
+private:
     unsigned char _data;
 };
 PUGI__NS_END
@@ -1649,24 +1649,24 @@ enum chartype_t {
 };
 
 static const unsigned char chartype_table[256] =
-  {
-    55, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 0, 0, 63, 0, 0,                           // 0-15
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                               // 16-31
-    8, 0, 6, 0, 0, 0, 7, 6, 0, 0, 0, 0, 0, 96, 64, 0,                             // 32-47
-    64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 192, 0, 1, 0, 48, 0,                  // 48-63
-    0, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, // 64-79
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 0, 0, 16, 0, 192,      // 80-95
-    0, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, // 96-111
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 0, 0, 0, 0, 0,         // 112-127
+        {
+                55, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 0, 0, 63, 0, 0,                           // 0-15
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                               // 16-31
+                8, 0, 6, 0, 0, 0, 7, 6, 0, 0, 0, 0, 0, 96, 64, 0,                             // 32-47
+                64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 192, 0, 1, 0, 48, 0,                  // 48-63
+                0, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, // 64-79
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 0, 0, 16, 0, 192,      // 80-95
+                0, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, // 96-111
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 0, 0, 0, 0, 0,         // 112-127
 
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, // 128+
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
-    192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192};
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, // 128+
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192,
+                192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192};
 
 enum chartypex_t {
     ctx_special_pcdata = 1, // Any symbol >= 0 and < 32 (except \t, \r, \n), &, <, >
@@ -1677,25 +1677,25 @@ enum chartypex_t {
 };
 
 static const unsigned char chartypex_table[256] =
-  {
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 2, 3, 3, 2, 3, 3,           // 0-15
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,           // 16-31
-    0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 16, 16, 0,         // 32-47
-    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 0, 0, 3, 0, 3, 0, // 48-63
+        {
+                3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 2, 3, 3, 2, 3, 3,           // 0-15
+                3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,           // 16-31
+                0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 16, 16, 0,         // 32-47
+                24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 0, 0, 3, 0, 3, 0, // 48-63
 
-    0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 64-79
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 0, 0, 0, 0, 20,    // 80-95
-    0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 96-111
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 0, 0, 0, 0, 0,     // 112-127
+                0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 64-79
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 0, 0, 0, 0, 20,    // 80-95
+                0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 96-111
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 0, 0, 0, 0, 0,     // 112-127
 
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 128+
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 128+
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+                20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
 
 #ifdef PUGIXML_WCHAR_MODE
 #define PUGI__IS_CHARTYPE_IMPL(c, ct, table) ((static_cast<unsigned int>(c) < 128 ? table[static_cast<unsigned int>(c)] : table[128]) & (ct))
@@ -3445,7 +3445,7 @@ class xml_buffered_writer {
     xml_buffered_writer(const xml_buffered_writer&);
     xml_buffered_writer& operator=(const xml_buffered_writer&);
 
-   public:
+public:
     xml_buffered_writer(xml_writer& writer_, xml_encoding user_encoding) : writer(writer_), bufsize(0), encoding(get_write_encoding(user_encoding)) {
         PUGI__STATIC_ASSERT(bufcapacity >= 8);
     }
@@ -3615,9 +3615,9 @@ class xml_buffered_writer {
     enum {
         bufcapacitybytes =
 #ifdef PUGIXML_MEMORY_OUTPUT_STACK
-          PUGIXML_MEMORY_OUTPUT_STACK
+                PUGIXML_MEMORY_OUTPUT_STACK
 #else
-          10240
+                10240
 #endif
         ,
         bufcapacity = bufcapacitybytes / (sizeof(char_t) + 4)
@@ -6884,11 +6884,11 @@ PUGI__NS_END
 PUGI__NS_BEGIN
 static const size_t xpath_memory_page_size =
 #ifdef PUGIXML_MEMORY_XPATH_PAGE_SIZE
-  PUGIXML_MEMORY_XPATH_PAGE_SIZE
+        PUGIXML_MEMORY_XPATH_PAGE_SIZE
 #else
-  4096
+        4096
 #endif
-  ;
+        ;
 
 static const uintptr_t xpath_memory_block_alignment = sizeof(double) > sizeof(void*) ? sizeof(double) : sizeof(void*);
 
@@ -6906,7 +6906,7 @@ class xpath_allocator {
     xpath_memory_block* _root;
     size_t _root_size;
 
-   public:
+public:
 #ifdef PUGIXML_NO_EXCEPTIONS
     jmp_buf* error_handler;
 #endif
@@ -7101,7 +7101,7 @@ class xpath_string {
     xpath_string(const char_t* buffer, bool uses_heap_, size_t length_heap) : _buffer(buffer), _uses_heap(uses_heap_), _length_heap(length_heap) {
     }
 
-   public:
+public:
     static xpath_string from_const(const char_t* str) {
         return xpath_string(str, false, 0);
     }
@@ -8115,7 +8115,7 @@ class xpath_node_set_raw {
     xpath_node* _end;
     xpath_node* _eos;
 
-   public:
+public:
     xpath_node_set_raw() : _type(xpath_node_set::type_unsorted), _begin(0), _end(0), _eos(0) {
     }
 
@@ -8277,7 +8277,7 @@ class xpath_lexer {
 
     lexeme_t _cur_lexeme;
 
-   public:
+public:
     explicit xpath_lexer(const char_t* query) : _cur(query) {
         next();
     }
@@ -8658,7 +8658,7 @@ template <axis_t N>
 const axis_t axis_to_type<N>::axis = N;
 
 class xpath_ast_node {
-   private:
+private:
     // node type
     char _type;
     char _rettype;
@@ -9291,9 +9291,9 @@ class xpath_ast_node {
         const xpath_node_set::type_t axis_type = axis_reverse ? xpath_node_set::type_sorted_reverse : xpath_node_set::type_sorted;
 
         bool once =
-          (axis == axis_attribute && _test == nodetest_name) ||
-          (!_right && eval_once(axis_type, eval)) ||
-          (_right && !_right->_next && _right->_test == predicate_constant_one);
+                (axis == axis_attribute && _test == nodetest_name) ||
+                (!_right && eval_once(axis_type, eval)) ||
+                (_right && !_right->_next && _right->_test == predicate_constant_one);
 
         xpath_node_set_raw ns;
         ns.set_type(axis_type);
@@ -9330,7 +9330,7 @@ class xpath_ast_node {
         return ns;
     }
 
-   public:
+public:
     xpath_ast_node(ast_type_t type, xpath_value_type rettype_, const char_t* value) : _type(static_cast<char>(type)), _rettype(static_cast<char>(rettype_)), _axis(0), _test(0), _left(0), _right(0), _next(0) {
         assert(type == ast_string_constant);
         _data.string = value;

@@ -56,7 +56,7 @@ class PIDSettings;
 #define reciprocalSqrt2 0.70710678118654752440084436210485
 
 class ForceController {
-   private:
+private:
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
     ForceActuatorSettings* forceActuatorSettings;
     PIDSettings* pidSettings;
@@ -102,7 +102,7 @@ class ForceController {
 
     static int32_t toInt24(float force) { return (int32_t)(force * 1000.0); }
 
-   public:
+public:
     ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings, M1M3SSPublisher* publisher, SafetyController* safetyController, MTMount_ElevationC* tmaAlt, MTMount_AzimuthC* tmaAz);
 
     void reset();
@@ -158,7 +158,7 @@ class ForceController {
     void applyVelocityForces();
     void zeroVelocityForces();
 
-   private:
+private:
     void sumAllForces();
     void convertForcesToSetpoints();
 
