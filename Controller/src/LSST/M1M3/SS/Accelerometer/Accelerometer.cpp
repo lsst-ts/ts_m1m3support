@@ -5,16 +5,18 @@
  *      Author: ccontaxis
  */
 
-#include <Accelerometer.h>
-#include <AccelerometerSettings.h>
-#include <SupportFPGAData.h>
-#include <M1M3SSPublisher.h>
-#include <Timestamp.h>
-#include <SAL_MTM1M3C.h>
-#include <SALEnumerations.h>
-#include <Log.h>
+#include "Accelerometer.h"
 
 #include <cstring>
+
+#include "SAL_MTM1M3C.h"
+
+#include "AccelerometerSettings.h"
+#include "Log.h"
+#include "M1M3SSPublisher.h"
+#include "SALEnumerations.h"
+#include "SupportFPGAData.h"
+#include "Timestamp.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -25,10 +27,8 @@ Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings, Suppo
     this->accelerometerSettings = accelerometerSettings;
     this->fpgaData = fpgaData;
     this->publisher = publisher;
-
     this->accelerometerData = this->publisher->getAccelerometerData();
     this->accelerometerWarning = this->publisher->getEventAccelerometerWarning();
-
     memset(this->accelerometerData, 0, sizeof(MTM1M3_accelerometerDataC));
     memset(this->accelerometerWarning, 0, sizeof(MTM1M3_logevent_accelerometerWarningC));
 }

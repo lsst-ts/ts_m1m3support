@@ -8,34 +8,37 @@
 
 #define SIMULATOR 1
 
-#include <iostream>
 #include <pthread.h>
-#include <CommandFactory.h>
-#include <M1M3SSSubscriber.h>
-#include <M1M3SSPublisher.h>
-#include <StaticStateFactory.h>
-#include <Model.h>
-#include <Context.h>
-#include <Controller.h>
-#include <SubscriberThread.h>
-#include <ControllerThread.h>
-#include <OuterLoopClockThread.h>
-#include <FPGA.h>
-#include <SimulatedFPGA.h>
-#include <CommandTypes.h>
-#include <SettingReader.h>
-#include <SAL_MTM1M3.h>
-#include <SAL_MTMount.h>
-#include <SAL_MTMountC.h>
-#include <Timestamp.h>
-#include <FPGAAddresses.h>
-#include <SafetyController.h>
-#include <DigitalInputOutput.h>
+
 #include <cstring>
-#include <ExpansionFPGA.h>
-#include <SimulatedExpansionFPGA.h>
-#include <PPSThread.h>
-#include <Log.h>
+#include <iostream>
+
+#include "SAL_MTM1M3.h"
+#include "SAL_MTMount.h"
+#include "SAL_MTMountC.h"
+
+#include "CommandFactory.h"
+#include "CommandTypes.h"
+#include "Context.h"
+#include "Controller.h"
+#include "ControllerThread.h"
+#include "DigitalInputOutput.h"
+#include "ExpansionFPGA.h"
+#include "FPGA.h"
+#include "FPGAAddresses.h"
+#include "Log.h"
+#include "M1M3SSPublisher.h"
+#include "M1M3SSSubscriber.h"
+#include "Model.h"
+#include "OuterLoopClockThread.h"
+#include "PPSThread.h"
+#include "SafetyController.h"
+#include "SettingReader.h"
+#include "SimulatedExpansionFPGA.h"
+#include "SimulatedFPGA.h"
+#include "StaticStateFactory.h"
+#include "SubscriberThread.h"
+#include "Timestamp.h"
 
 using namespace std;
 using namespace LSST::M1M3::SS;

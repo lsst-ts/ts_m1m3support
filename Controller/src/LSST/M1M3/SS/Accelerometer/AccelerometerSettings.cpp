@@ -5,10 +5,13 @@
  *      Author: ccontaxis
  */
 
-#include <AccelerometerSettings.h>
-#include <SettingReader.h>
-#include <pugixml.hpp>
+#include "AccelerometerSettings.h"
+
 #include <boost/lexical_cast.hpp>
+
+#include "pugixml.hpp"
+
+#include "SettingReader.h"
 
 namespace LSST {
 namespace M1M3 {

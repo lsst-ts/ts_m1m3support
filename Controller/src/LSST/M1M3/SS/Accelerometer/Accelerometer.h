@@ -15,35 +15,25 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class AccelerometerSettings;
 struct SupportFPGAData;
+class AccelerometerSettings;
 class M1M3SSPublisher;
 
 /*!
  * The class used to process accelerometer data.
  */
 class Accelerometer {
-   private:
-    AccelerometerSettings* accelerometerSettings;
-    SupportFPGAData* fpgaData;
-    M1M3SSPublisher* publisher;
-
-    MTM1M3_accelerometerDataC* accelerometerData;
-    MTM1M3_logevent_accelerometerWarningC* accelerometerWarning;
-
    public:
-    /*!
-	 * Instantiates the accelerometer.
-	 * @param[in] accelerometerSettings The accelerometer settings.
-	 * @param[in] fpgaData The fpga data.
-	 * @param[in] publisher The publisher.
-	 */
     Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher);
-
-    /*!
-	 * Processes currently available accelerometer data and publish it.
-	 */
+    ~Accelerometer() = default;
     void processData();
+
+   private:
+    AccelerometerSettings* accelerometerSettings = nullptr;
+    SupportFPGAData* fpgaData = nullptr;
+    M1M3SSPublisher* publisher = nullptr;
+    MTM1M3_accelerometerDataC* accelerometerData = nullptr;
+    MTM1M3_logevent_accelerometerWarningC* accelerometerWarning = nullptr;
 };
 
 } /* namespace SS */
