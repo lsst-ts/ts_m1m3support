@@ -25,7 +25,6 @@ class M1M3SSPublisher;
 class Accelerometer {
 public:
     Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher);
-    ~Accelerometer() = default;
     void processData();
 
 private:
