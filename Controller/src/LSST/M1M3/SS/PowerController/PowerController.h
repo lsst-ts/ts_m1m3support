@@ -29,90 +29,90 @@ class SafetyController;
  */
 class PowerController {
 private:
-	IFPGA* fpga;
-	SupportFPGAData* fpgaData;
-	IExpansionFPGA* expansionFPGA;
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
+    IFPGA* fpga;
+    SupportFPGAData* fpgaData;
+    IExpansionFPGA* expansionFPGA;
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
 
-	MTM1M3_powerDataC* powerData;
-	MTM1M3_logevent_powerStatusC* powerStatus;
-	MTM1M3_logevent_powerWarningC* powerWarning;
+    MTM1M3_powerDataC* powerData;
+    MTM1M3_logevent_powerStatusC* powerStatus;
+    MTM1M3_logevent_powerWarningC* powerWarning;
 
-	uint64_t lastPowerTimestamp;
+    uint64_t lastPowerTimestamp;
 
 public:
-	/*!
+    /*!
 	 * Instantiates the power controller.
 	 * @param[in] fpga The fpga.
 	 * @param[in] expansionFPGA The expansion fpga.
 	 * @param[in] publisher The publisher.
 	 * @param[in] safetyController The safety controller.
 	 */
-	PowerController(IFPGA* fpga, IExpansionFPGA* expansionFPGA, M1M3SSPublisher* publisher, SafetyController* safetyController);
+    PowerController(IFPGA* fpga, IExpansionFPGA* expansionFPGA, M1M3SSPublisher* publisher, SafetyController* safetyController);
 
-	/*!
+    /*!
 	 * Processes currently available power data and publish it.
 	 */
-	void processData();
+    void processData();
 
-	/*!
+    /*!
 	 * Turns all power networks on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setBothPowerNetworks(bool on);
+    void setBothPowerNetworks(bool on);
 
-	/*!
+    /*!
 	 * Turns all normal power networks on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setAllPowerNetworks(bool on);
-	/*!
+    void setAllPowerNetworks(bool on);
+    /*!
 	 * Turns normal power network A on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setPowerNetworkA(bool on);
-	/*!
+    void setPowerNetworkA(bool on);
+    /*!
 	 * Turns normal power network B on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setPowerNetworkB(bool on);
-	/*!
+    void setPowerNetworkB(bool on);
+    /*!
 	 * Turns normal power network C on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setPowerNetworkC(bool on);
-	/*!
+    void setPowerNetworkC(bool on);
+    /*!
 	 * Turns normal power network D on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setPowerNetworkD(bool on);
+    void setPowerNetworkD(bool on);
 
-	/*!
+    /*!
 	 * Turns all aux power networks on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setAllAuxPowerNetworks(bool on);
-	/*!
+    void setAllAuxPowerNetworks(bool on);
+    /*!
 	 * Turns aux power network A on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setAuxPowerNetworkA(bool on);
-	/*!
+    void setAuxPowerNetworkA(bool on);
+    /*!
 	 * Turns aux power network B on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setAuxPowerNetworkB(bool on);
-	/*!
+    void setAuxPowerNetworkB(bool on);
+    /*!
 	 * Turns aux power network C on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setAuxPowerNetworkC(bool on);
-	/*!
+    void setAuxPowerNetworkC(bool on);
+    /*!
 	 * Turns aux power network D on or off.
 	 * @param[in] on True to turn on.
 	 */
-	void setAuxPowerNetworkD(bool on);
+    void setAuxPowerNetworkD(bool on);
 };
 
 } /* namespace SS */

@@ -32,64 +32,64 @@ class SafetyController;
  */
 class DigitalInputOutput {
 private:
-	InterlockApplicationSettings* interlockApplicationSettings;
-	IFPGA* fpga;
-	SupportFPGAData* fpgaData;
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
+    InterlockApplicationSettings* interlockApplicationSettings;
+    IFPGA* fpga;
+    SupportFPGAData* fpgaData;
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
 
-	MTM1M3_logevent_airSupplyStatusC* airSupplyStatus;
-	MTM1M3_logevent_airSupplyWarningC* airSupplyWarning;
-	MTM1M3_logevent_cellLightStatusC* cellLightStatus;
-	MTM1M3_logevent_cellLightWarningC* cellLightWarning;
-	MTM1M3_logevent_interlockStatusC* interlockStatus;
-	MTM1M3_logevent_interlockWarningC* interlockWarning;
+    MTM1M3_logevent_airSupplyStatusC* airSupplyStatus;
+    MTM1M3_logevent_airSupplyWarningC* airSupplyWarning;
+    MTM1M3_logevent_cellLightStatusC* cellLightStatus;
+    MTM1M3_logevent_cellLightWarningC* cellLightWarning;
+    MTM1M3_logevent_interlockStatusC* interlockStatus;
+    MTM1M3_logevent_interlockWarningC* interlockWarning;
 
-	uint64_t lastDOTimestamp;
-	uint64_t lastDITimestamp;
+    uint64_t lastDOTimestamp;
+    uint64_t lastDITimestamp;
 
-	double lastToggleTimestamp;
+    double lastToggleTimestamp;
 
 public:
-	/*!
+    /*!
 	 * Instantiates the accelerometer.
 	 * @param[in] accelerometerSettings The accelerometer settings.
 	 * @param[in] fpga The fpga.
 	 * @param[in] publisher The publisher.
 	 */
-	DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings, IFPGA* fpga, M1M3SSPublisher* publisher);
+    DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings, IFPGA* fpga, M1M3SSPublisher* publisher);
 
-	/*!
+    /*!
 	 * Sets the safety controller.
 	 * @param[in] safetyController The safety controller.
 	 */
-	void setSafetyController(SafetyController* safetyController);
+    void setSafetyController(SafetyController* safetyController);
 
-	/*!
+    /*!
 	 * Processes currently available digital input and output data and publish it.
 	 */
-	void processData();
+    void processData();
 
-	/*!
+    /*!
 	 * Toggles the heartbeat signal if a configured amount of time has passed.
 	 */
-	void tryToggleHeartbeat();
-	/*!
+    void tryToggleHeartbeat();
+    /*!
 	 * Turns the air on.
 	 */
-	void turnAirOn();
-	/*!
+    void turnAirOn();
+    /*!
 	 * Turns the air off.
 	 */
-	void turnAirOff();
-	/*!
+    void turnAirOff();
+    /*!
 	 * Turns the cell lights on.
 	 */
-	void turnCellLightsOn();
-	/*!
+    void turnCellLightsOn();
+    /*!
 	 * Turns the cell lights off.
 	 */
-	void turnCellLightsOff();
+    void turnCellLightsOff();
 };
 
 } /* namespace SS */

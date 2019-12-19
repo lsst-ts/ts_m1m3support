@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_standbyC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 void StandbyCommand::execute() {
-	this->context->standby(this);
+    this->context->standby(this);
 }
 
 void StandbyCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandStandby(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandStandby(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

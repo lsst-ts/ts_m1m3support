@@ -22,12 +22,12 @@ namespace SS {
  * This is an external command and can be issued via SAL.
  * Once this command has been executed the software will stop running.
  */
-class ShutdownCommand: public SALCommand<MTM1M3_command_shutdownC> {
+class ShutdownCommand : public SALCommand<MTM1M3_command_shutdownC> {
 public:
-	ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_shutdownC* data);
+    ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_shutdownC* data);
 
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

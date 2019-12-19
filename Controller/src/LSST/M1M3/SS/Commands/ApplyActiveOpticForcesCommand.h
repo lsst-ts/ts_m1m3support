@@ -16,12 +16,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ApplyActiveOpticForcesCommand: public SALCommand<MTM1M3_command_applyActiveOpticForcesC> {
+class ApplyActiveOpticForcesCommand : public SALCommand<MTM1M3_command_applyActiveOpticForcesC> {
 public:
-	ApplyActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyActiveOpticForcesC* data);
+    ApplyActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyActiveOpticForcesC* data);
 
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

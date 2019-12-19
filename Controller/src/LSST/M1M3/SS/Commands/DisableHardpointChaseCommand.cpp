@@ -14,22 +14,22 @@ namespace M1M3 {
 namespace SS {
 
 DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointChaseC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 bool DisableHardpointChaseCommand::validate() {
-	if (!(this->data.hardpointActuator >= 0 && this->data.hardpointActuator <= 5)) {
-		this->ackInvalidParameter("The field hardpointActuator must be in range [0, 5].");
-		return false;
-	}
-	return true;
+    if (!(this->data.hardpointActuator >= 0 && this->data.hardpointActuator <= 5)) {
+        this->ackInvalidParameter("The field hardpointActuator must be in range [0, 5].");
+        return false;
+    }
+    return true;
 }
 
 void DisableHardpointChaseCommand::execute() {
-	this->context->disableHardpointChase(this);
+    this->context->disableHardpointChase(this);
 }
 
 void DisableHardpointChaseCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandDisableHardpointChase(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

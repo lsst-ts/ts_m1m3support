@@ -13,11 +13,11 @@ namespace M1M3 {
 namespace SS {
 
 BootCommand::BootCommand(Context* context) {
-	this->context = context;
+    this->context = context;
 }
 
 void BootCommand::execute() {
-	this->context->boot(this);
+    this->context->boot(this);
 }
 
 } /* namespace SS */

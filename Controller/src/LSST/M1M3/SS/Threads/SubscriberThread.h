@@ -23,22 +23,22 @@ class CommandFactory;
 /*!
  * The subscriber thread is responsible for accepting commands.
  */
-class SubscriberThread: public IThread {
+class SubscriberThread : public IThread {
 private:
-	M1M3SSSubscriber* subscriber;
-	Controller* controller;
-	M1M3SSPublisher* publisher;
-	CommandFactory* commandFactory;
-	bool keepRunning;
+    M1M3SSSubscriber* subscriber;
+    Controller* controller;
+    M1M3SSPublisher* publisher;
+    CommandFactory* commandFactory;
+    bool keepRunning;
 
 public:
-	SubscriberThread(M1M3SSSubscriber* subscriber, Controller* controller, M1M3SSPublisher* publisher, CommandFactory* commandFactory);
+    SubscriberThread(M1M3SSSubscriber* subscriber, Controller* controller, M1M3SSPublisher* publisher, CommandFactory* commandFactory);
 
-	void run();
-	void stop();
+    void run();
+    void stop();
 
 private:
-	void enqueueCommandIfAvailable(Command* command);
+    void enqueueCommandIfAvailable(Command* command);
 };
 
 } /* namespace SS */

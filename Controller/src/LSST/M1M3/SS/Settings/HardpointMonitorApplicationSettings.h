@@ -18,9 +18,9 @@ namespace SS {
 
 class HardpointMonitorApplicationSettings {
 public:
-	std::vector<HardpointMonitorTableRow> Table;
+    std::vector<HardpointMonitorTableRow> Table;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

@@ -16,11 +16,11 @@ namespace M1M3 {
 namespace SS {
 
 State::State(M1M3SSPublisher* publisher, std::string name) {
-	this->publisher = publisher;
-	this->name = name;
+    this->publisher = publisher;
+    this->name = name;
 }
 
-State::~State() { }
+State::~State() {}
 
 States::Type State::boot(BootCommand* command, Model* model) { return States::NoStateTransition; }
 States::Type State::start(StartCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
@@ -68,39 +68,39 @@ States::Type State::programILC(ProgramILCCommand* command, Model* model) { retur
 States::Type State::modbusTransmit(ModbusTransmitCommand* command, Model* model) { return this->rejectCommandInvalidState((Command*)command); }
 
 void State::startTimer() {
-	clock_gettime(CLOCK_REALTIME, &this->startTime);
+    clock_gettime(CLOCK_REALTIME, &this->startTime);
 }
 
 void State::stopTimer() {
-	clock_gettime(CLOCK_REALTIME, &this->stopTime);
+    clock_gettime(CLOCK_REALTIME, &this->stopTime);
 }
 
 double State::getCurrentTimer() {
-	timespec now;
-	clock_gettime(CLOCK_REALTIME, &now);
-	double deltaNano = now.tv_nsec - this->startTime.tv_nsec;
-	double deltaSec = now.tv_sec - this->startTime.tv_sec;
-	if (deltaNano < 0) {
-		deltaSec -= 1;
-		deltaNano += 1000000000;
-	}
-	return deltaSec + (deltaNano / 1000000000.0);
+    timespec now;
+    clock_gettime(CLOCK_REALTIME, &now);
+    double deltaNano = now.tv_nsec - this->startTime.tv_nsec;
+    double deltaSec = now.tv_sec - this->startTime.tv_sec;
+    if (deltaNano < 0) {
+        deltaSec -= 1;
+        deltaNano += 1000000000;
+    }
+    return deltaSec + (deltaNano / 1000000000.0);
 }
 
 double State::getTimer() {
-	double deltaNano = this->stopTime.tv_nsec - this->startTime.tv_nsec;
-	double deltaSec = this->stopTime.tv_sec - this->startTime.tv_sec;
-	if (deltaNano < 0) {
-		deltaSec -= 1;
-		deltaNano += 1000000000;
-	}
-	return deltaSec + (deltaNano / 1000000000.0);
+    double deltaNano = this->stopTime.tv_nsec - this->startTime.tv_nsec;
+    double deltaSec = this->stopTime.tv_sec - this->startTime.tv_sec;
+    if (deltaNano < 0) {
+        deltaSec -= 1;
+        deltaNano += 1000000000;
+    }
+    return deltaSec + (deltaNano / 1000000000.0);
 }
 
 States::Type State::rejectCommandInvalidState(Command* command) {
-	Log.Warn("The command is not valid in the %s.", this->name.c_str());
-	command->ackInvalidState("Not valid in the " + this->name + " state.");
-	return States::NoStateTransition;
+    Log.Warn("The command is not valid in the %s.", this->name.c_str());
+    command->ackInvalidState("Not valid in the " + this->name + " state.");
+    return States::NoStateTransition;
 }
 
 } /* namespace SS */

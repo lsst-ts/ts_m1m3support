@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnAirOnC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 void TurnAirOnCommand::execute() {
-	this->context->turnAirOn(this);
+    this->context->turnAirOn(this);
 }
 
 void TurnAirOnCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandTurnAirOn(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandTurnAirOn(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

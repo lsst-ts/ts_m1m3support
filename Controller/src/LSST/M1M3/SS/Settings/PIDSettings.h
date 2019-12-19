@@ -16,14 +16,14 @@ namespace M1M3 {
 namespace SS {
 
 struct PIDSettings {
-	PIDParameters Fx;
-	PIDParameters Fy;
-	PIDParameters Fz;
-	PIDParameters Mx;
-	PIDParameters My;
-	PIDParameters Mz;
+    PIDParameters Fx;
+    PIDParameters Fy;
+    PIDParameters Fz;
+    PIDParameters Mx;
+    PIDParameters My;
+    PIDParameters Mz;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

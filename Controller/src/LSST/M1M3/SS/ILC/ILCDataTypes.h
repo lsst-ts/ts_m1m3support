@@ -17,66 +17,66 @@ namespace M1M3 {
 namespace SS {
 
 struct ILCTypes {
-	enum Type {
-		Unknown = 0,
-		HP = 1,
-		FA = 2,
-		HM = 3
-	};
+    enum Type {
+        Unknown = 0,
+        HP = 1,
+        FA = 2,
+        HM = 3
+    };
 };
 
 struct ILCMap {
-	ILCTypes::Type Type;
-	uint8_t Subnet;
-	uint8_t Address;
-	int32_t ActuatorId;
-	int32_t DataIndex;
-	int32_t XDataIndex;
-	int32_t YDataIndex;
-	int32_t SecondaryDataIndex;
-	bool Disabled;
+    ILCTypes::Type Type;
+    uint8_t Subnet;
+    uint8_t Address;
+    int32_t ActuatorId;
+    int32_t DataIndex;
+    int32_t XDataIndex;
+    int32_t YDataIndex;
+    int32_t SecondaryDataIndex;
+    bool Disabled;
 };
 
 struct HPSettings {
-	uint8_t subnet[6];
-	uint8_t address[6];
-	int16_t id[6];
-	float xPosition[6];
-	float yPosition[6];
-	float zPosition[6];
-	float loadCellOffset[6];
-	float loadCellSensitivity[6];
+    uint8_t subnet[6];
+    uint8_t address[6];
+    int16_t id[6];
+    float xPosition[6];
+    float yPosition[6];
+    float zPosition[6];
+    float loadCellOffset[6];
+    float loadCellSensitivity[6];
 };
 
 struct ILCScanRates {
-	enum Type {
-		Hz50 = 0,
-		Hz60 = 1,
-		Hz100 = 2,
-		Hz120 = 3,
-		Hz200 = 4,
-		Hz240 = 5,
-		Hz300 = 6,
-		Hz400 = 7,
-		Hz480 = 8,
-		Hz600 = 9,
-		Hz1200 = 10,
-		Hz2400 = 11,
-		Hz4800 = 12,
-		NoChange = 255
-	};
+    enum Type {
+        Hz50 = 0,
+        Hz60 = 1,
+        Hz100 = 2,
+        Hz120 = 3,
+        Hz200 = 4,
+        Hz240 = 5,
+        Hz300 = 6,
+        Hz400 = 7,
+        Hz480 = 8,
+        Hz600 = 9,
+        Hz1200 = 10,
+        Hz2400 = 11,
+        Hz4800 = 12,
+        NoChange = 255
+    };
 };
 
 struct ILCModes {
-	enum Type {
-		Standby = 0,
-		Disabled = 1,
-		Enabled = 2,
-		FirmwareUpdate = 3,
-		Fault = 4,
-		ClearFaults = 5,
-		NoChange = 65535
-	};
+    enum Type {
+        Standby = 0,
+        Disabled = 1,
+        Enabled = 2,
+        FirmwareUpdate = 3,
+        Fault = 4,
+        ClearFaults = 5,
+        NoChange = 65535
+    };
 };
 
 } /* namespace SS */

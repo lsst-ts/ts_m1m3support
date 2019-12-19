@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearAberrationForcesC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ClearAberrationForcesCommand::execute() {
-	this->context->clearAberrationForces(this);
+    this->context->clearAberrationForces(this);
 }
 
 void ClearAberrationForcesCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandClearAberrationForces(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandClearAberrationForces(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

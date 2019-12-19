@@ -25,22 +25,22 @@ class M1M3SSPublisher;
  * The outer loop clock thread is responsible for controlling
  * the outer loop execution timing.
  */
-class OuterLoopClockThread: public IThread {
+class OuterLoopClockThread : public IThread {
 private:
-	CommandFactory* commandFactory;
-	Controller* controller;
-	IFPGA* fpga;
-	M1M3SSPublisher* publisher;
-	uint16_t timestampUpdateBuffer[5];
-	bool keepRunning;
-	pthread_mutex_t updateMutex;
+    CommandFactory* commandFactory;
+    Controller* controller;
+    IFPGA* fpga;
+    M1M3SSPublisher* publisher;
+    uint16_t timestampUpdateBuffer[5];
+    bool keepRunning;
+    pthread_mutex_t updateMutex;
 
 public:
-	OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, IFPGA* fpga, M1M3SSPublisher* publisher);
-	~OuterLoopClockThread();
+    OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, IFPGA* fpga, M1M3SSPublisher* publisher);
+    ~OuterLoopClockThread();
 
-	void run();
-	void stop();
+    void run();
+    void stop();
 };
 
 } /* namespace SS */

@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testAirC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 void TestAirCommand::execute() {
-	this->context->testAir(this);
+    this->context->testAir(this);
 }
 
 void TestAirCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandTestAir(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandTestAir(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

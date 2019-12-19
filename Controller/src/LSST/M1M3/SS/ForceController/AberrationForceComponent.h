@@ -24,27 +24,27 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class AberrationForceComponent: public ForceComponent {
+class AberrationForceComponent : public ForceComponent {
 private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_appliedAberrationForcesC* appliedAberrationForces;
-	MTM1M3_logevent_rejectedAberrationForcesC* rejectedAberrationForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+    MTM1M3_logevent_appliedAberrationForcesC* appliedAberrationForces;
+    MTM1M3_logevent_rejectedAberrationForcesC* rejectedAberrationForces;
 
 public:
-	AberrationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+    AberrationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
-	void applyAberrationForces(float* z);
-	void applyAberrationForcesByBendingModes(float* coefficients);
+    void applyAberrationForces(float* z);
+    void applyAberrationForcesByBendingModes(float* coefficients);
 
 protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

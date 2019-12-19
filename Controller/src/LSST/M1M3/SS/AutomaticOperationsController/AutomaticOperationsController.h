@@ -20,34 +20,34 @@ class PowerController;
 
 class AutomaticOperationsController {
 private:
-	PositionController* positionController;
-	ForceController* forceController;
-	SafetyController* safetyController;
-	M1M3SSPublisher* publisher;
-	PowerController* powerController;
-	double cachedTimestamp;
-	bool bypassMoveToReference;
+    PositionController* positionController;
+    ForceController* forceController;
+    SafetyController* safetyController;
+    M1M3SSPublisher* publisher;
+    PowerController* powerController;
+    double cachedTimestamp;
+    bool bypassMoveToReference;
 
 public:
-	AutomaticOperationsController(PositionController* positionController, ForceController* forceController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController);
+    AutomaticOperationsController(PositionController* positionController, ForceController* forceController, SafetyController* safetyController, M1M3SSPublisher* publisher, PowerController* powerController);
 
-	void startRaiseOperation(bool bypassMoveToReference);
-	void tryIncrementingSupportPercentage();
-	bool checkRaiseOperationComplete();
-	void completeRaiseOperation();
-	bool checkRaiseOperationTimeout();
-	void timeoutRaiseOperation();
+    void startRaiseOperation(bool bypassMoveToReference);
+    void tryIncrementingSupportPercentage();
+    bool checkRaiseOperationComplete();
+    void completeRaiseOperation();
+    bool checkRaiseOperationTimeout();
+    void timeoutRaiseOperation();
 
-	void abortRaiseM1M3();
+    void abortRaiseM1M3();
 
-	void startLowerOperation();
-	void tryDecrementSupportPercentage();
-	bool checkLowerOperationComplete();
-	void completeLowerOperation();
-	bool checkLowerOperationTimeout();
-	void timeoutLowerOperation();
+    void startLowerOperation();
+    void tryDecrementSupportPercentage();
+    bool checkLowerOperationComplete();
+    void completeLowerOperation();
+    bool checkLowerOperationTimeout();
+    void timeoutLowerOperation();
 
-	void uncontrolledLowerOperation();
+    void uncontrolledLowerOperation();
 };
 
 } /* namespace SS */

@@ -16,13 +16,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class EnableHardpointChaseCommand: public SALCommand<MTM1M3_command_enableHardpointChaseC> {
+class EnableHardpointChaseCommand : public SALCommand<MTM1M3_command_enableHardpointChaseC> {
 public:
-	EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableHardpointChaseC* data);
+    EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableHardpointChaseC* data);
 
-	bool validate();
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    bool validate();
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

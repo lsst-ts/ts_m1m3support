@@ -16,13 +16,13 @@ namespace SS {
 
 class InclinometerSettings {
 public:
-	float Offset;
-	float FaultLow;
-	float WarningLow;
-	float WarningHigh;
-	float FaultHigh;
+    float Offset;
+    float FaultLow;
+    float WarningLow;
+    float WarningHigh;
+    float FaultHigh;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

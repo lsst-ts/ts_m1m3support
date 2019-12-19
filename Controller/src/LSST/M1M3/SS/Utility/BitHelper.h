@@ -16,15 +16,15 @@ namespace SS {
 
 class BitHelper {
 public:
-	BitHelper();
+    BitHelper();
 
-	static inline void set(unsigned long long* data, int32_t bit, bool value) {
-		(*data) = ((*data) & ~(1 << bit)) | (value ? (1 << bit) : 0);
-	}
+    static inline void set(unsigned long long* data, int32_t bit, bool value) {
+        (*data) = ((*data) & ~(1 << bit)) | (value ? (1 << bit) : 0);
+    }
 
-	static inline bool get(unsigned long long data, int32_t bit) {
-		return data & (1 << bit);
-	}
+    static inline bool get(unsigned long long data, int32_t bit) {
+        return data & (1 << bit);
+    }
 };
 
 } /* namespace SS */

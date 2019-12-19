@@ -25,26 +25,26 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class StaticForceComponent: public ForceComponent {
+class StaticForceComponent : public ForceComponent {
 private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
-	MTM1M3_logevent_appliedStaticForcesC* appliedStaticForces;
-	MTM1M3_logevent_rejectedStaticForcesC* rejectedStaticForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceActuatorWarningC* forceActuatorWarning;
+    MTM1M3_logevent_appliedStaticForcesC* appliedStaticForces;
+    MTM1M3_logevent_rejectedStaticForcesC* rejectedStaticForces;
 
 public:
-	StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+    StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
 
-	void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);
+    void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);
 
 protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

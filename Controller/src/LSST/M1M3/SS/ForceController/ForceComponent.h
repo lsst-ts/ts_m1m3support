@@ -16,42 +16,42 @@ namespace SS {
 
 class ForceComponent {
 protected:
-	std::string name;
+    std::string name;
 
-	bool enabled;
-	bool disabling;
-	float maxRateOfChange;
-	float nearZeroValue;
+    bool enabled;
+    bool disabling;
+    float maxRateOfChange;
+    float nearZeroValue;
 
-	float xCurrent[12];
-	float yCurrent[100];
-	float zCurrent[156];
+    float xCurrent[12];
+    float yCurrent[100];
+    float zCurrent[156];
 
-	float xTarget[12];
-	float yTarget[100];
-	float zTarget[156];
+    float xTarget[12];
+    float yTarget[100];
+    float zTarget[156];
 
-	float xOffset[12];
-	float yOffset[100];
-	float zOffset[156];
+    float xOffset[12];
+    float yOffset[100];
+    float zOffset[156];
 
 public:
-	ForceComponent();
-	virtual ~ForceComponent();
+    ForceComponent();
+    virtual ~ForceComponent();
 
-	bool isEnabled();
-	bool isDisabling();
+    bool isEnabled();
+    bool isDisabling();
 
-	void enable();
-	void disable();
+    void enable();
+    void disable();
 
-	void update();
+    void update();
 
-	void reset();
+    void reset();
 
 protected:
-	virtual void postEnableDisableActions();
-	virtual void postUpdateActions();
+    virtual void postEnableDisableActions();
+    virtual void postUpdateActions();
 };
 
 } /* namespace SS */

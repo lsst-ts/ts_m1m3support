@@ -16,9 +16,9 @@ namespace M1M3 {
 namespace SS {
 
 struct RecommendedApplicationSettings {
-	std::vector<std::string> RecommendedSettings;
+    std::vector<std::string> RecommendedSettings;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

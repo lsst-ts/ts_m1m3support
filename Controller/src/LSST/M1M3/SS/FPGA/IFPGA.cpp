@@ -11,8 +11,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-IFPGA::IFPGA() { }
-IFPGA::~IFPGA() { }
+IFPGA::IFPGA() {}
+IFPGA::~IFPGA() {}
 
 SupportFPGAData* IFPGA::getSupportFPGAData() { return 0; }
 
@@ -32,7 +32,7 @@ int32_t IFPGA::ackPPS() { return 0; }
 int32_t IFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) { return 0; }
 int32_t IFPGA::ackModbusIRQ(int32_t subnet) { return 0; }
 
-void IFPGA::pullTelemetry() { }
+void IFPGA::pullTelemetry() {}
 
 int32_t IFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) { return 0; }
 int32_t IFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) { return 0; }

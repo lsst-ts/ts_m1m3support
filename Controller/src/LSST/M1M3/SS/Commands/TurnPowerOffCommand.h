@@ -16,13 +16,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TurnPowerOffCommand: public SALCommand<MTM1M3_command_turnPowerOffC> {
+class TurnPowerOffCommand : public SALCommand<MTM1M3_command_turnPowerOffC> {
 public:
-	TurnPowerOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOffC* data);
+    TurnPowerOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOffC* data);
 
-	bool validate();
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    bool validate();
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

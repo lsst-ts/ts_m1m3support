@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearActiveOpticForcesC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ClearActiveOpticForcesCommand::execute() {
-	this->context->clearActiveOpticForces(this);
+    this->context->clearActiveOpticForces(this);
 }
 
 void ClearActiveOpticForcesCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandClearActiveOpticForces(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandClearActiveOpticForces(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

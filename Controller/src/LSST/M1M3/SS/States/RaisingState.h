@@ -14,12 +14,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class RaisingState: public EnabledState {
+class RaisingState : public EnabledState {
 public:
-	RaisingState(M1M3SSPublisher* publisher);
+    RaisingState(M1M3SSPublisher* publisher);
 
-	States::Type update(UpdateCommand* command, Model* model);
-	States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model);
+    States::Type update(UpdateCommand* command, Model* model);
+    States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model);
 };
 
 } /* namespace SS */

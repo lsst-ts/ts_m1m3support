@@ -14,14 +14,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class EnabledState: public State {
+class EnabledState : public State {
 public:
-	EnabledState(M1M3SSPublisher* publisher);
-	EnabledState(M1M3SSPublisher* publisher, std::string name);
+    EnabledState(M1M3SSPublisher* publisher);
+    EnabledState(M1M3SSPublisher* publisher, std::string name);
 
-	virtual States::Type update(UpdateCommand* command, Model* model);
-	States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model);
-	States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model);
+    virtual States::Type update(UpdateCommand* command, Model* model);
+    States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model);
+    States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model);
 };
 
 } /* namespace SS */

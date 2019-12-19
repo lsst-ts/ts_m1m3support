@@ -17,25 +17,24 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringState::LoweringState(M1M3SSPublisher* publisher) : EnabledState(publisher, "LoweringState") { }
+LoweringState::LoweringState(M1M3SSPublisher* publisher) : EnabledState(publisher, "LoweringState") {}
 
 States::Type LoweringState::update(UpdateCommand* command, Model* model) {
-	Log.Trace("LoweringState: update()");
-	this->startTimer();
-	States::Type newState = States::NoStateTransition;
-	model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
-	EnabledState::update(command, model);
-	if (model->getAutomaticOperationsController()->checkLowerOperationComplete()) {
-		model->getAutomaticOperationsController()->completeLowerOperation();
-		newState = States::ParkedState;
-	}
-	else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
-		model->getAutomaticOperationsController()->timeoutLowerOperation();
-	}
-	model->getILC()->publishForceActuatorState();
-	this->stopTimer();
-	model->publishOuterLoop(this->getTimer());
-	return model->getSafetyController()->checkSafety(newState);
+    Log.Trace("LoweringState: update()");
+    this->startTimer();
+    States::Type newState = States::NoStateTransition;
+    model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
+    EnabledState::update(command, model);
+    if (model->getAutomaticOperationsController()->checkLowerOperationComplete()) {
+        model->getAutomaticOperationsController()->completeLowerOperation();
+        newState = States::ParkedState;
+    } else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
+        model->getAutomaticOperationsController()->timeoutLowerOperation();
+    }
+    model->getILC()->publishForceActuatorState();
+    this->stopTimer();
+    model->publishOuterLoop(this->getTimer());
+    return model->getSafetyController()->checkSafety(newState);
 }
 
 } /* namespace SS */

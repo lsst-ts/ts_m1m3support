@@ -17,16 +17,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TMAElevationSampleCommand: public Command {
+class TMAElevationSampleCommand : public Command {
 private:
-	MTMount_ElevationC data;
+    MTMount_ElevationC data;
 
 public:
-	TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data);
+    TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data);
 
-	MTMount_ElevationC* getData() { return &this->data; }
+    MTMount_ElevationC* getData() { return &this->data; }
 
-	void execute();
+    void execute();
 };
 
 } /* namespace SS */

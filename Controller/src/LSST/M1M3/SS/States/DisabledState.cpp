@@ -27,77 +27,77 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisabledState::DisabledState(M1M3SSPublisher* publisher) : State(publisher, "DisabledState") { }
+DisabledState::DisabledState(M1M3SSPublisher* publisher) : State(publisher, "DisabledState") {}
 
 States::Type DisabledState::update(UpdateCommand* command, Model* model) {
-	Log.Trace("DisabledState::update()");
-	this->startTimer();
-	ILC* ilc = model->getILC();
-	ilc->writeFreezeSensorListBuffer();
-	ilc->triggerModbus();
-	model->getDigitalInputOutput()->tryToggleHeartbeat();
-	usleep(1000);
-	model->getFPGA()->pullTelemetry();
-	model->getAccelerometer()->processData();
-	model->getDigitalInputOutput()->processData();
-	model->getDisplacement()->processData();
-	model->getGyro()->processData();
-	model->getInclinometer()->processData();
-	model->getPowerController()->processData();
-	ilc->waitForAllSubnets(5000);
-	ilc->readAll();
-	ilc->calculateHPPostion();
-	ilc->calculateHPMirrorForces();
-	ilc->calculateFAMirrorForces();
-	ilc->verifyResponses();
-	ilc->publishForceActuatorStatus();
-	ilc->publishForceActuatorData();
-	ilc->publishHardpointStatus();
-	ilc->publishHardpointData();
-	ilc->publishHardpointMonitorStatus();
-	ilc->publishHardpointMonitorData();
-	model->getPublisher()->tryLogHardpointActuatorWarning();
-	this->stopTimer();
-	model->publishOuterLoop(this->getTimer());
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    Log.Trace("DisabledState::update()");
+    this->startTimer();
+    ILC* ilc = model->getILC();
+    ilc->writeFreezeSensorListBuffer();
+    ilc->triggerModbus();
+    model->getDigitalInputOutput()->tryToggleHeartbeat();
+    usleep(1000);
+    model->getFPGA()->pullTelemetry();
+    model->getAccelerometer()->processData();
+    model->getDigitalInputOutput()->processData();
+    model->getDisplacement()->processData();
+    model->getGyro()->processData();
+    model->getInclinometer()->processData();
+    model->getPowerController()->processData();
+    ilc->waitForAllSubnets(5000);
+    ilc->readAll();
+    ilc->calculateHPPostion();
+    ilc->calculateHPMirrorForces();
+    ilc->calculateFAMirrorForces();
+    ilc->verifyResponses();
+    ilc->publishForceActuatorStatus();
+    ilc->publishForceActuatorData();
+    ilc->publishHardpointStatus();
+    ilc->publishHardpointData();
+    ilc->publishHardpointMonitorStatus();
+    ilc->publishHardpointMonitorData();
+    model->getPublisher()->tryLogHardpointActuatorWarning();
+    this->stopTimer();
+    model->publishOuterLoop(this->getTimer());
+    return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type DisabledState::enable(EnableCommand* command, Model* model) {
-	Log.Info("DisabledState: enable()");
-	States::Type newState = States::ParkedState;
-	model->getILC()->writeSetModeEnableBuffer();
-	model->getILC()->triggerModbus();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getILC()->verifyResponses();
-	model->getDigitalInputOutput()->turnAirOn();
-	model->getPowerController()->setAllAuxPowerNetworks(true);
-	return model->getSafetyController()->checkSafety(newState);
+    Log.Info("DisabledState: enable()");
+    States::Type newState = States::ParkedState;
+    model->getILC()->writeSetModeEnableBuffer();
+    model->getILC()->triggerModbus();
+    model->getILC()->waitForAllSubnets(5000);
+    model->getILC()->readAll();
+    model->getILC()->verifyResponses();
+    model->getDigitalInputOutput()->turnAirOn();
+    model->getPowerController()->setAllAuxPowerNetworks(true);
+    return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
-	Log.Info("DisabledState: standby()");
-	States::Type newState = States::StandbyState;
-	model->getILC()->writeSetModeStandbyBuffer();
-	model->getILC()->triggerModbus();
-	model->getILC()->waitForAllSubnets(5000);
-	model->getILC()->readAll();
-	model->getILC()->verifyResponses();
-	model->getPublisher()->tryLogForceActuatorState();
-	model->getPowerController()->setBothPowerNetworks(false);
-	return model->getSafetyController()->checkSafety(newState);
+    Log.Info("DisabledState: standby()");
+    States::Type newState = States::StandbyState;
+    model->getILC()->writeSetModeStandbyBuffer();
+    model->getILC()->triggerModbus();
+    model->getILC()->waitForAllSubnets(5000);
+    model->getILC()->readAll();
+    model->getILC()->verifyResponses();
+    model->getPublisher()->tryLogForceActuatorState();
+    model->getPowerController()->setBothPowerNetworks(false);
+    return model->getSafetyController()->checkSafety(newState);
 }
 
 States::Type DisabledState::programILC(ProgramILCCommand* command, Model* model) {
-	Log.Info("DisabledState: programILC()");
-	model->getILC()->programILC(command->getData()->actuatorId, command->getData()->filePath);
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    Log.Info("DisabledState: programILC()");
+    model->getILC()->programILC(command->getData()->actuatorId, command->getData()->filePath);
+    return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type DisabledState::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
-	Log.Info("DisabledState: modbusTransmit()");
-	model->getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode, command->getData()->dataLength, command->getData()->data);
-	return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    Log.Info("DisabledState: modbusTransmit()");
+    model->getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode, command->getData()->dataLength, command->getData()->data);
+    return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

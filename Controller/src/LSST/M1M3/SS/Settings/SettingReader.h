@@ -35,54 +35,54 @@ namespace SS {
 
 class SettingReader {
 private:
-	AliasApplicationSettings aliasApplicationSettings;
-	ForceActuatorApplicationSettings forceActuatorApplicationSettings;
-	ForceActuatorSettings forceActuatorSettings;
-	HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
-	HardpointActuatorSettings hardpointActuatorSettings;
-	ILCApplicationSettings ilcApplicationSettings;
-	RecommendedApplicationSettings recommendedApplicationSettings;
-	SafetyControllerSettings safetyControllerSettings;
-	PositionControllerSettings positionControllerSettings;
-	AccelerometerSettings accelerometerSettings;
-	DisplacementSensorSettings displacementSensorSettings;
-	HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
-	InterlockApplicationSettings interlockApplicationSettings;
-	GyroSettings gyroSettings;
-	ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
-	PIDSettings pidSettings;
-	InclinometerSettings inclinometerSettings;
+    AliasApplicationSettings aliasApplicationSettings;
+    ForceActuatorApplicationSettings forceActuatorApplicationSettings;
+    ForceActuatorSettings forceActuatorSettings;
+    HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
+    HardpointActuatorSettings hardpointActuatorSettings;
+    ILCApplicationSettings ilcApplicationSettings;
+    RecommendedApplicationSettings recommendedApplicationSettings;
+    SafetyControllerSettings safetyControllerSettings;
+    PositionControllerSettings positionControllerSettings;
+    AccelerometerSettings accelerometerSettings;
+    DisplacementSensorSettings displacementSensorSettings;
+    HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
+    InterlockApplicationSettings interlockApplicationSettings;
+    GyroSettings gyroSettings;
+    ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
+    PIDSettings pidSettings;
+    InclinometerSettings inclinometerSettings;
 
-	std::string basePath;
-	std::string setsPath;
-	std::string currentSet;
-	std::string currentVersion;
+    std::string basePath;
+    std::string setsPath;
+    std::string currentSet;
+    std::string currentVersion;
 
 public:
-	SettingReader(std::string basePath, std::string setsPath);
-	void configure(std::string settingsToApply);
-	static void ReadXMLDocumentFromDisk(pugi::xml_document &, const char*);
-	AliasApplicationSettings* loadAliasApplicationSettings();
-	ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
-	ForceActuatorSettings* loadForceActuatorSettings();
-	HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
-	HardpointActuatorSettings* loadHardpointActuatorSettings();
-	ILCApplicationSettings* loadILCApplicationSettings();
-	RecommendedApplicationSettings* loadRecommendedApplicationSettings();
-	SafetyControllerSettings* loadSafetyControllerSettings();
-	PositionControllerSettings* loadPositionControllerSettings();
-	AccelerometerSettings* loadAccelerometerSettings();
-	DisplacementSensorSettings* loadDisplacementSensorSettings();
-	HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
-	InterlockApplicationSettings* loadInterlockApplicationSettings();
-	GyroSettings* loadGyroSettings();
-	ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
-	PIDSettings* loadPIDSettings();
-	InclinometerSettings* loadInclinometerSettings();
+    SettingReader(std::string basePath, std::string setsPath);
+    void configure(std::string settingsToApply);
+    static void ReadXMLDocumentFromDisk(pugi::xml_document&, const char*);
+    AliasApplicationSettings* loadAliasApplicationSettings();
+    ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
+    ForceActuatorSettings* loadForceActuatorSettings();
+    HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
+    HardpointActuatorSettings* loadHardpointActuatorSettings();
+    ILCApplicationSettings* loadILCApplicationSettings();
+    RecommendedApplicationSettings* loadRecommendedApplicationSettings();
+    SafetyControllerSettings* loadSafetyControllerSettings();
+    PositionControllerSettings* loadPositionControllerSettings();
+    AccelerometerSettings* loadAccelerometerSettings();
+    DisplacementSensorSettings* loadDisplacementSensorSettings();
+    HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
+    InterlockApplicationSettings* loadInterlockApplicationSettings();
+    GyroSettings* loadGyroSettings();
+    ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
+    PIDSettings* loadPIDSettings();
+    InclinometerSettings* loadInclinometerSettings();
 
 private:
-	std::string getBasePath(std::string file);
-	std::string getSetPath(std::string file);
+    std::string getBasePath(std::string file);
+    std::string getSetPath(std::string file);
 };
 
 } /* namespace SS */

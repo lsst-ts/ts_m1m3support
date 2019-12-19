@@ -13,10 +13,10 @@ namespace M1M3 {
 namespace SS {
 
 struct Limit {
-	float LowFault;
-	float LowWarning;
-	float HighWarning;
-	float HighFault;
+    float LowFault;
+    float LowWarning;
+    float HighWarning;
+    float HighFault;
 };
 
 } /* namespace SS */

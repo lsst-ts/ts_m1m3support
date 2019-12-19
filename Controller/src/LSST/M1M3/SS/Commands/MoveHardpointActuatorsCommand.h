@@ -16,13 +16,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class MoveHardpointActuatorsCommand: public SALCommand<MTM1M3_command_moveHardpointActuatorsC> {
+class MoveHardpointActuatorsCommand : public SALCommand<MTM1M3_command_moveHardpointActuatorsC> {
 public:
-	MoveHardpointActuatorsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_moveHardpointActuatorsC* data);
+    MoveHardpointActuatorsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_moveHardpointActuatorsC* data);
 
-	bool validate();
-	void execute();
-	void ack(int32_t ack, int32_t errorCode, std::string reason);
+    bool validate();
+    void execute();
+    void ack(int32_t ack, int32_t errorCode, std::string reason);
 };
 
 } /* namespace SS */

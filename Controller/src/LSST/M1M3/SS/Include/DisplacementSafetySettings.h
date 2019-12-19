@@ -9,20 +9,20 @@
 #define DISPLACEMENTSAFETYSETTINGS_H_
 
 struct DisplacementSafetySettings {
-	bool FaultOnSensorReportsInvalidCommand;
-	bool FaultOnSensorReportsCommunicationTimeoutError;
-	bool FaultOnSensorReportsDataLengthError;
-	bool FaultOnSensorReportsNumberOfParametersError;
-	bool FaultOnSensorReportsParameterError;
-	bool FaultOnSensorReportsCommunicationError;
-	bool FaultOnSensorReportsIDNumberError;
-	bool FaultOnSensorReportsExpansionLineError;
-	bool FaultOnSensorReportsWriteControlError;
-	bool FaultOnResponseTimeoutError;
-	bool FaultOnInvalidLength;
-	bool FaultOnInvalidResponse;
-	bool FaultOnUnknownCommand;
-	bool FaultOnUnknownProblem;
+    bool FaultOnSensorReportsInvalidCommand;
+    bool FaultOnSensorReportsCommunicationTimeoutError;
+    bool FaultOnSensorReportsDataLengthError;
+    bool FaultOnSensorReportsNumberOfParametersError;
+    bool FaultOnSensorReportsParameterError;
+    bool FaultOnSensorReportsCommunicationError;
+    bool FaultOnSensorReportsIDNumberError;
+    bool FaultOnSensorReportsExpansionLineError;
+    bool FaultOnSensorReportsWriteControlError;
+    bool FaultOnResponseTimeoutError;
+    bool FaultOnInvalidLength;
+    bool FaultOnInvalidResponse;
+    bool FaultOnUnknownCommand;
+    bool FaultOnUnknownProblem;
 };
 
 #endif /* DISPLACEMENTSAFETYSETTINGS_H_ */

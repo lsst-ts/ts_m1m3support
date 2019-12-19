@@ -9,30 +9,30 @@
 #define DATATYPES_H_
 
 #define ACK_INPROGRESS 301
-#define ACK_COMPLETE   303
-#define ACK_FAILED    -302
+#define ACK_COMPLETE 303
+#define ACK_FAILED -302
 
-#define SUBNET_COUNT  5
-#define FA_COUNT      156
-#define FA_X_COUNT    12
-#define FA_Y_COUNT    100
-#define FA_Z_COUNT    156
-#define HP_COUNT      6
-#define HM_COUNT      6
+#define SUBNET_COUNT 5
+#define FA_COUNT 156
+#define FA_X_COUNT 12
+#define FA_Y_COUNT 100
+#define FA_Z_COUNT 156
+#define HP_COUNT 6
+#define HM_COUNT 6
 #define BENDING_MODES 22
 
 #define MILLIMETERS_PER_METER 1000.0
 #define MICROMETERS_PER_MILLIMETER 1000.0
 
-typedef signed char        int8_t;
-typedef short int          int16_t;
-typedef int                int32_t;
-typedef long int           int64_t;
-typedef unsigned char      uint8_t;
+typedef signed char int8_t;
+typedef short int int16_t;
+typedef int int32_t;
+typedef long int int64_t;
+typedef unsigned char uint8_t;
 typedef unsigned short int uint16_t;
-typedef unsigned int       uint32_t;
-typedef unsigned long int  uint64_t;
-typedef unsigned char      bool_t;
+typedef unsigned int uint32_t;
+typedef unsigned long int uint64_t;
+typedef unsigned char bool_t;
 
 // SAL__CMD_ACK        300
 // SAL__CMD_INPROGRESS 301

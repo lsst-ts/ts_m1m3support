@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ApplyOffsetForcesByMirrorForceCommand::execute() {
-	this->context->applyOffsetForcesByMirrorForce(this);
+    this->context->applyOffsetForcesByMirrorForce(this);
 }
 
 void ApplyOffsetForcesByMirrorForceCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandApplyOffsetForcesByMirrorForce(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandApplyOffsetForcesByMirrorForce(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

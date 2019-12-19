@@ -14,9 +14,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ReadBoostValveDCAGainBusList: public BusList {
+class ReadBoostValveDCAGainBusList : public BusList {
 public:
-	ReadBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+    ReadBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 
 } /* namespace SS */

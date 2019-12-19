@@ -11,8 +11,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-IExpansionFPGA::IExpansionFPGA() { }
-IExpansionFPGA::~IExpansionFPGA() { }
+IExpansionFPGA::IExpansionFPGA() {}
+IExpansionFPGA::~IExpansionFPGA() {}
 
 int32_t IExpansionFPGA::initialize() { return 0; }
 int32_t IExpansionFPGA::open() { return 0; }

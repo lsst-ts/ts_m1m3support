@@ -67,7 +67,7 @@ all: ts_M1M3Support
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -std=c++11 -pedantic -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -14,14 +14,14 @@ namespace M1M3 {
 namespace SS {
 
 ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_shutdownC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 void ShutdownCommand::execute() {
-	this->context->shutdown(this);
+    this->context->shutdown(this);
 }
 
 void ShutdownCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandShutdown(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandShutdown(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

@@ -19,11 +19,11 @@ namespace SS {
  * machine from the offline state to the standby state.
  * This is an internal command only and cannot be issued via SAL.
  */
-class BootCommand: public Command {
+class BootCommand : public Command {
 public:
-	BootCommand(Context* context);
+    BootCommand(Context* context);
 
-	void execute();
+    void execute();
 };
 
 } /* namespace SS */

@@ -14,14 +14,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ParkedEngineeringState: public EngineeringState {
+class ParkedEngineeringState : public EngineeringState {
 public:
-	ParkedEngineeringState(M1M3SSPublisher* publisher);
+    ParkedEngineeringState(M1M3SSPublisher* publisher);
 
-	States::Type update(UpdateCommand* command, Model* model);
-	States::Type raiseM1M3(RaiseM1M3Command* command, Model* model);
-	States::Type exitEngineering(ExitEngineeringCommand* command, Model* model);
-	States::Type disable(DisableCommand* command, Model* model);
+    States::Type update(UpdateCommand* command, Model* model);
+    States::Type raiseM1M3(RaiseM1M3Command* command, Model* model);
+    States::Type exitEngineering(ExitEngineeringCommand* command, Model* model);
+    States::Type disable(DisableCommand* command, Model* model);
 };
 
 } /* namespace SS */

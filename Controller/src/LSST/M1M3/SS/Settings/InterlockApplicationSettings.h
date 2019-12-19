@@ -16,9 +16,9 @@ namespace SS {
 
 class InterlockApplicationSettings {
 public:
-	double HeartbeatPeriodInSeconds;
+    double HeartbeatPeriodInSeconds;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */

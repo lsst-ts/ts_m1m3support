@@ -21,27 +21,27 @@ class M1M3SSPublisher;
 
 class PID {
 private:
-	int id;
-	PIDParameters initialParameters;
-	M1M3SSPublisher* publisher;
-	MTM1M3_logevent_pidInfoC* pidInfo;
-	MTM1M3_pidDataC* pidData;
+    int id;
+    PIDParameters initialParameters;
+    M1M3SSPublisher* publisher;
+    MTM1M3_logevent_pidInfoC* pidInfo;
+    MTM1M3_pidDataC* pidData;
 
 public:
-	PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher);
+    PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher);
 
-	void updateParameters(PIDParameters parameters);
-	void restoreInitialParameters();
-	void resetPreviousValues();
+    void updateParameters(PIDParameters parameters);
+    void restoreInitialParameters();
+    void resetPreviousValues();
 
-	double process(double setpoint, double measurement);
+    double process(double setpoint, double measurement);
 
-	void publishTelemetry();
+    void publishTelemetry();
 
 private:
-	void calculateIntermediateValues();
+    void calculateIntermediateValues();
 
-	void publishInfo();
+    void publishInfo();
 };
 
 } /* namespace SS */

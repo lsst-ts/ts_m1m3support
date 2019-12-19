@@ -15,179 +15,179 @@ namespace SS {
 template <class iType, class rType>
 class Function {
 public:
-	virtual ~Function();
+    virtual ~Function();
 
-	virtual rType evaluate(iType x);
+    virtual rType evaluate(iType x);
 };
 
 template <class iType>
 class LinearFunction : public Function<iType, iType> {
 protected:
-	iType m;
-	iType b;
+    iType m;
+    iType b;
 
 public:
-	LinearFunction();
+    LinearFunction();
 
-	void update(iType m, iType b);
+    void update(iType m, iType b);
 
-	iType evaluate(iType x);
+    iType evaluate(iType x);
 };
 
 template <class iType>
 class Poly2Function : public Function<iType, iType> {
 protected:
-	iType a;
-	iType b;
-	iType c;
+    iType a;
+    iType b;
+    iType c;
 
 public:
-	Poly2Function();
+    Poly2Function();
 
-	void update(iType a, iType b, iType c);
+    void update(iType a, iType b, iType c);
 
-	iType evaluate(iType x);
+    iType evaluate(iType x);
 };
 
 template <class iType>
 class Poly3Function : public Function<iType, iType> {
 protected:
-	iType a;
-	iType b;
-	iType c;
-	iType d;
+    iType a;
+    iType b;
+    iType c;
+    iType d;
 
 public:
-	Poly3Function();
+    Poly3Function();
 
-	void update(iType a, iType b, iType c, iType d);
+    void update(iType a, iType b, iType c, iType d);
 
-	iType evaluate(iType x);
+    iType evaluate(iType x);
 };
 
 template <class iType>
 class Poly4Function : public Function<iType, iType> {
 protected:
-	iType a;
-	iType b;
-	iType c;
-	iType d;
-	iType e;
+    iType a;
+    iType b;
+    iType c;
+    iType d;
+    iType e;
 
 public:
-	Poly4Function();
+    Poly4Function();
 
-	void update(iType a, iType b, iType c, iType d, iType e);
+    void update(iType a, iType b, iType c, iType d, iType e);
 
-	iType evaluate(iType x);
+    iType evaluate(iType x);
 };
 
 template <class iType>
 class Poly5Function : public Function<iType, iType> {
 protected:
-	iType a;
-	iType b;
-	iType c;
-	iType d;
-	iType e;
-	iType f;
+    iType a;
+    iType b;
+    iType c;
+    iType d;
+    iType e;
+    iType f;
 
 public:
-	Poly5Function();
+    Poly5Function();
 
-	void update(iType a, iType b, iType c, iType d, iType e, iType f);
+    void update(iType a, iType b, iType c, iType d, iType e, iType f);
 
-	iType evaluate(iType x);
+    iType evaluate(iType x);
 };
 
 class BitSetFunction : public Function<unsigned long, bool> {
 protected:
-	unsigned long bitMask;
+    unsigned long bitMask;
 
 public:
-	BitSetFunction();
+    BitSetFunction();
 
-	void update(int bit);
+    void update(int bit);
 
-	bool evaluate(unsigned long x);
+    bool evaluate(unsigned long x);
 };
 
 class NotBitSetFunction : public Function<unsigned long, bool> {
 protected:
-	unsigned long bitMask;
+    unsigned long bitMask;
 
 public:
-	NotBitSetFunction();
+    NotBitSetFunction();
 
-	void update(int bit);
+    void update(int bit);
 
-	bool evaluate(unsigned long x);
+    bool evaluate(unsigned long x);
 };
 
 struct Matrix1x8FunctionInput {
-	float A;
-	float B;
-	float C;
-	float D;
-	float E;
-	float F;
-	float G;
-	float H;
+    float A;
+    float B;
+    float C;
+    float D;
+    float E;
+    float F;
+    float G;
+    float H;
 };
 
 class Matrix1x8Function : public Function<Matrix1x8FunctionInput, float> {
 protected:
-	float a;
-	float b;
-	float c;
-	float d;
-	float e;
-	float f;
-	float g;
-	float h;
+    float a;
+    float b;
+    float c;
+    float d;
+    float e;
+    float f;
+    float g;
+    float h;
 
 public:
-	Matrix1x8Function();
+    Matrix1x8Function();
 
-	void update(float a, float b, float c, float d, float e, float f, float g, float h);
+    void update(float a, float b, float c, float d, float e, float f, float g, float h);
 
-	float evaluate(Matrix1x8FunctionInput x);
+    float evaluate(Matrix1x8FunctionInput x);
 };
 
 struct AngularAccelerationFunctionInput {
-	float a1x;
-	float a1y;
-	float a2x;
-	float a2y;
-	float a3x;
-	float a3y;
-	float a4x;
-	float a4y;
+    float a1x;
+    float a1y;
+    float a2x;
+    float a2y;
+    float a3x;
+    float a3y;
+    float a4x;
+    float a4y;
 };
 
 class AngularAccelerationFunction : public Function<AngularAccelerationFunctionInput, float> {
 protected:
-	float distance;
+    float distance;
 
 public:
-	AngularAccelerationFunction();
+    AngularAccelerationFunction();
 
-	void update(float distance);
+    void update(float distance);
 };
 
 class AngularAccelerationXFunction : public AngularAccelerationFunction {
 public:
-	float evaluate(AngularAccelerationFunctionInput x);
+    float evaluate(AngularAccelerationFunctionInput x);
 };
 
 class AngularAccelerationYFunction : public AngularAccelerationFunction {
 public:
-	float evaluate(AngularAccelerationFunctionInput x);
+    float evaluate(AngularAccelerationFunctionInput x);
 };
 
 class AngularAccelerationZFunction : public AngularAccelerationFunction {
 public:
-	float evaluate(AngularAccelerationFunctionInput x);
+    float evaluate(AngularAccelerationFunctionInput x);
 };
 
 } /* namespace SS */

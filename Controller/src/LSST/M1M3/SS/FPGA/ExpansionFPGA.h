@@ -16,26 +16,26 @@ namespace SS {
 
 class ExpansionFPGAApplicationSettings;
 
-class ExpansionFPGA: public IExpansionFPGA {
+class ExpansionFPGA : public IExpansionFPGA {
 private:
-	ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;
-	uint32_t session;
-	size_t remaining;
+    ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;
+    uint32_t session;
+    size_t remaining;
 
 public:
-	ExpansionFPGA(ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings);
+    ExpansionFPGA(ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings);
 
-	int32_t initialize();
-	int32_t open();
-	int32_t close();
-	int32_t finalize();
+    int32_t initialize();
+    int32_t open();
+    int32_t close();
+    int32_t finalize();
 
-	bool isErrorCode(int32_t status);
+    bool isErrorCode(int32_t status);
 
-	int32_t sample();
+    int32_t sample();
 
-	int32_t readSlot1(float* data);
-	int32_t readSlot2(uint32_t* data);
+    int32_t readSlot1(float* data);
+    int32_t readSlot2(uint32_t* data);
 };
 
 } /* namespace SS */

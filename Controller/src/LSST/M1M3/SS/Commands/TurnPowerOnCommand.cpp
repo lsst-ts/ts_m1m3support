@@ -14,29 +14,29 @@ namespace M1M3 {
 namespace SS {
 
 TurnPowerOnCommand::TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnPowerOnC* data)
-	: SALCommand(context, publisher, commandID, data) { }
+        : SALCommand(context, publisher, commandID, data) {}
 
 bool TurnPowerOnCommand::validate() {
-	if (!(this->data.turnPowerNetworkAOn ||
-			this->data.turnPowerNetworkBOn ||
-			this->data.turnPowerNetworkCOn ||
-			this->data.turnPowerNetworkDOn ||
-			this->data.turnAuxPowerNetworkAOn ||
-			this->data.turnAuxPowerNetworkBOn ||
-			this->data.turnAuxPowerNetworkCOn ||
-			this->data.turnAuxPowerNetworkDOn)) {
-		this->ackInvalidParameter("At least one field is not TRUE.");
-		return false;
-	}
-	return true;
+    if (!(this->data.turnPowerNetworkAOn ||
+          this->data.turnPowerNetworkBOn ||
+          this->data.turnPowerNetworkCOn ||
+          this->data.turnPowerNetworkDOn ||
+          this->data.turnAuxPowerNetworkAOn ||
+          this->data.turnAuxPowerNetworkBOn ||
+          this->data.turnAuxPowerNetworkCOn ||
+          this->data.turnAuxPowerNetworkDOn)) {
+        this->ackInvalidParameter("At least one field is not TRUE.");
+        return false;
+    }
+    return true;
 }
 
 void TurnPowerOnCommand::execute() {
-	this->context->turnPowerOn(this);
+    this->context->turnPowerOn(this);
 }
 
 void TurnPowerOnCommand::ack(int32_t ack, int32_t errorCode, std::string reason) {
-	this->publisher->ackCommandTurnPowerOn(this->commandID, ack, errorCode, reason);
+    this->publisher->ackCommandTurnPowerOn(this->commandID, ack, errorCode, reason);
 }
 
 } /* namespace SS */

@@ -18,9 +18,9 @@ namespace SS {
 
 class HardpointActuatorApplicationSettings {
 public:
-	std::vector<HardpointActuatorTableRow> Table;
+    std::vector<HardpointActuatorTableRow> Table;
 
-	void load(const std::string &filename);
+    void load(const std::string& filename);
 };
 
 } /* namespace SS */
