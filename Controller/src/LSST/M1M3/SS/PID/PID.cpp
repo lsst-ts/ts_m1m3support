@@ -60,10 +60,10 @@ void PID::resetPreviousValues() {
 
 double PID::process(double setpoint, double measurement) {
     this->pidData->setpoint[this->id] = setpoint;
-    this->pidData->measurement[this->id] = measurement;
+    this->pidData->measurementValue[this->id] = measurement;
     this->pidData->errorT2[this->id] = this->pidData->errorT1[this->id];
     this->pidData->errorT1[this->id] = this->pidData->error[this->id];
-    this->pidData->error[this->id] = this->pidData->setpoint[this->id] - this->pidData->measurement[this->id];
+    this->pidData->error[this->id] = this->pidData->setpoint[this->id] - this->pidData->measurementValue[this->id];
     this->pidData->controlT2[this->id] = this->pidData->controlT1[this->id];
     this->pidData->controlT1[this->id] = this->pidData->control[this->id];
     double A = this->pidInfo->calculatedA[this->id];
