@@ -8,7 +8,7 @@
 #ifndef HARDPOINTACTUATORMOTIONSTATES_H_
 #define HARDPOINTACTUATORMOTIONSTATES_H_
 
-#include <ccpp_sal_m1m3.h> // Provides access to enumerations
+#include <ccpp_sal_MTM1M3.h> // Provides access to enumerations
 
 struct HardpointActuatorMotionStates {
 	enum Type {

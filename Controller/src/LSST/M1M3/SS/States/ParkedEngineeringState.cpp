@@ -45,7 +45,7 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
 	Log.Info("ParkedEngineeringState: raiseM1M3()");
 	States::Type newState = States::RaisingEngineeringState;
-	model->getAutomaticOperationsController()->startRaiseOperation(command->getData()->BypassReferencePosition);
+	model->getAutomaticOperationsController()->startRaiseOperation(command->getData()->bypassReferencePosition);
 	return model->getSafetyController()->checkSafety(newState);
 }
 

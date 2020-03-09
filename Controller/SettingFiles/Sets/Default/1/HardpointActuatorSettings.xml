@@ -9,4 +9,12 @@
     <HP4EncoderOffset>61621</HP4EncoderOffset>
     <HP5EncoderOffset>-21824</HP5EncoderOffset>
     <HP6EncoderOffset>35572</HP6EncoderOffset>
+    <HardpointMeasuredForceFaultHigh>3900</HardpointMeasuredForceFaultHigh>
+    <HardpointMeasuredForceFaultLow>-3900</HardpointMeasuredForceFaultLow>
+    <HardpointMeasuredForceFSBWarningHigh>100</HardpointMeasuredForceFSBWarningHigh>
+    <HardpointMeasuredForceFSBWarningLow>-100</HardpointMeasuredForceFSBWarningLow>
+    <HardpointMeasuredForceWarningHigh>2000</HardpointMeasuredForceWarningHigh>
+    <HardpointMeasuredForceWarningLow>-2000</HardpointMeasuredForceWarningLow>
+    <AirPressureWarningHigh>125</AirPressureWarningHigh>
+    <AirPressureWarningLow>110</AirPressureWarningLow>
 </HardpointActuatorSettings>

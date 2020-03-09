@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ClearAberrationForcesC* data) {
+ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_clearAberrationForcesC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ClearAberrationForces = data->ClearAberrationForces;
+	this->data.clearAberrationForces = data->clearAberrationForces;
 }
 
 bool ClearAberrationForcesCommand::validate() {
-	if (!this->data.ClearAberrationForces) {
+	if (!this->data.clearAberrationForces) {
 		this->publisher->logCommandRejectionWarning("ClearAberrationForces", "The field ClearAberrationForces is not TRUE.");
 	}
-	return this->data.ClearAberrationForces;
+	return this->data.clearAberrationForces;
 }
 
 void ClearAberrationForcesCommand::execute() {
@@ -32,15 +32,15 @@ void ClearAberrationForcesCommand::execute() {
 }
 
 void ClearAberrationForcesCommand::ackInProgress() {
-	this->publisher->ackCommandClearAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandclearAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ClearAberrationForcesCommand::ackComplete() {
-	this->publisher->ackCommandClearAberrationForces(this->commandID, ACK_COMPLETE, "Complete");
+	this->publisher->ackCommandclearAberrationForces(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ClearAberrationForcesCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandClearAberrationForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandclearAberrationForces(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

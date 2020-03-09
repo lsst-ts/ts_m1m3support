@@ -15,7 +15,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData)
+FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("FreezeSensorBusList: FreezeSensorBusList()");
 	this->outerLoopData = outerLoopData;
@@ -29,7 +29,7 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 		this->startSubnet(subnetIndex);
 		if (this->subnetData->getFACount(subnetIndex) > 0) {
 			this->freezeSensorCommandIndex[subnetIndex] = this->buffer.getIndex();
-			this->ilcMessageFactory->broadcastPneumaticFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastPneumaticFreezeSensorValues(&this->buffer, this->outerLoopData->broadcastCounter);
 			this->buffer.writeTimestamp();
 			for(int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
 				uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
@@ -53,7 +53,7 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 		}
 		if (this->subnetData->getHPCount(subnetIndex) > 0) {
 			this->freezeSensorCommandIndex[subnetIndex] = this->buffer.getIndex();
-			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->broadcastCounter);
 			this->buffer.writeTimestamp();
 			for(int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
 				uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
@@ -95,14 +95,14 @@ FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFa
 }
 
 void FreezeSensorBusList::update() {
-	this->outerLoopData->BroadcastCounter = RoundRobin::BroadcastCounter(this->outerLoopData->BroadcastCounter);
+	this->outerLoopData->broadcastCounter = RoundRobin::BroadcastCounter(this->outerLoopData->broadcastCounter);
 	for(int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
 		this->buffer.setIndex(this->freezeSensorCommandIndex[subnetIndex]);
 		if (this->subnetData->getFACount(subnetIndex) > 0) {
-			this->ilcMessageFactory->broadcastPneumaticFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastPneumaticFreezeSensorValues(&this->buffer, this->outerLoopData->broadcastCounter);
 		}
 		else if (this->subnetData->getHPCount(subnetIndex) > 0) {
-			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->BroadcastCounter);
+			this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(&this->buffer, this->outerLoopData->broadcastCounter);
 		}
 		if (this->subnetData->getFACount(subnetIndex) > 0) {
 			int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];

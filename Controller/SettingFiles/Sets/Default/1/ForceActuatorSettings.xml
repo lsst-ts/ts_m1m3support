@@ -1,7 +1,5 @@
 <ForceActuatorSettings>
-    <DisabledActuators></DisabledActuators>--><!-- No Actuators Disabled -->
-    <!--<DisabledActuators>128,133,134,138,228,233,234,238,311,334,411,434</DisabledActuators><!-- Uninstalled Actuators Disabled -->
-    <!--<DisabledActuators>101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,207,208,209,210,211,212,214,215,216,217,218,219,220,221,222,223,224,225,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,407,408,409,410,411,412,414,415,416,417,418,419,420,421,422,423,424,425,427,428,429,430,431,432,433,434,435,436,437,438,439</DisabledActuators>-->
+    <DisabledActuators></DisabledActuators>
     <AccelerationXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/AccelerationXTable.csv</AccelerationXTablePath>
     <AccelerationYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/AccelerationYTable.csv</AccelerationYTablePath>
     <AccelerationZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/AccelerationZTable.csv</AccelerationZTablePath>
@@ -19,9 +17,9 @@
     <ElevationXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationXTable.csv</ElevationXTablePath>
     <ElevationYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationYTable.csv</ElevationYTablePath>
     <ElevationZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationZTable.csv</ElevationZTablePath>
-    <StaticXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/StaticXTable.csv</StaticXTablePath>
-    <StaticYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/StaticYTable.csv</StaticYTablePath>
-    <StaticZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/StaticZTable.csv</StaticZTablePath>
+    <StaticXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/StaticXTableNone.csv</StaticXTablePath>
+    <StaticYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/StaticYTableNone.csv</StaticYTablePath>
+    <StaticZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/StaticZTableNone.csv</StaticZTablePath>
     <ThermalXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ThermalXTable.csv</ThermalXTablePath>
     <ThermalYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ThermalYTable.csv</ThermalYTablePath>
     <ThermalZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ThermalZTable.csv</ThermalZTablePath>
@@ -52,9 +50,9 @@
     <ElevationLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitXTable.csv</ElevationLimitXTablePath>
     <ElevationLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitYTable.csv</ElevationLimitYTablePath>
     <ElevationLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ElevationLimitZTable.csv</ElevationLimitZTablePath>
-    <ForceLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitXTableNone.csv</ForceLimitXTablePath>
-    <ForceLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitYTableNone.csv</ForceLimitYTablePath>
-    <ForceLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitZTableNone.csv</ForceLimitZTablePath>
+    <ForceLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitXTable.csv</ForceLimitXTablePath>
+    <ForceLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitYTable.csv</ForceLimitYTablePath>
+    <ForceLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceLimitZTable.csv</ForceLimitZTablePath>
     <OffsetLimitXTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitXTable.csv</OffsetLimitXTablePath>
     <OffsetLimitYTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitYTable.csv</OffsetLimitYTablePath>
     <OffsetLimitZTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/OffsetLimitZTable.csv</OffsetLimitZTablePath>
@@ -92,8 +90,8 @@
     <MirrorCenterOfGravityY>0.000218726</MirrorCenterOfGravityY>
     <MirrorCenterOfGravityZ>-1.7657086</MirrorCenterOfGravityZ>
 
-    <RaiseIncrementPercentage>0.001</RaiseIncrementPercentage>
-    <LowerDecrementPercentage>0.001</LowerDecrementPercentage>
+    <RaiseIncrementPercentage>0.0005</RaiseIncrementPercentage>
+    <LowerDecrementPercentage>0.0005</LowerDecrementPercentage>
     <RaiseLowerFollowingErrorLimit>50</RaiseLowerFollowingErrorLimit>
 
     <AberrationForceComponent>

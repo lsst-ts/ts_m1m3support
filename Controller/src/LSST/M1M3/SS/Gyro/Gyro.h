@@ -11,8 +11,8 @@
 #include <DataTypes.h>
 #include <string>
 
-struct m1m3_GyroDataC;
-struct m1m3_logevent_GyroWarningC;
+struct MTM1M3_gyroDataC;
+struct MTM1M3_logevent_gyroWarningC;
 
 namespace LSST {
 namespace M1M3 {
@@ -33,8 +33,8 @@ private:
 	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 
-	m1m3_GyroDataC* gyroData;
-	m1m3_logevent_GyroWarningC* gyroWarning;
+	MTM1M3_gyroDataC* gyroData;
+	MTM1M3_logevent_gyroWarningC* gyroWarning;
 
 	uint64_t lastSampleTimestamp;
 	uint64_t lastBITTimestamp;

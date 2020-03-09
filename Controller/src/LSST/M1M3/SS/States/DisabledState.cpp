@@ -90,13 +90,13 @@ States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
 
 States::Type DisabledState::programILC(ProgramILCCommand* command, Model* model) {
 	Log.Info("DisabledState: programILC()");
-	model->getILC()->programILC(command->getData()->ActuatorId, command->getData()->FilePath);
+	model->getILC()->programILC(command->getData()->actuatorId, command->getData()->filePath);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type DisabledState::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
 	Log.Info("DisabledState: modbusTransmit()");
-	model->getILC()->modbusTransmit(command->getData()->ActuatorId, command->getData()->FunctionCode, command->getData()->DataLength, command->getData()->Data);
+	model->getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode, command->getData()->dataLength, command->getData()->data);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

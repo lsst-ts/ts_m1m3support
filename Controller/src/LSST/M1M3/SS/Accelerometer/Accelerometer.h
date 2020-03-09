@@ -8,8 +8,8 @@
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 
-struct m1m3_AccelerometerDataC;
-struct m1m3_logevent_AccelerometerWarningC;
+struct MTM1M3_accelerometerDataC;
+struct MTM1M3_logevent_accelerometerWarningC;
 
 namespace LSST {
 namespace M1M3 {
@@ -28,8 +28,8 @@ private:
 	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 
-	m1m3_AccelerometerDataC* accelerometerData;
-	m1m3_logevent_AccelerometerWarningC* accelerometerWarning;
+	MTM1M3_accelerometerDataC* accelerometerData;
+	MTM1M3_logevent_accelerometerWarningC* accelerometerWarning;
 
 public:
 	/*!

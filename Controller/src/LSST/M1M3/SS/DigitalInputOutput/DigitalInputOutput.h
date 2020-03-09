@@ -10,12 +10,12 @@
 
 #include <DataTypes.h>
 
-struct m1m3_logevent_AirSupplyStatusC;
-struct m1m3_logevent_AirSupplyWarningC;
-struct m1m3_logevent_CellLightStatusC;
-struct m1m3_logevent_CellLightWarningC;
-struct m1m3_logevent_InterlockStatusC;
-struct m1m3_logevent_InterlockWarningC;
+struct MTM1M3_logevent_airSupplyStatusC;
+struct MTM1M3_logevent_airSupplyWarningC;
+struct MTM1M3_logevent_cellLightStatusC;
+struct MTM1M3_logevent_cellLightWarningC;
+struct MTM1M3_logevent_interlockStatusC;
+struct MTM1M3_logevent_interlockWarningC;
 
 namespace LSST {
 namespace M1M3 {
@@ -38,12 +38,12 @@ private:
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
 
-	m1m3_logevent_AirSupplyStatusC* airSupplyStatus;
-	m1m3_logevent_AirSupplyWarningC* airSupplyWarning;
-	m1m3_logevent_CellLightStatusC* cellLightStatus;
-	m1m3_logevent_CellLightWarningC* cellLightWarning;
-	m1m3_logevent_InterlockStatusC* interlockStatus;
-	m1m3_logevent_InterlockWarningC* interlockWarning;
+	MTM1M3_logevent_airSupplyStatusC* airSupplyStatus;
+	MTM1M3_logevent_airSupplyWarningC* airSupplyWarning;
+	MTM1M3_logevent_cellLightStatusC* cellLightStatus;
+	MTM1M3_logevent_cellLightWarningC* cellLightWarning;
+	MTM1M3_logevent_interlockStatusC* interlockStatus;
+	MTM1M3_logevent_interlockWarningC* interlockWarning;
 
 	uint64_t lastDOTimestamp;
 	uint64_t lastDITimestamp;

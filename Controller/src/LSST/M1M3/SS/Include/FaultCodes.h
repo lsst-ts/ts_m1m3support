@@ -80,6 +80,11 @@ struct FaultCodes {
 		RaiseOperationTimeout                              = 0x000017DC00000001, // 6108
 		LowerOperationTimeout                              = 0x000017DD00000001, // 6109
 		ILCCommunicationTimeout                            = 0x000017DE00000001, // 6110
+		ForceActuatorFollowingError                        = 0x000017DF00000001, // 6111
+		HardpointActuator                                  = 0x000017E000000001, // 6112
+		HardpointActuatorLoadCellError                     = 0x000017E000000002,
+		HardpointActuatorMeasuredForceError                = 0x000017E000000003,
+		HardpointActuatorAirPressure                       = 0x000017E000000004,
 		UnknownFault                                       = 0x0000180600000001  // 6150
 	};
 };

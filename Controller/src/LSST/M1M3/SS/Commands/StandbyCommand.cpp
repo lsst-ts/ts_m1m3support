@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_StandbyC* data) {
+StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_standbyC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Standby = data->Standby;
+	this->data.value = data->value;
 }
 
 bool StandbyCommand::validate() {
-	if (!this->data.Standby) {
+	if (!this->data.value) {
 		this->publisher->logCommandRejectionWarning("Standby", "The field Standby is not TRUE.");
 	}
-	return this->data.Standby;
+	return this->data.value;
 }
 
 void StandbyCommand::execute() {
@@ -32,15 +32,15 @@ void StandbyCommand::execute() {
 }
 
 void StandbyCommand::ackInProgress() {
-	this->publisher->ackCommandStandby(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandstandby(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void StandbyCommand::ackComplete() {
-	this->publisher->ackCommandStandby(this->commandID, ACK_COMPLETE, "Complete");
+	this->publisher->ackCommandstandby(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void StandbyCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandStandby(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandstandby(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

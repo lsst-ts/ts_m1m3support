@@ -9,7 +9,7 @@
 #define SETBOOSTVALVEDCAGAINBUSLIST_H_
 
 #include <BusList.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -17,10 +17,10 @@ namespace SS {
 
 class SetBoostValveDCAGainBusList: public BusList {
 private:
-	m1m3_logevent_ForceActuatorInfoC* forceInfo;
+	MTM1M3_logevent_forceActuatorInfoC* forceInfo;
 
 public:
-	SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo);
+	SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_logevent_forceActuatorInfoC* forceInfo);
 };
 
 } /* namespace SS */

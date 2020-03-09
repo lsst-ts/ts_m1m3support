@@ -13,17 +13,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_RunMirrorForceProfileC* data) {
+RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_runMirrorForceProfileC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
 	for(int i = 0; i < 1000; ++i) {
-		this->data.XForce[i] = data->XForce[i];
-		this->data.YForce[i] = data->YForce[i];
-		this->data.ZForce[i] = data->ZForce[i];
-		this->data.XMoment[i] = data->XMoment[i];
-		this->data.YMoment[i] = data->YMoment[i];
-		this->data.ZMoment[i] = data->ZMoment[i];
+		this->data.xForce[i] = data->xForce[i];
+		this->data.yForce[i] = data->yForce[i];
+		this->data.zForce[i] = data->zForce[i];
+		this->data.xMoment[i] = data->xMoment[i];
+		this->data.yMoment[i] = data->yMoment[i];
+		this->data.zMoment[i] = data->zMoment[i];
 	}
 }
 
@@ -36,15 +36,15 @@ void RunMirrorForceProfileCommand::execute() {
 }
 
 void RunMirrorForceProfileCommand::ackInProgress() {
-	this->publisher->ackCommandRunMirrorForceProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandrunMirrorForceProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void RunMirrorForceProfileCommand::ackComplete() {
-	this->publisher->ackCommandRunMirrorForceProfile(this->commandID, ACK_COMPLETE, "Complete");
+	this->publisher->ackCommandrunMirrorForceProfile(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void RunMirrorForceProfileCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandRunMirrorForceProfile(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandrunMirrorForceProfile(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

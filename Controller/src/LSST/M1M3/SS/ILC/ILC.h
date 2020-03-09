@@ -28,7 +28,7 @@
 #include <RaisedBusList.h>
 #include <ActiveBusList.h>
 #include <ILCResponseParser.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <FirmwareUpdate.h>
 
 namespace LSST {
@@ -80,11 +80,11 @@ private:
 	FirmwareUpdate firmwareUpdate;
 
 	HardpointActuatorSettings* hardpointActuatorSettings;
-	m1m3_HardpointActuatorDataC* hardpointActuatorData;
+	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
-	m1m3_ForceActuatorDataC* forceActuatorData;
-	m1m3_logevent_HardpointActuatorInfoC* hardpointActuatorInfo;
+	MTM1M3_forceActuatorDataC* forceActuatorData;
+	MTM1M3_logevent_hardpointActuatorInfoC* hardpointActuatorInfo;
 	PositionController* positionController;
 
 	int8_t hpStepCommand[6];

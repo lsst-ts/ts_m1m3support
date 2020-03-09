@@ -13,16 +13,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PositionM1M3Command::PositionM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_PositionM1M3C* data) {
+PositionM1M3Command::PositionM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_positionM1M3C* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.XPosition = data->XPosition;
-	this->data.YPosition = data->YPosition;
-	this->data.ZPosition = data->ZPosition;
-	this->data.XRotation = data->XRotation;
-	this->data.YRotation = data->YRotation;
-	this->data.ZRotation = data->ZRotation;
+	this->data.xPosition = data->xPosition;
+	this->data.yPosition = data->yPosition;
+	this->data.zPosition = data->zPosition;
+	this->data.xRotation = data->xRotation;
+	this->data.yRotation = data->yRotation;
+	this->data.zRotation = data->zRotation;
 }
 
 bool PositionM1M3Command::validate() {
@@ -34,15 +34,15 @@ void PositionM1M3Command::execute() {
 }
 
 void PositionM1M3Command::ackInProgress() {
-	this->publisher->ackCommandPositionM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandpositionM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void PositionM1M3Command::ackComplete() {
-	this->publisher->ackCommandPositionM1M3(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommandpositionM1M3(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void PositionM1M3Command::ackFailed(std::string reason) {
-	this->publisher->ackCommandPositionM1M3(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandpositionM1M3(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

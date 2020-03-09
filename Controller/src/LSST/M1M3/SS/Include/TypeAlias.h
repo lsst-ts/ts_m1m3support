@@ -8,8 +8,8 @@
 #ifndef TYPEALIAS_H_
 #define TYPEALIAS_H_
 
-struct m1m3_AccelerometerDataC;
-struct m1m3_logevent_AccelerometerWarningC;
+struct MTM1M3_accelerometerDataC;
+struct MTM1M3_logevent_accelerometerWarningC;
 
 namespace LSST {
 namespace M1M3 {

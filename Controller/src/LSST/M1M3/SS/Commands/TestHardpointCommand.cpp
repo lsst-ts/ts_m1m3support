@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestHardpointCommand::TestHardpointCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestHardpointC* data) {
+TestHardpointCommand::TestHardpointCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testHardpointC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.HardpointActuator = data->HardpointActuator;
+	this->data.hardpointActuator = data->hardpointActuator;
 }
 
 bool TestHardpointCommand::validate() {
-	if (!(this->data.HardpointActuator >= 1 && this->data.HardpointActuator <= 6)) {
+	if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
 		this->publisher->logCommandRejectionWarning("TestHardpoint", "The field HardpointActuator must be in range [1, 6].");
 	}
-	return this->data.HardpointActuator >= 1 && this->data.HardpointActuator <= 6;
+	return this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6;
 }
 
 void TestHardpointCommand::execute() {
@@ -32,15 +32,15 @@ void TestHardpointCommand::execute() {
 }
 
 void TestHardpointCommand::ackInProgress() {
-	this->publisher->ackCommandTestHardpoint(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandtestHardpoint(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TestHardpointCommand::ackComplete() {
-	this->publisher->ackCommandTestHardpoint(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommandtestHardpoint(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void TestHardpointCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTestHardpoint(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandtestHardpoint(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

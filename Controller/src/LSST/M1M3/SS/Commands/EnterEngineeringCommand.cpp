@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnterEngineeringC* data) {
+EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enterEngineeringC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.EnterEngineering = data->EnterEngineering;
+	this->data.enterEngineering = data->enterEngineering;
 }
 
 bool EnterEngineeringCommand::validate() {
-	if (!this->data.EnterEngineering) {
+	if (!this->data.enterEngineering) {
 		this->publisher->logCommandRejectionWarning("EnterEngineering", "The field EnterEngineering is not TRUE.");
 	}
-	return this->data.EnterEngineering;
+	return this->data.enterEngineering;
 }
 
 void EnterEngineeringCommand::execute() {
@@ -32,15 +32,15 @@ void EnterEngineeringCommand::execute() {
 }
 
 void EnterEngineeringCommand::ackInProgress() {
-	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandenterEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnterEngineeringCommand::ackComplete() {
-	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommandenterEngineering(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnterEngineeringCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandEnterEngineering(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandenterEngineering(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

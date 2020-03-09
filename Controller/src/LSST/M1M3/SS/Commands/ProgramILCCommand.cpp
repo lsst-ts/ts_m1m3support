@@ -13,12 +13,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ProgramILCC* data) {
+ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_programILCC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ActuatorId = data->ActuatorId;
-	this->data.FilePath = data->FilePath;
+	this->data.actuatorId = data->actuatorId;
+	this->data.filePath = data->filePath;
 }
 
 bool ProgramILCCommand::validate() {
@@ -30,15 +30,15 @@ void ProgramILCCommand::execute() {
 }
 
 void ProgramILCCommand::ackInProgress() {
-	this->publisher->ackCommandProgramILC(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandprogramILC(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ProgramILCCommand::ackComplete() {
-	this->publisher->ackCommandProgramILC(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommandprogramILC(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void ProgramILCCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandProgramILC(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandprogramILC(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

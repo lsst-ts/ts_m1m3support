@@ -8,7 +8,7 @@
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyControllerSettings.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <Log.h>
 
 namespace LSST {
@@ -20,20 +20,35 @@ SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerS
 	this->publisher = publisher;
 	this->safetyControllerSettings = safetyControllerSettings;
 	this->errorCodeData = this->publisher->getEventErrorCode();
-	this->errorCodeData->Timestamp = this->publisher->getTimestamp();
-	this->errorCodeData->ErrorCode = FaultCodes::NoFault;
-	this->errorCodeData->DetailedErrorCode = FaultCodes::NoFault;
+	this->errorCodeData->timestamp = this->publisher->getTimestamp();
+	this->errorCodeData->errorCode = FaultCodes::NoFault;
+	this->errorCodeData->detailedErrorCode = FaultCodes::NoFault;
 	this->publisher->logErrorCode();
 	for(int i = 0; i < this->safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
 		this->ilcCommunicationTimeoutData.push_back(0);
+	}
+	for(int i = 0; i < this->safetyControllerSettings->ILC.ForceActuatorFollowingErrorPeriod; ++i) {
+		for(int j = 0; j < 156; ++j) {
+			this->forceActuatorFollowingErrorData[j].push_back(0);
+		}
+	}
+	for(int i = 0; i < this->safetyControllerSettings->ILC.HardpointActuatorMeasuredForcePeriod; ++i) {
+		for(int j = 0; j < 6; ++j) {
+			this->hardpointActuatorMeasuredForceData[j].push_back(0);
+		}
+	}
+	for(int i = 0; i < this->safetyControllerSettings->ILC.AirPressurePeriod; ++i) {
+		for(int j = 0; j < 6; ++j) {
+			this->hardpointActuatorAirPressureData[j].push_back(0);
+		}
 	}
 }
 
 void SafetyController::clearErrorCode() {
 	Log.Info("SafetyController: clearErrorCode()");
-	this->errorCodeData->Timestamp = this->publisher->getTimestamp();
-	this->errorCodeData->DetailedErrorCode= FaultCodes::NoFault;
-	this->errorCodeData->ErrorCode= FaultCodes::NoFault;
+	this->errorCodeData->timestamp = this->publisher->getTimestamp();
+	this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
+	this->errorCodeData->errorCode= FaultCodes::NoFault;
 	this->publisher->logErrorCode();
 }
 
@@ -107,7 +122,7 @@ void SafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool 
 
 void SafetyController::raiseOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->RaiseOperation.FaultOnTimeout, conditionFlag); }
 
-void SafetyController::lowerOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::RaiseOperationTimeout, this->safetyControllerSettings->LowerOperation.FaultOnTimeout, conditionFlag); }
+void SafetyController::lowerOperationTimeout(bool conditionFlag) { this->updateOverride(FaultCodes::LowerOperationTimeout, this->safetyControllerSettings->LowerOperation.FaultOnTimeout, conditionFlag); }
 
 void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
 	this->ilcCommunicationTimeoutData.pop_front();
@@ -119,11 +134,41 @@ void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
 	this->updateOverride(FaultCodes::ILCCommunicationTimeout, this->safetyControllerSettings->ILC.FaultOnCommunicationTimeout, sum >= this->safetyControllerSettings->ILC.CommunicationTimeoutCountThreshold);
 }
 
+void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool conditionFlag) {
+	this->forceActuatorFollowingErrorData[actuatorDataIndex].pop_front();
+	this->forceActuatorFollowingErrorData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
+	int sum = 0;
+	for(std::list<int>::iterator i = this->forceActuatorFollowingErrorData[actuatorDataIndex].begin(); i != this->forceActuatorFollowingErrorData[actuatorDataIndex].end(); ++i) {
+		sum += (*i);
+	}
+	this->updateOverride(FaultCodes::ForceActuatorFollowingError, this->safetyControllerSettings->ILC.FaultOnForceActuatorFollowingError, sum >= this->safetyControllerSettings->ILC.ForceActuatorFollowingErrorCountThreshold);
+}
+
+void SafetyController::hardpointActuatorLoadCellError(bool conditionFlag) { this->updateOverride(FaultCodes::HardpointActuatorLoadCellError, this->safetyControllerSettings->ILC.FaultOnHardpointActuatorLoadCellError, conditionFlag); }
+void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, bool conditionFlag) {
+	this->hardpointActuatorMeasuredForceData[actuatorDataIndex].pop_front();
+	this->hardpointActuatorMeasuredForceData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
+	int sum = 0;
+	for(std::list<int>::iterator i = this->hardpointActuatorMeasuredForceData[actuatorDataIndex].begin(); i != this->hardpointActuatorMeasuredForceData[actuatorDataIndex].end(); ++i) {
+		sum += (*i);
+	}
+	this->updateOverride(FaultCodes::HardpointActuatorMeasuredForceError, this->safetyControllerSettings->ILC.FaultOnHardpointActuatorMeasuredForce, sum >= this->safetyControllerSettings->ILC.HardpointActuatorMeasuredForceCountThreshold);
+}
+void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool conditionFlag) {
+	this->hardpointActuatorAirPressureData[actuatorDataIndex].pop_front();
+	this->hardpointActuatorAirPressureData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
+	int sum = 0;
+	for(std::list<int>::iterator i = this->hardpointActuatorAirPressureData[actuatorDataIndex].begin(); i != this->hardpointActuatorAirPressureData[actuatorDataIndex].end(); ++i) {
+		sum += (*i);
+	}
+	this->updateOverride(FaultCodes::HardpointActuatorAirPressure, this->safetyControllerSettings->ILC.FaultOnAirPressure, sum >= this->safetyControllerSettings->ILC.AirPressureCountThreshold);
+}
+
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
-	if (this->errorCodeData->DetailedErrorCode != FaultCodes::NoFault) {
+	if (this->errorCodeData->detailedErrorCode != FaultCodes::NoFault) {
 		this->publisher->logErrorCode();
-		this->errorCodeData->DetailedErrorCode= FaultCodes::NoFault;
-		this->errorCodeData->ErrorCode= FaultCodes::NoFault;
+		this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
+		this->errorCodeData->errorCode= FaultCodes::NoFault;
 		return States::LoweringFaultState;
 	}
 	return preferredNextState;
@@ -131,10 +176,10 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
 
 void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {
 	bool faultConditionExists = enabledFlag && conditionFlag;
-	if (faultConditionExists && this->errorCodeData->DetailedErrorCode == FaultCodes::NoFault) {
-		this->errorCodeData->Timestamp = this->publisher->getTimestamp();
-		this->errorCodeData->DetailedErrorCode = (int32_t)faultCode;
-		this->errorCodeData->ErrorCode = (int32_t)(((int64_t)faultCode) >> 32);
+	if (faultConditionExists && this->errorCodeData->detailedErrorCode == FaultCodes::NoFault) {
+		this->errorCodeData->timestamp = this->publisher->getTimestamp();
+		this->errorCodeData->detailedErrorCode = (int32_t)faultCode;
+		this->errorCodeData->errorCode = (int32_t)(((int64_t)faultCode) >> 32);
 	}
 }
 

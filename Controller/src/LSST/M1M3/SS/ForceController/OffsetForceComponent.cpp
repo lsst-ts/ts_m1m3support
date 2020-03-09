@@ -82,8 +82,8 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
 void OffsetForceComponent::postEnableDisableActions() {
 	Log.Debug("OffsetForceComponent: postEnableDisableActions()");
 
-	this->forceActuatorState->Timestamp = this->publisher->getTimestamp();
-	this->forceActuatorState->OffsetForcesApplied = this->enabled;
+	this->forceActuatorState->timestamp = this->publisher->getTimestamp();
+	this->forceActuatorState->offsetForcesApplied = this->enabled;
 	this->publisher->tryLogForceActuatorState();
 }
 
@@ -92,55 +92,55 @@ void OffsetForceComponent::postUpdateActions() {
 
 	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedOffsetForces->Timestamp = this->publisher->getTimestamp();
-	this->rejectedOffsetForces->Timestamp = this->appliedOffsetForces->Timestamp;
+	this->appliedOffsetForces->timestamp = this->publisher->getTimestamp();
+	this->rejectedOffsetForces->timestamp = this->appliedOffsetForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
-		this->forceSetpointWarning->OffsetForceWarning[zIndex] = false;
+		this->forceSetpointWarning->offsetForceWarning[zIndex] = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
-			this->rejectedOffsetForces->XForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedOffsetForces->XForces[xIndex], this->appliedOffsetForces->XForces + xIndex);
-			this->forceSetpointWarning->OffsetForceWarning[zIndex] = this->forceSetpointWarning->OffsetForceWarning[zIndex] || notInRange;
+			this->rejectedOffsetForces->xForces[xIndex] = this->xCurrent[xIndex];
+			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedOffsetForces->xForces[xIndex], this->appliedOffsetForces->xForces + xIndex);
+			this->forceSetpointWarning->offsetForceWarning[zIndex] = this->forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
-			this->rejectedOffsetForces->YForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedOffsetForces->YForces[yIndex], this->appliedOffsetForces->YForces + yIndex);
-			this->forceSetpointWarning->OffsetForceWarning[zIndex] = this->forceSetpointWarning->OffsetForceWarning[zIndex] || notInRange;
+			this->rejectedOffsetForces->yForces[yIndex] = this->yCurrent[yIndex];
+			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedOffsetForces->yForces[yIndex], this->appliedOffsetForces->yForces + yIndex);
+			this->forceSetpointWarning->offsetForceWarning[zIndex] = this->forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
 		}
 
 		float zLowFault = this->forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
-		this->rejectedOffsetForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedOffsetForces->ZForces[zIndex], this->appliedOffsetForces->ZForces + zIndex);
-		this->forceSetpointWarning->OffsetForceWarning[zIndex] = this->forceSetpointWarning->OffsetForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->OffsetForceWarning[zIndex];
+		this->rejectedOffsetForces->zForces[zIndex] = this->zCurrent[zIndex];
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedOffsetForces->zForces[zIndex], this->appliedOffsetForces->zForces + zIndex);
+		this->forceSetpointWarning->offsetForceWarning[zIndex] = this->forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
+		rejectionRequired = rejectionRequired || this->forceSetpointWarning->offsetForceWarning[zIndex];
 	}
 
-	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedOffsetForces->XForces, this->appliedOffsetForces->YForces, this->appliedOffsetForces->ZForces);
-	this->appliedOffsetForces->Fx = fm.Fx;
-	this->appliedOffsetForces->Fy = fm.Fy;
-	this->appliedOffsetForces->Fz = fm.Fz;
-	this->appliedOffsetForces->Mx = fm.Mx;
-	this->appliedOffsetForces->My = fm.My;
-	this->appliedOffsetForces->Mz = fm.Mz;
-	this->appliedOffsetForces->ForceMagnitude = fm.ForceMagnitude;
+	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedOffsetForces->xForces, this->appliedOffsetForces->yForces, this->appliedOffsetForces->zForces);
+	this->appliedOffsetForces->fx = fm.Fx;
+	this->appliedOffsetForces->fy = fm.Fy;
+	this->appliedOffsetForces->fz = fm.Fz;
+	this->appliedOffsetForces->mx = fm.Mx;
+	this->appliedOffsetForces->my = fm.My;
+	this->appliedOffsetForces->mz = fm.Mz;
+	this->appliedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
-	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedOffsetForces->XForces, this->rejectedOffsetForces->YForces, this->rejectedOffsetForces->ZForces);
-	this->rejectedOffsetForces->Fx = fm.Fx;
-	this->rejectedOffsetForces->Fy = fm.Fy;
-	this->rejectedOffsetForces->Fz = fm.Fz;
-	this->rejectedOffsetForces->Mx = fm.Mx;
-	this->rejectedOffsetForces->My = fm.My;
-	this->rejectedOffsetForces->Mz = fm.Mz;
-	this->rejectedOffsetForces->ForceMagnitude = fm.ForceMagnitude;
+	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedOffsetForces->xForces, this->rejectedOffsetForces->yForces, this->rejectedOffsetForces->zForces);
+	this->rejectedOffsetForces->fx = fm.Fx;
+	this->rejectedOffsetForces->fy = fm.Fy;
+	this->rejectedOffsetForces->fz = fm.Fz;
+	this->rejectedOffsetForces->mx = fm.Mx;
+	this->rejectedOffsetForces->my = fm.My;
+	this->rejectedOffsetForces->mz = fm.Mz;
+	this->rejectedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
 	this->safetyController->forceControllerNotifyOffsetForceClipping(rejectionRequired);
 

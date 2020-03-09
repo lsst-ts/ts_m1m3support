@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TestAirC* data) {
+TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testAirC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.TestAir = data->TestAir;
+	this->data.testAir = data->testAir;
 }
 
 bool TestAirCommand::validate() {
-	if (!this->data.TestAir) {
+	if (!this->data.testAir) {
 		this->publisher->logCommandRejectionWarning("TestAir", "The field TestAir is not TRUE.");
 	}
-	return this->data.TestAir;
+	return this->data.testAir;
 }
 
 void TestAirCommand::execute() {
@@ -32,15 +32,15 @@ void TestAirCommand::execute() {
 }
 
 void TestAirCommand::ackInProgress() {
-	this->publisher->ackCommandTestAir(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandtestAir(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TestAirCommand::ackComplete() {
-	this->publisher->ackCommandTestAir(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommandtestAir(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void TestAirCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTestAir(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandtestAir(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

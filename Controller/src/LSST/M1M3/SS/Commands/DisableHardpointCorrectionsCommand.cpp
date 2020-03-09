@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_DisableHardpointCorrectionsC* data) {
+DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointCorrectionsC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.DisableHardpointCorrections = data->DisableHardpointCorrections;
+	this->data.disableHardpointCorrections = data->disableHardpointCorrections;
 }
 
 bool DisableHardpointCorrectionsCommand::validate() {
-	if (!this->data.DisableHardpointCorrections) {
+	if (!this->data.disableHardpointCorrections) {
 		this->publisher->logCommandRejectionWarning("DisableHardpointCorrections", "The field DisableHardpointCorrections is not TRUE.");
 	}
-	return this->data.DisableHardpointCorrections;
+	return this->data.disableHardpointCorrections;
 }
 
 void DisableHardpointCorrectionsCommand::execute() {
@@ -32,15 +32,15 @@ void DisableHardpointCorrectionsCommand::execute() {
 }
 
 void DisableHardpointCorrectionsCommand::ackInProgress() {
-	this->publisher->ackCommandDisableHardpointCorrections(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommanddisableHardpointCorrections(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableHardpointCorrectionsCommand::ackComplete() {
-	this->publisher->ackCommandDisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommanddisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void DisableHardpointCorrectionsCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandDisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommanddisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

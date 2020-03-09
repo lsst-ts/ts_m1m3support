@@ -28,6 +28,14 @@ public:
 	int32_t HP4EncoderOffset;
 	int32_t HP5EncoderOffset;
 	int32_t HP6EncoderOffset;
+	float HardpointMeasuredForceFaultHigh;
+	float HardpointMeasuredForceFaultLow;
+	float HardpointMeasuredForceFSBWarningHigh;
+	float HardpointMeasuredForceFSBWarningLow;
+	float HardpointMeasuredForceWarningHigh;
+	float HardpointMeasuredForceWarningLow;
+	float AirPressureWarningHigh;
+	float AirPressureWarningLow;
 
 	void load(const std::string &filename);
 };

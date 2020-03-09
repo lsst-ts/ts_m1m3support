@@ -35,7 +35,7 @@ States::Type ParkedState::update(UpdateCommand* command, Model* model) {
 
 States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
 	Log.Info("ParkedState: raiseM1M3()");
-	if (command->getData()->BypassReferencePosition) {
+	if (command->getData()->bypassReferencePosition) {
 		model->getPublisher()->logCommandRejectionWarning("RaiseM1M3", "The BypassReferencePosition parameter of the RaiseM1M3 cannot be true in the ParkedState.");
 		return model->getSafetyController()->checkSafety(States::NoStateTransition);
 	}

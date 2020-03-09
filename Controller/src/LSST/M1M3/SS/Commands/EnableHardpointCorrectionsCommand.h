@@ -9,7 +9,7 @@
 #define ENABLEHARDPOINTCORRECTIONSCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -20,12 +20,12 @@ class EnableHardpointCorrectionsCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	m1m3_command_EnableHardpointCorrectionsC data;
+	MTM1M3_command_enableHardpointCorrectionsC data;
 
 public:
-	EnableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnableHardpointCorrectionsC* data);
+	EnableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC* data);
 
-	m1m3_command_EnableHardpointCorrectionsC* getData() { return &this->data; }
+	MTM1M3_command_enableHardpointCorrectionsC* getData() { return &this->data; }
 
 	bool validate();
 	void execute();

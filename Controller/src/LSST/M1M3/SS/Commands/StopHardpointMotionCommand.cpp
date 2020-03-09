@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_StopHardpointMotionC* data) {
+StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_stopHardpointMotionC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.StopHardpointMotion = data->StopHardpointMotion;
+	this->data.stopHardpointMotion = data->stopHardpointMotion;
 }
 
 bool StopHardpointMotionCommand::validate() {
-	if (!this->data.StopHardpointMotion) {
+	if (!this->data.stopHardpointMotion) {
 		this->publisher->logCommandRejectionWarning("StopHardpointMotion", "The field StopHardpointMotion is not TRUE.");
 	}
-	return this->data.StopHardpointMotion;
+	return this->data.stopHardpointMotion;
 }
 
 void StopHardpointMotionCommand::execute() {
@@ -32,15 +32,15 @@ void StopHardpointMotionCommand::execute() {
 }
 
 void StopHardpointMotionCommand::ackInProgress() {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandstopHardpointMotion(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void StopHardpointMotionCommand::ackComplete() {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_COMPLETE, "Complete");
+	this->publisher->ackCommandstopHardpointMotion(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void StopHardpointMotionCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandStopHardpointMotion(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandstopHardpointMotion(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

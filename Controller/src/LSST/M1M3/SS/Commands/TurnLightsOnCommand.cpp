@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnLightsOnCommand::TurnLightsOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_TurnLightsOnC* data) {
+TurnLightsOnCommand::TurnLightsOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnLightsOnC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.TurnLightsOn = data->TurnLightsOn;
+	this->data.turnLightsOn = data->turnLightsOn;
 }
 
 bool TurnLightsOnCommand::validate() {
-	if (!this->data.TurnLightsOn) {
+	if (!this->data.turnLightsOn) {
 		this->publisher->logCommandRejectionWarning("TurnLightsOn", "The field TurnLightsOn is not TRUE.");
 	}
-	return this->data.TurnLightsOn;
+	return this->data.turnLightsOn;
 }
 
 void TurnLightsOnCommand::execute() {
@@ -32,15 +32,15 @@ void TurnLightsOnCommand::execute() {
 }
 
 void TurnLightsOnCommand::ackInProgress() {
-	this->publisher->ackCommandTurnLightsOn(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandturnLightsOn(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnLightsOnCommand::ackComplete() {
-	this->publisher->ackCommandTurnLightsOn(this->commandID, ACK_COMPLETE, "Complete");
+	this->publisher->ackCommandturnLightsOn(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnLightsOnCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandTurnLightsOn(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandturnLightsOn(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

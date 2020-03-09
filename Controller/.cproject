@@ -30,16 +30,16 @@
 								<option id="gnu.cpp.compiler.option.debugging.level.1122234676" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1494100104" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\boost_1_65_1&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.7\HDE\x86_64.linux\examples\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.7\HDE\x86_64.linux\examples&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.7\HDE\x86_64.linux\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.7\HDE\x86_64.linux\include\sys&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.7\HDE\x86_64.linux\include\dcps\C++\SACPP&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\m1m3\cpp\src&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\m1m3\cpp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.9\HDE\x86_64.linux\examples\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.9\HDE\x86_64.linux\examples&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.9\HDE\x86_64.linux\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.9\HDE\x86_64.linux\include\sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.9\HDE\x86_64.linux\include\dcps\C++\SACPP&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\MTM1M3\cpp\src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\MTM1M3\cpp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\MTMount\cpp\src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\lsstsal\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\m1m3\cpp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\MTM1M3\cpp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\MTMount\cpp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\include&quot;"/>
@@ -84,9 +84,9 @@
 									<listOptionValue builtIn="false" value="dl"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 									<listOptionValue builtIn="false" value="SAL_MTMount"/>
-									<listOptionValue builtIn="false" value="SAL_m1m3"/>
+									<listOptionValue builtIn="false" value="SAL_MTM1M3"/>
 									<listOptionValue builtIn="false" value="sacpp_MTMount_types"/>
-									<listOptionValue builtIn="false" value="sacpp_m1m3_types"/>
+									<listOptionValue builtIn="false" value="sacpp_MTM1M3_types"/>
 									<listOptionValue builtIn="false" value="dcpssacpp"/>
 									<listOptionValue builtIn="false" value="dcpsgapi"/>
 									<listOptionValue builtIn="false" value="ddsuser"/>
@@ -101,11 +101,11 @@
 								<option id="gnu.cpp.link.option.paths.1995968209" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.7\HDE\x86_64.linux\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_opensplice\OpenSpliceDDS\V6.9\HDE\x86_64.linux\lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\lsstsal\lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.userobjs.860505181" name="Other objects" superClass="gnu.cpp.link.option.userobjs" valueType="userObjs">
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\m1m3\cpp\src\.obj\CheckStatus.o&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files (x86)\National Instruments\Eclipse\14.0\x64\sysroots\x86_64-nilrt-linux\usr\ts_sal\test\MTM1M3\cpp\src\.obj\CheckStatus.o&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1554068250" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -154,13 +154,13 @@
 							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1424317533" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
 								<option id="gnu.cpp.compiler.option.include.paths.1071838911" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;../../../boost_1_65_1&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/examples/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/examples&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include/sys&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include/dcps/C++/SACPP&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/m1m3/cpp/src&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/m1m3/cpp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/examples/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/examples&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/dcps/C++/SACPP&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTM1M3/cpp/src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTM1M3/cpp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTMount/cpp/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/lsstsal/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTMount/cpp&quot;"/>
@@ -208,9 +208,9 @@
 								<option id="gnu.cpp.link.option.libs.867402866" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="dl"/>
 									<listOptionValue builtIn="false" value="SAL_MTMount"/>
-									<listOptionValue builtIn="false" value="SAL_m1m3"/>
+									<listOptionValue builtIn="false" value="SAL_MTM1M3"/>
 									<listOptionValue builtIn="false" value="sacpp_MTMount_types"/>
-									<listOptionValue builtIn="false" value="sacpp_m1m3_types"/>
+									<listOptionValue builtIn="false" value="sacpp_MTM1M3_types"/>
 									<listOptionValue builtIn="false" value="dcpssacpp"/>
 									<listOptionValue builtIn="false" value="dcpsgapi"/>
 									<listOptionValue builtIn="false" value="ddsuser"/>
@@ -224,12 +224,12 @@
 									<listOptionValue builtIn="false" value="ddsos"/>
 								</option>
 								<option id="gnu.cpp.link.option.userobjs.1870957470" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs">
-									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/m1m3/cpp/src/.obj/CheckStatus.o&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTM1M3/cpp/src/.obj/CheckStatus.o&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.754215541" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/lsstsal/lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1051364670" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="" valueType="string"/>
@@ -280,13 +280,13 @@
 							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1554714956" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
 								<option id="gnu.cpp.compiler.option.include.paths.1032738182" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;../../../boost_1_65_1&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/examples/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/examples&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include/sys&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/include/dcps/C++/SACPP&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/m1m3/cpp/src&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/m1m3/cpp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/examples/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/examples&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/dcps/C++/SACPP&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTM1M3/cpp/src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTM1M3/cpp&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTMount/cpp/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/lsstsal/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTMount/cpp&quot;"/>
@@ -334,9 +334,9 @@
 								<option id="gnu.cpp.link.option.libs.1401057804" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="dl"/>
 									<listOptionValue builtIn="false" value="SAL_MTMount"/>
-									<listOptionValue builtIn="false" value="SAL_m1m3"/>
+									<listOptionValue builtIn="false" value="SAL_MTM1M3"/>
 									<listOptionValue builtIn="false" value="sacpp_MTMount_types"/>
-									<listOptionValue builtIn="false" value="sacpp_m1m3_types"/>
+									<listOptionValue builtIn="false" value="sacpp_MTM1M3_types"/>
 									<listOptionValue builtIn="false" value="dcpssacpp"/>
 									<listOptionValue builtIn="false" value="dcpsgapi"/>
 									<listOptionValue builtIn="false" value="ddsuser"/>
@@ -350,12 +350,12 @@
 									<listOptionValue builtIn="false" value="ddsos"/>
 								</option>
 								<option id="gnu.cpp.link.option.userobjs.102781203" name="Other objects" superClass="gnu.cpp.link.option.userobjs" useByScannerDiscovery="false" valueType="userObjs">
-									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/m1m3/cpp/src/.obj/CheckStatus.o&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/MTM1M3/cpp/src/.obj/CheckStatus.o&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.623155769" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/test/lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../../../ts_sal/lsstsal/lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.201809334" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="" valueType="string"/>

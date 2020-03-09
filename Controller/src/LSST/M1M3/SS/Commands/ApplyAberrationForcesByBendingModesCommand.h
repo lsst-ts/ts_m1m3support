@@ -9,7 +9,7 @@
 #define APPLYABERRATIONFORCESBYBENDINGMODESCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -20,12 +20,12 @@ class ApplyAberrationForcesByBendingModesCommand: public Command {
 private:
 	Context* context;
 	M1M3SSPublisher* publisher;
-	m1m3_command_ApplyAberrationForcesByBendingModesC data;
+	MTM1M3_command_applyAberrationForcesByBendingModesC data;
 
 public:
-	ApplyAberrationForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ApplyAberrationForcesByBendingModesC* data);
+	ApplyAberrationForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyAberrationForcesByBendingModesC* data);
 
-	m1m3_command_ApplyAberrationForcesByBendingModesC* getData() { return &this->data; }
+	MTM1M3_command_applyAberrationForcesByBendingModesC* getData() { return &this->data; }
 
 	bool validate();
 	void execute();

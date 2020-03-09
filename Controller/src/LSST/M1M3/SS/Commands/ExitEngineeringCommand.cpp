@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitEngineeringCommand::ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_ExitEngineeringC* data) {
+ExitEngineeringCommand::ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_exitEngineeringC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.ExitEngineering = data->ExitEngineering;
+	this->data.exitEngineering = data->exitEngineering;
 }
 
 bool ExitEngineeringCommand::validate() {
-	if (!this->data.ExitEngineering) {
+	if (!this->data.exitEngineering) {
 		this->publisher->logCommandRejectionWarning("ExitEngineering", "The field ExitEngineering is not TRUE.");
 	}
-	return this->data.ExitEngineering;
+	return this->data.exitEngineering;
 }
 
 void ExitEngineeringCommand::execute() {
@@ -32,15 +32,15 @@ void ExitEngineeringCommand::execute() {
 }
 
 void ExitEngineeringCommand::ackInProgress() {
-	this->publisher->ackCommandExitEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandexitEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ExitEngineeringCommand::ackComplete() {
-	this->publisher->ackCommandExitEngineering(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommandexitEngineering(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void ExitEngineeringCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandExitEngineering(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandexitEngineering(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

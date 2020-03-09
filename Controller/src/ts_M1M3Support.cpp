@@ -21,7 +21,7 @@
 #include <FPGA.h>
 #include <CommandTypes.h>
 #include <SettingReader.h>
-#include <SAL_m1m3.h>
+#include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 #include <Timestamp.h>
 #include <FPGAAddresses.h>
@@ -32,6 +32,8 @@
 #include <PPSThread.h>
 
 #include <Log.h>
+
+#define SIMULATOR 1
 
 using namespace std;
 using namespace LSST::M1M3::SS;
@@ -45,13 +47,26 @@ int main() {
 	Log.Info("Main: Creating setting reader");
 	SettingReader settingReader = SettingReader("/usr/ts_M1M3Support/SettingFiles/Base/", "/usr/ts_M1M3Support/SettingFiles/Sets/");
 	Log.Info("Main: Initializing M1M3 SAL");
-	SAL_m1m3 m1m3SAL = SAL_m1m3();
+	SAL_MTM1M3 m1m3SAL = SAL_MTM1M3();
 	m1m3SAL.setDebugLevel(0);
 	Log.Info("Main: Initializing MTMount SAL");
 	SAL_MTMount mtMountSAL = SAL_MTMount();
 	Log.Info("Main: Creating publisher");
 	M1M3SSPublisher publisher = M1M3SSPublisher(&m1m3SAL);
 	Log.Info("Main: Creating fpga");
+/* Add this back for simulator capable version
+	FPGA realFPGA = FPGA();
+	SimulatedFPGA simulatedFPGA = SimulatedFPGA(&publisher, &tmaElevation, &tmaAzimuth, settingReader.loadForceActuatorApplicationSettings());
+	IFPGA* fpga;
+	if (SIMULATOR == 0) {
+		Log.Info("Main: Creating FPGA");
+		fpga = &realFPGA;
+	}
+	else {
+		Log.Info("Main: Creating simulated FPGA");
+		fpga = &simulatedFPGA;
+	}
+ */
 	FPGA fpga = FPGA();
 	if (fpga.isErrorCode(fpga.initialize())) {
 		Log.Fatal("Main: Error initializing FPGA");

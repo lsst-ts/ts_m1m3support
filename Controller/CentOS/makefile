@@ -9,6 +9,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include src/LSST/M1M3/SS/Utility/subdir.mk
+-include src/LSST/M1M3/SS/Include/subdir.mk
 -include src/LSST/M1M3/SS/Threads/subdir.mk
 -include src/LSST/M1M3/SS/Subscriber/subdir.mk
 -include src/LSST/M1M3/SS/States/subdir.mk
@@ -23,7 +24,6 @@ RM := rm -rf
 -include src/LSST/M1M3/SS/Model/subdir.mk
 -include src/LSST/M1M3/SS/Modbus/subdir.mk
 -include src/LSST/M1M3/SS/Logging/subdir.mk
--include src/LSST/M1M3/SS/Include/subdir.mk
 -include src/LSST/M1M3/SS/Inclinometer/subdir.mk
 -include src/LSST/M1M3/SS/ILC/subdir.mk
 -include src/LSST/M1M3/SS/Gyro/subdir.mk
@@ -75,7 +75,7 @@ all: ts_M1M3Support
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.7/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

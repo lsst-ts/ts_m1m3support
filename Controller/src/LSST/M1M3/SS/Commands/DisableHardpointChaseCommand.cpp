@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_DisableHardpointChaseC* data) {
+DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointChaseC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.HardpointActuator = data->HardpointActuator;
+	this->data.hardpointActuator = data->hardpointActuator;
 }
 
 bool DisableHardpointChaseCommand::validate() {
-	if (!(this->data.HardpointActuator >= 1 && this->data.HardpointActuator <= 6)) {
+	if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
 		this->publisher->logCommandRejectionWarning("DisableHardpointChase", "The field HardpointActuator must be in range [1, 6].");
 	}
-	return this->data.HardpointActuator >= 1 && this->data.HardpointActuator <= 6;
+	return this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6;
 }
 
 void DisableHardpointChaseCommand::execute() {
@@ -32,15 +32,15 @@ void DisableHardpointChaseCommand::execute() {
 }
 
 void DisableHardpointChaseCommand::ackInProgress() {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommanddisableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableHardpointChaseCommand::ackComplete() {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommanddisableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void DisableHardpointChaseCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandDisableHardpointChase(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommanddisableHardpointChase(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -8,10 +8,10 @@
 #ifndef M1M3SSSUBSCRIBER_H_
 #define M1M3SSSUBSCRIBER_H_
 
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
 
-class SAL_m1m3;
+class SAL_MTM1M3;
 class SAL_MTMount;
 
 namespace LSST {
@@ -26,57 +26,57 @@ class Command;
  */
 class M1M3SSSubscriber {
 private:
-	SAL_m1m3* m1m3SAL;
+	SAL_MTM1M3* m1m3SAL;
 	SAL_MTMount* mtMountSAL;
 	CommandFactory* commandFactory;
-	m1m3_command_StartC startData;
-	m1m3_command_EnableC enableData;
-	m1m3_command_DisableC disableData;
-	m1m3_command_StandbyC standbyData;
-	m1m3_command_ShutdownC shutdownData;
-	m1m3_command_TurnAirOnC turnAirOnData;
-	m1m3_command_TurnAirOffC turnAirOffData;
-	m1m3_command_ApplyOffsetForcesC applyOffsetForcesData;
-	m1m3_command_ClearOffsetForcesC clearOffsetForcesData;
-	m1m3_command_RaiseM1M3C raiseM1M3Data;
-	m1m3_command_LowerM1M3C lowerM1M3Data;
-	m1m3_command_ApplyAberrationForcesByBendingModesC applyAberrationForcesByBendingModesData;
-	m1m3_command_ApplyAberrationForcesC applyAberrationForcesData;
-	m1m3_command_ClearAberrationForcesC clearAberrationForcesData;
-	m1m3_command_ApplyActiveOpticForcesByBendingModesC applyActiveOpticForcesByBendingModesData;
-	m1m3_command_ApplyActiveOpticForcesC applyActiveOpticForcesData;
-	m1m3_command_ClearActiveOpticForcesC clearActiveOpticForcesData;
-	m1m3_command_EnterEngineeringC enterEngineeringData;
-	m1m3_command_ExitEngineeringC exitEngineeringData;
-	m1m3_command_TestAirC testAirData;
-	m1m3_command_TestHardpointC testHardpointData;
-	m1m3_command_TestForceActuatorC testForceActuatorData;
-	m1m3_command_MoveHardpointActuatorsC moveHardpointActuatorsData;
-	m1m3_command_EnableHardpointChaseC enableHardpointChaseData;
-	m1m3_command_DisableHardpointChaseC disableHardpointChaseData;
-	m1m3_command_AbortRaiseM1M3C abortRaiseM1M3Data;
-	m1m3_command_TranslateM1M3C translateM1M3Data;
-	m1m3_command_StopHardpointMotionC stopHardpointMotionData;
-	m1m3_command_PositionM1M3C positionM1M3Data;
-	m1m3_command_TurnLightsOnC turnLightsOnData;
-	m1m3_command_TurnLightsOffC turnLightsOffData;
-	m1m3_command_TurnPowerOnC turnPowerOnData;
-	m1m3_command_TurnPowerOffC turnPowerOffData;
-	m1m3_command_EnableHardpointCorrectionsC enableHardpointCorrectionsData;
-	m1m3_command_DisableHardpointCorrectionsC disableHardpointCorrectionsData;
-	m1m3_command_RunMirrorForceProfileC runMirrorForceProfileData;
-	m1m3_command_AbortProfileC abortProfileData;
-	m1m3_command_ApplyOffsetForcesByMirrorForceC applyOffsetForcesByMirrorForceData;
-	m1m3_command_UpdatePIDC updatePIDData;
-	m1m3_command_ResetPIDC resetPIDData;
-	m1m3_command_ProgramILCC programILCData;
-	m1m3_command_ModbusTransmitC modbusTransmitData;
+	MTM1M3_command_startC startData;
+	MTM1M3_command_enableC enableData;
+	MTM1M3_command_disableC disableData;
+	MTM1M3_command_standbyC standbyData;
+	MTM1M3_command_shutdownC shutdownData;
+	MTM1M3_command_turnAirOnC turnAirOnData;
+	MTM1M3_command_turnAirOffC turnAirOffData;
+	MTM1M3_command_applyOffsetForcesC applyOffsetForcesData;
+	MTM1M3_command_clearOffsetForcesC clearOffsetForcesData;
+	MTM1M3_command_raiseM1M3C raiseM1M3Data;
+	MTM1M3_command_lowerM1M3C lowerM1M3Data;
+	MTM1M3_command_applyAberrationForcesByBendingModesC applyAberrationForcesByBendingModesData;
+	MTM1M3_command_applyAberrationForcesC applyAberrationForcesData;
+	MTM1M3_command_clearAberrationForcesC clearAberrationForcesData;
+	MTM1M3_command_applyActiveOpticForcesByBendingModesC applyActiveOpticForcesByBendingModesData;
+	MTM1M3_command_applyActiveOpticForcesC applyActiveOpticForcesData;
+	MTM1M3_command_clearActiveOpticForcesC clearActiveOpticForcesData;
+	MTM1M3_command_enterEngineeringC enterEngineeringData;
+	MTM1M3_command_exitEngineeringC exitEngineeringData;
+	MTM1M3_command_testAirC testAirData;
+	MTM1M3_command_testHardpointC testHardpointData;
+	MTM1M3_command_testForceActuatorC testForceActuatorData;
+	MTM1M3_command_moveHardpointActuatorsC moveHardpointActuatorsData;
+	MTM1M3_command_enableHardpointChaseC enableHardpointChaseData;
+	MTM1M3_command_disableHardpointChaseC disableHardpointChaseData;
+	MTM1M3_command_abortRaiseM1M3C abortRaiseM1M3Data;
+	MTM1M3_command_translateM1M3C translateM1M3Data;
+	MTM1M3_command_stopHardpointMotionC stopHardpointMotionData;
+	MTM1M3_command_positionM1M3C positionM1M3Data;
+	MTM1M3_command_turnLightsOnC turnLightsOnData;
+	MTM1M3_command_turnLightsOffC turnLightsOffData;
+	MTM1M3_command_turnPowerOnC turnPowerOnData;
+	MTM1M3_command_turnPowerOffC turnPowerOffData;
+	MTM1M3_command_enableHardpointCorrectionsC enableHardpointCorrectionsData;
+	MTM1M3_command_disableHardpointCorrectionsC disableHardpointCorrectionsData;
+	MTM1M3_command_runMirrorForceProfileC runMirrorForceProfileData;
+	MTM1M3_command_abortProfileC abortProfileData;
+	MTM1M3_command_applyOffsetForcesByMirrorForceC applyOffsetForcesByMirrorForceData;
+	MTM1M3_command_updatePIDC updatePIDData;
+	MTM1M3_command_resetPIDC resetPIDData;
+	MTM1M3_command_programILCC programILCData;
+	MTM1M3_command_modbusTransmitC modbusTransmitData;
 	MTMount_AzC tmaAzimuth;
 	MTMount_AltC tmaElevation;
 
 
 public:
-	M1M3SSSubscriber(SAL_m1m3* m1m3SAL, SAL_MTMount* mtMountSAL, CommandFactory* commandFactory);
+	M1M3SSSubscriber(SAL_MTM1M3* m1m3SAL, SAL_MTMount* mtMountSAL, CommandFactory* commandFactory);
 
 	Command* tryAcceptCommandStart();
 	Command* tryAcceptCommandEnable();

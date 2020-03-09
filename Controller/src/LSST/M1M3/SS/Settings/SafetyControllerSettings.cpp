@@ -92,6 +92,16 @@ void SafetyControllerSettings::load(const std::string &filename) {
 	this->ILC.FaultOnCommunicationTimeout = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/FaultOnCommunicationTimeout").node().child_value()) != 0;
 	this->ILC.CommunicationTimeoutCountThreshold = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/CommunicationTimeoutCountThreshold").node().child_value());
 	this->ILC.CommunicationTimeoutPeriod = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/CommunicationTimeoutPeriod").node().child_value());
+	this->ILC.FaultOnForceActuatorFollowingError = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/FaultOnForceActuatorFollowingError").node().child_value()) != 0;
+	this->ILC.ForceActuatorFollowingErrorCountThreshold = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/ForceActuatorFollowingErrorCountThreshold").node().child_value());
+	this->ILC.ForceActuatorFollowingErrorPeriod = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/ForceActuatorFollowingErrorPeriod").node().child_value());
+	this->ILC.FaultOnHardpointActuatorLoadCellError = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/FaultOnHardpointActuatorLoadCellError").node().child_value()) != 0;
+	this->ILC.FaultOnHardpointActuatorMeasuredForce = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/FaultOnHardpointActuatorMeasuredForce").node().child_value()) != 0;
+	this->ILC.HardpointActuatorMeasuredForceCountThreshold = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/HardpointActuatorMeasuredForceCountThreshold").node().child_value());
+	this->ILC.HardpointActuatorMeasuredForcePeriod = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/HardpointActuatorMeasuredForcePeriod").node().child_value());
+	this->ILC.FaultOnAirPressure = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/FaultOnAirPressure").node().child_value()) != 0;
+	this->ILC.AirPressureCountThreshold = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/AirPressureCountThreshold").node().child_value());
+	this->ILC.AirPressurePeriod = boost::lexical_cast<int32_t>(doc.select_node("//SafetyControllerSettings/ILCSettings/AirPressurePeriod").node().child_value());
 }
 
 } /* namespace SS */

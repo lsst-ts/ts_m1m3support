@@ -9,7 +9,7 @@
 #define FREEZESENSORBUSLIST_H_
 
 #include <BusList.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -17,7 +17,7 @@ namespace SS {
 
 class FreezeSensorBusList: public BusList {
 private:
-	m1m3_OuterLoopDataC* outerLoopData;
+	MTM1M3_outerLoopDataC* outerLoopData;
 
 	int32_t freezeSensorCommandIndex[5];
 	int32_t faStatusCommandIndex[5];
@@ -26,7 +26,7 @@ private:
 	int32_t lvdtSampleClock;
 
 public:
-	FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_OuterLoopDataC* outerLoopData);
+	FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData);
 
 	void update();
 };

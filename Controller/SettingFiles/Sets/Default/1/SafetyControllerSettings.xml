@@ -90,5 +90,15 @@
         <FaultOnCommunicationTimeout>1</FaultOnCommunicationTimeout>
         <CommunicationTimeoutCountThreshold>3</CommunicationTimeoutCountThreshold>
         <CommunicationTimeoutPeriod>5</CommunicationTimeoutPeriod>
+        <FaultOnForceActuatorFollowingError>1</FaultOnForceActuatorFollowingError>
+        <ForceActuatorFollowingErrorCountThreshold>50</ForceActuatorFollowingErrorCountThreshold>
+        <ForceActuatorFollowingErrorPeriod>50</ForceActuatorFollowingErrorPeriod>
+        <FaultOnHardpointActuatorLoadCellError>1</FaultOnHardpointActuatorLoadCellError>
+        <FaultOnHardpointActuatorMeasuredForce>1</FaultOnHardpointActuatorMeasuredForce>
+        <HardpointActuatorMeasuredForceCountThreshold>50</HardpointActuatorMeasuredForceCountThreshold>
+        <HardpointActuatorMeasuredForcePeriod>50</HardpointActuatorMeasuredForcePeriod>
+        <FaultOnAirPressure>1</FaultOnAirPressure>
+        <AirPressureCountThreshold>50</AirPressureCountThreshold>
+        <AirPressurePeriod>50</AirPressurePeriod>
     </ILCSettings>
 </SafetyControllerSettings>

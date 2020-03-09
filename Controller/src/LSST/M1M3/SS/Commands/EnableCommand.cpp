@@ -13,18 +13,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, m1m3_command_EnableC* data) {
+EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableC* data) {
 	this->context = context;
 	this->publisher = publisher;
 	this->commandID = commandID;
-	this->data.Enable = data->Enable;
+	this->data.value = data->value;
 }
 
 bool EnableCommand::validate() {
-	if (!this->data.Enable) {
+	if (!this->data.value) {
 		this->publisher->logCommandRejectionWarning("Enable", "The field Enable is not TRUE.");
 	}
-	return this->data.Enable;
+	return this->data.value;
 }
 
 void EnableCommand::execute() {
@@ -32,15 +32,15 @@ void EnableCommand::execute() {
 }
 
 void EnableCommand::ackInProgress() {
-	this->publisher->ackCommandEnable(this->commandID, ACK_INPROGRESS, "In-Progress");
+	this->publisher->ackCommandenable(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableCommand::ackComplete() {
-	this->publisher->ackCommandEnable(this->commandID, ACK_COMPLETE, "Completed");
+	this->publisher->ackCommandenable(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnableCommand::ackFailed(std::string reason) {
-	this->publisher->ackCommandEnable(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+	this->publisher->ackCommandenable(this->commandID, ACK_COMPLETE, "Failed: " + reason);
 }
 
 } /* namespace SS */

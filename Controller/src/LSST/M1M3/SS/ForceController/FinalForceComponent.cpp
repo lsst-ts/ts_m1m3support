@@ -74,39 +74,39 @@ void FinalForceComponent::applyForcesByComponents() {
 	for(int i = 0; i < 156; ++i) {
 		if (i < 12) {
 			this->xTarget[i] =
-					(this->appliedAccelerationForces->XForces[i] +
-					this->appliedAzimuthForces->XForces[i] +
-					this->appliedBalanceForces->XForces[i] +
-					this->appliedElevationForces->XForces[i] +
-					this->appliedOffsetForces->XForces[i] +
-					this->appliedStaticForces->XForces[i] +
-					this->appliedThermalForces->XForces[i] +
-					this->appliedVelocityForces->XForces[i]);
+					(this->appliedAccelerationForces->xForces[i] +
+					this->appliedAzimuthForces->xForces[i] +
+					this->appliedBalanceForces->xForces[i] +
+					this->appliedElevationForces->xForces[i] +
+					this->appliedOffsetForces->xForces[i] +
+					this->appliedStaticForces->xForces[i] +
+					this->appliedThermalForces->xForces[i] +
+					this->appliedVelocityForces->xForces[i]);
 		}
 
 		if (i < 100) {
 			this->yTarget[i] =
-					(this->appliedAccelerationForces->YForces[i] +
-					this->appliedAzimuthForces->YForces[i] +
-					this->appliedBalanceForces->YForces[i] +
-					this->appliedElevationForces->YForces[i] +
-					this->appliedOffsetForces->YForces[i] +
-					this->appliedStaticForces->YForces[i] +
-					this->appliedThermalForces->YForces[i] +
-					this->appliedVelocityForces->YForces[i]);
+					(this->appliedAccelerationForces->yForces[i] +
+					this->appliedAzimuthForces->yForces[i] +
+					this->appliedBalanceForces->yForces[i] +
+					this->appliedElevationForces->yForces[i] +
+					this->appliedOffsetForces->yForces[i] +
+					this->appliedStaticForces->yForces[i] +
+					this->appliedThermalForces->yForces[i] +
+					this->appliedVelocityForces->yForces[i]);
 		}
 
 		this->zTarget[i] =
-				(this->appliedAberrationForces->ZForces[i] +
-				this->appliedAccelerationForces->ZForces[i] +
-				this->appliedActiveOpticForces->ZForces[i] +
-				this->appliedAzimuthForces->ZForces[i] +
-				this->appliedBalanceForces->ZForces[i] +
-				this->appliedElevationForces->ZForces[i] +
-				this->appliedOffsetForces->ZForces[i] +
-				this->appliedStaticForces->ZForces[i] +
-				this->appliedThermalForces->ZForces[i] +
-				this->appliedVelocityForces->ZForces[i]);
+				(this->appliedAberrationForces->zForces[i] +
+				this->appliedAccelerationForces->zForces[i] +
+				this->appliedActiveOpticForces->zForces[i] +
+				this->appliedAzimuthForces->zForces[i] +
+				this->appliedBalanceForces->zForces[i] +
+				this->appliedElevationForces->zForces[i] +
+				this->appliedOffsetForces->zForces[i] +
+				this->appliedStaticForces->zForces[i] +
+				this->appliedThermalForces->zForces[i] +
+				this->appliedVelocityForces->zForces[i]);
 	}
 }
 
@@ -119,55 +119,55 @@ void FinalForceComponent::postUpdateActions() {
 
 	bool notInRange = false;
 	bool rejectionRequired = false;
-	this->appliedForces->Timestamp = this->publisher->getTimestamp();
-	this->rejectedForces->Timestamp = this->appliedForces->Timestamp;
+	this->appliedForces->timestamp = this->publisher->getTimestamp();
+	this->rejectedForces->timestamp = this->appliedForces->timestamp;
 	for(int zIndex = 0; zIndex < 156; ++zIndex) {
 		int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
 		int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
-		this->forceSetpointWarning->ForceWarning[zIndex] = false;
+		this->forceSetpointWarning->forceWarning[zIndex] = false;
 
 		if (xIndex != -1) {
 			float xLowFault = this->forceActuatorSettings->ForceLimitXTable[xIndex].LowFault;
 			float xHighFault = this->forceActuatorSettings->ForceLimitXTable[xIndex].HighFault;
-			this->rejectedForces->XForces[xIndex] = this->xCurrent[xIndex];
-			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedForces->XForces[xIndex], this->appliedForces->XForces + xIndex);
-			this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] || notInRange;
+			this->rejectedForces->xForces[xIndex] = this->xCurrent[xIndex];
+			notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedForces->xForces[xIndex], this->appliedForces->xForces + xIndex);
+			this->forceSetpointWarning->forceWarning[zIndex] = this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
 		}
 
 		if (yIndex != -1) {
 			float yLowFault = this->forceActuatorSettings->ForceLimitYTable[yIndex].LowFault;
 			float yHighFault = this->forceActuatorSettings->ForceLimitYTable[yIndex].HighFault;
-			this->rejectedForces->YForces[yIndex] = this->yCurrent[yIndex];
-			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedForces->YForces[yIndex], this->appliedForces->YForces + yIndex);
-			this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] || notInRange;
+			this->rejectedForces->yForces[yIndex] = this->yCurrent[yIndex];
+			notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedForces->yForces[yIndex], this->appliedForces->yForces + yIndex);
+			this->forceSetpointWarning->forceWarning[zIndex] = this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
 		}
 
 		float zLowFault = this->forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
 		float zHighFault = this->forceActuatorSettings->ForceLimitZTable[zIndex].HighFault;
-		this->rejectedForces->ZForces[zIndex] = this->zCurrent[zIndex];
-		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->ZForces[zIndex], this->appliedForces->ZForces + zIndex);
-		this->forceSetpointWarning->ForceWarning[zIndex] = this->forceSetpointWarning->ForceWarning[zIndex] || notInRange;
-		rejectionRequired = rejectionRequired || this->forceSetpointWarning->ForceWarning[zIndex];
+		this->rejectedForces->zForces[zIndex] = this->zCurrent[zIndex];
+		notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->zForces[zIndex], this->appliedForces->zForces + zIndex);
+		this->forceSetpointWarning->forceWarning[zIndex] = this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
+		rejectionRequired = rejectionRequired || this->forceSetpointWarning->forceWarning[zIndex];
 	}
 
-	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedForces->XForces, this->appliedForces->YForces, this->appliedForces->ZForces);
-	this->appliedForces->Fx = fm.Fx;
-	this->appliedForces->Fy = fm.Fy;
-	this->appliedForces->Fz = fm.Fz;
-	this->appliedForces->Mx = fm.Mx;
-	this->appliedForces->My = fm.My;
-	this->appliedForces->Mz = fm.Mz;
-	this->appliedForces->ForceMagnitude = fm.ForceMagnitude;
+	ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedForces->xForces, this->appliedForces->yForces, this->appliedForces->zForces);
+	this->appliedForces->fx = fm.Fx;
+	this->appliedForces->fy = fm.Fy;
+	this->appliedForces->fz = fm.Fz;
+	this->appliedForces->mx = fm.Mx;
+	this->appliedForces->my = fm.My;
+	this->appliedForces->mz = fm.Mz;
+	this->appliedForces->forceMagnitude = fm.ForceMagnitude;
 
-	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedForces->XForces, this->rejectedForces->YForces, this->rejectedForces->ZForces);
-	this->rejectedForces->Fx = fm.Fx;
-	this->rejectedForces->Fy = fm.Fy;
-	this->rejectedForces->Fz = fm.Fz;
-	this->rejectedForces->Mx = fm.Mx;
-	this->rejectedForces->My = fm.My;
-	this->rejectedForces->Mz = fm.Mz;
-	this->rejectedForces->ForceMagnitude = fm.ForceMagnitude;
+	fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->rejectedForces->xForces, this->rejectedForces->yForces, this->rejectedForces->zForces);
+	this->rejectedForces->fx = fm.Fx;
+	this->rejectedForces->fy = fm.Fy;
+	this->rejectedForces->fz = fm.Fz;
+	this->rejectedForces->mx = fm.Mx;
+	this->rejectedForces->my = fm.My;
+	this->rejectedForces->mz = fm.Mz;
+	this->rejectedForces->forceMagnitude = fm.ForceMagnitude;
 
 	this->safetyController->forceControllerNotifyForceClipping(rejectionRequired);
 

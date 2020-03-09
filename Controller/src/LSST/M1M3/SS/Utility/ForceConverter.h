@@ -22,8 +22,8 @@ class ForceActuatorSettings;
 
 class ForceConverter {
 private:
-	static double const sqrt2 = 1.4142135623730950488016887242097;
-	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
+	static double constexpr sqrt2 = 1.4142135623730950488016887242097;
+	static double constexpr reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
 public:
 	static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {

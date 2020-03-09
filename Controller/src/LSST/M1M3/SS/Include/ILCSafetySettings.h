@@ -16,6 +16,16 @@ struct ILCSafetySettings {
 	bool FaultOnCommunicationTimeout;
 	int CommunicationTimeoutCountThreshold;
 	int CommunicationTimeoutPeriod;
+	bool FaultOnForceActuatorFollowingError;
+	int ForceActuatorFollowingErrorCountThreshold;
+	int ForceActuatorFollowingErrorPeriod;
+	bool FaultOnHardpointActuatorLoadCellError;
+	bool FaultOnHardpointActuatorMeasuredForce;
+	int HardpointActuatorMeasuredForceCountThreshold;
+	int HardpointActuatorMeasuredForcePeriod;
+	bool FaultOnAirPressure;
+	int AirPressureCountThreshold;
+	int AirPressurePeriod;
 };
 
 } /* namespace SS */

@@ -8,14 +8,14 @@
 #include <SetADCChanneOffsetAndSensitivityBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <Log.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, m1m3_logevent_ForceActuatorInfoC* forceInfo, m1m3_logevent_HardpointActuatorInfoC* hardpointInfo)
+SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo)
  : BusList(subnetData, ilcMessageFactory) {
 	Log.Debug("SetADCChanneOffsetAndSensitivityBusList: SetADCChanneOffsetAndSensitivityBusList()");
 	this->forceInfo = forceInfo;

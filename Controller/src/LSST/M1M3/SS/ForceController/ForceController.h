@@ -11,7 +11,7 @@
 #include <DataTypes.h>
 #include <ForceActuatorNeighbors.h>
 #include <ForcesAndMoments.h>
-#include <SAL_m1m3C.h>
+#include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
 #include <DistributedForces.h>
 #include <PID.h>
@@ -40,8 +40,8 @@ class PIDSettings;
 
 class ForceController {
 private:
-	static double const sqrt2 = 1.4142135623730950488016887242097;
-	static double const reciprocalSqrt2 = 0.70710678118654752440084436210485;
+	static double constexpr sqrt2 = 1.4142135623730950488016887242097;
+	static double constexpr reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
 	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
 	ForceActuatorSettings* forceActuatorSettings;
@@ -61,22 +61,22 @@ private:
 	VelocityForceComponent velocityForceComponent;
 	FinalForceComponent finalForceComponent;
 
-	m1m3_logevent_AppliedCylinderForcesC* appliedCylinderForces;
-	m1m3_logevent_AppliedForcesC* appliedForces;
-	m1m3_logevent_ForceActuatorStateC* forceActuatorState;
-	m1m3_logevent_ForceSetpointWarningC* forceSetpointWarning;
-	m1m3_logevent_RejectedCylinderForcesC* rejectedCylinderForces;
-	m1m3_logevent_RejectedForcesC* rejectedForces;
+	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
+	MTM1M3_logevent_appliedForcesC* appliedForces;
+	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+	MTM1M3_logevent_rejectedCylinderForcesC* rejectedCylinderForces;
+	MTM1M3_logevent_rejectedForcesC* rejectedForces;
 
-	m1m3_logevent_ForceActuatorInfoC* forceActuatorInfo;
-	m1m3_ForceActuatorDataC* forceActuatorData;
+	MTM1M3_logevent_forceActuatorInfoC* forceActuatorInfo;
+	MTM1M3_forceActuatorDataC* forceActuatorData;
 
-	m1m3_InclinometerDataC* inclinometerData;
-	m1m3_PIDDataC* pidData;
-	m1m3_logevent_PIDInfoC* pidInfo;
-	m1m3_HardpointActuatorDataC* hardpointActuatorData;
-	m1m3_AccelerometerDataC* accelerometerData;
-	m1m3_GyroDataC* gyroData;
+	MTM1M3_inclinometerDataC* inclinometerData;
+	MTM1M3_pidDataC* pidData;
+	MTM1M3_logevent_pidInfoC* pidInfo;
+	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
+	MTM1M3_accelerometerDataC* accelerometerData;
+	MTM1M3_gyroDataC* gyroData;
 
 	MTMount_AzC tmaAzimuthData;
 	MTMount_AltC tmaElevationData;
