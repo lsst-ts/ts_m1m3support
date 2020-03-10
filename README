@@ -1,0 +1,67 @@
+This is the LSST M1M3 support software.
+
+NOTE : the information regarding the SIMULATOR is not applicable. 
+The portion of code initalizing simulation mode needs to be back ported from 
+the develop branch.
+
+Directories:
+./Bitfiles - Contains the bit files that are loaded onto the FPGA's
+./builds - Contains utility applications for creating look up tables
+./Controller - Contains the C++ code for the ts_M1M3Support application
+./FPGA - Contains the LabVIEW code for the FPGAs
+./Tests - Contains python tests for the ts_M1M3Support application
+./Utilities - Contains the code for the utility applications
+
+Setting up the build environment:
+- Clone ts_m1m3support to a directory (this directory will be referred to as the base directory)
+- Extract ./ts_m1m3support/boost_1_65_1.7z to the base directory
+- Clone ts_sal (master) to the base directory
+- Clone ts_opensplice (master) to the base directory
+- Clone ts_xml (develop) to the base directory
+- Update ./ts_sal/setup.env to point to the correct directories, make sure to add ./ts_sal/test/lib to the LD_LIBRARY_PATH
+- source ./ts_sal/setup.env
+- Navigate to ./ts_sal/test
+- cp ../../ts_xml/sal_interfaces/*.xml .
+- cp ../../ts_xml/sal_interfaces/MTM1M3/*.xml .
+- cp ../../ts_xml/sal_interfaces/MTMount/*.xml .
+- salgenerator MTM1M3 validate
+- salgenerator MTM1M3 html
+- salgenerator MTM1M3 sal cpp
+- salgenerator MTM1M3 sal python
+- salgenerator MTM1M3 lib
+- salgenerator MTMount validate
+- salgenerator MTMount html
+- salgenerator MTMount sal cpp
+- salgenerator MTMount sal python
+- salgenerator MTMount lib
+
+Compiling for deployment:
+- Open ./ts_m1m3support/Controller/src/ts_M1M3Support.cpp
+- Set #define SIMULATOR to 0
+- source ./ts_sal/setup.env
+- Navigate to ./ts_m1m3support/Controller/CentOS
+- make clean
+- make
+
+Compiling for simulation:
+- Open ./ts_m1m3support/Controller/src/ts_M1M3Support.cpp
+- Set #define SIMULATOR to 1
+- source ./ts_sal/setup.env
+- Navigate to ./ts_m1m3support/Controller/CentOS
+- make clean
+- make
+
+Setting up the runtime environment:
+- mkdir /usr/ts_M1M3Support
+- chmod a+rxw /usr/ts_M1M3Support
+- cp -r ./ts_m1m3support/Controller/SettingFiles /usr/ts_M1M3Support
+
+Running in deployment:
+- source ./ts_sal/setup.env;ulimit -u unlimited;./ts_m1m3support/Controller/CentOS/ts_M1M3Support;
+
+Running in simulation:
+- source ./ts_sal/setup.env;./ts_m1m3support/Controller/CentOS/ts_M1M3Support
+- When issuing the start command specify the settings as Simulator
+- The simulator does a pretty good job giving realistic data, you will notice some data isn't populated, it may be added at a later date, it may not
+- When issuing state change commands make sure to specify "value" as 1 otherwise the command will be rejected
+
