@@ -37,8 +37,8 @@ DAA and SAA are equipped with force cells. Difference between target and
 measured force is measured and excessive values leads to cell panic.
 
 Hardpoints are equipped with pneumatic driven break-away mechanism. Any
-excessive force will break hardpoint, and once detected with control software,
-mirror goes into panic. Mirror is still safe with any number of loose
+excessive force will make hardpoint break away, and once detected with control
+software, mirror goes into panic. Mirror is still safe with any number of loose
 hardpoints, resting on SAA and DAA.
 
 Any miss-communication, unexpected behaviour of either hardpoint, SAA or DAA
