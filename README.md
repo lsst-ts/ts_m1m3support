@@ -1,6 +1,6 @@
 # M1M3 Support Software
 
-Contains realtime software which runs on NI cRIO for M1M3 suppport.
+Contains realtime software which runs on NI cRIO for M1M3 support.
 [FPGA](https://github.com/lsst-ts/ts_m1m3supportFPGA) handling low-level
 communication, and 
 [LabView EUI (GUI panel)](https://github.com/lsst-ts/ts_m1m3supportEUI) running
@@ -20,7 +20,7 @@ There are secondary goals operating DAAs and SAAs:
 * apply small forces to keep mirror in optically ideal shape
 
 DAAs and SAAs are also equipped with booster valves. Those are activated to
-counteract forces experiented during telescope slews.
+counteract forces experienced during telescope slews.
 
 ## Safety
 
@@ -70,8 +70,8 @@ bool FirmwareUpdate::ClearFaults(int subnet, int address) {
 ```
 
 The command is processed inside FPGA, put into command queue for modbus port,
-send over modbus to ICL, response is read, added to response queue, added to
-command response queue and finally readout.
+send over modbus to Inner Loop Controllers (ILC), response is read, added to
+response queue, added to command response queue and finally readout.
 
 ## Directories
 
