@@ -132,7 +132,7 @@ cp -r ./ts_m1m3support/Controller/SettingFiles /usr/ts_M1M3Support
 
 ## Running in deployment
 
-``bash
+```bash
 source ./ts_sal/setup.env;ulimit -u unlimited;./ts_m1m3support/Controller/CentOS/ts_M1M3Support;
 ```
 
