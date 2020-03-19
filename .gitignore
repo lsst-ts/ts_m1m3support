@@ -25,10 +25,3 @@
 # Metadata
 *.aliases
 *.lvlps
-
-# Other
-*.stackdump
-
-/RemoteSystemsTemp*
-/Windows-Release
-/.metadata/

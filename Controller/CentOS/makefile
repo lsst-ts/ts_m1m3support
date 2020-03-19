@@ -1,10 +1,17 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
+ifndef VERBOSE
+  co := @
+endif
 
 -include ../makefile.init
 
-RM := rm -rf
+# define to "" to produce verbose output
+
+C := gcc -O3 -Wall
+CPP := g++ -std=c++11 -pedantic -O3 -Wall
+LSSTROOT := /home/petr
+
+BOOST_CPPFLAGS := -I/usr/include/boost169
+SAL_CPPFLAGS := -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/sys -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/dcps/C++/SACPP -I$(LSSTROOT)/ts_sal/test/MTM1M3/cpp/src -I$(LSSTROOT)/ts_sal/test/MTM1M3/cpp -I$(LSSTROOT)ts_sal/test/MTMount/cpp/src -I$(LSSTROOT)/ts_sal/include -I$(LSSTROOT)/ts_sal/test/MTMount/cpp -I$(LSSTROOT)/ts_sal/test -I$(LSSTROOT)/ts_sal/test/include
 
 # All of the sources participating in the build are defined here
 -include sources.mk
@@ -66,7 +73,15 @@ endif
 
 -include ../makefile.defs
 
+.PHONY: all clean dependents
+
+OBJS = $(patsubst %.c,%.o,$(C_SRCS)) $(patsubst %.cpp,%.o,$(CPP_SRCS))
+
+C_DEPS = $(patsubst %.c,%.d,$(C_SRCS))
+CPP_DEPS = $(patsubst %.cpp,%.d,$(CPP_SRCS))
+
 # Add inputs and outputs from these tool invocations to the build variables 
+#
 
 # All Target
 all: ts_M1M3Support
@@ -74,16 +89,12 @@ all: ts_M1M3Support
 # Tool invocations
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: Cross G++ Linker'
-	g++ -L"../../../ts_sal/test" -L"../../../ts_sal/test/lib" -L"../../../ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib" -L"../../../ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"$(LSSTROOT)/ts_sal/test" -L"$(LSSTROOT)/ts_sal/test/lib" -L"$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib" -L"$(LSSTROOT)/ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(C_DEPS)$(CPP_DEPS) ts_M1M3Support
-	-@echo ' '
-
-.PHONY: all clean dependents
+	$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS), echo '[RM ] ${file}'; $(RM) -r $(file);)
 
 -include ../makefile.targets
