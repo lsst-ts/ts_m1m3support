@@ -119,7 +119,7 @@ cd $BASE
 source ts_sal/setup.env
 cd ts_m1m3support/Controller/CentOS
 make clean
-make -DSIMULATOR
+make SIMULATOR=1
 ```
 
 ## Setting up the runtime environment

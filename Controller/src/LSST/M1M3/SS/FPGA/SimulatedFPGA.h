@@ -1,16 +1,11 @@
-/*
- * SimulatedFPGA.h
- *
- *  Created on: Nov 2, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LSST_M1M3_SS_FPGA_SIMULATEDFPGA_H_
 #define LSST_M1M3_SS_FPGA_SIMULATEDFPGA_H_
 
 #include <IFPGA.h>
 #include <queue>
 #include <ILCSubnetData.h>
+
+#include <SAL_MTMountC.h>
 
 #define RND_CNT 50
 
@@ -28,65 +23,68 @@ namespace SS {
 class M1M3SSPublisher;
 class ForceActuatorApplicationSettings;
 
-class SimulatedFPGA: public IFPGA {
-private:
-	M1M3SSPublisher* publisher;
-	SupportFPGAData supportFPGAData;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	MTMount_AltC* tmaElevation;
-	MTMount_AzC* tmaAzimuth;
-	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
-//	MTM1M3_logevent_appliedHardpointStepsC* appliedHardpointSteps;
-	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
-	MTM1M3_outerLoopDataC* outerLoopData;
-	int lastRequest;
-	std::queue<uint16_t> u8Response;
-	std::queue<uint16_t> u16Response;
-	std::queue<uint16_t> subnetAResponse;
-	std::queue<uint16_t> subnetBResponse;
-	std::queue<uint16_t> subnetCResponse;
-	std::queue<uint16_t> subnetDResponse;
-	std::queue<uint16_t> subnetEResponse;
-
-	std::queue<uint16_t> crcVector;
-	void writeModbus(std::queue<uint16_t>* response, uint16_t data);
-	void writeModbusCRC(std::queue<uint16_t>* response);
-	uint16_t readModbus(uint16_t data);
-
-	float rnd[RND_CNT];
-	int rndIndex;
-	float getRnd();
-
+/**
+ * FPGA simulator. Simulates MODBUS communication with devices.
+ */
+class SimulatedFPGA : public IFPGA {
 public:
-	SimulatedFPGA(M1M3SSPublisher* publisher, MTMount_AltC* tmaElevation, MTMount_AzC* tmaAzimuth, ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    SimulatedFPGA();
 
-	SupportFPGAData* getSupportFPGAData() { return &this->supportFPGAData; }
+    void setPublisher(M1M3SSPublisher* publisher);
+    void setForceActuatorApplicationSettings(
+            ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-	int32_t initialize();
-	int32_t open();
-	int32_t close();
-	int32_t finalize();
+    SupportFPGAData* getSupportFPGAData() override { return &this->supportFPGAData; }
 
-	bool isErrorCode(int32_t status);
+    int32_t initialize() override;
+    int32_t open() override;
+    int32_t close() override;
+    int32_t finalize() override;
 
-	int32_t waitForOuterLoopClock(int32_t timeout);
-	int32_t ackOuterLoopClock();
+    bool isErrorCode(int32_t status) override;
 
-	int32_t waitForPPS(int32_t timeout);
-	int32_t ackPPS();
+    int32_t waitForOuterLoopClock(int32_t timeout) override;
+    int32_t ackOuterLoopClock() override;
 
-	int32_t waitForModbusIRQ(int32_t subnet, int32_t timeout);
-	int32_t ackModbusIRQ(int32_t subnet);
+    int32_t waitForPPS(int32_t timeout) override;
+    int32_t ackPPS() override;
 
-	void pullTelemetry();
+    int32_t waitForModbusIRQ(int32_t subnet, int32_t timeout) override;
+    int32_t ackModbusIRQ(int32_t subnet) override;
 
-	int32_t writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs);
-	int32_t writeCommandFIFO(uint16_t data, int32_t timeoutInMs);
-	int32_t writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs);
-	int32_t writeRequestFIFO(uint16_t data, int32_t timeoutInMs);
-	int32_t writeTimestampFIFO(uint64_t timestamp);
-	int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs);
-	int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs);
+    void pullTelemetry() override;
+
+    int32_t writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
+    int32_t writeCommandFIFO(uint16_t data, int32_t timeoutInMs) override;
+    int32_t writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
+    int32_t writeRequestFIFO(uint16_t data, int32_t timeoutInMs) override;
+    int32_t writeTimestampFIFO(uint64_t timestamp) override;
+    int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) override;
+    int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
+
+private:
+    M1M3SSPublisher* publisher;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    SupportFPGAData supportFPGAData;
+    MTMount_AltC tmaElevation;
+    MTMount_AzC tmaAzimuth;
+    int lastRequest;
+    std::queue<uint16_t> u8Response;
+    std::queue<uint16_t> u16Response;
+    std::queue<uint16_t> subnetAResponse;
+    std::queue<uint16_t> subnetBResponse;
+    std::queue<uint16_t> subnetCResponse;
+    std::queue<uint16_t> subnetDResponse;
+    std::queue<uint16_t> subnetEResponse;
+
+    std::queue<uint16_t> crcVector;
+    void writeModbus(std::queue<uint16_t>* response, uint16_t data);
+    void writeModbusCRC(std::queue<uint16_t>* response);
+    uint16_t readModbus(uint16_t data);
+
+    float rnd[RND_CNT];
+    int rndIndex;
+    float getRnd();
 };
 
 } /* namespace SS */

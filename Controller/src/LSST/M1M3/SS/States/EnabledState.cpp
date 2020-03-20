@@ -40,7 +40,7 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 	ilc->triggerModbus();
 	model->getDigitalInputOutput()->tryToggleHeartbeat();
 	usleep(1000);
-	model->getFPGA()->pullTelemetry();
+        IFPGA::get().pullTelemetry();
 	model->getAccelerometer()->processData();
 	model->getDigitalInputOutput()->processData();
 	model->getDisplacement()->processData();
@@ -65,7 +65,7 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
 	Log.Trace("EnabledState: storeTMAAzimuthSample()");
-	model->getForceController()->updateAzimuthForces((float)command->getData()->Azimuth_Angle_Actual);
+	model->getForceController()->updateAzimuthForces((float)command->getData()->position);
 	return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

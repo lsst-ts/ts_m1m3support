@@ -540,8 +540,7 @@ void M1M3SSPublisher::logErrorCode() {
 }
 
 void M1M3SSPublisher::tryLogErrorCode() {
-	if (this->eventErrorCode.errorCode != this->previousEventErrorCode.errorCode ||
-		this->eventErrorCode.detailedErrorCode != this->previousEventErrorCode.detailedErrorCode) {
+	if (this->eventErrorCode.errorCode != this->previousEventErrorCode.errorCode) {
 		this->logErrorCode();
 	}
 }

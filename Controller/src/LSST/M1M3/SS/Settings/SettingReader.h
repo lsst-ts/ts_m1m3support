@@ -1,10 +1,3 @@
-/*
- * SettingReader.h
- *
- *  Created on: Oct 3, 2017
- *      Author: ccontaxis
- */
-
 #ifndef SETTINGREADER_H_
 #define SETTINGREADER_H_
 
@@ -31,6 +24,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Reads M1M3 support system configuration.
+ */
 class SettingReader {
 private:
 	AliasApplicationSettings aliasApplicationSettings;
@@ -57,6 +53,13 @@ private:
 	std::string currentVersion;
 
 public:
+        /**
+         * Construct new SettingReader. Verifies that basePath and setsPath
+         * directories exists and are readable, log and exit when not.
+         *
+         * @param basePath
+         * @param setsPath
+         */
 	SettingReader(std::string basePath, std::string setsPath);
 
 	void configure(std::string settingsToApply);

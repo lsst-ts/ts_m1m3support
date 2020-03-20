@@ -1,14 +1,9 @@
-/*
- * PowerController.h
- *
- *  Created on: Dec 7, 2017
- *      Author: ccontaxis
- */
-
 #ifndef POWERCONTROLLER_H_
 #define POWERCONTROLLER_H_
 
 #include <DataTypes.h>
+#include <IFPGA.h>
+#include <IExpansionFPGA.h>
 
 struct MTM1M3_powerSupplyDataC;
 struct MTM1M3_logevent_powerStatusC;
@@ -19,9 +14,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class FPGA;
 struct SupportFPGAData;
-class ExpansionFPGA;
 class M1M3SSPublisher;
 class SafetyController;
 
@@ -30,9 +23,6 @@ class SafetyController;
  */
 class PowerController {
 private:
-	FPGA* fpga;
-	SupportFPGAData* fpgaData;
-	ExpansionFPGA* expansionFPGA;
 	M1M3SSPublisher* publisher;
 	SafetyController* safetyController;
 
@@ -46,12 +36,10 @@ private:
 public:
 	/*!
 	 * Instantiates the power controller.
-	 * @param[in] fpga The fpga.
-	 * @param[in] expansionFPGA The expansion fpga.
 	 * @param[in] publisher The publisher.
 	 * @param[in] safetyController The safety controller.
 	 */
-	PowerController(FPGA* fpga, ExpansionFPGA* expansionFPGA, M1M3SSPublisher* publisher, SafetyController* safetyController);
+	PowerController(M1M3SSPublisher* publisher, SafetyController* safetyController);
 
 	/*!
 	 * Processes currently available power data and publish it.

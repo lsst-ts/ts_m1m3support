@@ -7,13 +7,13 @@
 
 #include <ILC.h>
 #include <M1M3SSPublisher.h>
-#include <FPGA.h>
 #include <DataTypes.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <iostream>
 #include <unistd.h>
+#include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <Timestamp.h>
 #include <cstring>
@@ -33,7 +33,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController)
+ILC::ILC(M1M3SSPublisher* publisher, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController)
  : subnetData(forceActuatorApplicationSettings, forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
    ilcMessageFactory(ilcApplicationSettings),
    responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData, safetyController),
@@ -55,10 +55,9 @@ ILC::ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionCon
    busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
    busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
    busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(), publisher->getForceActuatorData(), publisher->getHardpointActuatorData(), publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
-   firmwareUpdate(fpga, &this->subnetData) {
+   firmwareUpdate(&this->subnetData) {
 	Log.Debug("ILC: ILC()");
 	this->publisher = publisher;
-	this->fpga = fpga;
 	this->safetyController = safetyController;
 	this->hardpointActuatorSettings = hardpointActuatorSettings;
 	this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
@@ -106,7 +105,7 @@ void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataL
 	buffer.setLength(buffer.getIndex());
 
 	this->responseParser.grabNextResponse();
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+        IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	this->waitForSubnet(subnet, 5000);
 	this->read(subnet);
 }
@@ -218,13 +217,13 @@ void ILC::writeControlListBuffer() {
 
 void ILC::triggerModbus() {
 	Log.Debug("ILC: triggerModbus()");
-	this->fpga->writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
+	IFPGA::get().writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
 }
 
 void ILC::waitForSubnet(int32_t subnet, int32_t timeout) {
 	Log.Debug("ILC: waitForSubnet(%d, %d)", subnet, timeout);
-	this->fpga->waitForModbusIRQ(subnet, timeout);
-	this->fpga->ackModbusIRQ(subnet);
+	IFPGA::get().waitForModbusIRQ(subnet, timeout);
+	IFPGA::get().ackModbusIRQ(subnet);
 }
 
 void ILC::waitForAllSubnets(int32_t timeout) {
@@ -241,13 +240,13 @@ void ILC::read(uint8_t subnet) {
 	// TODO: The expectation is if someone asks to read something they expect something to be there
 	// so if something isn't there should be a warning (timeout on responses)
 	this->u16Buffer[0] = this->subnetToRxAddress(subnet);
-	this->fpga->writeRequestFIFO(this->u16Buffer, 1, 0);
+	IFPGA::get().writeRequestFIFO(this->u16Buffer, 1, 0);
 	this->rxBuffer.setIndex(0);
-	this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
+	IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
 	uint16_t reportedLength = this->rxBuffer.readLength();
 	if (reportedLength > 0) {
 		this->rxBuffer.setIndex(0);
-		if (this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
+		if (IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
 			Log.Warn("ILC: Failed to read all %d words", reportedLength);
 		}
 		this->rxBuffer.setLength(reportedLength);
@@ -267,13 +266,13 @@ void ILC::readAll() {
 void ILC::flush(uint8_t subnet) {
 	Log.Debug("ILC: flush(%d)", (int32_t)subnet);
 	this->u16Buffer[0] = this->subnetToRxAddress(subnet);
-	this->fpga->writeRequestFIFO(this->u16Buffer, 1, 0);
+	IFPGA::get().writeRequestFIFO(this->u16Buffer, 1, 0);
 	this->rxBuffer.setIndex(0);
-	this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
+	IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
 	uint16_t reportedLength = this->rxBuffer.readLength();
 	if (reportedLength > 0) {
 		this->rxBuffer.setIndex(0);
-		if (this->fpga->readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
+		if (IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
 			Log.Warn("ILC: Failed to read all %d words", reportedLength);
 		}
 		this->rxBuffer.setLength(reportedLength);
@@ -440,7 +439,7 @@ uint8_t ILC::subnetToTxAddress(uint8_t subnet) {
 }
 
 void ILC::writeBusList(IBusList* busList) {
-	this->fpga->writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
+	IFPGA::get().writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
 	this->responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(), busList->getExpectedHMResponses());
 }
 
