@@ -1,41 +1,33 @@
-/*
- * ExpansionFPGA.h
- *
- *  Created on: Jan 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef EXPANSIONFPGA_H_
 #define EXPANSIONFPGA_H_
 
 #include <NiFpga.h>
 
+#include <IExpansionFPGA.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ExpansionFPGAApplicationSettings;
-
-class ExpansionFPGA {
-private:
-	ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;
-	uint32_t session;
-	size_t remaining;
-
+class ExpansionFPGA : public IExpansionFPGA {
 public:
-	ExpansionFPGA(ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings);
+    ExpansionFPGA();
 
-	int32_t initialize();
-	int32_t open();
-	int32_t close();
-	int32_t finalize();
+    int32_t initialize() override;
+    int32_t open() override;
+    int32_t close() override;
+    int32_t finalize() override;
 
-	bool isErrorCode(int32_t status);
+    bool isErrorCode(int32_t status) override;
 
-	int32_t sample();
+    int32_t sample() override;
 
-	int32_t readSlot1(float* data);
-	int32_t readSlot2(uint32_t* data);
+    int32_t readSlot1(float* data) override;
+    int32_t readSlot2(uint32_t* data) override;
+
+private:
+    uint32_t session;
+    size_t remaining;
 };
 
 } /* namespace SS */

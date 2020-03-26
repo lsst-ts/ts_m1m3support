@@ -22,7 +22,11 @@ namespace SS {
 
 void ForceActuatorApplicationSettings::load(const std::string &filename) {
 	pugi::xml_document doc;
-	doc.load_file(filename.c_str());
+        pugi::xml_parse_result res = doc.load_file(filename.c_str());
+        if (res.status != pugi::xml_parse_status::status_ok) {
+            Log.Error("ForceActuatorApplicationSettings::load loading %s: %s", filename.c_str(), res.description());
+            return;
+        }
 	this->loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath").node().child_value());
 	this->XIndexToZIndex.clear();
 	this->YIndexToZIndex.clear();
@@ -75,6 +79,10 @@ void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string 
 	std::ifstream inputStream(filename.c_str());
 	std::string lineText;
 	int32_t lineNumber = 0;
+        if (!inputStream.good()) {
+            Log.Error("Cannot read %s", filename.c_str());
+            exit(2);
+        }
 	while(std::getline(inputStream, lineText)) {
 		boost::trim_right(lineText);
 		if (lineNumber != 0 && !lineText.empty()) {

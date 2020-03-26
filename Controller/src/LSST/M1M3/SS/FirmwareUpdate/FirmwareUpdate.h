@@ -16,7 +16,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class FPGA;
 class ModbusBuffer;
 class ILCSubnetData;
 
@@ -52,12 +51,11 @@ private:
 	std::vector<char> appData;
 	std::vector<IntelHexLine> hexData;
 	ILCApplicationStats appStats;
-	FPGA* fpga;
 	ILCSubnetData* subnetData;
 	int desiredState;
 
 public:
-	FirmwareUpdate(FPGA* fpga, ILCSubnetData* subnetData);
+	FirmwareUpdate(ILCSubnetData* subnetData);
 
 	bool Program(int actuatorId, std::string filePath);
 

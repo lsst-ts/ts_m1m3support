@@ -403,18 +403,18 @@ Command* M1M3SSSubscriber::tryAcceptCommandModbusTransmit() {
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
-	int32_t result = this->mtMountSAL->getSample_Az(&this->tmaAzimuth);
+/*	int32_t result = this->mtMountSAL->getSample_Az(&this->tmaAzimuth);
 	if (result == 0) {
 		return this->commandFactory->create(Commands::TMAAzimuthSampleCommand, &this->tmaAzimuth, 0);
-	}
+	}*/
 	return 0;
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAElevation() {
-	int32_t result = this->mtMountSAL->getSample_Alt(&this->tmaElevation);
+/*	int32_t result = this->mtMountSAL->getSample_Alt(&this->tmaElevation);
 	if (result == 0) {
 		return this->commandFactory->create(Commands::TMAElevationSampleCommand, &this->tmaElevation, 0);
-	}
+	}*/
 	return 0;
 }
 

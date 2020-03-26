@@ -15,9 +15,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExpansionFPGA::ExpansionFPGA(ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings) {
+ExpansionFPGA::ExpansionFPGA() {
 	Log.Debug("ExpansionFPGA: ExpansionFPGA()");
-	this->expansionFPGAApplicationSettings = expansionFPGAApplicationSettings;
 	this->session = 0;
 	this->remaining = 0;
 }

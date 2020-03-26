@@ -215,7 +215,7 @@ void ForceController::updateAppliedForces() {
 	}
 	if (this->elevationForceComponent.isEnabled() || this->elevationForceComponent.isDisabling()) {
 		if (this->elevationForceComponent.isEnabled()) {
-			double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->inclinometerAngle : this->tmaElevationData.Elevation_Angle_Actual;
+			double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->inclinometerAngle : this->tmaElevationData.position;
 			// Convert elevation angle to zenith angle (used by matrix)
 			elevationAngle = 90.0 - elevationAngle;
 			this->elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);

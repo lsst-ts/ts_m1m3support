@@ -1,10 +1,3 @@
-/*
- * Gyro.h
- *
- *  Created on: Jan 4, 2018
- *      Author: ccontaxis
- */
-
 #ifndef GYRO_H_
 #define GYRO_H_
 
@@ -19,7 +12,6 @@ namespace M1M3 {
 namespace SS {
 
 class GyroSettings;
-class FPGA;
 struct SupportFPGAData;
 class M1M3SSPublisher;
 
@@ -29,8 +21,6 @@ class M1M3SSPublisher;
 class Gyro {
 private:
 	GyroSettings* gyroSettings;
-	FPGA* fpga;
-	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 
 	MTM1M3_gyroDataC* gyroData;
@@ -46,10 +36,9 @@ public:
 	/*!
 	 * Instantiates the gyro sensor.
 	 * @param[in] gyroSettings The gyro settings.
-	 * @param[in] fpga The fpga.
 	 * @param[in] publisher The publisher.
 	 */
-	Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher);
+	Gyro(GyroSettings* gyroSettings, M1M3SSPublisher* publisher);
 
 	/*!
 	 * Executes a built in test.

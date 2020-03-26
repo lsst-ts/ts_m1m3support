@@ -7,6 +7,7 @@
 
 #include <Accelerometer.h>
 #include <AccelerometerSettings.h>
+#include <IFPGA.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
 #include <Timestamp.h>
@@ -19,10 +20,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher) {
+Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings, M1M3SSPublisher* publisher) {
 	Log.Debug("Accelerometer: Accelerometer()");
 	this->accelerometerSettings = accelerometerSettings;
-	this->fpgaData = fpgaData;
 	this->publisher = publisher;
 
 	this->accelerometerData = this->publisher->getAccelerometerData();
@@ -36,15 +36,16 @@ void Accelerometer::processData() {
 	// TODO: Handle no data available
 	// TODO: Handle acceleration limits, push to safety controller
 	Log.Trace("Accelerometer: processData()");
-	this->accelerometerData->timestamp = Timestamp::fromFPGA(this->fpgaData->AccelerometerSampleTimestamp);
-	this->accelerometerData->rawAccelerometer[0] = this->fpgaData->AccelerometerRaw1;
-	this->accelerometerData->rawAccelerometer[1] = this->fpgaData->AccelerometerRaw2;
-	this->accelerometerData->rawAccelerometer[2] = this->fpgaData->AccelerometerRaw3;
-	this->accelerometerData->rawAccelerometer[3] = this->fpgaData->AccelerometerRaw4;
-	this->accelerometerData->rawAccelerometer[4] = this->fpgaData->AccelerometerRaw5;
-	this->accelerometerData->rawAccelerometer[5] = this->fpgaData->AccelerometerRaw6;
-	this->accelerometerData->rawAccelerometer[6] = this->fpgaData->AccelerometerRaw7;
-	this->accelerometerData->rawAccelerometer[7] = this->fpgaData->AccelerometerRaw8;
+        SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
+	this->accelerometerData->timestamp = Timestamp::fromFPGA(fpgaData->AccelerometerSampleTimestamp);
+	this->accelerometerData->rawAccelerometer[0] = fpgaData->AccelerometerRaw1;
+	this->accelerometerData->rawAccelerometer[1] = fpgaData->AccelerometerRaw2;
+	this->accelerometerData->rawAccelerometer[2] = fpgaData->AccelerometerRaw3;
+	this->accelerometerData->rawAccelerometer[3] = fpgaData->AccelerometerRaw4;
+	this->accelerometerData->rawAccelerometer[4] = fpgaData->AccelerometerRaw5;
+	this->accelerometerData->rawAccelerometer[5] = fpgaData->AccelerometerRaw6;
+	this->accelerometerData->rawAccelerometer[6] = fpgaData->AccelerometerRaw7;
+	this->accelerometerData->rawAccelerometer[7] = fpgaData->AccelerometerRaw8;
 	this->accelerometerData->accelerometer[0] = ((this->accelerometerData->rawAccelerometer[0] - this->accelerometerSettings->AccelerometerBias[0]) * this->accelerometerSettings->AccelerometerSensitivity[0]) * this->accelerometerSettings->AccelerometerScalars[0] + this->accelerometerSettings->AccelerometerOffsets[0];
 	this->accelerometerData->accelerometer[1] = ((this->accelerometerData->rawAccelerometer[1] - this->accelerometerSettings->AccelerometerBias[1]) * this->accelerometerSettings->AccelerometerSensitivity[1]) * this->accelerometerSettings->AccelerometerScalars[1] + this->accelerometerSettings->AccelerometerOffsets[1];
 	this->accelerometerData->accelerometer[2] = ((this->accelerometerData->rawAccelerometer[2] - this->accelerometerSettings->AccelerometerBias[2]) * this->accelerometerSettings->AccelerometerSensitivity[2]) * this->accelerometerSettings->AccelerometerScalars[2] + this->accelerometerSettings->AccelerometerOffsets[2];

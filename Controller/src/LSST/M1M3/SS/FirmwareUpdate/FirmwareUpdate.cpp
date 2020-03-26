@@ -12,7 +12,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <CRC.h>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <ModbusBuffer.h>
 #include <DataTypes.h>
 #include <FPGAAddresses.h>
@@ -23,8 +23,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FirmwareUpdate::FirmwareUpdate(FPGA* fpga, ILCSubnetData* subnetData) {
-	this->fpga = fpga;
+FirmwareUpdate::FirmwareUpdate(ILCSubnetData* subnetData) {
 	this->subnetData = subnetData;
 	this->desiredState = 255;
 }
@@ -283,7 +282,7 @@ bool FirmwareUpdate::EnterFirmwareUpdate(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(100000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+        IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
@@ -299,7 +298,7 @@ bool FirmwareUpdate::ClearFaults(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(10000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
@@ -312,7 +311,7 @@ bool FirmwareUpdate::EraseILCApplication(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
@@ -348,7 +347,7 @@ bool FirmwareUpdate::WriteApplicationPage(int subnet, int address, uint16_t star
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
@@ -365,7 +364,7 @@ bool FirmwareUpdate::WriteApplicationStats(int subnet, int address, ILCApplicati
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
@@ -378,7 +377,7 @@ bool FirmwareUpdate::WriteVerifyApplication(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
@@ -394,7 +393,7 @@ bool FirmwareUpdate::RestartApplication(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(500000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
@@ -410,22 +409,22 @@ bool FirmwareUpdate::EnterDisable(int subnet, int address) {
 	buffer.writeEndOfFrame();
 	buffer.writeWaitForRx(10000);
 	this->EndBuffer(&buffer);
-	this->fpga->writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
+	IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
 	return this->ProcessResponse(&buffer, subnet);
 }
 
 bool FirmwareUpdate::ProcessResponse(ModbusBuffer* buffer, int subnet) {
-	this->fpga->writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
-	this->fpga->waitForModbusIRQ(subnet, 2000);
-	this->fpga->ackModbusIRQ(subnet);
+	IFPGA::get().writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
+	IFPGA::get().waitForModbusIRQ(subnet, 2000);
+	IFPGA::get().ackModbusIRQ(subnet);
 	buffer->setIndex(0);
 	buffer->setLength(0);
-	this->fpga->writeRequestFIFO(this->SubnetRxToFPGAAddress(subnet), 0);
-	this->fpga->readU16ResponseFIFO(buffer->getBuffer(), 1, 2000);
+	IFPGA::get().writeRequestFIFO(this->SubnetRxToFPGAAddress(subnet), 0);
+	IFPGA::get().readU16ResponseFIFO(buffer->getBuffer(), 1, 2000);
 	uint16_t reportedLength = buffer->readLength();
 	if (reportedLength > 0) {
 		buffer->setIndex(0);
-		if (this->fpga->readU16ResponseFIFO(buffer->getBuffer(), reportedLength, 2000)) {
+		if (IFPGA::get().readU16ResponseFIFO(buffer->getBuffer(), reportedLength, 2000)) {
 			Log.Error("FirmwareUpdate: Failed to read all %d words", reportedLength);
 			return false;
 		}

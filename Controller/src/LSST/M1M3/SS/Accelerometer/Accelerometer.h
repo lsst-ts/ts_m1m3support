@@ -16,7 +16,6 @@ namespace M1M3 {
 namespace SS {
 
 class AccelerometerSettings;
-struct SupportFPGAData;
 class M1M3SSPublisher;
 
 /*!
@@ -25,7 +24,6 @@ class M1M3SSPublisher;
 class Accelerometer {
 private:
 	AccelerometerSettings* accelerometerSettings;
-	SupportFPGAData* fpgaData;
 	M1M3SSPublisher* publisher;
 
 	MTM1M3_accelerometerDataC* accelerometerData;
@@ -35,10 +33,9 @@ public:
 	/*!
 	 * Instantiates the accelerometer.
 	 * @param[in] accelerometerSettings The accelerometer settings.
-	 * @param[in] fpgaData The fpga data.
 	 * @param[in] publisher The publisher.
 	 */
-	Accelerometer(AccelerometerSettings* accelerometerSettings, SupportFPGAData* fpgaData, M1M3SSPublisher* publisher);
+	Accelerometer(AccelerometerSettings* accelerometerSettings, M1M3SSPublisher* publisher);
 
 	/*!
 	 * Processes currently available accelerometer data and publish it.
