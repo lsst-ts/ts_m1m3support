@@ -1,10 +1,3 @@
-/*
- * IFPGA.h
- *
- *  Created on: Nov 2, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LSST_M1M3_SS_FPGA_IFPGA_H_
 #define LSST_M1M3_SS_FPGA_IFPGA_H_
 
@@ -15,38 +8,44 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Abstract interface for FPGA. Both real FPGA and simulated class implements
+ * this. Singleton.
+ */
 class IFPGA {
 public:
-	IFPGA();
-	virtual ~IFPGA();
+    IFPGA(){};
+    virtual ~IFPGA(){};
 
-	virtual SupportFPGAData* getSupportFPGAData();
+    static IFPGA& get();
 
-	virtual int32_t initialize();
-	virtual int32_t open();
-	virtual int32_t close();
-	virtual int32_t finalize();
+    virtual SupportFPGAData* getSupportFPGAData() = 0;
 
-	virtual bool isErrorCode(int32_t status);
+    virtual int32_t initialize() = 0;
+    virtual int32_t open() = 0;
+    virtual int32_t close() = 0;
+    virtual int32_t finalize() = 0;
 
-	virtual int32_t waitForOuterLoopClock(int32_t timeout);
-	virtual int32_t ackOuterLoopClock();
+    virtual bool isErrorCode(int32_t status) = 0;
 
-	virtual int32_t waitForPPS(int32_t timeout);
-	virtual int32_t ackPPS();
+    virtual int32_t waitForOuterLoopClock(int32_t timeout) = 0;
+    virtual int32_t ackOuterLoopClock() = 0;
 
-	virtual int32_t waitForModbusIRQ(int32_t subnet, int32_t timeout);
-	virtual int32_t ackModbusIRQ(int32_t subnet);
+    virtual int32_t waitForPPS(int32_t timeout) = 0;
+    virtual int32_t ackPPS() = 0;
 
-	virtual void pullTelemetry();
+    virtual int32_t waitForModbusIRQ(int32_t subnet, int32_t timeout) = 0;
+    virtual int32_t ackModbusIRQ(int32_t subnet) = 0;
 
-	virtual int32_t writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs);
-	virtual int32_t writeCommandFIFO(uint16_t data, int32_t timeoutInMs);
-	virtual int32_t writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs);
-	virtual int32_t writeRequestFIFO(uint16_t data, int32_t timeoutInMs);
-	virtual int32_t writeTimestampFIFO(uint64_t timestamp);
-	virtual int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs);
-	virtual int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs);
+    virtual void pullTelemetry() = 0;
+
+    virtual int32_t writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
+    virtual int32_t writeCommandFIFO(uint16_t data, int32_t timeoutInMs) = 0;
+    virtual int32_t writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
+    virtual int32_t writeRequestFIFO(uint16_t data, int32_t timeoutInMs) = 0;
+    virtual int32_t writeTimestampFIFO(uint64_t timestamp) = 0;
+    virtual int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) = 0;
+    virtual int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
 };
 
 } /* namespace SS */

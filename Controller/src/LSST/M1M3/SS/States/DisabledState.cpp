@@ -37,7 +37,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 	ilc->triggerModbus();
 	model->getDigitalInputOutput()->tryToggleHeartbeat();
 	usleep(1000);
-	model->getFPGA()->pullTelemetry();
+        IFPGA::get().pullTelemetry();
 	model->getAccelerometer()->processData();
 	model->getDigitalInputOutput()->processData();
 	model->getDisplacement()->processData();

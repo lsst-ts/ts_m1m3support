@@ -1,10 +1,3 @@
-/*
- * SimulatedExpansionFPGA.h
- *
- *  Created on: Nov 1, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
 #define LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
 
@@ -17,25 +10,26 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SimulatedExpansionFPGA: public IExpansionFPGA {
-private:
-	float rnd[RND_CNT];
-	int rndIndex;
-	float getRnd();
+class SimulatedExpansionFPGA : public IExpansionFPGA {
 public:
-	SimulatedExpansionFPGA();
+    SimulatedExpansionFPGA();
 
-	int32_t initialize();
-	int32_t open();
-	int32_t close();
-	int32_t finalize();
+    int32_t initialize() override;
+    int32_t open() override;
+    int32_t close() override;
+    int32_t finalize() override;
 
-	bool isErrorCode(int32_t status);
+    bool isErrorCode(int32_t status) override;
 
-	int32_t sample();
+    int32_t sample() override;
 
-	int32_t readSlot1(float* data);
-	int32_t readSlot2(uint32_t* data);
+    int32_t readSlot1(float* data) override;
+    int32_t readSlot2(uint32_t* data) override;
+
+private:
+    float rnd[RND_CNT];
+    int rndIndex;
+    float getRnd();
 };
 
 } /* namespace SS */

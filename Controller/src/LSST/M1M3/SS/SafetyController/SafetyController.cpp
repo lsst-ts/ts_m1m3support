@@ -20,9 +20,7 @@ SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerS
 	this->publisher = publisher;
 	this->safetyControllerSettings = safetyControllerSettings;
 	this->errorCodeData = this->publisher->getEventErrorCode();
-	this->errorCodeData->timestamp = this->publisher->getTimestamp();
 	this->errorCodeData->errorCode = FaultCodes::NoFault;
-	this->errorCodeData->detailedErrorCode = FaultCodes::NoFault;
 	this->publisher->logErrorCode();
 	for(int i = 0; i < this->safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
 		this->ilcCommunicationTimeoutData.push_back(0);
@@ -46,8 +44,6 @@ SafetyController::SafetyController(M1M3SSPublisher* publisher, SafetyControllerS
 
 void SafetyController::clearErrorCode() {
 	Log.Info("SafetyController: clearErrorCode()");
-	this->errorCodeData->timestamp = this->publisher->getTimestamp();
-	this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
 	this->errorCodeData->errorCode= FaultCodes::NoFault;
 	this->publisher->logErrorCode();
 }
@@ -165,22 +161,10 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
 }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
-	if (this->errorCodeData->detailedErrorCode != FaultCodes::NoFault) {
-		this->publisher->logErrorCode();
-		this->errorCodeData->detailedErrorCode= FaultCodes::NoFault;
-		this->errorCodeData->errorCode= FaultCodes::NoFault;
-		return States::LoweringFaultState;
-	}
 	return preferredNextState;
 }
 
 void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {
-	bool faultConditionExists = enabledFlag && conditionFlag;
-	if (faultConditionExists && this->errorCodeData->detailedErrorCode == FaultCodes::NoFault) {
-		this->errorCodeData->timestamp = this->publisher->getTimestamp();
-		this->errorCodeData->detailedErrorCode = (int32_t)faultCode;
-		this->errorCodeData->errorCode = (int32_t)(((int64_t)faultCode) >> 32);
-	}
 }
 
 } /* namespace SS */

@@ -6,9 +6,13 @@ endif
 
 # define to "" to produce verbose output
 
-C := gcc -O3 -Wall
-CPP := g++ -std=c++11 -pedantic -O3 -Wall
+C := gcc -O3 -Wall -g
+CPP := g++ -std=c++11 -pedantic -O3 -Wall -g
 LSSTROOT := /home/petr
+
+ifdef SIMULATOR
+  CPP += -DSIMULATOR
+endif
 
 BOOST_CPPFLAGS := -I/usr/include/boost169
 SAL_CPPFLAGS := -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/sys -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/dcps/C++/SACPP -I$(LSSTROOT)/ts_sal/test/MTM1M3/cpp/src -I$(LSSTROOT)/ts_sal/test/MTM1M3/cpp -I$(LSSTROOT)ts_sal/test/MTMount/cpp/src -I$(LSSTROOT)/ts_sal/include -I$(LSSTROOT)/ts_sal/test/MTMount/cpp -I$(LSSTROOT)/ts_sal/test -I$(LSSTROOT)/ts_sal/test/include
@@ -95,6 +99,6 @@ ts_M1M3Support: $(OBJS) $(USER_OBJS)
 
 # Other Targets
 clean:
-	$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS), echo '[RM ] ${file}'; $(RM) -r $(file);)
+	$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) ts_M1M3Support, echo '[RM ] ${file}'; $(RM) -r $(file);)
 
 -include ../makefile.targets

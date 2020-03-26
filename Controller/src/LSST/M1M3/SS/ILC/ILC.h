@@ -36,7 +36,6 @@ namespace M1M3 {
 namespace SS {
 
 class M1M3SSPublisher;
-class FPGA;
 class IBusList;
 class ILCApplicationSettings;
 class ForceActuatorApplicationSettings;
@@ -53,7 +52,6 @@ class SafetyController;
 class ILC {
 private:
 	M1M3SSPublisher* publisher;
-	FPGA* fpga;
 	SafetyController* safetyController;
 	ILCSubnetData subnetData;
 	ILCMessageFactory ilcMessageFactory;
@@ -96,7 +94,7 @@ private:
 	int32_t controlListToggle;
 
 public:
-	ILC(M1M3SSPublisher* publisher, FPGA* fpga, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController);
+	ILC(M1M3SSPublisher* publisher, PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings, HardpointActuatorSettings* hardpointActuatorSettings, HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings, SafetyController* safetyController);
 	virtual ~ILC();
 
 	void programILC(int32_t actuatorId, std::string filePath);

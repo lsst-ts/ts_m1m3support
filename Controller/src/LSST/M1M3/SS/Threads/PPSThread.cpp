@@ -16,8 +16,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PPSThread::PPSThread(FPGA* fpga, M1M3SSPublisher* publisher) {
-	this->fpga = fpga;
+PPSThread::PPSThread(M1M3SSPublisher* publisher) {
 	this->publisher = publisher;
 	this->keepRunning = true;
 }
@@ -25,11 +24,11 @@ PPSThread::PPSThread(FPGA* fpga, M1M3SSPublisher* publisher) {
 void PPSThread::run() {
 	Log.Info("PPSThread: Start");
 	while(this->keepRunning) {
-		if (this->fpga->waitForPPS(2500) == 0) {
-			this->fpga->ackPPS();
+		if (IFPGA::get().waitForPPS(2500) == 0) {
+			IFPGA::get().ackPPS();
 			uint64_t timestamp = Timestamp::toFPGA(this->publisher->getTimestamp());
 			if (this->keepRunning) {
-				this->fpga->writeTimestampFIFO(timestamp);
+				IFPGA::get().writeTimestampFIFO(timestamp);
 			}
 		}
 		else {

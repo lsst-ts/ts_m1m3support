@@ -7,7 +7,7 @@
 
 #include <Gyro.h>
 #include <GyroSettings.h>
-#include <FPGA.h>
+#include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
@@ -23,11 +23,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Gyro::Gyro(GyroSettings* gyroSettings, FPGA* fpga, M1M3SSPublisher* publisher) {
+Gyro::Gyro(GyroSettings* gyroSettings, M1M3SSPublisher* publisher) {
 	Log.Debug("Gyro: Gyro()");
 	this->gyroSettings = gyroSettings;
-	this->fpga = fpga;
-	this->fpgaData = this->fpga->getSupportFPGAData();
 	this->publisher = publisher;
 
 	this->gyroData = this->publisher->getGyroData();
@@ -100,20 +98,21 @@ void Gyro::processData() {
 	// TODO: Handle limits, push to safety controller
 	Log.Trace("Gyro: processData()");
 	bool tryLogWarning = false;
-	if (this->fpgaData->GyroErrorTimestamp > this->lastErrorTimestamp) {
-		this->lastErrorTimestamp = this->fpgaData->GyroErrorTimestamp;
+        SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
+	if (fpgaData->GyroErrorTimestamp > this->lastErrorTimestamp) {
+		this->lastErrorTimestamp = fpgaData->GyroErrorTimestamp;
 		this->errorCleared = false;
-		this->gyroWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroErrorTimestamp);
-		this->gyroWarning->invalidHeaderWarning = this->fpgaData->GyroErrorCode == 1;
-		this->gyroWarning->crcMismatchWarning = this->fpgaData->GyroErrorCode == 2 || this->fpgaData->GyroErrorCode == 4;
-		this->gyroWarning->incompleteFrameWarning = this->fpgaData->GyroErrorCode == 3;
+		this->gyroWarning->timestamp = Timestamp::fromFPGA(fpgaData->GyroErrorTimestamp);
+		this->gyroWarning->invalidHeaderWarning = fpgaData->GyroErrorCode == 1;
+		this->gyroWarning->crcMismatchWarning = fpgaData->GyroErrorCode == 2 || fpgaData->GyroErrorCode == 4;
+		this->gyroWarning->incompleteFrameWarning = fpgaData->GyroErrorCode == 3;
 		// TODO: Add Checksum Error
 		tryLogWarning = true;
 	}
-	if (this->fpgaData->GyroBITTimestamp > this->lastBITTimestamp) {
-		this->lastBITTimestamp = this->fpgaData->GyroBITTimestamp;
-		this->gyroWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroBITTimestamp);
-		uint8_t word0 = this->fpgaData->GyroBIT0;
+	if (fpgaData->GyroBITTimestamp > this->lastBITTimestamp) {
+		this->lastBITTimestamp = fpgaData->GyroBITTimestamp;
+		this->gyroWarning->timestamp = Timestamp::fromFPGA(fpgaData->GyroBITTimestamp);
+		uint8_t word0 = fpgaData->GyroBIT0;
 		this->gyroWarning->gyroXSLDWarning = (word0 & 0x01) == 0;
 		this->gyroWarning->gyroXMODDACWarning = (word0 & 0x02) == 0;
 		this->gyroWarning->gyroXPhaseWarning = (word0 & 0x04) == 0;
@@ -121,21 +120,21 @@ void Gyro::processData() {
 		this->gyroWarning->gyroYSLDWarning = (word0 & 0x10) == 0;
 		this->gyroWarning->gyroYMODDACWarning = (word0 & 0x20) == 0;
 		this->gyroWarning->gyroYPhaseWarning = (word0 & 0x40) == 0;
-		uint8_t word1 = this->fpgaData->GyroBIT1;
+		uint8_t word1 = fpgaData->GyroBIT1;
 		this->gyroWarning->gyroYFlashWarning = (word1 & 0x01) == 0;
 		this->gyroWarning->gyroZSLDWarning = (word1 & 0x02) == 0;
 		this->gyroWarning->gyroZMODDACWarning = (word1 & 0x04) == 0;
 		this->gyroWarning->gyroZPhaseWarning = (word1 & 0x08) == 0;
-		uint8_t word2 = this->fpgaData->GyroBIT2;
+		uint8_t word2 = fpgaData->GyroBIT2;
 		this->gyroWarning->gyroXSLDTemperatureStatusWarning = (word2 & 0x04) == 0;
 		this->gyroWarning->gyroYSLDTemperatureStatusWarning = (word2 & 0x10) == 0;
 		this->gyroWarning->gyroZSLDTemperatureStatusWarning = (word2 & 0x40) == 0;
-		uint8_t word3 = this->fpgaData->GyroBIT3;
+		uint8_t word3 = fpgaData->GyroBIT3;
 		this->gyroWarning->gcbTemperatureStatusWarning = (word3 & 0x08) == 0;
 		this->gyroWarning->temperatureStatusWarning = (word3 & 0x10) == 0;
 		this->gyroWarning->gcbDSPSPIFlashStatusWarning = (word3 & 0x20) == 0;
 		this->gyroWarning->gcbFPGASPIFlashStatusWarning = (word3 & 0x40) == 0;
-		uint8_t word4 = this->fpgaData->GyroBIT4;
+		uint8_t word4 = fpgaData->GyroBIT4;
 		this->gyroWarning->dspSPIFlashStatusWarning = (word4 & 0x01) == 0;
 		this->gyroWarning->fpgaSPIFlashStatusWarning = (word4 & 0x02) == 0;
 		this->gyroWarning->gcb1_2VStatusWarning = (word4 & 0x04) == 0;
@@ -143,42 +142,42 @@ void Gyro::processData() {
 		this->gyroWarning->gcb5VStatusWarning = (word4 & 0x10) == 0;
 		this->gyroWarning->v1_2StatusWarning = (word4 & 0x20) == 0;
 		this->gyroWarning->v3_3StatusWarning = (word4 & 0x40) == 0;
-		uint8_t word5 = this->fpgaData->GyroBIT5;
+		uint8_t word5 = fpgaData->GyroBIT5;
 		this->gyroWarning->v5StatusWarning = (word5 & 0x01) == 0;
 		this->gyroWarning->gcbFPGAStatusWarning = (word5 & 0x04) == 0;
 		this->gyroWarning->fpgaStatusWarning = (word5 & 0x08) == 0;
 		this->gyroWarning->hiSpeedSPORTStatusWarning = (word5 & 0x10) == 0;
 		this->gyroWarning->auxSPORTStatusWarning = (word5 & 0x20) == 0;
 		this->gyroWarning->sufficientSoftwareResourcesWarning = (word5 & 0x40) == 0;
-		uint8_t word6 = this->fpgaData->GyroBIT6;
+		uint8_t word6 = fpgaData->GyroBIT6;
 		this->gyroWarning->gyroEOVoltsPositiveWarning = (word6 & 0x01) == 0;
 		this->gyroWarning->gyroEOVoltsNegativeWarning = (word6 & 0x02) == 0;
 		this->gyroWarning->gyroXVoltsWarning = (word6 & 0x04) == 0;
 		this->gyroWarning->gyroYVoltsWarning = (word6 & 0x08) == 0;
 		this->gyroWarning->gyroZVoltsWarning = (word6 & 0x10) == 0;
-		uint8_t word7 = this->fpgaData->GyroBIT7;
+		uint8_t word7 = fpgaData->GyroBIT7;
 		this->gyroWarning->gcbADCCommsWarning = (word7 & 0x01) == 0;
 		this->gyroWarning->mSYNCExternalTimingWarning = (word7 & 0x02) == 0;
 		tryLogWarning = true;
 	}
-	if (this->fpgaData->GyroSampleTimestamp > this->lastSampleTimestamp) {
-		this->lastSampleTimestamp = this->fpgaData->GyroSampleTimestamp;
-		this->gyroData->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
-		this->gyroData->angularVelocityX = this->fpgaData->GyroRawX + this->gyroSettings->AngularVelocityXOffset;
-		this->gyroData->angularVelocityY = this->fpgaData->GyroRawY + this->gyroSettings->AngularVelocityYOffset;
-		this->gyroData->angularVelocityZ = this->fpgaData->GyroRawZ + this->gyroSettings->AngularVelocityZOffset;
-		this->gyroData->sequenceNumber = this->fpgaData->GyroSequenceNumber;
-		this->gyroData->temperature = this->fpgaData->GyroTemperature;
-		uint8_t status = this->fpgaData->GyroStatus;
+	if (fpgaData->GyroSampleTimestamp > this->lastSampleTimestamp) {
+		this->lastSampleTimestamp = fpgaData->GyroSampleTimestamp;
+		this->gyroData->timestamp = Timestamp::fromFPGA(fpgaData->GyroSampleTimestamp);
+		this->gyroData->angularVelocityX = fpgaData->GyroRawX + this->gyroSettings->AngularVelocityXOffset;
+		this->gyroData->angularVelocityY = fpgaData->GyroRawY + this->gyroSettings->AngularVelocityYOffset;
+		this->gyroData->angularVelocityZ = fpgaData->GyroRawZ + this->gyroSettings->AngularVelocityZOffset;
+		this->gyroData->sequenceNumber = fpgaData->GyroSequenceNumber;
+		this->gyroData->temperature = fpgaData->GyroTemperature;
+		uint8_t status = fpgaData->GyroStatus;
 		this->gyroWarning->gyroXStatusWarning = (status & 0x01) == 0;
 		this->gyroWarning->gyroYStatusWarning = (status & 0x02) == 0;
 		this->gyroWarning->gyroZStatusWarning = (status & 0x04) == 0;
 		this->publisher->putGyroData();
 		tryLogWarning = true;
-		if (!this->errorCleared && this->fpgaData->GyroSampleTimestamp > this->lastErrorTimestamp) {
-			this->lastErrorTimestamp = this->fpgaData->GyroErrorTimestamp;
+		if (!this->errorCleared && fpgaData->GyroSampleTimestamp > this->lastErrorTimestamp) {
+			this->lastErrorTimestamp = fpgaData->GyroErrorTimestamp;
 			this->errorCleared = true;
-			this->gyroWarning->timestamp = Timestamp::fromFPGA(this->fpgaData->GyroSampleTimestamp);
+			this->gyroWarning->timestamp = Timestamp::fromFPGA(fpgaData->GyroSampleTimestamp);
 			this->gyroWarning->invalidHeaderWarning = false;
 			this->gyroWarning->crcMismatchWarning = false;
 			this->gyroWarning->incompleteFrameWarning = false;
@@ -200,7 +199,7 @@ void Gyro::writeCommand(std::string command) {
 	for(int i = 0; i < size; ++i) {
 		buffer[i + 2] = (uint16_t)command[i];
 	}
-	this->fpga->writeCommandFIFO(buffer, size + 2, 0);
+        IFPGA::get().writeCommandFIFO(buffer, size + 2, 0);
 }
 
 } /* namespace SS */

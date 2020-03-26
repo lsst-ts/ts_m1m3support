@@ -1,31 +1,19 @@
-/*
- * IExpansionFPGA.cpp
- *
- *  Created on: Nov 1, 2018
- *      Author: ccontaxis
- */
-
 #include <IExpansionFPGA.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#ifdef SIMULATOR
+#include <SimulatedExpansionFPGA.h>
+#else
+#include <ExpansionFPGA.h>
+#endif
 
-IExpansionFPGA::IExpansionFPGA() { }
-IExpansionFPGA::~IExpansionFPGA() { }
+using namespace LSST::M1M3::SS;
 
-int32_t IExpansionFPGA::initialize() { return 0; }
-int32_t IExpansionFPGA::open() { return 0; }
-int32_t IExpansionFPGA::close() { return 0; }
-int32_t IExpansionFPGA::finalize() { return 0; }
-
-bool IExpansionFPGA::isErrorCode(int32_t status) { return 0; }
-
-int32_t IExpansionFPGA::sample() { return 0; }
-
-int32_t IExpansionFPGA::readSlot1(float* data) { return 0; }
-int32_t IExpansionFPGA::readSlot2(uint32_t* data) { return 0; }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+IExpansionFPGA& IExpansionFPGA::get() {
+#ifdef SIMULATOR
+    static SimulatedExpansionFPGA sexpansionfpga;
+    return sexpansionfpga;
+#else
+    static ExpansionFPGA expansionfpga;
+    return expansionfpga;
+#endif
+}
