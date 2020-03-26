@@ -8,7 +8,7 @@ endif
 
 C := gcc -O3 -Wall -g
 CPP := g++ -std=c++11 -pedantic -O3 -Wall -g
-LSSTROOT := /home/petr
+LSSTROOT := $$(dirname ${LSST_SDK_INSTALL})
 
 ifdef SIMULATOR
   CPP += -DSIMULATOR
