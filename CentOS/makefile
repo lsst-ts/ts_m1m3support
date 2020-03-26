@@ -8,14 +8,13 @@ endif
 
 C := gcc -O3 -Wall -g
 CPP := g++ -std=c++11 -pedantic -O3 -Wall -g
-LSSTROOT := $$(dirname ${LSST_SDK_INSTALL})
 
 ifdef SIMULATOR
   CPP += -DSIMULATOR
 endif
 
 BOOST_CPPFLAGS := -I/usr/include/boost169
-SAL_CPPFLAGS := -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/sys -I$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/include/dcps/C++/SACPP -I$(LSSTROOT)/ts_sal/test/MTM1M3/cpp/src -I$(LSSTROOT)/ts_sal/test/MTM1M3/cpp -I$(LSSTROOT)ts_sal/test/MTMount/cpp/src -I$(LSSTROOT)/ts_sal/include -I$(LSSTROOT)/ts_sal/test/MTMount/cpp -I$(LSSTROOT)/ts_sal/test -I$(LSSTROOT)/ts_sal/test/include
+SAL_CPPFLAGS := -I${OSPL_HOME}/include -I${OSPL_HOME}/include/sys -I${OSPL_HOME}/include/dcps/C++/SACPP -I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src -I${SAL_WORK_DIR}/include
 
 # All of the sources participating in the build are defined here
 -include sources.mk
@@ -93,7 +92,7 @@ all: ts_M1M3Support
 # Tool invocations
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	g++ -L"$(LSSTROOT)/ts_sal/test" -L"$(LSSTROOT)/ts_sal/test/lib" -L"$(LSSTROOT)/ts_opensplice/OpenSpliceDDS/V6.9/HDE/x86_64.linux/lib" -L"$(LSSTROOT)/ts_sal/lsstsal/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
