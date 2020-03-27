@@ -21,12 +21,12 @@ class TMAElevationSampleCommand: public Command {
 private:
 	Context* context;
 
-	MTMount_AltC data;
+	MTMount_ElevationC data;
 
 public:
-	TMAElevationSampleCommand(Context* context, MTMount_AltC* data);
+	TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data);
 
-	MTMount_AltC* getData() { return &this->data; }
+	MTMount_ElevationC* getData() { return &this->data; }
 
 	void execute();
 };

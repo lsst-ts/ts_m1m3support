@@ -13,10 +13,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(Context* context, MTMount_AzC* data) {
+TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data) {
 	this->context = context;
 	this->commandID = -1;
-	memcpy(&this->data, data, sizeof(MTMount_AzC));
+	memcpy(&this->data, data, sizeof(MTMount_AzimuthC));
 }
 
 void TMAAzimuthSampleCommand::execute() {

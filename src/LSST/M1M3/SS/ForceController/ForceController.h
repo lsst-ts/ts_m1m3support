@@ -78,8 +78,8 @@ private:
 	MTM1M3_accelerometerDataC* accelerometerData;
 	MTM1M3_gyroDataC* gyroData;
 
-	MTMount_AzC tmaAzimuthData;
-	MTMount_AltC tmaElevationData;
+	MTMount_AzimuthC tmaAzimuthData;
+	MTMount_ElevationC tmaElevationData;
 
 	std::vector<ForceActuatorNeighbors> neighbors;
 
@@ -93,7 +93,7 @@ public:
 
 	void reset();
 
-	void updateTMAElevationData(MTMount_AltC* tmaElevationData);
+	void updateTMAElevationData(MTMount_ElevationC* tmaElevationData);
 
 	void incSupportPercentage();
 	void decSupportPercentage();

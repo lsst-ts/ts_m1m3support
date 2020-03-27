@@ -62,8 +62,8 @@ M1M3SSSubscriber::M1M3SSSubscriber(SAL_MTM1M3* m1m3SAL, SAL_MTMount* mtMountSAL,
 	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_resetPID");
 	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_programILC");
 	this->m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
-	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Az");
-	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Alt");
+	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Azimuth");
+	this->mtMountSAL->salTelemetrySub((char*)"MTMount_Elevation");
 }
 
 Command* M1M3SSSubscriber::tryAcceptCommandStart() {

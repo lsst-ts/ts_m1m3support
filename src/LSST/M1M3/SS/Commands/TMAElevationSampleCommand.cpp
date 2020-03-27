@@ -13,10 +13,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAElevationSampleCommand::TMAElevationSampleCommand(Context* context, MTMount_AltC* data) {
+TMAElevationSampleCommand::TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data) {
 	this->context = context;
 	this->commandID = -1;
-	memcpy(&this->data, data, sizeof(MTMount_AltC));
+	memcpy(&this->data, data, sizeof(MTMount_ElevationC));
 }
 
 void TMAElevationSampleCommand::execute() {

@@ -98,8 +98,8 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
 	case Commands::AbortRaiseM1M3Command: return new AbortRaiseM1M3Command(this->context, this->publisher, commandID, (MTM1M3_command_abortRaiseM1M3C*)data);
 	case Commands::TranslateM1M3Command: return new TranslateM1M3Command(this->context, this->publisher, commandID, (MTM1M3_command_translateM1M3C*)data);
 	case Commands::StopHardpointMotionCommand: return new StopHardpointMotionCommand(this->context, this->publisher, commandID, (MTM1M3_command_stopHardpointMotionC*)data);
-	case Commands::TMAAzimuthSampleCommand: return new TMAAzimuthSampleCommand(this->context, (MTMount_AzC*)data);
-	case Commands::TMAElevationSampleCommand: return new TMAElevationSampleCommand(this->context, (MTMount_AltC*)data);
+	case Commands::TMAAzimuthSampleCommand: return new TMAAzimuthSampleCommand(this->context, (MTMount_AzimuthC*)data);
+	case Commands::TMAElevationSampleCommand: return new TMAElevationSampleCommand(this->context, (MTMount_ElevationC*)data);
 	case Commands::PositionM1M3Command: return new PositionM1M3Command(this->context, this->publisher, commandID, (MTM1M3_command_positionM1M3C*)data);
 	case Commands::TurnLightsOnCommand: return new TurnLightsOnCommand(this->context, this->publisher, commandID, (MTM1M3_command_turnLightsOnC*)data);
 	case Commands::TurnLightsOffCommand: return new TurnLightsOffCommand(this->context, this->publisher, commandID, (MTM1M3_command_turnLightsOffC*)data);
