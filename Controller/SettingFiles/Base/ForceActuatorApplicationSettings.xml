@@ -1,9 +1,0 @@
-<ForceActuatorApplicationSettings>
-<XIndexToZIndexTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorXIndexToZIndexTable.csv</XIndexToZIndexTablePath>
-<YIndexToZIndexTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorYIndexToZIndexTable.csv</YIndexToZIndexTablePath>
-<SecondaryCylinderIndexToZIndexTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorSecondaryCylinderIndexToZIndexTable.csv</SecondaryCylinderIndexToZIndexTablePath>
-<ZIndexToXIndexTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorZIndexToXIndexTable.csv</ZIndexToXIndexTablePath>
-<ZIndexToYIndexTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorZIndexToYIndexTable.csv</ZIndexToYIndexTablePath>
-<ZIndexToSecondaryCylinderIndexTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorZIndexToSecondaryCylinderIndexTable.csv</ZIndexToSecondaryCylinderIndexTablePath>
-<ForceActuatorTablePath>/usr/ts_M1M3Support/SettingFiles/Tables/ForceActuatorTable.csv</ForceActuatorTablePath>
-</ForceActuatorApplicationSettings>
