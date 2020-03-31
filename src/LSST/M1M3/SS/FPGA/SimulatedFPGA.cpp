@@ -16,14 +16,14 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <unistd.h>
 #include <cstdlib>
-#include <Log.h>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 SimulatedFPGA::SimulatedFPGA() {
-    Log.Info("SimulatedFPGA: SimulatedFPGA()");
+    spdlog::info("SimulatedFPGA: SimulatedFPGA()");
     this->publisher = NULL;
     this->forceActuatorApplicationSettings = NULL;
     this->lastRequest = -1;
@@ -52,22 +52,22 @@ void SimulatedFPGA::setForceActuatorApplicationSettings(
 }
 
 int32_t SimulatedFPGA::initialize() {
-    Log.Debug("SimulatedFPGA: initialize()");
+    spdlog::debug("SimulatedFPGA: initialize()");
     return 0;
 }
 
 int32_t SimulatedFPGA::open() {
-    Log.Debug("SimulatedFPGA: open()");
+    spdlog::debug("SimulatedFPGA: open()");
     return 0;
 }
 
 int32_t SimulatedFPGA::close() {
-    Log.Debug("SimulatedFPGA: close()");
+    spdlog::debug("SimulatedFPGA: close()");
     return 0;
 }
 
 int32_t SimulatedFPGA::finalize() {
-    Log.Debug("SimulatedFPGA: finalize()");
+    spdlog::debug("SimulatedFPGA: finalize()");
     return 0;
 }
 
@@ -92,7 +92,7 @@ int32_t SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) { retur
 int32_t SimulatedFPGA::ackModbusIRQ(int32_t subnet) { return 0; }
 
 void SimulatedFPGA::pullTelemetry() {
-    Log.Trace("SimulatedFPGA: pullTelemetry()");
+    spdlog::trace("SimulatedFPGA: pullTelemetry()");
     uint64_t timestamp = Timestamp::toRaw(this->publisher->getTimestamp());
     this->supportFPGAData.Reserved = 0;
     this->supportFPGAData.InclinometerTxBytes = 0;

@@ -107,39 +107,31 @@ salgenerator MTMount generate python
 ## Compiling for deployment
 
 ```bash
-cd ${BASE}/ts_m1m3support/Controller/CentOS
+cd ${BASE}/ts_m1m3support
 make clean
 make
 ```
 
-## Compiling for simulation (TODO currently broken)
+## Compiling for simulation
 
 ```bash
 cd $BASE
 source ts_sal/setup.env
-cd ts_m1m3support/Controller/CentOS
+cd ts_m1m3support
 make clean
 make SIMULATOR=1
-```
-
-## Setting up the runtime environment
-
-```bash
-sudo mkdir /usr/ts_M1M3Support
-sudo chmod a+rxw /usr/ts_M1M3Support
-cp -r ./ts_m1m3support/Controller/SettingFiles /usr/ts_M1M3Support
 ```
 
 ## Running in deployment
 
 ```bash
-source ./ts_sal/setup.env;ulimit -u unlimited;./ts_m1m3support/Controller/CentOS/ts_M1M3Support;
+source ./ts_sal/setup.env;./ts_m1m3support/ts_M1M3Support;
 ```
 
-## Running in simulation (TODO currently broken)
+## Running in simulation
 
 ```bash
-source ./ts_sal/setup.env;./ts_m1m3support/Controller/CentOS/ts_M1M3Support
+source ./ts_sal/setup.env;./ts_m1m3support/ts_M1M3Support
 ```
 
 When issuing the start command specify the settings as Simulator The simulator
