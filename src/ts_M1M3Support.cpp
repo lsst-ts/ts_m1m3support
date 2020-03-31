@@ -33,6 +33,7 @@ void* runThread(void* data);
 
 LSST::M1M3::SS::Logger Log;
 
+
 int main(int argc, char* const argv[]) {
     int opt;
     const char* configRoot = getenv("PWD");
