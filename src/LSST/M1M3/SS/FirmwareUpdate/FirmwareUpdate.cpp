@@ -38,7 +38,7 @@ bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
         return false;
     }
     if (!this->UpdateAppData()) {
-        spdlog::error("FirmwareUpdate: Failed to load intel hex file into application data for actuator %d",
+        spdlog::error("FirmwareUpdate: Failed to load intel hex file into application data for actuator {:d}",
                       actuatorId);
         return false;
     }

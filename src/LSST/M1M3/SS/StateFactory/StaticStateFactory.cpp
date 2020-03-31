@@ -26,7 +26,7 @@ StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher)
 }
 
 State* StaticStateFactory::create(States::Type state) {
-    spdlog::trace("StaticStateFactory: create({:ld})", state);
+    spdlog::trace("StaticStateFactory: create({:d})", state);
     switch (state) {
         case States::OfflineState:
             return &this->offlineState;

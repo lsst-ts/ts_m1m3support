@@ -198,7 +198,7 @@ void Model::publishFPGAData() {
 }
 
 void Model::publishStateChange(States::Type newState) {
-    spdlog::debug("Model: publishStateChange({:ld})", newState);
+    spdlog::debug("Model: publishStateChange({:d})", newState);
     uint64_t state = (uint64_t)newState;
     double timestamp = this->publisher->getTimestamp();
     MTM1M3_logevent_summaryStateC* summaryStateData = this->publisher->getEventSummaryState();

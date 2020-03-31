@@ -179,7 +179,7 @@ double State::getTimer() {
 }
 
 States::Type State::rejectCommandInvalidState(std::string command) {
-    spdlog::warn("The command %s is not valid in the {}.", command, this->name);
+    spdlog::warn("The command {} is not valid in the {}.", command, this->name);
     this->publisher->logCommandRejectionWarning(
             command, "The command " + command + " is not valid in the " + this->name + ".");
     return States::NoStateTransition;
