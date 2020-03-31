@@ -78,10 +78,13 @@ response queue, added to command response queue and finally readout.
 * *Bitfiles* - Contains the bit files that are loaded onto the FPGA's
 * *builds* - Contains utility applications for creating look up tables
 * *Controller* - Contains the C++ code for the ts\_M1M3Support application
+* *SettingFiles* - Configuration files
 * *Tests* - Contains python tests for the ts\_M1M3Support application
 * *Utilities* - Contains the code for the utility applications
 
 # Building
+
+Please use lsstts/mtm1m3_sim Docker container to run simulator.
 
 ## Setting up the build environment
 
