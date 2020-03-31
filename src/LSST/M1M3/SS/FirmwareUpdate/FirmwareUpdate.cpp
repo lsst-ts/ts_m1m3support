@@ -616,7 +616,7 @@ bool FirmwareUpdate::PrintBuffer(ModbusBuffer* buffer, std::string text) {
     for (int i = 3; i < buffer->getLength() - 3; ++i) {
         text = text + " " + boost::lexical_cast<std::string>((int)buffer->readU8());
     }
-    spdlog::info(text.c_str());
+    spdlog::info("{}", text.c_str());
     return true;
 }
 

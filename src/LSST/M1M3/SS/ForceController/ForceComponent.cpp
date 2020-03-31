@@ -32,7 +32,7 @@ bool ForceComponent::isDisabling() { return this->disabling; }
 
 void ForceComponent::enable() {
     // Enable and set the target to 0N
-    spdlog::debug("{}ForceComponent: enable()", this->name.c_str());
+    spdlog::debug("{}ForceComponent: enable()", this->name);
     this->enabled = true;
     this->disabling = false;
     memset(this->xTarget, 0, sizeof(this->xTarget));
@@ -43,7 +43,7 @@ void ForceComponent::enable() {
 
 void ForceComponent::disable() {
     // Start disabling and driving to 0N
-    spdlog::debug("{}ForceComponent: disable()", this->name.c_str());
+    spdlog::debug("{}ForceComponent: disable()", this->name);
     this->enabled = false;
     this->disabling = true;
     memset(this->xTarget, 0, sizeof(this->xTarget));
@@ -76,7 +76,7 @@ void ForceComponent::update() {
                        this->zCurrent[i] > -this->nearZeroValue;
         }
         if (nearZero) {
-            spdlog::debug("{}ForceComponent: disabled()", this->name.c_str());
+            spdlog::debug("{}ForceComponent: disabled()", this->name);
             this->disabling = false;
             this->enabled = false;
             memset(this->xCurrent, 0, sizeof(this->xCurrent));

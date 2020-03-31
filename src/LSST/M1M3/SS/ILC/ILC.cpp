@@ -87,7 +87,7 @@ ILC::ILC(M1M3SSPublisher* publisher, PositionController* positionController,
 ILC::~ILC() {}
 
 void ILC::programILC(int32_t actuatorId, std::string filePath) {
-    spdlog::debug("ILC: programILC({},{})", actuatorId, filePath.c_str());
+    spdlog::debug("ILC: programILC({},{})", actuatorId, filePath);
     this->firmwareUpdate.Program(actuatorId, filePath);
 }
 

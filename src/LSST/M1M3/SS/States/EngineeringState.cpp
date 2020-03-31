@@ -27,25 +27,25 @@ EngineeringState::EngineeringState(M1M3SSPublisher* publisher, std::string name)
         : EnabledState(publisher, name) {}
 
 States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command, Model* model) {
-    spdlog::info("{}: turnAirOn()", this->name.c_str());
+    spdlog::info("{}: turnAirOn()", this->name);
     model->getDigitalInputOutput()->turnAirOn();
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnAirOff(TurnAirOffCommand* command, Model* model) {
-    spdlog::info("{}: turnAirOff()", this->name.c_str());
+    spdlog::info("{}: turnAirOff()", this->name);
     model->getDigitalInputOutput()->turnAirOff();
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) {
-    spdlog::info("{}: stopHardpointMotion()", this->name.c_str());
+    spdlog::info("{}: stopHardpointMotion()", this->name);
     model->getPositionController()->stopMotion();
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
-    spdlog::info("{}: moveHardpointActuators()", this->name.c_str());
+    spdlog::info("{}: moveHardpointActuators()", this->name);
     if (!model->getPositionController()->move(command->getData()->steps)) {
         model->getPublisher()->logCommandRejectionWarning(
                 "MoveHardpointActuators",
@@ -55,7 +55,7 @@ States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsComm
 }
 
 States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) {
-    spdlog::info("{}: enableHardpointChase()", this->name.c_str());
+    spdlog::info("{}: enableHardpointChase()", this->name);
     if (!model->getPositionController()->enableChase(command->getData()->hardpointActuator)) {
         model->getPublisher()->logCommandRejectionWarning(
                 "EnableHardpointChase",
@@ -65,13 +65,13 @@ States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand*
 }
 
 States::Type EngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command, Model* model) {
-    spdlog::info("{}: disableHardpointChase()", this->name.c_str());
+    spdlog::info("{}: disableHardpointChase()", this->name);
     model->getPositionController()->disableChase(command->getData()->hardpointActuator);
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) {
-    spdlog::info("{}: applyOffsetForces()", this->name.c_str());
+    spdlog::info("{}: applyOffsetForces()", this->name);
     model->getForceController()->applyOffsetForces(command->getData()->xForces, command->getData()->yForces,
                                                    command->getData()->zForces);
     model->getForceController()->processAppliedForces();
@@ -80,7 +80,7 @@ States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* comma
 
 States::Type EngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command,
                                                               Model* model) {
-    spdlog::info("{}: applyOffsetForcesByMirrorForce()", this->name.c_str());
+    spdlog::info("{}: applyOffsetForcesByMirrorForce()", this->name);
     model->getForceController()->applyOffsetForcesByMirrorForces(
             command->getData()->xForce, command->getData()->yForce, command->getData()->zForce,
             command->getData()->xMoment, command->getData()->yMoment, command->getData()->zMoment);
@@ -89,26 +89,26 @@ States::Type EngineeringState::applyOffsetForcesByMirrorForce(ApplyOffsetForcesB
 }
 
 States::Type EngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) {
-    spdlog::info("{}: clearOffsetForces()", this->name.c_str());
+    spdlog::info("{}: clearOffsetForces()", this->name);
     model->getForceController()->zeroOffsetForces();
     model->getForceController()->processAppliedForces();
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnLightsOn(TurnLightsOnCommand* command, Model* model) {
-    spdlog::info("{}: turnLightsOn()", this->name.c_str());
+    spdlog::info("{}: turnLightsOn()", this->name);
     model->getDigitalInputOutput()->turnCellLightsOn();
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnLightsOff(TurnLightsOffCommand* command, Model* model) {
-    spdlog::info("{}: turnLightsOff()", this->name.c_str());
+    spdlog::info("{}: turnLightsOff()", this->name);
     model->getDigitalInputOutput()->turnCellLightsOff();
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command, Model* model) {
-    spdlog::info("{}: turnPowerOn()", this->name.c_str());
+    spdlog::info("{}: turnPowerOn()", this->name);
     if (command->getData()->turnPowerNetworkAOn) {
         model->getPowerController()->setPowerNetworkA(true);
     }
@@ -137,7 +137,7 @@ States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command, Model* m
 }
 
 States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command, Model* model) {
-    spdlog::info("{}: turnPowerOff()", this->name.c_str());
+    spdlog::info("{}: turnPowerOff()", this->name);
     if (command->getData()->turnPowerNetworkAOff) {
         model->getPowerController()->setPowerNetworkA(false);
     }
@@ -166,7 +166,7 @@ States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command, Model*
 }
 
 States::Type EngineeringState::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
-    spdlog::info("{}: modbusTransmit()", this->name.c_str());
+    spdlog::info("{}: modbusTransmit()", this->name);
     model->getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode,
                                     command->getData()->dataLength, command->getData()->data);
     return model->getSafetyController()->checkSafety(States::NoStateTransition);

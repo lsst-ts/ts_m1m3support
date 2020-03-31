@@ -88,7 +88,7 @@ Model::~Model() {
 }
 
 void Model::loadSettings(std::string settingsToApply) {
-    spdlog::info("Model: loadSettings({})", settingsToApply.c_str());
+    spdlog::info("Model: loadSettings({})", settingsToApply);
 
     SettingReader& settingReader = SettingReader::get();
     settingReader.configure(settingsToApply);

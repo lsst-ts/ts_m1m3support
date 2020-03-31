@@ -64,7 +64,7 @@ int32_t ExpansionFPGA::finalize() {
 bool ExpansionFPGA::isErrorCode(int32_t status) {
     bool isError = NiFpga_IsError(status);
     if (isError) {
-        spdlog::error("ExpansionFPGA: Error code %d", status);
+        spdlog::error("ExpansionFPGA: Error code {:d}", status);
     }
     return isError;
 }
