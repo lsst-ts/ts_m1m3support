@@ -66,8 +66,8 @@ private:
     M1M3SSPublisher* publisher;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
     SupportFPGAData supportFPGAData;
-    MTMount_AltC tmaElevation;
-    MTMount_AzC tmaAzimuth;
+    MTMount_AzimuthC tmaAzimuth;
+    MTMount_ElevationC tmaElevation;
     int lastRequest;
     std::queue<uint16_t> u8Response;
     std::queue<uint16_t> u16Response;
