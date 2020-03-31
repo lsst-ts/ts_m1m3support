@@ -21,12 +21,12 @@ class TMAAzimuthSampleCommand: public Command {
 private:
 	Context* context;
 
-	MTMount_AzC data;
+	MTMount_AzimuthC data;
 
 public:
-	TMAAzimuthSampleCommand(Context* context, MTMount_AzC* data);
+	TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data);
 
-	MTMount_AzC* getData() { return &this->data; }
+	MTMount_AzimuthC* getData() { return &this->data; }
 
 	void execute();
 };
