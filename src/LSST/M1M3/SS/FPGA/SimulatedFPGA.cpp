@@ -103,7 +103,7 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.InclinometerErrorCode = 0;
     this->supportFPGAData.InclinometerSampleTimestamp = timestamp;
     this->supportFPGAData.InclinometerAngleRaw =
-            (int32_t)(tmaElevation.position * 1000.0) + (this->getRnd() * 5.0);
+            (int32_t)(tmaElevation.Elevation_Angle_Actual * 1000.0) + (this->getRnd() * 5.0);
     this->supportFPGAData.DisplacementTxBytes = 0;
     this->supportFPGAData.DisplacementRxBytes = 0;
     this->supportFPGAData.DisplacementTxFrames = 0;

@@ -48,7 +48,7 @@ struct ILCApplicationStats {
 
 class FirmwareUpdate {
 private:
-	std::vector<char> appData;
+	std::vector<unsigned char> appData;
 	std::vector<IntelHexLine> hexData;
 	ILCApplicationStats appStats;
 	ILCSubnetData* subnetData;

@@ -65,8 +65,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 	this->gyroData = this->publisher->getGyroData();
 
 	memset(this->forceActuatorData, 0, sizeof(MTM1M3_forceActuatorDataC));
-	memset(&this->tmaAzimuthData, 0, sizeof(MTMount_AzC));
-	memset(&this->tmaElevationData, 0, sizeof(MTMount_AltC));
+	memset(&this->tmaAzimuthData, 0, sizeof(MTMount_AzimuthC));
+	memset(&this->tmaElevationData, 0, sizeof(MTMount_ElevationC));
 
 	memset(this->appliedForces, 0, sizeof(MTM1M3_logevent_appliedForcesC));
 	memset(this->forceActuatorState, 0, sizeof(MTM1M3_logevent_forceActuatorStateC));
@@ -137,9 +137,9 @@ void ForceController::reset() {
 	this->finalForceComponent.reset();
 }
 
-void ForceController::updateTMAElevationData(MTMount_AltC* tmaElevationData) {
+void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationData) {
 	Log.Trace("ForceController: updateTMAElevationData()");
-	memcpy(&this->tmaElevationData, tmaElevationData, sizeof(MTMount_AltC));
+	memcpy(&this->tmaElevationData, tmaElevationData, sizeof(MTMount_ElevationC));
 }
 
 void ForceController::incSupportPercentage() {
@@ -215,7 +215,7 @@ void ForceController::updateAppliedForces() {
 	}
 	if (this->elevationForceComponent.isEnabled() || this->elevationForceComponent.isDisabling()) {
 		if (this->elevationForceComponent.isEnabled()) {
-			double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->inclinometerAngle : this->tmaElevationData.position;
+			double elevationAngle = this->forceActuatorSettings->UseInclinometer ? this->inclinometerData->inclinometerAngle : this->tmaElevationData.Elevation_Angle_Actual;
 			// Convert elevation angle to zenith angle (used by matrix)
 			elevationAngle = 90.0 - elevationAngle;
 			this->elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);

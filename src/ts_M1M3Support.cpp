@@ -1,11 +1,9 @@
 #include <CommandFactory.h>
-#include <CommandTypes.h>
 #include <Context.h>
 #include <Controller.h>
 #include <ControllerThread.h>
 #include <DigitalInputOutput.h>
 #include <IExpansionFPGA.h>
-#include <FPGAAddresses.h>
 #include <M1M3SSPublisher.h>
 #include <M1M3SSSubscriber.h>
 #include <Model.h>
@@ -13,14 +11,12 @@
 #include <PPSThread.h>
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
-#include <SafetyController.h>
 #include <SettingReader.h>
 #include <StaticStateFactory.h>
 #include <SubscriberThread.h>
-#include <Timestamp.h>
 #include <pthread.h>
-#include <cstring>
-#include <iostream>
+
+#include <getopt.h>
 
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
@@ -37,10 +33,23 @@ void* runThread(void* data);
 
 LSST::M1M3::SS::Logger Log;
 
-int main() {
+int main(int argc, char* const argv[]) {
+    int opt;
+    const char* configRoot = getenv("PWD");
+    while ((opt = getopt(argc, argv, "c:")) != -1) {
+        switch (opt) {
+            case 'c':
+                configRoot = optarg;
+                break;
+
+            default:
+                exit(EXIT_FAILURE);
+        }
+    }
+
     Log.SetLevel(Levels::Debug);
     Log.Info("Main: Creating setting reader");
-    SettingReader::get().setRootPath("/home/petr/ts_m1m3support/SettingFiles/");
+    SettingReader::get().setRootPath(configRoot);
     Log.Info("Main: Initializing M1M3 SAL");
     SAL_MTM1M3 m1m3SAL = SAL_MTM1M3();
     m1m3SAL.setDebugLevel(0);
@@ -54,7 +63,8 @@ int main() {
 #ifdef SIMULATOR
     ((SimulatedFPGA*)fpga)->setPublisher(&publisher);
     ((SimulatedFPGA*)fpga)
-            ->setForceActuatorApplicationSettings(SettingReader::get().loadForceActuatorApplicationSettings());
+            ->setForceActuatorApplicationSettings(
+                    SettingReader::get().loadForceActuatorApplicationSettings());
 #endif
 
     if (fpga->isErrorCode(fpga->initialize())) {
