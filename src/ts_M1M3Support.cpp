@@ -23,7 +23,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
 #include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/sinks/daily_file_sink.h"
 
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
@@ -52,13 +52,12 @@ int main(int argc, char* const argv[]) {
 
     spdlog::init_thread_pool(8192, 1);
     auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto rotating_sink =
-            std::make_shared<spdlog::sinks::rotating_file_sink_mt>("MTM1M3.log", 1024 * 1024 * 10, 3);
-    std::vector<spdlog::sink_ptr> sinks{stdout_sink, rotating_sink};
+    auto daily_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>("MTM1M3", 0, 0);
+    std::vector<spdlog::sink_ptr> sinks{stdout_sink, daily_sink};
     auto logger = std::make_shared<spdlog::async_logger>("loggername", sinks.begin(), sinks.end(),
                                                          spdlog::thread_pool(),
                                                          spdlog::async_overflow_policy::block);
-    spdlog::register_logger(logger);
+    spdlog::set_default_logger(logger);
     spdlog::set_level(spdlog::level::debug);
 
     spdlog::info("Main: Creating setting reader");
