@@ -36,29 +36,65 @@ using namespace LSST::M1M3::SS;
 
 void* runThread(void* data);
 
+void printHelp() {
+    std::cout << "M1M3 Static Support controller. Runs either as simulator or as simulator or as "
+                 "the real think on cRIO."
+              << std::endl
+              << "Options:" << std::endl
+              << "  -b runs on background, don't log to stdout" << std::endl
+              << "  -c <configuration path> use given configuration directory (should be SettingFiles)"
+              << std::endl
+              << "  -d increases debugging (can be specified multiple times, default is info)" << std::endl
+              << "  -f runs on foreground, don't log to file" << std::endl
+              << "  -h prints this help" << std::endl;
+}
+
 int main(int argc, char* const argv[]) {
     int opt;
+    int enabledSinks = 0x3;
+    int debugLevel = 0;
     const char* configRoot = getenv("PWD");
-    while ((opt = getopt(argc, argv, "c:")) != -1) {
+    while ((opt = getopt(argc, argv, "bc:dfh")) != -1) {
         switch (opt) {
+            case 'b':
+                enabledSinks &= ~0x01;
+                break;
             case 'c':
                 configRoot = optarg;
                 break;
-
+            case 'd':
+                debugLevel++;
+                break;
+            case 'f':
+                enabledSinks &= ~0x02;
+                break;
+            case 'h':
+                printHelp();
+                exit(EXIT_SUCCESS);
             default:
+                std::cerr << "Unknow option " << opt << std::endl;
+                printHelp();
                 exit(EXIT_FAILURE);
         }
     }
 
     spdlog::init_thread_pool(8192, 1);
-    auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto daily_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>("MTM1M3", 0, 0);
-    std::vector<spdlog::sink_ptr> sinks{stdout_sink, daily_sink};
+    std::vector<spdlog::sink_ptr> sinks;
+    if (enabledSinks & 0x01) {
+        auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        sinks.push_back(stdout_sink);
+    }
+
+    if (enabledSinks & 0x02) {
+        auto daily_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>("MTM1M3", 0, 0);
+        sinks.push_back(daily_sink);
+    }
     auto logger = std::make_shared<spdlog::async_logger>("loggername", sinks.begin(), sinks.end(),
                                                          spdlog::thread_pool(),
                                                          spdlog::async_overflow_policy::block);
     spdlog::set_default_logger(logger);
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level((debugLevel == 0 ? spdlog::level::info
+                                       : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace)));
 
     spdlog::info("Main: Creating setting reader");
     SettingReader::get().setRootPath(configRoot);
@@ -77,6 +113,7 @@ int main(int argc, char* const argv[]) {
     ((SimulatedFPGA*)fpga)
             ->setForceActuatorApplicationSettings(
                     SettingReader::get().loadForceActuatorApplicationSettings());
+    spdlog::warn("Starting Simulator version!");
 #endif
 
     if (fpga->isErrorCode(fpga->initialize())) {
