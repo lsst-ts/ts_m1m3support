@@ -82,6 +82,14 @@ response queue, added to command response queue and finally readout.
 * *Tests* - Contains python tests for the ts_M1M3Support application
 * *Utilities* - Contains the code for the utility applications
 
+## Included external libraries
+
+* **src/spdlog** SpeedLog library (see [version.h](src/spdlog/version.h) for version)
+ This software depends on the fmt lib (MIT License),
+ and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/LICENSE.rst
+
+* **src/pugixml** Light-weight [XML library](https://pugixml.org/) (MIT License) [version](src/pugixml/pugixml.hpp)
+
 # Building
 
 ## Setting up the build environment
