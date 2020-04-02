@@ -95,6 +95,8 @@ and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/
 
 # Building
 
+Please use lsstts/mtm1m3_sim Docker container to run simulator.
+
 ## Setting up the build environment
 
 ```bash

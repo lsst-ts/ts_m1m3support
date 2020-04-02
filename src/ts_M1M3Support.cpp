@@ -96,6 +96,7 @@ int main(int argc, char* const argv[]) {
     spdlog::set_level((debugLevel == 0 ? spdlog::level::info
                                        : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace)));
 
+
     spdlog::info("Main: Creating setting reader");
     SettingReader::get().setRootPath(configRoot);
     spdlog::info("Main: Initializing M1M3 SAL");
