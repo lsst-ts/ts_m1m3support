@@ -14,9 +14,16 @@
 #include <SettingReader.h>
 #include <StaticStateFactory.h>
 #include <SubscriberThread.h>
-#include <pthread.h>
 
+#include <pthread.h>
 #include <getopt.h>
+#include <cstring>
+#include <iostream>
+
+#include <spdlog/spdlog.h>
+#include <spdlog/async.h>
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/daily_file_sink.h"
 
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
@@ -24,41 +31,82 @@
 #include <FPGA.h>
 #endif
 
-#include <Log.h>
-
 using namespace std;
 using namespace LSST::M1M3::SS;
 
 void* runThread(void* data);
 
-LSST::M1M3::SS::Logger Log;
-
+void printHelp() {
+    std::cout << "M1M3 Static Support controller. Runs either as simulator or as simulator or as "
+                 "the real think on cRIO."
+              << std::endl
+              << "Options:" << std::endl
+              << "  -b runs on background, don't log to stdout" << std::endl
+              << "  -c <configuration path> use given configuration directory (should be SettingFiles)"
+              << std::endl
+              << "  -d increases debugging (can be specified multiple times, default is info)" << std::endl
+              << "  -f runs on foreground, don't log to file" << std::endl
+              << "  -h prints this help" << std::endl;
+}
 
 int main(int argc, char* const argv[]) {
     int opt;
+    int enabledSinks = 0x3;
+    int debugLevel = 0;
     const char* configRoot = getenv("PWD");
-    while ((opt = getopt(argc, argv, "c:")) != -1) {
+    while ((opt = getopt(argc, argv, "bc:dfh")) != -1) {
         switch (opt) {
+            case 'b':
+                enabledSinks &= ~0x01;
+                break;
             case 'c':
                 configRoot = optarg;
                 break;
-
+            case 'd':
+                debugLevel++;
+                break;
+            case 'f':
+                enabledSinks &= ~0x02;
+                break;
+            case 'h':
+                printHelp();
+                exit(EXIT_SUCCESS);
             default:
+                std::cerr << "Unknow option " << opt << std::endl;
+                printHelp();
                 exit(EXIT_FAILURE);
         }
     }
 
-    Log.SetLevel(Levels::Debug);
-    Log.Info("Main: Creating setting reader");
+    spdlog::init_thread_pool(8192, 1);
+    std::vector<spdlog::sink_ptr> sinks;
+    if (enabledSinks & 0x01) {
+        auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        sinks.push_back(stdout_sink);
+    }
+
+    if (enabledSinks & 0x02) {
+        auto daily_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>("MTM1M3", 0, 0);
+        sinks.push_back(daily_sink);
+    }
+    auto logger = std::make_shared<spdlog::async_logger>("loggername", sinks.begin(), sinks.end(),
+                                                         spdlog::thread_pool(),
+                                                         spdlog::async_overflow_policy::block);
+    spdlog::set_default_logger(logger);
+    spdlog::set_level((debugLevel == 0 ? spdlog::level::info
+                                       : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace)));
+
+
+    spdlog::info("Main: Creating setting reader");
     SettingReader::get().setRootPath(configRoot);
-    Log.Info("Main: Initializing M1M3 SAL");
+    spdlog::info("Main: Initializing M1M3 SAL");
     SAL_MTM1M3 m1m3SAL = SAL_MTM1M3();
     m1m3SAL.setDebugLevel(0);
-    Log.Info("Main: Initializing MTMount SAL");
+    spdlog::info("Main: Initializing MTMount SAL");
     SAL_MTMount mtMountSAL = SAL_MTMount();
-    Log.Info("Main: Creating publisher");
+    spdlog::info("Main: Creating publisher");
     M1M3SSPublisher publisher = M1M3SSPublisher(&m1m3SAL);
-    Log.Info("Main: Creating fpga");
+    spdlog::info("Main: Creating fpga");
 
     IFPGA* fpga = &IFPGA::get();
 #ifdef SIMULATOR
@@ -66,63 +114,64 @@ int main(int argc, char* const argv[]) {
     ((SimulatedFPGA*)fpga)
             ->setForceActuatorApplicationSettings(
                     SettingReader::get().loadForceActuatorApplicationSettings());
+    spdlog::warn("Starting Simulator version!");
 #endif
 
     if (fpga->isErrorCode(fpga->initialize())) {
-        Log.Fatal("Main: Error initializing FPGA");
+        spdlog::critical("Main: Error initializing FPGA");
         mtMountSAL.salShutdown();
         m1m3SAL.salShutdown();
         return -1;
     }
     if (fpga->isErrorCode(fpga->open())) {
-        Log.Fatal("Main: Error opening FPGA");
+        spdlog::critical("Main: Error opening FPGA");
         fpga->finalize();
         mtMountSAL.salShutdown();
         m1m3SAL.salShutdown();
         return -1;
     }
-    Log.Info("Main: Load expansion FPGA application settings");
+    spdlog::info("Main: Load expansion FPGA application settings");
     ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings =
             SettingReader::get().loadExpansionFPGAApplicationSettings();
-    Log.Info("Main: Create expansion FPGA");
+    spdlog::info("Main: Create expansion FPGA");
     IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
     expansionFPGA->setExpansionFPGAApplicationSettings(expansionFPGAApplicationSettings);
     if (expansionFPGA->isErrorCode(expansionFPGA->open())) {
-        Log.Fatal("Main: Error opening expansion FPGA");
+        spdlog::critical("Main: Error opening expansion FPGA");
         fpga->close();
         fpga->finalize();
         mtMountSAL.salShutdown();
         m1m3SAL.salShutdown();
         return -1;
     }
-    Log.Info("Main: Creating state factory");
+    spdlog::info("Main: Creating state factory");
     StaticStateFactory stateFactory = StaticStateFactory(&publisher);
-    Log.Info("Main: Load interlock application settings");
+    spdlog::info("Main: Load interlock application settings");
     InterlockApplicationSettings* interlockApplicationSettings =
             SettingReader::get().loadInterlockApplicationSettings();
-    Log.Info("Main: Creating digital input output");
+    spdlog::info("Main: Creating digital input output");
     DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings, &publisher);
-    Log.Info("Main: Creating model");
+    spdlog::info("Main: Creating model");
     Model model = Model(&publisher, &digitalInputOutput);
-    Log.Info("Main: Creating context");
+    spdlog::info("Main: Creating context");
     Context context = Context(&stateFactory, &model);
-    Log.Info("Main: Creating command factory");
+    spdlog::info("Main: Creating command factory");
     CommandFactory commandFactory = CommandFactory(&publisher, &context);
-    Log.Info("Main: Creating subscriber");
+    spdlog::info("Main: Creating subscriber");
     M1M3SSSubscriber subscriber = M1M3SSSubscriber(&m1m3SAL, &mtMountSAL, &commandFactory);
-    Log.Info("Main: Creating controller");
+    spdlog::info("Main: Creating controller");
     Controller controller = Controller(&commandFactory);
-    Log.Info("Main: Creating subscriber thread");
+    spdlog::info("Main: Creating subscriber thread");
     SubscriberThread subscriberThread =
             SubscriberThread(&subscriber, &controller, &publisher, &commandFactory);
-    Log.Info("Main: Creating controller thread");
+    spdlog::info("Main: Creating controller thread");
     ControllerThread controllerThread = ControllerThread(&controller);
-    Log.Info("Main: Creating outer loop clock thread");
+    spdlog::info("Main: Creating outer loop clock thread");
     OuterLoopClockThread outerLoopClockThread =
             OuterLoopClockThread(&commandFactory, &controller, &publisher);
-    Log.Info("Main: Creating pps thread");
+    spdlog::info("Main: Creating pps thread");
     PPSThread ppsThread = PPSThread(&publisher);
-    Log.Info("Main: Queuing boot command");
+    spdlog::info("Main: Queuing boot command");
     controller.enqueue(commandFactory.create(Commands::BootCommand));
 
     pthread_t subscriberThreadId;
@@ -134,99 +183,99 @@ int main(int argc, char* const argv[]) {
     pthread_attr_setdetachstate(&threadAttribute, PTHREAD_CREATE_JOINABLE);
 
     void* status;
-    Log.Info("Main: Starting pps thread");
+    spdlog::info("Main: Starting pps thread");
     int rc = pthread_create(&ppsThreadId, &threadAttribute, runThread, (void*)(&ppsThread));
     usleep(1500000);
     if (!rc) {
-        Log.Info("Main: Starting subscriber thread");
+        spdlog::info("Main: Starting subscriber thread");
         int rc = pthread_create(&subscriberThreadId, &threadAttribute, runThread, (void*)(&subscriberThread));
         if (!rc) {
-            Log.Info("Main: Starting controller thread");
+            spdlog::info("Main: Starting controller thread");
             rc = pthread_create(&controllerThreadId, &threadAttribute, runThread, (void*)(&controllerThread));
             if (!rc) {
-                Log.Info("Main: Starting outer loop clock thread");
+                spdlog::info("Main: Starting outer loop clock thread");
                 rc = pthread_create(&outerLoopClockThreadId, &threadAttribute, runThread,
                                     (void*)(&outerLoopClockThread));
                 if (!rc) {
-                    Log.Info("Main: Waiting for shutdown");
+                    spdlog::info("Main: Waiting for shutdown");
                     model.waitForShutdown();
-                    Log.Info("Main: Shutdown received");
-                    Log.Info("Main: Stopping pps thread");
+                    spdlog::info("Main: Shutdown received");
+                    spdlog::info("Main: Stopping pps thread");
                     ppsThread.stop();
-                    Log.Info("Main: Stopping subscriber thread");
+                    spdlog::info("Main: Stopping subscriber thread");
                     subscriberThread.stop();
-                    Log.Info("Main: Stopping controller thread");
+                    spdlog::info("Main: Stopping controller thread");
                     controllerThread.stop();
-                    Log.Info("Main: Stopping outer loop clock thread");
+                    spdlog::info("Main: Stopping outer loop clock thread");
                     outerLoopClockThread.stop();
                     usleep(100000);
                     controller.clear();
-                    Log.Info("Main: Joining pps thread");
+                    spdlog::info("Main: Joining pps thread");
                     pthread_join(ppsThreadId, &status);
-                    Log.Info("Main: Joining subscriber thread");
+                    spdlog::info("Main: Joining subscriber thread");
                     pthread_join(subscriberThreadId, &status);
-                    Log.Info("Main: Joining controller thread");
+                    spdlog::info("Main: Joining controller thread");
                     pthread_join(controllerThreadId, &status);
-                    Log.Info("Main: Joining outer loop clock thread");
+                    spdlog::info("Main: Joining outer loop clock thread");
                     pthread_join(outerLoopClockThreadId, &status);
                 } else {
-                    Log.Fatal("Main: Failed to start outer loop clock thread");
-                    Log.Info("Main: Stopping pps thread");
+                    spdlog::critical("Main: Failed to start outer loop clock thread");
+                    spdlog::info("Main: Stopping pps thread");
                     ppsThread.stop();
-                    Log.Info("Main: Stopping subscriber thread");
+                    spdlog::info("Main: Stopping subscriber thread");
                     subscriberThread.stop();
-                    Log.Info("Main: Stopping controller thread");
+                    spdlog::info("Main: Stopping controller thread");
                     controllerThread.stop();
-                    Log.Info("Main: Joining pps thread");
+                    spdlog::info("Main: Joining pps thread");
                     pthread_join(ppsThreadId, &status);
-                    Log.Info("Main: Joining subscriber thread");
+                    spdlog::info("Main: Joining subscriber thread");
                     pthread_join(subscriberThreadId, &status);
-                    Log.Info("Main: Joining controller thread");
+                    spdlog::info("Main: Joining controller thread");
                     pthread_join(controllerThreadId, &status);
                 }
             } else {
-                Log.Fatal("Main: Failed to start controller thread");
-                Log.Info("Main: Stopping pps thread");
+                spdlog::critical("Main: Failed to start controller thread");
+                spdlog::info("Main: Stopping pps thread");
                 ppsThread.stop();
-                Log.Info("Main: Stopping subscriber thread");
+                spdlog::info("Main: Stopping subscriber thread");
                 subscriberThread.stop();
-                Log.Info("Main: Joining pps thread");
+                spdlog::info("Main: Joining pps thread");
                 pthread_join(ppsThreadId, &status);
-                Log.Info("Main: Joining subscriber thread");
+                spdlog::info("Main: Joining subscriber thread");
                 pthread_join(subscriberThreadId, &status);
             }
         } else {
-            Log.Fatal("Main: Failed to start subscriber thread");
-            Log.Info("Main: Stopping pps thread");
+            spdlog::critical("Main: Failed to start subscriber thread");
+            spdlog::info("Main: Stopping pps thread");
             ppsThread.stop();
-            Log.Info("Main: Joining pps thread");
+            spdlog::info("Main: Joining pps thread");
             pthread_join(ppsThreadId, &status);
         }
     } else {
-        Log.Fatal("Main: Failed to start pps thread");
+        spdlog::critical("Main: Failed to start pps thread");
     }
 
     pthread_attr_destroy(&threadAttribute);
 
     if (expansionFPGA->isErrorCode(expansionFPGA->close())) {
-        Log.Error("Main: Error closing expansion FPGA");
+        spdlog::error("Main: Error closing expansion FPGA");
     }
 
     if (fpga->isErrorCode(fpga->close())) {
-        Log.Error("Main: Error closing FPGA");
+        spdlog::error("Main: Error closing FPGA");
     }
 
     if (fpga->isErrorCode(fpga->finalize())) {
-        Log.Error("Main: Error finalizing FPGA");
+        spdlog::error("Main: Error finalizing FPGA");
     }
 
-    Log.Info("Main: Shutting down MTMount SAL");
+    spdlog::info("Main: Shutting down MTMount SAL");
     mtMountSAL.salShutdown();
 
-    Log.Info("Main: Shutting down M1M3 SAL");
+    spdlog::info("Main: Shutting down M1M3 SAL");
     m1m3SAL.salShutdown();
 
-    Log.Info("Main: Shutdown complete");
+    spdlog::info("Main: Shutdown complete");
 
     return 0;
 }

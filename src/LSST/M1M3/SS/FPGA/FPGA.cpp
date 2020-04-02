@@ -8,16 +8,17 @@
 #include <FPGA.h>
 #include <NiFpga_M1M3Support.h>
 #include <unistd.h>
-#include <Log.h>
 #include <U8ArrayUtilities.h>
 #include <FPGAAddresses.h>
+
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 FPGA::FPGA() {
-    Log.Debug("FPGA: FPGA()");
+    spdlog::debug("FPGA: FPGA()");
     this->session = 0;
     this->remaining = 0;
     this->u16Buffer[0] = 0;
@@ -29,12 +30,12 @@ FPGA::FPGA() {
 FPGA::~FPGA() {}
 
 int32_t FPGA::initialize() {
-    Log.Debug("FPGA: initialize()");
+    spdlog::debug("FPGA: initialize()");
     return NiFpga_Initialize();
 }
 
 int32_t FPGA::open() {
-    Log.Debug("FPGA: open()");
+    spdlog::debug("FPGA: open()");
     int32_t status = NiFpga_Open("/usr/ts_M1M3Support/" NiFpga_M1M3Support_Bitfile,
                                  NiFpga_M1M3Support_Signature, "RIO0", 0, &(this->session));
     status = NiFpga_Abort(this->session);
@@ -49,7 +50,7 @@ int32_t FPGA::open() {
 }
 
 int32_t FPGA::close() {
-    Log.Debug("FPGA: close()");
+    spdlog::debug("FPGA: close()");
     NiFpga_UnreserveIrqContext(this->session, this->outerLoopIRQContext);
     NiFpga_UnreserveIrqContext(this->session, this->modbusIRQContext);
     NiFpga_UnreserveIrqContext(this->session, this->ppsIRQContext);
@@ -57,14 +58,14 @@ int32_t FPGA::close() {
 }
 
 int32_t FPGA::finalize() {
-    Log.Debug("FPGA: finalize()");
+    spdlog::debug("FPGA: finalize()");
     return NiFpga_Finalize();
 }
 
 bool FPGA::isErrorCode(int32_t status) {
     bool isError = NiFpga_IsError(status);
     if (isError) {
-        Log.Error("FPGA: Error code %d", status);
+        spdlog::error("FPGA: Error code {}", status);
     }
     return isError;
 }
@@ -148,7 +149,7 @@ int32_t FPGA::ackModbusIRQ(int32_t subnet) {
 }
 
 void FPGA::pullTelemetry() {
-    Log.Trace("FPGA: pullTelemetry()");
+    spdlog::trace("FPGA: pullTelemetry()");
     this->writeRequestFIFO(FPGAAddresses::Telemetry, 0);
     uint16_t length[1];
     this->readU16ResponseFIFO(length, 1, 20);

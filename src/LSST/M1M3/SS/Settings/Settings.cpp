@@ -7,7 +7,7 @@
 
 #include <Settings.h>
 #include <boost/lexical_cast.hpp>
-#include <Log.h>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {

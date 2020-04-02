@@ -9,20 +9,20 @@
 #include <ExpansionFPGAApplicationSettings.h>
 #include <NiFpga_M1M3Expansion.h>
 #include <unistd.h>
-#include <Log.h>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 ExpansionFPGA::ExpansionFPGA() {
-    Log.Debug("ExpansionFPGA: ExpansionFPGA()");
+    spdlog::debug("ExpansionFPGA: ExpansionFPGA()");
     this->session = 0;
     this->remaining = 0;
 }
 
 int32_t ExpansionFPGA::initialize() {
-    Log.Debug("ExpansionFPGA: initialize()");
+    spdlog::debug("ExpansionFPGA: initialize()");
     if (!this->expansionFPGAApplicationSettings->Enabled) {
         return 0;
     }
@@ -30,7 +30,7 @@ int32_t ExpansionFPGA::initialize() {
 }
 
 int32_t ExpansionFPGA::open() {
-    Log.Debug("ExpansionFPGA: open()");
+    spdlog::debug("ExpansionFPGA: open()");
     if (!this->expansionFPGAApplicationSettings->Enabled) {
         return 0;
     }
@@ -46,7 +46,7 @@ int32_t ExpansionFPGA::open() {
 }
 
 int32_t ExpansionFPGA::close() {
-    Log.Debug("ExpansionFPGA: close()");
+    spdlog::debug("ExpansionFPGA: close()");
     if (!this->expansionFPGAApplicationSettings->Enabled) {
         return 0;
     }
@@ -54,7 +54,7 @@ int32_t ExpansionFPGA::close() {
 }
 
 int32_t ExpansionFPGA::finalize() {
-    Log.Debug("ExpansionFPGA: finalize()");
+    spdlog::debug("ExpansionFPGA: finalize()");
     if (!this->expansionFPGAApplicationSettings->Enabled) {
         return 0;
     }
@@ -64,7 +64,7 @@ int32_t ExpansionFPGA::finalize() {
 bool ExpansionFPGA::isErrorCode(int32_t status) {
     bool isError = NiFpga_IsError(status);
     if (isError) {
-        Log.Error("ExpansionFPGA: Error code %d", status);
+        spdlog::error("ExpansionFPGA: Error code {:d}", status);
     }
     return isError;
 }
