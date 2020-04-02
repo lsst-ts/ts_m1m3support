@@ -12,7 +12,7 @@
 // #include <Domain.h>
 // #include <Functions.h>
 // #include <LimitDefinitions.h>
-#include <pugixml.hpp>
+#include <pugixml/pugixml.hpp>
 
 namespace LSST {
 namespace M1M3 {

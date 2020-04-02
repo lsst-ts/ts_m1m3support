@@ -5,7 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <TableLoader.h>
-#include <Log.h>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -399,8 +399,8 @@ void ForceActuatorSettings::loadDisabledActuators(const std::string line) {
     this->DisabledActuators.clear();
     while (i != tok.end()) {
         this->DisabledActuators.push_back(boost::lexical_cast<int32_t>(*i));
-        Log.Warn("ForceActuatorSettings: Disabled Actuator %d",
-                 this->DisabledActuators[this->DisabledActuators.size() - 1]);
+        spdlog::warn("ForceActuatorSettings: Disabled Actuator {:d}",
+                     this->DisabledActuators[this->DisabledActuators.size() - 1]);
         ++i;
     }
 }

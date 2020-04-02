@@ -6,7 +6,7 @@
  */
 
 #include <AliasApplicationSettings.h>
-#include <pugixml.hpp>
+#include <pugixml/pugixml.hpp>
 #include <XMLDocLoad.h>
 #include <boost/tokenizer.hpp>
 

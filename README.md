@@ -41,7 +41,7 @@ excessive force will make hardpoint break away, and once detected with control
 software, mirror goes into panic. Mirror is still safe with any number of loose
 hardpoints, resting on SAA and DAA.
 
-Any miss-communication, unexpected behaviour of either hardpoint, SAA or DAA
+Any miss-communication, unexpected behavior of either hardpoint, SAA or DAA
 shall bring mirror into panic.
 
 ## NI-PC interaction
@@ -77,10 +77,21 @@ response queue, added to command response queue and finally readout.
 
 * *Bitfiles* - Contains the bit files that are loaded onto the FPGA's
 * *builds* - Contains utility applications for creating look up tables
-* *Controller* - Contains the C++ code for the ts\_M1M3Support application
-* *SettingFiles* - Configuration files
-* *Tests* - Contains python tests for the ts\_M1M3Support application
+* *SettingFiles* - Default configuration files
+* *src* - Contains the C++ code for the ts_M1M3Support application
+* *Tests* - Contains python tests for the ts_M1M3Support application
 * *Utilities* - Contains the code for the utility applications
+
+## Included external libraries
+
+* **src/pugixml** Light-weight [XML library](https://pugixml.org/) (MIT
+  License) [version](src/pugixml/pugixml.hpp)
+
+* **src/spdlog** [SpeedLog](https://github.com/gabime/spdlog) library (see
+  [version.h](src/spdlog/version.h) for version)
+
+This software depends on the fmt lib (MIT License),
+and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/LICENSE.rst
 
 # Building
 
@@ -110,43 +121,34 @@ salgenerator MTMount generate python
 ## Compiling for deployment
 
 ```bash
-cd ${BASE}/ts_m1m3support/Controller/CentOS
+cd ${BASE}/ts_m1m3support
 make clean
 make
 ```
 
-## Compiling for simulation (TODO currently broken)
+## Compiling for simulation
 
 ```bash
 cd $BASE
 source ts_sal/setup.env
-cd ts_m1m3support/Controller/CentOS
+cd ts_m1m3support
 make clean
 make SIMULATOR=1
-```
-
-## Setting up the runtime environment
-
-```bash
-sudo mkdir /usr/ts_M1M3Support
-sudo chmod a+rxw /usr/ts_M1M3Support
-cp -r ./ts_m1m3support/Controller/SettingFiles /usr/ts_M1M3Support
 ```
 
 ## Running in deployment
 
 ```bash
-source ./ts_sal/setup.env;ulimit -u unlimited;./ts_m1m3support/Controller/CentOS/ts_M1M3Support;
+source ./ts_sal/setup.env;./ts_m1m3support/ts_M1M3Support -c SettingFiles
 ```
 
-## Running in simulation (TODO currently broken)
+## Running in simulation
 
 ```bash
-source ./ts_sal/setup.env;./ts_m1m3support/Controller/CentOS/ts_M1M3Support
+source ./ts_sal/setup.env;./ts_m1m3support/ts_M1M3Support -c SettingFiles
 ```
 
-When issuing the start command specify the settings as Simulator The simulator
-does a pretty good job giving realistic data, you will notice some data isn't
-populated, it may be added at a later date, it may not. When issuing state
-change commands make sure to specify "value" as 1 otherwise the command will be
-rejected.
+The simulator does a pretty good job giving realistic data, you will notice
+some data isn't populated, it may be added at a later date, it may not. When
+issuing state change commands make sure to specify "value" as 1 otherwise the
+command will be rejected.

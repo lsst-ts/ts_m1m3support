@@ -1,7 +1,7 @@
 #ifndef XMLDOCLOAD_H
 #define XMLDOCLOAD_H
 
-#include <pugixml.hpp>
+#include <pugixml/pugixml.hpp>
 
 namespace LSST {
 namespace M1M3 {
