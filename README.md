@@ -84,11 +84,14 @@ response queue, added to command response queue and finally readout.
 
 ## Included external libraries
 
-* **src/spdlog** SpeedLog library (see [version.h](src/spdlog/version.h) for version)
- This software depends on the fmt lib (MIT License),
- and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/LICENSE.rst
+* **src/pugixml** Light-weight [XML library](https://pugixml.org/) (MIT
+  License) [version](src/pugixml/pugixml.hpp)
 
-* **src/pugixml** Light-weight [XML library](https://pugixml.org/) (MIT License) [version](src/pugixml/pugixml.hpp)
+* **src/spdlog** [SpeedLog](https://github.com/gabime/spdlog) library (see
+  [version.h](src/spdlog/version.h) for version)
+
+This software depends on the fmt lib (MIT License),
+and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/LICENSE.rst
 
 # Building
 
