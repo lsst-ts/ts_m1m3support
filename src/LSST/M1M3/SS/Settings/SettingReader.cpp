@@ -47,6 +47,8 @@ std::string SettingReader::getFilePath(std::string filename) {
 
 void SettingReader::configure(std::string settingsToApply) {
     spdlog::debug("SettingReader: configure(\"{}\")", settingsToApply);
+    currentSet = "";
+    currentVersion = "";
     if (settingsToApply.find(',') != std::string::npos) {
         typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
         tokenizer tokenize(settingsToApply);
@@ -64,6 +66,13 @@ void SettingReader::configure(std::string settingsToApply) {
                 break;
             }
         }
+    }
+    if (currentSet.empty()) {
+        throw std::runtime_error("Cannot find configuration for " + settingsToApply + " settings");
+    }
+
+    if (currentVersion.empty()) {
+        throw std::runtime_error("Empty version for " + settingsToApply + " settings");
     }
 }
 

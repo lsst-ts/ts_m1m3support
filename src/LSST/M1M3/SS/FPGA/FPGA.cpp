@@ -36,7 +36,7 @@ int32_t FPGA::initialize() {
 
 int32_t FPGA::open() {
     spdlog::debug("FPGA: open()");
-    int32_t status = NiFpga_Open("/usr/ts_M1M3Support/" NiFpga_M1M3Support_Bitfile,
+    int32_t status = NiFpga_Open("/home/admin/ts_m1m3support/Bitfiles/" NiFpga_M1M3Support_Bitfile,
                                  NiFpga_M1M3Support_Signature, "RIO0", 0, &(this->session));
     status = NiFpga_Abort(this->session);
     status = NiFpga_Download(this->session);
