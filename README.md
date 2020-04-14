@@ -120,6 +120,8 @@ salgenerator MTMount generate python
 
 ## Compiling for deployment
 
+You will need to install [NI provided GNU toolchain](http://www.ni.com/download/labview-real-time-module-2017/6763/en/).
+
 ```bash
 cd ${BASE}/ts_m1m3support
 make clean

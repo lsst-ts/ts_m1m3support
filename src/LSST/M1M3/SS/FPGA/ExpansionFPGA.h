@@ -1,8 +1,6 @@
 #ifndef EXPANSIONFPGA_H_
 #define EXPANSIONFPGA_H_
 
-#include <NiFpga.h>
-
 #include <IExpansionFPGA.h>
 
 namespace LSST {

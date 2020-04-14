@@ -15,7 +15,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher(SAL_MTM1M3* m1m3SAL) {
+M1M3SSPublisher::M1M3SSPublisher(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()");
     this->m1m3SAL = m1m3SAL;
 
@@ -2319,14 +2319,6 @@ void M1M3SSPublisher::tryLogRejectedVelocityForces() {
 
 void M1M3SSPublisher::logSettingVersions() {
     this->m1m3SAL->logEvent_settingVersions(&this->eventSettingVersions, 0);
-    this->previousEventSettingVersions = this->eventSettingVersions;
-}
-
-void M1M3SSPublisher::tryLogSettingVersions() {
-    if (this->eventSettingVersions.recommendedSettingsVersion.compare(
-                this->previousEventSettingVersions.recommendedSettingsVersion) != 0) {
-        this->logSettingVersions();
-    }
 }
 
 void M1M3SSPublisher::logSettingsApplied() {

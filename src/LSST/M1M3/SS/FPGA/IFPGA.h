@@ -1,7 +1,6 @@
 #ifndef LSST_M1M3_SS_FPGA_IFPGA_H_
 #define LSST_M1M3_SS_FPGA_IFPGA_H_
 
-#include <NiFpga.h>
 #include <SupportFPGAData.h>
 
 namespace LSST {
