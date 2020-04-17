@@ -9,19 +9,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * The class used to communicate with the FPGA.
+/**
+ * The class used to communicate with the FPGA. Encapsulates various NiFpga
+ * calls, primary dealing with FPGAs FIFOs.
  */
 class FPGA : public IFPGA {
-private:
-    uint32_t session;
-    size_t remaining;
-    uint16_t u16Buffer[1];
-    NiFpga_IrqContext outerLoopIRQContext;
-    NiFpga_IrqContext modbusIRQContext;
-    NiFpga_IrqContext ppsIRQContext;
-    SupportFPGAData supportFPGAData;
-
 public:
     FPGA();
     virtual ~FPGA();
@@ -53,6 +45,25 @@ public:
     int32_t writeTimestampFIFO(uint64_t timestamp) override;
     int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) override;
     int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
+
+private:
+    uint32_t session;
+    size_t remaining;
+    uint16_t u16Buffer[1];
+    NiFpga_IrqContext outerLoopIRQContext;
+    NiFpga_IrqContext modbusIRQContext;
+    NiFpga_IrqContext ppsIRQContext;
+    SupportFPGAData supportFPGAData;
+
+    /**
+     * Log NiFpga call error.
+     *
+     * @param msg additional message (can be __PRETTY_FUNCTION__)
+     * @param status NiFpga returned status
+     *
+     * @return status (so it can be reused)
+     */
+    int32_t reportError(const char* msg, int32_t status);
 };
 
 } /* namespace SS */
