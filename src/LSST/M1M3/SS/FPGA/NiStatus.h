@@ -12,6 +12,8 @@
  *
  * @return error description, or "Unknow error status" if not known
  */
-const char* NiFpga_Status(int32_t status);
+const char* NiStatus(int32_t status);
+
+int32_t NiReportError(const char* msg, int32_t status);
 
 #endif /* NiStatus_H_ */

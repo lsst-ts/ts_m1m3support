@@ -1,4 +1,5 @@
 #include <NiStatus.h>
+#include <spdlog/spdlog.h>
 
 struct NiErrors {
     int32_t status;
@@ -167,9 +168,16 @@ NiErrors errors[] = {
          "some: open sessions"},
         {0, nullptr}};
 
-const char *NiFpga_Status(int32_t status) {
+const char *NiStatus(int32_t status) {
     for (NiErrors *err = errors; err->desc != nullptr; err++) {
         if (err->status == status) return err->desc;
     }
     return "Unknow error status";
+}
+
+int32_t NiReportError(const char* msg, int32_t status) {
+    if (status != 0) {
+        spdlog::error("FPGA error in {0}: {1}", msg, NiStatus(status));
+    }
+    return status;
 }

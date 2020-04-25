@@ -3,8 +3,6 @@ ifndef VERBOSE
   co := @
 endif
 
--include ../makefile.init
-
 # compile x86 simulator or real cRIO stuff
 ifdef SIMULATOR
   C := gcc -O3 -Wall -g
@@ -21,7 +19,7 @@ M1M3_CPPFLAGS := -I"src" -I"src/LSST/M1M3/SS/DigitalInputOutput" -I"src/LSST/M1M
 
 LIBS := -ldl -lSAL_MTMount -lSAL_MTM1M3 -lsacpp_MTMount_types -lsacpp_MTM1M3_types -ldcpssacpp -ldcpsgapi -lddsuser -lddskernel -lpthread -lddsserialization -lddsconfparser -lddsconf -lddsdatabase -lddsutil -lddsos
 
-.PHONY: all clean dependents
+.PHONY: all clean dependents deploy
 
 C_SRCS = $(shell find src/ -name '*.c')
 CPP_SRCS = $(shell find src/ -name '*.cpp')
@@ -58,4 +56,5 @@ src/%.o: src/%.c
 	@echo '[C  ] $<'
 	${co}$(C) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 
--include ../makefile.targets
+deploy: ts_M1M3Support
+	scp $< admin@10.0.0.11:
