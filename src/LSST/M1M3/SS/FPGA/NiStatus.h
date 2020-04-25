@@ -14,6 +14,14 @@
  */
 const char* NiStatus(int32_t status);
 
+/**
+ * Log NiFpga call error.
+ *
+ * @param msg additional message (can be __PRETTY_FUNCTION__)
+ * @param status NiFpga returned status
+ *
+ * @return status (so it can be reused)
+ */
 int32_t NiReportError(const char* msg, int32_t status);
 
 #endif /* NiStatus_H_ */

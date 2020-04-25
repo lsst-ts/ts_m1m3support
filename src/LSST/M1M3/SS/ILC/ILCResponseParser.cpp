@@ -360,7 +360,7 @@ void ILCResponseParser::verifyResponses() {
     }
     if (warn) {
         anyTimeout = true;
-        spdlog::warn("ILCResponseParser: Force actuator response timeout");
+        spdlog::warn("ILCResponseParser: Force actuator response timeout {} {} {} {} {} {} {} {}");
     }
     warn = false;
     for (int i = 0; i < HP_COUNT; i++) {
