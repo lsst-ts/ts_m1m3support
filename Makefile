@@ -40,7 +40,7 @@ all: ts_M1M3Support
 ts_M1M3Support: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo '$(CPP_SRCS)'
-	g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o "ts_M1M3Support" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
