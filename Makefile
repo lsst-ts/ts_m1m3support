@@ -21,8 +21,8 @@ LIBS := -ldl -lSAL_MTMount -lSAL_MTM1M3 -lsacpp_MTMount_types -lsacpp_MTM1M3_typ
 
 .PHONY: all clean dependents deploy
 
-C_SRCS = $(shell find src/ -name '*.c')
-CPP_SRCS = $(shell find src/ -name '*.cpp')
+C_SRCS = $(shell find src/*/ -name '*.c')
+CPP_SRCS = $(shell find src/*/ -name '*.cpp')
 
 OBJS = $(patsubst %.c,%.o,$(C_SRCS)) $(patsubst %.cpp,%.o,$(CPP_SRCS))
 
@@ -33,15 +33,23 @@ CPP_DEPS = $(patsubst %.cpp,%.d,$(CPP_SRCS))
 #
 
 # All Target
-all: ts_M1M3Support
+all: ts_M1M3Support m1m3cli
 
 # Tool invocations
-ts_M1M3Support: $(OBJS) $(USER_OBJS)
-	@echo 'Building target: $@'
-	@echo '$(CPP_SRCS)'
-	g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o "$@" $(OBJS) $(USER_OBJS) $(LIBS)
-	@echo 'Finished building target: $@'
-	@echo ' '
+ts_M1M3Support: src/ts_M1M3Support.o $(filter-out src/cliapp/%,$(OBJS))
+	@echo '[LD ] $@'
+	${co}g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o "$@" $? $(LIBS)
+
+M1M3_OBJS = src/cliapp/CliApp.o \
+  src/LSST/M1M3/SS/FPGA/FPGA.o \
+  src/LSST/M1M3/SS/FPGA/NiFpga.o \
+  src/LSST/M1M3/SS/FPGA/NiStatus.o \
+  src/LSST/M1M3/SS/Utility/U8ArrayUtilities.o \
+  src/LSST/M1M3/SS/Utility/U16ArrayUtilities.o
+
+m1m3cli: src/m1m3cli.o $(M1M3_OBJS)
+	@echo '[LD ] $@'
+	${co}g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -o "$@" $? $(LIBS) -lreadline
 
 # Other Targets
 clean:
@@ -56,5 +64,10 @@ src/%.o: src/%.c
 	@echo '[C  ] $<'
 	${co}$(C) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 
-deploy: ts_M1M3Support
-	scp $< admin@10.0.0.11:
+CRIO_IP = 10.0.0.11
+
+deploy: ts_M1M3Support m1m3cli
+	@echo '[SCP] $?'
+	${co}scp $? admin@${CRIO_IP}:
+	@echo '[SCP] Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx'
+	${co}scp Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx admin@${CRIO_IP}:Bitfiles
