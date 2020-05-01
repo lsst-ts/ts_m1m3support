@@ -1,5 +1,5 @@
 #include <FPGA.h>
-#include <NiFpga_ts_M1M3SupportFPGA.h>
+#include <NiFpga_M1M3SupportFPGA.h>
 #include <NiStatus.h>
 #include <unistd.h>
 #include <U8ArrayUtilities.h>
@@ -30,8 +30,8 @@ int32_t FPGA::initialize() {
 
 int32_t FPGA::open() {
     spdlog::debug("FPGA: open()");
-    int32_t status = NiFpga_Open("/home/admin/Bitfiles/" NiFpga_ts_M1M3SupportFPGA_Bitfile,
-                                 NiFpga_ts_M1M3SupportFPGA_Signature, "RIO0", 0, &(this->session));
+    int32_t status = NiFpga_Open("/home/admin/Bitfiles/" NiFpga_M1M3SupportFPGA_Bitfile,
+                                 NiFpga_M1M3SupportFPGA_Signature, "RIO0", 0, &(this->session));
     if (status) {
         return NiReportError(__PRETTY_FUNCTION__, status);
     }
@@ -224,8 +224,8 @@ void FPGA::pullTelemetry() {
 int32_t FPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_WriteFifoU16(this->session, NiFpga_ts_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO,
-                                data, length, timeoutInMs, &this->remaining));
+            NiFpga_WriteFifoU16(this->session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO, data,
+                                length, timeoutInMs, &this->remaining));
 }
 
 int32_t FPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {
@@ -236,8 +236,8 @@ int32_t FPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {
 int32_t FPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_WriteFifoU16(this->session, NiFpga_ts_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO,
-                                data, length, timeoutInMs, &this->remaining));
+            NiFpga_WriteFifoU16(this->session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO, data,
+                                length, timeoutInMs, &this->remaining));
 }
 
 int32_t FPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
@@ -247,24 +247,23 @@ int32_t FPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
 
 int32_t FPGA::writeTimestampFIFO(uint64_t timestamp) {
     uint64_t buffer[1] = {timestamp};
-    return NiReportError(
-            __PRETTY_FUNCTION__,
-            NiFpga_WriteFifoU64(this->session,
-                                NiFpga_ts_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO, buffer, 1,
-                                0, &this->remaining));
+    return NiReportError(__PRETTY_FUNCTION__,
+                         NiFpga_WriteFifoU64(this->session,
+                                             NiFpga_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO,
+                                             buffer, 1, 0, &this->remaining));
 }
 
 int32_t FPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) {
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_ReadFifoU8(this->session, NiFpga_ts_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO,
-                              data, length, timeoutInMs, &this->remaining));
+            NiFpga_ReadFifoU8(this->session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO, data,
+                              length, timeoutInMs, &this->remaining));
 }
 
 int32_t FPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_ReadFifoU16(this->session, NiFpga_ts_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO,
+            NiFpga_ReadFifoU16(this->session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO,
                                data, length, timeoutInMs, &this->remaining));
 }
 
