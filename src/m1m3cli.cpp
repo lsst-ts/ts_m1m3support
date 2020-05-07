@@ -63,11 +63,13 @@ int serials(command_vec cmds) {
 
 M1M3cli cli("M1M3 Command Line Interface");
 
-command_t commands[] = {{"close", &closeFPGA, "", 0, NULL, "Close FPGA connection"},
-                        {"info", &info, "I?", 0, "<ID> <ID..>", "Print actuator info"},
-                        {"open", &openFPGA, "", 0, NULL, "Open FPGA"},
-                        {"serials", &serials, "s", 0, NULL, "Report serial port status"},
-                        {NULL, NULL, NULL, 0, NULL, NULL}};
+command_t commands[] = {
+        {"close", &closeFPGA, "", 0, NULL, "Close FPGA connection"},
+        {"help", [=](command_vec cmds) { return cli.helpCommands(cmds); }, "", 0, NULL, "Print command help"},
+        {"info", &info, "I?", 0, "<ID> <ID..>", "Print actuator info"},
+        {"open", &openFPGA, "", 0, NULL, "Open FPGA"},
+        {"serials", &serials, "s", 0, NULL, "Report serial port status"},
+        {NULL, NULL, NULL, 0, NULL, NULL}};
 
 int main(int argc, char* const argv[]) {
     command_vec cmds = cli.init(commands, "h", argc, argv);
