@@ -44,6 +44,10 @@ M1M3_OBJS = src/cliapp/CliApp.o \
   src/LSST/M1M3/SS/FPGA/FPGA.o \
   src/LSST/M1M3/SS/FPGA/NiFpga.o \
   src/LSST/M1M3/SS/FPGA/NiStatus.o \
+  src/LSST/M1M3/SS/FPGA/NiError.o \
+  src/LSST/M1M3/SS/FPGA/IFPGA.o \
+  src/LSST/M1M3/SS/FPGA/FPGA.o \
+  src/LSST/M1M3/SS/FPGA/HealthAndStatusFPGAData.o \
   src/LSST/M1M3/SS/Utility/U8ArrayUtilities.o \
   src/LSST/M1M3/SS/Utility/U16ArrayUtilities.o
 
