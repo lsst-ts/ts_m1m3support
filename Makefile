@@ -10,6 +10,7 @@ ifdef SIMULATOR
 else
   C := gcc -Wall -g -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
   CPP := g++ -std=c++11 -Wall -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -g
+  m1m3cli := m1m3cli
 endif
 
 BOOST_CPPFLAGS := -I/usr/include
@@ -33,7 +34,7 @@ CPP_DEPS = $(patsubst %.cpp,%.d,$(CPP_SRCS))
 #
 
 # All Target
-all: ts_M1M3Support m1m3cli
+all: ts_M1M3Support $(m1m3cli)
 
 # Tool invocations
 ts_M1M3Support: src/ts_M1M3Support.o $(filter-out src/cliapp/%,$(OBJS))
