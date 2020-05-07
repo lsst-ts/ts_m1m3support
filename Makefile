@@ -58,7 +58,7 @@ m1m3cli: src/m1m3cli.o $(M1M3_OBJS)
 
 # Other Targets
 clean:
-	$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) ts_M1M3Support, echo '[RM ] ${file}'; $(RM) -r $(file);)
+	$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) ts_M1M3Support src/ts_M1M3Support.o src/m1m3cli.o, echo '[RM ] ${file}'; $(RM) -r $(file);)
 
 # file targets
 src/%.o: src/%.cpp
