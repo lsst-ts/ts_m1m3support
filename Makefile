@@ -9,7 +9,7 @@ ifdef SIMULATOR
   CPP := g++ -std=c++11 -pedantic -O3 -Wall -g -DSIMULATOR
 else
   C := gcc -Wall -g -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
-  CPP := g++ -std=c++11 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -g
+  CPP := g++ -std=c++11 -Wall -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -g
 endif
 
 BOOST_CPPFLAGS := -I/usr/include
@@ -38,7 +38,7 @@ all: ts_M1M3Support m1m3cli
 # Tool invocations
 ts_M1M3Support: src/ts_M1M3Support.o $(filter-out src/cliapp/%,$(OBJS))
 	@echo '[LD ] $@'
-	${co}g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o "$@" $? $(LIBS)
+	${co}$(CPP) -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o "$@" $? $(LIBS)
 
 M1M3_OBJS = src/cliapp/CliApp.o \
   src/LSST/M1M3/SS/FPGA/FPGA.o \
@@ -53,7 +53,7 @@ M1M3_OBJS = src/cliapp/CliApp.o \
 
 m1m3cli: src/m1m3cli.o $(M1M3_OBJS)
 	@echo '[LD ] $@'
-	${co}g++ -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -o "$@" $? $(LIBS) -lreadline
+	${co}$(CPP) -o "$@" $? -lreadline -ldl
 
 # Other Targets
 clean:
