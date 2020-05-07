@@ -7,6 +7,7 @@
 
 #include <cliapp/CliApp.hpp>
 #include <iostream>
+#include <iomanip>
 
 using namespace LSST::M1M3::SS;
 
@@ -35,22 +36,37 @@ void M1M3cli::processArg(int opt, const char* optarg) {
     }
 }
 
-FPGA fpga;
+int closeFPGA(command_vec) { return IFPGA::get().close(); }
 
-int closeFPGA(command_vec) { return fpga.close(); }
+int info(command_vec cmds) {
+    for (auto c : cmds) {
+    }
 
-int info(command_vec cmds) { return 0; }
+    return 0;
+}
 
 int openFPGA(command_vec) {
-    fpga.initialize();
-    return fpga.open();
+    IFPGA::get().initialize();
+    return IFPGA::get().open();
+}
+
+int serials(command_vec cmds) {
+    IFPGA::get().pullHealthAndStatus();
+    ModbusPort* p = IFPGA::get().getHealthAndStatusFPGAData()->ports;
+    for (int i = 0; i < 5; i++, p++) {
+        std::cout << "Bus " << (char)('A' + i) << ": 0x" << std::hex << std::setfill('0') << std::setw(2)
+                  << p->errorFlag << std::dec << " " << p->txBytes << " " << p->txFrames << " " << p->rxBytes
+                  << " " << p->rxFrames << std::endl;
+    }
+    return 0;
 }
 
 M1M3cli cli("M1M3 Command Line Interface");
 
 command_t commands[] = {{"close", &closeFPGA, "", 0, NULL, "Close FPGA connection"},
-                        {"info", &info, "D?", 0, "<ID> <ID..>", "Print actuator info"},
+                        {"info", &info, "I?", 0, "<ID> <ID..>", "Print actuator info"},
                         {"open", &openFPGA, "", 0, NULL, "Open FPGA"},
+                        {"serials", &serials, "s", 0, NULL, "Report serial port status"},
                         {NULL, NULL, NULL, 0, NULL, NULL}};
 
 int main(int argc, char* const argv[]) {

@@ -3,7 +3,6 @@
 
 #include <NiFpga.h>
 #include <IFPGA.h>
-#include <SupportFPGAData.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -17,8 +16,6 @@ class FPGA : public IFPGA {
 public:
     FPGA();
     virtual ~FPGA();
-
-    SupportFPGAData* getSupportFPGAData() override { return &this->supportFPGAData; }
 
     int32_t initialize() override;
     int32_t open() override;
@@ -37,11 +34,12 @@ public:
     int32_t ackModbusIRQ(int32_t subnet) override;
 
     void pullTelemetry() override;
+    void pullHealthAndStatus() override;
 
     int32_t writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
     int32_t writeCommandFIFO(uint16_t data, int32_t timeoutInMs) override;
-    int32_t writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
-    int32_t writeRequestFIFO(uint16_t data, int32_t timeoutInMs) override;
+    void writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
+    void writeRequestFIFO(uint16_t data, int32_t timeoutInMs) override;
     int32_t writeTimestampFIFO(uint64_t timestamp) override;
     int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) override;
     int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
@@ -53,7 +51,7 @@ private:
     NiFpga_IrqContext outerLoopIRQContext;
     NiFpga_IrqContext modbusIRQContext;
     NiFpga_IrqContext ppsIRQContext;
-    SupportFPGAData supportFPGAData;
+    HealthAndStatusFPGAData healthAndStatusFPGAData;
 };
 
 } /* namespace SS */
