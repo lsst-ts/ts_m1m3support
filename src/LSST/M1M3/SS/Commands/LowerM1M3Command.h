@@ -1,10 +1,3 @@
-/*
- * LowerM1M3Command.h
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #ifndef LOWERM1M3COMMAND_H_
 #define LOWERM1M3COMMAND_H_
 
@@ -16,22 +9,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class LowerM1M3Command: public Command {
+class LowerM1M3Command : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_lowerM1M3C data;
+    Context* context;
+    M1M3SSPublisher* publisher;
 
 public:
-	LowerM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_lowerM1M3C* data);
+    LowerM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                     MTM1M3_command_lowerM1M3C*);
 
-	MTM1M3_command_lowerM1M3C* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

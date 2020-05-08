@@ -7,19 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 AbortProfileCommand::AbortProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                         MTM1M3_command_abortProfileC* data) {
+                                         MTM1M3_command_abortProfileC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data = *data;
-    this->data.abortProfile = data->abortProfile;
-}
-
-bool AbortProfileCommand::validate() {
-    if (!this->data.abortProfile) {
-        this->publisher->logCommandRejectionWarning("AbortProfile", "The field AbortProfile is not TRUE.");
-    }
-    return this->data.abortProfile;
 }
 
 void AbortProfileCommand::execute() { this->context->abortProfile(this); }

@@ -7,14 +7,11 @@ namespace M1M3 {
 namespace SS {
 
 StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                               MTM1M3_command_standbyC* data) {
+                               MTM1M3_command_standbyC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.value = data->value;
 }
-
-bool StandbyCommand::validate() { return true; }
 
 void StandbyCommand::execute() { this->context->standby(this); }
 

@@ -8,19 +8,10 @@ namespace SS {
 
 ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher,
                                                              int32_t commandID,
-                                                             MTM1M3_command_clearActiveOpticForcesC* data) {
+                                                             MTM1M3_command_clearActiveOpticForcesC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.clearActiveOpticForces = data->clearActiveOpticForces;
-}
-
-bool ClearActiveOpticForcesCommand::validate() {
-    if (!this->data.clearActiveOpticForces) {
-        this->publisher->logCommandRejectionWarning("ClearActiveOpticForces",
-                                                    "The field ClearActiveOpticForces is not TRUE.");
-    }
-    return this->data.clearActiveOpticForces;
 }
 
 void ClearActiveOpticForcesCommand::execute() { this->context->clearActiveOpticForces(this); }

@@ -19,18 +19,15 @@ class ShutdownCommand : public Command {
 private:
     Context* context;
     M1M3SSPublisher* publisher;
-    MTM1M3_command_shutdownC data;
 
 public:
     ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                    MTM1M3_command_shutdownC* data);
+                    MTM1M3_command_shutdownC*);
 
-    MTM1M3_command_shutdownC* getData() { return &this->data; }
-
-    void execute();
-    void ackInProgress();
-    void ackComplete();
-    void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

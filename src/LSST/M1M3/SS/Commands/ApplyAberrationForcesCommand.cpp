@@ -17,8 +17,6 @@ ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(Context* context, M1M
     }
 }
 
-bool ApplyAberrationForcesCommand::validate() { return true; }
-
 void ApplyAberrationForcesCommand::execute() { this->context->applyAberrationForces(this); }
 
 void ApplyAberrationForcesCommand::ackInProgress() {

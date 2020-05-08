@@ -8,19 +8,10 @@ namespace SS {
 
 DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(
         Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-        MTM1M3_command_disableHardpointCorrectionsC* data) {
+        MTM1M3_command_disableHardpointCorrectionsC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.disableHardpointCorrections = data->disableHardpointCorrections;
-}
-
-bool DisableHardpointCorrectionsCommand::validate() {
-    if (!this->data.disableHardpointCorrections) {
-        this->publisher->logCommandRejectionWarning("DisableHardpointCorrections",
-                                                    "The field DisableHardpointCorrections is not TRUE.");
-    }
-    return this->data.disableHardpointCorrections;
 }
 
 void DisableHardpointCorrectionsCommand::execute() { this->context->disableHardpointCorrections(this); }

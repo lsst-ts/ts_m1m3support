@@ -7,11 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                             MTM1M3_command_enableC* data) {
+                             MTM1M3_command_enableC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.value = data->value;
 }
 
 void EnableCommand::execute() { this->context->enable(this); }

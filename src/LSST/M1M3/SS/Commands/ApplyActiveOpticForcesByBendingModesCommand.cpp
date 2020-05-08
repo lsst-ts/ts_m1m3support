@@ -17,8 +17,6 @@ ApplyActiveOpticForcesByBendingModesCommand::ApplyActiveOpticForcesByBendingMode
     }
 }
 
-bool ApplyActiveOpticForcesByBendingModesCommand::validate() { return true; }
-
 void ApplyActiveOpticForcesByBendingModesCommand::execute() {
     this->context->applyActiveOpticForcesByBendingModes(this);
 }

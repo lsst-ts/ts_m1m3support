@@ -1,10 +1,3 @@
-/*
- * UpdatePIDCommand.h
- *
- *  Created on: Feb 13, 2018
- *      Author: ccontaxis
- */
-
 #ifndef UPDATEPIDCOMMAND_H_
 #define UPDATEPIDCOMMAND_H_
 
@@ -16,22 +9,23 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class UpdatePIDCommand: public Command {
+class UpdatePIDCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_updatePIDC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
+    MTM1M3_command_updatePIDC data;
 
 public:
-	UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_updatePIDC* data);
+    UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                     MTM1M3_command_updatePIDC* data);
 
-	MTM1M3_command_updatePIDC* getData() { return &this->data; }
+    MTM1M3_command_updatePIDC* getData() { return &this->data; }
 
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

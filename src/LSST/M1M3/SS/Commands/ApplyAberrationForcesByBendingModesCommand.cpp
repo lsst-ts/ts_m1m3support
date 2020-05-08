@@ -17,8 +17,6 @@ ApplyAberrationForcesByBendingModesCommand::ApplyAberrationForcesByBendingModesC
     }
 }
 
-bool ApplyAberrationForcesByBendingModesCommand::validate() { return true; }
-
 void ApplyAberrationForcesByBendingModesCommand::execute() {
     this->context->applyAberrationForcesByBendingModes(this);
 }

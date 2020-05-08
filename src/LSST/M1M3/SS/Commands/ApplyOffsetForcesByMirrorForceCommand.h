@@ -1,10 +1,3 @@
-/*
- * ApplyOffsetForcesByMirrorForceCommand.h
- *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef APPLYOFFSETFORCESBYMIRRORFORCECOMMAND_H_
 #define APPLYOFFSETFORCESBYMIRRORFORCECOMMAND_H_
 
@@ -16,22 +9,22 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ApplyOffsetForcesByMirrorForceCommand: public Command {
+class ApplyOffsetForcesByMirrorForceCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_applyOffsetForcesByMirrorForceC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
+    MTM1M3_command_applyOffsetForcesByMirrorForceC data;
 
 public:
-	ApplyOffsetForcesByMirrorForceCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data);
+    ApplyOffsetForcesByMirrorForceCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                                          MTM1M3_command_applyOffsetForcesByMirrorForceC* data);
 
-	MTM1M3_command_applyOffsetForcesByMirrorForceC* getData() { return &this->data; }
+    MTM1M3_command_applyOffsetForcesByMirrorForceC* getData() { return &this->data; }
 
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

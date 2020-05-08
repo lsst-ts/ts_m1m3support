@@ -17,8 +17,6 @@ ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(Context* context, M
     }
 }
 
-bool ApplyActiveOpticForcesCommand::validate() { return true; }
-
 void ApplyActiveOpticForcesCommand::execute() { this->context->applyActiveOpticForces(this); }
 
 void ApplyActiveOpticForcesCommand::ackInProgress() {

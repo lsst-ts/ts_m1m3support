@@ -26,11 +26,11 @@ public:
 
     MTM1M3_command_startC* getData() { return &this->data; }
 
-    bool validate();
-    void execute();
-    void ackInProgress();
-    void ackComplete();
-    void ackFailed(std::string reason);
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

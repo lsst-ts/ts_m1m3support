@@ -7,11 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                 MTM1M3_command_shutdownC* data) {
+                                 MTM1M3_command_shutdownC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.shutdown = data->shutdown;
 }
 
 void ShutdownCommand::execute() { this->context->shutdown(this); }
