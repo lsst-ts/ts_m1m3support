@@ -39,7 +39,7 @@ all: ts_M1M3Support $(m1m3cli)
 # Tool invocations
 ts_M1M3Support: src/ts_M1M3Support.o $(filter-out src/cliapp/%,$(OBJS))
 	@echo '[LD ] $@'
-	${co}$(CPP) -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o "$@" $? $(LIBS)
+	${co}$(CPP) -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o $@ $^ $(LIBS)
 
 M1M3_OBJS = src/cliapp/CliApp.o \
   src/LSST/M1M3/SS/FPGA/FPGA.o \
@@ -54,7 +54,7 @@ M1M3_OBJS = src/cliapp/CliApp.o \
 
 m1m3cli: src/m1m3cli.o $(M1M3_OBJS)
 	@echo '[LD ] $@'
-	${co}$(CPP) -o "$@" $? -lreadline -ldl
+	${co}$(CPP) -o $@ $^ -lreadline -ldl
 
 # Other Targets
 clean:
@@ -62,17 +62,17 @@ clean:
 
 # file targets
 src/%.o: src/%.cpp
-	@echo '[CPP] $<'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	@echo '[CPP] $^'
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o $@ $^
 
 src/%.o: src/%.c
-	@echo '[C  ] $<'
-	${co}$(C) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	@echo '[C  ] $^'
+	${co}$(C) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o $@ $^
 
 CRIO_IP = 10.0.0.11
 
 deploy: ts_M1M3Support m1m3cli
-	@echo '[SCP] $?'
-	${co}scp $? admin@${CRIO_IP}:
+	@echo '[SCP] $^'
+	${co}scp $^ admin@${CRIO_IP}:
 	@echo '[SCP] Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx'
 	${co}scp Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx admin@${CRIO_IP}:Bitfiles
