@@ -58,7 +58,6 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     forceActuatorState = publisher->getEventForceActuatorState();
     forceSetpointWarning = publisher->getEventForceSetpointWarning();
     rejectedCylinderForces = publisher->getEventRejectedCylinderForces();
-    rejectedForces = publisher->getEventRejectedForces();
 
     forceActuatorInfo = publisher->getEventForceActuatorInfo();
     inclinometerData = publisher->getInclinometerData();
@@ -70,15 +69,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     accelerometerData = publisher->getAccelerometerData();
     gyroData = publisher->getGyroData();
 
-    memset(forceActuatorData, 0, sizeof(MTM1M3_forceActuatorDataC));
-    memset(&tmaAzimuthData, 0, sizeof(MTMount_AzimuthC));
-    memset(&tmaElevationData, 0, sizeof(MTMount_ElevationC));
-
-    memset(appliedForces, 0, sizeof(MTM1M3_logevent_appliedForcesC));
-    memset(forceActuatorState, 0, sizeof(MTM1M3_logevent_forceActuatorStateC));
-    memset(forceSetpointWarning, 0, sizeof(MTM1M3_logevent_forceSetpointWarningC));
-    memset(rejectedCylinderForces, 0, sizeof(MTM1M3_logevent_rejectedCylinderForcesC));
-    memset(rejectedForces, 0, sizeof(MTM1M3_logevent_rejectedForcesC));
+    elevation_Timestamp = 0;
+    elevation_Angle_Actual = NAN;
 
     this->aberrationForceComponent.reset();
     this->accelerationForceComponent.reset();
@@ -145,7 +137,8 @@ void ForceController::reset() {
 
 void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationData) {
     spdlog::trace("ForceController: updateTMAElevationData()");
-    memcpy(&this->tmaElevationData, tmaElevationData, sizeof(MTMount_ElevationC));
+    elevation_Angle_Actual = tmaElevationData->Elevation_Angle_Actual;
+    elevation_Timestamp = tmaElevationData->timestamp;
 }
 
 void ForceController::incSupportPercentage() {
@@ -230,7 +223,7 @@ void ForceController::updateAppliedForces() {
         if (this->elevationForceComponent.isEnabled()) {
             double elevationAngle = this->forceActuatorSettings->UseInclinometer
                                             ? this->inclinometerData->inclinometerAngle
-                                            : this->tmaElevationData.Elevation_Angle_Actual;
+                                            : elevation_Angle_Actual;
             // Convert elevation angle to zenith angle (used by matrix)
             elevationAngle = 90.0 - elevationAngle;
             this->elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);
