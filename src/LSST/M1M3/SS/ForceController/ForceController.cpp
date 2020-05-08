@@ -53,32 +53,32 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     this->safetyController = safetyController;
     this->pidSettings = pidSettings;
 
-    this->appliedCylinderForces = this->publisher->getEventAppliedCylinderForces();
-    this->appliedForces = this->publisher->getEventAppliedForces();
-    this->forceActuatorState = this->publisher->getEventForceActuatorState();
-    this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
-    this->rejectedCylinderForces = this->publisher->getEventRejectedCylinderForces();
-    this->rejectedForces = this->publisher->getEventRejectedForces();
+    appliedCylinderForces = publisher->getEventAppliedCylinderForces();
+    appliedForces = publisher->getEventAppliedForces();
+    forceActuatorState = publisher->getEventForceActuatorState();
+    forceSetpointWarning = publisher->getEventForceSetpointWarning();
+    rejectedCylinderForces = publisher->getEventRejectedCylinderForces();
+    rejectedForces = publisher->getEventRejectedForces();
 
-    this->forceActuatorInfo = this->publisher->getEventForceActuatorInfo();
-    this->inclinometerData = this->publisher->getInclinometerData();
-    this->forceActuatorData = this->publisher->getForceActuatorData();
+    forceActuatorInfo = publisher->getEventForceActuatorInfo();
+    inclinometerData = publisher->getInclinometerData();
+    forceActuatorData = publisher->getForceActuatorData();
 
-    this->pidData = this->publisher->getPIDData();
-    this->pidInfo = this->publisher->getEventPIDInfo();
-    this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
-    this->accelerometerData = this->publisher->getAccelerometerData();
-    this->gyroData = this->publisher->getGyroData();
+    pidData = publisher->getPIDData();
+    pidInfo = publisher->getEventPIDInfo();
+    hardpointActuatorData = publisher->getHardpointActuatorData();
+    accelerometerData = publisher->getAccelerometerData();
+    gyroData = publisher->getGyroData();
 
-    memset(this->forceActuatorData, 0, sizeof(MTM1M3_forceActuatorDataC));
-    memset(&this->tmaAzimuthData, 0, sizeof(MTMount_AzimuthC));
-    memset(&this->tmaElevationData, 0, sizeof(MTMount_ElevationC));
+    memset(forceActuatorData, 0, sizeof(MTM1M3_forceActuatorDataC));
+    memset(&tmaAzimuthData, 0, sizeof(MTMount_AzimuthC));
+    memset(&tmaElevationData, 0, sizeof(MTMount_ElevationC));
 
-    memset(this->appliedForces, 0, sizeof(MTM1M3_logevent_appliedForcesC));
-    memset(this->forceActuatorState, 0, sizeof(MTM1M3_logevent_forceActuatorStateC));
-    memset(this->forceSetpointWarning, 0, sizeof(MTM1M3_logevent_forceSetpointWarningC));
-    memset(this->rejectedCylinderForces, 0, sizeof(MTM1M3_logevent_rejectedCylinderForcesC));
-    memset(this->rejectedForces, 0, sizeof(MTM1M3_logevent_rejectedForcesC));
+    memset(appliedForces, 0, sizeof(MTM1M3_logevent_appliedForcesC));
+    memset(forceActuatorState, 0, sizeof(MTM1M3_logevent_forceActuatorStateC));
+    memset(forceSetpointWarning, 0, sizeof(MTM1M3_logevent_forceSetpointWarningC));
+    memset(rejectedCylinderForces, 0, sizeof(MTM1M3_logevent_rejectedCylinderForcesC));
+    memset(rejectedForces, 0, sizeof(MTM1M3_logevent_rejectedForcesC));
 
     this->aberrationForceComponent.reset();
     this->accelerationForceComponent.reset();
