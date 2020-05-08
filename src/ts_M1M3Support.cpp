@@ -100,12 +100,12 @@ int main(int argc, char* const argv[]) {
     spdlog::info("Main: Creating setting reader");
     SettingReader::get().setRootPath(configRoot);
     spdlog::info("Main: Initializing M1M3 SAL");
-    SAL_MTM1M3 m1m3SAL = SAL_MTM1M3();
-    m1m3SAL.setDebugLevel(0);
+    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
+    m1m3SAL->setDebugLevel(0);
     spdlog::info("Main: Initializing MTMount SAL");
-    SAL_MTMount mtMountSAL = SAL_MTMount();
+    std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
     spdlog::info("Main: Creating publisher");
-    M1M3SSPublisher publisher = M1M3SSPublisher(&m1m3SAL);
+    M1M3SSPublisher publisher = M1M3SSPublisher(m1m3SAL);
     spdlog::info("Main: Creating fpga");
 
     IFPGA* fpga = &IFPGA::get();
@@ -119,15 +119,15 @@ int main(int argc, char* const argv[]) {
 
     if (fpga->isErrorCode(fpga->initialize())) {
         spdlog::critical("Main: Error initializing FPGA");
-        mtMountSAL.salShutdown();
-        m1m3SAL.salShutdown();
+        mtMountSAL->salShutdown();
+        m1m3SAL->salShutdown();
         return -1;
     }
     if (fpga->isErrorCode(fpga->open())) {
         spdlog::critical("Main: Error opening FPGA");
         fpga->finalize();
-        mtMountSAL.salShutdown();
-        m1m3SAL.salShutdown();
+        mtMountSAL->salShutdown();
+        m1m3SAL->salShutdown();
         return -1;
     }
     spdlog::info("Main: Load expansion FPGA application settings");
@@ -140,8 +140,8 @@ int main(int argc, char* const argv[]) {
         spdlog::critical("Main: Error opening expansion FPGA");
         fpga->close();
         fpga->finalize();
-        mtMountSAL.salShutdown();
-        m1m3SAL.salShutdown();
+        mtMountSAL->salShutdown();
+        m1m3SAL->salShutdown();
         return -1;
     }
     spdlog::info("Main: Creating state factory");
@@ -158,7 +158,7 @@ int main(int argc, char* const argv[]) {
     spdlog::info("Main: Creating command factory");
     CommandFactory commandFactory = CommandFactory(&publisher, &context);
     spdlog::info("Main: Creating subscriber");
-    M1M3SSSubscriber subscriber = M1M3SSSubscriber(&m1m3SAL, &mtMountSAL, &commandFactory);
+    M1M3SSSubscriber subscriber = M1M3SSSubscriber(m1m3SAL, mtMountSAL, &commandFactory);
     spdlog::info("Main: Creating controller");
     Controller controller = Controller(&commandFactory);
     spdlog::info("Main: Creating subscriber thread");
@@ -270,10 +270,10 @@ int main(int argc, char* const argv[]) {
     }
 
     spdlog::info("Main: Shutting down MTMount SAL");
-    mtMountSAL.salShutdown();
+    mtMountSAL->salShutdown();
 
     spdlog::info("Main: Shutting down M1M3 SAL");
-    m1m3SAL.salShutdown();
+    m1m3SAL->salShutdown();
 
     spdlog::info("Main: Shutdown complete");
 

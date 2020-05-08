@@ -8,7 +8,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSSubscriber::M1M3SSSubscriber(SAL_MTM1M3* m1m3SAL, SAL_MTMount* mtMountSAL,
+M1M3SSSubscriber::M1M3SSSubscriber(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL,
                                    CommandFactory* commandFactory) {
     spdlog::debug("M1M3SSSubscriber: M1M3SSSubscriber()");
     this->m1m3SAL = m1m3SAL;
