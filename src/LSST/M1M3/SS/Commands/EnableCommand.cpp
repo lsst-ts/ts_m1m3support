@@ -14,8 +14,6 @@ EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32
     this->data.value = data->value;
 }
 
-bool EnableCommand::validate() { return true; }
-
 void EnableCommand::execute() { this->context->enable(this); }
 
 void EnableCommand::ackInProgress() {

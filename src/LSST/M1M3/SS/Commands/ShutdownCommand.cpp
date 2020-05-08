@@ -14,13 +14,6 @@ ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, i
     this->data.shutdown = data->shutdown;
 }
 
-bool ShutdownCommand::validate() {
-    if (!this->data.shutdown) {
-        this->publisher->logCommandRejectionWarning("Shutdown", "The field Shutdown is not TRUE.");
-    }
-    return this->data.shutdown;
-}
-
 void ShutdownCommand::execute() { this->context->shutdown(this); }
 
 void ShutdownCommand::ackInProgress() {

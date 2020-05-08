@@ -1,6 +1,5 @@
 #include <State.h>
 #include <DataTypes.h>
-#include <M1M3SSPublisher.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -16,91 +15,91 @@ State::~State() {}
 
 States::Type State::boot(BootCommand* command, Model* model) { return States::NoStateTransition; }
 States::Type State::start(StartCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("Start");
+    return this->rejectCommandInvalidState(command, "Start");
 }
 States::Type State::enable(EnableCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("Enable");
+    return this->rejectCommandInvalidState(command, "Enable");
 }
 States::Type State::disable(DisableCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("Disable");
+    return this->rejectCommandInvalidState(command, "Disable");
 }
 States::Type State::standby(StandbyCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("Standby");
+    return this->rejectCommandInvalidState(command, "Standby");
 }
 States::Type State::shutdown(ShutdownCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("Shutdown");
+    return this->rejectCommandInvalidState(command, "Shutdown");
 }
 States::Type State::update(UpdateCommand* command, Model* model) { return States::NoStateTransition; }
 States::Type State::turnAirOn(TurnAirOnCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TurnAirOn");
+    return this->rejectCommandInvalidState(command, "TurnAirOn");
 }
 States::Type State::turnAirOff(TurnAirOffCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TurnAirOff");
+    return this->rejectCommandInvalidState(command, "TurnAirOff");
 }
 States::Type State::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ApplyOffsetForces");
+    return this->rejectCommandInvalidState(command, "ApplyOffsetForces");
 }
 States::Type State::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ClearOffsetForces");
+    return this->rejectCommandInvalidState(command, "ClearOffsetForces");
 }
 States::Type State::raiseM1M3(RaiseM1M3Command* command, Model* model) {
-    return this->rejectCommandInvalidState("RaiseM1M3");
+    return this->rejectCommandInvalidState(command, "RaiseM1M3");
 }
 States::Type State::lowerM1M3(LowerM1M3Command* command, Model* model) {
-    return this->rejectCommandInvalidState("LowerM1M3");
+    return this->rejectCommandInvalidState(command, "LowerM1M3");
 }
 States::Type State::applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command,
                                                         Model* model) {
-    return this->rejectCommandInvalidState("ApplyAberrationForcesByBendingModes");
+    return this->rejectCommandInvalidState(command, "ApplyAberrationForcesByBendingModes");
 }
 States::Type State::applyAberrationForces(ApplyAberrationForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ApplyAberrationForces");
+    return this->rejectCommandInvalidState(command, "ApplyAberrationForces");
 }
 States::Type State::clearAberrationForces(ClearAberrationForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ClearAberrationForces");
+    return this->rejectCommandInvalidState(command, "ClearAberrationForces");
 }
 States::Type State::applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command,
                                                          Model* model) {
-    return this->rejectCommandInvalidState("ApplyActiveOpticForcesByBendingModes");
+    return this->rejectCommandInvalidState(command, "ApplyActiveOpticForcesByBendingModes");
 }
 States::Type State::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ApplyActiveOpticForces");
+    return this->rejectCommandInvalidState(command, "ApplyActiveOpticForces");
 }
 States::Type State::clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ClearActiveOpticForces");
+    return this->rejectCommandInvalidState(command, "ClearActiveOpticForces");
 }
 States::Type State::enterEngineering(EnterEngineeringCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("EnterEngineering");
+    return this->rejectCommandInvalidState(command, "EnterEngineering");
 }
 States::Type State::exitEngineering(ExitEngineeringCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ExitEngineering");
+    return this->rejectCommandInvalidState(command, "ExitEngineering");
 }
 States::Type State::testAir(TestAirCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TestAir");
+    return this->rejectCommandInvalidState(command, "TestAir");
 }
 States::Type State::testHardpoint(TestHardpointCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TestHardpoint");
+    return this->rejectCommandInvalidState(command, "TestHardpoint");
 }
 States::Type State::testForceActuator(TestForceActuatorCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TestForceActuator");
+    return this->rejectCommandInvalidState(command, "TestForceActuator");
 }
 States::Type State::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("MoveHardpointActuators");
+    return this->rejectCommandInvalidState(command, "MoveHardpointActuators");
 }
 States::Type State::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("EnableHardpointChase");
+    return this->rejectCommandInvalidState(command, "EnableHardpointChase");
 }
 States::Type State::disableHardpointChase(DisableHardpointChaseCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("DisableHardpointChase");
+    return this->rejectCommandInvalidState(command, "DisableHardpointChase");
 }
 States::Type State::abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) {
-    return this->rejectCommandInvalidState("AbortRaiseM1M3");
+    return this->rejectCommandInvalidState(command, "AbortRaiseM1M3");
 }
 States::Type State::translateM1M3(TranslateM1M3Command* command, Model* model) {
-    return this->rejectCommandInvalidState("TranslateM1M3");
+    return this->rejectCommandInvalidState(command, "TranslateM1M3");
 }
 States::Type State::stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("StopHardpointMotion");
+    return this->rejectCommandInvalidState(command, "StopHardpointMotion");
 }
 States::Type State::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
     return States::NoStateTransition;
@@ -109,47 +108,47 @@ States::Type State::storeTMAElevationSample(TMAElevationSampleCommand* command, 
     return States::NoStateTransition;
 }
 States::Type State::positionM1M3(PositionM1M3Command* command, Model* model) {
-    return this->rejectCommandInvalidState("PositionM1M3");
+    return this->rejectCommandInvalidState(command, "PositionM1M3");
 }
 States::Type State::turnLightsOn(TurnLightsOnCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TurnLightsOn");
+    return this->rejectCommandInvalidState(command, "TurnLightsOn");
 }
 States::Type State::turnLightsOff(TurnLightsOffCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TurnLightsOff");
+    return this->rejectCommandInvalidState(command, "TurnLightsOff");
 }
 States::Type State::turnPowerOn(TurnPowerOnCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TurnPowerOn");
+    return this->rejectCommandInvalidState(command, "TurnPowerOn");
 }
 States::Type State::turnPowerOff(TurnPowerOffCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("TurnPowerOff");
+    return this->rejectCommandInvalidState(command, "TurnPowerOff");
 }
 States::Type State::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("EnableHardpointCorrections");
+    return this->rejectCommandInvalidState(command, "EnableHardpointCorrections");
 }
 States::Type State::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("DisableHardpointCorrections");
+    return this->rejectCommandInvalidState(command, "DisableHardpointCorrections");
 }
 States::Type State::runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("RunMirrorForceProfile");
+    return this->rejectCommandInvalidState(command, "RunMirrorForceProfile");
 }
 States::Type State::abortProfile(AbortProfileCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("AbortProfile");
+    return this->rejectCommandInvalidState(command, "AbortProfile");
 }
 States::Type State::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command,
                                                    Model* model) {
-    return this->rejectCommandInvalidState("ApplyOffsetForcesByMirrorForce");
+    return this->rejectCommandInvalidState(command, "ApplyOffsetForcesByMirrorForce");
 }
 States::Type State::updatePID(UpdatePIDCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("UpdatePID");
+    return this->rejectCommandInvalidState(command, "UpdatePID");
 }
 States::Type State::resetPID(ResetPIDCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ResetPID");
+    return this->rejectCommandInvalidState(command, "ResetPID");
 }
 States::Type State::programILC(ProgramILCCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ProgramILC");
+    return this->rejectCommandInvalidState(command, "ProgramILC");
 }
 States::Type State::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ModbusTransmit");
+    return this->rejectCommandInvalidState(command, "ModbusTransmit");
 }
 
 void State::startTimer() { clock_gettime(CLOCK_REALTIME, &this->startTime); }
@@ -178,10 +177,11 @@ double State::getTimer() {
     return deltaSec + (deltaNano / 1000000000.0);
 }
 
-States::Type State::rejectCommandInvalidState(std::string command) {
-    spdlog::warn("The command {} is not valid in the {}.", command, this->name);
-    this->publisher->logCommandRejectionWarning(
-            command, "The command " + command + " is not valid in the " + this->name + ".");
+States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
+    std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";
+    spdlog::warn(reason);
+    this->publisher->logCommandRejectionWarning(cmd_name, reason);
+    command->ackFailed(reason);
     return States::NoStateTransition;
 }
 
