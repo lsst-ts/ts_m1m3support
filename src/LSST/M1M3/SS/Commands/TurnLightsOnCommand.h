@@ -1,10 +1,3 @@
-/*
- * TurnLightsOnCommand.h
- *
- *  Created on: Nov 30, 2017
- *      Author: ccontaxis
- */
-
 #ifndef TURNLIGHTSONCOMMAND_H_
 #define TURNLIGHTSONCOMMAND_H_
 
@@ -16,22 +9,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TurnLightsOnCommand: public Command {
+class TurnLightsOnCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_turnLightsOnC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
 
 public:
-	TurnLightsOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnLightsOnC* data);
+    TurnLightsOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                        MTM1M3_command_turnLightsOnC*);
 
-	MTM1M3_command_turnLightsOnC* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

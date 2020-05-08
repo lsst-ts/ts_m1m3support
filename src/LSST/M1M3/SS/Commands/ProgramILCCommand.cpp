@@ -15,8 +15,6 @@ ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publishe
     this->data.filePath = data->filePath;
 }
 
-bool ProgramILCCommand::validate() { return true; }
-
 void ProgramILCCommand::execute() { this->context->programILC(this); }
 
 void ProgramILCCommand::ackInProgress() {

@@ -8,19 +8,10 @@ namespace SS {
 
 ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher,
                                                            int32_t commandID,
-                                                           MTM1M3_command_clearAberrationForcesC* data) {
+                                                           MTM1M3_command_clearAberrationForcesC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.clearAberrationForces = data->clearAberrationForces;
-}
-
-bool ClearAberrationForcesCommand::validate() {
-    if (!this->data.clearAberrationForces) {
-        this->publisher->logCommandRejectionWarning("ClearAberrationForces",
-                                                    "The field ClearAberrationForces is not TRUE.");
-    }
-    return this->data.clearAberrationForces;
 }
 
 void ClearAberrationForcesCommand::execute() { this->context->clearAberrationForces(this); }

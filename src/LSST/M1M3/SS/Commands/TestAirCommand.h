@@ -1,10 +1,3 @@
-/*
- * TestAirCommand.h
- *
- *  Created on: Oct 30, 2017
- *      Author: ccontaxis
- */
-
 #ifndef TESTAIRCOMMAND_H_
 #define TESTAIRCOMMAND_H_
 
@@ -16,22 +9,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TestAirCommand: public Command {
+class TestAirCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_testAirC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
 
 public:
-	TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testAirC* data);
+    TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_testAirC*);
 
-	MTM1M3_command_testAirC* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

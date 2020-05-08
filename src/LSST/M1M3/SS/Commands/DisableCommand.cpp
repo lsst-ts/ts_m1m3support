@@ -7,14 +7,11 @@ namespace M1M3 {
 namespace SS {
 
 DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                               MTM1M3_command_disableC* data) {
+                               MTM1M3_command_disableC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.value = data->value;
 }
-
-bool DisableCommand::validate() { return true; }
 
 void DisableCommand::execute() { this->context->disable(this); }
 

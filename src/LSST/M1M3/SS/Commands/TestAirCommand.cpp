@@ -7,18 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                               MTM1M3_command_testAirC* data) {
+                               MTM1M3_command_testAirC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.testAir = data->testAir;
-}
-
-bool TestAirCommand::validate() {
-    if (!this->data.testAir) {
-        this->publisher->logCommandRejectionWarning("TestAir", "The field TestAir is not TRUE.");
-    }
-    return this->data.testAir;
 }
 
 void TestAirCommand::execute() { this->context->testAir(this); }

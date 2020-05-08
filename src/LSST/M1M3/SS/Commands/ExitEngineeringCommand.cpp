@@ -7,19 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 ExitEngineeringCommand::ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher,
-                                               int32_t commandID, MTM1M3_command_exitEngineeringC* data) {
+                                               int32_t commandID, MTM1M3_command_exitEngineeringC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.exitEngineering = data->exitEngineering;
-}
-
-bool ExitEngineeringCommand::validate() {
-    if (!this->data.exitEngineering) {
-        this->publisher->logCommandRejectionWarning("ExitEngineering",
-                                                    "The field ExitEngineering is not TRUE.");
-    }
-    return this->data.exitEngineering;
 }
 
 void ExitEngineeringCommand::execute() { this->context->exitEngineering(this); }

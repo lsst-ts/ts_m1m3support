@@ -20,8 +20,6 @@ ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
     this->data.zMoment = data->zMoment;
 }
 
-bool ApplyOffsetForcesByMirrorForceCommand::validate() { return true; }
-
 void ApplyOffsetForcesByMirrorForceCommand::execute() { this->context->applyOffsetForcesByMirrorForce(this); }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackInProgress() {

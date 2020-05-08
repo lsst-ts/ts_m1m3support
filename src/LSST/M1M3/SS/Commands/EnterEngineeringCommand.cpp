@@ -7,19 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher,
-                                                 int32_t commandID, MTM1M3_command_enterEngineeringC* data) {
+                                                 int32_t commandID, MTM1M3_command_enterEngineeringC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.enterEngineering = data->enterEngineering;
-}
-
-bool EnterEngineeringCommand::validate() {
-    if (!this->data.enterEngineering) {
-        this->publisher->logCommandRejectionWarning("EnterEngineering",
-                                                    "The field EnterEngineering is not TRUE.");
-    }
-    return this->data.enterEngineering;
 }
 
 void EnterEngineeringCommand::execute() { this->context->enterEngineering(this); }

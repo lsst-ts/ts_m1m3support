@@ -19,8 +19,6 @@ ModbusTransmitCommand::ModbusTransmitCommand(Context* context, M1M3SSPublisher* 
     this->data.dataLength = data->dataLength;
 }
 
-bool ModbusTransmitCommand::validate() { return true; }
-
 void ModbusTransmitCommand::execute() { this->context->modbusTransmit(this); }
 
 void ModbusTransmitCommand::ackInProgress() {

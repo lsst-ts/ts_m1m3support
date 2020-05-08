@@ -7,18 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 LowerM1M3Command::LowerM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                   MTM1M3_command_lowerM1M3C* data) {
+                                   MTM1M3_command_lowerM1M3C*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.lowerM1M3 = data->lowerM1M3;
-}
-
-bool LowerM1M3Command::validate() {
-    if (!this->data.lowerM1M3) {
-        this->publisher->logCommandRejectionWarning("LowerM1M3", "The field LowerM1M3 is not TRUE.");
-    }
-    return this->data.lowerM1M3;
 }
 
 void LowerM1M3Command::execute() { this->context->lowerM1M3(this); }

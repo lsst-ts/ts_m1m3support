@@ -1,10 +1,3 @@
-/*
- * DisableCommand.h
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef DISABLECOMMAND_H_
 #define DISABLECOMMAND_H_
 
@@ -21,22 +14,20 @@ namespace SS {
  * machine from the enabled state to the disabled state.
  * This is an external command and can be issued via SAL.
  */
-class DisableCommand: public Command {
+class DisableCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_disableC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
+    MTM1M3_command_disableC data;
 
 public:
-	DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableC* data);
+    DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                   MTM1M3_command_disableC* data);
 
-	MTM1M3_command_disableC* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

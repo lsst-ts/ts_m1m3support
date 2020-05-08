@@ -1,10 +1,3 @@
-/*
- * AbortProfileCommand.h
- *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef ABORTPROFILECOMMAND_H_
 #define ABORTPROFILECOMMAND_H_
 
@@ -16,22 +9,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class AbortProfileCommand: public Command {
+class AbortProfileCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_abortProfileC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
 
 public:
-	AbortProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_abortProfileC* data);
+    AbortProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                        MTM1M3_command_abortProfileC*);
 
-	MTM1M3_command_abortProfileC* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

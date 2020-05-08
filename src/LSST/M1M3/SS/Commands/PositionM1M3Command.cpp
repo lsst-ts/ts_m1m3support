@@ -19,8 +19,6 @@ PositionM1M3Command::PositionM1M3Command(Context* context, M1M3SSPublisher* publ
     this->data.zRotation = data->zRotation;
 }
 
-bool PositionM1M3Command::validate() { return true; }
-
 void PositionM1M3Command::execute() { this->context->positionM1M3(this); }
 
 void PositionM1M3Command::ackInProgress() {

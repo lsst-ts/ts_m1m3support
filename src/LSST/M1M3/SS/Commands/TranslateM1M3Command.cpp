@@ -19,8 +19,6 @@ TranslateM1M3Command::TranslateM1M3Command(Context* context, M1M3SSPublisher* pu
     this->data.zRotation = data->zRotation;
 }
 
-bool TranslateM1M3Command::validate() { return true; }
-
 void TranslateM1M3Command::execute() { this->context->translateM1M3(this); }
 
 void TranslateM1M3Command::ackInProgress() {

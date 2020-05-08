@@ -8,19 +8,10 @@ namespace SS {
 
 StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher,
                                                        int32_t commandID,
-                                                       MTM1M3_command_stopHardpointMotionC* data) {
+                                                       MTM1M3_command_stopHardpointMotionC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.stopHardpointMotion = data->stopHardpointMotion;
-}
-
-bool StopHardpointMotionCommand::validate() {
-    if (!this->data.stopHardpointMotion) {
-        this->publisher->logCommandRejectionWarning("StopHardpointMotion",
-                                                    "The field StopHardpointMotion is not TRUE.");
-    }
-    return this->data.stopHardpointMotion;
 }
 
 void StopHardpointMotionCommand::execute() { this->context->stopHardpointMotion(this); }

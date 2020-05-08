@@ -18,13 +18,9 @@ class EnableCommand : public Command {
 private:
     Context* context;
     M1M3SSPublisher* publisher;
-    MTM1M3_command_enableC data;
 
 public:
-    EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                  MTM1M3_command_enableC* data);
-
-    MTM1M3_command_enableC* getData() { return &this->data; }
+    EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableC*);
 
     void execute();
     void ackInProgress();

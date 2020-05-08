@@ -7,18 +7,10 @@ namespace M1M3 {
 namespace SS {
 
 TurnAirOnCommand::TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                   MTM1M3_command_turnAirOnC* data) {
+                                   MTM1M3_command_turnAirOnC*) {
     this->context = context;
     this->publisher = publisher;
     this->commandID = commandID;
-    this->data.turnAirOn = data->turnAirOn;
-}
-
-bool TurnAirOnCommand::validate() {
-    if (!this->data.turnAirOn) {
-        this->publisher->logCommandRejectionWarning("TurnAirOn", "The field TurnAirOn is not TRUE.");
-    }
-    return this->data.turnAirOn;
 }
 
 void TurnAirOnCommand::execute() { this->context->turnAirOn(this); }
