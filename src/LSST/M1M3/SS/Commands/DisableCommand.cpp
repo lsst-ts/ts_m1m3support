@@ -14,12 +14,7 @@ DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int
     this->data.value = data->value;
 }
 
-bool DisableCommand::validate() {
-    if (!this->data.value) {
-        this->publisher->logCommandRejectionWarning("Disable", "The field Disable is not TRUE.");
-    }
-    return this->data.value;
-}
+bool DisableCommand::validate() { return true; }
 
 void DisableCommand::execute() { this->context->disable(this); }
 

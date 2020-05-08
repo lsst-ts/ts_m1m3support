@@ -14,12 +14,7 @@ StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int
     this->data.value = data->value;
 }
 
-bool StandbyCommand::validate() {
-    if (!this->data.value) {
-        this->publisher->logCommandRejectionWarning("Standby", "The field Standby is not TRUE.");
-    }
-    return this->data.value;
-}
+bool StandbyCommand::validate() { return true; }
 
 void StandbyCommand::execute() { this->context->standby(this); }
 
