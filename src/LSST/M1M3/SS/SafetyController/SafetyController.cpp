@@ -405,9 +405,21 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
                          sum >= this->safetyControllerSettings->ILC.AirPressureCountThreshold);
 }
 
-States::Type SafetyController::checkSafety(States::Type preferredNextState) { return preferredNextState; }
+States::Type SafetyController::checkSafety(States::Type preferredNextState) {
+    if (this->errorCodeData->errorCode != FaultCodes::NoFault) {
+        this->publisher->logErrorCode();
+        this->errorCodeData->errorCode = FaultCodes::NoFault;
+        return States::LoweringFaultState;
+    }
+    return preferredNextState;
+}
 
-void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {}
+void SafetyController::updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {
+    bool faultConditionExists = enabledFlag && conditionFlag;
+    if (faultConditionExists && this->errorCodeData->errorCode == FaultCodes::NoFault) {
+        this->errorCodeData->errorCode = faultCode;
+    }
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */
