@@ -1,10 +1,3 @@
-/*
- * BootCommand.cpp
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #include <BootCommand.h>
 #include <Context.h>
 
@@ -13,13 +6,11 @@ namespace M1M3 {
 namespace SS {
 
 BootCommand::BootCommand(Context* context) {
-	this->context = context;
-	this->commandID = -1;
+    this->context = context;
+    this->commandID = -1;
 }
 
-void BootCommand::execute() {
-	this->context->boot(this);
-}
+void BootCommand::execute() { this->context->boot(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

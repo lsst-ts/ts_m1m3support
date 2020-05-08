@@ -1,13 +1,8 @@
-/*
- * StartCommand.cpp
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #include <StartCommand.h>
 #include <Context.h>
 #include <M1M3SSPublisher.h>
+
+#include <SAL_defines.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,7 +35,7 @@ void StartCommand::ackComplete() {
 }
 
 void StartCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandstart(this->commandID, ACK_COMPLETE, "Failed: " + reason);
+    this->publisher->ackCommandstart(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */
