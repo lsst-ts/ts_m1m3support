@@ -1,10 +1,3 @@
-/*
- * ILCMessageFactory.cpp
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #include <ILCMessageFactory.h>
 #include <ModbusBuffer.h>
 #include <ILCApplicationSettings.h>

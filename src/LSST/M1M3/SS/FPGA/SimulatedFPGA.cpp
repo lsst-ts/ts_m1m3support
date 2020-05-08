@@ -165,6 +165,11 @@ void SimulatedFPGA::pullTelemetry() {
     //	this->supportFPGAData.PowerSupplyStates = 0;
 }
 
+void SimulatedFPGA::pullHealthAndStatus()
+{
+
+}
+
 int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     for (int i = 0; i < length;) {
         uint16_t signal = data[i++];
@@ -846,7 +851,7 @@ uint16_t SimulatedFPGA::readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
 int32_t SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) { return 0; }
 
-int32_t SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
+void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     int signal = data[0];
     std::queue<uint16_t>* modbusResponse = 0;
     switch (signal) {
@@ -917,10 +922,9 @@ int32_t SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t 
             modbusResponse->pop();
         }
     }
-    return 0;
 }
 
-int32_t SimulatedFPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
+void SimulatedFPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
     uint16_t newData[1];
     newData[0] = data;
     return this->writeRequestFIFO(newData, 1, timeoutInMs);
