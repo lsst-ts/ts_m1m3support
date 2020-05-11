@@ -1,10 +1,3 @@
-/*
- * TMAElevationSampleCommand.cpp
- *
- *  Created on: Nov 2, 2017
- *      Author: ccontaxis
- */
-
 #include <TMAElevationSampleCommand.h>
 #include <Context.h>
 #include <cstring>

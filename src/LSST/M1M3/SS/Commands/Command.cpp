@@ -1,10 +1,3 @@
-/*
- * Command.cpp
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #include <Command.h>
 
 namespace LSST {

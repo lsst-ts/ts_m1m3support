@@ -55,36 +55,16 @@ Model::~Model() {
     pthread_mutex_unlock(&this->mutex);
     pthread_mutex_destroy(&this->mutex);
 
-    if (this->safetyController) {
-        delete this->safetyController;
-    }
-    if (this->displacement) {
-        delete this->displacement;
-    }
-    if (this->inclinometer) {
-        delete this->inclinometer;
-    }
-    if (this->ilc) {
-        delete this->ilc;
-    }
-    if (this->forceController) {
-        delete this->forceController;
-    }
-    if (this->positionController) {
-        delete this->positionController;
-    }
-    if (this->accelerometer) {
-        delete this->accelerometer;
-    }
-    if (this->powerController) {
-        delete this->powerController;
-    }
-    if (this->automaticOperationsController) {
-        delete this->automaticOperationsController;
-    }
-    if (this->gyro) {
-        delete this->gyro;
-    }
+    delete this->safetyController;
+    delete this->displacement;
+    delete this->inclinometer;
+    delete this->ilc;
+    delete this->forceController;
+    delete this->positionController;
+    delete this->accelerometer;
+    delete this->powerController;
+    delete this->automaticOperationsController;
+    delete this->gyro;
 }
 
 void Model::loadSettings(std::string settingsToApply) {

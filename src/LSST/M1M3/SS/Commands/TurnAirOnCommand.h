@@ -1,10 +1,3 @@
-/*
- * TurnAirOnCommand.h
- *
- *  Created on: Oct 16, 2017
- *      Author: ccontaxis
- */
-
 #ifndef TURNAIRONCOMMAND_H_
 #define TURNAIRONCOMMAND_H_
 
@@ -16,22 +9,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TurnAirOnCommand: public Command {
+class TurnAirOnCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_turnAirOnC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
 
 public:
-	TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_turnAirOnC* data);
+    TurnAirOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                     MTM1M3_command_turnAirOnC*);
 
-	MTM1M3_command_turnAirOnC* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

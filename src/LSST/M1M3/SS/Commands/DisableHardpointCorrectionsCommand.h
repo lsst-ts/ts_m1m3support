@@ -1,10 +1,3 @@
-/*
- * DisableHardpointCorrectionsCommand.h
- *
- *  Created on: Feb 8, 2018
- *      Author: ccontaxis
- */
-
 #ifndef DISABLEHARDPOINTCORRECTIONSCOMMAND_H_
 #define DISABLEHARDPOINTCORRECTIONSCOMMAND_H_
 
@@ -16,22 +9,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class DisableHardpointCorrectionsCommand: public Command {
+class DisableHardpointCorrectionsCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_disableHardpointCorrectionsC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
 
 public:
-	DisableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_disableHardpointCorrectionsC* data);
+    DisableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                                       MTM1M3_command_disableHardpointCorrectionsC*);
 
-	MTM1M3_command_disableHardpointCorrectionsC* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */
