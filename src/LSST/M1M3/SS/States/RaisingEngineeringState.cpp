@@ -35,32 +35,6 @@ States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* comm
     return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type RaisingEngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("StopHardpointMotion");
-}
-States::Type RaisingEngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command,
-                                                             Model* model) {
-    return this->rejectCommandInvalidState("MoveHardpointActuators");
-}
-States::Type RaisingEngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command,
-                                                           Model* model) {
-    return this->rejectCommandInvalidState("EnableHardpointChase");
-}
-States::Type RaisingEngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command,
-                                                            Model* model) {
-    return this->rejectCommandInvalidState("DisableHardpointChase");
-}
-States::Type RaisingEngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ApplyOffsetForces");
-}
-States::Type RaisingEngineeringState::applyOffsetForcesByMirrorForce(
-        ApplyOffsetForcesByMirrorForceCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ApplyOffsetForcesByMirrorForce");
-}
-States::Type RaisingEngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) {
-    return this->rejectCommandInvalidState("ClearOffsetForces");
-}
-
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

@@ -1,10 +1,3 @@
-/*
- * ShutdownCommand.h
- *
- *  Created on: Sep 28, 2017
- *      Author: ccontaxis
- */
-
 #ifndef SHUTDOWNCOMMAND_H_
 #define SHUTDOWNCOMMAND_H_
 
@@ -22,22 +15,19 @@ namespace SS {
  * This is an external command and can be issued via SAL.
  * Once this command has been executed the software will stop running.
  */
-class ShutdownCommand: public Command {
+class ShutdownCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_shutdownC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
 
 public:
-	ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_shutdownC* data);
+    ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                    MTM1M3_command_shutdownC*);
 
-	MTM1M3_command_shutdownC* getData() { return &this->data; }
-
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */

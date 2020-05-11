@@ -57,9 +57,15 @@ Command* Controller::dequeue() {
 
 void Controller::execute(Command* command) {
     spdlog::trace("Controller: execute()");
-    command->ackInProgress();
-    command->execute();
-    command->ackComplete();
+    try {
+        command->ackInProgress();
+        command->execute();
+        command->ackComplete();
+    } catch (std::exception& e) {
+        spdlog::error("Cannot execute command: {}", e.what());
+        command->ackFailed(e.what());
+    }
+
     this->commandFactory->destroy(command);
 }
 
