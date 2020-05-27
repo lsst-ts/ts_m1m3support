@@ -1,12 +1,4 @@
-/*
- * PID.cpp
- *
- *  Created on: Feb 13, 2018
- *      Author: ccontaxis
- */
-
 #include <PID.h>
-#include <M1M3SSPublisher.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
@@ -14,94 +6,95 @@ namespace M1M3 {
 namespace SS {
 
 PID::PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher) {
-	this->id = id;
-	this->initialParameters = parameters;
-	this->publisher = publisher;
-	this->pidInfo = this->publisher->getEventPIDInfo();
-	this->pidData = this->publisher->getPIDData();
-	this->pidInfo->timestep[this->id] = parameters.Timestep;
-	this->pidInfo->p[this->id] = parameters.P;
-	this->pidInfo->i[this->id] = parameters.I;
-	this->pidInfo->d[this->id] = parameters.D;
-	this->pidInfo->n[this->id] = parameters.N;
-	this->calculateIntermediateValues();
-	this->publishInfo();
+    _id = id;
+    _initialParameters = parameters;
+    _publisher = publisher;
+
+    _pidInfo = _publisher->getEventPIDInfo();
+    _pidData = _publisher->getPIDData();
+    _pidInfo->timestep[_id] = parameters.Timestep;
+    _pidInfo->p[_id] = parameters.P;
+    _pidInfo->i[_id] = parameters.I;
+    _pidInfo->d[_id] = parameters.D;
+    _pidInfo->n[_id] = parameters.N;
+    _calculateIntermediateValues();
+    _publishInfo();
 }
 
 void PID::updateParameters(PIDParameters parameters) {
-	this->pidInfo->timestep[this->id] = parameters.Timestep;
-	this->pidInfo->p[this->id] = parameters.P;
-	this->pidInfo->i[this->id] = parameters.I;
-	this->pidInfo->d[this->id] = parameters.D;
-	this->pidInfo->n[this->id] = parameters.N;
-	this->calculateIntermediateValues();
-	this->publishInfo();
+    _pidInfo->timestep[_id] = parameters.Timestep;
+    _pidInfo->p[_id] = parameters.P;
+    _pidInfo->i[_id] = parameters.I;
+    _pidInfo->d[_id] = parameters.D;
+    _pidInfo->n[_id] = parameters.N;
+    _calculateIntermediateValues();
+    _publishInfo();
 }
 
 void PID::restoreInitialParameters() {
-	this->pidInfo->timestep[this->id] = this->initialParameters.Timestep;
-	this->pidInfo->p[this->id] = this->initialParameters.P;
-	this->pidInfo->i[this->id] = this->initialParameters.I;
-	this->pidInfo->d[this->id] = this->initialParameters.D;
-	this->pidInfo->n[this->id] = this->initialParameters.N;
-	this->calculateIntermediateValues();
-	this->resetPreviousValues();
-	this->publishInfo();
+    _pidInfo->timestep[_id] = _initialParameters.Timestep;
+    _pidInfo->p[_id] = _initialParameters.P;
+    _pidInfo->i[_id] = _initialParameters.I;
+    _pidInfo->d[_id] = _initialParameters.D;
+    _pidInfo->n[_id] = _initialParameters.N;
+    _calculateIntermediateValues();
+    resetPreviousValues();
+    _publishInfo();
 }
 
 void PID::resetPreviousValues() {
-	this->pidData->errorT2[this->id] = 0.0;
-	this->pidData->errorT1[this->id] = 0.0;
-	this->pidData->error[this->id] = 0.0;
-	this->pidData->controlT2[this->id] = 0.0;
-	this->pidData->controlT1[this->id] = 0.0;
-	this->pidData->control[this->id] = 0.0;
+    _pidData->errorT2[_id] = 0.0;
+    _pidData->errorT1[_id] = 0.0;
+    _pidData->error[_id] = 0.0;
+    _pidData->controlT2[_id] = 0.0;
+    _pidData->controlT1[_id] = 0.0;
+    _pidData->control[_id] = 0.0;
 }
 
 double PID::process(double setpoint, double measurement) {
-	this->pidData->setpoint[this->id] = setpoint;
-	this->pidData->measuredPID[this->id] = measurement;
-	this->pidData->errorT2[this->id] = this->pidData->errorT1[this->id];
-	this->pidData->errorT1[this->id] = this->pidData->error[this->id];
-	this->pidData->error[this->id] = this->pidData->setpoint[this->id] - this->pidData->measuredPID[this->id];
-	this->pidData->controlT2[this->id] = this->pidData->controlT1[this->id];
-	this->pidData->controlT1[this->id] = this->pidData->control[this->id];
-	double A = this->pidInfo->calculatedA[this->id];
-	double B = this->pidInfo->calculatedB[this->id];
-	double C = this->pidInfo->calculatedC[this->id];
-	double D = this->pidInfo->calculatedD[this->id];
-	double E = this->pidInfo->calculatedE[this->id];
-	double e = this->pidData->error[this->id];
-	double e1 = this->pidData->errorT1[this->id];
-	double e2 = this->pidData->errorT2[this->id];
-	double u1 = this->pidData->controlT1[this->id];
-	double u2 = this->pidData->controlT2[this->id];
-	this->pidData->control[this->id] = D * u1 + E * u2 + A * e + B * e1 + C * e2;
-	return this->pidData->control[this->id];
+    _pidData->setpoint[_id] = setpoint;
+    _pidData->measuredPID[_id] = measurement;
+    _pidData->errorT2[_id] = _pidData->errorT1[_id];
+    _pidData->errorT1[_id] = _pidData->error[_id];
+    _pidData->error[_id] = _pidData->setpoint[_id] - _pidData->measuredPID[_id];
+    _pidData->controlT2[_id] = _pidData->controlT1[_id];
+    _pidData->controlT1[_id] = _pidData->control[_id];
+    double A = _pidInfo->calculatedA[_id];
+    double B = _pidInfo->calculatedB[_id];
+    double C = _pidInfo->calculatedC[_id];
+    double D = _pidInfo->calculatedD[_id];
+    double E = _pidInfo->calculatedE[_id];
+    double e = _pidData->error[_id];
+    double e1 = _pidData->errorT1[_id];
+    double e2 = _pidData->errorT2[_id];
+    double u1 = _pidData->controlT1[_id];
+    double u2 = _pidData->controlT2[_id];
+    _pidData->control[_id] = D * u1 + E * u2 + A * e + B * e1 + C * e2;
+    return _pidData->control[_id];
 }
 
 void PID::publishTelemetry() {
-	this->pidData->timestamp = this->publisher->getTimestamp();
-	this->publisher->putPIDData();
+    _pidData->timestamp = _publisher->getTimestamp();
+    _publisher->putPIDData();
 }
 
-void PID::calculateIntermediateValues() {
-	double Kp = this->pidInfo->p[this->id];
-	double Ki = this->pidInfo->i[this->id];
-	double Kd = this->pidInfo->d[this->id];
-	double N = this->pidInfo->n[this->id];
-	double Ts = this->pidInfo->timestep[this->id];
-	this->pidInfo->calculatedA[this->id] = Kp + Kd * N;
-	this->pidInfo->calculatedB[this->id] = -2.0 * Kp + Kp * N * Ts + Ki * Ts - 2.0 * Kd * N;
-	this->pidInfo->calculatedC[this->id] = Kp - Kp * N * Ts - Ki * Ts + Ki * N * Ts * Ts + Kd * N;
-	this->pidInfo->calculatedD[this->id] = 2.0 - N * Ts;
-	this->pidInfo->calculatedE[this->id] = N * Ts - 1.0;
-	this->resetPreviousValues();
+void PID::_calculateIntermediateValues() {
+    double Kp = _pidInfo->p[_id];
+    double Ki = _pidInfo->i[_id];
+    double Kd = _pidInfo->d[_id];
+    double N = _pidInfo->n[_id];
+    double Ts = _pidInfo->timestep[_id];
+    _pidInfo->calculatedA[_id] = Kp + Kd * N;
+    _pidInfo->calculatedB[_id] = -2.0 * Kp + Kp * N * Ts + Ki * Ts - 2.0 * Kd * N;
+    _pidInfo->calculatedC[_id] = Kp - Kp * N * Ts - Ki * Ts + Ki * N * Ts * Ts + Kd * N;
+    _pidInfo->calculatedD[_id] = 2.0 - N * Ts;
+    _pidInfo->calculatedE[_id] = N * Ts - 1.0;
+    resetPreviousValues();
 }
 
-void PID::publishInfo() {
-	this->pidInfo->timestamp = this->publisher->getTimestamp();
-	this->publisher->logPIDInfo();
+void PID::_publishInfo() {
+    _pidInfo->timestamp = _publisher->getTimestamp();
+    _publisher->logPIDInfo();
 }
 
 } /* namespace SS */
