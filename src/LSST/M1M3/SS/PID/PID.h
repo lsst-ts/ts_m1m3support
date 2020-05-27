@@ -25,9 +25,9 @@ public:
     /**
      * Constructs PID.
      *
-     * @param id member ID. It'
+     * @param id member ID. Index to fx,fy,fz and mx,my,mz 
      * @param parameters PID parameters struct
-     * @param publisher
+     * @param publisher SAL interface
      */
     PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher);
 
