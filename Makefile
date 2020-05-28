@@ -22,52 +22,34 @@ LIBS := -ldl -lSAL_MTMount -lSAL_MTM1M3 -lsacpp_MTMount_types -lsacpp_MTM1M3_typ
 
 .PHONY: all clean dependents deploy
 
-C_SRCS = $(shell find src/*/ -name '*.c')
-CPP_SRCS = $(shell find src/*/ -name '*.cpp')
-
-OBJS = $(patsubst %.c,%.o,$(C_SRCS)) $(patsubst %.cpp,%.o,$(CPP_SRCS))
-
-C_DEPS = $(patsubst %.c,%.d,$(C_SRCS))
-CPP_DEPS = $(patsubst %.cpp,%.d,$(CPP_SRCS))
-
 # Add inputs and outputs from these tool invocations to the build variables 
 #
 
 # All Target
 all: ts_M1M3Support $(m1m3cli)
 
+src/libM1M3SS.a:
+	$(MAKE) -C src libM1M3SS.a
+
 # Tool invocations
-ts_M1M3Support: src/ts_M1M3Support.o $(filter-out src/cliapp/%,$(OBJS))
+ts_M1M3Support: src/ts_M1M3Support.o src/libM1M3SS.a
 	@echo '[LD ] $@'
 	${co}$(CPP) -L"${SAL_WORK_DIR}/lib" -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib" -o $@ $^ $(LIBS)
 
-M1M3_OBJS = src/cliapp/CliApp.o \
-  src/LSST/M1M3/SS/FPGA/FPGA.o \
-  src/LSST/M1M3/SS/FPGA/NiFpga.o \
-  src/LSST/M1M3/SS/FPGA/NiStatus.o \
-  src/LSST/M1M3/SS/FPGA/NiError.o \
-  src/LSST/M1M3/SS/FPGA/IFPGA.o \
-  src/LSST/M1M3/SS/FPGA/FPGA.o \
-  src/LSST/M1M3/SS/FPGA/HealthAndStatusFPGAData.o \
-  src/LSST/M1M3/SS/Utility/U8ArrayUtilities.o \
-  src/LSST/M1M3/SS/Utility/U16ArrayUtilities.o
+M1M3_OBJS = src/cliapp/CliApp.o 
 
-m1m3cli: src/m1m3cli.o $(M1M3_OBJS)
+m1m3cli: src/m1m3cli.o $(M1M3_OBJS) src/libM1M3SS.a
 	@echo '[LD ] $@'
 	${co}$(CPP) -o $@ $^ -lreadline -ldl
 
 # Other Targets
 clean:
-	$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) ts_M1M3Support src/ts_M1M3Support.o src/m1m3cli.o, echo '[RM ] ${file}'; $(RM) -r $(file);)
+	$(foreach file,ts_M1M3Support src/ts_M1M3Support.o src/m1m3cli.o, echo '[RM ] ${file}'; $(RM) -r $(file);)
+	$(foreach dir,src tests,$(MAKE) -C ${dir} $@;)
 
 # file targets
-src/%.o: src/%.cpp
-	@echo '[CPP] $^'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o $@ $^
-
-src/%.o: src/%.c
-	@echo '[C  ] $^'
-	${co}$(C) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o $@ $^
+src/%.o:
+	$(MAKE) -C src $(patsubst src/%,%,$@)
 
 CRIO_IP = 10.0.0.11
 
