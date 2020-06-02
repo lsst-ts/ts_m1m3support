@@ -51,7 +51,6 @@ private:
     NiFpga_IrqContext outerLoopIRQContext;
     NiFpga_IrqContext modbusIRQContext;
     NiFpga_IrqContext ppsIRQContext;
-    HealthAndStatusFPGAData healthAndStatusFPGAData;
 };
 
 } /* namespace SS */
