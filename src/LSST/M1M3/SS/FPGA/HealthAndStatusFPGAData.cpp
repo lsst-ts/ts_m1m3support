@@ -6,7 +6,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ModbusPort::ModbusPort() : errorFlag(0), txBytes(0), txFrames(0), rxBytes(0), rxFrames(0) {}
+ModbusPort::ModbusPort()
+        : errorFlag(0), txBytes(0), txFrames(0), rxBytes(0), rxFrames(0), instructionCount(0) {}
 
 void ModbusPort::fillFromFIFO(uint64_t *buffer) {
     errorFlag = buffer[0];
@@ -14,6 +15,7 @@ void ModbusPort::fillFromFIFO(uint64_t *buffer) {
     txFrames = buffer[2];
     rxBytes = buffer[3];
     rxFrames = buffer[4];
+    instructionCount = buffer[5];
 }
 
 void HealthAndStatusFPGAData::refresh(uint64_t buffer[PORTNUM * PORT_COUNTNUM]) {

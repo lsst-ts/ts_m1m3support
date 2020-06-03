@@ -56,7 +56,9 @@ public:
      *
      * @return byte written by the instruction. Start bit is removed.
      */
-    static inline uint8_t readInstructionByte(uint16_t instruction) { return (uint8_t)((instruction >> 1) & 0xFF); }
+    static inline uint8_t readInstructionByte(uint16_t instruction) {
+        return (uint8_t)((instruction >> 1) & 0xFF);
+    }
 
     void readEndOfFrame();
 
