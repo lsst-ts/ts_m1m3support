@@ -2,13 +2,19 @@ include ../Makefile.inc
 
 all: libM1M3SS.a
 
+.PHONY: DEPS clean
+
 C_SRCS = $(shell find LSST -name '*.c')
 CPP_SRCS = $(shell find LSST pugixml -name '*.cpp')
 
 OBJS = $(patsubst %.c,%.o,$(C_SRCS)) $(patsubst %.cpp,%.o,$(CPP_SRCS))
 
-C_DEPS = $(patsubst %.c,%.d,$(C_SRCS))
-CPP_DEPS = $(patsubst %.cpp,%.d,$(CPP_SRCS))
+C_DEPS = $(patsubst %.c,%.c.d,$(C_SRCS))
+CPP_DEPS = $(patsubst %.cpp,%.cpp.d,$(CPP_SRCS))
+
+ifneq ($(MAKECMDGOALS),clean)
+  -include ${C_DEPS} ${CPP_DEPS}
+endif
 
 M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/DigitalInputOutput" \
@@ -53,10 +59,17 @@ clean:
 
 # file targets
 %.o: %.cpp
-	@echo '[CPP] $^'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $^
+	@echo '[CPP] $<'
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $<
 
 %.o: %.c
-	@echo '[C  ] $^'
-	${co}$(C) -c -fmessage-length=0 -o $@ $^
+	@echo '[C  ] $<'
+	${co}$(C) -c -fmessage-length=0 -o $@ $<
 
+%.cpp.d: %.cpp
+	@echo '[DPP] $^'
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@ -MT '$*.o'
+
+%.c.d: %.c
+	@echo '[DEP] $^'
+	${co}$(C) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@ -MT '$*.o'
