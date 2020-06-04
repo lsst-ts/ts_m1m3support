@@ -1,5 +1,18 @@
 #!/usr/bin/env groovy
 
+properties(
+    [
+    buildDiscarder
+        (logRotator (
+            artifactDaysToKeepStr: '',
+            artifactNumToKeepStr: '',
+            daysToKeepStr: '14',
+            numToKeepStr: ''
+        ) ),
+    disableConcurrentBuilds()
+    ]
+)
+
 node {
 
     def M1M3sim
@@ -26,39 +39,45 @@ node {
 
     stage("Running tests")
     {
-         M1M3sim.inside("--entrypoint=''") {
-            sh.withEnv(["SAL_REPOS=" + SAL_REPOS]) '''
-                cd $SAL_REPOS
-                source ts_sal/setup.env
+        withEnv(["SAL_REPOS=" + SAL_REPOS]) {
+             M1M3sim.inside("--entrypoint=''") {
+                 sh '''
+                    cd $SAL_REPOS
+                    source ts_sal/setup.env
+    
+                    export PATH=/opt/rh/devtoolset-8/root/usr/bin:$PATH
+    
+                    cd $WORKSPACE
+                    make clean
+                    make SIMULATOR=1
+                    make junit
+                '''
+             }
+        }
 
-                export PATH=/opt/rh/devtoolset-8/root/usr/bin:$PATH
-
-                cd $WORKSPACE
-                make clean
-                make SIMULATOR=1
-                make run_tests
-            '''
-         }
+        junit 'tests/*.xml'
     }
 
     stage('Running container')
     {
-        M1M3sim.inside("--entrypoint=''") {
-            sh.withEnv(["SAL_REPOS=" + SAL_REPOS]) """
-                cd $SAL_REPOS
-                source ts_sal/setup.env
-
-                cd $WORKSPACE
-                ./ts_M1M3Support -c SettingFiles &
-
-                echo "Waiting for 30 seconds"
-                sleep 30
-
-                cd /home/saluser/repos
-                ./ts_sal/test/MTM1M3/cpp/src/sacpp_MTM1M3_start_commander Default
-                sleep 30
-                killall ts_M1M3Support
-            """
+        withEnv(["SAL_REPOS=" + SAL_REPOS]){
+            M1M3sim.inside("--entrypoint=''") {
+                sh """
+                    cd $SAL_REPOS
+                    source ts_sal/setup.env
+    
+                    cd $WORKSPACE
+                    ./ts_M1M3Support -c SettingFiles &
+    
+                    echo "Waiting for 30 seconds"
+                    sleep 30
+    
+                    cd /home/saluser/repos
+                    ./ts_sal/test/MTM1M3/cpp/src/sacpp_MTM1M3_start_commander Default
+                    sleep 30
+                    killall ts_M1M3Support
+                """
+            }
         }
     }
 }
