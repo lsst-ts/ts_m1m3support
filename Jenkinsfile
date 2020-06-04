@@ -26,11 +26,18 @@ node {
         dir("ts_Dockerfiles") {
             git branch: (BRANCH == "master" ? "master" : "develop"), url: 'https://github.com/lsst-ts/ts_Dockerfiles'
         }
+        sh '''
+          ls -l
+          ls -l ts_Dockerfiles
+        '''
     }
 
     stage('Cloning source')
     {
         git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
+        sh '''
+          ls -l
+        '''
     }
 
     stage('Building dev container')
