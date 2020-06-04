@@ -6,10 +6,11 @@ all: compile
 
 .PHONY: FORCE compile run junit clean
 
-TEST_SRCS := $(shell ls test_*.cpp)
+TEST_SRCS := $(shell ls test_*.cpp 2>/dev/null)
 BINARIES := $(patsubst %.cpp,%,$(TEST_SRCS))
 DEPS := $(patsubst %.cpp,%.d,$(TEST_SRCS))
 OBJS := $(patsubst %.cpp,%.o,$(TEST_SRCS))
+JUNIT_FILES := $(shell ls *.xml 2>/dev/null)
 
 ifeq (0, $(words $(findstring $(MAKECMDGOALS), "clean")))
     -include $(DEPS)
@@ -59,7 +60,7 @@ junit: compile
 	@$(foreach b,$(BINARIES),echo '[JUT] ${b}'; ./${b} -r junit -o ${b}.xml;)
 
 clean:
-	@$(foreach df,$(BINARIES) $(DEPS) $(OBJS),echo '[RM ] ${df}'; $(RM) ${df};)
+	@$(foreach df,$(BINARIES) $(DEPS) $(OBJS) $(JUNIT_FILES),echo '[RM ] ${df}'; $(RM) ${df};)
 
 ../src/libM1M3SS.a: FORCE
 	@$(MAKE) -C ../src libM1M3SS.a SIMULATOR=1
