@@ -8,11 +8,11 @@ all: compile
 
 TEST_SRCS := $(shell ls test_*.cpp 2>/dev/null)
 BINARIES := $(patsubst %.cpp,%,$(TEST_SRCS))
-DEPS := $(patsubst %.cpp,%.d,$(TEST_SRCS))
+DEPS := $(patsubst %.cpp,%.cpp.d,$(TEST_SRCS))
 OBJS := $(patsubst %.cpp,%.o,$(TEST_SRCS))
 JUNIT_FILES := $(shell ls *.xml 2>/dev/null)
 
-ifeq (0, $(words $(findstring $(MAKECMDGOALS), "clean")))
+ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPS)
 endif
 
@@ -65,10 +65,10 @@ clean:
 ../src/libM1M3SS.a: FORCE
 	@$(MAKE) -C ../src libM1M3SS.a SIMULATOR=1
 
-%.d: %.cpp
+%.cpp.d: %.cpp
 	@echo '[DEP] $<'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -MM -MT '$(patsubst %.cpp,%.o,$<)' $< -MF $@
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@
 
-%: %.cpp ../src/libM1M3SS.a %.d
+%: %.cpp ../src/libM1M3SS.a
 	@echo '[TPP] $<'
 	${co}$(CPP) -o $@ $(LIBS_FLAGS) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(LIBS) $(M1M3_CPPFLAGS) $< ../src/libM1M3SS.a
