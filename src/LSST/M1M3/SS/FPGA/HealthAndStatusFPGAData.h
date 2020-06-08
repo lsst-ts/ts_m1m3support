@@ -43,7 +43,7 @@ public:
      *
      * @throw NiError on FPGA/NI error
      */
-    void refresh(uint64_t buffer[PORTNUM * 5]);
+    void refresh(uint64_t buffer[PORTNUM * PORT_COUNTNUM]);
 
     ModbusPort ports[PORTNUM];
 };

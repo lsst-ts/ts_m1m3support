@@ -165,10 +165,7 @@ void SimulatedFPGA::pullTelemetry() {
     //	this->supportFPGAData.PowerSupplyStates = 0;
 }
 
-void SimulatedFPGA::pullHealthAndStatus()
-{
-
-}
+void SimulatedFPGA::pullHealthAndStatus() {}
 
 int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     for (int i = 0; i < length;) {
@@ -315,7 +312,6 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
             case FPGAAddresses::Inclinometer:
             case FPGAAddresses::ModbusSoftwareTrigger:
             case FPGAAddresses::Telemetry:
-            case FPGAAddresses::HealthAndStatus:
             case FPGAAddresses::Timestamp:
                 break;
             default:
@@ -909,7 +905,6 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t tim
         case FPGAAddresses::Inclinometer:
         case FPGAAddresses::ModbusSoftwareTrigger:
         case FPGAAddresses::Telemetry:
-        case FPGAAddresses::HealthAndStatus:
         case FPGAAddresses::Timestamp:
             break;
         default:
@@ -940,6 +935,12 @@ int32_t SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32
         this->u16Response.pop();
     }
     return 0;
+}
+
+void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}
+
+int32_t SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs) {
+    return -1;
 }
 
 float SimulatedFPGA::getRnd() {

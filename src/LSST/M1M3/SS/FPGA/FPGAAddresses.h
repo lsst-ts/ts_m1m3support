@@ -11,11 +11,11 @@
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+namespace FPGAAddresses {
 
 /*!
  * An enumeration match FPGA signals to port numbers.
  */
-struct FPGAAddresses {
 	enum Type {
 		NA = 0,
 		AccelerometerAx = 1,                          // Slot1/AI0
@@ -96,11 +96,32 @@ struct FPGAAddresses {
 		Slot8Port4 = 76,
 		ModbusSoftwareTrigger = 252,
 		Telemetry = 253,
-		HealthAndStatus = 254,
-		Timestamp = 255
+		Timestamp = 254
 	};
+
+/**
+ * Array of commands to transmit message.
+ */
+const static uint8_t ModbusSubnetsTx[] = {
+    FPGAAddresses::ModbusSubnetATx,
+    FPGAAddresses::ModbusSubnetBTx,
+    FPGAAddresses::ModbusSubnetCTx,
+    FPGAAddresses::ModbusSubnetDTx,
+    FPGAAddresses::ModbusSubnetETx
 };
 
+/**
+ * Array of requests to receive message.
+ */
+const static uint8_t ModbusSubnetsRx[] = {
+    FPGAAddresses::ModbusSubnetARx,
+    FPGAAddresses::ModbusSubnetBRx,
+    FPGAAddresses::ModbusSubnetCRx,
+    FPGAAddresses::ModbusSubnetDRx,
+    FPGAAddresses::ModbusSubnetERx
+};
+
+} /* namespace FPGAAddresses */
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

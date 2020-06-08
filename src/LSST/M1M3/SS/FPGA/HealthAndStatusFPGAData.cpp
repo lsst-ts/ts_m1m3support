@@ -16,9 +16,9 @@ void ModbusPort::fillFromFIFO(uint64_t *buffer) {
     rxFrames = buffer[4];
 }
 
-void HealthAndStatusFPGAData::refresh(uint64_t buffer[PORTNUM * 5]) {
+void HealthAndStatusFPGAData::refresh(uint64_t buffer[PORTNUM * PORT_COUNTNUM]) {
     for (int i = 0; i < PORTNUM; i++) {
-        ports[i].fillFromFIFO(buffer + i * 5);
+        ports[i].fillFromFIFO(buffer + i * PORT_COUNTNUM);
     }
 }
 
