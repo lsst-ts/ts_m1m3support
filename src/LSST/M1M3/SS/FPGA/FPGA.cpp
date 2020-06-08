@@ -6,6 +6,9 @@
 #include <U8ArrayUtilities.h>
 #include <FPGAAddresses.h>
 
+#include <iostream>
+#include <iomanip>
+
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -223,9 +226,9 @@ void FPGA::pullTelemetry() {
 }
 
 void FPGA::pullHealthAndStatus() {
-    writeRequestFIFO(FPGAAddresses::HealthAndStatus, 0);
+    writeHealthAndStatusFIFO(2, 0);
     uint64_t buffer[64];
-    readU16ResponseFIFO((uint16_t*)buffer, 64 * 4, 500);
+    readHealthAndStatusFIFO(buffer, 64, 500);
     healthAndStatusFPGAData.refresh(buffer);
 }
 
@@ -271,6 +274,22 @@ int32_t FPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeou
             __PRETTY_FUNCTION__,
             NiFpga_ReadFifoU16(this->session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO,
                                data, length, timeoutInMs, &this->remaining));
+}
+
+void FPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {
+    uint16_t data[2] = {request, param};
+    NiThrowError(__PRETTY_FUNCTION__,
+                 NiFpga_WriteFifoU16(this->session,
+                                     NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_HealthAndStatusControlFIFO,
+                                     data, 2, 0, &this->remaining));
+}
+
+int32_t FPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs) {
+    return NiReportError(
+            __PRETTY_FUNCTION__,
+            NiFpga_ReadFifoU64(this->session,
+                               NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO, data,
+                               length, timeoutInMs, &this->remaining));
 }
 
 } /* namespace SS */

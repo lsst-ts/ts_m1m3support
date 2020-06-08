@@ -167,16 +167,6 @@ void Model::loadSettings(std::string settingsToApply) {
 
 void Model::queryFPGAData() {}
 
-void Model::publishFPGAData() {
-    uint16_t response[512];
-    IFPGA::get().writeRequestFIFO(FPGAAddresses::HealthAndStatus, 0);
-    IFPGA::get().readU16ResponseFIFO(response, 64 * 4, 20);
-    /*for(int i = 0; i < 25; i++) {
-            cout << U16ArrayUtilities::u64(response, i * 4) << " ";
-    }
-    cout << endl;*/
-}
-
 void Model::publishStateChange(States::Type newState) {
     spdlog::debug("Model: publishStateChange({:d})", newState);
     uint64_t state = (uint64_t)newState;
