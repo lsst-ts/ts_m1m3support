@@ -26,23 +26,18 @@ node {
         dir("ts_Dockerfiles") {
             git branch: (BRANCH == "master" ? "master" : "develop"), url: 'https://github.com/lsst-ts/ts_Dockerfiles'
         }
-        sh '''
-          ls -l
-          ls -l ts_Dockerfiles
-        '''
-    }
-
-    stage('Cloning source')
-    {
-        git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
-        sh '''
-          ls -l
-        '''
     }
 
     stage('Building dev container')
     {
         M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
+    }
+
+    stage('Cloning source')
+    {
+        dir("ts_m1m3support") {
+            git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
+        }
     }
 
     stage("Running tests")
@@ -55,14 +50,14 @@ node {
     
                     export PATH=/opt/rh/devtoolset-8/root/usr/bin:$PATH
     
-                    cd $WORKSPACE
+                    cd $WORKSPACE/ts_m1m3support
                     make SIMULATOR=1
                     make junit
                 '''
              }
         }
 
-        junit 'tests/*.xml'
+        junit 'ts_m1m3support/tests/*.xml'
     }
 
     stage('Running container')
@@ -73,7 +68,7 @@ node {
                     cd $SAL_REPOS
                     source ts_sal/setup.env
     
-                    cd $WORKSPACE
+                    cd $WORKSPACE/ts_m1m3support
                     ./ts_M1M3Support -c SettingFiles &
     
                     echo "Waiting for 30 seconds"
