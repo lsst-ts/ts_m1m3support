@@ -120,31 +120,68 @@ salgenerator MTMount generate python
 
 ## Compiling for deployment
 
-You will need to install [NI provided GNU toolchain](http://www.ni.com/download/labview-real-time-module-2017/6763/en/).
-
-```bash
-cd ${BASE}/ts_m1m3support
-make clean
-make
-```
-
-## Compiling for simulation
+Ni RT stack isn't needed.
 
 ```bash
 cd $BASE
 source ts_sal/setup.env
 cd ts_m1m3support
-make clean
+make
+```
+
+## Deploying the code
+
+```bash
+cd $BASE
+source ts_sal/setup.env
+cd ts_m1m3support
+make deploy
+```
+
+cRIO IP can be supplied with CRIO_IP=xx.yy.zz.ww argument.
+
+## Compiling for simulation
+
+If you run make before (for deployment), you need to run make clean before
+compiling for simulator.
+
+```bash
+cd $BASE
+source ts_sal/setup.env
+cd ts_m1m3support
 make SIMULATOR=1
 ```
 
 ## Running in deployment
 
+ts_sal must be installed/available on target host. FPGA bitfiles with matching
+signature shall be installed in Bitfiles directory. Those contains compiled
+FPGA code, so you don't need to load (deploy) the code from LabView. This will
+run only on cRIO system.
+
 ```bash
 source ./ts_sal/setup.env;./ts_m1m3support/ts_M1M3Support -c SettingFiles
 ```
 
+## Running m1m3cli
+
+M1M3 command line client can be run as:
+
+```bash
+./m1m3cli
+Please type help for more help.
+M1M3 > open
+[2020-06-09 20:12:50.964] [m1m3cli] [debug] FPGA: FPGA()
+[2020-06-09 20:12:50.964] [m1m3cli] [debug] FPGA: initialize()
+[2020-06-09 20:12:50.966] [m1m3cli] [debug] FPGA: open()
+```
+
+SAL isn't needed to run the command line tool.
+
 ## Running in simulation
+
+After make SIMULATOR=1, you can run the code as simulator. This doesn't need
+any hardware attached.
 
 ```bash
 source ./ts_sal/setup.env;./ts_m1m3support/ts_M1M3Support -c SettingFiles
@@ -152,5 +189,5 @@ source ./ts_sal/setup.env;./ts_m1m3support/ts_M1M3Support -c SettingFiles
 
 The simulator does a pretty good job giving realistic data, you will notice
 some data isn't populated, it may be added at a later date, it may not. When
-issuing state change commands make sure to specify "value" as 1 otherwise the
+issuing state change commands make sure to specify "value" as otherwise the
 command will be rejected.
