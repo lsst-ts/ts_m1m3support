@@ -1,5 +1,5 @@
 /*
- * This file is part of M1M3 test suite. Tests software PID.
+ * This file is part of LSST M1M3 SS test suite. Tests software PID.
  *
  * Developed for the LSST Data Management System.
  * This product includes software developed by the LSST Project

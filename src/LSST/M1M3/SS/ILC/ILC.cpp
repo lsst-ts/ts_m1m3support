@@ -251,21 +251,22 @@ void ILC::waitForAllSubnets(int32_t timeout) {
 
 void ILC::read(uint8_t subnet) {
     spdlog::debug("ILC: read({:d})", subnet);
-    // TODO: The expectation is if someone asks to read something they expect something to be there
-    // so if something isn't there should be a warning (timeout on responses)
     this->u16Buffer[0] = this->subnetToRxAddress(subnet);
     IFPGA::get().writeRequestFIFO(this->u16Buffer, 1, 0);
     this->rxBuffer.setIndex(0);
     IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
     uint16_t reportedLength = this->rxBuffer.readLength();
-    if (reportedLength > 0) {
-        this->rxBuffer.setIndex(0);
-        if (IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
-            spdlog::warn("ILC: Failed to read all {:d} words", reportedLength);
-        }
-        this->rxBuffer.setLength(reportedLength);
-        this->responseParser.parse(&this->rxBuffer, subnet);
+    if (reportedLength == 0) {
+        spdlog::error("ILC: Timeout on response");
+        return;
     }
+
+    rxBuffer.setIndex(0);
+    if (IFPGA::get().readU16ResponseFIFO(rxBuffer.getBuffer(), reportedLength, 10)) {
+        spdlog::warn("ILC: Failed to read all {:d} words", reportedLength);
+    }
+    rxBuffer.setLength(reportedLength);
+    responseParser.parse(&rxBuffer, subnet);
 }
 
 void ILC::readAll() {

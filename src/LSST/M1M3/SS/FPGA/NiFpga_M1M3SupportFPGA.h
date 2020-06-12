@@ -23,7 +23,7 @@
 /**
  * The signature of the FPGA bitfile.
  */
-static const char* const NiFpga_M1M3SupportFPGA_Signature = "555A946B4076DA4C17F9E0D4E9AE6DC0";
+static const char* const NiFpga_M1M3SupportFPGA_Signature = "DD68D43924E4F8705378FB4F14CD9F6A";
 
 #if NiFpga_Cpp
 extern "C"
@@ -47,7 +47,13 @@ typedef enum
 
 typedef enum
 {
-   NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO = 4,
+   NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO = 4,
+} NiFpga_M1M3SupportFPGA_TargetToHostFifoU64;
+
+typedef enum
+{
+   NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO = 6,
+   NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_HealthAndStatusControlFIFO = 5,
    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO = 3,
 } NiFpga_M1M3SupportFPGA_HostToTargetFifoU16;
 
