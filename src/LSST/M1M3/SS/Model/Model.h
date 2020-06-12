@@ -66,7 +66,6 @@ public:
     void loadSettings(std::string settingsToApply);
 
     void queryFPGAData();
-    void publishFPGAData();
 
     void publishStateChange(States::Type newState);
     void publishRecommendedSettings();

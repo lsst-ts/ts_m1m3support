@@ -51,6 +51,9 @@ public:
     virtual int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) = 0;
     virtual int32_t readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
 
+    virtual void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) = 0;
+    virtual int32_t readHealthAndStatusFIFO(uint64_t * data, int32_t length, int32_t timeoutInMs = 10) = 0;
+
 protected:
     SupportFPGAData supportFPGAData;
     HealthAndStatusFPGAData healthAndStatusFPGAData;

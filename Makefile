@@ -20,7 +20,7 @@ M1M3_OBJS = src/cliapp/CliApp.o
 
 m1m3cli: src/m1m3cli.o $(M1M3_OBJS) src/libM1M3SS.a
 	@echo '[LD ] $@'
-	${co}$(CPP) -o $@ $^ -lreadline -ldl
+	${co}$(CPP) -o $@ $^ -lpthread -lreadline -ldl
 
 # Other Targets
 clean:
@@ -28,7 +28,7 @@ clean:
 	@$(foreach dir,src tests,$(MAKE) -C ${dir} $@;)
 
 # file targets
-src/%.o:
+src/%.o: src/%.cpp
 	$(MAKE) -C src $(patsubst src/%,%,$@)
 
 CRIO_IP = 10.0.0.11

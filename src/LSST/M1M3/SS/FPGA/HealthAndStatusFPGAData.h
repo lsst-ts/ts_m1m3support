@@ -7,7 +7,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+// number of Modbus ports    
 const int PORTNUM = 5;
+// Number of counters/flags per port
+const int PORT_COUNTNUM = 6;
 
 /**
  * A single modbus port data. Reads data from FIFO buffer, and provides access.
@@ -29,6 +32,7 @@ public:
     uint64_t txFrames;
     uint64_t rxBytes;
     uint64_t rxFrames;
+    uint64_t instructionCount;
 };
 
 /**
@@ -43,7 +47,7 @@ public:
      *
      * @throw NiError on FPGA/NI error
      */
-    void refresh(uint64_t buffer[PORTNUM * 5]);
+    void refresh(uint64_t buffer[PORTNUM * PORT_COUNTNUM]);
 
     ModbusPort ports[PORTNUM];
 };
