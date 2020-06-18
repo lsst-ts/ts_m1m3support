@@ -262,9 +262,7 @@ void ILC::read(uint8_t subnet) {
     }
 
     rxBuffer.setIndex(0);
-    if (IFPGA::get().readU16ResponseFIFO(rxBuffer.getBuffer(), reportedLength, 10)) {
-        spdlog::warn("ILC: Failed to read all {:d} words", reportedLength);
-    }
+    IFPGA::get().readU16ResponseFIFO(rxBuffer.getBuffer(), reportedLength, 10);
     rxBuffer.setLength(reportedLength);
     responseParser.parse(&rxBuffer, subnet);
 }
@@ -287,9 +285,7 @@ void ILC::flush(uint8_t subnet) {
     uint16_t reportedLength = this->rxBuffer.readLength();
     if (reportedLength > 0) {
         this->rxBuffer.setIndex(0);
-        if (IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10)) {
-            spdlog::warn("ILC: Failed to read all {:d} words", reportedLength);
-        }
+        IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10);
         this->rxBuffer.setLength(reportedLength);
     }
 }
