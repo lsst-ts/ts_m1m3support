@@ -45,3 +45,23 @@ TEST_CASE("CalculateCRC", "[ModbusBuffer]") {
     REQUIRE(mbuf.readInstructionByte(buf[2]) == 0xe3);
     REQUIRE(mbuf.readInstructionByte(buf[3]) == 0x4c);
 }
+
+TEST_CASE("CalculateLongCRC", "[ModbusBuffer]") {
+    std::vector<uint8_t> data = {0x81, 0x11, 0x10, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAA, 0xFF,
+                                 0xBB, 0xCC, 0xDD, 0xEE, 0x11, 0x53, 0x74, 0x61, 0x72};
+
+    REQUIRE(ModbusBuffer::calculateCRC(data) == 0x9FA7);
+
+    ModbusBuffer mbuf;
+    for (auto d : data) mbuf.writeU8(d);
+
+    mbuf.writeCRC(19);
+    mbuf.writeEndOfFrame();
+
+    REQUIRE(mbuf.getIndex() == 22);
+
+    uint16_t* buf = mbuf.getBuffer();
+
+    REQUIRE(mbuf.readInstructionByte(buf[19]) == 0xA7);
+    REQUIRE(mbuf.readInstructionByte(buf[20]) == 0x9F);
+}
