@@ -3,6 +3,7 @@
 
 #include <DataTypes.h>
 #include <string>
+#include <vector>
 
 namespace LSST {
 namespace M1M3 {
@@ -36,6 +37,31 @@ public:
     bool endOfBuffer();
     bool endOfFrame();
 
+    /**
+     * Returns read data from buffer.
+     *
+     * @param length data length 
+     *
+     * @return read data
+     */
+    std::vector<uint8_t> getReadData(int32_t length);
+
+    /**
+     * Calculate Modbus CRC16
+     *
+     * @param data data for CRC16 calculation
+     *
+     * @return calculated Modbus CRC16
+     */
+    static uint16_t calculateCRC(std::vector<uint8_t> data);
+
+    /**
+     * Calculate Modbus from written data
+     *
+     * @param length buffer length
+     *
+     * @return calculated Modbus CRC16
+     */
     uint16_t calculateCRC(int32_t length);
 
     uint16_t readLength();
@@ -90,12 +116,35 @@ public:
     void writeTriggerIRQ();
     void writeWaitForRx(uint32_t timeoutMicros);
 
+    /**
+     * Fills buffer with data from response, returns start and end timestamps.
+     * Checks for CRC.
+     *
+     * Throws exception on error.
+     */
+    void pullModbusResponse(uint16_t request, uint64_t& beginTs, uint64_t& endTs, std::vector<uint8_t>& data);
+
 private:
     uint16_t buffer[5120];
     uint8_t floatPointBuffer[8];
     uint8_t stringBuffer[256];
     int32_t index;
     int32_t length;
+
+    // masks for FPGA FIFO commands
+    const static uint16_t FIFO_INSTRUCTION = 0xF000;
+    const static uint16_t FIFO_TX_WRITE = 0x1000;
+    const static uint16_t FIFO_TX_FRAMEEND = 0x20DA;
+    const static uint16_t FIFO_TX_TIMESTAMP = 0x3000;
+    const static uint16_t FIFO_TX_WAIT_US = 0x4000;
+    const static uint16_t FIFO_TX_WAIT_MS = 0x5000;
+    const static uint16_t FIFO_TX_WAIT_RX = 0x6000;
+    const static uint16_t FIFO_TX_IRQTRIGGER = 0x7000;
+    const static uint16_t FIFO_TX_WAIT_TRIGGER = 0x8000;
+    const static uint16_t FIFO_TX_WAIT_LONG_RX = 0x9000;
+    const static uint16_t FIFO_RX_READ = 0x9000;
+    const static uint16_t FIFO_RX_ENDFRAME = 0xA000;
+    const static uint16_t FIFO_RX_TIMESTAMP = 0xB000;
 };
 
 } /* namespace SS */

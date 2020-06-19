@@ -1,7 +1,9 @@
 #include <ModbusBuffer.h>
+#include <IFPGA.h>
 #include <Timestamp.h>
 #include <string.h>
-#include <iostream>
+#include <spdlog/spdlog.h>
+#include <stdexcept>
 
 using namespace std;
 
@@ -43,12 +45,20 @@ void ModbusBuffer::reset() { this->index = 0; }
 
 bool ModbusBuffer::endOfBuffer() { return this->index >= this->length; }
 
-bool ModbusBuffer::endOfFrame() { return this->buffer[this->index] == 0xA000; }
+bool ModbusBuffer::endOfFrame() { return this->buffer[this->index] == FIFO_RX_ENDFRAME; }
 
-uint16_t ModbusBuffer::calculateCRC(int32_t length) {
+std::vector<uint8_t> ModbusBuffer::getReadData(int32_t length) {
+    std::vector<uint8_t> data;
+    for (int i = index - length; i < index; i++) {
+        data.push_back(readInstructionByte(buffer[i]));
+    }
+    return data;
+}
+
+uint16_t ModbusBuffer::calculateCRC(std::vector<uint8_t> data) {
     uint16_t crc = 0xFFFF;
-    for (int i = this->index - length; i < this->index; i++) {
-        crc = crc ^ ((uint16_t)this->readInstructionByte(this->buffer[i]));
+    for (auto i : data) {
+        crc = crc ^ (uint16_t(i));
         for (int j = 0; j < 8; j++) {
             if (crc & 0x0001) {
                 crc = crc >> 1;
@@ -60,6 +70,8 @@ uint16_t ModbusBuffer::calculateCRC(int32_t length) {
     }
     return crc;
 }
+
+uint16_t ModbusBuffer::calculateCRC(int32_t length) { return calculateCRC(getReadData(length)); }
 
 uint16_t ModbusBuffer::readLength() { return this->buffer[this->index++]; }
 
@@ -218,28 +230,94 @@ void ModbusBuffer::writeDelay(uint32_t delayMicros) {
 
 void ModbusBuffer::writeEndOfFrame() {
     this->index += 1;
-    this->buffer[this->index - 1] = 0x20DA;
+    this->buffer[this->index - 1] = FIFO_TX_FRAMEEND;
 }
 
 void ModbusBuffer::writeSoftwareTrigger() {
     this->index += 1;
-    this->buffer[this->index - 1] = 0x8000;
+    this->buffer[this->index - 1] = FIFO_TX_WAIT_TRIGGER;
 }
 
 void ModbusBuffer::writeTimestamp() {
     this->index += 1;
-    this->buffer[this->index - 1] = 0x3000;
+    this->buffer[this->index - 1] = FIFO_TX_TIMESTAMP;
 }
 
 void ModbusBuffer::writeTriggerIRQ() {
     this->index += 1;
-    this->buffer[this->index - 1] = 0x7000;
+    this->buffer[this->index - 1] = FIFO_TX_IRQTRIGGER;
 }
 
 void ModbusBuffer::writeWaitForRx(uint32_t timeoutMicros) {
     this->index += 1;
-    this->buffer[this->index - 1] =
-            timeoutMicros > 4095 ? (((timeoutMicros / 1000) + 1) | 0x9000) : (timeoutMicros | 0x6000);
+    this->buffer[this->index - 1] = timeoutMicros > 4095
+                                            ? (((timeoutMicros / 1000) + 1) | FIFO_TX_WAIT_LONG_RX)
+                                            : (timeoutMicros | FIFO_TX_WAIT_RX);
+}
+
+void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint64_t& endTs,
+                                      std::vector<uint8_t>& data) {
+    IFPGA::get().writeRequestFIFO(&request, 1, 0);
+
+    reset();
+
+    uint16_t reportedLength;
+    IFPGA::get().readU16ResponseFIFO(&reportedLength, 1, 20);
+    if (reportedLength <= 4) {
+        throw std::runtime_error("ModbusBuffer::pullModbusResponse: Timeout on response");
+    }
+
+    IFPGA::get().readU16ResponseFIFO(getBuffer(), reportedLength, 10);
+    setLength(reportedLength);
+
+    // check for frame ends - should be just one
+    int endCount = 0;
+    endTs = 0;
+    int endTsShift = 0;
+    for (int i = 4; i < reportedLength; i++) {
+        switch (buffer[i] & FIFO_INSTRUCTION) {
+            case FIFO_RX_READ:
+                data.push_back(readInstructionByte(buffer[i]));
+                break;
+            case FIFO_RX_TIMESTAMP:
+                endTs |= (uint64_t)(buffer[i] & 0xFF) << endTsShift;
+                endTsShift += 8;
+                break;
+            case FIFO_RX_ENDFRAME:
+                endCount++;
+                break;
+        }
+    }
+
+    // at least instruction and some payload shall be received
+    if (data.size() < 3) {
+        throw std::runtime_error("ModbusBuffer::pullModbusResponse: data not received");
+    }
+
+    if (endCount != 1) {
+        throw std::runtime_error("ModbusBuffer::pullModbusResponse: wrong number of end frames");
+    }
+
+    if (endTsShift != 64) {
+        throw std::runtime_error("ModbusBuffer::pollModbusResponse End timestamp not received");
+    }
+
+    if (buffer[getLength() - 1] != FIFO_RX_ENDFRAME)
+        throw std::runtime_error("ModbusBuffer::pullModbusResponse: last received word isn't ENDFRAME");
+
+    // remove CRC16
+    uint16_t crc = data.back();
+    data.pop_back();
+    crc |= ((uint16_t)data.back()) << 8;
+    data.pop_back();
+
+    beginTs = *((uint64_t*)getBuffer());
+
+    uint16_t calcCrc = calculateCRC(data);
+
+    if (calcCrc != crc) {
+        throw std::runtime_error(fmt::format("Invalid CRC: {:#06x} expected {:#06x}", crc, calcCrc));
+    }
 }
 
 } /* namespace SS */
