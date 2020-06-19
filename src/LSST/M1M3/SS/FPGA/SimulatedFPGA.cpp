@@ -929,12 +929,11 @@ int32_t SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) { return 0; }
 
 int32_t SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) { return 0; }
 
-int32_t SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
+void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     for (int i = 0; i < length; ++i) {
         data[i] = this->u16Response.front();
         this->u16Response.pop();
     }
-    return 0;
 }
 
 void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}

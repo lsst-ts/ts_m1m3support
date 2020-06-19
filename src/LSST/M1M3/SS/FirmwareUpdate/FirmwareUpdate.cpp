@@ -431,10 +431,7 @@ bool FirmwareUpdate::ProcessResponse(ModbusBuffer* buffer, int subnet) {
     uint16_t reportedLength = buffer->readLength();
     if (reportedLength > 0) {
         buffer->setIndex(0);
-        if (IFPGA::get().readU16ResponseFIFO(buffer->getBuffer(), reportedLength, 2000)) {
-            spdlog::error("FirmwareUpdate: Failed to read all {} words", reportedLength);
-            return false;
-        }
+        IFPGA::get().readU16ResponseFIFO(buffer->getBuffer(), reportedLength, 2000);
         buffer->setLength(reportedLength);
         // Read U64 Global Timestamp (UNUSED)
         buffer->readLength();

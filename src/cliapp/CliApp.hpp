@@ -157,7 +157,7 @@ public:
     /**
      * Prints help for multiple commands.
      */
-    int helpCommands(command_vec cmds);
+    int helpCommands(command_vec cmds = std::vector<std::string>());
 
     /**
      * Starts commands interactive processing.

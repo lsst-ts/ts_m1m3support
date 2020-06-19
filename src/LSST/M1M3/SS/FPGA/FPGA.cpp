@@ -269,8 +269,8 @@ int32_t FPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutI
                               length, timeoutInMs, &this->remaining));
 }
 
-int32_t FPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
-    return NiReportError(
+void FPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
+    NiThrowError(
             __PRETTY_FUNCTION__,
             NiFpga_ReadFifoU16(this->session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO,
                                data, length, timeoutInMs, &this->remaining));
