@@ -1,10 +1,3 @@
-/*
- * StaticForceComponent.cpp
- *
- *  Created on: Jul 9, 2018
- *      Author: ccontaxis
- */
-
 #include <StaticForceComponent.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>

@@ -1,10 +1,3 @@
-/*
- * FaultCodes.h
- *
- *  Created on: Oct 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FAULTCODES_H_
 #define FAULTCODES_H_
 

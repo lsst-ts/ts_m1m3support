@@ -1,10 +1,3 @@
-/*
- * ReadCalibrationBusList.cpp
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #include <ReadCalibrationBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>

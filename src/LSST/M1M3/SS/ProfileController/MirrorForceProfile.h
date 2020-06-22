@@ -1,10 +1,3 @@
-/*
- * MirrorForceProfile.h
- *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef MIRRORFORCEPROFILE_H_
 #define MIRRORFORCEPROFILE_H_
 

@@ -1,10 +1,3 @@
-/*
- * AccelerometerSettings.cpp
- *
- *  Created on: Nov 2, 2017
- *      Author: ccontaxis
- */
-
 #include <AccelerometerSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

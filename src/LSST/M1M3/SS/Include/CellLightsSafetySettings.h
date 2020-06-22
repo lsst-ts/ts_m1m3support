@@ -1,10 +1,3 @@
-/*
- * CellLightsSafetySettings.h
- *
- *  Created on: Nov 30, 2017
- *      Author: ccontaxis
- */
-
 #ifndef CELLLIGHTSSAFETYSETTINGS_H_
 #define CELLLIGHTSSAFETYSETTINGS_H_
 

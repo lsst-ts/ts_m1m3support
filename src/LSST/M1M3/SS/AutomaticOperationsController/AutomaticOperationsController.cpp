@@ -1,10 +1,3 @@
-/*
- * AutomaticOperationsController.cpp
- *
- *  Created on: Dec 13, 2017
- *      Author: ccontaxis
- */
-
 #include <AutomaticOperationsController.h>
 #include <PositionController.h>
 #include <ForceController.h>

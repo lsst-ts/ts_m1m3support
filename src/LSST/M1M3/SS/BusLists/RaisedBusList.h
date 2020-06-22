@@ -1,10 +1,3 @@
-/*
- * RaisedBusList.h
- *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
- */
-
 #ifndef RAISEDBUSLIST_H_
 #define RAISEDBUSLIST_H_
 

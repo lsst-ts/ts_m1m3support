@@ -1,10 +1,3 @@
-/*
- * IThread.h
- *
- *  Created on: Sep 28, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ITHREAD_H_
 #define ITHREAD_H_
 

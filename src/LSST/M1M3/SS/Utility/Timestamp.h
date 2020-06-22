@@ -1,10 +1,3 @@
-/*
- * Timestamp.h
- *
- *  Created on: Oct 2, 2017
- *      Author: ccontaxis
- */
-
 #ifndef TIMESTAMP_H_
 #define TIMESTAMP_H_
 

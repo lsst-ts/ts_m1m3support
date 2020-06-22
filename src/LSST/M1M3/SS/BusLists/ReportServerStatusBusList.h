@@ -1,10 +1,3 @@
-/*
- * ReportServerStatusBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef REPORTSERVERSTATUSBUSLIST_H_
 #define REPORTSERVERSTATUSBUSLIST_H_
 

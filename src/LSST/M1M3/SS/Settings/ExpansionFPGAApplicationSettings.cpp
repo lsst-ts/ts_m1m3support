@@ -1,10 +1,3 @@
-/*
- * ExpansionFPGAApplicationSettings.cpp
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #include <ExpansionFPGAApplicationSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

@@ -1,10 +1,3 @@
-/*
- * PowerControllerSafetySettings.h
- *
- *  Created on: Dec 7, 2017
- *      Author: ccontaxis
- */
-
 #ifndef POWERCONTROLLERSAFETYSETTINGS_H_
 #define POWERCONTROLLERSAFETYSETTINGS_H_
 

@@ -1,10 +1,3 @@
-/*
- * ActiveBusList.cpp
- *
- *  Created on: Apr 9, 2018
- *      Author: ccontaxis
- */
-
 #include <ActiveBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>

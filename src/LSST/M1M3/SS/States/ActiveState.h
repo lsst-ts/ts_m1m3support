@@ -1,10 +1,3 @@
-/*
- * ActiveState.h
- *
- *  Created on: Nov 3, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ACTIVESTATE_H_
 #define ACTIVESTATE_H_
 

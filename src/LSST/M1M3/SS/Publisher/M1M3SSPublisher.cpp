@@ -1,10 +1,3 @@
-/*
- * M1M3SSPublisher.cpp
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #include <M1M3SSPublisher.h>
 #include <SAL_MTM1M3.h>
 #include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations

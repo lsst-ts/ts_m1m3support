@@ -1,10 +1,3 @@
-/*
- * ReadCalibrationBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef READCALIBRATIONBUSLIST_H_
 #define READCALIBRATIONBUSLIST_H_
 

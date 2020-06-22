@@ -1,10 +1,3 @@
-/*
- * AberrationForceComponent.cpp
- *
- *  Created on: Jul 9, 2018
- *      Author: ccontaxis
- */
-
 #include <AberrationForceComponent.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>

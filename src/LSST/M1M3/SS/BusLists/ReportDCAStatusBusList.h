@@ -1,10 +1,3 @@
-/*
- * ReportDCAStatusBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef REPORTDCASTATUSBUSLIST_H_
 #define REPORTDCASTATUSBUSLIST_H_
 

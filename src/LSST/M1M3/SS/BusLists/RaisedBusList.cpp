@@ -1,10 +1,3 @@
-/*
- * RaisedBusList.cpp
- *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
- */
-
 #include <RaisedBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>

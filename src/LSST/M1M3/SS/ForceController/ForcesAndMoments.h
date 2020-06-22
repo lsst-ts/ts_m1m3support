@@ -1,10 +1,3 @@
-/*
- * ForcesAndMoments.h
- *
- *  Created on: Mar 13, 2018
- *      Author: ccontaxis
- */
-
 #ifndef FORCESANDMOMENTS_H_
 #define FORCESANDMOMENTS_H_
 

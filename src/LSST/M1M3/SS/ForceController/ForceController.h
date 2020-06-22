@@ -1,10 +1,3 @@
-/*
- * ForceController.h
- *
- *  Created on: Oct 23, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FORCECONTROLLER_H_
 #define FORCECONTROLLER_H_
 

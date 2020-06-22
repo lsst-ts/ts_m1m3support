@@ -1,10 +1,3 @@
-/*
- * PositionControllerSettings.h
- *
- *  Created on: Oct 30, 2017
- *      Author: ccontaxis
- */
-
 #ifndef POSITIONCONTROLLERSETTINGS_H_
 #define POSITIONCONTROLLERSETTINGS_H_
 

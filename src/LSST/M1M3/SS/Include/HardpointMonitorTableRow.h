@@ -1,10 +1,3 @@
-/*
- * HardpointMonitorTableRow.h
- *
- *  Created on: Nov 17, 2017
- *      Author: ccontaxis
- */
-
 #ifndef HARDPOINTMONITORTABLEROW_H_
 #define HARDPOINTMONITORTABLEROW_H_
 

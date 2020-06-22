@@ -1,10 +1,3 @@
-/*
- * RoundRobin.h
- *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ROUNDROBIN_H_
 #define ROUNDROBIN_H_
 

@@ -1,10 +1,3 @@
-/*
- * PPSThread.h
- *
- *  Created on: Mar 29, 2018
- *      Author: ccontaxis
- */
-
 #ifndef PPSTHREAD_H_
 #define PPSTHREAD_H_
 

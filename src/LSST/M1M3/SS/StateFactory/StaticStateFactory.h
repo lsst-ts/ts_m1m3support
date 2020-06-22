@@ -1,10 +1,3 @@
-/*
- * StaticStateFactory.h
- *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef STATICSTATEFACTORY_H_
 #define STATICSTATEFACTORY_H_
 

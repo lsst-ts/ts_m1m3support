@@ -1,10 +1,3 @@
-/*
- * Command.h
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef COMMAND_H_
 #define COMMAND_H_
 

@@ -1,10 +1,3 @@
-/*
- * DisplacementSensorSettings.h
- *
- *  Created on: Nov 16, 2017
- *      Author: ccontaxis
- */
-
 #ifndef DISPLACEMENTSENSORSETTINGS_H_
 #define DISPLACEMENTSENSORSETTINGS_H_
 

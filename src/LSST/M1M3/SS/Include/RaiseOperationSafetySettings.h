@@ -1,10 +1,3 @@
-/*
- * RaiseOperationSafetySettings.h
- *
- *  Created on: Dec 12, 2017
- *      Author: ccontaxis
- */
-
 #ifndef RAISEOPERATIONSAFETYSETTINGS_H_
 #define RAISEOPERATIONSAFETYSETTINGS_H_
 

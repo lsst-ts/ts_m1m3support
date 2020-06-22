@@ -1,10 +1,3 @@
-/*
- * ReadBoostValveDCAGainBusList.cpp
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #include <ReadBoostValveDCAGainBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>

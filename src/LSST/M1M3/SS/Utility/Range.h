@@ -1,10 +1,3 @@
-/*
- * Range.h
- *
- *  Created on: Oct 31, 2017
- *      Author: ccontaxis
- */
-
 #ifndef RANGE_H_
 #define RANGE_H_
 

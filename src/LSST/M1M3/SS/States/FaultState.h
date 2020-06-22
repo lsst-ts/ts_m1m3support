@@ -1,10 +1,3 @@
-/*
- * FaultState.h
- *
- *  Created on: Oct 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FAULTSTATE_H_
 #define FAULTSTATE_H_
 

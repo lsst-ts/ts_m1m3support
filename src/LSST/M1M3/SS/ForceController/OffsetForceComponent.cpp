@@ -1,10 +1,3 @@
-/*
- * OffsetForceComponent.cpp
- *
- *  Created on: Jul 6, 2018
- *      Author: ccontaxis
- */
-
 #include <OffsetForceComponent.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>

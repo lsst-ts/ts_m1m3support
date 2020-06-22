@@ -1,10 +1,3 @@
-/*
- * BusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef BUSLIST_H_
 #define BUSLIST_H_
 

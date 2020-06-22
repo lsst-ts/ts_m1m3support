@@ -1,10 +1,3 @@
-/*
- * PositionControllerSettings.cpp
- *
- *  Created on: Oct 30, 2017
- *      Author: ccontaxis
- */
-
 #include <PositionControllerSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

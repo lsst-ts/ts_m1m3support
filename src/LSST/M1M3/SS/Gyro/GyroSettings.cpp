@@ -1,10 +1,3 @@
-/*
- * GyroSettings.cpp
- *
- *  Created on: Jan 4, 2018
- *      Author: ccontaxis
- */
-
 #include <GyroSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

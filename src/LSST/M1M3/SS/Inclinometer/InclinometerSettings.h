@@ -1,10 +1,3 @@
-/*
- * InclinometerSettings.h
- *
- *  Created on: May 11, 2018
- *      Author: ccontaxis
- */
-
 #ifndef INCLINOMETERSETTINGS_H_
 #define INCLINOMETERSETTINGS_H_
 

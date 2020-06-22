@@ -1,10 +1,3 @@
-/*
- * Accelerometer.h
- *
- *  Created on: Nov 1, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 

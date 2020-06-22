@@ -1,10 +1,3 @@
-/*
- * ParkedEngineeringState.h
- *
- *  Created on: Oct 17, 2017
- *      Author: ccontaxis
- */
-
 #ifndef PARKEDENGINEERINGSTATE_H_
 #define PARKEDENGINEERINGSTATE_H_
 

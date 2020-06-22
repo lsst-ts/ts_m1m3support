@@ -1,10 +1,3 @@
-/*
- * InclinometerSettings.cpp
- *
- *  Created on: May 11, 2018
- *      Author: ccontaxis
- */
-
 #include <InclinometerSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

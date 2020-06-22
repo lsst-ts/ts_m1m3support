@@ -1,10 +1,3 @@
-/*
- * InterlockApplicationSettings.h
- *
- *  Created on: Nov 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef INTERLOCKAPPLICATIONSETTINGS_H_
 #define INTERLOCKAPPLICATIONSETTINGS_H_
 

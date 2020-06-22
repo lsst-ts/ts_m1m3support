@@ -1,10 +1,3 @@
-/*
- * AliasApplicationSettings.cpp
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #include <AliasApplicationSettings.h>
 #include <pugixml/pugixml.hpp>
 #include <XMLDocLoad.h>

@@ -1,10 +1,3 @@
-/*
- * DistributedForces.h
- *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef DISTRIBUTEDFORCES_H_
 #define DISTRIBUTEDFORCES_H_
 

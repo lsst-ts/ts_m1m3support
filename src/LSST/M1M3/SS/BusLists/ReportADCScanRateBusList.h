@@ -1,10 +1,3 @@
-/*
- * ReportADCScanRateBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef REPORTADCSCANRATEBUSLIST_H_
 #define REPORTADCSCANRATEBUSLIST_H_
 

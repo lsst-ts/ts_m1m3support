@@ -1,10 +1,3 @@
-/*
- * SetADCScanRateBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef SETADCSCANRATEBUSLIST_H_
 #define SETADCSCANRATEBUSLIST_H_
 

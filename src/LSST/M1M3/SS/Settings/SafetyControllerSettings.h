@@ -1,10 +1,3 @@
-/*
- * SafetyControllerSettings.h
- *
- *  Created on: Oct 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef SAFETYCONTROLLERSETTINGS_H_
 #define SAFETYCONTROLLERSETTINGS_H_
 

@@ -1,10 +1,3 @@
-/*
- * TMAAzimuthSampleCommand.h
- *
- *  Created on: Nov 2, 2017
- *      Author: ccontaxis
- */
-
 #ifndef TMAAZIMUTHSAMPLECOMMAND_H_
 #define TMAAZIMUTHSAMPLECOMMAND_H_
 

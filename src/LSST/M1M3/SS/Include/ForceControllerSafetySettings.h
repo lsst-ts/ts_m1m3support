@@ -1,10 +1,3 @@
-/*
- * ForceControllerSafetySettings.h
- *
- *  Created on: Nov 15, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FORCECONTROLLERSAFETYSETTINGS_H_
 #define FORCECONTROLLERSAFETYSETTINGS_H_
 

@@ -1,10 +1,3 @@
-/*
- * SubscriberThread.h
- *
- *  Created on: Sep 28, 2017
- *      Author: ccontaxis
- */
-
 #ifndef SUBSCRIBERTHREAD_H_
 #define SUBSCRIBERTHREAD_H_
 

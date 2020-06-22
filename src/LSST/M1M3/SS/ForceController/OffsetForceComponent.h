@@ -1,10 +1,3 @@
-/*
- * OffsetForceComponent.h
- *
- *  Created on: Jul 6, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_OFFSETFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_OFFSETFORCECOMPONENT_H_
 

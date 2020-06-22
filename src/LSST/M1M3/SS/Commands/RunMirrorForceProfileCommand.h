@@ -1,10 +1,3 @@
-/*
- * RunMirrorForceProfileCommand.h
- *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef RUNMIRRORFORCEPROFILECOMMAND_H_
 #define RUNMIRRORFORCEPROFILECOMMAND_H_
 

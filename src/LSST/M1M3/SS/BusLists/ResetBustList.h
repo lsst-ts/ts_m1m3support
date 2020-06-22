@@ -1,10 +1,3 @@
-/*
- * ResetBustList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef RESETBUSTLIST_H_
 #define RESETBUSTLIST_H_
 

@@ -1,10 +1,3 @@
-/*
- * ILCTimingSettings.cpp
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #include <ILCApplicationSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

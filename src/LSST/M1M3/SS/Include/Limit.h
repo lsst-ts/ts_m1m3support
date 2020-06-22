@@ -1,10 +1,3 @@
-/*
- * Limit.h
- *
- *  Created on: Mar 1, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LIMIT_H_
 #define LIMIT_H_
 

@@ -1,10 +1,3 @@
-/*
- * ForceActuatorOrientations.h
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FORCEACTUATORORIENTATIONS_H_
 #define FORCEACTUATORORIENTATIONS_H_
 

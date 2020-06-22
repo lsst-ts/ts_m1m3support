@@ -1,10 +1,3 @@
-/*
- * ControllerThread.h
- *
- *  Created on: Sep 28, 2017
- *      Author: ccontaxis
- */
-
 #ifndef CONTROLLERTHREAD_H_
 #define CONTROLLERTHREAD_H_
 

@@ -1,10 +1,3 @@
-/*
- * ForceActuatorApplicationSettings.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FORCEACTUATORAPPLICATIONSETTINGS_H_
 #define FORCEACTUATORAPPLICATIONSETTINGS_H_
 

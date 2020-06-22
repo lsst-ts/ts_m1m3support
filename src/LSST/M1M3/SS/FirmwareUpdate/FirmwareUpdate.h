@@ -1,10 +1,3 @@
-/*
- * FirmwareUpdate.h
- *
- *  Created on: May 8, 2018
- *      Author: ccontaxis
- */
-
 #ifndef FIRMWAREUPDATE_H_
 #define FIRMWAREUPDATE_H_
 

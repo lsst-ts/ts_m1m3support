@@ -1,10 +1,3 @@
-/*
- * ResetPIDCommand.h
- *
- *  Created on: Feb 13, 2018
- *      Author: ccontaxis
- */
-
 #ifndef RESETPIDCOMMAND_H_
 #define RESETPIDCOMMAND_H_
 

@@ -1,10 +1,3 @@
-/*
- * InclinometerSafetySettings.h
- *
- *  Created on: Oct 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef INCLINOMETERSAFETYSETTINGS_H_
 #define INCLINOMETERSAFETYSETTINGS_H_
 

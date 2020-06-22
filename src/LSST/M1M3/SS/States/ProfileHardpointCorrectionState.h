@@ -1,10 +1,3 @@
-/*
- * ProfileHardpointCorrectionState.h
- *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef PROFILEHARDPOINTCORRECTIONSTATE_H_
 #define PROFILEHARDPOINTCORRECTIONSTATE_H_
 

@@ -1,10 +1,3 @@
-/*
- * ForceConverter.cpp
- *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
- */
-
 #include <ForceConverter.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>

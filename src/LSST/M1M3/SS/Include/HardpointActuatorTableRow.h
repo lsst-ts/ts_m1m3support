@@ -1,10 +1,3 @@
-/*
- * HardpointActuatorTableRow.h
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #ifndef HARDPOINTACTUATORTABLEROW_H_
 #define HARDPOINTACTUATORTABLEROW_H_
 

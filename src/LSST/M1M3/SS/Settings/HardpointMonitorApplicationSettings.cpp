@@ -1,10 +1,3 @@
-/*
- * HardpointMonitorApplicationSettings.cpp
- *
- *  Created on: Nov 17, 2017
- *      Author: ccontaxis
- */
-
 #include <HardpointMonitorApplicationSettings.h>
 #include <SettingReader.h>
 #include <XMLDocLoad.h>

@@ -1,10 +1,3 @@
-/*
- * DisplacementSafetySettings.h
- *
- *  Created on: Oct 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef DISPLACEMENTSAFETYSETTINGS_H_
 #define DISPLACEMENTSAFETYSETTINGS_H_
 

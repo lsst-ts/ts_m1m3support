@@ -1,10 +1,3 @@
-/*
- * StandbyState.h
- *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef STANDBYSTATE_H_
 #define STANDBYSTATE_H_
 

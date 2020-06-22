@@ -1,10 +1,3 @@
-/*
- * InterlockApplicationSettings.cpp
- *
- *  Created on: Nov 29, 2017
- *      Author: ccontaxis
- */
-
 #include <InterlockApplicationSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

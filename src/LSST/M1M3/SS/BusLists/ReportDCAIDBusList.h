@@ -1,10 +1,3 @@
-/*
- * ReportDCAIDBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef REPORTDCAIDBUSLIST_H_
 #define REPORTDCAIDBUSLIST_H_
 

@@ -1,10 +1,3 @@
-/*
- * ParkedState.h
- *
- *  Created on: Nov 3, 2017
- *      Author: ccontaxis
- */
-
 #ifndef PARKEDSTATE_H_
 #define PARKEDSTATE_H_
 

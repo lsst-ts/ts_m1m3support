@@ -1,10 +1,3 @@
-/*
- * Accelerometer.cpp
- *
- *  Created on: Nov 1, 2017
- *      Author: ccontaxis
- */
-
 #include <Accelerometer.h>
 #include <AccelerometerSettings.h>
 #include <IFPGA.h>

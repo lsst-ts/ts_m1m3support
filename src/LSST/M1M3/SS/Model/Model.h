@@ -1,10 +1,3 @@
-/*
- * Model.h
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef MODEL_H_
 #define MODEL_H_
 

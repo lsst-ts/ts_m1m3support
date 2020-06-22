@@ -1,10 +1,3 @@
-/*
- * LoweringFaultState.h
- *
- *  Created on: Feb 7, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LOWERINGFAULTSTATE_H_
 #define LOWERINGFAULTSTATE_H_
 

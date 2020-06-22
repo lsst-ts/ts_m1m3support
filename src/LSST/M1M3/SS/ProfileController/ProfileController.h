@@ -1,10 +1,3 @@
-/*
- * ProfileController.h
- *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef PROFILECONTROLLER_H_
 #define PROFILECONTROLLER_H_
 

@@ -1,10 +1,3 @@
-/*
- * SubscriberThread.cpp
- *
- *  Created on: Sep 28, 2017
- *      Author: ccontaxis
- */
-
 #include <SubscriberThread.h>
 #include <M1M3SSSubscriber.h>
 #include <Controller.h>

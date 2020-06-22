@@ -1,10 +1,3 @@
-/*
- * ILCSubnetData.h
- *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ILCSUBNETDATA_H_
 #define ILCSUBNETDATA_H_
 
