@@ -1,8 +1,24 @@
 /*
- * ForceConverter.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef FORCECONVERTER_H_
@@ -22,51 +38,69 @@ class ForceActuatorSettings;
 
 class ForceConverter {
 private:
-	static double constexpr sqrt2 = 1.4142135623730950488016887242097;
-	static double constexpr reciprocalSqrt2 = 0.70710678118654752440084436210485;
+    static double constexpr sqrt2 = 1.4142135623730950488016887242097;
+    static double constexpr reciprocalSqrt2 = 0.70710678118654752440084436210485;
 
 public:
-	static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
-		*xForce = secondaryCylinder * reciprocalSqrt2;
-		*yForce = 0;
-		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
-	}
+    static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
+                                     float* yForce, float* zForce) {
+        *xForce = secondaryCylinder * reciprocalSqrt2;
+        *yForce = 0;
+        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+    }
 
-	static void daaNegativeXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
-		*xForce = -secondaryCylinder * reciprocalSqrt2;
-		*yForce = 0;
-		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
-	}
+    static void daaNegativeXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
+                                     float* yForce, float* zForce) {
+        *xForce = -secondaryCylinder * reciprocalSqrt2;
+        *yForce = 0;
+        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+    }
 
-	static void daaPositiveYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
-		*xForce = 0;
-		*yForce = secondaryCylinder * reciprocalSqrt2;
-		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
-	}
+    static void daaPositiveYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
+                                     float* yForce, float* zForce) {
+        *xForce = 0;
+        *yForce = secondaryCylinder * reciprocalSqrt2;
+        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+    }
 
-	static void daaNegativeYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
-		*xForce = 0;
-		*yForce = -secondaryCylinder * reciprocalSqrt2;
-		*zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
-	}
+    static void daaNegativeYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
+                                     float* yForce, float* zForce) {
+        *xForce = 0;
+        *yForce = -secondaryCylinder * reciprocalSqrt2;
+        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+    }
 
-	static void saaToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce, float* zForce) {
-		*xForce = 0;
-		*yForce = 0;
-		*zForce = primaryCylinder;
-	}
+    static void saaToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce,
+                            float* zForce) {
+        *xForce = 0;
+        *yForce = 0;
+        *zForce = primaryCylinder;
+    }
 
-	static ForcesAndMoments calculateForcesAndMoments(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, float* xForces, float* yForces, float* zForces);
-	static ForcesAndMoments calculateForcesAndMoments(ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings, float* zForces);
+    static ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+            ForceActuatorSettings* forceActuatorSettings, float* xForces, float* yForces, float* zForces);
+    static ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+            ForceActuatorSettings* forceActuatorSettings, float* zForces);
 
-	static DistributedForces calculateForceFromBendingModes(ForceActuatorSettings* forceActuatorSettings, float* coefficients);
-	static DistributedForces calculateForceFromAngularAcceleration(ForceActuatorSettings* forceActuatorSettings, float angularAccelerationX, float angularAccelerationY, float angularAccelerationZ);
-	static DistributedForces calculateForceFromAngularVelocity(ForceActuatorSettings* forceActuatorSettings, float angularVelocityX, float angularVelocityY, float angularVelocityZ);
-	static DistributedForces calculateForceFromAzimuthAngle(ForceActuatorSettings* forceActuatorSettings, float azimuthAngle);
-	static DistributedForces calculateForceFromElevationAngle(ForceActuatorSettings* forceActuatorSettings, float elevationAngle);
-	static DistributedForces calculateForceFromTemperature(ForceActuatorSettings* forceActuatorSettings, float temperature);
-	static DistributedForces calculateForceDistribution(ForceActuatorSettings* forceActuatorSettings, float xForce, float yForce, float zForce, float xMoment, float yMoment, float zMoment);
-
+    static DistributedForces calculateForceFromBendingModes(ForceActuatorSettings* forceActuatorSettings,
+                                                            float* coefficients);
+    static DistributedForces calculateForceFromAngularAcceleration(
+            ForceActuatorSettings* forceActuatorSettings, float angularAccelerationX,
+            float angularAccelerationY, float angularAccelerationZ);
+    static DistributedForces calculateForceFromAngularVelocity(ForceActuatorSettings* forceActuatorSettings,
+                                                               float angularVelocityX, float angularVelocityY,
+                                                               float angularVelocityZ);
+    static DistributedForces calculateForceFromAzimuthAngle(ForceActuatorSettings* forceActuatorSettings,
+                                                            float azimuthAngle);
+    static DistributedForces calculateForceFromElevationAngle(ForceActuatorSettings* forceActuatorSettings,
+                                                              float elevationAngle);
+    static DistributedForces calculateForceFromTemperature(ForceActuatorSettings* forceActuatorSettings,
+                                                           float temperature);
+    static DistributedForces calculateForceDistribution(ForceActuatorSettings* forceActuatorSettings,
+                                                        float xForce, float yForce, float zForce,
+                                                        float xMoment, float yMoment, float zMoment);
 };
 
 } /* namespace SS */

@@ -1,8 +1,24 @@
 /*
- * RunMirrorForceProfileCommand.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Feb 9, 2018
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef RUNMIRRORFORCEPROFILECOMMAND_H_
@@ -16,22 +32,23 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class RunMirrorForceProfileCommand: public Command {
+class RunMirrorForceProfileCommand : public Command {
 private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_runMirrorForceProfileC data;
+    Context* context;
+    M1M3SSPublisher* publisher;
+    MTM1M3_command_runMirrorForceProfileC data;
 
 public:
-	RunMirrorForceProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_runMirrorForceProfileC* data);
+    RunMirrorForceProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                                 MTM1M3_command_runMirrorForceProfileC* data);
 
-	MTM1M3_command_runMirrorForceProfileC* getData() { return &this->data; }
+    MTM1M3_command_runMirrorForceProfileC* getData() { return &this->data; }
 
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    bool validate();
+    void execute();
+    void ackInProgress();
+    void ackComplete();
+    void ackFailed(std::string reason);
 };
 
 } /* namespace SS */

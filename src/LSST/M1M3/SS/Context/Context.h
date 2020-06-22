@@ -1,8 +1,24 @@
 /*
- * Context.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef CONTEXT_H_
@@ -71,61 +87,61 @@ class ModbusTransmitCommand;
  */
 class Context {
 private:
-	StaticStateFactory* stateFactory;
-	Model* model;
-	States::Type currentState;
+    StaticStateFactory* stateFactory;
+    Model* model;
+    States::Type currentState;
 
-	void updateCurrentStateIfRequired(States::Type potentialNewState);
+    void updateCurrentStateIfRequired(States::Type potentialNewState);
 
 public:
-	Context(StaticStateFactory* stateFactory, Model* model);
+    Context(StaticStateFactory* stateFactory, Model* model);
 
-	void boot(BootCommand* command);
-	void start(StartCommand* command);
-	void enable(EnableCommand* command);
-	void disable(DisableCommand* command);
-	void standby(StandbyCommand* command);
-	void shutdown(ShutdownCommand* command);
-	void update(UpdateCommand* command);
-	void turnAirOn(TurnAirOnCommand* command);
-	void turnAirOff(TurnAirOffCommand* command);
-	void applyOffsetForces(ApplyOffsetForcesCommand* command);
-	void clearOffsetForces(ClearOffsetForcesCommand* command);
-	void raiseM1M3(RaiseM1M3Command* command);
-	void lowerM1M3(LowerM1M3Command* command);
-	void applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command);
-	void applyAberrationForces(ApplyAberrationForcesCommand* command);
-	void clearAberrationForces(ClearAberrationForcesCommand* command);
-	void applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command);
-	void applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
-	void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
-	void enterEngineering(EnterEngineeringCommand* command);
-	void exitEngineering(ExitEngineeringCommand* command);
-	void testAir(TestAirCommand* command);
-	void testHardpoint(TestHardpointCommand* command);
-	void testForceActuator(TestForceActuatorCommand* command);
-	void moveHardpointActuators(MoveHardpointActuatorsCommand* command);
-	void enableHardpointChase(EnableHardpointChaseCommand* command);
-	void disableHardpointChase(DisableHardpointChaseCommand* command);
-	void abortRaiseM1M3(AbortRaiseM1M3Command* command);
-	void translateM1M3(TranslateM1M3Command* command);
-	void stopHardpointMotion(StopHardpointMotionCommand* command);
-	void storeTMAAzimuthSample(TMAAzimuthSampleCommand* command);
-	void storeTMAElevationSample(TMAElevationSampleCommand* command);
-	void positionM1M3(PositionM1M3Command* command);
-	void turnLightsOn(TurnLightsOnCommand* command);
-	void turnLightsOff(TurnLightsOffCommand* command);
-	void turnPowerOn(TurnPowerOnCommand* command);
-	void turnPowerOff(TurnPowerOffCommand* command);
-	void enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
-	void disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
-	void runMirrorForceProfile(RunMirrorForceProfileCommand* command);
-	void abortProfile(AbortProfileCommand* command);
-	void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
-	void updatePID(UpdatePIDCommand* command);
-	void resetPID(ResetPIDCommand* command);
-	void programILC(ProgramILCCommand* command);
-	void modbusTransmit(ModbusTransmitCommand* command);
+    void boot(BootCommand* command);
+    void start(StartCommand* command);
+    void enable(EnableCommand* command);
+    void disable(DisableCommand* command);
+    void standby(StandbyCommand* command);
+    void shutdown(ShutdownCommand* command);
+    void update(UpdateCommand* command);
+    void turnAirOn(TurnAirOnCommand* command);
+    void turnAirOff(TurnAirOffCommand* command);
+    void applyOffsetForces(ApplyOffsetForcesCommand* command);
+    void clearOffsetForces(ClearOffsetForcesCommand* command);
+    void raiseM1M3(RaiseM1M3Command* command);
+    void lowerM1M3(LowerM1M3Command* command);
+    void applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command);
+    void applyAberrationForces(ApplyAberrationForcesCommand* command);
+    void clearAberrationForces(ClearAberrationForcesCommand* command);
+    void applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command);
+    void applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
+    void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
+    void enterEngineering(EnterEngineeringCommand* command);
+    void exitEngineering(ExitEngineeringCommand* command);
+    void testAir(TestAirCommand* command);
+    void testHardpoint(TestHardpointCommand* command);
+    void testForceActuator(TestForceActuatorCommand* command);
+    void moveHardpointActuators(MoveHardpointActuatorsCommand* command);
+    void enableHardpointChase(EnableHardpointChaseCommand* command);
+    void disableHardpointChase(DisableHardpointChaseCommand* command);
+    void abortRaiseM1M3(AbortRaiseM1M3Command* command);
+    void translateM1M3(TranslateM1M3Command* command);
+    void stopHardpointMotion(StopHardpointMotionCommand* command);
+    void storeTMAAzimuthSample(TMAAzimuthSampleCommand* command);
+    void storeTMAElevationSample(TMAElevationSampleCommand* command);
+    void positionM1M3(PositionM1M3Command* command);
+    void turnLightsOn(TurnLightsOnCommand* command);
+    void turnLightsOff(TurnLightsOffCommand* command);
+    void turnPowerOn(TurnPowerOnCommand* command);
+    void turnPowerOff(TurnPowerOffCommand* command);
+    void enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
+    void disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
+    void runMirrorForceProfile(RunMirrorForceProfileCommand* command);
+    void abortProfile(AbortProfileCommand* command);
+    void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
+    void updatePID(UpdatePIDCommand* command);
+    void resetPID(ResetPIDCommand* command);
+    void programILC(ProgramILCCommand* command);
+    void modbusTransmit(ModbusTransmitCommand* command);
 };
 
 } /* namespace SS */
