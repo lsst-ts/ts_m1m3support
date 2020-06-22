@@ -1,8 +1,24 @@
 /*
- * ElevationForceComponent.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Jul 9, 2018
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_ELEVATIONFORCECOMPONENT_H_
@@ -20,27 +36,29 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class ElevationForceComponent: public ForceComponent {
+class ElevationForceComponent : public ForceComponent {
 private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-	MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
-	MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+    MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
+    MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
 
 public:
-	ElevationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+    ElevationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+                            ForceActuatorSettings* forceActuatorSettings);
 
-	void applyElevationForces(float* x, float* y, float* z);
-	void applyElevationForcesByElevationAngle(float elevationAngle);
+    void applyElevationForces(float* x, float* y, float* z);
+    void applyElevationForcesByElevationAngle(float elevationAngle);
 
 protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */
