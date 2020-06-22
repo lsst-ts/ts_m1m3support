@@ -16,10 +16,10 @@ namespace M1M3 {
 namespace SS {
 
 struct ExpansionFPGAApplicationSettings {
-	bool Enabled;
-	std::string Resource;
+    bool Enabled;
+    std::string Resource;
 
-	void load(const std::string &filename);
+    void load(const std::string &filename);
 };
 
 } /* namespace SS */

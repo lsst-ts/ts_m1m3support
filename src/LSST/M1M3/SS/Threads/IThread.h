@@ -18,16 +18,16 @@ namespace SS {
  */
 class IThread {
 public:
-	virtual ~IThread();
+    virtual ~IThread();
 
-	/*!
-	 * Run the task.
-	 */
-	virtual void run();
-	/*!
-	 * Stop the task.
-	 */
-	virtual void stop();
+    /*!
+     * Run the task.
+     */
+    virtual void run();
+    /*!
+     * Stop the task.
+     */
+    virtual void stop();
 };
 
 } /* namespace SS */

@@ -18,12 +18,12 @@ class M1M3SSPublisher;
 class UpdateCommand;
 class Model;
 
-class ProfileHardpointCorrectionState: public EnabledState {
+class ProfileHardpointCorrectionState : public EnabledState {
 public:
-	ProfileHardpointCorrectionState(M1M3SSPublisher* publisher);
+    ProfileHardpointCorrectionState(M1M3SSPublisher* publisher);
 
-	States::Type update(UpdateCommand* command, Model* model);
-	States::Type abortProfile(AbortProfileCommand* command, Model* model);
+    States::Type update(UpdateCommand* command, Model* model);
+    States::Type abortProfile(AbortProfileCommand* command, Model* model);
 };
 
 } /* namespace SS */

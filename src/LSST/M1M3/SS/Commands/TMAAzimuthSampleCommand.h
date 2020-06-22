@@ -17,18 +17,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TMAAzimuthSampleCommand: public Command {
+class TMAAzimuthSampleCommand : public Command {
 private:
-	Context* context;
+    Context* context;
 
-	MTMount_AzimuthC data;
+    MTMount_AzimuthC data;
 
 public:
-	TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data);
+    TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data);
 
-	MTMount_AzimuthC* getData() { return &this->data; }
+    MTMount_AzimuthC* getData() { return &this->data; }
 
-	void execute();
+    void execute();
 };
 
 } /* namespace SS */

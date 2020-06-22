@@ -49,9 +49,9 @@ public:
     std::string getFilePath(std::string filename);
 
     /**
-     * Select given configuration set. 
+     * Select given configuration set.
      *
-     * @throw runtime_error if configuration is 
+     * @throw runtime_error if configuration is
      */
     void configure(std::string settingsToApply);
     AliasApplicationSettings* loadAliasApplicationSettings();

@@ -21,43 +21,44 @@ class M1M3SSPublisher;
 
 class PositionController {
 private:
-	PositionControllerSettings* positionControllerSettings;
-	HardpointActuatorSettings* hardpointActuatorSettings;
-	M1M3SSPublisher* publisher;
+    PositionControllerSettings* positionControllerSettings;
+    HardpointActuatorSettings* hardpointActuatorSettings;
+    M1M3SSPublisher* publisher;
 
-	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
-	MTM1M3_logevent_hardpointActuatorStateC* hardpointActuatorState;
-	MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
+    MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
+    MTM1M3_logevent_hardpointActuatorStateC* hardpointActuatorState;
+    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
 
-	int32_t scaledMaxStepsPerLoop[6];
-	int32_t targetEncoderValues[6];
-	int32_t stableEncoderCount[6];
+    int32_t scaledMaxStepsPerLoop[6];
+    int32_t targetEncoderValues[6];
+    int32_t stableEncoderCount[6];
 
 public:
-	PositionController(PositionControllerSettings* positionControllerSettings, HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher);
+    PositionController(PositionControllerSettings* positionControllerSettings,
+                       HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher);
 
-	double getRaiseLowerTimeout();
+    double getRaiseLowerTimeout();
 
-	bool enableChase(int32_t actuatorID);
-	void disableChase(int32_t actuatorID);
-	bool enableChaseAll();
-	void disableChaseAll();
+    bool enableChase(int32_t actuatorID);
+    void disableChase(int32_t actuatorID);
+    bool enableChaseAll();
+    void disableChaseAll();
 
-	bool forcesInTolerance();
-	bool motionComplete();
+    bool forcesInTolerance();
+    bool motionComplete();
 
-	bool move(int32_t* steps);
-	bool moveToEncoder(int32_t* encoderValues);
-	bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
-	bool moveToReferencePosition();
-	bool translate(double x, double y, double z, double rX, double rY, double rZ);
-	void stopMotion();
+    bool move(int32_t* steps);
+    bool moveToEncoder(int32_t* encoderValues);
+    bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
+    bool moveToReferencePosition();
+    bool translate(double x, double y, double z, double rX, double rY, double rZ);
+    void stopMotion();
 
-	void updateSteps();
+    void updateSteps();
 
 private:
-	void convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
-	int32_t abs(int32_t x);
+    void convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
+    int32_t abs(int32_t x);
 };
 
 } /* namespace SS */

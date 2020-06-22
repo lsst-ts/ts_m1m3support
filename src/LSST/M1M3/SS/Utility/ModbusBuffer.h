@@ -40,7 +40,7 @@ public:
     /**
      * Returns read data from buffer.
      *
-     * @param length data length 
+     * @param length data length
      *
      * @return read data
      */

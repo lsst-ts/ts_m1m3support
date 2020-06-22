@@ -18,11 +18,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-//class Settings {
-//private:
+// class Settings {
+// private:
 //	AccelerometerSettings accelerometerSettings;
 //
-//public:
+// public:
 //	Settings();
 //
 //	AccelerometerSettings& getAccelerometerSettings() { return this->accelerometerSettings; }
@@ -30,7 +30,7 @@ namespace SS {
 //	bool loadSettings(std::string filePath);
 //	void loadAccelerometerSettings(std::string filePath);
 //
-//private:
+// private:
 //	void loadLinearFunctionFloat(LinearFunction<float>& function, pugi::xml_node node);
 //};
 

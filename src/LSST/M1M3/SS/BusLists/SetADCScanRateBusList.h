@@ -15,13 +15,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SetADCScanRateBusList: public BusList {
+class SetADCScanRateBusList : public BusList {
 private:
-	MTM1M3_logevent_forceActuatorInfoC* forceInfo;
-	MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo;
+    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
 
 public:
-	SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo);
+    SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
+                          MTM1M3_logevent_forceActuatorInfoC* forceInfo,
+                          MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo);
 };
 
 } /* namespace SS */

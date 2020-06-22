@@ -14,32 +14,44 @@ namespace M1M3 {
 namespace SS {
 
 BusList::BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory) {
-	this->subnetData = subnetData;
-	this->ilcMessageFactory = ilcMessageFactory;
-	memset(this->expectedHPResponses, 0, sizeof(this->expectedHPResponses));
-	memset(this->expectedFAResponses, 0, sizeof(this->expectedFAResponses));
-	memset(this->expectedHMResponses, 0, sizeof(this->expectedHMResponses));
-	this->subnetStartIndex = 0;
+    this->subnetData = subnetData;
+    this->ilcMessageFactory = ilcMessageFactory;
+    memset(this->expectedHPResponses, 0, sizeof(this->expectedHPResponses));
+    memset(this->expectedFAResponses, 0, sizeof(this->expectedFAResponses));
+    memset(this->expectedHMResponses, 0, sizeof(this->expectedHMResponses));
+    this->subnetStartIndex = 0;
 }
 
 void BusList::startSubnet(uint8_t subnet) {
-	switch(subnet) {
-	case 0: subnet = FPGAAddresses::ModbusSubnetATx; break;
-	case 1: subnet = FPGAAddresses::ModbusSubnetBTx; break;
-	case 2: subnet = FPGAAddresses::ModbusSubnetCTx; break;
-	case 3: subnet = FPGAAddresses::ModbusSubnetDTx; break;
-	case 4: subnet = FPGAAddresses::ModbusSubnetETx; break;
-	default: subnet = 255; break;
-	}
-	this->buffer.writeSubnet(subnet);
-	this->subnetStartIndex = this->buffer.getIndex();
-	this->buffer.writeLength(0);
-	this->buffer.writeSoftwareTrigger();
+    switch (subnet) {
+        case 0:
+            subnet = FPGAAddresses::ModbusSubnetATx;
+            break;
+        case 1:
+            subnet = FPGAAddresses::ModbusSubnetBTx;
+            break;
+        case 2:
+            subnet = FPGAAddresses::ModbusSubnetCTx;
+            break;
+        case 3:
+            subnet = FPGAAddresses::ModbusSubnetDTx;
+            break;
+        case 4:
+            subnet = FPGAAddresses::ModbusSubnetETx;
+            break;
+        default:
+            subnet = 255;
+            break;
+    }
+    this->buffer.writeSubnet(subnet);
+    this->subnetStartIndex = this->buffer.getIndex();
+    this->buffer.writeLength(0);
+    this->buffer.writeSoftwareTrigger();
 }
 
 void BusList::endSubnet() {
-	this->buffer.writeTriggerIRQ();
-	this->buffer.set(this->subnetStartIndex, this->buffer.getIndex() - this->subnetStartIndex - 1);
+    this->buffer.writeTriggerIRQ();
+    this->buffer.set(this->subnetStartIndex, this->buffer.getIndex() - this->subnetStartIndex - 1);
 }
 
 } /* namespace SS */

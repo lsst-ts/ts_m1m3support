@@ -9,7 +9,7 @@
 #define LOWEROPERATIONSAFETYSETTINGS_H_
 
 struct LowerOperationSafetySettings {
-	bool FaultOnTimeout;
+    bool FaultOnTimeout;
 };
 
 #endif /* LOWEROPERATIONSAFETYSETTINGS_H_ */

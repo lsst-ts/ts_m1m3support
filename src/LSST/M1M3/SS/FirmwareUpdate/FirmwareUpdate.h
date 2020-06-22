@@ -20,76 +20,76 @@ class ModbusBuffer;
 class ILCSubnetData;
 
 struct IntelRecordType {
-	enum Types {
-		Data = 0,
-		EndOfFile = 1,
-		ExtendedSegmentAddress = 2,
-		StartSegmentAddress = 3,
-		ExtendedLinearAddress = 4,
-		StartLinearAddress = 5
-	};
+    enum Types {
+        Data = 0,
+        EndOfFile = 1,
+        ExtendedSegmentAddress = 2,
+        StartSegmentAddress = 3,
+        ExtendedLinearAddress = 4,
+        StartLinearAddress = 5
+    };
 };
 
 struct IntelHexLine {
-	char StartCode;
-	char ByteCount;
-	unsigned short Address;
-	IntelRecordType::Types RecordType;
-	std::vector<char> Data;
-	char Checksum;
+    char StartCode;
+    char ByteCount;
+    unsigned short Address;
+    IntelRecordType::Types RecordType;
+    std::vector<char> Data;
+    char Checksum;
 };
 
 struct ILCApplicationStats {
-	unsigned short DataCRC;
-	unsigned short StartAddress;
-	unsigned short DataLength;
-	unsigned short StatsCRC;
+    unsigned short DataCRC;
+    unsigned short StartAddress;
+    unsigned short DataLength;
+    unsigned short StatsCRC;
 };
 
 class FirmwareUpdate {
 private:
-	std::vector<unsigned char> appData;
-	std::vector<IntelHexLine> hexData;
-	ILCApplicationStats appStats;
-	ILCSubnetData* subnetData;
-	int desiredState;
+    std::vector<unsigned char> appData;
+    std::vector<IntelHexLine> hexData;
+    ILCApplicationStats appStats;
+    ILCSubnetData* subnetData;
+    int desiredState;
 
 public:
-	FirmwareUpdate(ILCSubnetData* subnetData);
+    FirmwareUpdate(ILCSubnetData* subnetData);
 
-	bool Program(int actuatorId, std::string filePath);
+    bool Program(int actuatorId, std::string filePath);
 
-	bool CreateAppData();
-	bool ProcessFile(std::string filePath);
-	bool ProcessLine(const char* line, IntelHexLine* hexLine);
-	bool UpdateAppData();
-	bool UpdateAppDataCRC();
-	bool UpdateAppStatCRC();
-	bool EnterFirmwareUpdate(int subnet, int address);
-	bool ClearFaults(int subnet, int address);
-	bool EraseILCApplication(int subnet, int address);
-	bool WriteApplication(int subnet, int address);
-	bool WriteApplicationPage(int subnet, int address, uint16_t startAddress, uint16_t length, uint8_t* data);
-	bool WriteApplicationStats(int subnet, int address, ILCApplicationStats stats);
-	bool WriteVerifyApplication(int subnet, int address);
-	bool RestartApplication(int subnet, int address);
-	bool EnterDisable(int subnet, int address);
+    bool CreateAppData();
+    bool ProcessFile(std::string filePath);
+    bool ProcessLine(const char* line, IntelHexLine* hexLine);
+    bool UpdateAppData();
+    bool UpdateAppDataCRC();
+    bool UpdateAppStatCRC();
+    bool EnterFirmwareUpdate(int subnet, int address);
+    bool ClearFaults(int subnet, int address);
+    bool EraseILCApplication(int subnet, int address);
+    bool WriteApplication(int subnet, int address);
+    bool WriteApplicationPage(int subnet, int address, uint16_t startAddress, uint16_t length, uint8_t* data);
+    bool WriteApplicationStats(int subnet, int address, ILCApplicationStats stats);
+    bool WriteVerifyApplication(int subnet, int address);
+    bool RestartApplication(int subnet, int address);
+    bool EnterDisable(int subnet, int address);
 
-	bool ProcessResponse(ModbusBuffer* buffer, int subnet);
-	bool ValidateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
-	bool ProcessStateChange(ModbusBuffer* buffer);
-	bool ProcessEraseILCApplication(ModbusBuffer* buffer);
-	bool ProcessWriteApplicationPage(ModbusBuffer* buffer);
-	bool ProcessWriteApplicationStats(ModbusBuffer* buffer);
-	bool ProcessVerifyUserApplication(ModbusBuffer* buffer);
-	bool ProcessExceptionCode(ModbusBuffer* buffer, int functionCode);
+    bool ProcessResponse(ModbusBuffer* buffer, int subnet);
+    bool ValidateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
+    bool ProcessStateChange(ModbusBuffer* buffer);
+    bool ProcessEraseILCApplication(ModbusBuffer* buffer);
+    bool ProcessWriteApplicationPage(ModbusBuffer* buffer);
+    bool ProcessWriteApplicationStats(ModbusBuffer* buffer);
+    bool ProcessVerifyUserApplication(ModbusBuffer* buffer);
+    bool ProcessExceptionCode(ModbusBuffer* buffer, int functionCode);
 
-	void SetupBuffer(ModbusBuffer* buffer, int subnet);
-	int SubnetTxToFPGAAddress(int subnet);
-	int SubnetRxToFPGAAddress(int subnet);
-	void EndBuffer(ModbusBuffer* buffer);
+    void SetupBuffer(ModbusBuffer* buffer, int subnet);
+    int SubnetTxToFPGAAddress(int subnet);
+    int SubnetRxToFPGAAddress(int subnet);
+    void EndBuffer(ModbusBuffer* buffer);
 
-	bool PrintBuffer(ModbusBuffer* buffer, std::string text);
+    bool PrintBuffer(ModbusBuffer* buffer, std::string text);
 };
 
 } /* namespace SS */

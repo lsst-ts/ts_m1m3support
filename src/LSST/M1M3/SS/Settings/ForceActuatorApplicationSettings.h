@@ -18,18 +18,18 @@ namespace SS {
 
 class ForceActuatorApplicationSettings {
 public:
-	std::vector<int32_t> XIndexToZIndex;
-	std::vector<int32_t> YIndexToZIndex;
-	std::vector<int32_t> SecondaryCylinderIndexToZIndex;
-	std::vector<int32_t> ZIndexToXIndex;
-	std::vector<int32_t> ZIndexToYIndex;
-	std::vector<int32_t> ZIndexToSecondaryCylinderIndex;
-	std::vector<ForceActuatorTableRow> Table;
+    std::vector<int32_t> XIndexToZIndex;
+    std::vector<int32_t> YIndexToZIndex;
+    std::vector<int32_t> SecondaryCylinderIndexToZIndex;
+    std::vector<int32_t> ZIndexToXIndex;
+    std::vector<int32_t> ZIndexToYIndex;
+    std::vector<int32_t> ZIndexToSecondaryCylinderIndex;
+    std::vector<ForceActuatorTableRow> Table;
 
-	void load(const std::string &filename);
+    void load(const std::string &filename);
 
 private:
-	void loadForceActuatorTable(const std::string &filename);
+    void loadForceActuatorTable(const std::string &filename);
 };
 
 } /* namespace SS */

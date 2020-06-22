@@ -17,9 +17,9 @@ namespace M1M3 {
 namespace SS {
 
 struct AliasApplicationSettings {
-	std::vector<Alias> Aliases;
+    std::vector<Alias> Aliases;
 
-	void load(const std::string &filename);
+    void load(const std::string &filename);
 };
 
 } /* namespace SS */

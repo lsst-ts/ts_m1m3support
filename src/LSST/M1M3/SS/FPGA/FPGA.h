@@ -45,7 +45,7 @@ public:
     void readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
 
     void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) override;
-    int32_t readHealthAndStatusFIFO(uint64_t * data, int32_t length, int32_t timeoutInMs = 10) override;
+    int32_t readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) override;
 
 private:
     uint32_t session;

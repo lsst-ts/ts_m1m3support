@@ -15,7 +15,7 @@ namespace SS {
  *
  * @throw std::runtime_error on error
  */
-void XMLDocLoad(const std::string& filename, pugi::xml_document &doc);
+void XMLDocLoad(const std::string& filename, pugi::xml_document& doc);
 
 }  // namespace SS
 }  // namespace M1M3

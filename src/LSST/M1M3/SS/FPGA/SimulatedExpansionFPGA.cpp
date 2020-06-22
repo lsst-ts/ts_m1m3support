@@ -17,7 +17,7 @@ SimulatedExpansionFPGA::SimulatedExpansionFPGA() {
     spdlog::debug("SimulatedExpansionFPGA: SimulatedExpansionFPGA()");
 
     for (int i = 0; i < RND_CNT; ++i) {
-	this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
+        this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
     }
     this->rndIndex = 0;
 }
@@ -25,7 +25,7 @@ SimulatedExpansionFPGA::SimulatedExpansionFPGA() {
 float SimulatedExpansionFPGA::getRnd() {
     ++this->rndIndex;
     if (this->rndIndex > RND_CNT) {
-	this->rndIndex = 0;
+        this->rndIndex = 0;
     }
     return this->rnd[rndIndex];
 }

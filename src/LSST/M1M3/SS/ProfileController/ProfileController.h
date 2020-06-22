@@ -16,14 +16,15 @@ namespace SS {
 
 class ProfileController {
 private:
-	MirrorForceProfile mirrorForceProfile;
+    MirrorForceProfile mirrorForceProfile;
 
 public:
-	ProfileController();
+    ProfileController();
 
-	void setupMirrorForceProfile(float* xForce, float* yForce, float* zForce, float* xMoment, float* yMoment, float* zMoment);
-	bool incMirrorForceProfile();
-	MirrorForceProfileRecord getMirrorForceProfileData();
+    void setupMirrorForceProfile(float* xForce, float* yForce, float* zForce, float* xMoment, float* yMoment,
+                                 float* zMoment);
+    bool incMirrorForceProfile();
+    MirrorForceProfileRecord getMirrorForceProfileData();
 };
 
 } /* namespace SS */

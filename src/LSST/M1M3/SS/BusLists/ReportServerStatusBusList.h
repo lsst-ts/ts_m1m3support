@@ -14,9 +14,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ReportServerStatusBusList: public BusList {
+class ReportServerStatusBusList : public BusList {
 public:
-	ReportServerStatusBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+    ReportServerStatusBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 
 } /* namespace SS */

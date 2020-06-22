@@ -16,16 +16,16 @@ namespace SS {
 
 class AccelerometerSettings {
 public:
-	float GsToMetersPerSecondSqrd;
-	float AngularAccelerationXDistance;
-	float AngularAccelerationYDistance;
-	float AngularAccelerationZDistance;
-	float AccelerometerBias[8];
-	float AccelerometerSensitivity[8];
-	float AccelerometerOffsets[8];
-	float AccelerometerScalars[8];
+    float GsToMetersPerSecondSqrd;
+    float AngularAccelerationXDistance;
+    float AngularAccelerationYDistance;
+    float AngularAccelerationZDistance;
+    float AccelerometerBias[8];
+    float AccelerometerSensitivity[8];
+    float AccelerometerOffsets[8];
+    float AccelerometerScalars[8];
 
-	void load(const std::string &filename);
+    void load(const std::string &filename);
 };
 
 } /* namespace SS */

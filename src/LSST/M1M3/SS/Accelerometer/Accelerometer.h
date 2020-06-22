@@ -23,24 +23,24 @@ class M1M3SSPublisher;
  */
 class Accelerometer {
 private:
-	AccelerometerSettings* accelerometerSettings;
-	M1M3SSPublisher* publisher;
+    AccelerometerSettings* accelerometerSettings;
+    M1M3SSPublisher* publisher;
 
-	MTM1M3_accelerometerDataC* accelerometerData;
-	MTM1M3_logevent_accelerometerWarningC* accelerometerWarning;
+    MTM1M3_accelerometerDataC* accelerometerData;
+    MTM1M3_logevent_accelerometerWarningC* accelerometerWarning;
 
 public:
-	/*!
-	 * Instantiates the accelerometer.
-	 * @param[in] accelerometerSettings The accelerometer settings.
-	 * @param[in] publisher The publisher.
-	 */
-	Accelerometer(AccelerometerSettings* accelerometerSettings, M1M3SSPublisher* publisher);
+    /*!
+     * Instantiates the accelerometer.
+     * @param[in] accelerometerSettings The accelerometer settings.
+     * @param[in] publisher The publisher.
+     */
+    Accelerometer(AccelerometerSettings* accelerometerSettings, M1M3SSPublisher* publisher);
 
-	/*!
-	 * Processes currently available accelerometer data and publish it.
-	 */
-	void processData();
+    /*!
+     * Processes currently available accelerometer data and publish it.
+     */
+    void processData();
 };
 
 } /* namespace SS */
