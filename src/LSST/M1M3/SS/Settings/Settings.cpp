@@ -51,46 +51,46 @@ namespace SS {
 //	pugi::xml_document doc;
 //	doc.load_file(filePath.c_str());
 //	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[0],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='0']").node()); 	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[1],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='1']").node()); 	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[2],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='2']").node()); 	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[3],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='3']").node()); 	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[4],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='4']").node()); 	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[5],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='5']").node()); 	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[6],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='6']").node()); 	this->loadLinearFunctionFloat(settings.RawVoltageToCorrectedVoltage[7],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='RawVoltageToCorrectedVoltage' and
 //@index='7']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[0],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='0']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='0']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[1],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='1']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='1']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[2],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='2']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='2']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[3],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='3']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='3']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[4],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='4']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='4']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[5],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='5']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='5']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[6],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='6']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='6']").node());
 //	this->loadLinearFunctionFloat(settings.CorrectedVoltageToLinearAcceleration[7],
-//doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
-//and @index='7']").node());
+// doc.select_node("//Setting[@model='AccelerometerSystem' and @field='CorrectedVoltageToLinearAcceleration'
+// and @index='7']").node());
 //}
 //
 // void Settings::loadLinearFunctionFloat(LinearFunction<float>& function, pugi::xml_node node) {
