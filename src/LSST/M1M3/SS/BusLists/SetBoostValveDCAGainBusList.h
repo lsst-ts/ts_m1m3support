@@ -1,10 +1,3 @@
-/*
- * SetBoostValveDCAGainBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef SETBOOSTVALVEDCAGAINBUSLIST_H_
 #define SETBOOSTVALVEDCAGAINBUSLIST_H_
 

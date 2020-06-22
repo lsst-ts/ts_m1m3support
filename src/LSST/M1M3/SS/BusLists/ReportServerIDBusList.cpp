@@ -1,10 +1,3 @@
-/*
- * ReportServerIDBusList.cpp
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #include <ReportServerIDBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>

@@ -1,10 +1,3 @@
-/*
- * SimulatedFPGA.cpp
- *
- *  Created on: Nov 2, 2018
- *      Author: ccontaxis
- */
-
 #include <SimulatedFPGA.h>
 #include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>

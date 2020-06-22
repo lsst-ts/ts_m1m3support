@@ -1,10 +1,3 @@
-/*
- * BootCommand.h
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef BOOTCOMMAND_H_
 #define BOOTCOMMAND_H_
 

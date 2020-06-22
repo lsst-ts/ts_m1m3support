@@ -1,10 +1,3 @@
-/*
- * PIDSettings.h
- *
- *  Created on: Feb 13, 2018
- *      Author: ccontaxis
- */
-
 #ifndef PIDSETTINGS_H_
 #define PIDSETTINGS_H_
 

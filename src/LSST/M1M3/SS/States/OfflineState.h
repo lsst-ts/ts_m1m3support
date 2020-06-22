@@ -1,10 +1,3 @@
-/*
- * OfflineState.h
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef OFFLINESTATE_H_
 #define OFFLINESTATE_H_
 

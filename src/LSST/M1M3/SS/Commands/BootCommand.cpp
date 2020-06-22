@@ -1,10 +1,3 @@
-/*
- * BootCommand.cpp
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #include <BootCommand.h>
 #include <Context.h>
 

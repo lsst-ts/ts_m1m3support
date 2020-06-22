@@ -1,10 +1,3 @@
-/*
- * DisabledState.h
- *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef DISABLEDSTATE_H_
 #define DISABLEDSTATE_H_
 

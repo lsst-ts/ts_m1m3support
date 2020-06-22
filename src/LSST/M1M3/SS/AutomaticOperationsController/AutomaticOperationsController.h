@@ -1,10 +1,3 @@
-/*
- * AutomaticOperationsController.h
- *
- *  Created on: Dec 13, 2017
- *      Author: ccontaxis
- */
-
 #ifndef AUTOMATICOPERATIONSCONTROLLER_H_
 #define AUTOMATICOPERATIONSCONTROLLER_H_
 

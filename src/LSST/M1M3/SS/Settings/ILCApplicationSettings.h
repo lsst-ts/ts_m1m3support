@@ -1,10 +1,3 @@
-/*
- * ILCApplicationSettings.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ILCAPPLICATIONSETTINGS_H_
 #define ILCAPPLICATIONSETTINGS_H_
 

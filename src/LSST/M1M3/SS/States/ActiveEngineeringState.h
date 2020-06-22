@@ -1,10 +1,3 @@
-/*
- * ActiveEngineeringState.h
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ACTIVEENGINEERINGSTATE_H_
 #define ACTIVEENGINEERINGSTATE_H_
 

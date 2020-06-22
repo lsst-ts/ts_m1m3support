@@ -1,10 +1,3 @@
-/*
- * HardpointActuatorMotionStates.h
- *
- *  Created on: Oct 31, 2017
- *      Author: ccontaxis
- */
-
 #ifndef HARDPOINTACTUATORMOTIONSTATES_H_
 #define HARDPOINTACTUATORMOTIONSTATES_H_
 

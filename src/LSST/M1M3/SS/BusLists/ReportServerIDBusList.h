@@ -1,10 +1,3 @@
-/*
- * ReportServerIDBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef REPORTSERVERIDBUSLIST_H_
 #define REPORTSERVERIDBUSLIST_H_
 

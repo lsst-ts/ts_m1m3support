@@ -1,10 +1,3 @@
-/*
- * IThread.cpp
- *
- *  Created on: Sep 28, 2017
- *      Author: ccontaxis
- */
-
 #include <IThread.h>
 
 namespace LSST {

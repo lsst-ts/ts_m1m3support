@@ -1,10 +1,3 @@
-/*
- * AccelerometerSettings.h
- *
- *  Created on: Nov 2, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ACCELEROMETERSETTINGS_H_
 #define ACCELEROMETERSETTINGS_H_
 

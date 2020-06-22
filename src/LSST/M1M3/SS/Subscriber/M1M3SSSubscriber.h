@@ -1,10 +1,3 @@
-/*
- * M1M3SSSubscriber.h
- *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef M1M3SSSUBSCRIBER_H_
 #define M1M3SSSUBSCRIBER_H_
 

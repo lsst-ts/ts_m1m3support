@@ -1,10 +1,3 @@
-/*
- * DisplacementSensorSettings.cpp
- *
- *  Created on: Nov 16, 2017
- *      Author: ccontaxis
- */
-
 #include <DisplacementSensorSettings.h>
 #include <TableLoader.h>
 #include <XMLDocLoad.h>

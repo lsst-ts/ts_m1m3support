@@ -1,10 +1,3 @@
-/*
- * ApplyOffsetForcesCommand.h
- *
- *  Created on: Oct 24, 2017
- *      Author: ccontaxis
- */
-
 #ifndef APPLYOFFSETFORCESCOMMAND_H_
 #define APPLYOFFSETFORCESCOMMAND_H_
 

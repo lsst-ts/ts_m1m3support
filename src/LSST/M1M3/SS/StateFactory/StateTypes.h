@@ -1,10 +1,3 @@
-/*
- * StateTypes.h
- *
- *  Created on: Sep 26, 2017
- *      Author: ccontaxis
- */
-
 #ifndef STATETYPES_H_
 #define STATETYPES_H_
 

@@ -1,10 +1,3 @@
-/*
- * IBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef IBUSLIST_H_
 #define IBUSLIST_H_
 

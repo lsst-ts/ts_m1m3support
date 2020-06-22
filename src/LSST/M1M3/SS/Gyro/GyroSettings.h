@@ -1,10 +1,3 @@
-/*
- * GyroSettings.h
- *
- *  Created on: Jan 4, 2018
- *      Author: ccontaxis
- */
-
 #ifndef GYROSETTINGS_H_
 #define GYROSETTINGS_H_
 

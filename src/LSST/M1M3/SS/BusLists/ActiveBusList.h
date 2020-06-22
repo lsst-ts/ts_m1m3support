@@ -1,10 +1,3 @@
-/*
- * ActiveBusList.h
- *
- *  Created on: Apr 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef ACTIVEBUSLIST_H_
 #define ACTIVEBUSLIST_H_
 

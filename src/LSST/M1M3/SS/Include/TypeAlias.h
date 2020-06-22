@@ -1,10 +1,3 @@
-/*
- * TypeAlias.h
- *
- *  Created on: Mar 14, 2018
- *      Author: ccontaxis
- */
-
 #ifndef TYPEALIAS_H_
 #define TYPEALIAS_H_
 

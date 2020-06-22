@@ -1,10 +1,3 @@
-/*
- * RecommendedApplicationSettings.cpp
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #include <RecommendedApplicationSettings.h>
 #include <XMLDocLoad.h>
 

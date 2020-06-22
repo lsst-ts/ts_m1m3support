@@ -1,10 +1,3 @@
-/*
- * CommandTypes.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef COMMANDTYPES_H_
 #define COMMANDTYPES_H_
 

@@ -1,10 +1,3 @@
-/*
- * ILCResponseParser.h
- *
- *  Created on: Oct 24, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ILCRESPONSEPARSER_H_
 #define ILCRESPONSEPARSER_H_
 

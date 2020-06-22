@@ -1,10 +1,3 @@
-/*
- * CommandFactory.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef COMMANDFACTORY_H_
 #define COMMANDFACTORY_H_
 

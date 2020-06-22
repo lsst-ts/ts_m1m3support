@@ -1,10 +1,3 @@
-/*
- * PIDSettings.cpp
- *
- *  Created on: Feb 13, 2018
- *      Author: ccontaxis
- */
-
 #include <PIDSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

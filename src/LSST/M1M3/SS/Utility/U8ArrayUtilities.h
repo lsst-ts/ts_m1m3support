@@ -1,10 +1,3 @@
-/*
- * ByteArrayUtilities.h
- *
- *  Created on: Oct 2, 2017
- *      Author: ccontaxis
- */
-
 #ifndef U8ARRAYUTILITIES_H_
 #define U8ARRAYUTILITIES_H_
 

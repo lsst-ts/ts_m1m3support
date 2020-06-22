@@ -1,10 +1,3 @@
-/*
- * Alias.h
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ALIAS_H_
 #define ALIAS_H_
 

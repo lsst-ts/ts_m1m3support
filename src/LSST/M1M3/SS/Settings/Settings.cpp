@@ -1,10 +1,3 @@
-/*
- * Settings.cpp
- *
- *  Created on: Jan 2, 2019
- *      Author: ccontaxis
- */
-
 #include <Settings.h>
 #include <boost/lexical_cast.hpp>
 #include <spdlog/spdlog.h>

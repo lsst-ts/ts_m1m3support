@@ -1,10 +1,3 @@
-/*
- * Domain.h
- *
- *  Created on: Jul 10, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LSST_M1M3_SS_INCLUDE_APPLICATIONDOMAIN_H_
 #define LSST_M1M3_SS_INCLUDE_APPLICATIONDOMAIN_H_
 

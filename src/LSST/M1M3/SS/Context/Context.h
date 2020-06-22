@@ -1,10 +1,3 @@
-/*
- * Context.h
- *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef CONTEXT_H_
 #define CONTEXT_H_
 

@@ -1,10 +1,3 @@
-/*
- * ChangeILCModeBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef CHANGEILCMODEBUSLIST_H_
 #define CHANGEILCMODEBUSLIST_H_
 

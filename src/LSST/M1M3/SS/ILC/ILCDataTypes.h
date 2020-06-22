@@ -1,10 +1,3 @@
-/*
- * ILCDataTypes.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ILCDATATYPES_H_
 #define ILCDATATYPES_H_
 

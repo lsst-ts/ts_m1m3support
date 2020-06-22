@@ -1,10 +1,3 @@
-/*
- * SafetyControllerSettings.cpp
- *
- *  Created on: Oct 26, 2017
- *      Author: ccontaxis
- */
-
 #include <SafetyControllerSettings.h>
 #include <XMLDocLoad.h>
 #include <boost/lexical_cast.hpp>

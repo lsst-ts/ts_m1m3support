@@ -1,10 +1,3 @@
-/*
- * HardpointMonitorApplicationSettings.h
- *
- *  Created on: Nov 17, 2017
- *      Author: ccontaxis
- */
-
 #ifndef HARDPOINTMONITORAPPLICATIONSETTINGS_H_
 #define HARDPOINTMONITORAPPLICATIONSETTINGS_H_
 

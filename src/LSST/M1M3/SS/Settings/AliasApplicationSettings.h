@@ -1,10 +1,3 @@
-/*
- * AliasApplicationSettings.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ALIASAPPLICATIONSETTINGS_H_
 #define ALIASAPPLICATIONSETTINGS_H_
 

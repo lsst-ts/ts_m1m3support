@@ -1,10 +1,3 @@
-/*
- * U16ArrayUtilities.cpp
- *
- *  Created on: Oct 12, 2017
- *      Author: ccontaxis
- */
-
 #include <U16ArrayUtilities.h>
 
 namespace LSST {

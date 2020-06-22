@@ -1,10 +1,3 @@
-/*
- * FinalForceComponent.cpp
- *
- *  Created on: Jul 10, 2018
- *      Author: ccontaxis
- */
-
 #include <FinalForceComponent.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>

@@ -1,10 +1,3 @@
-/*
- * ForceActuatorLimits.h
- *
- *  Created on: Nov 8, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FORCEACTUATORLIMITS_H_
 #define FORCEACTUATORLIMITS_H_
 

@@ -1,10 +1,3 @@
-/*
- * RecommendedApplicationSettings.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef RECOMMENDEDAPPLICATIONSETTINGS_H_
 #define RECOMMENDEDAPPLICATIONSETTINGS_H_
 

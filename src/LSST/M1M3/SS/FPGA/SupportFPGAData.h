@@ -1,10 +1,3 @@
-/*
- * SupportFPGAData.h
- *
- *  Created on: Mar 29, 2018
- *      Author: ccontaxis
- */
-
 #ifndef SUPPORTFPGADATA_H_
 #define SUPPORTFPGADATA_H_
 

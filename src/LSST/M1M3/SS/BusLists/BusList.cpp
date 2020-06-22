@@ -1,10 +1,3 @@
-/*
- * BusList.cpp
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #include <BusList.h>
 #include <FPGAAddresses.h>
 #include <cstring>

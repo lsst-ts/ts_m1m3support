@@ -1,10 +1,3 @@
-/*
- * ForceConverter.h
- *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FORCECONVERTER_H_
 #define FORCECONVERTER_H_
 

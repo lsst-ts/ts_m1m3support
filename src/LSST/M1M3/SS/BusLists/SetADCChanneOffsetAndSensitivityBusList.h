@@ -1,10 +1,3 @@
-/*
- * SetADCChanneOffsetAndSensitivityBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef SETADCCHANNEOFFSETANDSENSITIVITYBUSLIST_H_
 #define SETADCCHANNEOFFSETANDSENSITIVITYBUSLIST_H_
 

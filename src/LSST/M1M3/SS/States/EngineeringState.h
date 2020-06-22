@@ -1,10 +1,3 @@
-/*
- * EngineeringState.h
- *
- *  Created on: Nov 3, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ENGINEERINGSTATE_H_
 #define ENGINEERINGSTATE_H_
 

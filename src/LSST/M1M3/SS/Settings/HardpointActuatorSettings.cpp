@@ -1,10 +1,3 @@
-/*
- * HardpointActuatorSettings.cpp
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #include <HardpointActuatorSettings.h>
 #include <TableLoader.h>
 #include <XMLDocLoad.h>

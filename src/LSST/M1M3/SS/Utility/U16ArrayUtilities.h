@@ -1,10 +1,3 @@
-/*
- * U16ArrayUtilities.h
- *
- *  Created on: Oct 12, 2017
- *      Author: ccontaxis
- */
-
 #ifndef U16ARRAYUTILITIES_H_
 #define U16ARRAYUTILITIES_H_
 

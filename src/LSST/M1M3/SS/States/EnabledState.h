@@ -1,10 +1,3 @@
-/*
- * EnabledState.h
- *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef ENABLEDSTATE_H_
 #define ENABLEDSTATE_H_
 

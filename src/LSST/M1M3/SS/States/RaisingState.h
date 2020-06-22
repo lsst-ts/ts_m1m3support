@@ -1,10 +1,3 @@
-/*
- * RaisingState.h
- *
- *  Created on: Nov 3, 2017
- *      Author: ccontaxis
- */
-
 #ifndef RAISINGSTATE_H_
 #define RAISINGSTATE_H_
 

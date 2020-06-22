@@ -1,10 +1,3 @@
-/*
- * BalanceForceComponent.h
- *
- *  Created on: Jul 9, 2018
- *      Author: ccontaxis
- */
-
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_BALANCEFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_BALANCEFORCECOMPONENT_H_
 

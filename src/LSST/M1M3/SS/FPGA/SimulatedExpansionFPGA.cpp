@@ -1,10 +1,3 @@
-/*
- * SimulatedExpansionFPGA.cpp
- *
- *  Created on: Nov 1, 2018
- *      Author: ccontaxis
- */
-
 #include <SimulatedExpansionFPGA.h>
 #include <cstdlib>
 #include <spdlog/spdlog.h>

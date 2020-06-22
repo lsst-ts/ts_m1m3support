@@ -1,10 +1,3 @@
-/*
- * Controller.h
- *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
- */
-
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 

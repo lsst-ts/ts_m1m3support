@@ -1,10 +1,3 @@
-/*
- * FreezeSensorBusList.h
- *
- *  Created on: Oct 20, 2017
- *      Author: ccontaxis
- */
-
 #ifndef FREEZESENSORBUSLIST_H_
 #define FREEZESENSORBUSLIST_H_
 

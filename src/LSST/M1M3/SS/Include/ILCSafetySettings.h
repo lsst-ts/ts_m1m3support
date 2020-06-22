@@ -1,10 +1,3 @@
-/*
- * ILCSafetySettings.h
- *
- *  Created on: Jun 28, 2018
- *      Author: ccontaxis
- */
-
 #ifndef ILCSAFETYSETTINGS_H_
 #define ILCSAFETYSETTINGS_H_
 

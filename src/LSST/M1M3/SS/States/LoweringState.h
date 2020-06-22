@@ -1,10 +1,3 @@
-/*
- * LoweringState.h
- *
- *  Created on: Nov 3, 2017
- *      Author: ccontaxis
- */
-
 #ifndef LOWERINGSTATE_H_
 #define LOWERINGSTATE_H_
 

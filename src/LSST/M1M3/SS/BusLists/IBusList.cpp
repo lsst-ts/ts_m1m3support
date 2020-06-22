@@ -1,10 +1,3 @@
-/*
- * IBusList.cpp
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #include <IBusList.h>
 
 namespace LSST {

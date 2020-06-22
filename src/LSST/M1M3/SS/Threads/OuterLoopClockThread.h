@@ -1,10 +1,3 @@
-/*
- * OuterLoopClockThread.h
- *
- *  Created on: Oct 2, 2017
- *      Author: ccontaxis
- */
-
 #ifndef OUTERLOOPCLOCKTHREAD_H_
 #define OUTERLOOPCLOCKTHREAD_H_
 

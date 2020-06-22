@@ -1,10 +1,3 @@
-/*
- * ForceComponent.cpp
- *
- *  Created on: Jul 6, 2018
- *      Author: ccontaxis
- */
-
 #include <ForceComponent.h>
 #include <cstring>
 #include <cmath>

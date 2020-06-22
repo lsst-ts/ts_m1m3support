@@ -1,10 +1,3 @@
-/*
- * Settings.h
- *
- *  Created on: Jan 2, 2019
- *      Author: ccontaxis
- */
-
 #ifndef LSST_M1M3_SS_SETTINGS_SETTINGS_H_
 #define LSST_M1M3_SS_SETTINGS_SETTINGS_H_
 

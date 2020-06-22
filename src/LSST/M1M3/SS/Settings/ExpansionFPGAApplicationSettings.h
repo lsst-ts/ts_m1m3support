@@ -1,10 +1,3 @@
-/*
- * ExpansionFPGAApplicationSettings.h
- *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
- */
-
 #ifndef EXPANSIONFPGAAPPLICATIONSETTINGS_H_
 #define EXPANSIONFPGAAPPLICATIONSETTINGS_H_
 

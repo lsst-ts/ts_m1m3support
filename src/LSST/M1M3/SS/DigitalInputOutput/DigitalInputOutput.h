@@ -1,10 +1,3 @@
-/*
- * DigitalInputOutput.h
- *
- *  Created on: Mar 29, 2018
- *      Author: ccontaxis
- */
-
 #ifndef DIGITALINPUTOUTPUT_H_
 #define DIGITALINPUTOUTPUT_H_
 

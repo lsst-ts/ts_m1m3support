@@ -1,10 +1,3 @@
-/*
- * HardpointActuatorSettings.h
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #ifndef HARDPOINTACTUATORSETTINGS_H_
 #define HARDPOINTACTUATORSETTINGS_H_
 

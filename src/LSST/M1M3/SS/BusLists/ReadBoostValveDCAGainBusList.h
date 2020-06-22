@@ -1,10 +1,3 @@
-/*
- * ReadBoostValveDCAGainBusList.h
- *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
- */
-
 #ifndef READBOOSTVALVEDCAGAINBUSLIST_H_
 #define READBOOSTVALVEDCAGAINBUSLIST_H_
 

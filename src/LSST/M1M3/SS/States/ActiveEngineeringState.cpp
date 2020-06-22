@@ -1,10 +1,3 @@
-/*
- * ActiveEngineeringState.cpp
- *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
- */
-
 #include <ActiveEngineeringState.h>
 #include <Model.h>
 #include <ILC.h>

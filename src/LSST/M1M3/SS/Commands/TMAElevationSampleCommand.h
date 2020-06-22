@@ -1,10 +1,3 @@
-/*
- * TMAElevationSampleCommand.h
- *
- *  Created on: Nov 2, 2017
- *      Author: ccontaxis
- */
-
 #ifndef TMAELEVATIONSAMPLECOMMAND_H_
 #define TMAELEVATIONSAMPLECOMMAND_H_
 
