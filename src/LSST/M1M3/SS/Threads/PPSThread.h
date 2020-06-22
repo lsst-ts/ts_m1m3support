@@ -18,17 +18,17 @@ namespace SS {
 class FPGA;
 class M1M3SSPublisher;
 
-class PPSThread: public IThread {
+class PPSThread : public IThread {
 private:
-	M1M3SSPublisher* publisher;
-	uint16_t timestampUpdateBuffer[5];
-	bool keepRunning;
+    M1M3SSPublisher* publisher;
+    uint16_t timestampUpdateBuffer[5];
+    bool keepRunning;
 
 public:
-	PPSThread(M1M3SSPublisher* publisher);
+    PPSThread(M1M3SSPublisher* publisher);
 
-	void run();
-	void stop();
+    void run();
+    void stop();
 };
 
 } /* namespace SS */

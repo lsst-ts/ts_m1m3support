@@ -9,10 +9,7 @@
 #define FORCEACTUATORTYPES_H_
 
 struct ForceActuatorTypes {
-	enum Type {
-		SAA = 0,
-		DAA = 1
-	};
+    enum Type { SAA = 0, DAA = 1 };
 };
 
 #endif /* FORCEACTUATORTYPES_H_ */

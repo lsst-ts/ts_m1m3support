@@ -13,17 +13,17 @@ namespace M1M3 {
 namespace SS {
 
 struct MirrorForceProfileRecord {
-	float XForce;
-	float YForce;
-	float ZForce;
-	float XMoment;
-	float YMoment;
-	float ZMoment;
+    float XForce;
+    float YForce;
+    float ZForce;
+    float XMoment;
+    float YMoment;
+    float ZMoment;
 };
 
 struct MirrorForceProfile {
-	MirrorForceProfileRecord Records[1000];
-	int Index;
+    MirrorForceProfileRecord Records[1000];
+    int Index;
 };
 
 } /* namespace SS */

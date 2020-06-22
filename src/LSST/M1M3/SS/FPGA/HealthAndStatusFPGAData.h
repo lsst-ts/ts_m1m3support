@@ -7,7 +7,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-// number of Modbus ports    
+// number of Modbus ports
 const int PORTNUM = 5;
 // Number of counters/flags per port
 const int PORT_COUNTNUM = 6;

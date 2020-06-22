@@ -50,31 +50,31 @@ namespace M1M3 {
 namespace SS {
 
 struct DCAccelerometer {
-	float VoltageInVolts;
-	float AccelerationInMetersPerSecondSqrd;
+    float VoltageInVolts;
+    float AccelerationInMetersPerSecondSqrd;
 };
 
 struct MirrorCellAngularAcceleration {
-	float AngularAcceleration[AXIS_COUNT];
+    float AngularAcceleration[AXIS_COUNT];
 };
 
 struct MirrorCellAngularAccelerationSystem {
-	DCAccelerometer Sensor[DCACCELEROMETER_COUNT];
-	MirrorCellAngularAcceleration AngularAcceleration;
+    DCAccelerometer Sensor[DCACCELEROMETER_COUNT];
+    MirrorCellAngularAcceleration AngularAcceleration;
 };
 
 struct IMSSensor {
-	float DisplacementInMillimeters;
-	float DisplacementInMeters;
+    float DisplacementInMillimeters;
+    float DisplacementInMeters;
 };
 
 struct MirrorPosition {
-	float Position[DOF_COUNT];
+    float Position[DOF_COUNT];
 };
 
 struct IMSSystem {
-	IMSSensor Sensor[IMS_SENSOR_COUNT];
-	MirrorPosition MirrorPosition;
+    IMSSensor Sensor[IMS_SENSOR_COUNT];
+    MirrorPosition MirrorPosition;
 };
 
 } /* namespace SS */

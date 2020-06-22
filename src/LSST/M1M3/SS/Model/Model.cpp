@@ -172,7 +172,7 @@ void Model::publishStateChange(States::Type newState) {
     uint64_t state = (uint64_t)newState;
     double timestamp = this->publisher->getTimestamp();
     MTM1M3_logevent_summaryStateC* summaryStateData = this->publisher->getEventSummaryState();
-    //summaryStateData->timestamp = timestamp;
+    // summaryStateData->timestamp = timestamp;
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
     this->publisher->logSummaryState();
     MTM1M3_logevent_detailedStateC* detailedStateData = this->publisher->getEventDetailedState();

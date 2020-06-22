@@ -16,16 +16,16 @@ namespace SS {
 
 class IBusList {
 public:
-	virtual ~IBusList();
+    virtual ~IBusList();
 
-	virtual int32_t getLength();
-	virtual uint16_t* getBuffer();
+    virtual int32_t getLength();
+    virtual uint16_t* getBuffer();
 
-	virtual int32_t* getExpectedHPResponses();
-	virtual int32_t* getExpectedFAResponses();
-	virtual int32_t* getExpectedHMResponses();
+    virtual int32_t* getExpectedHPResponses();
+    virtual int32_t* getExpectedFAResponses();
+    virtual int32_t* getExpectedHMResponses();
 
-	virtual void update();
+    virtual void update();
 };
 
 } /* namespace SS */

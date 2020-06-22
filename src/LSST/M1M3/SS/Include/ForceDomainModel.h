@@ -13,8 +13,8 @@ namespace M1M3 {
 namespace SS {
 
 struct ForceComponentSettings {
-	float MaxRateOfChange;
-	float NearZeroValue;
+    float MaxRateOfChange;
+    float NearZeroValue;
 };
 
 } /* namespace SS */

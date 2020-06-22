@@ -14,15 +14,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class DisabledState: public State {
+class DisabledState : public State {
 public:
-	DisabledState(M1M3SSPublisher* publisher);
+    DisabledState(M1M3SSPublisher* publisher);
 
-	States::Type update(UpdateCommand* command, Model* model);
-	States::Type enable(EnableCommand* command, Model* model);
-	States::Type standby(StandbyCommand* command, Model* model);
-	States::Type programILC(ProgramILCCommand* command, Model* model);
-	States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model);
+    States::Type update(UpdateCommand* command, Model* model);
+    States::Type enable(EnableCommand* command, Model* model);
+    States::Type standby(StandbyCommand* command, Model* model);
+    States::Type programILC(ProgramILCCommand* command, Model* model);
+    States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model);
 };
 
 } /* namespace SS */

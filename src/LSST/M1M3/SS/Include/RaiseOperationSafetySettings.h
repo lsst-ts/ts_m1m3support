@@ -9,7 +9,7 @@
 #define RAISEOPERATIONSAFETYSETTINGS_H_
 
 struct RaiseOperationSafetySettings {
-	bool FaultOnTimeout;
+    bool FaultOnTimeout;
 };
 
 #endif /* RAISEOPERATIONSAFETYSETTINGS_H_ */

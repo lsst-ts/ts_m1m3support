@@ -15,20 +15,21 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class FreezeSensorBusList: public BusList {
+class FreezeSensorBusList : public BusList {
 private:
-	MTM1M3_outerLoopDataC* outerLoopData;
+    MTM1M3_outerLoopDataC* outerLoopData;
 
-	int32_t freezeSensorCommandIndex[5];
-	int32_t faStatusCommandIndex[5];
-	int32_t roundRobinFAReportServerStatusIndex[5];
-	int32_t hmLVDTCommandIndex[5];
-	int32_t lvdtSampleClock;
+    int32_t freezeSensorCommandIndex[5];
+    int32_t faStatusCommandIndex[5];
+    int32_t roundRobinFAReportServerStatusIndex[5];
+    int32_t hmLVDTCommandIndex[5];
+    int32_t lvdtSampleClock;
 
 public:
-	FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData);
+    FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
+                        MTM1M3_outerLoopDataC* outerLoopData);
 
-	void update();
+    void update();
 };
 
 } /* namespace SS */

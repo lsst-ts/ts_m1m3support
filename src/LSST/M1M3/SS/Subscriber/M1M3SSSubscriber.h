@@ -76,7 +76,8 @@ private:
     MTMount_ElevationC tmaElevation;
 
 public:
-    M1M3SSSubscriber(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL, CommandFactory* commandFactory);
+    M1M3SSSubscriber(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL,
+                     CommandFactory* commandFactory);
 
     Command* tryAcceptCommandStart();
     Command* tryAcceptCommandEnable();

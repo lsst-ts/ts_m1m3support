@@ -620,4 +620,3 @@ bool FirmwareUpdate::PrintBuffer(ModbusBuffer* buffer, std::string text) {
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
-

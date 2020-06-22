@@ -20,27 +20,29 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class ElevationForceComponent: public ForceComponent {
+class ElevationForceComponent : public ForceComponent {
 private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-	MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
-	MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+    MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
+    MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
 
 public:
-	ElevationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+    ElevationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+                            ForceActuatorSettings* forceActuatorSettings);
 
-	void applyElevationForces(float* x, float* y, float* z);
-	void applyElevationForcesByElevationAngle(float elevationAngle);
+    void applyElevationForces(float* x, float* y, float* z);
+    void applyElevationForcesByElevationAngle(float elevationAngle);
 
 protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

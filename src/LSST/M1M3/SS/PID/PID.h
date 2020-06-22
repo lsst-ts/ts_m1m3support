@@ -25,7 +25,7 @@ public:
     /**
      * Constructs PID.
      *
-     * @param id member ID. Index to fx,fy,fz and mx,my,mz 
+     * @param id member ID. Index to fx,fy,fz and mx,my,mz
      * @param parameters PID parameters struct
      * @param publisher SAL interface
      */

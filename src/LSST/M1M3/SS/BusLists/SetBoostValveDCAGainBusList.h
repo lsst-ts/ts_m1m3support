@@ -15,12 +15,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SetBoostValveDCAGainBusList: public BusList {
+class SetBoostValveDCAGainBusList : public BusList {
 private:
-	MTM1M3_logevent_forceActuatorInfoC* forceInfo;
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo;
 
 public:
-	SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_logevent_forceActuatorInfoC* forceInfo);
+    SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
+                                MTM1M3_logevent_forceActuatorInfoC* forceInfo);
 };
 
 } /* namespace SS */

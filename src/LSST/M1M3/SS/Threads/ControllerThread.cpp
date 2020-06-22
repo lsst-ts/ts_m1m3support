@@ -15,14 +15,14 @@ ControllerThread::ControllerThread(Controller* controller) {
 void ControllerThread::run() {
     spdlog::info("ControllerThread: Start");
     while (this->keepRunning) {
-	this->controller->lock();
-	Command* command = this->controller->dequeue();
-	this->controller->unlock();
-	if (command) {
-	    this->controller->execute(command);
-	} else {
-	    usleep(100);
-	}
+        this->controller->lock();
+        Command* command = this->controller->dequeue();
+        this->controller->unlock();
+        if (command) {
+            this->controller->execute(command);
+        } else {
+            usleep(100);
+        }
     }
     spdlog::info("ControllerThread: Completed");
 }

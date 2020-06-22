@@ -17,20 +17,20 @@ namespace SS {
 
 class PositionControllerSettings {
 public:
-	double ForceToStepsCoefficient;
-	double EncoderToStepsCoefficient;
-	int32_t MaxStepsPerLoop;
-	double RaiseLowerForceLimitLow;
-	double RaiseLowerForceLimitHigh;
-	double RaiseLowerTimeoutInSeconds;
-	int32_t ReferencePositionEncoder1;
-	int32_t ReferencePositionEncoder2;
-	int32_t ReferencePositionEncoder3;
-	int32_t ReferencePositionEncoder4;
-	int32_t ReferencePositionEncoder5;
-	int32_t ReferencePositionEncoder6;
+    double ForceToStepsCoefficient;
+    double EncoderToStepsCoefficient;
+    int32_t MaxStepsPerLoop;
+    double RaiseLowerForceLimitLow;
+    double RaiseLowerForceLimitHigh;
+    double RaiseLowerTimeoutInSeconds;
+    int32_t ReferencePositionEncoder1;
+    int32_t ReferencePositionEncoder2;
+    int32_t ReferencePositionEncoder3;
+    int32_t ReferencePositionEncoder4;
+    int32_t ReferencePositionEncoder5;
+    int32_t ReferencePositionEncoder6;
 
-	void load(const std::string &filename);
+    void load(const std::string &filename);
 };
 
 } /* namespace SS */

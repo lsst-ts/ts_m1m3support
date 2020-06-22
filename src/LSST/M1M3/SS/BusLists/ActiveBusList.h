@@ -15,25 +15,29 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ActiveBusList: public BusList {
+class ActiveBusList : public BusList {
 private:
-	MTM1M3_outerLoopDataC* outerLoopData;
-	MTM1M3_forceActuatorDataC* forceActuatorData;
-	MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
-	MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
-	MTM1M3_logevent_forceActuatorInfoC* forceInfo;
+    MTM1M3_outerLoopDataC* outerLoopData;
+    MTM1M3_forceActuatorDataC* forceActuatorData;
+    MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
+    MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo;
 
-	int32_t setForceCommandIndex[5];
-	int32_t hpFreezeCommandIndex[5];
-	int32_t faStatusCommandIndex[5];
-	int32_t roundRobinFAReportServerStatusIndex[5];
-	int32_t hmLVDTCommandIndex[5];
-	int32_t lvdtSampleClock;
+    int32_t setForceCommandIndex[5];
+    int32_t hpFreezeCommandIndex[5];
+    int32_t faStatusCommandIndex[5];
+    int32_t roundRobinFAReportServerStatusIndex[5];
+    int32_t hmLVDTCommandIndex[5];
+    int32_t lvdtSampleClock;
 
 public:
-	ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData, MTM1M3_hardpointActuatorDataC* hardpointActuatorData, MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces);
+    ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
+                  MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData,
+                  MTM1M3_hardpointActuatorDataC* hardpointActuatorData,
+                  MTM1M3_logevent_forceActuatorInfoC* forceInfo,
+                  MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces);
 
-	void update();
+    void update();
 };
 
 } /* namespace SS */

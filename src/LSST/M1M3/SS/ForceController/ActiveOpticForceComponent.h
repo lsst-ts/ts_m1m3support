@@ -20,27 +20,29 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class ActiveOpticForceComponent: public ForceComponent {
+class ActiveOpticForceComponent : public ForceComponent {
 private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
+    M1M3SSPublisher* publisher;
+    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    ForceActuatorSettings* forceActuatorSettings;
 
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-	MTM1M3_logevent_appliedActiveOpticForcesC* appliedActiveOpticForces;
-	MTM1M3_logevent_rejectedActiveOpticForcesC* rejectedActiveOpticForces;
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+    MTM1M3_logevent_appliedActiveOpticForcesC* appliedActiveOpticForces;
+    MTM1M3_logevent_rejectedActiveOpticForcesC* rejectedActiveOpticForces;
 
 public:
-	ActiveOpticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+    ActiveOpticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+                              ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+                              ForceActuatorSettings* forceActuatorSettings);
 
-	void applyActiveOpticForces(float* z);
-	void applyActiveOpticForcesByBendingModes(float* coefficients);
+    void applyActiveOpticForces(float* z);
+    void applyActiveOpticForcesByBendingModes(float* coefficients);
 
 protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+    void postEnableDisableActions();
+    void postUpdateActions();
 };
 
 } /* namespace SS */

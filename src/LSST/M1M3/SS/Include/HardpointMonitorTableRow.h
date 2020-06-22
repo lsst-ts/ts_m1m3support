@@ -11,10 +11,10 @@
 #include <DataTypes.h>
 
 struct HardpointMonitorTableRow {
-	int32_t Index;
-	int32_t ActuatorID;
-	uint8_t Subnet;
-	uint8_t Address;
+    int32_t Index;
+    int32_t ActuatorID;
+    uint8_t Subnet;
+    uint8_t Address;
 };
 
 #endif /* HARDPOINTMONITORTABLEROW_H_ */
