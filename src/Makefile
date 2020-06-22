@@ -4,8 +4,8 @@ all: libM1M3SS.a
 
 .PHONY: DEPS clean
 
-C_SRCS = $(shell find LSST -name '*.c')
-CPP_SRCS = $(shell find LSST pugixml -name '*.cpp')
+C_SRCS = $(shell find LSST NiFpga -name '*.c')
+CPP_SRCS = $(shell find LSST NiFpga pugixml -name '*.cpp')
 
 OBJS = $(patsubst %.c,%.o,$(C_SRCS)) $(patsubst %.cpp,%.o,$(CPP_SRCS))
 
@@ -17,6 +17,7 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 M1M3_CPPFLAGS := -I. \
+	-I"NiFpga" \
 	-I"LSST/M1M3/SS/DigitalInputOutput" \
 	-I"LSST/M1M3/SS/FirmwareUpdate" \
 	-I"LSST/M1M3/SS/Accelerometer" \
