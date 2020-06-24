@@ -33,6 +33,9 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <spdlog/spdlog.h>
+#include <thread>
+#include "SAL_MTMount.h"
+#include "ccpp_sal_MTMount.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -49,6 +52,36 @@ SimulatedFPGA::SimulatedFPGA() {
         this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
     }
     this->rndIndex = 0;
+    this->mgr_MTMount = SAL_MTMount();
+    this->mgr_MTMount.salTelemetrySub(const_cast<char*>("MTMount_Elevation"));
+
+    this->elevationReadWriteLock.unlock();
+
+    this->monitorMountElevationThread = std::thread(&SimulatedFPGA::monitorElevation, this);
+}
+
+SimulatedFPGA::~SimulatedFPGA() {
+    this->exitThread = true;
+
+    this->monitorMountElevationThread.join();
+}
+
+void SimulatedFPGA::monitorElevation(void) {
+    MTMount_ElevationC mountElevationInstance;
+
+    spdlog::debug("Start monitoring mount elevation...");
+
+    while (!this->exitThread) {
+        ReturnCode_t status = mgr_MTMount.getSample_Elevation(&mountElevationInstance);
+
+        if (status == 0) {
+            spdlog::debug("Got valid elevation sample...");
+            this->elevationReadWriteLock.lock();
+            this->mountElevation = mountElevationInstance.Elevation_Angle_Actual;
+            this->elevationReadWriteLock.unlock();
+        }
+        usleep(20000);
+    }
 }
 
 void SimulatedFPGA::setPublisher(M1M3SSPublisher* publisher) {
@@ -118,8 +151,18 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.InclinometerErrorTimestamp = 0;
     this->supportFPGAData.InclinometerErrorCode = 0;
     this->supportFPGAData.InclinometerSampleTimestamp = timestamp;
+
+    // This comment is made in src/LSST/M1M3/SS/Inclinometer/Inclinometer.cpp
+    // 0 = Zenith, we want 0 to = Horizon
+    // Also we want below horizon to be negative
+    // Which I take to mean that the inclinometer is measuring Zenith angle,
+    // so I will convert elevation to zenith angle here.
+
+    this->elevationReadWriteLock.lock();
     this->supportFPGAData.InclinometerAngleRaw =
-            (int32_t)(tmaElevation.Elevation_Angle_Actual * 1000.0) + (this->getRnd() * 5.0);
+            (int32_t)((this->mountElevation - 90.0) * 1000.0) + (this->getRnd() * 5.0);
+    this->elevationReadWriteLock.unlock();
+
     this->supportFPGAData.DisplacementTxBytes = 0;
     this->supportFPGAData.DisplacementRxBytes = 0;
     this->supportFPGAData.DisplacementTxFrames = 0;
