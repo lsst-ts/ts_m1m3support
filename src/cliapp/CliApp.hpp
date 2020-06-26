@@ -17,9 +17,10 @@
 
 #pragma once
 
+#include <functional>
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 typedef std::vector<std::string> command_vec;
 
@@ -36,7 +37,7 @@ typedef std::vector<std::string> command_vec;
  */
 struct command_t {
     const char* command;  // "*" indicates any command (no other command matched)
-    int (*action)(command_vec cmds);
+    std::function<int(command_vec)> action;
     const char* args;
     int flags;
     const char* help_args;
