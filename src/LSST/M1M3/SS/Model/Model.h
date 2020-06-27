@@ -60,24 +60,24 @@ public:
     Model(M1M3SSPublisher* publisher, DigitalInputOutput* digitalInputOutput);
     virtual ~Model();
 
-    inline M1M3SSPublisher* getPublisher() { return this->publisher; }
-    inline Displacement* getDisplacement() { return this->displacement; }
-    inline Inclinometer* getInclinometer() { return this->inclinometer; }
-    inline ILC* getILC() { return this->ilc; }
-    inline ForceController* getForceController() { return this->forceController; }
-    inline SafetyController* getSafetyController() { return this->safetyController; }
-    inline PositionController* getPositionController() { return this->positionController; }
-    inline DigitalInputOutput* getDigitalInputOutput() { return this->digitalInputOutput; }
-    inline Accelerometer* getAccelerometer() { return this->accelerometer; }
-    inline PowerController* getPowerController() { return this->powerController; }
+    inline M1M3SSPublisher* getPublisher() { return _publisher; }
+    inline Displacement* getDisplacement() { return _displacement; }
+    inline Inclinometer* getInclinometer() { return _inclinometer; }
+    inline ILC* getILC() { return _ilc; }
+    inline ForceController* getForceController() { return _forceController; }
+    inline SafetyController* getSafetyController() { return _safetyController; }
+    inline PositionController* getPositionController() { return _positionController; }
+    inline DigitalInputOutput* getDigitalInputOutput() { return _digitalInputOutput; }
+    inline Accelerometer* getAccelerometer() { return _accelerometer; }
+    inline PowerController* getPowerController() { return _powerController; }
     inline AutomaticOperationsController* getAutomaticOperationsController() {
-        return this->automaticOperationsController;
+        return _automaticOperationsController;
     }
-    inline Gyro* getGyro() { return this->gyro; }
-    inline ProfileController* getProfileController() { return &this->profileController; }
+    inline Gyro* getGyro() { return _gyro; }
+    inline ProfileController* getProfileController() { return &_profileController; }
 
-    void setCachedTimestamp(double timestamp) { this->cachedTimestamp = timestamp; }
-    double getCachedTimestamp() { return this->cachedTimestamp; }
+    void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
+    double getCachedTimestamp() { return _cachedTimestamp; }
 
     void loadSettings(std::string settingsToApply);
 
@@ -91,32 +91,32 @@ public:
     void waitForShutdown();
 
 private:
-    void populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                    ForceActuatorSettings* forceActuatorSettings);
-    void populateHardpointActuatorInfo(
+    void _populateHardpointActuatorInfo(
             HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
             HardpointActuatorSettings* hardpointActuatorSettings,
             PositionControllerSettings* positionControllerSettings);
-    void populateHardpointMonitorInfo(
+    void _populateHardpointMonitorInfo(
             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
-    M1M3SSPublisher* publisher;
-    Displacement* displacement;
-    Inclinometer* inclinometer;
-    ILC* ilc;
-    ForceController* forceController;
-    SafetyController* safetyController;
-    PositionController* positionController;
-    Accelerometer* accelerometer;
-    PowerController* powerController;
-    AutomaticOperationsController* automaticOperationsController;
-    Gyro* gyro;
-    ProfileController profileController;
-    DigitalInputOutput* digitalInputOutput;
+    M1M3SSPublisher* _publisher;
+    Displacement* _displacement;
+    Inclinometer* _inclinometer;
+    ILC* _ilc;
+    ForceController* _forceController;
+    SafetyController* _safetyController;
+    PositionController* _positionController;
+    Accelerometer* _accelerometer;
+    PowerController* _powerController;
+    AutomaticOperationsController* _automaticOperationsController;
+    Gyro* _gyro;
+    ProfileController _profileController;
+    DigitalInputOutput* _digitalInputOutput;
 
-    pthread_mutex_t mutex;
+    pthread_mutex_t _mutex;
 
-    double cachedTimestamp;
+    double _cachedTimestamp;
 };
 
 } /* namespace SS */

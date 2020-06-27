@@ -39,91 +39,91 @@ namespace SS {
 Inclinometer::Inclinometer(SupportFPGAData* fpgaData, M1M3SSPublisher* publisher,
                            SafetyController* safetyController, InclinometerSettings* inclinometerSettings) {
     spdlog::debug("Inclinometer: Inclinometer()");
-    this->fpgaData = fpgaData;
-    this->publisher = publisher;
-    this->safetyController = safetyController;
-    this->inclinometerSettings = inclinometerSettings;
+    _fpgaData = fpgaData;
+    _publisher = publisher;
+    _safetyController = safetyController;
+    _inclinometerSettings = inclinometerSettings;
 
-    this->inclinometerData = this->publisher->getInclinometerData();
-    this->inclinometerWarning = this->publisher->getEventInclinometerSensorWarning();
+    _inclinometerData = _publisher->getInclinometerData();
+    _inclinometerWarning = _publisher->getEventInclinometerSensorWarning();
 
-    this->lastSampleTimestamp = 0;
-    this->lastErrorTimestamp = 0;
-    this->errorCleared = false;
+    _lastSampleTimestamp = 0;
+    _lastErrorTimestamp = 0;
+    _errorCleared = false;
 
-    memset(this->inclinometerData, 0, sizeof(MTM1M3_inclinometerDataC));
-    memset(this->inclinometerWarning, 0, sizeof(MTM1M3_logevent_inclinometerSensorWarningC));
+    memset(_inclinometerData, 0, sizeof(MTM1M3_inclinometerDataC));
+    memset(_inclinometerWarning, 0, sizeof(MTM1M3_logevent_inclinometerSensorWarningC));
 }
 
 void Inclinometer::processData() {
     // TODO: Handle no data available
     // TODO: Handle limits, push to safety controller
     spdlog::trace("Inclinometer: processData()");
-    if (this->fpgaData->InclinometerErrorTimestamp > this->lastErrorTimestamp) {
-        this->lastErrorTimestamp = this->fpgaData->InclinometerErrorTimestamp;
-        this->errorCleared = false;
-        this->inclinometerWarning->timestamp =
-                Timestamp::fromFPGA(this->fpgaData->InclinometerErrorTimestamp);
-        this->inclinometerWarning->unknownAddress = this->fpgaData->InclinometerErrorCode == 1;
-        this->inclinometerWarning->unknownFunction = this->fpgaData->InclinometerErrorCode == 2;
-        this->inclinometerWarning->invalidLength = this->fpgaData->InclinometerErrorCode == 3;
-        this->inclinometerWarning->invalidCRC = this->fpgaData->InclinometerErrorCode == 4;
-        this->inclinometerWarning->unknownProblem = this->fpgaData->InclinometerErrorCode == 5;
-        this->inclinometerWarning->responseTimeout = this->fpgaData->InclinometerErrorCode == 6;
-        this->inclinometerWarning->sensorReportsIllegalFunction = this->fpgaData->InclinometerErrorCode == 7;
-        this->inclinometerWarning->sensorReportsIllegalDataAddress =
-                this->fpgaData->InclinometerErrorCode == 8;
-        this->publisher->tryLogInclinometerSensorWarning();
-        this->safetyController->inclinometerNotifyUnknownAddress(this->inclinometerWarning->unknownAddress);
-        this->safetyController->inclinometerNotifyUnknownFunction(this->inclinometerWarning->unknownFunction);
-        this->safetyController->inclinometerNotifyInvalidLength(this->inclinometerWarning->invalidLength);
-        this->safetyController->inclinometerNotifyInvalidCRC(this->inclinometerWarning->invalidCRC);
-        this->safetyController->inclinometerNotifyUnknownProblem(this->inclinometerWarning->unknownProblem);
-        this->safetyController->inclinometerNotifyResponseTimeout(this->inclinometerWarning->responseTimeout);
-        this->safetyController->inclinometerNotifySensorReportsIllegalFunction(
-                this->inclinometerWarning->sensorReportsIllegalFunction);
-        this->safetyController->inclinometerNotifySensorReportsIllegalDataAddress(
-                this->inclinometerWarning->sensorReportsIllegalDataAddress);
+    if (_fpgaData->InclinometerErrorTimestamp > _lastErrorTimestamp) {
+        _lastErrorTimestamp = _fpgaData->InclinometerErrorTimestamp;
+        _errorCleared = false;
+        _inclinometerWarning->timestamp =
+                Timestamp::fromFPGA(_fpgaData->InclinometerErrorTimestamp);
+        _inclinometerWarning->unknownAddress = _fpgaData->InclinometerErrorCode == 1;
+        _inclinometerWarning->unknownFunction = _fpgaData->InclinometerErrorCode == 2;
+        _inclinometerWarning->invalidLength = _fpgaData->InclinometerErrorCode == 3;
+        _inclinometerWarning->invalidCRC = _fpgaData->InclinometerErrorCode == 4;
+        _inclinometerWarning->unknownProblem = _fpgaData->InclinometerErrorCode == 5;
+        _inclinometerWarning->responseTimeout = _fpgaData->InclinometerErrorCode == 6;
+        _inclinometerWarning->sensorReportsIllegalFunction = _fpgaData->InclinometerErrorCode == 7;
+        _inclinometerWarning->sensorReportsIllegalDataAddress =
+                _fpgaData->InclinometerErrorCode == 8;
+        _publisher->tryLogInclinometerSensorWarning();
+        _safetyController->inclinometerNotifyUnknownAddress(_inclinometerWarning->unknownAddress);
+        _safetyController->inclinometerNotifyUnknownFunction(_inclinometerWarning->unknownFunction);
+        _safetyController->inclinometerNotifyInvalidLength(_inclinometerWarning->invalidLength);
+        _safetyController->inclinometerNotifyInvalidCRC(_inclinometerWarning->invalidCRC);
+        _safetyController->inclinometerNotifyUnknownProblem(_inclinometerWarning->unknownProblem);
+        _safetyController->inclinometerNotifyResponseTimeout(_inclinometerWarning->responseTimeout);
+        _safetyController->inclinometerNotifySensorReportsIllegalFunction(
+                _inclinometerWarning->sensorReportsIllegalFunction);
+        _safetyController->inclinometerNotifySensorReportsIllegalDataAddress(
+                _inclinometerWarning->sensorReportsIllegalDataAddress);
     }
-    if (this->fpgaData->InclinometerSampleTimestamp > this->lastSampleTimestamp) {
-        this->lastSampleTimestamp = this->fpgaData->InclinometerSampleTimestamp;
-        this->inclinometerData->timestamp = Timestamp::fromFPGA(this->fpgaData->InclinometerSampleTimestamp);
+    if (_fpgaData->InclinometerSampleTimestamp > _lastSampleTimestamp) {
+        _lastSampleTimestamp = _fpgaData->InclinometerSampleTimestamp;
+        _inclinometerData->timestamp = Timestamp::fromFPGA(_fpgaData->InclinometerSampleTimestamp);
         // 0 = Zenith, we want 0 to = Horizon
         // Also we want below horizon to be negative
-        float angle = (float)(this->fpgaData->InclinometerAngleRaw / 1000.0) + 90.0;
+        float angle = (float)(_fpgaData->InclinometerAngleRaw / 1000.0) + 90.0;
         if (angle > 180.0) {
             angle = angle - 360.0;
         }
-        this->inclinometerData->inclinometerAngle = angle + this->inclinometerSettings->Offset;
-        this->publisher->putInclinometerData();
-        if (!this->errorCleared &&
-            this->fpgaData->InclinometerSampleTimestamp > this->fpgaData->InclinometerErrorTimestamp) {
-            this->errorCleared = true;
-            this->inclinometerWarning->timestamp =
-                    Timestamp::fromFPGA(this->fpgaData->InclinometerSampleTimestamp);
-            this->inclinometerWarning->unknownAddress = false;
-            this->inclinometerWarning->unknownFunction = false;
-            this->inclinometerWarning->invalidLength = false;
-            this->inclinometerWarning->invalidCRC = false;
-            this->inclinometerWarning->unknownProblem = false;
-            this->inclinometerWarning->responseTimeout = false;
-            this->inclinometerWarning->sensorReportsIllegalFunction = false;
-            this->inclinometerWarning->sensorReportsIllegalDataAddress = false;
-            this->publisher->tryLogInclinometerSensorWarning();
-            this->safetyController->inclinometerNotifyUnknownAddress(
-                    this->inclinometerWarning->unknownAddress);
-            this->safetyController->inclinometerNotifyUnknownFunction(
-                    this->inclinometerWarning->unknownFunction);
-            this->safetyController->inclinometerNotifyInvalidLength(this->inclinometerWarning->invalidLength);
-            this->safetyController->inclinometerNotifyInvalidCRC(this->inclinometerWarning->invalidCRC);
-            this->safetyController->inclinometerNotifyUnknownProblem(
-                    this->inclinometerWarning->unknownProblem);
-            this->safetyController->inclinometerNotifyResponseTimeout(
-                    this->inclinometerWarning->responseTimeout);
-            this->safetyController->inclinometerNotifySensorReportsIllegalFunction(
-                    this->inclinometerWarning->sensorReportsIllegalFunction);
-            this->safetyController->inclinometerNotifySensorReportsIllegalDataAddress(
-                    this->inclinometerWarning->sensorReportsIllegalDataAddress);
+        _inclinometerData->inclinometerAngle = angle + _inclinometerSettings->Offset;
+        _publisher->putInclinometerData();
+        if (!_errorCleared &&
+            _fpgaData->InclinometerSampleTimestamp > _fpgaData->InclinometerErrorTimestamp) {
+            _errorCleared = true;
+            _inclinometerWarning->timestamp =
+                    Timestamp::fromFPGA(_fpgaData->InclinometerSampleTimestamp);
+            _inclinometerWarning->unknownAddress = false;
+            _inclinometerWarning->unknownFunction = false;
+            _inclinometerWarning->invalidLength = false;
+            _inclinometerWarning->invalidCRC = false;
+            _inclinometerWarning->unknownProblem = false;
+            _inclinometerWarning->responseTimeout = false;
+            _inclinometerWarning->sensorReportsIllegalFunction = false;
+            _inclinometerWarning->sensorReportsIllegalDataAddress = false;
+            _publisher->tryLogInclinometerSensorWarning();
+            _safetyController->inclinometerNotifyUnknownAddress(
+                    _inclinometerWarning->unknownAddress);
+            _safetyController->inclinometerNotifyUnknownFunction(
+                    _inclinometerWarning->unknownFunction);
+            _safetyController->inclinometerNotifyInvalidLength(_inclinometerWarning->invalidLength);
+            _safetyController->inclinometerNotifyInvalidCRC(_inclinometerWarning->invalidCRC);
+            _safetyController->inclinometerNotifyUnknownProblem(
+                    _inclinometerWarning->unknownProblem);
+            _safetyController->inclinometerNotifyResponseTimeout(
+                    _inclinometerWarning->responseTimeout);
+            _safetyController->inclinometerNotifySensorReportsIllegalFunction(
+                    _inclinometerWarning->sensorReportsIllegalFunction);
+            _safetyController->inclinometerNotifySensorReportsIllegalDataAddress(
+                    _inclinometerWarning->sensorReportsIllegalDataAddress);
         }
     }
 }

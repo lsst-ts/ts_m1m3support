@@ -57,37 +57,37 @@ namespace SS {
 
 Model::Model(M1M3SSPublisher* publisher, DigitalInputOutput* digitalInputOutput) {
     spdlog::debug("Model: Model()");
-    this->publisher = publisher;
-    this->safetyController = NULL;
-    this->displacement = NULL;
-    this->inclinometer = NULL;
-    this->ilc = NULL;
-    this->forceController = NULL;
-    this->positionController = NULL;
-    this->digitalInputOutput = digitalInputOutput;
-    this->accelerometer = NULL;
-    this->powerController = NULL;
-    this->automaticOperationsController = NULL;
-    this->gyro = NULL;
-    this->cachedTimestamp = 0;
-    pthread_mutex_init(&this->mutex, NULL);
-    pthread_mutex_lock(&this->mutex);
+    _publisher = publisher;
+    _safetyController = NULL;
+    _displacement = NULL;
+    _inclinometer = NULL;
+    _ilc = NULL;
+    _forceController = NULL;
+    _positionController = NULL;
+    _digitalInputOutput = digitalInputOutput;
+    _accelerometer = NULL;
+    _powerController = NULL;
+    _automaticOperationsController = NULL;
+    _gyro = NULL;
+    _cachedTimestamp = 0;
+    pthread_mutex_init(&_mutex, NULL);
+    pthread_mutex_lock(&_mutex);
 }
 
 Model::~Model() {
-    pthread_mutex_unlock(&this->mutex);
-    pthread_mutex_destroy(&this->mutex);
+    pthread_mutex_unlock(&_mutex);
+    pthread_mutex_destroy(&_mutex);
 
-    delete this->safetyController;
-    delete this->displacement;
-    delete this->inclinometer;
-    delete this->ilc;
-    delete this->forceController;
-    delete this->positionController;
-    delete this->accelerometer;
-    delete this->powerController;
-    delete this->automaticOperationsController;
-    delete this->gyro;
+    delete _safetyController;
+    delete _displacement;
+    delete _inclinometer;
+    delete _ilc;
+    delete _forceController;
+    delete _positionController;
+    delete _accelerometer;
+    delete _powerController;
+    delete _automaticOperationsController;
+    delete _gyro;
 }
 
 void Model::loadSettings(std::string settingsToApply) {
@@ -96,7 +96,7 @@ void Model::loadSettings(std::string settingsToApply) {
     SettingReader& settingReader = SettingReader::get();
     settingReader.configure(settingsToApply);
 
-    this->publisher->getOuterLoopData()->slewFlag = false;
+    _publisher->getOuterLoopData()->slewFlag = false;
 
     spdlog::info("Model: Loading ILC application settings");
     ILCApplicationSettings* ilcApplicationSettings = settingReader.loadILCApplicationSettings();
@@ -128,62 +128,62 @@ void Model::loadSettings(std::string settingsToApply) {
     spdlog::info("Model: Loading inclinometer settings");
     InclinometerSettings* inclinometerSettings = settingReader.loadInclinometerSettings();
 
-    this->populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
-    this->populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
+    _populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
+    _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
                                         positionControllerSettings);
-    this->populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
+    _populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
 
-    delete this->safetyController;
+    delete _safetyController;
     spdlog::info("Model: Creating safety controller");
-    this->safetyController = new SafetyController(this->publisher, safetyControllerSettings);
+    _safetyController = new SafetyController(_publisher, safetyControllerSettings);
 
-    delete this->displacement;
+    delete _displacement;
     spdlog::info("Model: Creating displacement");
-    this->displacement = new Displacement(displacementSensorSettings, IFPGA::get().getSupportFPGAData(),
-                                          this->publisher, this->safetyController);
+    _displacement = new Displacement(displacementSensorSettings, IFPGA::get().getSupportFPGAData(),
+                                          _publisher, _safetyController);
 
-    delete this->inclinometer;
+    delete _inclinometer;
     spdlog::info("Model: Creating inclinometer");
-    this->inclinometer = new Inclinometer(IFPGA::get().getSupportFPGAData(), this->publisher,
-                                          this->safetyController, inclinometerSettings);
+    _inclinometer = new Inclinometer(IFPGA::get().getSupportFPGAData(), _publisher,
+                                          _safetyController, inclinometerSettings);
 
-    delete this->positionController;
+    delete _positionController;
     spdlog::info("Model: Creating position controller");
-    this->positionController =
-            new PositionController(positionControllerSettings, hardpointActuatorSettings, this->publisher);
+    _positionController =
+            new PositionController(positionControllerSettings, hardpointActuatorSettings, _publisher);
 
-    delete this->ilc;
+    delete _ilc;
     spdlog::info("Model: Creating ILC");
-    this->ilc = new ILC(this->publisher, this->positionController, ilcApplicationSettings,
+    _ilc = new ILC(_publisher, _positionController, ilcApplicationSettings,
                         forceActuatorApplicationSettings, forceActuatorSettings,
                         hardpointActuatorApplicationSettings, hardpointActuatorSettings,
-                        hardpointMonitorApplicationSettings, this->safetyController);
+                        hardpointMonitorApplicationSettings, _safetyController);
 
-    delete this->forceController;
+    delete _forceController;
     spdlog::info("Model: Creating force controller");
-    this->forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings,
-                                                pidSettings, this->publisher, this->safetyController);
+    _forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings,
+                                                pidSettings, _publisher, _safetyController);
 
     spdlog::info("Model: Updating digital input output");
-    this->digitalInputOutput->setSafetyController(this->safetyController);
+    _digitalInputOutput->setSafetyController(_safetyController);
 
-    delete this->accelerometer;
+    delete _accelerometer;
     spdlog::info("Model: Creating accelerometer");
-    this->accelerometer = new Accelerometer(accelerometerSettings, this->publisher);
+    _accelerometer = new Accelerometer(accelerometerSettings, _publisher);
 
-    delete this->powerController;
+    delete _powerController;
     spdlog::info("Model: Creating power controller");
-    this->powerController = new PowerController(this->publisher, this->safetyController);
+    _powerController = new PowerController(_publisher, _safetyController);
 
-    delete this->automaticOperationsController;
+    delete _automaticOperationsController;
     spdlog::info("Model: Creating automatic operations controller");
-    this->automaticOperationsController =
-            new AutomaticOperationsController(this->positionController, this->forceController,
-                                              this->safetyController, this->publisher, this->powerController);
+    _automaticOperationsController =
+            new AutomaticOperationsController(_positionController, _forceController,
+                                              _safetyController, _publisher, _powerController);
 
-    delete this->gyro;
+    delete _gyro;
     spdlog::info("Model: Creating gyro");
-    this->gyro = new Gyro(gyroSettings, this->publisher);
+    _gyro = new Gyro(gyroSettings, _publisher);
 
     spdlog::info("Model: Settings applied");
 }
@@ -193,47 +193,47 @@ void Model::queryFPGAData() {}
 void Model::publishStateChange(States::Type newState) {
     spdlog::debug("Model: publishStateChange({:d})", newState);
     uint64_t state = (uint64_t)newState;
-    double timestamp = this->publisher->getTimestamp();
-    MTM1M3_logevent_summaryStateC* summaryStateData = this->publisher->getEventSummaryState();
+    double timestamp = _publisher->getTimestamp();
+    MTM1M3_logevent_summaryStateC* summaryStateData = _publisher->getEventSummaryState();
     // summaryStateData->timestamp = timestamp;
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
-    this->publisher->logSummaryState();
-    MTM1M3_logevent_detailedStateC* detailedStateData = this->publisher->getEventDetailedState();
+    _publisher->logSummaryState();
+    MTM1M3_logevent_detailedStateC* detailedStateData = _publisher->getEventDetailedState();
     detailedStateData->timestamp = timestamp;
     detailedStateData->detailedState = (int32_t)(state & 0x00000000FFFFFFFF);
-    this->publisher->logDetailedState();
+    _publisher->logDetailedState();
 }
 
 void Model::publishRecommendedSettings() {
     spdlog::debug("Model: publishRecommendedSettings()");
     RecommendedApplicationSettings* recommendedApplicationSettings =
             SettingReader::get().loadRecommendedApplicationSettings();
-    MTM1M3_logevent_settingVersionsC* data = this->publisher->getEventSettingVersions();
+    MTM1M3_logevent_settingVersionsC* data = _publisher->getEventSettingVersions();
     data->recommendedSettingsVersion = "";
     for (uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
         data->recommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
     }
-    this->publisher->logSettingVersions();
+    _publisher->logSettingVersions();
 }
 
 void Model::publishOuterLoop(double executionTime) {
     spdlog::trace("Model: publishOuterLoop()");
-    MTM1M3_outerLoopDataC* data = this->publisher->getOuterLoopData();
+    MTM1M3_outerLoopDataC* data = _publisher->getOuterLoopData();
     data->executionTime = executionTime;
-    this->publisher->putOuterLoopData();
+    _publisher->putOuterLoopData();
 }
 
-void Model::shutdown() { pthread_mutex_unlock(&this->mutex); }
+void Model::shutdown() { pthread_mutex_unlock(&_mutex); }
 
 void Model::waitForShutdown() {
-    pthread_mutex_lock(&this->mutex);
-    pthread_mutex_unlock(&this->mutex);
+    pthread_mutex_lock(&_mutex);
+    pthread_mutex_unlock(&_mutex);
 }
 
-void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                       ForceActuatorSettings* forceActuatorSettings) {
     spdlog::debug("Model: populateForceActuatorInfo()");
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo = this->publisher->getEventForceActuatorInfo();
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo = _publisher->getEventForceActuatorInfo();
     for (int i = 0; i < FA_COUNT; i++) {
         ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
         forceInfo->referenceId[row.Index] = row.ActuatorID;
@@ -247,12 +247,12 @@ void Model::populateForceActuatorInfo(ForceActuatorApplicationSettings* forceAct
     }
 }
 
-void Model::populateHardpointActuatorInfo(
+void Model::_populateHardpointActuatorInfo(
         HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
         HardpointActuatorSettings* hardpointActuatorSettings,
         PositionControllerSettings* positionControllerSettings) {
     spdlog::debug("Model: populateHardpointActuatorInfo()");
-    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo = this->publisher->getEventHardpointActuatorInfo();
+    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo = _publisher->getEventHardpointActuatorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
         hardpointInfo->referenceId[row.Index] = row.ActuatorID;
@@ -270,11 +270,11 @@ void Model::populateHardpointActuatorInfo(
     hardpointInfo->referencePosition[5] = positionControllerSettings->ReferencePositionEncoder6;
 }
 
-void Model::populateHardpointMonitorInfo(
+void Model::_populateHardpointMonitorInfo(
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
     spdlog::debug("Model: populateHardpointMonitorInfo()");
     MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo =
-            this->publisher->getEventHardpointMonitorInfo();
+            _publisher->getEventHardpointMonitorInfo();
     for (int i = 0; i < HM_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
         hardpointMonitorInfo->referenceId[row.Index] = row.ActuatorID;

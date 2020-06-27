@@ -40,50 +40,50 @@ AberrationForceComponent::AberrationForceComponent(
         M1M3SSPublisher* publisher, SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Aberration";
+    name = "Aberration";
 
-    this->publisher = publisher;
-    this->safetyController = safetyController;
-    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    this->forceActuatorSettings = forceActuatorSettings;
-    this->forceActuatorState = this->publisher->getEventForceActuatorState();
-    this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
-    this->appliedAberrationForces = this->publisher->getEventAppliedAberrationForces();
-    this->rejectedAberrationForces = this->publisher->getEventRejectedAberrationForces();
-    this->maxRateOfChange = this->forceActuatorSettings->AberrationComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = this->forceActuatorSettings->AberrationComponentSettings.NearZeroValue;
+    _publisher = publisher;
+    _safetyController = safetyController;
+    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    _forceActuatorSettings = forceActuatorSettings;
+    _forceActuatorState = _publisher->getEventForceActuatorState();
+    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
+    _appliedAberrationForces = _publisher->getEventAppliedAberrationForces();
+    _rejectedAberrationForces = _publisher->getEventRejectedAberrationForces();
+    maxRateOfChange = _forceActuatorSettings->AberrationComponentSettings.MaxRateOfChange;
+    nearZeroValue = _forceActuatorSettings->AberrationComponentSettings.NearZeroValue;
 }
 
 void AberrationForceComponent::applyAberrationForces(float* z) {
     spdlog::debug("AberrationForceComponent: applyAberrationForces()");
-    if (!this->enabled) {
+    if (!enabled) {
         spdlog::error(
                 "AberrationForceComponent: applyAberrationForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
+    if (disabling) {
         spdlog::warn(
                 "AberrationForceComponent: applyAberrationForces() called when the component is disabling");
-        this->enable();
+        enable();
     }
     for (int i = 0; i < 156; ++i) {
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
 void AberrationForceComponent::applyAberrationForcesByBendingModes(float* coefficients) {
     spdlog::debug("AberrationForceComponent: applyAberrationForcesByBendingModes()");
     DistributedForces forces =
-            ForceConverter::calculateForceFromBendingModes(this->forceActuatorSettings, coefficients);
-    this->applyAberrationForces(forces.ZForces);
+            ForceConverter::calculateForceFromBendingModes(_forceActuatorSettings, coefficients);
+    applyAberrationForces(forces.ZForces);
 }
 
 void AberrationForceComponent::postEnableDisableActions() {
     spdlog::debug("AberrationForceComponent: postEnableDisableActions()");
 
-    this->forceActuatorState->timestamp = this->publisher->getTimestamp();
-    this->forceActuatorState->aberrationForcesApplied = this->enabled;
-    this->publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->aberrationForcesApplied = enabled;
+    _publisher->tryLogForceActuatorState();
 }
 
 void AberrationForceComponent::postUpdateActions() {
@@ -91,58 +91,58 @@ void AberrationForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    this->appliedAberrationForces->timestamp = this->publisher->getTimestamp();
-    this->rejectedAberrationForces->timestamp = this->appliedAberrationForces->timestamp;
+    _appliedAberrationForces->timestamp = _publisher->getTimestamp();
+    _rejectedAberrationForces->timestamp = _appliedAberrationForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
-        float zLowFault = this->forceActuatorSettings->AberrationLimitZTable[zIndex].LowFault;
-        float zHighFault = this->forceActuatorSettings->AberrationLimitZTable[zIndex].HighFault;
+        float zLowFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].LowFault;
+        float zHighFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].HighFault;
 
-        this->forceSetpointWarning->aberrationForceWarning[zIndex] = false;
+        _forceSetpointWarning->aberrationForceWarning[zIndex] = false;
 
-        this->rejectedAberrationForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedAberrationForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
-                                              this->rejectedAberrationForces->zForces[zIndex],
-                                              this->appliedAberrationForces->zForces + zIndex);
-        this->forceSetpointWarning->aberrationForceWarning[zIndex] =
-                this->forceSetpointWarning->aberrationForceWarning[zIndex] || notInRange;
+                                              _rejectedAberrationForces->zForces[zIndex],
+                                              _appliedAberrationForces->zForces + zIndex);
+        _forceSetpointWarning->aberrationForceWarning[zIndex] =
+                _forceSetpointWarning->aberrationForceWarning[zIndex] || notInRange;
 
-        rejectionRequired = rejectionRequired || this->forceSetpointWarning->aberrationForceWarning[zIndex];
+        rejectionRequired = rejectionRequired || _forceSetpointWarning->aberrationForceWarning[zIndex];
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings,
-                                                                    this->forceActuatorSettings,
-                                                                    this->appliedAberrationForces->zForces);
-    this->appliedAberrationForces->fz = fm.Fz;
-    this->appliedAberrationForces->mx = fm.Mx;
-    this->appliedAberrationForces->my = fm.My;
+    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings,
+                                                                    _forceActuatorSettings,
+                                                                    _appliedAberrationForces->zForces);
+    _appliedAberrationForces->fz = fm.Fz;
+    _appliedAberrationForces->mx = fm.Mx;
+    _appliedAberrationForces->my = fm.My;
 
-    fm = ForceConverter::calculateForcesAndMoments(this->forceActuatorApplicationSettings,
-                                                   this->forceActuatorSettings,
-                                                   this->rejectedAberrationForces->zForces);
-    this->rejectedAberrationForces->fz = fm.Fz;
-    this->rejectedAberrationForces->mx = fm.Mx;
-    this->rejectedAberrationForces->my = fm.My;
+    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings,
+                                                   _forceActuatorSettings,
+                                                   _rejectedAberrationForces->zForces);
+    _rejectedAberrationForces->fz = fm.Fz;
+    _rejectedAberrationForces->mx = fm.Mx;
+    _rejectedAberrationForces->my = fm.My;
 
-    this->forceSetpointWarning->aberrationNetForceWarning =
-            !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance,
-                            this->forceActuatorSettings->NetAberrationForceTolerance,
-                            this->appliedAberrationForces->fz) ||
-            !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance,
-                            this->forceActuatorSettings->NetAberrationForceTolerance,
-                            this->appliedAberrationForces->mx) ||
-            !Range::InRange(-this->forceActuatorSettings->NetAberrationForceTolerance,
-                            this->forceActuatorSettings->NetAberrationForceTolerance,
-                            this->appliedAberrationForces->my);
+    _forceSetpointWarning->aberrationNetForceWarning =
+            !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
+                            _forceActuatorSettings->NetAberrationForceTolerance,
+                            _appliedAberrationForces->fz) ||
+            !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
+                            _forceActuatorSettings->NetAberrationForceTolerance,
+                            _appliedAberrationForces->mx) ||
+            !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
+                            _forceActuatorSettings->NetAberrationForceTolerance,
+                            _appliedAberrationForces->my);
 
-    this->safetyController->forceControllerNotifyAberrationForceClipping(rejectionRequired);
-    this->safetyController->forceControllerNotifyAberrationNetForceCheck(
-            this->forceSetpointWarning->aberrationNetForceWarning);
+    _safetyController->forceControllerNotifyAberrationForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyAberrationNetForceCheck(
+            _forceSetpointWarning->aberrationNetForceWarning);
 
-    this->publisher->tryLogForceSetpointWarning();
+    _publisher->tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        this->publisher->logRejectedAberrationForces();
+        _publisher->logRejectedAberrationForces();
     }
-    this->publisher->logAppliedAberrationForces();
+    _publisher->logAppliedAberrationForces();
 }
 
 } /* namespace SS */

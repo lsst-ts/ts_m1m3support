@@ -54,162 +54,162 @@ void SettingReader::setRootPath(std::string rootPath) {
 
     test_dir(rootPath);
 
-    this->rootPath = rootPath;
+    _rootPath = rootPath;
 
-    test_dir(getBasePath(""));
-    test_dir(getSetPath(""));
+    test_dir(_getBasePath(""));
+    test_dir(_getSetPath(""));
 
-    this->currentSet = "";
-    this->currentVersion = "";
+    _currentSet = "";
+    _currentVersion = "";
 }
 
 std::string SettingReader::getFilePath(std::string filename) {
     if (filename[0] == '/') return filename;
-    return this->rootPath + "/" + filename;
+    return _rootPath + "/" + filename;
 }
 
 void SettingReader::configure(std::string settingsToApply) {
     spdlog::debug("SettingReader: configure(\"{}\")", settingsToApply);
-    currentSet = "";
-    currentVersion = "";
+    _currentSet = "";
+    _currentVersion = "";
     if (settingsToApply.find(',') != std::string::npos) {
         typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
         tokenizer tokenize(settingsToApply);
         tokenizer::iterator token = tokenize.begin();
-        this->currentSet = *token;
+        _currentSet = *token;
         ++token;
-        this->currentVersion = *token;
+        _currentVersion = *token;
     } else {
         AliasApplicationSettings* aliasApplicationSettings = loadAliasApplicationSettings();
         for (uint32_t i = 0; i != aliasApplicationSettings->Aliases.size(); ++i) {
             Alias alias = aliasApplicationSettings->Aliases[i];
             if (alias.Name.compare(settingsToApply) == 0) {
-                this->currentSet = alias.Set;
-                this->currentVersion = alias.Version;
+                _currentSet = alias.Set;
+                _currentVersion = alias.Version;
                 break;
             }
         }
     }
-    if (currentSet.empty()) {
+    if (_currentSet.empty()) {
         throw std::runtime_error("Cannot find configuration for " + settingsToApply + " settings");
     }
 
-    if (currentVersion.empty()) {
+    if (_currentVersion.empty()) {
         throw std::runtime_error("Empty version for " + settingsToApply + " settings");
     }
 }
 
 AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
     spdlog::debug("SettingReader: loadAliasApplicationSettings()");
-    this->aliasApplicationSettings.load(this->getBasePath("AliasApplicationSettings.xml").c_str());
-    return &this->aliasApplicationSettings;
+    _aliasApplicationSettings.load(_getBasePath("AliasApplicationSettings.xml").c_str());
+    return &_aliasApplicationSettings;
 }
 
 ForceActuatorApplicationSettings* SettingReader::loadForceActuatorApplicationSettings() {
     spdlog::debug("SettingReader: loadForceActuatorApplicationSettings()");
-    this->forceActuatorApplicationSettings.load(
-            this->getBasePath("ForceActuatorApplicationSettings.xml").c_str());
-    return &this->forceActuatorApplicationSettings;
+    _forceActuatorApplicationSettings.load(
+            _getBasePath("ForceActuatorApplicationSettings.xml").c_str());
+    return &_forceActuatorApplicationSettings;
 }
 
 ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
     spdlog::debug("SettingReader: loadForceActuatorSettings()");
-    this->forceActuatorSettings.load(this->getSetPath("ForceActuatorSettings.xml").c_str());
-    return &this->forceActuatorSettings;
+    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.xml").c_str());
+    return &_forceActuatorSettings;
 }
 
 HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
     spdlog::debug("SettingReader: loadHardpointActuatorApplicationSettings()");
-    this->hardpointActuatorApplicationSettings.load(
-            this->getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
-    return &this->hardpointActuatorApplicationSettings;
+    _hardpointActuatorApplicationSettings.load(
+            _getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
+    return &_hardpointActuatorApplicationSettings;
 }
 
 HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
     spdlog::debug("SettingReader: loadHardpointActuatorSettings()");
-    this->hardpointActuatorSettings.load(this->getSetPath("HardpointActuatorSettings.xml").c_str());
-    return &this->hardpointActuatorSettings;
+    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.xml").c_str());
+    return &_hardpointActuatorSettings;
 }
 
 ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
     spdlog::debug("SettingReader: loadILCApplicationSettings()");
-    this->ilcApplicationSettings.load(this->getBasePath("ILCApplicationSettings.xml").c_str());
-    return &this->ilcApplicationSettings;
+    _ilcApplicationSettings.load(_getBasePath("ILCApplicationSettings.xml").c_str());
+    return &_ilcApplicationSettings;
 }
 
 RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
     spdlog::debug("SettingReader: loadRecommendedApplicationSettings()");
-    this->recommendedApplicationSettings.load(
-            this->getBasePath("RecommendedApplicationSettings.xml").c_str());
-    return &this->recommendedApplicationSettings;
+    _recommendedApplicationSettings.load(
+            _getBasePath("RecommendedApplicationSettings.xml").c_str());
+    return &_recommendedApplicationSettings;
 }
 
 SafetyControllerSettings* SettingReader::loadSafetyControllerSettings() {
     spdlog::debug("SettingReader: loadSafetyControllerSettings()");
-    this->safetyControllerSettings.load(this->getSetPath("SafetyControllerSettings.xml").c_str());
-    return &this->safetyControllerSettings;
+    _safetyControllerSettings.load(_getSetPath("SafetyControllerSettings.xml").c_str());
+    return &_safetyControllerSettings;
 }
 
 PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
     spdlog::debug("SettingReader: loadPositionControllerSettings()");
-    this->positionControllerSettings.load(this->getSetPath("PositionControllerSettings.xml").c_str());
-    return &this->positionControllerSettings;
+    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.xml").c_str());
+    return &_positionControllerSettings;
 }
 
 AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
     spdlog::debug("SettingReader: loadAccelerometerSettings()");
-    this->accelerometerSettings.load(this->getSetPath("AccelerometerSettings.xml").c_str());
-    return &this->accelerometerSettings;
+    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.xml").c_str());
+    return &_accelerometerSettings;
 }
 
 DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
     spdlog::debug("SettingReader: loadDisplacementSensorSettings()");
-    this->displacementSensorSettings.load(this->getSetPath("DisplacementSensorSettings.xml").c_str());
-    return &this->displacementSensorSettings;
+    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.xml").c_str());
+    return &_displacementSensorSettings;
 }
 
 HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicationSettings() {
     spdlog::debug("SettingReader: loadHardpointMonitorApplicationSettings()");
-    this->hardpointMonitorApplicationSettings.load(
-            this->getBasePath("HardpointMonitorApplicationSettings.xml").c_str());
-    return &this->hardpointMonitorApplicationSettings;
+    _hardpointMonitorApplicationSettings.load(
+            _getBasePath("HardpointMonitorApplicationSettings.xml").c_str());
+    return &_hardpointMonitorApplicationSettings;
 }
 
 InterlockApplicationSettings* SettingReader::loadInterlockApplicationSettings() {
     spdlog::debug("SettingReader: loadInterlockApplicationSettings()");
-    this->interlockApplicationSettings.load(this->getBasePath("InterlockApplicationSettings.xml").c_str());
-    return &this->interlockApplicationSettings;
+    _interlockApplicationSettings.load(_getBasePath("InterlockApplicationSettings.xml").c_str());
+    return &_interlockApplicationSettings;
 }
 
 GyroSettings* SettingReader::loadGyroSettings() {
     spdlog::debug("SettingReader: loadGyroSettings()");
-    this->gyroSettings.load(this->getSetPath("GyroSettings.xml").c_str());
-    return &this->gyroSettings;
+    _gyroSettings.load(_getSetPath("GyroSettings.xml").c_str());
+    return &_gyroSettings;
 }
 
 ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSettings() {
     spdlog::debug("SettingReader: loadExpansionFPGAApplicationSettings()");
-    this->expansionFPGAApplicationSettings.load(
-            this->getBasePath("ExpansionFPGAApplicationSettings.xml").c_str());
-    return &this->expansionFPGAApplicationSettings;
+    _expansionFPGAApplicationSettings.load(
+            _getBasePath("ExpansionFPGAApplicationSettings.xml").c_str());
+    return &_expansionFPGAApplicationSettings;
 }
 
 PIDSettings* SettingReader::loadPIDSettings() {
     spdlog::debug("SettingReader: loadPIDSettings()");
-    this->pidSettings.load(this->getSetPath("PIDSettings.xml"));
-    return &this->pidSettings;
+    _pidSettings.load(_getSetPath("PIDSettings.xml"));
+    return &_pidSettings;
 }
 
 InclinometerSettings* SettingReader::loadInclinometerSettings() {
     spdlog::debug("SettingReader: loadInclinometerSettings()");
-    this->inclinometerSettings.load(this->getSetPath("InclinometerSettings.xml"));
-    return &this->inclinometerSettings;
+    _inclinometerSettings.load(_getSetPath("InclinometerSettings.xml"));
+    return &_inclinometerSettings;
 }
 
-std::string SettingReader::getBasePath(std::string file) { return this->rootPath + "/Base/" + file; }
+std::string SettingReader::_getBasePath(std::string file) { return _rootPath + "/Base/" + file; }
 
-std::string SettingReader::getSetPath(std::string file) {
-    return this->rootPath + "/Sets/" + this->currentSet + "/" + this->currentVersion + "/" + file;
+std::string SettingReader::_getSetPath(std::string file) {
+    return _rootPath + "/Sets/" + _currentSet + "/" + _currentVersion + "/" + file;
 }
 
 } /* namespace SS */

@@ -38,20 +38,20 @@ namespace SS {
 
 PowerController::PowerController(M1M3SSPublisher* publisher, SafetyController* safetyController) {
     spdlog::debug("PowerController: PowerController()");
-    this->publisher = publisher;
-    this->safetyController = safetyController;
+    _publisher = publisher;
+    _safetyController = safetyController;
 
-    this->powerSupplyData = this->publisher->getPowerSupplyData();
-    this->powerStatus = this->publisher->getEventPowerStatus();
-    this->powerSupplyStatus = this->publisher->getEventPowerSupplyStatus();
-    this->powerWarning = this->publisher->getEventPowerWarning();
+    _powerSupplyData = _publisher->getPowerSupplyData();
+    _powerStatus = _publisher->getEventPowerStatus();
+    _powerSupplyStatus = _publisher->getEventPowerSupplyStatus();
+    _powerWarning = _publisher->getEventPowerWarning();
 
-    this->lastPowerTimestamp = 0;
+    _lastPowerTimestamp = 0;
 
-    memset(this->powerSupplyData, 0, sizeof(MTM1M3_powerSupplyDataC));
-    memset(this->powerStatus, 0, sizeof(MTM1M3_logevent_powerStatusC));
-    memset(this->powerSupplyStatus, 0, sizeof(MTM1M3_logevent_powerSupplyStatusC));
-    memset(this->powerWarning, 0, sizeof(MTM1M3_logevent_powerWarningC));
+    memset(_powerSupplyData, 0, sizeof(MTM1M3_powerSupplyDataC));
+    memset(_powerStatus, 0, sizeof(MTM1M3_logevent_powerStatusC));
+    memset(_powerSupplyStatus, 0, sizeof(MTM1M3_logevent_powerSupplyStatusC));
+    memset(_powerWarning, 0, sizeof(MTM1M3_logevent_powerWarningC));
 }
 
 void PowerController::processData() {
@@ -60,175 +60,175 @@ void PowerController::processData() {
     spdlog::trace("PowerController: processData()");
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
 
-    if (fpgaData->PowerSupplyTimestamp != this->lastPowerTimestamp) {
-        this->lastPowerTimestamp = fpgaData->PowerSupplyTimestamp;
+    if (fpgaData->PowerSupplyTimestamp != _lastPowerTimestamp) {
+        _lastPowerTimestamp = fpgaData->PowerSupplyTimestamp;
         double timestamp = Timestamp::fromFPGA(fpgaData->PowerSupplyTimestamp);
-        this->powerStatus->timestamp = timestamp;
-        this->powerStatus->auxPowerNetworkAOutputOn = (fpgaData->PowerSupplyStates & 0x01) != 0;
-        this->powerStatus->auxPowerNetworkBOutputOn = (fpgaData->PowerSupplyStates & 0x02) != 0;
-        this->powerStatus->auxPowerNetworkCOutputOn = (fpgaData->PowerSupplyStates & 0x04) != 0;
-        this->powerStatus->auxPowerNetworkDOutputOn = (fpgaData->PowerSupplyStates & 0x08) != 0;
-        this->powerStatus->powerNetworkAOutputOn = (fpgaData->PowerSupplyStates & 0x10) != 0;
-        this->powerStatus->powerNetworkBOutputOn = (fpgaData->PowerSupplyStates & 0x20) != 0;
-        this->powerStatus->powerNetworkCOutputOn = (fpgaData->PowerSupplyStates & 0x40) != 0;
-        this->powerStatus->powerNetworkDOutputOn = (fpgaData->PowerSupplyStates & 0x80) != 0;
-        this->publisher->tryLogPowerStatus();
-        this->powerWarning->timestamp = timestamp;
-        this->powerWarning->auxPowerNetworkAOutputMismatch =
-                this->powerStatus->auxPowerNetworkACommandedOn != this->powerStatus->auxPowerNetworkAOutputOn;
-        this->powerWarning->auxPowerNetworkBOutputMismatch =
-                this->powerStatus->auxPowerNetworkBCommandedOn != this->powerStatus->auxPowerNetworkBOutputOn;
-        this->powerWarning->auxPowerNetworkCOutputMismatch =
-                this->powerStatus->auxPowerNetworkCCommandedOn != this->powerStatus->auxPowerNetworkCOutputOn;
-        this->powerWarning->auxPowerNetworkDOutputMismatch =
-                this->powerStatus->auxPowerNetworkDCommandedOn != this->powerStatus->auxPowerNetworkDOutputOn;
-        this->powerWarning->powerNetworkAOutputMismatch =
-                this->powerStatus->powerNetworkACommandedOn != this->powerStatus->powerNetworkAOutputOn;
-        this->powerWarning->powerNetworkBOutputMismatch =
-                this->powerStatus->powerNetworkBCommandedOn != this->powerStatus->powerNetworkBOutputOn;
-        this->powerWarning->powerNetworkCOutputMismatch =
-                this->powerStatus->powerNetworkCCommandedOn != this->powerStatus->powerNetworkCOutputOn;
-        this->powerWarning->powerNetworkDOutputMismatch =
-                this->powerStatus->powerNetworkDCommandedOn != this->powerStatus->powerNetworkDOutputOn;
-        this->publisher->tryLogPowerWarning();
+        _powerStatus->timestamp = timestamp;
+        _powerStatus->auxPowerNetworkAOutputOn = (fpgaData->PowerSupplyStates & 0x01) != 0;
+        _powerStatus->auxPowerNetworkBOutputOn = (fpgaData->PowerSupplyStates & 0x02) != 0;
+        _powerStatus->auxPowerNetworkCOutputOn = (fpgaData->PowerSupplyStates & 0x04) != 0;
+        _powerStatus->auxPowerNetworkDOutputOn = (fpgaData->PowerSupplyStates & 0x08) != 0;
+        _powerStatus->powerNetworkAOutputOn = (fpgaData->PowerSupplyStates & 0x10) != 0;
+        _powerStatus->powerNetworkBOutputOn = (fpgaData->PowerSupplyStates & 0x20) != 0;
+        _powerStatus->powerNetworkCOutputOn = (fpgaData->PowerSupplyStates & 0x40) != 0;
+        _powerStatus->powerNetworkDOutputOn = (fpgaData->PowerSupplyStates & 0x80) != 0;
+        _publisher->tryLogPowerStatus();
+        _powerWarning->timestamp = timestamp;
+        _powerWarning->auxPowerNetworkAOutputMismatch =
+                _powerStatus->auxPowerNetworkACommandedOn != _powerStatus->auxPowerNetworkAOutputOn;
+        _powerWarning->auxPowerNetworkBOutputMismatch =
+                _powerStatus->auxPowerNetworkBCommandedOn != _powerStatus->auxPowerNetworkBOutputOn;
+        _powerWarning->auxPowerNetworkCOutputMismatch =
+                _powerStatus->auxPowerNetworkCCommandedOn != _powerStatus->auxPowerNetworkCOutputOn;
+        _powerWarning->auxPowerNetworkDOutputMismatch =
+                _powerStatus->auxPowerNetworkDCommandedOn != _powerStatus->auxPowerNetworkDOutputOn;
+        _powerWarning->powerNetworkAOutputMismatch =
+                _powerStatus->powerNetworkACommandedOn != _powerStatus->powerNetworkAOutputOn;
+        _powerWarning->powerNetworkBOutputMismatch =
+                _powerStatus->powerNetworkBCommandedOn != _powerStatus->powerNetworkBOutputOn;
+        _powerWarning->powerNetworkCOutputMismatch =
+                _powerStatus->powerNetworkCCommandedOn != _powerStatus->powerNetworkCOutputOn;
+        _powerWarning->powerNetworkDOutputMismatch =
+                _powerStatus->powerNetworkDCommandedOn != _powerStatus->powerNetworkDOutputOn;
+        _publisher->tryLogPowerWarning();
     }
-    double timestamp = this->publisher->getTimestamp();
+    double timestamp = _publisher->getTimestamp();
     IExpansionFPGA::get().sample();
     float sample[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     IExpansionFPGA::get().readSlot1(sample);
-    this->powerSupplyData->timestamp = timestamp;
-    this->powerSupplyData->powerNetworkACurrent = sample[0];
-    this->powerSupplyData->powerNetworkBCurrent = sample[1];
-    this->powerSupplyData->powerNetworkCCurrent = sample[2];
-    this->powerSupplyData->powerNetworkDCurrent = sample[3];
-    this->powerSupplyData->lightPowerNetworkCurrent = sample[4];
-    this->powerSupplyData->controlsPowerNetworkCurrent = sample[5];
-    this->publisher->putPowerSupplyData();
+    _powerSupplyData->timestamp = timestamp;
+    _powerSupplyData->powerNetworkACurrent = sample[0];
+    _powerSupplyData->powerNetworkBCurrent = sample[1];
+    _powerSupplyData->powerNetworkCCurrent = sample[2];
+    _powerSupplyData->powerNetworkDCurrent = sample[3];
+    _powerSupplyData->lightPowerNetworkCurrent = sample[4];
+    _powerSupplyData->controlsPowerNetworkCurrent = sample[5];
+    _publisher->putPowerSupplyData();
 }
 
 void PowerController::setBothPowerNetworks(bool on) {
     spdlog::info("PowerController: setBothPowerNetworks({:d})", on);
-    this->powerStatus->powerNetworkACommandedOn = on;
-    this->powerStatus->powerNetworkBCommandedOn = on;
-    this->powerStatus->powerNetworkCCommandedOn = on;
-    this->powerStatus->powerNetworkDCommandedOn = on;
-    this->powerStatus->auxPowerNetworkACommandedOn = on;
-    this->powerStatus->auxPowerNetworkBCommandedOn = on;
-    this->powerStatus->auxPowerNetworkCCommandedOn = on;
-    this->powerStatus->auxPowerNetworkDCommandedOn = on;
+    _powerStatus->powerNetworkACommandedOn = on;
+    _powerStatus->powerNetworkBCommandedOn = on;
+    _powerStatus->powerNetworkCCommandedOn = on;
+    _powerStatus->powerNetworkDCommandedOn = on;
+    _powerStatus->auxPowerNetworkACommandedOn = on;
+    _powerStatus->auxPowerNetworkBCommandedOn = on;
+    _powerStatus->auxPowerNetworkCCommandedOn = on;
+    _powerStatus->auxPowerNetworkDCommandedOn = on;
     uint16_t buffer[16] = {
-            FPGAAddresses::DCPowerNetworkAOn,    (uint16_t)this->powerStatus->powerNetworkACommandedOn,
-            FPGAAddresses::DCPowerNetworkBOn,    (uint16_t)this->powerStatus->powerNetworkBCommandedOn,
-            FPGAAddresses::DCPowerNetworkCOn,    (uint16_t)this->powerStatus->powerNetworkCCommandedOn,
-            FPGAAddresses::DCPowerNetworkDOn,    (uint16_t)this->powerStatus->powerNetworkDCommandedOn,
-            FPGAAddresses::DCAuxPowerNetworkAOn, (uint16_t)this->powerStatus->auxPowerNetworkACommandedOn,
-            FPGAAddresses::DCAuxPowerNetworkBOn, (uint16_t)this->powerStatus->auxPowerNetworkBCommandedOn,
-            FPGAAddresses::DCAuxPowerNetworkCOn, (uint16_t)this->powerStatus->auxPowerNetworkCCommandedOn,
-            FPGAAddresses::DCAuxPowerNetworkDOn, (uint16_t)this->powerStatus->auxPowerNetworkDCommandedOn};
+            FPGAAddresses::DCPowerNetworkAOn,    (uint16_t)_powerStatus->powerNetworkACommandedOn,
+            FPGAAddresses::DCPowerNetworkBOn,    (uint16_t)_powerStatus->powerNetworkBCommandedOn,
+            FPGAAddresses::DCPowerNetworkCOn,    (uint16_t)_powerStatus->powerNetworkCCommandedOn,
+            FPGAAddresses::DCPowerNetworkDOn,    (uint16_t)_powerStatus->powerNetworkDCommandedOn,
+            FPGAAddresses::DCAuxPowerNetworkAOn, (uint16_t)_powerStatus->auxPowerNetworkACommandedOn,
+            FPGAAddresses::DCAuxPowerNetworkBOn, (uint16_t)_powerStatus->auxPowerNetworkBCommandedOn,
+            FPGAAddresses::DCAuxPowerNetworkCOn, (uint16_t)_powerStatus->auxPowerNetworkCCommandedOn,
+            FPGAAddresses::DCAuxPowerNetworkDOn, (uint16_t)_powerStatus->auxPowerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 16, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setAllPowerNetworks(bool on) {
     spdlog::info("PowerController: setAllPowerNetworks({:d})", on);
-    this->powerStatus->powerNetworkACommandedOn = on;
-    this->powerStatus->powerNetworkBCommandedOn = on;
-    this->powerStatus->powerNetworkCCommandedOn = on;
-    this->powerStatus->powerNetworkDCommandedOn = on;
+    _powerStatus->powerNetworkACommandedOn = on;
+    _powerStatus->powerNetworkBCommandedOn = on;
+    _powerStatus->powerNetworkCCommandedOn = on;
+    _powerStatus->powerNetworkDCommandedOn = on;
     uint16_t buffer[8] = {
-            FPGAAddresses::DCPowerNetworkAOn, (uint16_t)this->powerStatus->powerNetworkACommandedOn,
-            FPGAAddresses::DCPowerNetworkBOn, (uint16_t)this->powerStatus->powerNetworkBCommandedOn,
-            FPGAAddresses::DCPowerNetworkCOn, (uint16_t)this->powerStatus->powerNetworkCCommandedOn,
-            FPGAAddresses::DCPowerNetworkDOn, (uint16_t)this->powerStatus->powerNetworkDCommandedOn};
+            FPGAAddresses::DCPowerNetworkAOn, (uint16_t)_powerStatus->powerNetworkACommandedOn,
+            FPGAAddresses::DCPowerNetworkBOn, (uint16_t)_powerStatus->powerNetworkBCommandedOn,
+            FPGAAddresses::DCPowerNetworkCOn, (uint16_t)_powerStatus->powerNetworkCCommandedOn,
+            FPGAAddresses::DCPowerNetworkDOn, (uint16_t)_powerStatus->powerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 8, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkA(bool on) {
     spdlog::info("PowerController: setPowerNetworkA({:d})", on);
-    this->powerStatus->powerNetworkACommandedOn = on;
+    _powerStatus->powerNetworkACommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCPowerNetworkAOn,
-                          (uint16_t)this->powerStatus->powerNetworkACommandedOn};
+                          (uint16_t)_powerStatus->powerNetworkACommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkB(bool on) {
     spdlog::info("PowerController: setPowerNetworkB({:d})", on);
-    this->powerStatus->powerNetworkBCommandedOn = on;
+    _powerStatus->powerNetworkBCommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCPowerNetworkBOn,
-                          (uint16_t)this->powerStatus->powerNetworkBCommandedOn};
+                          (uint16_t)_powerStatus->powerNetworkBCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkC(bool on) {
     spdlog::info("PowerController: setPowerNetworkC({:d})", on);
-    this->powerStatus->powerNetworkCCommandedOn = on;
+    _powerStatus->powerNetworkCCommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCPowerNetworkCOn,
-                          (uint16_t)this->powerStatus->powerNetworkCCommandedOn};
+                          (uint16_t)_powerStatus->powerNetworkCCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkD(bool on) {
     spdlog::info("PowerController: setPowerNetworkD({:d})", on);
-    this->powerStatus->powerNetworkDCommandedOn = on;
+    _powerStatus->powerNetworkDCommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCPowerNetworkDOn,
-                          (uint16_t)this->powerStatus->powerNetworkDCommandedOn};
+                          (uint16_t)_powerStatus->powerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setAllAuxPowerNetworks(bool on) {
     spdlog::info("PowerController: setAllAuxPowerNetworks({:d})", on);
-    this->powerStatus->auxPowerNetworkACommandedOn = on;
-    this->powerStatus->auxPowerNetworkBCommandedOn = on;
-    this->powerStatus->auxPowerNetworkCCommandedOn = on;
-    this->powerStatus->auxPowerNetworkDCommandedOn = on;
+    _powerStatus->auxPowerNetworkACommandedOn = on;
+    _powerStatus->auxPowerNetworkBCommandedOn = on;
+    _powerStatus->auxPowerNetworkCCommandedOn = on;
+    _powerStatus->auxPowerNetworkDCommandedOn = on;
     uint16_t buffer[8] = {
-            FPGAAddresses::DCAuxPowerNetworkAOn, (uint16_t)this->powerStatus->auxPowerNetworkACommandedOn,
-            FPGAAddresses::DCAuxPowerNetworkBOn, (uint16_t)this->powerStatus->auxPowerNetworkBCommandedOn,
-            FPGAAddresses::DCAuxPowerNetworkCOn, (uint16_t)this->powerStatus->auxPowerNetworkCCommandedOn,
-            FPGAAddresses::DCAuxPowerNetworkDOn, (uint16_t)this->powerStatus->auxPowerNetworkDCommandedOn};
+            FPGAAddresses::DCAuxPowerNetworkAOn, (uint16_t)_powerStatus->auxPowerNetworkACommandedOn,
+            FPGAAddresses::DCAuxPowerNetworkBOn, (uint16_t)_powerStatus->auxPowerNetworkBCommandedOn,
+            FPGAAddresses::DCAuxPowerNetworkCOn, (uint16_t)_powerStatus->auxPowerNetworkCCommandedOn,
+            FPGAAddresses::DCAuxPowerNetworkDOn, (uint16_t)_powerStatus->auxPowerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 8, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkA(bool on) {
     spdlog::info("PowerController: setAuxPowerNetworkA({:d})", on);
-    this->powerStatus->auxPowerNetworkACommandedOn = on;
+    _powerStatus->auxPowerNetworkACommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCAuxPowerNetworkAOn,
-                          (uint16_t)this->powerStatus->auxPowerNetworkACommandedOn};
+                          (uint16_t)_powerStatus->auxPowerNetworkACommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkB(bool on) {
     spdlog::info("PowerController: setAuxPowerNetworkB({:d})", on);
-    this->powerStatus->auxPowerNetworkBCommandedOn = on;
+    _powerStatus->auxPowerNetworkBCommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCAuxPowerNetworkBOn,
-                          (uint16_t)this->powerStatus->auxPowerNetworkBCommandedOn};
+                          (uint16_t)_powerStatus->auxPowerNetworkBCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkC(bool on) {
     spdlog::info("PowerController: setAuxPowerNetworkC({:d})", on);
-    this->powerStatus->auxPowerNetworkCCommandedOn = on;
+    _powerStatus->auxPowerNetworkCCommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCAuxPowerNetworkCOn,
-                          (uint16_t)this->powerStatus->auxPowerNetworkCCommandedOn};
+                          (uint16_t)_powerStatus->auxPowerNetworkCCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkD(bool on) {
     spdlog::info("PowerController: setAuxPowerNetworkD({:d})", on);
-    this->powerStatus->auxPowerNetworkDCommandedOn = on;
+    _powerStatus->auxPowerNetworkDCommandedOn = on;
     uint16_t buffer[2] = {FPGAAddresses::DCAuxPowerNetworkDOn,
-                          (uint16_t)this->powerStatus->auxPowerNetworkDCommandedOn};
+                          (uint16_t)_powerStatus->auxPowerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    this->publisher->tryLogPowerStatus();
+    _publisher->tryLogPowerStatus();
 }
 
 } /* namespace SS */

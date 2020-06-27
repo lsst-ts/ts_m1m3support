@@ -31,23 +31,23 @@ namespace SS {
 
 ExitEngineeringCommand::ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher,
                                                int32_t commandID, MTM1M3_command_exitEngineeringC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void ExitEngineeringCommand::execute() { this->context->exitEngineering(this); }
+void ExitEngineeringCommand::execute() { _context->exitEngineering(this); }
 
 void ExitEngineeringCommand::ackInProgress() {
-    this->publisher->ackCommandexitEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandexitEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ExitEngineeringCommand::ackComplete() {
-    this->publisher->ackCommandexitEngineering(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandexitEngineering(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void ExitEngineeringCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandexitEngineering(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandexitEngineering(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

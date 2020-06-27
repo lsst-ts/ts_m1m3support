@@ -32,23 +32,23 @@ namespace SS {
 StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, M1M3SSPublisher* publisher,
                                                        int32_t commandID,
                                                        MTM1M3_command_stopHardpointMotionC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void StopHardpointMotionCommand::execute() { this->context->stopHardpointMotion(this); }
+void StopHardpointMotionCommand::execute() { _context->stopHardpointMotion(this); }
 
 void StopHardpointMotionCommand::ackInProgress() {
-    this->publisher->ackCommandstopHardpointMotion(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandstopHardpointMotion(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void StopHardpointMotionCommand::ackComplete() {
-    this->publisher->ackCommandstopHardpointMotion(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandstopHardpointMotion(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void StopHardpointMotionCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandstopHardpointMotion(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandstopHardpointMotion(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

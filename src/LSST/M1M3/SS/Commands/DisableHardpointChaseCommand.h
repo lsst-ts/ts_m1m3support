@@ -33,22 +33,22 @@ namespace M1M3 {
 namespace SS {
 
 class DisableHardpointChaseCommand : public Command {
-private:
-    Context* context;
-    M1M3SSPublisher* publisher;
-    MTM1M3_command_disableHardpointChaseC data;
-
 public:
     DisableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                  MTM1M3_command_disableHardpointChaseC* data);
 
-    MTM1M3_command_disableHardpointChaseC* getData() { return &this->data; }
+    MTM1M3_command_disableHardpointChaseC* getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
+    MTM1M3_command_disableHardpointChaseC _data;
 };
 
 } /* namespace SS */

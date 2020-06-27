@@ -34,17 +34,17 @@ namespace M1M3 {
 namespace SS {
 
 class TMAElevationSampleCommand : public Command {
-private:
-    Context* context;
-
-    MTMount_ElevationC data;
-
 public:
     TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data);
 
-    MTMount_ElevationC* getData() { return &this->data; }
+    MTMount_ElevationC* getData() { return &_data; }
 
     void execute();
+
+private:
+    Context* _context;
+
+    MTMount_ElevationC _data;
 };
 
 } /* namespace SS */

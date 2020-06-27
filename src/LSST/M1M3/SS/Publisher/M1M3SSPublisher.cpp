@@ -180,17 +180,17 @@ void M1M3SSPublisher::tryLogAirSupplyWarning() {
 
 void M1M3SSPublisher::logAppliedAberrationForces() {
     _m1m3SAL->logEvent_appliedAberrationForces(&_eventAppliedAberrationForces, 0);
-    this->previousEventAppliedAberrationForces = _eventAppliedAberrationForces;
+    _previousEventAppliedAberrationForces = _eventAppliedAberrationForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedAberrationForces() {
     bool changeDetected =
-            _eventAppliedAberrationForces.fz != this->previousEventAppliedAberrationForces.fz ||
-            _eventAppliedAberrationForces.mx != this->previousEventAppliedAberrationForces.mx ||
-            _eventAppliedAberrationForces.my != this->previousEventAppliedAberrationForces.my;
+            _eventAppliedAberrationForces.fz != _previousEventAppliedAberrationForces.fz ||
+            _eventAppliedAberrationForces.mx != _previousEventAppliedAberrationForces.mx ||
+            _eventAppliedAberrationForces.my != _previousEventAppliedAberrationForces.my;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventAppliedAberrationForces.zForces[i] !=
-                                                   this->previousEventAppliedAberrationForces.zForces[i];
+                                                   _previousEventAppliedAberrationForces.zForces[i];
     }
     if (changeDetected) {
         this->logAppliedAberrationForces();
@@ -199,25 +199,25 @@ void M1M3SSPublisher::tryLogAppliedAberrationForces() {
 
 void M1M3SSPublisher::logAppliedAccelerationForces() {
     _m1m3SAL->logEvent_appliedAccelerationForces(&_eventAppliedAccelerationForces, 0);
-    this->previousEventAppliedAccelerationForces = _eventAppliedAccelerationForces;
+    _previousEventAppliedAccelerationForces = _eventAppliedAccelerationForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedAccelerationForces() {
     bool changeDetected =
-            _eventAppliedAccelerationForces.fx != this->previousEventAppliedAccelerationForces.fx ||
-            _eventAppliedAccelerationForces.fy != this->previousEventAppliedAccelerationForces.fy ||
-            _eventAppliedAccelerationForces.fz != this->previousEventAppliedAccelerationForces.fz ||
-            _eventAppliedAccelerationForces.mx != this->previousEventAppliedAccelerationForces.mx ||
-            _eventAppliedAccelerationForces.my != this->previousEventAppliedAccelerationForces.my ||
-            _eventAppliedAccelerationForces.mz != this->previousEventAppliedAccelerationForces.mz;
+            _eventAppliedAccelerationForces.fx != _previousEventAppliedAccelerationForces.fx ||
+            _eventAppliedAccelerationForces.fy != _previousEventAppliedAccelerationForces.fy ||
+            _eventAppliedAccelerationForces.fz != _previousEventAppliedAccelerationForces.fz ||
+            _eventAppliedAccelerationForces.mx != _previousEventAppliedAccelerationForces.mx ||
+            _eventAppliedAccelerationForces.my != _previousEventAppliedAccelerationForces.my ||
+            _eventAppliedAccelerationForces.mz != _previousEventAppliedAccelerationForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventAppliedAccelerationForces.xForces[i] !=
-                                            this->previousEventAppliedAccelerationForces.xForces[i]) ||
+                                            _previousEventAppliedAccelerationForces.xForces[i]) ||
                          (i < 100 && _eventAppliedAccelerationForces.yForces[i] !=
-                                             this->previousEventAppliedAccelerationForces.yForces[i]) ||
+                                             _previousEventAppliedAccelerationForces.yForces[i]) ||
                          (_eventAppliedAccelerationForces.zForces[i] !=
-                          this->previousEventAppliedAccelerationForces.zForces[i]);
+                          _previousEventAppliedAccelerationForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedAccelerationForces();
@@ -226,17 +226,17 @@ void M1M3SSPublisher::tryLogAppliedAccelerationForces() {
 
 void M1M3SSPublisher::logAppliedActiveOpticForces() {
     _m1m3SAL->logEvent_appliedActiveOpticForces(&_eventAppliedActiveOpticForces, 0);
-    this->previousEventAppliedActiveOpticForces = _eventAppliedActiveOpticForces;
+    _previousEventAppliedActiveOpticForces = _eventAppliedActiveOpticForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedActiveOpticForces() {
     bool changeDetected =
-            _eventAppliedActiveOpticForces.fz != this->previousEventAppliedActiveOpticForces.fz ||
-            _eventAppliedActiveOpticForces.mx != this->previousEventAppliedActiveOpticForces.mx ||
-            _eventAppliedActiveOpticForces.my != this->previousEventAppliedActiveOpticForces.my;
+            _eventAppliedActiveOpticForces.fz != _previousEventAppliedActiveOpticForces.fz ||
+            _eventAppliedActiveOpticForces.mx != _previousEventAppliedActiveOpticForces.mx ||
+            _eventAppliedActiveOpticForces.my != _previousEventAppliedActiveOpticForces.my;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventAppliedActiveOpticForces.zForces[i] !=
-                                                   this->previousEventAppliedActiveOpticForces.zForces[i];
+                                                   _previousEventAppliedActiveOpticForces.zForces[i];
     }
     if (changeDetected) {
         this->logAppliedActiveOpticForces();
@@ -245,24 +245,24 @@ void M1M3SSPublisher::tryLogAppliedActiveOpticForces() {
 
 void M1M3SSPublisher::logAppliedAzimuthForces() {
     _m1m3SAL->logEvent_appliedAzimuthForces(&_eventAppliedAzimuthForces, 0);
-    this->previousEventAppliedAzimuthForces = _eventAppliedAzimuthForces;
+    _previousEventAppliedAzimuthForces = _eventAppliedAzimuthForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedAzimuthForces() {
-    bool changeDetected = _eventAppliedAzimuthForces.fx != this->previousEventAppliedAzimuthForces.fx ||
-                          _eventAppliedAzimuthForces.fy != this->previousEventAppliedAzimuthForces.fy ||
-                          _eventAppliedAzimuthForces.fz != this->previousEventAppliedAzimuthForces.fz ||
-                          _eventAppliedAzimuthForces.mx != this->previousEventAppliedAzimuthForces.mx ||
-                          _eventAppliedAzimuthForces.my != this->previousEventAppliedAzimuthForces.my ||
-                          _eventAppliedAzimuthForces.mz != this->previousEventAppliedAzimuthForces.mz;
+    bool changeDetected = _eventAppliedAzimuthForces.fx != _previousEventAppliedAzimuthForces.fx ||
+                          _eventAppliedAzimuthForces.fy != _previousEventAppliedAzimuthForces.fy ||
+                          _eventAppliedAzimuthForces.fz != _previousEventAppliedAzimuthForces.fz ||
+                          _eventAppliedAzimuthForces.mx != _previousEventAppliedAzimuthForces.mx ||
+                          _eventAppliedAzimuthForces.my != _previousEventAppliedAzimuthForces.my ||
+                          _eventAppliedAzimuthForces.mz != _previousEventAppliedAzimuthForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventAppliedAzimuthForces.xForces[i] !=
-                                            this->previousEventAppliedAzimuthForces.xForces[i]) ||
+                                            _previousEventAppliedAzimuthForces.xForces[i]) ||
                          (i < 100 && _eventAppliedAzimuthForces.yForces[i] !=
-                                             this->previousEventAppliedAzimuthForces.yForces[i]) ||
+                                             _previousEventAppliedAzimuthForces.yForces[i]) ||
                          (_eventAppliedAzimuthForces.zForces[i] !=
-                          this->previousEventAppliedAzimuthForces.zForces[i]);
+                          _previousEventAppliedAzimuthForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedAzimuthForces();
@@ -271,24 +271,24 @@ void M1M3SSPublisher::tryLogAppliedAzimuthForces() {
 
 void M1M3SSPublisher::logAppliedBalanceForces() {
     _m1m3SAL->logEvent_appliedBalanceForces(&_eventAppliedBalanceForces, 0);
-    this->previousEventAppliedBalanceForces = _eventAppliedBalanceForces;
+    _previousEventAppliedBalanceForces = _eventAppliedBalanceForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedBalanceForces() {
-    bool changeDetected = _eventAppliedBalanceForces.fx != this->previousEventAppliedBalanceForces.fx ||
-                          _eventAppliedBalanceForces.fy != this->previousEventAppliedBalanceForces.fy ||
-                          _eventAppliedBalanceForces.fz != this->previousEventAppliedBalanceForces.fz ||
-                          _eventAppliedBalanceForces.mx != this->previousEventAppliedBalanceForces.mx ||
-                          _eventAppliedBalanceForces.my != this->previousEventAppliedBalanceForces.my ||
-                          _eventAppliedBalanceForces.mz != this->previousEventAppliedBalanceForces.mz;
+    bool changeDetected = _eventAppliedBalanceForces.fx != _previousEventAppliedBalanceForces.fx ||
+                          _eventAppliedBalanceForces.fy != _previousEventAppliedBalanceForces.fy ||
+                          _eventAppliedBalanceForces.fz != _previousEventAppliedBalanceForces.fz ||
+                          _eventAppliedBalanceForces.mx != _previousEventAppliedBalanceForces.mx ||
+                          _eventAppliedBalanceForces.my != _previousEventAppliedBalanceForces.my ||
+                          _eventAppliedBalanceForces.mz != _previousEventAppliedBalanceForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventAppliedBalanceForces.xForces[i] !=
-                                            this->previousEventAppliedBalanceForces.xForces[i]) ||
+                                            _previousEventAppliedBalanceForces.xForces[i]) ||
                          (i < 100 && _eventAppliedBalanceForces.yForces[i] !=
-                                             this->previousEventAppliedBalanceForces.yForces[i]) ||
+                                             _previousEventAppliedBalanceForces.yForces[i]) ||
                          (_eventAppliedBalanceForces.zForces[i] !=
-                          this->previousEventAppliedBalanceForces.zForces[i]);
+                          _previousEventAppliedBalanceForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedBalanceForces();
@@ -297,7 +297,7 @@ void M1M3SSPublisher::tryLogAppliedBalanceForces() {
 
 void M1M3SSPublisher::logAppliedCylinderForces() {
     _m1m3SAL->logEvent_appliedCylinderForces(&_eventAppliedCylinderForces, 0);
-    this->previousEventAppliedCylinderForces = _eventAppliedCylinderForces;
+    _previousEventAppliedCylinderForces = _eventAppliedCylinderForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedCylinderForces() {
@@ -306,9 +306,9 @@ void M1M3SSPublisher::tryLogAppliedCylinderForces() {
         changeDetected =
                 changeDetected ||
                 (i < 112 && _eventAppliedCylinderForces.secondaryCylinderForces[i] !=
-                                    this->previousEventAppliedCylinderForces.secondaryCylinderForces[i]) ||
+                                    _previousEventAppliedCylinderForces.secondaryCylinderForces[i]) ||
                 (_eventAppliedCylinderForces.primaryCylinderForces[i] !=
-                 this->previousEventAppliedCylinderForces.primaryCylinderForces[i]);
+                 _previousEventAppliedCylinderForces.primaryCylinderForces[i]);
     }
     if (changeDetected) {
         this->logAppliedCylinderForces();
@@ -317,25 +317,25 @@ void M1M3SSPublisher::tryLogAppliedCylinderForces() {
 
 void M1M3SSPublisher::logAppliedElevationForces() {
     _m1m3SAL->logEvent_appliedElevationForces(&this->eventAppliedElevationForces, 0);
-    this->previousEventAppliedElevationForces = this->eventAppliedElevationForces;
+    _previousEventAppliedElevationForces = this->eventAppliedElevationForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedElevationForces() {
     bool changeDetected =
-            this->eventAppliedElevationForces.fx != this->previousEventAppliedElevationForces.fx ||
-            this->eventAppliedElevationForces.fy != this->previousEventAppliedElevationForces.fy ||
-            this->eventAppliedElevationForces.fz != this->previousEventAppliedElevationForces.fz ||
-            this->eventAppliedElevationForces.mx != this->previousEventAppliedElevationForces.mx ||
-            this->eventAppliedElevationForces.my != this->previousEventAppliedElevationForces.my ||
-            this->eventAppliedElevationForces.mz != this->previousEventAppliedElevationForces.mz;
+            this->eventAppliedElevationForces.fx != _previousEventAppliedElevationForces.fx ||
+            this->eventAppliedElevationForces.fy != _previousEventAppliedElevationForces.fy ||
+            this->eventAppliedElevationForces.fz != _previousEventAppliedElevationForces.fz ||
+            this->eventAppliedElevationForces.mx != _previousEventAppliedElevationForces.mx ||
+            this->eventAppliedElevationForces.my != _previousEventAppliedElevationForces.my ||
+            this->eventAppliedElevationForces.mz != _previousEventAppliedElevationForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && this->eventAppliedElevationForces.xForces[i] !=
-                                            this->previousEventAppliedElevationForces.xForces[i]) ||
+                                            _previousEventAppliedElevationForces.xForces[i]) ||
                          (i < 100 && this->eventAppliedElevationForces.yForces[i] !=
-                                             this->previousEventAppliedElevationForces.yForces[i]) ||
+                                             _previousEventAppliedElevationForces.yForces[i]) ||
                          (this->eventAppliedElevationForces.zForces[i] !=
-                          this->previousEventAppliedElevationForces.zForces[i]);
+                          _previousEventAppliedElevationForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedElevationForces();
@@ -344,23 +344,23 @@ void M1M3SSPublisher::tryLogAppliedElevationForces() {
 
 void M1M3SSPublisher::logAppliedForces() {
     _m1m3SAL->logEvent_appliedForces(&_eventAppliedForces, 0);
-    this->previousEventAppliedForces = _eventAppliedForces;
+    _previousEventAppliedForces = _eventAppliedForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedForces() {
-    bool changeDetected = _eventAppliedForces.fx != this->previousEventAppliedForces.fx ||
-                          _eventAppliedForces.fy != this->previousEventAppliedForces.fy ||
-                          _eventAppliedForces.fz != this->previousEventAppliedForces.fz ||
-                          _eventAppliedForces.mx != this->previousEventAppliedForces.mx ||
-                          _eventAppliedForces.my != this->previousEventAppliedForces.my ||
-                          _eventAppliedForces.mz != this->previousEventAppliedForces.mz;
+    bool changeDetected = _eventAppliedForces.fx != _previousEventAppliedForces.fx ||
+                          _eventAppliedForces.fy != _previousEventAppliedForces.fy ||
+                          _eventAppliedForces.fz != _previousEventAppliedForces.fz ||
+                          _eventAppliedForces.mx != _previousEventAppliedForces.mx ||
+                          _eventAppliedForces.my != _previousEventAppliedForces.my ||
+                          _eventAppliedForces.mz != _previousEventAppliedForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventAppliedForces.xForces[i] !=
-                                            this->previousEventAppliedForces.xForces[i]) ||
+                                            _previousEventAppliedForces.xForces[i]) ||
                          (i < 100 && _eventAppliedForces.yForces[i] !=
-                                             this->previousEventAppliedForces.yForces[i]) ||
-                         (_eventAppliedForces.zForces[i] != this->previousEventAppliedForces.zForces[i]);
+                                             _previousEventAppliedForces.yForces[i]) ||
+                         (_eventAppliedForces.zForces[i] != _previousEventAppliedForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedForces();
@@ -369,53 +369,53 @@ void M1M3SSPublisher::tryLogAppliedForces() {
 
 void M1M3SSPublisher::logAppliedOffsetForces() {
     _m1m3SAL->logEvent_appliedOffsetForces(&_eventAppliedOffsetForces, 0);
-    this->previousEventAppliedOffsetForces = _eventAppliedOffsetForces;
+    _previousEventAppliedOffsetForces = _eventAppliedOffsetForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedOffsetForces() {
-    bool changeDetected = _eventAppliedOffsetForces.fx != this->previousEventAppliedOffsetForces.fx ||
-                          _eventAppliedOffsetForces.fy != this->previousEventAppliedOffsetForces.fy ||
-                          _eventAppliedOffsetForces.fz != this->previousEventAppliedOffsetForces.fz ||
-                          _eventAppliedOffsetForces.mx != this->previousEventAppliedOffsetForces.mx ||
-                          _eventAppliedOffsetForces.my != this->previousEventAppliedOffsetForces.my ||
-                          _eventAppliedOffsetForces.mz != this->previousEventAppliedOffsetForces.mz;
+    bool changeDetected = _eventAppliedOffsetForces.fx != _previousEventAppliedOffsetForces.fx ||
+                          _eventAppliedOffsetForces.fy != _previousEventAppliedOffsetForces.fy ||
+                          _eventAppliedOffsetForces.fz != _previousEventAppliedOffsetForces.fz ||
+                          _eventAppliedOffsetForces.mx != _previousEventAppliedOffsetForces.mx ||
+                          _eventAppliedOffsetForces.my != _previousEventAppliedOffsetForces.my ||
+                          _eventAppliedOffsetForces.mz != _previousEventAppliedOffsetForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
-                         (i < 12 && _eventAppliedOffsetForces.xForces[i] != this->previousEventAppliedOffsetForces.xForces[i]) || (i < 100 && _eventAppliedOffsetForces.yForces[i] != this->previousEventAppliedOffsetForces.yForces[i]) || (_eventAppliedOffsetForces.zForces[i] != this->previousEventAppliedOffsetForces.zForces[i]); } if (changeDetected) {
+                         (i < 12 && _eventAppliedOffsetForces.xForces[i] != _previousEventAppliedOffsetForces.xForces[i]) || (i < 100 && _eventAppliedOffsetForces.yForces[i] != _previousEventAppliedOffsetForces.yForces[i]) || (_eventAppliedOffsetForces.zForces[i] != _previousEventAppliedOffsetForces.zForces[i]); } if (changeDetected) {
         this->logAppliedOffsetForces();
     } }
 
 void M1M3SSPublisher::logAppliedSettingsMatchStart() { _m1m3SAL->logEvent_appliedSettingsMatchStart(&_eventAppliedSettingsMatchStart, 0);
-    this->previousEventAppliedSettingsMatchStart = _eventAppliedSettingsMatchStart;
+    _previousEventAppliedSettingsMatchStart = _eventAppliedSettingsMatchStart;
 }
 
 void M1M3SSPublisher::tryLogAppliedSettingsMatchStart() {
     if (_eventAppliedSettingsMatchStart.appliedSettingsMatchStartIsTrue !=
-        this->previousEventAppliedSettingsMatchStart.appliedSettingsMatchStartIsTrue) {
+        _previousEventAppliedSettingsMatchStart.appliedSettingsMatchStartIsTrue) {
         this->logAppliedSettingsMatchStart();
     }
 }
 
 void M1M3SSPublisher::logAppliedStaticForces() {
     _m1m3SAL->logEvent_appliedStaticForces(&this->eventAppliedStaticForces, 0);
-    this->previousEventAppliedStaticForces = this->eventAppliedStaticForces;
+    _previousEventAppliedStaticForces = this->eventAppliedStaticForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedStaticForces() {
-    bool changeDetected = this->eventAppliedStaticForces.fx != this->previousEventAppliedStaticForces.fx ||
-                          this->eventAppliedStaticForces.fy != this->previousEventAppliedStaticForces.fy ||
-                          this->eventAppliedStaticForces.fz != this->previousEventAppliedStaticForces.fz ||
-                          this->eventAppliedStaticForces.mx != this->previousEventAppliedStaticForces.mx ||
-                          this->eventAppliedStaticForces.my != this->previousEventAppliedStaticForces.my ||
-                          this->eventAppliedStaticForces.mz != this->previousEventAppliedStaticForces.mz;
+    bool changeDetected = this->eventAppliedStaticForces.fx != _previousEventAppliedStaticForces.fx ||
+                          this->eventAppliedStaticForces.fy != _previousEventAppliedStaticForces.fy ||
+                          this->eventAppliedStaticForces.fz != _previousEventAppliedStaticForces.fz ||
+                          this->eventAppliedStaticForces.mx != _previousEventAppliedStaticForces.mx ||
+                          this->eventAppliedStaticForces.my != _previousEventAppliedStaticForces.my ||
+                          this->eventAppliedStaticForces.mz != _previousEventAppliedStaticForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && this->eventAppliedStaticForces.xForces[i] !=
-                                            this->previousEventAppliedStaticForces.xForces[i]) ||
+                                            _previousEventAppliedStaticForces.xForces[i]) ||
                          (i < 100 && this->eventAppliedStaticForces.yForces[i] !=
-                                             this->previousEventAppliedStaticForces.yForces[i]) ||
+                                             _previousEventAppliedStaticForces.yForces[i]) ||
                          (this->eventAppliedStaticForces.zForces[i] !=
-                          this->previousEventAppliedStaticForces.zForces[i]);
+                          _previousEventAppliedStaticForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedStaticForces();
@@ -424,23 +424,21 @@ void M1M3SSPublisher::tryLogAppliedStaticForces() {
 
 void M1M3SSPublisher::logAppliedThermalForces() {
     _m1m3SAL->logEvent_appliedThermalForces(&_eventAppliedThermalForces, 0);
-    this->previousEventAppliedThermalForces = _eventAppliedThermalForces;
+    _previousEventAppliedThermalForces = _eventAppliedThermalForces;
 }
 
-void M1M3SSPublisher::tryLogAppliedThermalForces() { bool changeDetected = _eventAppliedThermalForces.fx != this->previousEventAppliedThermalForces.fx ||
-                          _eventAppliedThermalForces.fy != this->previousEventAppliedThermalForces.fy ||
-                          _eventAppliedThermalForces.fz != this->previousEventAppliedThermalForces.fz ||
-                          _eventAppliedThermalForces.mx != this->previousEventAppliedThermalForces.mx ||
-                          _eventAppliedThermalForces.my != this->previousEventAppliedThermalForces.my ||
-                          _eventAppliedThermalForces.mz != this->previousEventAppliedThermalForces.mz;
+void M1M3SSPublisher::tryLogAppliedThermalForces() { bool changeDetected = _eventAppliedThermalForces.fx != _previousEventAppliedThermalForces.fx ||
+                          _eventAppliedThermalForces.fy != _previousEventAppliedThermalForces.fy ||
+                          _eventAppliedThermalForces.fz != _previousEventAppliedThermalForces.fz ||
+                          _eventAppliedThermalForces.mx != _previousEventAppliedThermalForces.mx || _eventAppliedThermalForces.my != _previousEventAppliedThermalForces.my ||
+                          _eventAppliedThermalForces.mz != _previousEventAppliedThermalForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventAppliedThermalForces.xForces[i] !=
-                                            this->previousEventAppliedThermalForces.xForces[i]) ||
-                         (i < 100 && _eventAppliedThermalForces.yForces[i] !=
-                                             this->previousEventAppliedThermalForces.yForces[i]) ||
+                                            _previousEventAppliedThermalForces.xForces[i]) || (i < 100 && _eventAppliedThermalForces.yForces[i] !=
+                                             _previousEventAppliedThermalForces.yForces[i]) ||
                          (_eventAppliedThermalForces.zForces[i] !=
-                          this->previousEventAppliedThermalForces.zForces[i]);
+                          _previousEventAppliedThermalForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedThermalForces();
@@ -449,25 +447,25 @@ void M1M3SSPublisher::tryLogAppliedThermalForces() { bool changeDetected = _even
 
 void M1M3SSPublisher::logAppliedVelocityForces() {
     _m1m3SAL->logEvent_appliedVelocityForces(&_eventAppliedVelocityForces, 0);
-    this->previousEventAppliedVelocityForces = _eventAppliedVelocityForces;
+    _previousEventAppliedVelocityForces = _eventAppliedVelocityForces;
 }
 
 void M1M3SSPublisher::tryLogAppliedVelocityForces() {
     bool changeDetected =
-            _eventAppliedVelocityForces.fx != this->previousEventAppliedVelocityForces.fx ||
-            _eventAppliedVelocityForces.fy != this->previousEventAppliedVelocityForces.fy ||
-            _eventAppliedVelocityForces.fz != this->previousEventAppliedVelocityForces.fz ||
-            _eventAppliedVelocityForces.mx != this->previousEventAppliedVelocityForces.mx ||
-            _eventAppliedVelocityForces.my != this->previousEventAppliedVelocityForces.my ||
-            _eventAppliedVelocityForces.mz != this->previousEventAppliedVelocityForces.mz;
+            _eventAppliedVelocityForces.fx != _previousEventAppliedVelocityForces.fx ||
+            _eventAppliedVelocityForces.fy != _previousEventAppliedVelocityForces.fy ||
+            _eventAppliedVelocityForces.fz != _previousEventAppliedVelocityForces.fz ||
+            _eventAppliedVelocityForces.mx != _previousEventAppliedVelocityForces.mx ||
+            _eventAppliedVelocityForces.my != _previousEventAppliedVelocityForces.my ||
+            _eventAppliedVelocityForces.mz != _previousEventAppliedVelocityForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventAppliedVelocityForces.xForces[i] !=
-                                            this->previousEventAppliedVelocityForces.xForces[i]) ||
+                                            _previousEventAppliedVelocityForces.xForces[i]) ||
                          (i < 100 && _eventAppliedVelocityForces.yForces[i] !=
-                                             this->previousEventAppliedVelocityForces.yForces[i]) ||
+                                             _previousEventAppliedVelocityForces.yForces[i]) ||
                          (_eventAppliedVelocityForces.zForces[i] !=
-                          this->previousEventAppliedVelocityForces.zForces[i]);
+                          _previousEventAppliedVelocityForces.zForces[i]);
     }
     if (changeDetected) {
         this->logAppliedVelocityForces();
@@ -476,15 +474,15 @@ void M1M3SSPublisher::tryLogAppliedVelocityForces() {
 
 void M1M3SSPublisher::logCellLightStatus() {
     _m1m3SAL->logEvent_cellLightStatus(&_eventCellLightStatus, 0);
-    this->previousEventCellLightStatus = _eventCellLightStatus;
+    _previousEventCellLightStatus = _eventCellLightStatus;
 }
 
 void M1M3SSPublisher::tryLogCellLightStatus() {
     if (_eventCellLightStatus.cellLightsCommandedOn !=
-                this->previousEventCellLightStatus.cellLightsCommandedOn ||
+                _previousEventCellLightStatus.cellLightsCommandedOn ||
         _eventCellLightStatus.cellLightsOutputOn !=
-                this->previousEventCellLightStatus.cellLightsOutputOn ||
-        _eventCellLightStatus.cellLightsOn != this->previousEventCellLightStatus.cellLightsOn) {
+                _previousEventCellLightStatus.cellLightsOutputOn ||
+        _eventCellLightStatus.cellLightsOn != _previousEventCellLightStatus.cellLightsOn) {
         this->logCellLightStatus();
     }
 }
@@ -493,28 +491,28 @@ void M1M3SSPublisher::logCellLightWarning() {
     _eventCellLightWarning.anyWarning = _eventCellLightWarning.cellLightsOutputMismatch ||
                                              _eventCellLightWarning.cellLightsSensorMismatch;
     _m1m3SAL->logEvent_cellLightWarning(&_eventCellLightWarning, 0);
-    this->previousEventCellLightWarning = _eventCellLightWarning;
+    _previousEventCellLightWarning = _eventCellLightWarning;
 }
 
 void M1M3SSPublisher::tryLogCellLightWarning() {
     if (_eventCellLightWarning.cellLightsOutputMismatch !=
-                this->previousEventCellLightWarning.cellLightsOutputMismatch ||
+                _previousEventCellLightWarning.cellLightsOutputMismatch ||
         _eventCellLightWarning.cellLightsSensorMismatch !=
-                this->previousEventCellLightWarning.cellLightsSensorMismatch) {
+                _previousEventCellLightWarning.cellLightsSensorMismatch) {
         this->logCellLightWarning();
     }
 }
 
 void M1M3SSPublisher::logCommandRejectionWarning() {
     _m1m3SAL->logEvent_commandRejectionWarning(&_eventCommandRejectionWarning, 0);
-    this->previousEventCommandRejectionWarning = _eventCommandRejectionWarning;
+    _previousEventCommandRejectionWarning = _eventCommandRejectionWarning;
 }
 
 void M1M3SSPublisher::tryLogCommandRejectionWarning() {
     if (_eventCommandRejectionWarning.command.compare(
-                this->previousEventCommandRejectionWarning.command) != 0 ||
+                _previousEventCommandRejectionWarning.command) != 0 ||
         _eventCommandRejectionWarning.reason.compare(
-                this->previousEventCommandRejectionWarning.reason) != 0) {
+                _previousEventCommandRejectionWarning.reason) != 0) {
         this->logCommandRejectionWarning();
     }
 }
@@ -535,11 +533,11 @@ void M1M3SSPublisher::tryLogCommandRejectionWarning(std::string command, std::st
 
 void M1M3SSPublisher::logDetailedState() {
     _m1m3SAL->logEvent_detailedState(&_eventDetailedState, 0);
-    this->previousEventDetailedState = _eventDetailedState;
+    _previousEventDetailedState = _eventDetailedState;
 }
 
 void M1M3SSPublisher::tryLogDetailedState() {
-    if (_eventDetailedState.detailedState != this->previousEventDetailedState.detailedState) {
+    if (_eventDetailedState.detailedState != _previousEventDetailedState.detailedState) {
         this->logDetailedState();
     }
 }
@@ -561,49 +559,49 @@ void M1M3SSPublisher::logDisplacementSensorWarning() {
             _eventDisplacementSensorWarning.unknownCommand ||
             _eventDisplacementSensorWarning.unknownProblem;
     _m1m3SAL->logEvent_displacementSensorWarning(&_eventDisplacementSensorWarning, 0);
-    this->previousEventDisplacementSensorWarning = _eventDisplacementSensorWarning;
+    _previousEventDisplacementSensorWarning = _eventDisplacementSensorWarning;
 }
 
 void M1M3SSPublisher::tryLogDisplacementSensorWarning() {
     if (_eventDisplacementSensorWarning.sensorReportsInvalidCommand !=
-                this->previousEventDisplacementSensorWarning.sensorReportsInvalidCommand ||
+                _previousEventDisplacementSensorWarning.sensorReportsInvalidCommand ||
         _eventDisplacementSensorWarning.sensorReportsCommunicationTimeoutError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsCommunicationTimeoutError ||
+                _previousEventDisplacementSensorWarning.sensorReportsCommunicationTimeoutError ||
         _eventDisplacementSensorWarning.sensorReportsDataLengthError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsDataLengthError ||
+                _previousEventDisplacementSensorWarning.sensorReportsDataLengthError ||
         _eventDisplacementSensorWarning.sensorReportsNumberOfParametersError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsNumberOfParametersError ||
+                _previousEventDisplacementSensorWarning.sensorReportsNumberOfParametersError ||
         _eventDisplacementSensorWarning.sensorReportsParameterError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsParameterError ||
+                _previousEventDisplacementSensorWarning.sensorReportsParameterError ||
         _eventDisplacementSensorWarning.sensorReportsCommunicationError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsCommunicationError ||
+                _previousEventDisplacementSensorWarning.sensorReportsCommunicationError ||
         _eventDisplacementSensorWarning.sensorReportsIDNumberError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsIDNumberError ||
+                _previousEventDisplacementSensorWarning.sensorReportsIDNumberError ||
         _eventDisplacementSensorWarning.sensorReportsExpansionLineError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsExpansionLineError ||
+                _previousEventDisplacementSensorWarning.sensorReportsExpansionLineError ||
         _eventDisplacementSensorWarning.sensorReportsWriteControlError !=
-                this->previousEventDisplacementSensorWarning.sensorReportsWriteControlError ||
+                _previousEventDisplacementSensorWarning.sensorReportsWriteControlError ||
         _eventDisplacementSensorWarning.responseTimeout !=
-                this->previousEventDisplacementSensorWarning.responseTimeout ||
+                _previousEventDisplacementSensorWarning.responseTimeout ||
         _eventDisplacementSensorWarning.invalidLength !=
-                this->previousEventDisplacementSensorWarning.invalidLength ||
+                _previousEventDisplacementSensorWarning.invalidLength ||
         _eventDisplacementSensorWarning.invalidResponse !=
-                this->previousEventDisplacementSensorWarning.invalidResponse ||
+                _previousEventDisplacementSensorWarning.invalidResponse ||
         _eventDisplacementSensorWarning.unknownCommand !=
-                this->previousEventDisplacementSensorWarning.unknownCommand ||
+                _previousEventDisplacementSensorWarning.unknownCommand ||
         _eventDisplacementSensorWarning.unknownProblem !=
-                this->previousEventDisplacementSensorWarning.unknownProblem) {
+                _previousEventDisplacementSensorWarning.unknownProblem) {
         this->logDisplacementSensorWarning();
     }
 }
 
 void M1M3SSPublisher::logErrorCode() {
     _m1m3SAL->logEvent_errorCode(&_eventErrorCode, 0);
-    this->previousEventErrorCode = _eventErrorCode;
+    _previousEventErrorCode = _eventErrorCode;
 }
 
 void M1M3SSPublisher::tryLogErrorCode() {
-    if (_eventErrorCode.errorCode != this->previousEventErrorCode.errorCode) {
+    if (_eventErrorCode.errorCode != _previousEventErrorCode.errorCode) {
         this->logErrorCode();
     }
 }
@@ -633,7 +631,7 @@ void M1M3SSPublisher::logForceActuatorForceWarning() {
             _eventForceActuatorForceWarning.anyPrimaryAxisFollowingErrorWarning ||
             _eventForceActuatorForceWarning.anySecondaryAxisFollowingErrorWarning;
     _m1m3SAL->logEvent_forceActuatorForceWarning(&_eventForceActuatorForceWarning, 0);
-    this->previousEventForceActuatorForceWarning = _eventForceActuatorForceWarning;
+    _previousEventForceActuatorForceWarning = _eventForceActuatorForceWarning;
 }
 
 void M1M3SSPublisher::tryLogForceActuatorForceWarning() {
@@ -642,13 +640,13 @@ void M1M3SSPublisher::tryLogForceActuatorForceWarning() {
         changeDetected =
                 changeDetected ||
                 _eventForceActuatorForceWarning.primaryAxisMeasuredForceWarning[i] !=
-                        this->previousEventForceActuatorForceWarning.primaryAxisMeasuredForceWarning[i] ||
+                        _previousEventForceActuatorForceWarning.primaryAxisMeasuredForceWarning[i] ||
                 _eventForceActuatorForceWarning.secondaryAxisMeasuredForceWarning[i] !=
-                        this->previousEventForceActuatorForceWarning.secondaryAxisMeasuredForceWarning[i] ||
+                        _previousEventForceActuatorForceWarning.secondaryAxisMeasuredForceWarning[i] ||
                 _eventForceActuatorForceWarning.primaryAxisFollowingErrorWarning[i] !=
-                        this->previousEventForceActuatorForceWarning.primaryAxisFollowingErrorWarning[i] ||
+                        _previousEventForceActuatorForceWarning.primaryAxisFollowingErrorWarning[i] ||
                 _eventForceActuatorForceWarning.secondaryAxisFollowingErrorWarning[i] !=
-                        this->previousEventForceActuatorForceWarning.secondaryAxisFollowingErrorWarning[i];
+                        _previousEventForceActuatorForceWarning.secondaryAxisFollowingErrorWarning[i];
     }
     if (changeDetected) {
         this->logForceActuatorForceWarning();
@@ -657,7 +655,7 @@ void M1M3SSPublisher::tryLogForceActuatorForceWarning() {
 
 void M1M3SSPublisher::logForceActuatorInfo() {
     _m1m3SAL->logEvent_forceActuatorInfo(&_eventForceActuatorInfo, 0);
-    this->previousEventForceActuatorInfo = _eventForceActuatorInfo;
+    _previousEventForceActuatorInfo = _eventForceActuatorInfo;
 }
 
 void M1M3SSPublisher::tryLogForceActuatorInfo() {
@@ -666,79 +664,79 @@ void M1M3SSPublisher::tryLogForceActuatorInfo() {
         changeDetected =
                 changeDetected ||
                 _eventForceActuatorInfo.referenceId[i] !=
-                        this->previousEventForceActuatorInfo.referenceId[i] ||
+                        _previousEventForceActuatorInfo.referenceId[i] ||
                 _eventForceActuatorInfo.xDataReferenceId[i] !=
-                        this->previousEventForceActuatorInfo.xDataReferenceId[i] ||
+                        _previousEventForceActuatorInfo.xDataReferenceId[i] ||
                 _eventForceActuatorInfo.yDataReferenceId[i] !=
-                        this->previousEventForceActuatorInfo.yDataReferenceId[i] ||
+                        _previousEventForceActuatorInfo.yDataReferenceId[i] ||
                 _eventForceActuatorInfo.zDataReferenceId[i] !=
-                        this->previousEventForceActuatorInfo.zDataReferenceId[i] ||
+                        _previousEventForceActuatorInfo.zDataReferenceId[i] ||
                 _eventForceActuatorInfo.actuatorType[i] !=
-                        this->previousEventForceActuatorInfo.actuatorType[i] ||
+                        _previousEventForceActuatorInfo.actuatorType[i] ||
                 _eventForceActuatorInfo.actuatorOrientation[i] !=
-                        this->previousEventForceActuatorInfo.actuatorOrientation[i] ||
+                        _previousEventForceActuatorInfo.actuatorOrientation[i] ||
                 _eventForceActuatorInfo.modbusSubnet[i] !=
-                        this->previousEventForceActuatorInfo.modbusSubnet[i] ||
+                        _previousEventForceActuatorInfo.modbusSubnet[i] ||
                 _eventForceActuatorInfo.modbusAddress[i] !=
-                        this->previousEventForceActuatorInfo.modbusAddress[i] ||
+                        _previousEventForceActuatorInfo.modbusAddress[i] ||
                 _eventForceActuatorInfo.xPosition[i] !=
-                        this->previousEventForceActuatorInfo.xPosition[i] ||
+                        _previousEventForceActuatorInfo.xPosition[i] ||
                 _eventForceActuatorInfo.yPosition[i] !=
-                        this->previousEventForceActuatorInfo.yPosition[i] ||
+                        _previousEventForceActuatorInfo.yPosition[i] ||
                 _eventForceActuatorInfo.zPosition[i] !=
-                        this->previousEventForceActuatorInfo.zPosition[i] ||
+                        _previousEventForceActuatorInfo.zPosition[i] ||
                 _eventForceActuatorInfo.ilcUniqueId[i] !=
-                        this->previousEventForceActuatorInfo.ilcUniqueId[i] ||
+                        _previousEventForceActuatorInfo.ilcUniqueId[i] ||
                 _eventForceActuatorInfo.ilcApplicationType[i] !=
-                        this->previousEventForceActuatorInfo.ilcApplicationType[i] ||
+                        _previousEventForceActuatorInfo.ilcApplicationType[i] ||
                 _eventForceActuatorInfo.networkNodeType[i] !=
-                        this->previousEventForceActuatorInfo.networkNodeType[i] ||
+                        _previousEventForceActuatorInfo.networkNodeType[i] ||
                 _eventForceActuatorInfo.ilcSelectedOptions[i] !=
-                        this->previousEventForceActuatorInfo.ilcSelectedOptions[i] ||
+                        _previousEventForceActuatorInfo.ilcSelectedOptions[i] ||
                 _eventForceActuatorInfo.networkNodeOptions[i] !=
-                        this->previousEventForceActuatorInfo.networkNodeOptions[i] ||
+                        _previousEventForceActuatorInfo.networkNodeOptions[i] ||
                 _eventForceActuatorInfo.majorRevision[i] !=
-                        this->previousEventForceActuatorInfo.majorRevision[i] ||
+                        _previousEventForceActuatorInfo.majorRevision[i] ||
                 _eventForceActuatorInfo.minorRevision[i] !=
-                        this->previousEventForceActuatorInfo.minorRevision[i] ||
+                        _previousEventForceActuatorInfo.minorRevision[i] ||
                 _eventForceActuatorInfo.adcScanRate[i] !=
-                        this->previousEventForceActuatorInfo.adcScanRate[i] ||
+                        _previousEventForceActuatorInfo.adcScanRate[i] ||
                 _eventForceActuatorInfo.mainPrimaryCylinderCoefficient[i] !=
-                        this->previousEventForceActuatorInfo.mainPrimaryCylinderCoefficient[i] ||
+                        _previousEventForceActuatorInfo.mainPrimaryCylinderCoefficient[i] ||
                 _eventForceActuatorInfo.mainSecondaryCylinderCoefficient[i] !=
-                        this->previousEventForceActuatorInfo.mainSecondaryCylinderCoefficient[i] ||
+                        _previousEventForceActuatorInfo.mainSecondaryCylinderCoefficient[i] ||
                 _eventForceActuatorInfo.mainPrimaryCylinderLoadCellOffset[i] !=
-                        this->previousEventForceActuatorInfo.mainPrimaryCylinderLoadCellOffset[i] ||
+                        _previousEventForceActuatorInfo.mainPrimaryCylinderLoadCellOffset[i] ||
                 _eventForceActuatorInfo.mainSecondaryCylinderLoadCellOffset[i] !=
-                        this->previousEventForceActuatorInfo.mainSecondaryCylinderLoadCellOffset[i] ||
+                        _previousEventForceActuatorInfo.mainSecondaryCylinderLoadCellOffset[i] ||
                 _eventForceActuatorInfo.mainPrimaryCylinderLoadCellSensitivity[i] !=
-                        this->previousEventForceActuatorInfo.mainPrimaryCylinderLoadCellSensitivity[i] ||
+                        _previousEventForceActuatorInfo.mainPrimaryCylinderLoadCellSensitivity[i] ||
                 _eventForceActuatorInfo.mainSecondaryCylinderLoadCellSensitivity[i] !=
-                        this->previousEventForceActuatorInfo.mainSecondaryCylinderLoadCellSensitivity[i] ||
+                        _previousEventForceActuatorInfo.mainSecondaryCylinderLoadCellSensitivity[i] ||
                 _eventForceActuatorInfo.backupPrimaryCylinderCoefficient[i] !=
-                        this->previousEventForceActuatorInfo.backupPrimaryCylinderCoefficient[i] ||
+                        _previousEventForceActuatorInfo.backupPrimaryCylinderCoefficient[i] ||
                 _eventForceActuatorInfo.backupSecondaryCylinderCoefficient[i] !=
-                        this->previousEventForceActuatorInfo.backupSecondaryCylinderCoefficient[i] ||
+                        _previousEventForceActuatorInfo.backupSecondaryCylinderCoefficient[i] ||
                 _eventForceActuatorInfo.backupPrimaryCylinderLoadCellOffset[i] !=
-                        this->previousEventForceActuatorInfo.backupPrimaryCylinderLoadCellOffset[i] ||
+                        _previousEventForceActuatorInfo.backupPrimaryCylinderLoadCellOffset[i] ||
                 _eventForceActuatorInfo.backupSecondaryCylinderLoadCellOffset[i] !=
-                        this->previousEventForceActuatorInfo.backupSecondaryCylinderLoadCellOffset[i] ||
+                        _previousEventForceActuatorInfo.backupSecondaryCylinderLoadCellOffset[i] ||
                 _eventForceActuatorInfo.backupPrimaryCylinderLoadCellSensitivity[i] !=
-                        this->previousEventForceActuatorInfo.backupPrimaryCylinderLoadCellSensitivity[i] ||
+                        _previousEventForceActuatorInfo.backupPrimaryCylinderLoadCellSensitivity[i] ||
                 _eventForceActuatorInfo.backupSecondaryCylinderLoadCellSensitivity[i] !=
-                        this->previousEventForceActuatorInfo.backupSecondaryCylinderLoadCellSensitivity[i] ||
+                        _previousEventForceActuatorInfo.backupSecondaryCylinderLoadCellSensitivity[i] ||
                 _eventForceActuatorInfo.mezzaninePrimaryCylinderGain[i] !=
-                        this->previousEventForceActuatorInfo.mezzaninePrimaryCylinderGain[i] ||
+                        _previousEventForceActuatorInfo.mezzaninePrimaryCylinderGain[i] ||
                 _eventForceActuatorInfo.mezzanineSecondaryCylinderGain[i] !=
-                        this->previousEventForceActuatorInfo.mezzanineSecondaryCylinderGain[i] ||
+                        _previousEventForceActuatorInfo.mezzanineSecondaryCylinderGain[i] ||
                 _eventForceActuatorInfo.mezzanineUniqueId[i] !=
-                        this->previousEventForceActuatorInfo.mezzanineUniqueId[i] ||
+                        _previousEventForceActuatorInfo.mezzanineUniqueId[i] ||
                 _eventForceActuatorInfo.mezzanineFirmwareType[i] !=
-                        this->previousEventForceActuatorInfo.mezzanineFirmwareType[i] ||
+                        _previousEventForceActuatorInfo.mezzanineFirmwareType[i] ||
                 _eventForceActuatorInfo.mezzanineMajorRevision[i] !=
-                        this->previousEventForceActuatorInfo.mezzanineMajorRevision[i] ||
+                        _previousEventForceActuatorInfo.mezzanineMajorRevision[i] ||
                 _eventForceActuatorInfo.mezzanineMinorRevision[i] !=
-                        this->previousEventForceActuatorInfo.mezzanineMinorRevision[i];
+                        _previousEventForceActuatorInfo.mezzanineMinorRevision[i];
     }
     if (changeDetected) {
         this->logForceActuatorInfo();
@@ -747,37 +745,37 @@ void M1M3SSPublisher::tryLogForceActuatorInfo() {
 
 void M1M3SSPublisher::logForceActuatorState() {
     _m1m3SAL->logEvent_forceActuatorState(&_eventForceActuatorState, 0);
-    this->previousEventForceActuatorState = _eventForceActuatorState;
+    _previousEventForceActuatorState = _eventForceActuatorState;
 }
 
 void M1M3SSPublisher::tryLogForceActuatorState() {
     bool changeDetected =
-            _eventForceActuatorState.slewFlag != this->previousEventForceActuatorState.slewFlag ||
+            _eventForceActuatorState.slewFlag != _previousEventForceActuatorState.slewFlag ||
             _eventForceActuatorState.staticForcesApplied !=
-                    this->previousEventForceActuatorState.staticForcesApplied ||
+                    _previousEventForceActuatorState.staticForcesApplied ||
             _eventForceActuatorState.elevationForcesApplied !=
-                    this->previousEventForceActuatorState.elevationForcesApplied ||
+                    _previousEventForceActuatorState.elevationForcesApplied ||
             _eventForceActuatorState.azimuthForcesApplied !=
-                    this->previousEventForceActuatorState.azimuthForcesApplied ||
+                    _previousEventForceActuatorState.azimuthForcesApplied ||
             _eventForceActuatorState.thermalForcesApplied !=
-                    this->previousEventForceActuatorState.thermalForcesApplied ||
+                    _previousEventForceActuatorState.thermalForcesApplied ||
             _eventForceActuatorState.offsetForcesApplied !=
-                    this->previousEventForceActuatorState.offsetForcesApplied ||
+                    _previousEventForceActuatorState.offsetForcesApplied ||
             _eventForceActuatorState.accelerationForcesApplied !=
-                    this->previousEventForceActuatorState.accelerationForcesApplied ||
+                    _previousEventForceActuatorState.accelerationForcesApplied ||
             _eventForceActuatorState.velocityForcesApplied !=
-                    this->previousEventForceActuatorState.velocityForcesApplied ||
+                    _previousEventForceActuatorState.velocityForcesApplied ||
             _eventForceActuatorState.activeOpticForcesApplied !=
-                    this->previousEventForceActuatorState.activeOpticForcesApplied ||
+                    _previousEventForceActuatorState.activeOpticForcesApplied ||
             _eventForceActuatorState.aberrationForcesApplied !=
-                    this->previousEventForceActuatorState.aberrationForcesApplied ||
+                    _previousEventForceActuatorState.aberrationForcesApplied ||
             _eventForceActuatorState.balanceForcesApplied !=
-                    this->previousEventForceActuatorState.balanceForcesApplied ||
+                    _previousEventForceActuatorState.balanceForcesApplied ||
             _eventForceActuatorState.supportPercentage !=
-                    this->previousEventForceActuatorState.supportPercentage;
+                    _previousEventForceActuatorState.supportPercentage;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventForceActuatorState.ilcState[i] !=
-                                                   this->previousEventForceActuatorState.ilcState[i];
+                                                   _previousEventForceActuatorState.ilcState[i];
     }
     if (changeDetected) {
         this->logForceActuatorState();
@@ -929,7 +927,7 @@ void M1M3SSPublisher::logForceActuatorWarning() {
             _eventForceActuatorWarning.anyILCFault ||
             _eventForceActuatorWarning.anyBroadcastCounterWarning;
     _m1m3SAL->logEvent_forceActuatorWarning(&_eventForceActuatorWarning, 0);
-    this->previousEventForceActuatorWarning = _eventForceActuatorWarning;
+    _previousEventForceActuatorWarning = _eventForceActuatorWarning;
 }
 
 void M1M3SSPublisher::tryLogForceActuatorWarning() {
@@ -937,65 +935,65 @@ void M1M3SSPublisher::tryLogForceActuatorWarning() {
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventForceActuatorWarning.majorFault[i] !=
-                                 this->previousEventForceActuatorWarning.majorFault[i] ||
+                                 _previousEventForceActuatorWarning.majorFault[i] ||
                          _eventForceActuatorWarning.minorFault[i] !=
-                                 this->previousEventForceActuatorWarning.minorFault[i] ||
+                                 _previousEventForceActuatorWarning.minorFault[i] ||
                          _eventForceActuatorWarning.faultOverride[i] !=
-                                 this->previousEventForceActuatorWarning.faultOverride[i] ||
+                                 _previousEventForceActuatorWarning.faultOverride[i] ||
                          _eventForceActuatorWarning.mainCalibrationError[i] !=
-                                 this->previousEventForceActuatorWarning.mainCalibrationError[i] ||
+                                 _previousEventForceActuatorWarning.mainCalibrationError[i] ||
                          _eventForceActuatorWarning.backupCalibrationError[i] !=
-                                 this->previousEventForceActuatorWarning.backupCalibrationError[i] ||
+                                 _previousEventForceActuatorWarning.backupCalibrationError[i] ||
                          _eventForceActuatorWarning.mezzanineError[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineError[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineError[i] ||
                          _eventForceActuatorWarning.mezzanineBootloaderActive[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineBootloaderActive[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineBootloaderActive[i] ||
                          _eventForceActuatorWarning.uniqueIdCRCError[i] !=
-                                 this->previousEventForceActuatorWarning.uniqueIdCRCError[i] ||
+                                 _previousEventForceActuatorWarning.uniqueIdCRCError[i] ||
                          _eventForceActuatorWarning.applicationTypeMismatch[i] !=
-                                 this->previousEventForceActuatorWarning.applicationTypeMismatch[i] ||
+                                 _previousEventForceActuatorWarning.applicationTypeMismatch[i] ||
                          _eventForceActuatorWarning.applicationMissing[i] !=
-                                 this->previousEventForceActuatorWarning.applicationMissing[i] ||
+                                 _previousEventForceActuatorWarning.applicationMissing[i] ||
                          _eventForceActuatorWarning.applicationCRCMismatch[i] !=
-                                 this->previousEventForceActuatorWarning.applicationCRCMismatch[i] ||
+                                 _previousEventForceActuatorWarning.applicationCRCMismatch[i] ||
                          _eventForceActuatorWarning.oneWireMissing[i] !=
-                                 this->previousEventForceActuatorWarning.oneWireMissing[i] ||
+                                 _previousEventForceActuatorWarning.oneWireMissing[i] ||
                          _eventForceActuatorWarning.oneWire1Mismatch[i] !=
-                                 this->previousEventForceActuatorWarning.oneWire1Mismatch[i] ||
+                                 _previousEventForceActuatorWarning.oneWire1Mismatch[i] ||
                          _eventForceActuatorWarning.oneWire2Mismatch[i] !=
-                                 this->previousEventForceActuatorWarning.oneWire2Mismatch[i] ||
+                                 _previousEventForceActuatorWarning.oneWire2Mismatch[i] ||
                          _eventForceActuatorWarning.watchdogReset[i] !=
-                                 this->previousEventForceActuatorWarning.watchdogReset[i] ||
+                                 _previousEventForceActuatorWarning.watchdogReset[i] ||
                          _eventForceActuatorWarning.brownOut[i] !=
-                                 this->previousEventForceActuatorWarning.brownOut[i] ||
+                                 _previousEventForceActuatorWarning.brownOut[i] ||
                          _eventForceActuatorWarning.eventTrapReset[i] !=
-                                 this->previousEventForceActuatorWarning.eventTrapReset[i] ||
+                                 _previousEventForceActuatorWarning.eventTrapReset[i] ||
                          _eventForceActuatorWarning.ssrPowerFault[i] !=
-                                 this->previousEventForceActuatorWarning.ssrPowerFault[i] ||
+                                 _previousEventForceActuatorWarning.ssrPowerFault[i] ||
                          _eventForceActuatorWarning.auxPowerFault[i] !=
-                                 this->previousEventForceActuatorWarning.auxPowerFault[i] ||
+                                 _previousEventForceActuatorWarning.auxPowerFault[i] ||
                          _eventForceActuatorWarning.mezzaninePowerFault[i] !=
-                                 this->previousEventForceActuatorWarning.mezzaninePowerFault[i] ||
+                                 _previousEventForceActuatorWarning.mezzaninePowerFault[i] ||
                          _eventForceActuatorWarning.mezzanineCurrentAmp1Fault[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineCurrentAmp1Fault[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineCurrentAmp1Fault[i] ||
                          _eventForceActuatorWarning.mezzanineCurrentAmp2Fault[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineCurrentAmp2Fault[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineCurrentAmp2Fault[i] ||
                          _eventForceActuatorWarning.mezzanineUniqueIdCRCError[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineUniqueIdCRCError[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineUniqueIdCRCError[i] ||
                          _eventForceActuatorWarning.mezzanineMainCalibrationError[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineMainCalibrationError[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineMainCalibrationError[i] ||
                          _eventForceActuatorWarning.mezzanineBackupCalibrationError[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineBackupCalibrationError[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineBackupCalibrationError[i] ||
                          _eventForceActuatorWarning.mezzanineEventTrapReset[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineEventTrapReset[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineEventTrapReset[i] ||
                          _eventForceActuatorWarning.mezzanineApplicationMissing[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineApplicationMissing[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineApplicationMissing[i] ||
                          _eventForceActuatorWarning.mezzanineApplicationCRCMismatch[i] !=
-                                 this->previousEventForceActuatorWarning.mezzanineApplicationCRCMismatch[i] ||
+                                 _previousEventForceActuatorWarning.mezzanineApplicationCRCMismatch[i] ||
                          _eventForceActuatorWarning.ilcFault[i] !=
-                                 this->previousEventForceActuatorWarning.ilcFault[i] ||
+                                 _previousEventForceActuatorWarning.ilcFault[i] ||
                          _eventForceActuatorWarning.broadcastCounterWarning[i] !=
-                                 this->previousEventForceActuatorWarning.broadcastCounterWarning[i];
+                                 _previousEventForceActuatorWarning.broadcastCounterWarning[i];
     }
     if (changeDetected) {
         this->logForceActuatorForceWarning();
@@ -1082,52 +1080,52 @@ void M1M3SSPublisher::logForceSetpointWarning() {
             _eventForceSetpointWarning.anyOffsetForceWarning ||
             _eventForceSetpointWarning.anyForceWarning;
     _m1m3SAL->logEvent_forceSetpointWarning(&_eventForceSetpointWarning, 0);
-    this->previousEventForceSetpointWarning = _eventForceSetpointWarning;
+    _previousEventForceSetpointWarning = _eventForceSetpointWarning;
 }
 
 void M1M3SSPublisher::tryLogForceSetpointWarning() {
     bool changeDetected = _eventForceSetpointWarning.xMomentWarning !=
-                                  this->previousEventForceSetpointWarning.xMomentWarning ||
+                                  _previousEventForceSetpointWarning.xMomentWarning ||
                           _eventForceSetpointWarning.yMomentWarning !=
-                                  this->previousEventForceSetpointWarning.yMomentWarning ||
+                                  _previousEventForceSetpointWarning.yMomentWarning ||
                           _eventForceSetpointWarning.zMomentWarning !=
-                                  this->previousEventForceSetpointWarning.zMomentWarning ||
+                                  _previousEventForceSetpointWarning.zMomentWarning ||
                           _eventForceSetpointWarning.magnitudeWarning !=
-                                  this->previousEventForceSetpointWarning.magnitudeWarning ||
+                                  _previousEventForceSetpointWarning.magnitudeWarning ||
                           _eventForceSetpointWarning.activeOpticNetForceWarning !=
-                                  this->previousEventForceSetpointWarning.activeOpticNetForceWarning ||
+                                  _previousEventForceSetpointWarning.activeOpticNetForceWarning ||
                           _eventForceSetpointWarning.aberrationNetForceWarning !=
-                                  this->previousEventForceSetpointWarning.aberrationNetForceWarning;
+                                  _previousEventForceSetpointWarning.aberrationNetForceWarning;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventForceSetpointWarning.safetyLimitWarning[i] !=
-                                 this->previousEventForceSetpointWarning.safetyLimitWarning[i] ||
+                                 _previousEventForceSetpointWarning.safetyLimitWarning[i] ||
                          _eventForceSetpointWarning.nearNeighborWarning[i] !=
-                                 this->previousEventForceSetpointWarning.nearNeighborWarning[i] ||
+                                 _previousEventForceSetpointWarning.nearNeighborWarning[i] ||
                          _eventForceSetpointWarning.farNeighborWarning[i] !=
-                                 this->previousEventForceSetpointWarning.farNeighborWarning[i] ||
+                                 _previousEventForceSetpointWarning.farNeighborWarning[i] ||
                          _eventForceSetpointWarning.elevationForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.elevationForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.elevationForceWarning[i] ||
                          _eventForceSetpointWarning.azimuthForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.azimuthForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.azimuthForceWarning[i] ||
                          _eventForceSetpointWarning.thermalForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.thermalForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.thermalForceWarning[i] ||
                          _eventForceSetpointWarning.balanceForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.balanceForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.balanceForceWarning[i] ||
                          _eventForceSetpointWarning.accelerationForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.accelerationForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.accelerationForceWarning[i] ||
                          _eventForceSetpointWarning.velocityForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.velocityForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.velocityForceWarning[i] ||
                          _eventForceSetpointWarning.activeOpticForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.activeOpticForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.activeOpticForceWarning[i] ||
                          _eventForceSetpointWarning.staticForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.staticForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.staticForceWarning[i] ||
                          _eventForceSetpointWarning.aberrationForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.aberrationForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.aberrationForceWarning[i] ||
                          _eventForceSetpointWarning.offsetForceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.offsetForceWarning[i] ||
+                                 _previousEventForceSetpointWarning.offsetForceWarning[i] ||
                          _eventForceSetpointWarning.forceWarning[i] !=
-                                 this->previousEventForceSetpointWarning.forceWarning[i];
+                                 _previousEventForceSetpointWarning.forceWarning[i];
     }
     if (changeDetected) {
         this->logForceSetpointWarning();
@@ -1166,81 +1164,81 @@ void M1M3SSPublisher::logGyroWarning() {
             _eventGyroWarning.gyroYVoltsWarning || _eventGyroWarning.gyroZVoltsWarning ||
             _eventGyroWarning.gcbADCCommsWarning || _eventGyroWarning.mSYNCExternalTimingWarning;
     _m1m3SAL->logEvent_gyroWarning(&_eventGyroWarning, 0);
-    this->previousEventGyroWarning = _eventGyroWarning;
+    _previousEventGyroWarning = _eventGyroWarning;
 }
 
 void M1M3SSPublisher::tryLogGyroWarning() {
-    if (_eventGyroWarning.gyroXStatusWarning != this->previousEventGyroWarning.gyroXStatusWarning ||
-        _eventGyroWarning.gyroYStatusWarning != this->previousEventGyroWarning.gyroYStatusWarning ||
-        _eventGyroWarning.gyroZStatusWarning != this->previousEventGyroWarning.gyroZStatusWarning ||
+    if (_eventGyroWarning.gyroXStatusWarning != _previousEventGyroWarning.gyroXStatusWarning ||
+        _eventGyroWarning.gyroYStatusWarning != _previousEventGyroWarning.gyroYStatusWarning ||
+        _eventGyroWarning.gyroZStatusWarning != _previousEventGyroWarning.gyroZStatusWarning ||
         _eventGyroWarning.sequenceNumberWarning !=
-                this->previousEventGyroWarning.sequenceNumberWarning ||
-        _eventGyroWarning.crcMismatchWarning != this->previousEventGyroWarning.crcMismatchWarning ||
-        _eventGyroWarning.invalidLengthWarning != this->previousEventGyroWarning.invalidLengthWarning ||
-        _eventGyroWarning.invalidHeaderWarning != this->previousEventGyroWarning.invalidHeaderWarning ||
+                _previousEventGyroWarning.sequenceNumberWarning ||
+        _eventGyroWarning.crcMismatchWarning != _previousEventGyroWarning.crcMismatchWarning ||
+        _eventGyroWarning.invalidLengthWarning != _previousEventGyroWarning.invalidLengthWarning ||
+        _eventGyroWarning.invalidHeaderWarning != _previousEventGyroWarning.invalidHeaderWarning ||
         _eventGyroWarning.incompleteFrameWarning !=
-                this->previousEventGyroWarning.incompleteFrameWarning ||
-        _eventGyroWarning.gyroXSLDWarning != this->previousEventGyroWarning.gyroXSLDWarning ||
-        _eventGyroWarning.gyroXMODDACWarning != this->previousEventGyroWarning.gyroXMODDACWarning ||
-        _eventGyroWarning.gyroXPhaseWarning != this->previousEventGyroWarning.gyroXPhaseWarning ||
-        _eventGyroWarning.gyroXFlashWarning != this->previousEventGyroWarning.gyroXFlashWarning ||
-        _eventGyroWarning.gyroYSLDWarning != this->previousEventGyroWarning.gyroYSLDWarning ||
-        _eventGyroWarning.gyroYMODDACWarning != this->previousEventGyroWarning.gyroYMODDACWarning ||
-        _eventGyroWarning.gyroYPhaseWarning != this->previousEventGyroWarning.gyroYPhaseWarning ||
-        _eventGyroWarning.gyroYFlashWarning != this->previousEventGyroWarning.gyroYFlashWarning ||
-        _eventGyroWarning.gyroZSLDWarning != this->previousEventGyroWarning.gyroZSLDWarning ||
-        _eventGyroWarning.gyroZMODDACWarning != this->previousEventGyroWarning.gyroZMODDACWarning ||
-        _eventGyroWarning.gyroZPhaseWarning != this->previousEventGyroWarning.gyroZPhaseWarning ||
-        _eventGyroWarning.gyroZFlashWarning != this->previousEventGyroWarning.gyroZFlashWarning ||
+                _previousEventGyroWarning.incompleteFrameWarning ||
+        _eventGyroWarning.gyroXSLDWarning != _previousEventGyroWarning.gyroXSLDWarning ||
+        _eventGyroWarning.gyroXMODDACWarning != _previousEventGyroWarning.gyroXMODDACWarning ||
+        _eventGyroWarning.gyroXPhaseWarning != _previousEventGyroWarning.gyroXPhaseWarning ||
+        _eventGyroWarning.gyroXFlashWarning != _previousEventGyroWarning.gyroXFlashWarning ||
+        _eventGyroWarning.gyroYSLDWarning != _previousEventGyroWarning.gyroYSLDWarning ||
+        _eventGyroWarning.gyroYMODDACWarning != _previousEventGyroWarning.gyroYMODDACWarning ||
+        _eventGyroWarning.gyroYPhaseWarning != _previousEventGyroWarning.gyroYPhaseWarning ||
+        _eventGyroWarning.gyroYFlashWarning != _previousEventGyroWarning.gyroYFlashWarning ||
+        _eventGyroWarning.gyroZSLDWarning != _previousEventGyroWarning.gyroZSLDWarning ||
+        _eventGyroWarning.gyroZMODDACWarning != _previousEventGyroWarning.gyroZMODDACWarning ||
+        _eventGyroWarning.gyroZPhaseWarning != _previousEventGyroWarning.gyroZPhaseWarning ||
+        _eventGyroWarning.gyroZFlashWarning != _previousEventGyroWarning.gyroZFlashWarning ||
         _eventGyroWarning.gyroXSLDTemperatureStatusWarning !=
-                this->previousEventGyroWarning.gyroXSLDTemperatureStatusWarning ||
+                _previousEventGyroWarning.gyroXSLDTemperatureStatusWarning ||
         _eventGyroWarning.gyroYSLDTemperatureStatusWarning !=
-                this->previousEventGyroWarning.gyroYSLDTemperatureStatusWarning ||
+                _previousEventGyroWarning.gyroYSLDTemperatureStatusWarning ||
         _eventGyroWarning.gyroZSLDTemperatureStatusWarning !=
-                this->previousEventGyroWarning.gyroZSLDTemperatureStatusWarning ||
+                _previousEventGyroWarning.gyroZSLDTemperatureStatusWarning ||
         _eventGyroWarning.gcbTemperatureStatusWarning !=
-                this->previousEventGyroWarning.gcbTemperatureStatusWarning ||
+                _previousEventGyroWarning.gcbTemperatureStatusWarning ||
         _eventGyroWarning.temperatureStatusWarning !=
-                this->previousEventGyroWarning.temperatureStatusWarning ||
+                _previousEventGyroWarning.temperatureStatusWarning ||
         _eventGyroWarning.gcbDSPSPIFlashStatusWarning !=
-                this->previousEventGyroWarning.gcbDSPSPIFlashStatusWarning ||
+                _previousEventGyroWarning.gcbDSPSPIFlashStatusWarning ||
         _eventGyroWarning.gcbFPGASPIFlashStatusWarning !=
-                this->previousEventGyroWarning.gcbFPGASPIFlashStatusWarning ||
+                _previousEventGyroWarning.gcbFPGASPIFlashStatusWarning ||
         _eventGyroWarning.dspSPIFlashStatusWarning !=
-                this->previousEventGyroWarning.dspSPIFlashStatusWarning ||
+                _previousEventGyroWarning.dspSPIFlashStatusWarning ||
         _eventGyroWarning.fpgaSPIFlashStatusWarning !=
-                this->previousEventGyroWarning.fpgaSPIFlashStatusWarning ||
-        _eventGyroWarning.gcb1_2VStatusWarning != this->previousEventGyroWarning.gcb1_2VStatusWarning ||
-        _eventGyroWarning.gcb3_3VStatusWarning != this->previousEventGyroWarning.gcb3_3VStatusWarning ||
-        _eventGyroWarning.gcb5VStatusWarning != this->previousEventGyroWarning.gcb5VStatusWarning ||
-        _eventGyroWarning.v1_2StatusWarning != this->previousEventGyroWarning.v1_2StatusWarning ||
-        _eventGyroWarning.v3_3StatusWarning != this->previousEventGyroWarning.v3_3StatusWarning ||
-        _eventGyroWarning.v5StatusWarning != this->previousEventGyroWarning.v5StatusWarning ||
-        _eventGyroWarning.gcbFPGAStatusWarning != this->previousEventGyroWarning.gcbFPGAStatusWarning ||
-        _eventGyroWarning.fpgaStatusWarning != this->previousEventGyroWarning.fpgaStatusWarning ||
+                _previousEventGyroWarning.fpgaSPIFlashStatusWarning ||
+        _eventGyroWarning.gcb1_2VStatusWarning != _previousEventGyroWarning.gcb1_2VStatusWarning ||
+        _eventGyroWarning.gcb3_3VStatusWarning != _previousEventGyroWarning.gcb3_3VStatusWarning ||
+        _eventGyroWarning.gcb5VStatusWarning != _previousEventGyroWarning.gcb5VStatusWarning ||
+        _eventGyroWarning.v1_2StatusWarning != _previousEventGyroWarning.v1_2StatusWarning ||
+        _eventGyroWarning.v3_3StatusWarning != _previousEventGyroWarning.v3_3StatusWarning ||
+        _eventGyroWarning.v5StatusWarning != _previousEventGyroWarning.v5StatusWarning ||
+        _eventGyroWarning.gcbFPGAStatusWarning != _previousEventGyroWarning.gcbFPGAStatusWarning ||
+        _eventGyroWarning.fpgaStatusWarning != _previousEventGyroWarning.fpgaStatusWarning ||
         _eventGyroWarning.hiSpeedSPORTStatusWarning !=
-                this->previousEventGyroWarning.hiSpeedSPORTStatusWarning ||
+                _previousEventGyroWarning.hiSpeedSPORTStatusWarning ||
         _eventGyroWarning.auxSPORTStatusWarning !=
-                this->previousEventGyroWarning.auxSPORTStatusWarning ||
+                _previousEventGyroWarning.auxSPORTStatusWarning ||
         _eventGyroWarning.sufficientSoftwareResourcesWarning !=
-                this->previousEventGyroWarning.sufficientSoftwareResourcesWarning ||
+                _previousEventGyroWarning.sufficientSoftwareResourcesWarning ||
         _eventGyroWarning.gyroEOVoltsPositiveWarning !=
-                this->previousEventGyroWarning.gyroEOVoltsPositiveWarning ||
+                _previousEventGyroWarning.gyroEOVoltsPositiveWarning ||
         _eventGyroWarning.gyroEOVoltsNegativeWarning !=
-                this->previousEventGyroWarning.gyroEOVoltsNegativeWarning ||
-        _eventGyroWarning.gyroXVoltsWarning != this->previousEventGyroWarning.gyroXVoltsWarning ||
-        _eventGyroWarning.gyroYVoltsWarning != this->previousEventGyroWarning.gyroYVoltsWarning ||
-        _eventGyroWarning.gyroZVoltsWarning != this->previousEventGyroWarning.gyroZVoltsWarning ||
-        _eventGyroWarning.gcbADCCommsWarning != this->previousEventGyroWarning.gcbADCCommsWarning ||
+                _previousEventGyroWarning.gyroEOVoltsNegativeWarning ||
+        _eventGyroWarning.gyroXVoltsWarning != _previousEventGyroWarning.gyroXVoltsWarning ||
+        _eventGyroWarning.gyroYVoltsWarning != _previousEventGyroWarning.gyroYVoltsWarning ||
+        _eventGyroWarning.gyroZVoltsWarning != _previousEventGyroWarning.gyroZVoltsWarning ||
+        _eventGyroWarning.gcbADCCommsWarning != _previousEventGyroWarning.gcbADCCommsWarning ||
         _eventGyroWarning.mSYNCExternalTimingWarning !=
-                this->previousEventGyroWarning.mSYNCExternalTimingWarning) {
+                _previousEventGyroWarning.mSYNCExternalTimingWarning) {
         this->logGyroWarning();
     }
 }
 
 void M1M3SSPublisher::logHardpointActuatorInfo() {
     _m1m3SAL->logEvent_hardpointActuatorInfo(&_eventHardpointActuatorInfo, 0);
-    this->previousEventHardpointActuatorInfo = _eventHardpointActuatorInfo;
+    _previousEventHardpointActuatorInfo = _eventHardpointActuatorInfo;
 }
 
 void M1M3SSPublisher::tryLogHardpointActuatorInfo() {
@@ -1248,47 +1246,47 @@ void M1M3SSPublisher::tryLogHardpointActuatorInfo() {
     for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointActuatorInfo.referenceId[i] !=
-                                 this->previousEventHardpointActuatorInfo.referenceId[i] ||
+                                 _previousEventHardpointActuatorInfo.referenceId[i] ||
                          _eventHardpointActuatorInfo.referencePosition[i] !=
-                                 this->previousEventHardpointActuatorInfo.referencePosition[i] ||
+                                 _previousEventHardpointActuatorInfo.referencePosition[i] ||
                          _eventHardpointActuatorInfo.modbusSubnet[i] !=
-                                 this->previousEventHardpointActuatorInfo.modbusSubnet[i] ||
+                                 _previousEventHardpointActuatorInfo.modbusSubnet[i] ||
                          _eventHardpointActuatorInfo.modbusAddress[i] !=
-                                 this->previousEventHardpointActuatorInfo.modbusAddress[i] ||
+                                 _previousEventHardpointActuatorInfo.modbusAddress[i] ||
                          _eventHardpointActuatorInfo.xPosition[i] !=
-                                 this->previousEventHardpointActuatorInfo.xPosition[i] ||
+                                 _previousEventHardpointActuatorInfo.xPosition[i] ||
                          _eventHardpointActuatorInfo.yPosition[i] !=
-                                 this->previousEventHardpointActuatorInfo.yPosition[i] ||
+                                 _previousEventHardpointActuatorInfo.yPosition[i] ||
                          _eventHardpointActuatorInfo.zPosition[i] !=
-                                 this->previousEventHardpointActuatorInfo.zPosition[i] ||
+                                 _previousEventHardpointActuatorInfo.zPosition[i] ||
                          _eventHardpointActuatorInfo.ilcUniqueId[i] !=
-                                 this->previousEventHardpointActuatorInfo.ilcUniqueId[i] ||
+                                 _previousEventHardpointActuatorInfo.ilcUniqueId[i] ||
                          _eventHardpointActuatorInfo.ilcApplicationType[i] !=
-                                 this->previousEventHardpointActuatorInfo.ilcApplicationType[i] ||
+                                 _previousEventHardpointActuatorInfo.ilcApplicationType[i] ||
                          _eventHardpointActuatorInfo.networkNodeType[i] !=
-                                 this->previousEventHardpointActuatorInfo.networkNodeType[i] ||
+                                 _previousEventHardpointActuatorInfo.networkNodeType[i] ||
                          _eventHardpointActuatorInfo.ilcSelectedOptions[i] !=
-                                 this->previousEventHardpointActuatorInfo.ilcSelectedOptions[i] ||
+                                 _previousEventHardpointActuatorInfo.ilcSelectedOptions[i] ||
                          _eventHardpointActuatorInfo.networkNodeOptions[i] !=
-                                 this->previousEventHardpointActuatorInfo.networkNodeOptions[i] ||
+                                 _previousEventHardpointActuatorInfo.networkNodeOptions[i] ||
                          _eventHardpointActuatorInfo.majorRevision[i] !=
-                                 this->previousEventHardpointActuatorInfo.majorRevision[i] ||
+                                 _previousEventHardpointActuatorInfo.majorRevision[i] ||
                          _eventHardpointActuatorInfo.minorRevision[i] !=
-                                 this->previousEventHardpointActuatorInfo.minorRevision[i] ||
+                                 _previousEventHardpointActuatorInfo.minorRevision[i] ||
                          _eventHardpointActuatorInfo.adcScanRate[i] !=
-                                 this->previousEventHardpointActuatorInfo.adcScanRate[i] ||
+                                 _previousEventHardpointActuatorInfo.adcScanRate[i] ||
                          _eventHardpointActuatorInfo.mainLoadCellCoefficient[i] !=
-                                 this->previousEventHardpointActuatorInfo.mainLoadCellCoefficient[i] ||
+                                 _previousEventHardpointActuatorInfo.mainLoadCellCoefficient[i] ||
                          _eventHardpointActuatorInfo.mainLoadCellOffset[i] !=
-                                 this->previousEventHardpointActuatorInfo.mainLoadCellOffset[i] ||
+                                 _previousEventHardpointActuatorInfo.mainLoadCellOffset[i] ||
                          _eventHardpointActuatorInfo.mainLoadCellSensitivity[i] !=
-                                 this->previousEventHardpointActuatorInfo.mainLoadCellSensitivity[i] ||
+                                 _previousEventHardpointActuatorInfo.mainLoadCellSensitivity[i] ||
                          _eventHardpointActuatorInfo.backupLoadCellCoefficient[i] !=
-                                 this->previousEventHardpointActuatorInfo.backupLoadCellCoefficient[i] ||
+                                 _previousEventHardpointActuatorInfo.backupLoadCellCoefficient[i] ||
                          _eventHardpointActuatorInfo.backupLoadCellOffset[i] !=
-                                 this->previousEventHardpointActuatorInfo.backupLoadCellOffset[i] ||
+                                 _previousEventHardpointActuatorInfo.backupLoadCellOffset[i] ||
                          _eventHardpointActuatorInfo.backupLoadCellSensitivity[i] !=
-                                 this->previousEventHardpointActuatorInfo.backupLoadCellSensitivity[i];
+                                 _previousEventHardpointActuatorInfo.backupLoadCellSensitivity[i];
     }
     if (changeDetected) {
         this->logHardpointActuatorInfo();
@@ -1297,7 +1295,7 @@ void M1M3SSPublisher::tryLogHardpointActuatorInfo() {
 
 void M1M3SSPublisher::logHardpointActuatorState() {
     _m1m3SAL->logEvent_hardpointActuatorState(&_eventHardpointActuatorState, 0);
-    this->previousEventHardpointActuatorState = _eventHardpointActuatorState;
+    _previousEventHardpointActuatorState = _eventHardpointActuatorState;
 }
 
 void M1M3SSPublisher::tryLogHardpointActuatorState() {
@@ -1305,9 +1303,9 @@ void M1M3SSPublisher::tryLogHardpointActuatorState() {
     for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointActuatorState.ilcState[i] !=
-                                 this->previousEventHardpointActuatorState.ilcState[i] ||
+                                 _previousEventHardpointActuatorState.ilcState[i] ||
                          _eventHardpointActuatorState.motionState[i] !=
-                                 this->previousEventHardpointActuatorState.motionState[i];
+                                 _previousEventHardpointActuatorState.motionState[i];
     }
     if (changeDetected) {
         this->logHardpointActuatorState();
@@ -1432,7 +1430,7 @@ void M1M3SSPublisher::logHardpointActuatorWarning() {
             _eventHardpointActuatorWarning.anyILCFault ||
             _eventHardpointActuatorWarning.anyBroadcastCounterWarning;
     _m1m3SAL->logEvent_hardpointActuatorWarning(&_eventHardpointActuatorWarning, 0);
-    this->previousEventHardpointActuatorWarning = _eventHardpointActuatorWarning;
+    _previousEventHardpointActuatorWarning = _eventHardpointActuatorWarning;
 }
 
 void M1M3SSPublisher::tryLogHardpointActuatorWarning() {
@@ -1440,51 +1438,51 @@ void M1M3SSPublisher::tryLogHardpointActuatorWarning() {
     for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointActuatorWarning.majorFault[i] !=
-                                 this->previousEventHardpointActuatorWarning.majorFault[i] ||
+                                 _previousEventHardpointActuatorWarning.majorFault[i] ||
                          _eventHardpointActuatorWarning.minorFault[i] !=
-                                 this->previousEventHardpointActuatorWarning.minorFault[i] ||
+                                 _previousEventHardpointActuatorWarning.minorFault[i] ||
                          _eventHardpointActuatorWarning.faultOverride[i] !=
-                                 this->previousEventHardpointActuatorWarning.faultOverride[i] ||
+                                 _previousEventHardpointActuatorWarning.faultOverride[i] ||
                          _eventHardpointActuatorWarning.mainCalibrationError[i] !=
-                                 this->previousEventHardpointActuatorWarning.mainCalibrationError[i] ||
+                                 _previousEventHardpointActuatorWarning.mainCalibrationError[i] ||
                          _eventHardpointActuatorWarning.backupCalibrationError[i] !=
-                                 this->previousEventHardpointActuatorWarning.backupCalibrationError[i] ||
+                                 _previousEventHardpointActuatorWarning.backupCalibrationError[i] ||
                          _eventHardpointActuatorWarning.limitSwitch1Operated[i] !=
-                                 this->previousEventHardpointActuatorWarning.limitSwitch1Operated[i] ||
+                                 _previousEventHardpointActuatorWarning.limitSwitch1Operated[i] ||
                          _eventHardpointActuatorWarning.limitSwitch2Operated[i] !=
-                                 this->previousEventHardpointActuatorWarning.limitSwitch2Operated[i] ||
+                                 _previousEventHardpointActuatorWarning.limitSwitch2Operated[i] ||
                          _eventHardpointActuatorWarning.uniqueIdCRCError[i] !=
-                                 this->previousEventHardpointActuatorWarning.uniqueIdCRCError[i] ||
+                                 _previousEventHardpointActuatorWarning.uniqueIdCRCError[i] ||
                          _eventHardpointActuatorWarning.applicationTypeMismatch[i] !=
-                                 this->previousEventHardpointActuatorWarning.applicationTypeMismatch[i] ||
+                                 _previousEventHardpointActuatorWarning.applicationTypeMismatch[i] ||
                          _eventHardpointActuatorWarning.applicationMissing[i] !=
-                                 this->previousEventHardpointActuatorWarning.applicationMissing[i] ||
+                                 _previousEventHardpointActuatorWarning.applicationMissing[i] ||
                          _eventHardpointActuatorWarning.applicationCRCMismatch[i] !=
-                                 this->previousEventHardpointActuatorWarning.applicationCRCMismatch[i] ||
+                                 _previousEventHardpointActuatorWarning.applicationCRCMismatch[i] ||
                          _eventHardpointActuatorWarning.oneWireMissing[i] !=
-                                 this->previousEventHardpointActuatorWarning.oneWireMissing[i] ||
+                                 _previousEventHardpointActuatorWarning.oneWireMissing[i] ||
                          _eventHardpointActuatorWarning.oneWire1Mismatch[i] !=
-                                 this->previousEventHardpointActuatorWarning.oneWire1Mismatch[i] ||
+                                 _previousEventHardpointActuatorWarning.oneWire1Mismatch[i] ||
                          _eventHardpointActuatorWarning.oneWire2Mismatch[i] !=
-                                 this->previousEventHardpointActuatorWarning.oneWire2Mismatch[i] ||
+                                 _previousEventHardpointActuatorWarning.oneWire2Mismatch[i] ||
                          _eventHardpointActuatorWarning.watchdogReset[i] !=
-                                 this->previousEventHardpointActuatorWarning.watchdogReset[i] ||
+                                 _previousEventHardpointActuatorWarning.watchdogReset[i] ||
                          _eventHardpointActuatorWarning.brownOut[i] !=
-                                 this->previousEventHardpointActuatorWarning.brownOut[i] ||
+                                 _previousEventHardpointActuatorWarning.brownOut[i] ||
                          _eventHardpointActuatorWarning.eventTrapReset[i] !=
-                                 this->previousEventHardpointActuatorWarning.eventTrapReset[i] ||
+                                 _previousEventHardpointActuatorWarning.eventTrapReset[i] ||
                          _eventHardpointActuatorWarning.motorDriverFault[i] !=
-                                 this->previousEventHardpointActuatorWarning.motorDriverFault[i] ||
+                                 _previousEventHardpointActuatorWarning.motorDriverFault[i] ||
                          _eventHardpointActuatorWarning.ssrPowerFault[i] !=
-                                 this->previousEventHardpointActuatorWarning.ssrPowerFault[i] ||
+                                 _previousEventHardpointActuatorWarning.ssrPowerFault[i] ||
                          _eventHardpointActuatorWarning.auxPowerFault[i] !=
-                                 this->previousEventHardpointActuatorWarning.auxPowerFault[i] ||
+                                 _previousEventHardpointActuatorWarning.auxPowerFault[i] ||
                          _eventHardpointActuatorWarning.smcPowerFault[i] !=
-                                 this->previousEventHardpointActuatorWarning.smcPowerFault[i] ||
+                                 _previousEventHardpointActuatorWarning.smcPowerFault[i] ||
                          _eventHardpointActuatorWarning.ilcFault[i] !=
-                                 this->previousEventHardpointActuatorWarning.ilcFault[i] ||
+                                 _previousEventHardpointActuatorWarning.ilcFault[i] ||
                          _eventHardpointActuatorWarning.broadcastCounterWarning[i] !=
-                                 this->previousEventHardpointActuatorWarning.broadcastCounterWarning[i];
+                                 _previousEventHardpointActuatorWarning.broadcastCounterWarning[i];
     }
     if (changeDetected) {
         this->logHardpointActuatorWarning();
@@ -1493,7 +1491,7 @@ void M1M3SSPublisher::tryLogHardpointActuatorWarning() {
 
 void M1M3SSPublisher::logHardpointMonitorInfo() {
     _m1m3SAL->logEvent_hardpointMonitorInfo(&_eventHardpointMonitorInfo, 0);
-    this->previousEventHardpointMonitorInfo = _eventHardpointMonitorInfo;
+    _previousEventHardpointMonitorInfo = _eventHardpointMonitorInfo;
 }
 
 void M1M3SSPublisher::tryLogHardpointMonitorInfo() {
@@ -1501,29 +1499,29 @@ void M1M3SSPublisher::tryLogHardpointMonitorInfo() {
     for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointMonitorInfo.referenceId[i] !=
-                                 this->previousEventHardpointMonitorInfo.referenceId[i] ||
+                                 _previousEventHardpointMonitorInfo.referenceId[i] ||
                          _eventHardpointMonitorInfo.modbusSubnet[i] !=
-                                 this->previousEventHardpointMonitorInfo.modbusSubnet[i] ||
+                                 _previousEventHardpointMonitorInfo.modbusSubnet[i] ||
                          _eventHardpointMonitorInfo.modbusAddress[i] !=
-                                 this->previousEventHardpointMonitorInfo.modbusAddress[i] ||
+                                 _previousEventHardpointMonitorInfo.modbusAddress[i] ||
                          _eventHardpointMonitorInfo.ilcUniqueId[i] !=
-                                 this->previousEventHardpointMonitorInfo.ilcUniqueId[i] ||
+                                 _previousEventHardpointMonitorInfo.ilcUniqueId[i] ||
                          _eventHardpointMonitorInfo.ilcApplicationType[i] !=
-                                 this->previousEventHardpointMonitorInfo.ilcApplicationType[i] ||
+                                 _previousEventHardpointMonitorInfo.ilcApplicationType[i] ||
                          _eventHardpointMonitorInfo.networkNodeType[i] !=
-                                 this->previousEventHardpointMonitorInfo.networkNodeType[i] ||
+                                 _previousEventHardpointMonitorInfo.networkNodeType[i] ||
                          _eventHardpointMonitorInfo.majorRevision[i] !=
-                                 this->previousEventHardpointMonitorInfo.majorRevision[i] ||
+                                 _previousEventHardpointMonitorInfo.majorRevision[i] ||
                          _eventHardpointMonitorInfo.minorRevision[i] !=
-                                 this->previousEventHardpointMonitorInfo.minorRevision[i] ||
+                                 _previousEventHardpointMonitorInfo.minorRevision[i] ||
                          _eventHardpointMonitorInfo.mezzanineUniqueId[i] !=
-                                 this->previousEventHardpointMonitorInfo.mezzanineUniqueId[i] ||
+                                 _previousEventHardpointMonitorInfo.mezzanineUniqueId[i] ||
                          _eventHardpointMonitorInfo.mezzanineFirmwareType[i] !=
-                                 this->previousEventHardpointMonitorInfo.mezzanineFirmwareType[i] ||
+                                 _previousEventHardpointMonitorInfo.mezzanineFirmwareType[i] ||
                          _eventHardpointMonitorInfo.mezzanineMajorRevision[i] !=
-                                 this->previousEventHardpointMonitorInfo.mezzanineMajorRevision[i] ||
+                                 _previousEventHardpointMonitorInfo.mezzanineMajorRevision[i] ||
                          _eventHardpointMonitorInfo.mezzanineMinorRevision[i] !=
-                                 this->previousEventHardpointMonitorInfo.mezzanineMinorRevision[i];
+                                 _previousEventHardpointMonitorInfo.mezzanineMinorRevision[i];
     }
     if (changeDetected) {
         this->logHardpointMonitorInfo();
@@ -1532,14 +1530,14 @@ void M1M3SSPublisher::tryLogHardpointMonitorInfo() {
 
 void M1M3SSPublisher::logHardpointMonitorState() {
     _m1m3SAL->logEvent_hardpointMonitorState(&_eventHardpointMonitorState, 0);
-    this->previousEventHardpointMonitorState = _eventHardpointMonitorState;
+    _previousEventHardpointMonitorState = _eventHardpointMonitorState;
 }
 
 void M1M3SSPublisher::tryLogHardpointMonitorState() {
     bool changeDetected = false;
     for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventHardpointMonitorState.ilcState[i] !=
-                                                   this->previousEventHardpointMonitorState.ilcState[i];
+                                                   _previousEventHardpointMonitorState.ilcState[i];
     }
     if (changeDetected) {
         this->logHardpointMonitorState();
@@ -1683,7 +1681,7 @@ void M1M3SSPublisher::logHardpointMonitorWarning() {
             _eventHardpointMonitorWarning.anyMezzanineApplicationMissing ||
             _eventHardpointMonitorWarning.anyMezzanineApplicationCRCMismatch;
     _m1m3SAL->logEvent_hardpointMonitorWarning(&_eventHardpointMonitorWarning, 0);
-    this->previousEventHardpointMonitorWarning = _eventHardpointMonitorWarning;
+    _previousEventHardpointMonitorWarning = _eventHardpointMonitorWarning;
 }
 
 void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
@@ -1692,59 +1690,59 @@ void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
         changeDetected =
                 changeDetected ||
                 _eventHardpointMonitorWarning.majorFault[i] !=
-                        this->previousEventHardpointMonitorWarning.majorFault[i] ||
+                        _previousEventHardpointMonitorWarning.majorFault[i] ||
                 _eventHardpointMonitorWarning.minorFault[i] !=
-                        this->previousEventHardpointMonitorWarning.minorFault[i] ||
+                        _previousEventHardpointMonitorWarning.minorFault[i] ||
                 _eventHardpointMonitorWarning.faultOverride[i] !=
-                        this->previousEventHardpointMonitorWarning.faultOverride[i] ||
+                        _previousEventHardpointMonitorWarning.faultOverride[i] ||
                 _eventHardpointMonitorWarning.instrumentError[i] !=
-                        this->previousEventHardpointMonitorWarning.instrumentError[i] ||
+                        _previousEventHardpointMonitorWarning.instrumentError[i] ||
                 _eventHardpointMonitorWarning.mezzanineError[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineError[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineError[i] ||
                 _eventHardpointMonitorWarning.mezzanineBootloaderActive[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineBootloaderActive[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineBootloaderActive[i] ||
                 _eventHardpointMonitorWarning.uniqueIdCRCError[i] !=
-                        this->previousEventHardpointMonitorWarning.uniqueIdCRCError[i] ||
+                        _previousEventHardpointMonitorWarning.uniqueIdCRCError[i] ||
                 _eventHardpointMonitorWarning.applicationTypeMismatch[i] !=
-                        this->previousEventHardpointMonitorWarning.applicationTypeMismatch[i] ||
+                        _previousEventHardpointMonitorWarning.applicationTypeMismatch[i] ||
                 _eventHardpointMonitorWarning.applicationMissing[i] !=
-                        this->previousEventHardpointMonitorWarning.applicationMissing[i] ||
+                        _previousEventHardpointMonitorWarning.applicationMissing[i] ||
                 _eventHardpointMonitorWarning.applicationCRCMismatch[i] !=
-                        this->previousEventHardpointMonitorWarning.applicationCRCMismatch[i] ||
+                        _previousEventHardpointMonitorWarning.applicationCRCMismatch[i] ||
                 _eventHardpointMonitorWarning.oneWireMissing[i] !=
-                        this->previousEventHardpointMonitorWarning.oneWireMissing[i] ||
+                        _previousEventHardpointMonitorWarning.oneWireMissing[i] ||
                 _eventHardpointMonitorWarning.oneWire1Mismatch[i] !=
-                        this->previousEventHardpointMonitorWarning.oneWire1Mismatch[i] ||
+                        _previousEventHardpointMonitorWarning.oneWire1Mismatch[i] ||
                 _eventHardpointMonitorWarning.oneWire2Mismatch[i] !=
-                        this->previousEventHardpointMonitorWarning.oneWire2Mismatch[i] ||
+                        _previousEventHardpointMonitorWarning.oneWire2Mismatch[i] ||
                 _eventHardpointMonitorWarning.watchdogReset[i] !=
-                        this->previousEventHardpointMonitorWarning.watchdogReset[i] ||
+                        _previousEventHardpointMonitorWarning.watchdogReset[i] ||
                 _eventHardpointMonitorWarning.brownOut[i] !=
-                        this->previousEventHardpointMonitorWarning.brownOut[i] ||
+                        _previousEventHardpointMonitorWarning.brownOut[i] ||
                 _eventHardpointMonitorWarning.eventTrapReset[i] !=
-                        this->previousEventHardpointMonitorWarning.eventTrapReset[i] ||
+                        _previousEventHardpointMonitorWarning.eventTrapReset[i] ||
                 _eventHardpointMonitorWarning.ssrPowerFault[i] !=
-                        this->previousEventHardpointMonitorWarning.ssrPowerFault[i] ||
+                        _previousEventHardpointMonitorWarning.ssrPowerFault[i] ||
                 _eventHardpointMonitorWarning.auxPowerFault[i] !=
-                        this->previousEventHardpointMonitorWarning.auxPowerFault[i] ||
+                        _previousEventHardpointMonitorWarning.auxPowerFault[i] ||
                 _eventHardpointMonitorWarning.mezzanineS1AInterface1Fault[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineS1AInterface1Fault[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineS1AInterface1Fault[i] ||
                 _eventHardpointMonitorWarning.mezzanineS1ALVDT1Fault[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineS1ALVDT1Fault[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineS1ALVDT1Fault[i] ||
                 _eventHardpointMonitorWarning.mezzanineS1AInterface2Fault[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineS1AInterface2Fault[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineS1AInterface2Fault[i] ||
                 _eventHardpointMonitorWarning.mezzanineS1ALVDT2Fault[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineS1ALVDT2Fault[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineS1ALVDT2Fault[i] ||
                 _eventHardpointMonitorWarning.mezzanineUniqueIdCRCError[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineUniqueIdCRCError[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineUniqueIdCRCError[i] ||
                 _eventHardpointMonitorWarning.mezzanineEventTrapReset[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineEventTrapReset[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineEventTrapReset[i] ||
                 _eventHardpointMonitorWarning.mezzanineDCPRS422ChipFault[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineDCPRS422ChipFault[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineDCPRS422ChipFault[i] ||
                 _eventHardpointMonitorWarning.mezzanineApplicationMissing[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineApplicationMissing[i] ||
+                        _previousEventHardpointMonitorWarning.mezzanineApplicationMissing[i] ||
                 _eventHardpointMonitorWarning.mezzanineApplicationCRCMismatch[i] !=
-                        this->previousEventHardpointMonitorWarning.mezzanineApplicationCRCMismatch[i];
+                        _previousEventHardpointMonitorWarning.mezzanineApplicationCRCMismatch[i];
     }
     if (changeDetected) {
         this->logHardpointMonitorWarning();
@@ -1759,20 +1757,20 @@ void M1M3SSPublisher::logILCWarning() {
             _eventILCWarning.unknownAddress || _eventILCWarning.unknownFunction ||
             _eventILCWarning.unknownProblem;
     _m1m3SAL->logEvent_ilcWarning(&_eventILCWarning, 0);
-    this->previousEventILCWarning = _eventILCWarning;
+    _previousEventILCWarning = _eventILCWarning;
 }
 
 void M1M3SSPublisher::tryLogILCWarning() {
-    if (_eventILCWarning.actuatorId != this->previousEventILCWarning.actuatorId ||
-        _eventILCWarning.responseTimeout != this->previousEventILCWarning.responseTimeout ||
-        _eventILCWarning.invalidCRC != this->previousEventILCWarning.invalidCRC ||
-        _eventILCWarning.illegalFunction != this->previousEventILCWarning.illegalFunction ||
-        _eventILCWarning.illegalDataValue != this->previousEventILCWarning.illegalDataValue ||
-        _eventILCWarning.invalidLength != this->previousEventILCWarning.invalidLength ||
-        _eventILCWarning.unknownSubnet != this->previousEventILCWarning.unknownSubnet ||
-        _eventILCWarning.unknownAddress != this->previousEventILCWarning.unknownAddress ||
-        _eventILCWarning.unknownFunction != this->previousEventILCWarning.unknownFunction ||
-        _eventILCWarning.unknownProblem != this->previousEventILCWarning.unknownProblem) {
+    if (_eventILCWarning.actuatorId != _previousEventILCWarning.actuatorId ||
+        _eventILCWarning.responseTimeout != _previousEventILCWarning.responseTimeout ||
+        _eventILCWarning.invalidCRC != _previousEventILCWarning.invalidCRC ||
+        _eventILCWarning.illegalFunction != _previousEventILCWarning.illegalFunction ||
+        _eventILCWarning.illegalDataValue != _previousEventILCWarning.illegalDataValue ||
+        _eventILCWarning.invalidLength != _previousEventILCWarning.invalidLength ||
+        _eventILCWarning.unknownSubnet != _previousEventILCWarning.unknownSubnet ||
+        _eventILCWarning.unknownAddress != _previousEventILCWarning.unknownAddress ||
+        _eventILCWarning.unknownFunction != _previousEventILCWarning.unknownFunction ||
+        _eventILCWarning.unknownProblem != _previousEventILCWarning.unknownProblem) {
         this->logILCWarning();
     }
 }
@@ -1788,40 +1786,40 @@ void M1M3SSPublisher::logInclinometerSensorWarning() {
             _eventInclinometerSensorWarning.unknownFunction ||
             _eventInclinometerSensorWarning.unknownProblem;
     _m1m3SAL->logEvent_inclinometerSensorWarning(&_eventInclinometerSensorWarning, 0);
-    this->previousEventInclinometerSensorWarning = _eventInclinometerSensorWarning;
+    _previousEventInclinometerSensorWarning = _eventInclinometerSensorWarning;
 }
 
 void M1M3SSPublisher::tryLogInclinometerSensorWarning() {
     if (_eventInclinometerSensorWarning.sensorReportsIllegalFunction !=
-                this->previousEventInclinometerSensorWarning.sensorReportsIllegalFunction ||
+                _previousEventInclinometerSensorWarning.sensorReportsIllegalFunction ||
         _eventInclinometerSensorWarning.sensorReportsIllegalDataAddress !=
-                this->previousEventInclinometerSensorWarning.sensorReportsIllegalDataAddress ||
+                _previousEventInclinometerSensorWarning.sensorReportsIllegalDataAddress ||
         _eventInclinometerSensorWarning.responseTimeout !=
-                this->previousEventInclinometerSensorWarning.responseTimeout ||
+                _previousEventInclinometerSensorWarning.responseTimeout ||
         _eventInclinometerSensorWarning.invalidCRC !=
-                this->previousEventInclinometerSensorWarning.invalidCRC ||
+                _previousEventInclinometerSensorWarning.invalidCRC ||
         _eventInclinometerSensorWarning.invalidLength !=
-                this->previousEventInclinometerSensorWarning.invalidLength ||
+                _previousEventInclinometerSensorWarning.invalidLength ||
         _eventInclinometerSensorWarning.unknownAddress !=
-                this->previousEventInclinometerSensorWarning.unknownAddress ||
+                _previousEventInclinometerSensorWarning.unknownAddress ||
         _eventInclinometerSensorWarning.unknownFunction !=
-                this->previousEventInclinometerSensorWarning.unknownFunction ||
+                _previousEventInclinometerSensorWarning.unknownFunction ||
         _eventInclinometerSensorWarning.unknownProblem !=
-                this->previousEventInclinometerSensorWarning.unknownProblem) {
+                _previousEventInclinometerSensorWarning.unknownProblem) {
         this->logInclinometerSensorWarning();
     }
 }
 
 void M1M3SSPublisher::logInterlockStatus() {
     _m1m3SAL->logEvent_interlockStatus(&_eventInterlockStatus, 0);
-    this->previousEventInterlockStatus = _eventInterlockStatus;
+    _previousEventInterlockStatus = _eventInterlockStatus;
 }
 
 void M1M3SSPublisher::tryLogInterlockStatus() {
     if (_eventInterlockStatus.heartbeatCommandedState !=
-                this->previousEventInterlockStatus.heartbeatCommandedState ||
+                _previousEventInterlockStatus.heartbeatCommandedState ||
         _eventInterlockStatus.heartbeatOutputState !=
-                this->previousEventInterlockStatus.heartbeatOutputState) {
+                _previousEventInterlockStatus.heartbeatOutputState) {
         this->logInterlockStatus();
     }
 }
@@ -1834,59 +1832,59 @@ void M1M3SSPublisher::logInterlockWarning() {
             _eventInterlockWarning.cabinetDoorOpen || _eventInterlockWarning.tmaMotionStop ||
             _eventInterlockWarning.gisHeartbeatLost;
     _m1m3SAL->logEvent_interlockWarning(&_eventInterlockWarning, 0);
-    this->previousEventInterlockWarning = _eventInterlockWarning;
+    _previousEventInterlockWarning = _eventInterlockWarning;
 }
 
 void M1M3SSPublisher::tryLogInterlockWarning() {
     if (_eventInterlockWarning.heartbeatStateOutputMismatch !=
-                this->previousEventInterlockWarning.heartbeatStateOutputMismatch ||
+                _previousEventInterlockWarning.heartbeatStateOutputMismatch ||
         _eventInterlockWarning.auxPowerNetworksOff !=
-                this->previousEventInterlockWarning.auxPowerNetworksOff ||
+                _previousEventInterlockWarning.auxPowerNetworksOff ||
         _eventInterlockWarning.thermalEquipmentOff !=
-                this->previousEventInterlockWarning.thermalEquipmentOff ||
-        _eventInterlockWarning.airSupplyOff != this->previousEventInterlockWarning.airSupplyOff ||
-        _eventInterlockWarning.cabinetDoorOpen != this->previousEventInterlockWarning.cabinetDoorOpen ||
-        _eventInterlockWarning.tmaMotionStop != this->previousEventInterlockWarning.tmaMotionStop ||
+                _previousEventInterlockWarning.thermalEquipmentOff ||
+        _eventInterlockWarning.airSupplyOff != _previousEventInterlockWarning.airSupplyOff ||
+        _eventInterlockWarning.cabinetDoorOpen != _previousEventInterlockWarning.cabinetDoorOpen ||
+        _eventInterlockWarning.tmaMotionStop != _previousEventInterlockWarning.tmaMotionStop ||
         _eventInterlockWarning.gisHeartbeatLost !=
-                this->previousEventInterlockWarning.gisHeartbeatLost) {
+                _previousEventInterlockWarning.gisHeartbeatLost) {
         this->logInterlockWarning();
     }
 }
 
 void M1M3SSPublisher::logModbusResponse() {
     _m1m3SAL->logEvent_modbusResponse(&_eventModbusResponse, 0);
-    this->previousEventModbusResponse = _eventModbusResponse;
+    _previousEventModbusResponse = _eventModbusResponse;
 }
 
 void M1M3SSPublisher::tryLogModbusResponse() {
-    if (_eventModbusResponse.responseValid != this->previousEventModbusResponse.responseValid ||
-        _eventModbusResponse.address != this->previousEventModbusResponse.address ||
-        _eventModbusResponse.functionCode != this->previousEventModbusResponse.functionCode ||
-        _eventModbusResponse.crc != this->previousEventModbusResponse.crc ||
-        _eventModbusResponse.dataLength != this->previousEventModbusResponse.dataLength) {
+    if (_eventModbusResponse.responseValid != _previousEventModbusResponse.responseValid ||
+        _eventModbusResponse.address != _previousEventModbusResponse.address ||
+        _eventModbusResponse.functionCode != _previousEventModbusResponse.functionCode ||
+        _eventModbusResponse.crc != _previousEventModbusResponse.crc ||
+        _eventModbusResponse.dataLength != _previousEventModbusResponse.dataLength) {
         this->logModbusResponse();
     }
 }
 
 void M1M3SSPublisher::logPIDInfo() {
     _m1m3SAL->logEvent_pidInfo(&_eventPIDInfo, 0);
-    this->previousEventPIDInfo = _eventPIDInfo;
+    _previousEventPIDInfo = _eventPIDInfo;
 }
 
 void M1M3SSPublisher::tryLogPIDInfo() {
     bool changeDetected = false;
     for (int i = 0; i < 6 && !changeDetected; ++i) {
         changeDetected = changeDetected ||
-                         _eventPIDInfo.timestep[i] != this->previousEventPIDInfo.timestep[i] ||
-                         _eventPIDInfo.p[i] != this->previousEventPIDInfo.p[i] ||
-                         _eventPIDInfo.i[i] != this->previousEventPIDInfo.i[i] ||
-                         _eventPIDInfo.d[i] != this->previousEventPIDInfo.d[i] ||
-                         _eventPIDInfo.n[i] != this->previousEventPIDInfo.n[i] ||
-                         _eventPIDInfo.calculatedA[i] != this->previousEventPIDInfo.calculatedA[i] ||
-                         _eventPIDInfo.calculatedB[i] != this->previousEventPIDInfo.calculatedB[i] ||
-                         _eventPIDInfo.calculatedC[i] != this->previousEventPIDInfo.calculatedC[i] ||
-                         _eventPIDInfo.calculatedD[i] != this->previousEventPIDInfo.calculatedD[i] ||
-                         _eventPIDInfo.calculatedE[i] != this->previousEventPIDInfo.calculatedE[i];
+                         _eventPIDInfo.timestep[i] != _previousEventPIDInfo.timestep[i] ||
+                         _eventPIDInfo.p[i] != _previousEventPIDInfo.p[i] ||
+                         _eventPIDInfo.i[i] != _previousEventPIDInfo.i[i] ||
+                         _eventPIDInfo.d[i] != _previousEventPIDInfo.d[i] ||
+                         _eventPIDInfo.n[i] != _previousEventPIDInfo.n[i] ||
+                         _eventPIDInfo.calculatedA[i] != _previousEventPIDInfo.calculatedA[i] ||
+                         _eventPIDInfo.calculatedB[i] != _previousEventPIDInfo.calculatedB[i] ||
+                         _eventPIDInfo.calculatedC[i] != _previousEventPIDInfo.calculatedC[i] ||
+                         _eventPIDInfo.calculatedD[i] != _previousEventPIDInfo.calculatedD[i] ||
+                         _eventPIDInfo.calculatedE[i] != _previousEventPIDInfo.calculatedE[i];
     }
     if (changeDetected) {
         this->logPIDInfo();
@@ -1895,98 +1893,98 @@ void M1M3SSPublisher::tryLogPIDInfo() {
 
 void M1M3SSPublisher::logPowerStatus() {
     _m1m3SAL->logEvent_powerStatus(&_eventPowerStatus, 0);
-    this->previousEventPowerStatus = _eventPowerStatus;
+    _previousEventPowerStatus = _eventPowerStatus;
 }
 
 void M1M3SSPublisher::tryLogPowerStatus() {
     if (_eventPowerStatus.powerNetworkACommandedOn !=
-                this->previousEventPowerStatus.powerNetworkACommandedOn ||
+                _previousEventPowerStatus.powerNetworkACommandedOn ||
         _eventPowerStatus.powerNetworkAOutputOn !=
-                this->previousEventPowerStatus.powerNetworkAOutputOn ||
+                _previousEventPowerStatus.powerNetworkAOutputOn ||
         _eventPowerStatus.powerNetworkBCommandedOn !=
-                this->previousEventPowerStatus.powerNetworkBCommandedOn ||
+                _previousEventPowerStatus.powerNetworkBCommandedOn ||
         _eventPowerStatus.powerNetworkBOutputOn !=
-                this->previousEventPowerStatus.powerNetworkBOutputOn ||
+                _previousEventPowerStatus.powerNetworkBOutputOn ||
         _eventPowerStatus.powerNetworkCCommandedOn !=
-                this->previousEventPowerStatus.powerNetworkCCommandedOn ||
+                _previousEventPowerStatus.powerNetworkCCommandedOn ||
         _eventPowerStatus.powerNetworkCOutputOn !=
-                this->previousEventPowerStatus.powerNetworkCOutputOn ||
+                _previousEventPowerStatus.powerNetworkCOutputOn ||
         _eventPowerStatus.powerNetworkDCommandedOn !=
-                this->previousEventPowerStatus.powerNetworkDCommandedOn ||
+                _previousEventPowerStatus.powerNetworkDCommandedOn ||
         _eventPowerStatus.powerNetworkDOutputOn !=
-                this->previousEventPowerStatus.powerNetworkDOutputOn ||
+                _previousEventPowerStatus.powerNetworkDOutputOn ||
         _eventPowerStatus.auxPowerNetworkACommandedOn !=
-                this->previousEventPowerStatus.auxPowerNetworkACommandedOn ||
+                _previousEventPowerStatus.auxPowerNetworkACommandedOn ||
         _eventPowerStatus.auxPowerNetworkAOutputOn !=
-                this->previousEventPowerStatus.auxPowerNetworkAOutputOn ||
+                _previousEventPowerStatus.auxPowerNetworkAOutputOn ||
         _eventPowerStatus.auxPowerNetworkBCommandedOn !=
-                this->previousEventPowerStatus.auxPowerNetworkBCommandedOn ||
+                _previousEventPowerStatus.auxPowerNetworkBCommandedOn ||
         _eventPowerStatus.auxPowerNetworkBOutputOn !=
-                this->previousEventPowerStatus.auxPowerNetworkBOutputOn ||
+                _previousEventPowerStatus.auxPowerNetworkBOutputOn ||
         _eventPowerStatus.auxPowerNetworkCCommandedOn !=
-                this->previousEventPowerStatus.auxPowerNetworkCCommandedOn ||
+                _previousEventPowerStatus.auxPowerNetworkCCommandedOn ||
         _eventPowerStatus.auxPowerNetworkCOutputOn !=
-                this->previousEventPowerStatus.auxPowerNetworkCOutputOn ||
+                _previousEventPowerStatus.auxPowerNetworkCOutputOn ||
         _eventPowerStatus.auxPowerNetworkDCommandedOn !=
-                this->previousEventPowerStatus.auxPowerNetworkDCommandedOn ||
+                _previousEventPowerStatus.auxPowerNetworkDCommandedOn ||
         _eventPowerStatus.auxPowerNetworkDOutputOn !=
-                this->previousEventPowerStatus.auxPowerNetworkDOutputOn) {
+                _previousEventPowerStatus.auxPowerNetworkDOutputOn) {
         this->logPowerStatus();
     }
 }
 
 void M1M3SSPublisher::logPowerSupplyStatus() {
     _m1m3SAL->logEvent_powerSupplyStatus(&_eventPowerSupplyStatus, 0);
-    this->previousEventPowerSupplyStatus = _eventPowerSupplyStatus;
+    _previousEventPowerSupplyStatus = _eventPowerSupplyStatus;
 }
 
 void M1M3SSPublisher::tryLogPowerSupplyStatus() {
     if (_eventPowerSupplyStatus.rcpMirrorCellUtility220VAC1Status !=
-                this->previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC1Status ||
+                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC1Status ||
         _eventPowerSupplyStatus.rcpCabinetUtility220VACStatus !=
-                this->previousEventPowerSupplyStatus.rcpCabinetUtility220VACStatus ||
+                _previousEventPowerSupplyStatus.rcpCabinetUtility220VACStatus ||
         _eventPowerSupplyStatus.rcpExternalEquipment220VACStatus !=
-                this->previousEventPowerSupplyStatus.rcpExternalEquipment220VACStatus ||
+                _previousEventPowerSupplyStatus.rcpExternalEquipment220VACStatus ||
         _eventPowerSupplyStatus.rcpMirrorCellUtility220VAC2Status !=
-                this->previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC2Status ||
+                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC2Status ||
         _eventPowerSupplyStatus.rcpMirrorCellUtility220VAC3Status !=
-                this->previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC3Status ||
+                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC3Status ||
         _eventPowerSupplyStatus.powerNetworkARedundancyControlStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkARedundancyControlStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkARedundancyControlStatus ||
         _eventPowerSupplyStatus.powerNetworkBRedundancyControlStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkBRedundancyControlStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkBRedundancyControlStatus ||
         _eventPowerSupplyStatus.powerNetworkCRedundancyControlStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkCRedundancyControlStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkCRedundancyControlStatus ||
         _eventPowerSupplyStatus.powerNetworkDRedundancyControlStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkDRedundancyControlStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkDRedundancyControlStatus ||
         _eventPowerSupplyStatus.controlsPowerNetworkRedundancyControlStatus !=
-                this->previousEventPowerSupplyStatus.controlsPowerNetworkRedundancyControlStatus ||
+                _previousEventPowerSupplyStatus.controlsPowerNetworkRedundancyControlStatus ||
         _eventPowerSupplyStatus.powerNetworkAStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkAStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkAStatus ||
         _eventPowerSupplyStatus.powerNetworkARedundantStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkARedundantStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkARedundantStatus ||
         _eventPowerSupplyStatus.powerNetworkBStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkBStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkBStatus ||
         _eventPowerSupplyStatus.powerNetworkBRedundantStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkBRedundantStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkBRedundantStatus ||
         _eventPowerSupplyStatus.powerNetworkCStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkCStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkCStatus ||
         _eventPowerSupplyStatus.powerNetworkCRedundantStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkCRedundantStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkCRedundantStatus ||
         _eventPowerSupplyStatus.powerNetworkDStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkDStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkDStatus ||
         _eventPowerSupplyStatus.powerNetworkDRedundantStatus !=
-                this->previousEventPowerSupplyStatus.powerNetworkDRedundantStatus ||
+                _previousEventPowerSupplyStatus.powerNetworkDRedundantStatus ||
         _eventPowerSupplyStatus.controlsPowerNetworkStatus !=
-                this->previousEventPowerSupplyStatus.controlsPowerNetworkStatus ||
+                _previousEventPowerSupplyStatus.controlsPowerNetworkStatus ||
         _eventPowerSupplyStatus.controlsPowerNetworkRedundantStatus !=
-                this->previousEventPowerSupplyStatus.controlsPowerNetworkRedundantStatus ||
+                _previousEventPowerSupplyStatus.controlsPowerNetworkRedundantStatus ||
         _eventPowerSupplyStatus.lightPowerNetworkStatus !=
-                this->previousEventPowerSupplyStatus.lightPowerNetworkStatus ||
+                _previousEventPowerSupplyStatus.lightPowerNetworkStatus ||
         _eventPowerSupplyStatus.externalEquipmentPowerNetworkStatus !=
-                this->previousEventPowerSupplyStatus.externalEquipmentPowerNetworkStatus ||
+                _previousEventPowerSupplyStatus.externalEquipmentPowerNetworkStatus ||
         _eventPowerSupplyStatus.laserTrackerPowerNetworkStatus !=
-                this->previousEventPowerSupplyStatus.laserTrackerPowerNetworkStatus) {
+                _previousEventPowerSupplyStatus.laserTrackerPowerNetworkStatus) {
         this->logPowerSupplyStatus();
     }
 }
@@ -2001,43 +1999,43 @@ void M1M3SSPublisher::logPowerWarning() {
                                          _eventPowerWarning.auxPowerNetworkCOutputMismatch ||
                                          _eventPowerWarning.auxPowerNetworkDOutputMismatch;
     _m1m3SAL->logEvent_powerWarning(&_eventPowerWarning, 0);
-    this->previousEventPowerWarning = _eventPowerWarning;
+    _previousEventPowerWarning = _eventPowerWarning;
 }
 
 void M1M3SSPublisher::tryLogPowerWarning() {
     if (_eventPowerWarning.powerNetworkAOutputMismatch !=
-                this->previousEventPowerWarning.powerNetworkAOutputMismatch ||
+                _previousEventPowerWarning.powerNetworkAOutputMismatch ||
         _eventPowerWarning.powerNetworkBOutputMismatch !=
-                this->previousEventPowerWarning.powerNetworkBOutputMismatch ||
+                _previousEventPowerWarning.powerNetworkBOutputMismatch ||
         _eventPowerWarning.powerNetworkCOutputMismatch !=
-                this->previousEventPowerWarning.powerNetworkCOutputMismatch ||
+                _previousEventPowerWarning.powerNetworkCOutputMismatch ||
         _eventPowerWarning.powerNetworkDOutputMismatch !=
-                this->previousEventPowerWarning.powerNetworkDOutputMismatch ||
+                _previousEventPowerWarning.powerNetworkDOutputMismatch ||
         _eventPowerWarning.auxPowerNetworkAOutputMismatch !=
-                this->previousEventPowerWarning.auxPowerNetworkAOutputMismatch ||
+                _previousEventPowerWarning.auxPowerNetworkAOutputMismatch ||
         _eventPowerWarning.auxPowerNetworkBOutputMismatch !=
-                this->previousEventPowerWarning.auxPowerNetworkBOutputMismatch ||
+                _previousEventPowerWarning.auxPowerNetworkBOutputMismatch ||
         _eventPowerWarning.auxPowerNetworkCOutputMismatch !=
-                this->previousEventPowerWarning.auxPowerNetworkCOutputMismatch ||
+                _previousEventPowerWarning.auxPowerNetworkCOutputMismatch ||
         _eventPowerWarning.auxPowerNetworkDOutputMismatch !=
-                this->previousEventPowerWarning.auxPowerNetworkDOutputMismatch) {
+                _previousEventPowerWarning.auxPowerNetworkDOutputMismatch) {
         this->logPowerWarning();
     }
 }
 
 void M1M3SSPublisher::logRejectedAberrationForces() {
     _m1m3SAL->logEvent_rejectedAberrationForces(&_eventRejectedAberrationForces, 0);
-    this->previousEventRejectedAberrationForces = _eventRejectedAberrationForces;
+    _previousEventRejectedAberrationForces = _eventRejectedAberrationForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedAberrationForces() {
     bool changeDetected =
-            _eventRejectedAberrationForces.fz != this->previousEventRejectedAberrationForces.fz ||
-            _eventRejectedAberrationForces.mx != this->previousEventRejectedAberrationForces.mx ||
-            _eventRejectedAberrationForces.my != this->previousEventRejectedAberrationForces.my;
+            _eventRejectedAberrationForces.fz != _previousEventRejectedAberrationForces.fz ||
+            _eventRejectedAberrationForces.mx != _previousEventRejectedAberrationForces.mx ||
+            _eventRejectedAberrationForces.my != _previousEventRejectedAberrationForces.my;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventRejectedAberrationForces.zForces[i] !=
-                                                   this->previousEventRejectedAberrationForces.zForces[i];
+                                                   _previousEventRejectedAberrationForces.zForces[i];
     }
     if (changeDetected) {
         this->logRejectedAberrationForces();
@@ -2046,25 +2044,25 @@ void M1M3SSPublisher::tryLogRejectedAberrationForces() {
 
 void M1M3SSPublisher::logRejectedAccelerationForces() {
     _m1m3SAL->logEvent_rejectedAccelerationForces(&_eventRejectedAccelerationForces, 0);
-    this->previousEventRejectedAccelerationForces = _eventRejectedAccelerationForces;
+    _previousEventRejectedAccelerationForces = _eventRejectedAccelerationForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedAccelerationForces() {
     bool changeDetected =
-            _eventRejectedAccelerationForces.fx != this->previousEventRejectedAccelerationForces.fx ||
-            _eventRejectedAccelerationForces.fy != this->previousEventRejectedAccelerationForces.fy ||
-            _eventRejectedAccelerationForces.fz != this->previousEventRejectedAccelerationForces.fz ||
-            _eventRejectedAccelerationForces.mx != this->previousEventRejectedAccelerationForces.mx ||
-            _eventRejectedAccelerationForces.my != this->previousEventRejectedAccelerationForces.my ||
-            _eventRejectedAccelerationForces.mz != this->previousEventRejectedAccelerationForces.mz;
+            _eventRejectedAccelerationForces.fx != _previousEventRejectedAccelerationForces.fx ||
+            _eventRejectedAccelerationForces.fy != _previousEventRejectedAccelerationForces.fy ||
+            _eventRejectedAccelerationForces.fz != _previousEventRejectedAccelerationForces.fz ||
+            _eventRejectedAccelerationForces.mx != _previousEventRejectedAccelerationForces.mx ||
+            _eventRejectedAccelerationForces.my != _previousEventRejectedAccelerationForces.my ||
+            _eventRejectedAccelerationForces.mz != _previousEventRejectedAccelerationForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedAccelerationForces.xForces[i] !=
-                                            this->previousEventRejectedAccelerationForces.xForces[i]) ||
+                                            _previousEventRejectedAccelerationForces.xForces[i]) ||
                          (i < 100 && _eventRejectedAccelerationForces.yForces[i] !=
-                                             this->previousEventRejectedAccelerationForces.yForces[i]) ||
+                                             _previousEventRejectedAccelerationForces.yForces[i]) ||
                          (_eventRejectedAccelerationForces.zForces[i] !=
-                          this->previousEventRejectedAccelerationForces.zForces[i]);
+                          _previousEventRejectedAccelerationForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedAccelerationForces();
@@ -2073,17 +2071,17 @@ void M1M3SSPublisher::tryLogRejectedAccelerationForces() {
 
 void M1M3SSPublisher::logRejectedActiveOpticForces() {
     _m1m3SAL->logEvent_rejectedActiveOpticForces(&_eventRejectedActiveOpticForces, 0);
-    this->previousEventRejectedActiveOpticForces = _eventRejectedActiveOpticForces;
+    _previousEventRejectedActiveOpticForces = _eventRejectedActiveOpticForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedActiveOpticForces() {
     bool changeDetected =
-            _eventRejectedActiveOpticForces.fz != this->previousEventRejectedActiveOpticForces.fz ||
-            _eventRejectedActiveOpticForces.mx != this->previousEventRejectedActiveOpticForces.mx ||
-            _eventRejectedActiveOpticForces.my != this->previousEventRejectedActiveOpticForces.my;
+            _eventRejectedActiveOpticForces.fz != _previousEventRejectedActiveOpticForces.fz ||
+            _eventRejectedActiveOpticForces.mx != _previousEventRejectedActiveOpticForces.mx ||
+            _eventRejectedActiveOpticForces.my != _previousEventRejectedActiveOpticForces.my;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventRejectedActiveOpticForces.zForces[i] !=
-                                                   this->previousEventRejectedActiveOpticForces.zForces[i];
+                                                   _previousEventRejectedActiveOpticForces.zForces[i];
     }
     if (changeDetected) {
         this->logRejectedActiveOpticForces();
@@ -2092,25 +2090,25 @@ void M1M3SSPublisher::tryLogRejectedActiveOpticForces() {
 
 void M1M3SSPublisher::logRejectedAzimuthForces() {
     _m1m3SAL->logEvent_rejectedAzimuthForces(&_eventRejectedAzimuthForces, 0);
-    this->previousEventRejectedAzimuthForces = _eventRejectedAzimuthForces;
+    _previousEventRejectedAzimuthForces = _eventRejectedAzimuthForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedAzimuthForces() {
     bool changeDetected =
-            _eventRejectedAzimuthForces.fx != this->previousEventRejectedAzimuthForces.fx ||
-            _eventRejectedAzimuthForces.fy != this->previousEventRejectedAzimuthForces.fy ||
-            _eventRejectedAzimuthForces.fz != this->previousEventRejectedAzimuthForces.fz ||
-            _eventRejectedAzimuthForces.mx != this->previousEventRejectedAzimuthForces.mx ||
-            _eventRejectedAzimuthForces.my != this->previousEventRejectedAzimuthForces.my ||
-            _eventRejectedAzimuthForces.mz != this->previousEventRejectedAzimuthForces.mz;
+            _eventRejectedAzimuthForces.fx != _previousEventRejectedAzimuthForces.fx ||
+            _eventRejectedAzimuthForces.fy != _previousEventRejectedAzimuthForces.fy ||
+            _eventRejectedAzimuthForces.fz != _previousEventRejectedAzimuthForces.fz ||
+            _eventRejectedAzimuthForces.mx != _previousEventRejectedAzimuthForces.mx ||
+            _eventRejectedAzimuthForces.my != _previousEventRejectedAzimuthForces.my ||
+            _eventRejectedAzimuthForces.mz != _previousEventRejectedAzimuthForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedAzimuthForces.xForces[i] !=
-                                            this->previousEventRejectedAzimuthForces.xForces[i]) ||
+                                            _previousEventRejectedAzimuthForces.xForces[i]) ||
                          (i < 100 && _eventRejectedAzimuthForces.yForces[i] !=
-                                             this->previousEventRejectedAzimuthForces.yForces[i]) ||
+                                             _previousEventRejectedAzimuthForces.yForces[i]) ||
                          (_eventRejectedAzimuthForces.zForces[i] !=
-                          this->previousEventRejectedAzimuthForces.zForces[i]);
+                          _previousEventRejectedAzimuthForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedAzimuthForces();
@@ -2119,25 +2117,25 @@ void M1M3SSPublisher::tryLogRejectedAzimuthForces() {
 
 void M1M3SSPublisher::logRejectedBalanceForces() {
     _m1m3SAL->logEvent_rejectedBalanceForces(&_eventRejectedBalanceForces, 0);
-    this->previousEventRejectedBalanceForces = _eventRejectedBalanceForces;
+    _previousEventRejectedBalanceForces = _eventRejectedBalanceForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedBalanceForces() {
     bool changeDetected =
-            _eventRejectedBalanceForces.fx != this->previousEventRejectedBalanceForces.fx ||
-            _eventRejectedBalanceForces.fy != this->previousEventRejectedBalanceForces.fy ||
-            _eventRejectedBalanceForces.fz != this->previousEventRejectedBalanceForces.fz ||
-            _eventRejectedBalanceForces.mx != this->previousEventRejectedBalanceForces.mx ||
-            _eventRejectedBalanceForces.my != this->previousEventRejectedBalanceForces.my ||
-            _eventRejectedBalanceForces.mz != this->previousEventRejectedBalanceForces.mz;
+            _eventRejectedBalanceForces.fx != _previousEventRejectedBalanceForces.fx ||
+            _eventRejectedBalanceForces.fy != _previousEventRejectedBalanceForces.fy ||
+            _eventRejectedBalanceForces.fz != _previousEventRejectedBalanceForces.fz ||
+            _eventRejectedBalanceForces.mx != _previousEventRejectedBalanceForces.mx ||
+            _eventRejectedBalanceForces.my != _previousEventRejectedBalanceForces.my ||
+            _eventRejectedBalanceForces.mz != _previousEventRejectedBalanceForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedBalanceForces.xForces[i] !=
-                                            this->previousEventRejectedBalanceForces.xForces[i]) ||
+                                            _previousEventRejectedBalanceForces.xForces[i]) ||
                          (i < 100 && _eventRejectedBalanceForces.yForces[i] !=
-                                             this->previousEventRejectedBalanceForces.yForces[i]) ||
+                                             _previousEventRejectedBalanceForces.yForces[i]) ||
                          (_eventRejectedBalanceForces.zForces[i] !=
-                          this->previousEventRejectedBalanceForces.zForces[i]);
+                          _previousEventRejectedBalanceForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedBalanceForces();
@@ -2146,7 +2144,7 @@ void M1M3SSPublisher::tryLogRejectedBalanceForces() {
 
 void M1M3SSPublisher::logRejectedCylinderForces() {
     _m1m3SAL->logEvent_rejectedCylinderForces(&_eventRejectedCylinderForces, 0);
-    this->previousEventRejectedCylinderForces = _eventRejectedCylinderForces;
+    _previousEventRejectedCylinderForces = _eventRejectedCylinderForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedCylinderForces() {
@@ -2155,9 +2153,9 @@ void M1M3SSPublisher::tryLogRejectedCylinderForces() {
         changeDetected =
                 changeDetected ||
                 (i < 112 && _eventRejectedCylinderForces.secondaryCylinderForces[i] !=
-                                    this->previousEventRejectedCylinderForces.secondaryCylinderForces[i]) ||
+                                    _previousEventRejectedCylinderForces.secondaryCylinderForces[i]) ||
                 (_eventRejectedCylinderForces.primaryCylinderForces[i] !=
-                 this->previousEventRejectedCylinderForces.primaryCylinderForces[i]);
+                 _previousEventRejectedCylinderForces.primaryCylinderForces[i]);
     }
     if (changeDetected) {
         this->logRejectedCylinderForces();
@@ -2166,25 +2164,25 @@ void M1M3SSPublisher::tryLogRejectedCylinderForces() {
 
 void M1M3SSPublisher::logRejectedElevationForces() {
     _m1m3SAL->logEvent_rejectedElevationForces(&_eventRejectedElevationForces, 0);
-    this->previousEventRejectedElevationForces = _eventRejectedElevationForces;
+    _previousEventRejectedElevationForces = _eventRejectedElevationForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedElevationForces() {
     bool changeDetected =
-            _eventRejectedElevationForces.fx != this->previousEventRejectedElevationForces.fx ||
-            _eventRejectedElevationForces.fy != this->previousEventRejectedElevationForces.fy ||
-            _eventRejectedElevationForces.fz != this->previousEventRejectedElevationForces.fz ||
-            _eventRejectedElevationForces.mx != this->previousEventRejectedElevationForces.mx ||
-            _eventRejectedElevationForces.my != this->previousEventRejectedElevationForces.my ||
-            _eventRejectedElevationForces.mz != this->previousEventRejectedElevationForces.mz;
+            _eventRejectedElevationForces.fx != _previousEventRejectedElevationForces.fx ||
+            _eventRejectedElevationForces.fy != _previousEventRejectedElevationForces.fy ||
+            _eventRejectedElevationForces.fz != _previousEventRejectedElevationForces.fz ||
+            _eventRejectedElevationForces.mx != _previousEventRejectedElevationForces.mx ||
+            _eventRejectedElevationForces.my != _previousEventRejectedElevationForces.my ||
+            _eventRejectedElevationForces.mz != _previousEventRejectedElevationForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedElevationForces.xForces[i] !=
-                                            this->previousEventRejectedElevationForces.xForces[i]) ||
+                                            _previousEventRejectedElevationForces.xForces[i]) ||
                          (i < 100 && _eventRejectedElevationForces.yForces[i] !=
-                                             this->previousEventRejectedElevationForces.yForces[i]) ||
+                                             _previousEventRejectedElevationForces.yForces[i]) ||
                          (_eventRejectedElevationForces.zForces[i] !=
-                          this->previousEventRejectedElevationForces.zForces[i]);
+                          _previousEventRejectedElevationForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedElevationForces();
@@ -2193,24 +2191,24 @@ void M1M3SSPublisher::tryLogRejectedElevationForces() {
 
 void M1M3SSPublisher::logRejectedForces() {
     _m1m3SAL->logEvent_rejectedForces(&_eventRejectedForces, 0);
-    this->previousEventRejectedForces = _eventRejectedForces;
+    _previousEventRejectedForces = _eventRejectedForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedForces() {
-    bool changeDetected = _eventRejectedForces.fx != this->previousEventRejectedForces.fx ||
-                          _eventRejectedForces.fy != this->previousEventRejectedForces.fy ||
-                          _eventRejectedForces.fz != this->previousEventRejectedForces.fz ||
-                          _eventRejectedForces.mx != this->previousEventRejectedForces.mx ||
-                          _eventRejectedForces.my != this->previousEventRejectedForces.my ||
-                          _eventRejectedForces.mz != this->previousEventRejectedForces.mz;
+    bool changeDetected = _eventRejectedForces.fx != _previousEventRejectedForces.fx ||
+                          _eventRejectedForces.fy != _previousEventRejectedForces.fy ||
+                          _eventRejectedForces.fz != _previousEventRejectedForces.fz ||
+                          _eventRejectedForces.mx != _previousEventRejectedForces.mx ||
+                          _eventRejectedForces.my != _previousEventRejectedForces.my ||
+                          _eventRejectedForces.mz != _previousEventRejectedForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected =
                 changeDetected ||
                 (i < 12 &&
-                 _eventRejectedForces.xForces[i] != this->previousEventRejectedForces.xForces[i]) ||
+                 _eventRejectedForces.xForces[i] != _previousEventRejectedForces.xForces[i]) ||
                 (i < 100 &&
-                 _eventRejectedForces.yForces[i] != this->previousEventRejectedForces.yForces[i]) ||
-                (_eventRejectedForces.zForces[i] != this->previousEventRejectedForces.zForces[i]);
+                 _eventRejectedForces.yForces[i] != _previousEventRejectedForces.yForces[i]) ||
+                (_eventRejectedForces.zForces[i] != _previousEventRejectedForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedForces();
@@ -2219,24 +2217,24 @@ void M1M3SSPublisher::tryLogRejectedForces() {
 
 void M1M3SSPublisher::logRejectedOffsetForces() {
     _m1m3SAL->logEvent_rejectedOffsetForces(&_eventRejectedOffsetForces, 0);
-    this->previousEventRejectedOffsetForces = _eventRejectedOffsetForces;
+    _previousEventRejectedOffsetForces = _eventRejectedOffsetForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedOffsetForces() {
-    bool changeDetected = _eventRejectedOffsetForces.fx != this->previousEventRejectedOffsetForces.fx ||
-                          _eventRejectedOffsetForces.fy != this->previousEventRejectedOffsetForces.fy ||
-                          _eventRejectedOffsetForces.fz != this->previousEventRejectedOffsetForces.fz ||
-                          _eventRejectedOffsetForces.mx != this->previousEventRejectedOffsetForces.mx ||
-                          _eventRejectedOffsetForces.my != this->previousEventRejectedOffsetForces.my ||
-                          _eventRejectedOffsetForces.mz != this->previousEventRejectedOffsetForces.mz;
+    bool changeDetected = _eventRejectedOffsetForces.fx != _previousEventRejectedOffsetForces.fx ||
+                          _eventRejectedOffsetForces.fy != _previousEventRejectedOffsetForces.fy ||
+                          _eventRejectedOffsetForces.fz != _previousEventRejectedOffsetForces.fz ||
+                          _eventRejectedOffsetForces.mx != _previousEventRejectedOffsetForces.mx ||
+                          _eventRejectedOffsetForces.my != _previousEventRejectedOffsetForces.my ||
+                          _eventRejectedOffsetForces.mz != _previousEventRejectedOffsetForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedOffsetForces.xForces[i] !=
-                                            this->previousEventRejectedOffsetForces.xForces[i]) ||
+                                            _previousEventRejectedOffsetForces.xForces[i]) ||
                          (i < 100 && _eventRejectedOffsetForces.yForces[i] !=
-                                             this->previousEventRejectedOffsetForces.yForces[i]) ||
+                                             _previousEventRejectedOffsetForces.yForces[i]) ||
                          (_eventRejectedOffsetForces.zForces[i] !=
-                          this->previousEventRejectedOffsetForces.zForces[i]);
+                          _previousEventRejectedOffsetForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedOffsetForces();
@@ -2245,24 +2243,24 @@ void M1M3SSPublisher::tryLogRejectedOffsetForces() {
 
 void M1M3SSPublisher::logRejectedStaticForces() {
     _m1m3SAL->logEvent_rejectedStaticForces(&_eventRejectedStaticForces, 0);
-    this->previousEventRejectedStaticForces = _eventRejectedStaticForces;
+    _previousEventRejectedStaticForces = _eventRejectedStaticForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedStaticForces() {
-    bool changeDetected = _eventRejectedStaticForces.fx != this->previousEventRejectedStaticForces.fx ||
-                          _eventRejectedStaticForces.fy != this->previousEventRejectedStaticForces.fy ||
-                          _eventRejectedStaticForces.fz != this->previousEventRejectedStaticForces.fz ||
-                          _eventRejectedStaticForces.mx != this->previousEventRejectedStaticForces.mx ||
-                          _eventRejectedStaticForces.my != this->previousEventRejectedStaticForces.my ||
-                          _eventRejectedStaticForces.mz != this->previousEventRejectedStaticForces.mz;
+    bool changeDetected = _eventRejectedStaticForces.fx != _previousEventRejectedStaticForces.fx ||
+                          _eventRejectedStaticForces.fy != _previousEventRejectedStaticForces.fy ||
+                          _eventRejectedStaticForces.fz != _previousEventRejectedStaticForces.fz ||
+                          _eventRejectedStaticForces.mx != _previousEventRejectedStaticForces.mx ||
+                          _eventRejectedStaticForces.my != _previousEventRejectedStaticForces.my ||
+                          _eventRejectedStaticForces.mz != _previousEventRejectedStaticForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedStaticForces.xForces[i] !=
-                                            this->previousEventRejectedStaticForces.xForces[i]) ||
+                                            _previousEventRejectedStaticForces.xForces[i]) ||
                          (i < 100 && _eventRejectedStaticForces.yForces[i] !=
-                                             this->previousEventRejectedStaticForces.yForces[i]) ||
+                                             _previousEventRejectedStaticForces.yForces[i]) ||
                          (_eventRejectedStaticForces.zForces[i] !=
-                          this->previousEventRejectedStaticForces.zForces[i]);
+                          _previousEventRejectedStaticForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedStaticForces();
@@ -2271,25 +2269,25 @@ void M1M3SSPublisher::tryLogRejectedStaticForces() {
 
 void M1M3SSPublisher::logRejectedThermalForces() {
     _m1m3SAL->logEvent_rejectedThermalForces(&_eventRejectedThermalForces, 0);
-    this->previousEventRejectedThermalForces = _eventRejectedThermalForces;
+    _previousEventRejectedThermalForces = _eventRejectedThermalForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedThermalForces() {
     bool changeDetected =
-            _eventRejectedThermalForces.fx != this->previousEventRejectedThermalForces.fx ||
-            _eventRejectedThermalForces.fy != this->previousEventRejectedThermalForces.fy ||
-            _eventRejectedThermalForces.fz != this->previousEventRejectedThermalForces.fz ||
-            _eventRejectedThermalForces.mx != this->previousEventRejectedThermalForces.mx ||
-            _eventRejectedThermalForces.my != this->previousEventRejectedThermalForces.my ||
-            _eventRejectedThermalForces.mz != this->previousEventRejectedThermalForces.mz;
+            _eventRejectedThermalForces.fx != _previousEventRejectedThermalForces.fx ||
+            _eventRejectedThermalForces.fy != _previousEventRejectedThermalForces.fy ||
+            _eventRejectedThermalForces.fz != _previousEventRejectedThermalForces.fz ||
+            _eventRejectedThermalForces.mx != _previousEventRejectedThermalForces.mx ||
+            _eventRejectedThermalForces.my != _previousEventRejectedThermalForces.my ||
+            _eventRejectedThermalForces.mz != _previousEventRejectedThermalForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedThermalForces.xForces[i] !=
-                                            this->previousEventRejectedThermalForces.xForces[i]) ||
+                                            _previousEventRejectedThermalForces.xForces[i]) ||
                          (i < 100 && _eventRejectedThermalForces.yForces[i] !=
-                                             this->previousEventRejectedThermalForces.yForces[i]) ||
+                                             _previousEventRejectedThermalForces.yForces[i]) ||
                          (_eventRejectedThermalForces.zForces[i] !=
-                          this->previousEventRejectedThermalForces.zForces[i]);
+                          _previousEventRejectedThermalForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedThermalForces();
@@ -2298,25 +2296,25 @@ void M1M3SSPublisher::tryLogRejectedThermalForces() {
 
 void M1M3SSPublisher::logRejectedVelocityForces() {
     _m1m3SAL->logEvent_rejectedVelocityForces(&_eventRejectedVelocityForces, 0);
-    this->previousEventRejectedVelocityForces = _eventRejectedVelocityForces;
+    _previousEventRejectedVelocityForces = _eventRejectedVelocityForces;
 }
 
 void M1M3SSPublisher::tryLogRejectedVelocityForces() {
     bool changeDetected =
-            _eventRejectedVelocityForces.fx != this->previousEventRejectedVelocityForces.fx ||
-            _eventRejectedVelocityForces.fy != this->previousEventRejectedVelocityForces.fy ||
-            _eventRejectedVelocityForces.fz != this->previousEventRejectedVelocityForces.fz ||
-            _eventRejectedVelocityForces.mx != this->previousEventRejectedVelocityForces.mx ||
-            _eventRejectedVelocityForces.my != this->previousEventRejectedVelocityForces.my ||
-            _eventRejectedVelocityForces.mz != this->previousEventRejectedVelocityForces.mz;
+            _eventRejectedVelocityForces.fx != _previousEventRejectedVelocityForces.fx ||
+            _eventRejectedVelocityForces.fy != _previousEventRejectedVelocityForces.fy ||
+            _eventRejectedVelocityForces.fz != _previousEventRejectedVelocityForces.fz ||
+            _eventRejectedVelocityForces.mx != _previousEventRejectedVelocityForces.mx ||
+            _eventRejectedVelocityForces.my != _previousEventRejectedVelocityForces.my ||
+            _eventRejectedVelocityForces.mz != _previousEventRejectedVelocityForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          (i < 12 && _eventRejectedVelocityForces.xForces[i] !=
-                                            this->previousEventRejectedVelocityForces.xForces[i]) ||
+                                            _previousEventRejectedVelocityForces.xForces[i]) ||
                          (i < 100 && _eventRejectedVelocityForces.yForces[i] !=
-                                             this->previousEventRejectedVelocityForces.yForces[i]) ||
+                                             _previousEventRejectedVelocityForces.yForces[i]) ||
                          (_eventRejectedVelocityForces.zForces[i] !=
-                          this->previousEventRejectedVelocityForces.zForces[i]);
+                          _previousEventRejectedVelocityForces.zForces[i]);
     }
     if (changeDetected) {
         this->logRejectedVelocityForces();
@@ -2329,23 +2327,23 @@ void M1M3SSPublisher::logSettingVersions() {
 
 void M1M3SSPublisher::logSettingsApplied() {
     _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0);
-    this->previousEventSettingsApplied = _eventSettingsApplied;
+    _previousEventSettingsApplied = _eventSettingsApplied;
 }
 
 void M1M3SSPublisher::tryLogSettingsApplied() {
     if (_eventSettingsApplied.settingsVersion.compare(
-                this->previousEventSettingsApplied.settingsVersion) != 0) {
+                _previousEventSettingsApplied.settingsVersion) != 0) {
         this->logSettingsApplied();
     }
 }
 
 void M1M3SSPublisher::logSummaryState() {
     _m1m3SAL->logEvent_summaryState(&_eventSummaryState, 0);
-    this->previousEventSummaryState = _eventSummaryState;
+    _previousEventSummaryState = _eventSummaryState;
 }
 
 void M1M3SSPublisher::tryLogSummaryState() {
-    if (_eventSummaryState.summaryState != this->previousEventSummaryState.summaryState) {
+    if (_eventSummaryState.summaryState != _previousEventSummaryState.summaryState) {
         this->logSummaryState();
     }
 }

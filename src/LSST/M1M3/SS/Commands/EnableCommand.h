@@ -38,10 +38,6 @@ namespace SS {
  * This is an external command and can be issued via SAL.
  */
 class EnableCommand : public Command {
-private:
-    Context* context;
-    M1M3SSPublisher* publisher;
-
 public:
     EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableC*);
 
@@ -49,6 +45,10 @@ public:
     void ackInProgress();
     void ackComplete();
     void ackFailed(std::string reason);
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

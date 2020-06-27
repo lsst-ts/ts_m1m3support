@@ -31,25 +31,25 @@ namespace SS {
 
 ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                      MTM1M3_command_programILCC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.actuatorId = data->actuatorId;
-    this->data.filePath = data->filePath;
+    _data.actuatorId = data->actuatorId;
+    _data.filePath = data->filePath;
 }
 
-void ProgramILCCommand::execute() { this->context->programILC(this); }
+void ProgramILCCommand::execute() { _context->programILC(this); }
 
 void ProgramILCCommand::ackInProgress() {
-    this->publisher->ackCommandprogramILC(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandprogramILC(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ProgramILCCommand::ackComplete() {
-    this->publisher->ackCommandprogramILC(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandprogramILC(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void ProgramILCCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandprogramILC(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandprogramILC(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

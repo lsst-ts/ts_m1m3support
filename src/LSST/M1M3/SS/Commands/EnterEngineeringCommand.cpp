@@ -31,23 +31,23 @@ namespace SS {
 
 EnterEngineeringCommand::EnterEngineeringCommand(Context* context, M1M3SSPublisher* publisher,
                                                  int32_t commandID, MTM1M3_command_enterEngineeringC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void EnterEngineeringCommand::execute() { this->context->enterEngineering(this); }
+void EnterEngineeringCommand::execute() { _context->enterEngineering(this); }
 
 void EnterEngineeringCommand::ackInProgress() {
-    this->publisher->ackCommandenterEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandenterEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnterEngineeringCommand::ackComplete() {
-    this->publisher->ackCommandenterEngineering(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandenterEngineering(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnterEngineeringCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandenterEngineering(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandenterEngineering(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

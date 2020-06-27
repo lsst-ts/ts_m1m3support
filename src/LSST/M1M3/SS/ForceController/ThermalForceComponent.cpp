@@ -40,18 +40,18 @@ ThermalForceComponent::ThermalForceComponent(
         M1M3SSPublisher* publisher, SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Thermal";
+    name = "Thermal";
 
-    this->publisher = publisher;
-    this->safetyController = safetyController;
-    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    this->forceActuatorSettings = forceActuatorSettings;
-    this->forceActuatorState = this->publisher->getEventForceActuatorState();
-    this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
-    this->appliedThermalForces = this->publisher->getEventAppliedThermalForces();
-    this->rejectedThermalForces = this->publisher->getEventRejectedThermalForces();
-    this->maxRateOfChange = this->forceActuatorSettings->ThermalComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = this->forceActuatorSettings->ThermalComponentSettings.NearZeroValue;
+    _publisher = publisher;
+    _safetyController = safetyController;
+    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    _forceActuatorSettings = forceActuatorSettings;
+    _forceActuatorState = _publisher->getEventForceActuatorState();
+    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
+    _appliedThermalForces = _publisher->getEventAppliedThermalForces();
+    _rejectedThermalForces = _publisher->getEventRejectedThermalForces();
+    maxRateOfChange = _forceActuatorSettings->ThermalComponentSettings.MaxRateOfChange;
+    nearZeroValue = _forceActuatorSettings->ThermalComponentSettings.NearZeroValue;
 }
 
 void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
@@ -80,13 +80,13 @@ void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
 void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperature) {
     spdlog::trace("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
     DistributedForces forces =
-            ForceConverter::calculateForceFromTemperature(this->forceActuatorSettings, temperature);
+            ForceConverter::calculateForceFromTemperature(_forceActuatorSettings, temperature);
     float xForces[12];
     float yForces[100];
     float zForces[156];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -102,9 +102,9 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
 void ThermalForceComponent::postEnableDisableActions() {
     spdlog::debug("ThermalForceComponent: postEnableDisableActions()");
 
-    this->forceActuatorState->timestamp = this->publisher->getTimestamp();
-    this->forceActuatorState->thermalForcesApplied = this->enabled;
-    this->publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->thermalForcesApplied = this->enabled;
+    _publisher->tryLogForceActuatorState();
 }
 
 void ThermalForceComponent::postUpdateActions() {
@@ -112,78 +112,78 @@ void ThermalForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    this->appliedThermalForces->timestamp = this->publisher->getTimestamp();
-    this->rejectedThermalForces->timestamp = this->appliedThermalForces->timestamp;
+    _appliedThermalForces->timestamp = _publisher->getTimestamp();
+    _rejectedThermalForces->timestamp = _appliedThermalForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
-        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
-        this->forceSetpointWarning->thermalForceWarning[zIndex] = false;
+        _forceSetpointWarning->thermalForceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = this->forceActuatorSettings->ThermalLimitXTable[xIndex].LowFault;
-            float xHighFault = this->forceActuatorSettings->ThermalLimitXTable[xIndex].HighFault;
-            this->rejectedThermalForces->xForces[xIndex] = this->xCurrent[xIndex];
+            float xLowFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].LowFault;
+            float xHighFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].HighFault;
+            _rejectedThermalForces->xForces[xIndex] = this->xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  this->rejectedThermalForces->xForces[xIndex],
-                                                  this->appliedThermalForces->xForces + xIndex);
-            this->forceSetpointWarning->thermalForceWarning[zIndex] =
-                    this->forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
+                                                  _rejectedThermalForces->xForces[xIndex],
+                                                  _appliedThermalForces->xForces + xIndex);
+            _forceSetpointWarning->thermalForceWarning[zIndex] =
+                    _forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
         }
 
         if (yIndex != -1) {
-            float yLowFault = this->forceActuatorSettings->ThermalLimitYTable[yIndex].LowFault;
-            float yHighFault = this->forceActuatorSettings->ThermalLimitYTable[yIndex].HighFault;
-            this->rejectedThermalForces->yForces[yIndex] = this->yCurrent[yIndex];
+            float yLowFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].LowFault;
+            float yHighFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].HighFault;
+            _rejectedThermalForces->yForces[yIndex] = this->yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  this->rejectedThermalForces->yForces[yIndex],
-                                                  this->appliedThermalForces->yForces + yIndex);
-            this->forceSetpointWarning->thermalForceWarning[zIndex] =
-                    this->forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
+                                                  _rejectedThermalForces->yForces[yIndex],
+                                                  _appliedThermalForces->yForces + yIndex);
+            _forceSetpointWarning->thermalForceWarning[zIndex] =
+                    _forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
         }
 
-        float zLowFault = this->forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
-        float zHighFault = this->forceActuatorSettings->ThermalLimitZTable[zIndex].HighFault;
-        this->rejectedThermalForces->zForces[zIndex] = this->zCurrent[zIndex];
+        float zLowFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
+        float zHighFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].HighFault;
+        _rejectedThermalForces->zForces[zIndex] = this->zCurrent[zIndex];
         notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedThermalForces->zForces[zIndex],
-                                         this->appliedThermalForces->zForces + zIndex);
-        this->forceSetpointWarning->thermalForceWarning[zIndex] =
-                this->forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || this->forceSetpointWarning->thermalForceWarning[zIndex];
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedThermalForces->zForces[zIndex],
+                                         _appliedThermalForces->zForces + zIndex);
+        _forceSetpointWarning->thermalForceWarning[zIndex] =
+                _forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
+        rejectionRequired = rejectionRequired || _forceSetpointWarning->thermalForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            this->forceActuatorApplicationSettings, this->forceActuatorSettings,
-            this->appliedThermalForces->xForces, this->appliedThermalForces->yForces,
-            this->appliedThermalForces->zForces);
-    this->appliedThermalForces->fx = fm.Fx;
-    this->appliedThermalForces->fy = fm.Fy;
-    this->appliedThermalForces->fz = fm.Fz;
-    this->appliedThermalForces->mx = fm.Mx;
-    this->appliedThermalForces->my = fm.My;
-    this->appliedThermalForces->mz = fm.Mz;
-    this->appliedThermalForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings,
+            _appliedThermalForces->xForces, _appliedThermalForces->yForces,
+            _appliedThermalForces->zForces);
+    _appliedThermalForces->fx = fm.Fx;
+    _appliedThermalForces->fy = fm.Fy;
+    _appliedThermalForces->fz = fm.Fz;
+    _appliedThermalForces->mx = fm.Mx;
+    _appliedThermalForces->my = fm.My;
+    _appliedThermalForces->mz = fm.Mz;
+    _appliedThermalForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            this->forceActuatorApplicationSettings, this->forceActuatorSettings,
-            this->rejectedThermalForces->xForces, this->rejectedThermalForces->yForces,
-            this->rejectedThermalForces->zForces);
-    this->rejectedThermalForces->fx = fm.Fx;
-    this->rejectedThermalForces->fy = fm.Fy;
-    this->rejectedThermalForces->fz = fm.Fz;
-    this->rejectedThermalForces->mx = fm.Mx;
-    this->rejectedThermalForces->my = fm.My;
-    this->rejectedThermalForces->mz = fm.Mz;
-    this->rejectedThermalForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings,
+            _rejectedThermalForces->xForces, _rejectedThermalForces->yForces,
+            _rejectedThermalForces->zForces);
+    _rejectedThermalForces->fx = fm.Fx;
+    _rejectedThermalForces->fy = fm.Fy;
+    _rejectedThermalForces->fz = fm.Fz;
+    _rejectedThermalForces->mx = fm.Mx;
+    _rejectedThermalForces->my = fm.My;
+    _rejectedThermalForces->mz = fm.Mz;
+    _rejectedThermalForces->forceMagnitude = fm.ForceMagnitude;
 
-    this->safetyController->forceControllerNotifyThermalForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyThermalForceClipping(rejectionRequired);
 
-    this->publisher->tryLogForceSetpointWarning();
+    _publisher->tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        this->publisher->logRejectedThermalForces();
+        _publisher->logRejectedThermalForces();
     }
-    this->publisher->logAppliedThermalForces();
+    _publisher->logAppliedThermalForces();
 }
 
 } /* namespace SS */

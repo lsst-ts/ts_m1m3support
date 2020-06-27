@@ -29,22 +29,22 @@ namespace M1M3 {
 namespace SS {
 
 UpdateCommand::UpdateCommand(Context* context, pthread_mutex_t* updateMutex) {
-    this->context = context;
-    this->updateMutex = updateMutex;
+    _context = context;
+    _updateMutex = updateMutex;
     this->commandID = -1;
 
     // Lock the update mutex to prevent the outer loop clock
     // thread from executing.
-    pthread_mutex_lock(this->updateMutex);
+    pthread_mutex_lock(_updateMutex);
 }
 
 UpdateCommand::~UpdateCommand() {
     // Release the update mutex to allow the outer loop clock
     // thread to continue executing.
-    pthread_mutex_unlock(this->updateMutex);
+    pthread_mutex_unlock(_updateMutex);
 }
 
-void UpdateCommand::execute() { this->context->update(this); }
+void UpdateCommand::execute() { _context->update(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

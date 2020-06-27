@@ -127,54 +127,54 @@ public:
     void publishHardpointMonitorData();
 
 private:
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-    ILCSubnetData subnetData;
-    ILCMessageFactory ilcMessageFactory;
-    ILCResponseParser responseParser;
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    ILCSubnetData _subnetData;
+    ILCMessageFactory _ilcMessageFactory;
+    ILCResponseParser _responseParser;
 
-    SetADCChanneOffsetAndSensitivityBusList busListSetADCChannelOffsetAndSensitivity;
-    SetADCScanRateBusList busListSetADCScanRate;
-    SetBoostValveDCAGainBusList busListSetBoostValveDCAGains;
-    ResetBustList busListReset;
-    ReportServerIDBusList busListReportServerID;
-    ReportServerStatusBusList busListReportServerStatus;
-    ReportADCScanRateBusList busListReportADCScanRate;
-    ReadCalibrationBusList busListReadCalibration;
-    ReadBoostValveDCAGainBusList busListReadBoostValveDCAGains;
-    ReportDCAIDBusList busListReportDCAID;
-    ReportDCAStatusBusList busListReportDCAStatus;
-    ChangeILCModeBusList busListChangeILCModeDisabled;
-    ChangeILCModeBusList busListChangeILCModeEnabled;
-    ChangeILCModeBusList busListChangeILCModeStandby;
-    ChangeILCModeBusList busListChangeILCModeClearFaults;
-    FreezeSensorBusList busListFreezeSensor;
-    RaisedBusList busListRaised;
-    ActiveBusList busListActive;
-    FirmwareUpdate firmwareUpdate;
+    SetADCChanneOffsetAndSensitivityBusList _busListSetADCChannelOffsetAndSensitivity;
+    SetADCScanRateBusList _busListSetADCScanRate;
+    SetBoostValveDCAGainBusList _busListSetBoostValveDCAGains;
+    ResetBustList _busListReset;
+    ReportServerIDBusList _busListReportServerID;
+    ReportServerStatusBusList _busListReportServerStatus;
+    ReportADCScanRateBusList _busListReportADCScanRate;
+    ReadCalibrationBusList _busListReadCalibration;
+    ReadBoostValveDCAGainBusList _busListReadBoostValveDCAGains;
+    ReportDCAIDBusList _busListReportDCAID;
+    ReportDCAStatusBusList _busListReportDCAStatus;
+    ChangeILCModeBusList _busListChangeILCModeDisabled;
+    ChangeILCModeBusList _busListChangeILCModeEnabled;
+    ChangeILCModeBusList _busListChangeILCModeStandby;
+    ChangeILCModeBusList _busListChangeILCModeClearFaults;
+    FreezeSensorBusList _busListFreezeSensor;
+    RaisedBusList _busListRaised;
+    ActiveBusList _busListActive;
+    FirmwareUpdate _firmwareUpdate;
 
-    HardpointActuatorSettings* hardpointActuatorSettings;
-    MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    ForceActuatorSettings* forceActuatorSettings;
-    MTM1M3_forceActuatorDataC* forceActuatorData;
-    MTM1M3_logevent_hardpointActuatorInfoC* hardpointActuatorInfo;
-    PositionController* positionController;
+    HardpointActuatorSettings* _hardpointActuatorSettings;
+    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+    MTM1M3_forceActuatorDataC* _forceActuatorData;
+    MTM1M3_logevent_hardpointActuatorInfoC* _hardpointActuatorInfo;
+    PositionController* _positionController;
 
-    int8_t hpStepCommand[6];
-    int32_t hpSteps[6];
+    int8_t _hpStepCommand[6];
+    int32_t _hpSteps[6];
 
-    uint16_t u16Buffer[1];
-    ModbusBuffer rxBuffer;
+    uint16_t _u16Buffer[1];
+    ModbusBuffer _rxBuffer;
 
-    int32_t controlListToggle;
+    int32_t _controlListToggle;
 
-    uint8_t subnetToRxAddress(uint8_t subnet);
-    uint8_t subnetToTxAddress(uint8_t subnet);
+    uint8_t _subnetToRxAddress(uint8_t subnet);
+    uint8_t _subnetToTxAddress(uint8_t subnet);
 
-    void writeBusList(IBusList* busList);
+    void _writeBusList(IBusList* busList);
 
-    void updateHPSteps();
+    void _updateHPSteps();
 };
 
 } /* namespace SS */

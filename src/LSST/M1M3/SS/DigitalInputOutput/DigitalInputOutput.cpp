@@ -41,32 +41,32 @@ namespace SS {
 DigitalInputOutput::DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings,
                                        M1M3SSPublisher* publisher) {
     spdlog::debug("DigitalInputOutput: DigitalInputOutput()");
-    this->interlockApplicationSettings = interlockApplicationSettings;
-    this->publisher = publisher;
-    this->safetyController = 0;
+    _interlockApplicationSettings = interlockApplicationSettings;
+    _publisher = publisher;
+    _safetyController = 0;
 
-    this->airSupplyStatus = this->publisher->getEventAirSupplyStatus();
-    this->airSupplyWarning = this->publisher->getEventAirSupplyWarning();
-    this->cellLightStatus = this->publisher->getEventCellLightStatus();
-    this->cellLightWarning = this->publisher->getEventCellLightWarning();
-    this->interlockStatus = this->publisher->getEventInterlockStatus();
-    this->interlockWarning = this->publisher->getEventInterlockWarning();
+    _airSupplyStatus = _publisher->getEventAirSupplyStatus();
+    _airSupplyWarning = _publisher->getEventAirSupplyWarning();
+    _cellLightStatus = _publisher->getEventCellLightStatus();
+    _cellLightWarning = _publisher->getEventCellLightWarning();
+    _interlockStatus = _publisher->getEventInterlockStatus();
+    _interlockWarning = _publisher->getEventInterlockWarning();
 
-    this->lastDITimestamp = 0;
-    this->lastDOTimestamp = 0;
-    this->lastToggleTimestamp = 0;
+    _lastDITimestamp = 0;
+    _lastDOTimestamp = 0;
+    _lastToggleTimestamp = 0;
 
-    memset(this->airSupplyStatus, 0, sizeof(MTM1M3_logevent_airSupplyStatusC));
-    memset(this->airSupplyWarning, 0, sizeof(MTM1M3_logevent_airSupplyWarningC));
-    memset(this->cellLightStatus, 0, sizeof(MTM1M3_logevent_cellLightStatusC));
-    memset(this->cellLightWarning, 0, sizeof(MTM1M3_logevent_cellLightWarningC));
-    memset(this->interlockStatus, 0, sizeof(MTM1M3_logevent_interlockStatusC));
-    memset(this->interlockWarning, 0, sizeof(MTM1M3_logevent_interlockWarningC));
+    memset(_airSupplyStatus, 0, sizeof(MTM1M3_logevent_airSupplyStatusC));
+    memset(_airSupplyWarning, 0, sizeof(MTM1M3_logevent_airSupplyWarningC));
+    memset(_cellLightStatus, 0, sizeof(MTM1M3_logevent_cellLightStatusC));
+    memset(_cellLightWarning, 0, sizeof(MTM1M3_logevent_cellLightWarningC));
+    memset(_interlockStatus, 0, sizeof(MTM1M3_logevent_interlockStatusC));
+    memset(_interlockWarning, 0, sizeof(MTM1M3_logevent_interlockWarningC));
 }
 
 void DigitalInputOutput::setSafetyController(SafetyController* safetyController) {
     spdlog::debug("DigitalInputOutput: setSafetyController()");
-    this->safetyController = safetyController;
+    _safetyController = safetyController;
 }
 
 void DigitalInputOutput::processData() {
@@ -76,143 +76,143 @@ void DigitalInputOutput::processData() {
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     double timestamp = Timestamp::fromFPGA(
             Range::Max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));
-    if (fpgaData->DigitalOutputTimestamp != this->lastDOTimestamp) {
+    if (fpgaData->DigitalOutputTimestamp != _lastDOTimestamp) {
         tryPublish = true;
-        this->lastDOTimestamp = fpgaData->DigitalOutputTimestamp;
+        _lastDOTimestamp = fpgaData->DigitalOutputTimestamp;
 
-        this->airSupplyStatus->timestamp = timestamp;
-        this->airSupplyStatus->airCommandOutputOn = (fpgaData->DigitalOutputStates & 0x10) != 0;
+        _airSupplyStatus->timestamp = timestamp;
+        _airSupplyStatus->airCommandOutputOn = (fpgaData->DigitalOutputStates & 0x10) != 0;
 
-        this->airSupplyWarning->timestamp = timestamp;
-        this->airSupplyWarning->commandOutputMismatch =
-                this->airSupplyStatus->airCommandOutputOn != this->airSupplyStatus->airCommandedOn;
+        _airSupplyWarning->timestamp = timestamp;
+        _airSupplyWarning->commandOutputMismatch =
+                _airSupplyStatus->airCommandOutputOn != _airSupplyStatus->airCommandedOn;
 
-        this->cellLightStatus->timestamp = timestamp;
+        _cellLightStatus->timestamp = timestamp;
         // Polarity is swapped
-        this->cellLightStatus->cellLightsOutputOn = (fpgaData->DigitalOutputStates & 0x20) == 0;
+        _cellLightStatus->cellLightsOutputOn = (fpgaData->DigitalOutputStates & 0x20) == 0;
 
-        this->cellLightWarning->timestamp = timestamp;
-        this->cellLightWarning->cellLightsOutputMismatch =
-                this->cellLightStatus->cellLightsOutputOn != this->cellLightStatus->cellLightsCommandedOn;
+        _cellLightWarning->timestamp = timestamp;
+        _cellLightWarning->cellLightsOutputMismatch =
+                _cellLightStatus->cellLightsOutputOn != _cellLightStatus->cellLightsCommandedOn;
 
-        this->interlockStatus->timestamp = timestamp;
-        this->interlockStatus->heartbeatOutputState = (fpgaData->DigitalOutputStates & 0x01) != 0;
+        _interlockStatus->timestamp = timestamp;
+        _interlockStatus->heartbeatOutputState = (fpgaData->DigitalOutputStates & 0x01) != 0;
 
-        this->interlockWarning->timestamp = timestamp;
-        this->interlockWarning->heartbeatStateOutputMismatch =
-                this->interlockStatus->heartbeatOutputState != this->interlockStatus->heartbeatCommandedState;
+        _interlockWarning->timestamp = timestamp;
+        _interlockWarning->heartbeatStateOutputMismatch =
+                _interlockStatus->heartbeatOutputState != _interlockStatus->heartbeatCommandedState;
 
-        if (this->safetyController) {
-            this->safetyController->airControllerNotifyCommandOutputMismatch(
-                    this->airSupplyWarning->commandOutputMismatch);
-            this->safetyController->cellLightNotifyOutputMismatch(
-                    this->cellLightWarning->cellLightsOutputMismatch);
-            this->safetyController->interlockNotifyHeartbeatStateOutputMismatch(
-                    this->interlockWarning->heartbeatStateOutputMismatch);
+        if (_safetyController) {
+            _safetyController->airControllerNotifyCommandOutputMismatch(
+                    _airSupplyWarning->commandOutputMismatch);
+            _safetyController->cellLightNotifyOutputMismatch(
+                    _cellLightWarning->cellLightsOutputMismatch);
+            _safetyController->interlockNotifyHeartbeatStateOutputMismatch(
+                    _interlockWarning->heartbeatStateOutputMismatch);
         }
     }
-    if (fpgaData->DigitalInputTimestamp != this->lastDITimestamp) {
+    if (fpgaData->DigitalInputTimestamp != _lastDITimestamp) {
         tryPublish = true;
-        this->lastDITimestamp = fpgaData->DigitalInputTimestamp;
+        _lastDITimestamp = fpgaData->DigitalInputTimestamp;
 
-        this->airSupplyStatus->timestamp = timestamp;
+        _airSupplyStatus->timestamp = timestamp;
         // Polarity is swapped
-        this->airSupplyStatus->airValveOpened = (fpgaData->DigitalInputStates & 0x0100) == 0;
+        _airSupplyStatus->airValveOpened = (fpgaData->DigitalInputStates & 0x0100) == 0;
         // Polarity is swapped
-        this->airSupplyStatus->airValveClosed = (fpgaData->DigitalInputStates & 0x0200) == 0;
+        _airSupplyStatus->airValveClosed = (fpgaData->DigitalInputStates & 0x0200) == 0;
 
-        this->airSupplyWarning->timestamp = timestamp;
-        this->airSupplyWarning->commandSensorMismatch =
-                (this->airSupplyStatus->airCommandedOn &&
-                 (!this->airSupplyStatus->airValveOpened || this->airSupplyStatus->airValveClosed)) ||
-                (!this->airSupplyStatus->airCommandedOn &&
-                 (this->airSupplyStatus->airValveOpened || !this->airSupplyStatus->airValveClosed));
+        _airSupplyWarning->timestamp = timestamp;
+        _airSupplyWarning->commandSensorMismatch =
+                (_airSupplyStatus->airCommandedOn &&
+                 (!_airSupplyStatus->airValveOpened || _airSupplyStatus->airValveClosed)) ||
+                (!_airSupplyStatus->airCommandedOn &&
+                 (_airSupplyStatus->airValveOpened || !_airSupplyStatus->airValveClosed));
 
-        this->cellLightStatus->timestamp = timestamp;
-        this->cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & 0x0400) != 0;
+        _cellLightStatus->timestamp = timestamp;
+        _cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & 0x0400) != 0;
 
-        this->cellLightWarning->timestamp = timestamp;
-        this->cellLightWarning->cellLightsSensorMismatch =
-                this->cellLightStatus->cellLightsCommandedOn != this->cellLightStatus->cellLightsOn;
+        _cellLightWarning->timestamp = timestamp;
+        _cellLightWarning->cellLightsSensorMismatch =
+                _cellLightStatus->cellLightsCommandedOn != _cellLightStatus->cellLightsOn;
 
-        this->interlockWarning->timestamp = timestamp;
-        this->interlockWarning->auxPowerNetworksOff = (fpgaData->DigitalInputStates & 0x0001) == 0;
-        this->interlockWarning->thermalEquipmentOff = (fpgaData->DigitalInputStates & 0x0002) == 0;
-        this->interlockWarning->airSupplyOff = (fpgaData->DigitalInputStates & 0x0008) == 0;
-        this->interlockWarning->cabinetDoorOpen = (fpgaData->DigitalInputStates & 0x0010) == 0;
-        this->interlockWarning->tmaMotionStop = (fpgaData->DigitalInputStates & 0x0040) == 0;
-        this->interlockWarning->gisHeartbeatLost = (fpgaData->DigitalInputStates & 0x0080) == 0;
+        _interlockWarning->timestamp = timestamp;
+        _interlockWarning->auxPowerNetworksOff = (fpgaData->DigitalInputStates & 0x0001) == 0;
+        _interlockWarning->thermalEquipmentOff = (fpgaData->DigitalInputStates & 0x0002) == 0;
+        _interlockWarning->airSupplyOff = (fpgaData->DigitalInputStates & 0x0008) == 0;
+        _interlockWarning->cabinetDoorOpen = (fpgaData->DigitalInputStates & 0x0010) == 0;
+        _interlockWarning->tmaMotionStop = (fpgaData->DigitalInputStates & 0x0040) == 0;
+        _interlockWarning->gisHeartbeatLost = (fpgaData->DigitalInputStates & 0x0080) == 0;
 
-        if (this->safetyController) {
-            this->safetyController->airControllerNotifyCommandSensorMismatch(
-                    this->airSupplyWarning->commandSensorMismatch);
-            this->safetyController->cellLightNotifySensorMismatch(
-                    this->cellLightWarning->cellLightsSensorMismatch);
-            this->safetyController->interlockNotifyAuxPowerNetworksOff(
-                    this->interlockWarning->auxPowerNetworksOff);
-            this->safetyController->interlockNotifyThermalEquipmentOff(
-                    this->interlockWarning->thermalEquipmentOff);
-            this->safetyController->interlockNotifyAirSupplyOff(this->interlockWarning->airSupplyOff);
-            this->safetyController->interlockNotifyCabinetDoorOpen(this->interlockWarning->cabinetDoorOpen);
-            this->safetyController->interlockNotifyTMAMotionStop(this->interlockWarning->tmaMotionStop);
-            this->safetyController->interlockNotifyGISHeartbeatLost(this->interlockWarning->gisHeartbeatLost);
+        if (_safetyController) {
+            _safetyController->airControllerNotifyCommandSensorMismatch(
+                    _airSupplyWarning->commandSensorMismatch);
+            _safetyController->cellLightNotifySensorMismatch(
+                    _cellLightWarning->cellLightsSensorMismatch);
+            _safetyController->interlockNotifyAuxPowerNetworksOff(
+                    _interlockWarning->auxPowerNetworksOff);
+            _safetyController->interlockNotifyThermalEquipmentOff(
+                    _interlockWarning->thermalEquipmentOff);
+            _safetyController->interlockNotifyAirSupplyOff(_interlockWarning->airSupplyOff);
+            _safetyController->interlockNotifyCabinetDoorOpen(_interlockWarning->cabinetDoorOpen);
+            _safetyController->interlockNotifyTMAMotionStop(_interlockWarning->tmaMotionStop);
+            _safetyController->interlockNotifyGISHeartbeatLost(_interlockWarning->gisHeartbeatLost);
         }
     }
     if (tryPublish) {
-        this->publisher->tryLogAirSupplyStatus();
-        this->publisher->tryLogAirSupplyWarning();
-        this->publisher->tryLogCellLightStatus();
-        this->publisher->tryLogCellLightWarning();
-        this->publisher->tryLogInterlockStatus();
-        this->publisher->tryLogInterlockWarning();
+        _publisher->tryLogAirSupplyStatus();
+        _publisher->tryLogAirSupplyWarning();
+        _publisher->tryLogCellLightStatus();
+        _publisher->tryLogCellLightWarning();
+        _publisher->tryLogInterlockStatus();
+        _publisher->tryLogInterlockWarning();
     }
 }
 
 void DigitalInputOutput::tryToggleHeartbeat() {
     spdlog::trace("DigitalInputOutput: tryToggleHeartbeat()");
-    double timestamp = this->publisher->getTimestamp();
+    double timestamp = _publisher->getTimestamp();
     if (timestamp >=
-        (this->lastToggleTimestamp + this->interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
+        (_lastToggleTimestamp + _interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
         spdlog::debug("DigitalInputOutput: toggleHeartbeat()");
-        this->lastToggleTimestamp = timestamp;
-        this->interlockStatus->heartbeatCommandedState = !this->interlockStatus->heartbeatCommandedState;
+        _lastToggleTimestamp = timestamp;
+        _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
         uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
-                              (uint16_t)this->interlockStatus->heartbeatCommandedState};
+                              (uint16_t)_interlockStatus->heartbeatCommandedState};
         IFPGA::get().writeCommandFIFO(buffer, 2, 0);
     }
 }
 
 void DigitalInputOutput::turnAirOn() {
     spdlog::info("DigitalInputOutput: turnAirOn()");
-    this->airSupplyStatus->airCommandedOn = true;
+    _airSupplyStatus->airCommandedOn = true;
     uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl,
-                          (uint16_t)this->airSupplyStatus->airCommandedOn};
+                          (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnAirOff() {
     spdlog::info("DigitalInputOutput: turnAirOff()");
-    this->airSupplyStatus->airCommandedOn = false;
+    _airSupplyStatus->airCommandedOn = false;
     uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl,
-                          (uint16_t)this->airSupplyStatus->airCommandedOn};
+                          (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnCellLightsOn() {
     spdlog::info("DigitalInputOutput: turnCellLightsOn()");
-    this->cellLightStatus->cellLightsCommandedOn = true;
+    _cellLightStatus->cellLightsCommandedOn = true;
     // Polarity is swapped
     uint16_t buffer[2] = {FPGAAddresses::MirrorCellLightControl,
-                          (uint16_t)(!this->cellLightStatus->cellLightsCommandedOn)};
+                          (uint16_t)(!_cellLightStatus->cellLightsCommandedOn)};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnCellLightsOff() {
     spdlog::info("DigitalInputOutput: turnCellLightsOff()");
-    this->cellLightStatus->cellLightsCommandedOn = false;
+    _cellLightStatus->cellLightsCommandedOn = false;
     // Polarity is swapped
     uint16_t buffer[2] = {FPGAAddresses::MirrorCellLightControl,
-                          (uint16_t)(!this->cellLightStatus->cellLightsCommandedOn)};
+                          (uint16_t)(!_cellLightStatus->cellLightsCommandedOn)};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 

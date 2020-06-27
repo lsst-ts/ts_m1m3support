@@ -30,6 +30,21 @@
 
 using namespace std;
 
+// masks for FPGA FIFO commands
+const static uint16_t FIFO_INSTRUCTION = 0xF000;
+const static uint16_t FIFO_TX_WRITE = 0x1000;
+const static uint16_t FIFO_TX_FRAMEEND = 0x20DA;
+const static uint16_t FIFO_TX_TIMESTAMP = 0x3000;
+const static uint16_t FIFO_TX_WAIT_US = 0x4000;
+const static uint16_t FIFO_TX_WAIT_MS = 0x5000;
+const static uint16_t FIFO_TX_WAIT_RX = 0x6000;
+const static uint16_t FIFO_TX_IRQTRIGGER = 0x7000;
+const static uint16_t FIFO_TX_WAIT_TRIGGER = 0x8000;
+const static uint16_t FIFO_TX_WAIT_LONG_RX = 0x9000;
+const static uint16_t FIFO_RX_READ = 0x9000;
+const static uint16_t FIFO_RX_ENDFRAME = 0xA000;
+const static uint16_t FIFO_RX_TIMESTAMP = 0xB000;
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -41,39 +56,39 @@ ModbusBuffer::ModbusBuffer() {
 
 ModbusBuffer::~ModbusBuffer() {}
 
-int32_t ModbusBuffer::getIndex() { return this->index; }
+int32_t ModbusBuffer::getIndex() { return _index; }
 
-void ModbusBuffer::setIndex(int32_t index) { this->index = index; }
+void ModbusBuffer::setIndex(int32_t index) { _index = index; }
 
-void ModbusBuffer::incIndex(int32_t inc) { this->index += inc; }
+void ModbusBuffer::incIndex(int32_t inc) { _index += inc; }
 
 void ModbusBuffer::skipToNextFrame() {
     // Scan for the end of frame marker
     while (!this->endOfFrame() && !this->endOfBuffer()) {
-        this->index++;
+        _index++;
     }
     // Increment to the address of the next message in the buffer
-    this->index++;
+    _index++;
 }
 
-uint16_t* ModbusBuffer::getBuffer() { return this->buffer; }
+uint16_t* ModbusBuffer::getBuffer() { return _buffer; }
 
-void ModbusBuffer::set(int32_t index, uint16_t data) { this->buffer[index] = data; }
+void ModbusBuffer::set(int32_t index, uint16_t data) { _buffer[index] = data; }
 
-void ModbusBuffer::setLength(int32_t length) { this->length = length; }
+void ModbusBuffer::setLength(int32_t length) { _length = length; }
 
-int32_t ModbusBuffer::getLength() { return this->length; }
+int32_t ModbusBuffer::getLength() { return _length; }
 
-void ModbusBuffer::reset() { this->index = 0; }
+void ModbusBuffer::reset() { _index = 0; }
 
-bool ModbusBuffer::endOfBuffer() { return this->index >= this->length; }
+bool ModbusBuffer::endOfBuffer() { return _index >= _length; }
 
-bool ModbusBuffer::endOfFrame() { return this->buffer[this->index] == FIFO_RX_ENDFRAME; }
+bool ModbusBuffer::endOfFrame() { return _buffer[_index] == FIFO_RX_ENDFRAME; }
 
 std::vector<uint8_t> ModbusBuffer::getReadData(int32_t length) {
     std::vector<uint8_t> data;
-    for (int i = index - length; i < index; i++) {
-        data.push_back(readInstructionByte(buffer[i]));
+    for (int i = _index - length; i < _index; i++) {
+        data.push_back(readInstructionByte(_buffer[i]));
     }
     return data;
 }
@@ -96,184 +111,184 @@ uint16_t ModbusBuffer::calculateCRC(std::vector<uint8_t> data) {
 
 uint16_t ModbusBuffer::calculateCRC(int32_t length) { return calculateCRC(getReadData(length)); }
 
-uint16_t ModbusBuffer::readLength() { return this->buffer[this->index++]; }
+uint16_t ModbusBuffer::readLength() { return _buffer[_index++]; }
 
 int32_t ModbusBuffer::readI32() {
-    this->index += 4;
-    return ((int32_t)this->readInstructionByte(this->buffer[this->index - 4]) << 24) |
-           ((int32_t)this->readInstructionByte(this->buffer[this->index - 3]) << 16) |
-           ((int32_t)this->readInstructionByte(this->buffer[this->index - 2]) << 8) |
-           ((int32_t)this->readInstructionByte(this->buffer[this->index - 1]));
+    _index += 4;
+    return ((int32_t)this->readInstructionByte(_buffer[_index - 4]) << 24) |
+           ((int32_t)this->readInstructionByte(_buffer[_index - 3]) << 16) |
+           ((int32_t)this->readInstructionByte(_buffer[_index - 2]) << 8) |
+           ((int32_t)this->readInstructionByte(_buffer[_index - 1]));
 }
 
 uint8_t ModbusBuffer::readU8() {
-    this->index += 1;
-    return this->readInstructionByte(this->buffer[this->index - 1]);
+    _index += 1;
+    return this->readInstructionByte(_buffer[_index - 1]);
 }
 
 uint16_t ModbusBuffer::readU16() {
-    this->index += 2;
-    return ((uint16_t)this->readInstructionByte(this->buffer[this->index - 2]) << 8) |
-           ((uint16_t)this->readInstructionByte(this->buffer[this->index - 1]));
+    _index += 2;
+    return ((uint16_t)this->readInstructionByte(_buffer[_index - 2]) << 8) |
+           ((uint16_t)this->readInstructionByte(_buffer[_index - 1]));
 }
 
 uint32_t ModbusBuffer::readU32() {
-    this->index += 4;
-    return ((uint32_t)this->readInstructionByte(this->buffer[this->index - 4]) << 24) |
-           ((uint32_t)this->readInstructionByte(this->buffer[this->index - 3]) << 16) |
-           ((uint32_t)this->readInstructionByte(this->buffer[this->index - 2]) << 8) |
-           ((uint32_t)this->readInstructionByte(this->buffer[this->index - 1]));
+    _index += 4;
+    return ((uint32_t)this->readInstructionByte(_buffer[_index - 4]) << 24) |
+           ((uint32_t)this->readInstructionByte(_buffer[_index - 3]) << 16) |
+           ((uint32_t)this->readInstructionByte(_buffer[_index - 2]) << 8) |
+           ((uint32_t)this->readInstructionByte(_buffer[_index - 1]));
 }
 
 uint64_t ModbusBuffer::readU48() {
-    this->index += 6;
-    return ((uint64_t)this->readInstructionByte(this->buffer[this->index - 6]) << 40) |
-           ((uint64_t)this->readInstructionByte(this->buffer[this->index - 5]) << 32) |
-           ((uint64_t)this->readInstructionByte(this->buffer[this->index - 4]) << 24) |
-           ((uint64_t)this->readInstructionByte(this->buffer[this->index - 3]) << 16) |
-           ((uint64_t)this->readInstructionByte(this->buffer[this->index - 2]) << 8) |
-           ((uint64_t)this->readInstructionByte(this->buffer[this->index - 1]));
+    _index += 6;
+    return ((uint64_t)this->readInstructionByte(_buffer[_index - 6]) << 40) |
+           ((uint64_t)this->readInstructionByte(_buffer[_index - 5]) << 32) |
+           ((uint64_t)this->readInstructionByte(_buffer[_index - 4]) << 24) |
+           ((uint64_t)this->readInstructionByte(_buffer[_index - 3]) << 16) |
+           ((uint64_t)this->readInstructionByte(_buffer[_index - 2]) << 8) |
+           ((uint64_t)this->readInstructionByte(_buffer[_index - 1]));
 }
 
 float ModbusBuffer::readSGL() {
-    this->index += 4;
-    this->floatPointBuffer[3] = this->readInstructionByte(this->buffer[this->index - 4]);
-    this->floatPointBuffer[2] = this->readInstructionByte(this->buffer[this->index - 3]);
-    this->floatPointBuffer[1] = this->readInstructionByte(this->buffer[this->index - 2]);
-    this->floatPointBuffer[0] = this->readInstructionByte(this->buffer[this->index - 1]);
+    _index += 4;
+    _floatPointBuffer[3] = this->readInstructionByte(_buffer[_index - 4]);
+    _floatPointBuffer[2] = this->readInstructionByte(_buffer[_index - 3]);
+    _floatPointBuffer[1] = this->readInstructionByte(_buffer[_index - 2]);
+    _floatPointBuffer[0] = this->readInstructionByte(_buffer[_index - 1]);
     float data;
-    memcpy(&data, this->floatPointBuffer, sizeof(float));
+    memcpy(&data, _floatPointBuffer, sizeof(float));
     return data;
 }
 
 std::string ModbusBuffer::readString(int32_t length) {
     for (int i = 0; i < length; i++) {
-        this->stringBuffer[i] = this->readInstructionByte(this->buffer[this->index++]);
+        _stringBuffer[i] = this->readInstructionByte(_buffer[_index++]);
     }
-    return std::string((const char*)this->stringBuffer, (size_t)length);
+    return std::string((const char*)_stringBuffer, (size_t)length);
 }
 
 uint16_t ModbusBuffer::readCRC() {
-    this->index += 2;
-    return ((uint16_t)this->readInstructionByte(this->buffer[this->index - 2])) |
-           ((uint16_t)this->readInstructionByte(this->buffer[this->index - 1]) << 8);
+    _index += 2;
+    return ((uint16_t)this->readInstructionByte(_buffer[_index - 2])) |
+           ((uint16_t)this->readInstructionByte(_buffer[_index - 1]) << 8);
 }
 
 double ModbusBuffer::readTimestamp() {
-    this->index += 8;
-    uint64_t data = ((uint64_t)(this->buffer[this->index - 8] & 0xFF)) |
-                    ((uint64_t)(this->buffer[this->index - 7] & 0xFF)) << 8 |
-                    ((uint64_t)(this->buffer[this->index - 6] & 0xFF)) << 16 |
-                    ((uint64_t)(this->buffer[this->index - 5] & 0xFF)) << 24 |
-                    ((uint64_t)(this->buffer[this->index - 4] & 0xFF)) << 32 |
-                    ((uint64_t)(this->buffer[this->index - 3] & 0xFF)) << 40 |
-                    ((uint64_t)(this->buffer[this->index - 2] & 0xFF)) << 48 |
-                    ((uint64_t)(this->buffer[this->index - 1] & 0xFF)) << 56;
+    _index += 8;
+    uint64_t data = ((uint64_t)(_buffer[_index - 8] & 0xFF)) |
+                    ((uint64_t)(_buffer[_index - 7] & 0xFF)) << 8 |
+                    ((uint64_t)(_buffer[_index - 6] & 0xFF)) << 16 |
+                    ((uint64_t)(_buffer[_index - 5] & 0xFF)) << 24 |
+                    ((uint64_t)(_buffer[_index - 4] & 0xFF)) << 32 |
+                    ((uint64_t)(_buffer[_index - 3] & 0xFF)) << 40 |
+                    ((uint64_t)(_buffer[_index - 2] & 0xFF)) << 48 |
+                    ((uint64_t)(_buffer[_index - 1] & 0xFF)) << 56;
     return Timestamp::fromRaw(data);
 }
 
-void ModbusBuffer::readEndOfFrame() { this->index++; }
+void ModbusBuffer::readEndOfFrame() { _index++; }
 
 void ModbusBuffer::writeSubnet(uint8_t data) {
-    this->index += 1;
-    this->buffer[this->index - 1] = (uint16_t)data;
+    _index += 1;
+    _buffer[_index - 1] = (uint16_t)data;
 }
 
 void ModbusBuffer::writeLength(uint16_t data) {
-    this->index += 1;
-    this->buffer[this->index - 1] = data;
+    _index += 1;
+    _buffer[_index - 1] = data;
 }
 
 void ModbusBuffer::writeI8(int8_t data) {
-    this->index += 1;
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)data);
+    _index += 1;
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)data);
 }
 
 void ModbusBuffer::writeI16(int16_t data) {
-    this->index += 2;
-    this->buffer[this->index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)data);
+    _index += 2;
+    _buffer[_index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)data);
 }
 
 void ModbusBuffer::writeI24(int32_t data) {
-    this->index += 3;
-    this->buffer[this->index - 3] = this->writeByteInstruction((uint8_t)(data >> 16));
-    this->buffer[this->index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)data);
+    _index += 3;
+    _buffer[_index - 3] = this->writeByteInstruction((uint8_t)(data >> 16));
+    _buffer[_index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)data);
 }
 
 void ModbusBuffer::writeI32(int32_t data) {
-    this->index += 4;
-    this->buffer[this->index - 4] = this->writeByteInstruction((uint8_t)(data >> 24));
-    this->buffer[this->index - 3] = this->writeByteInstruction((uint8_t)(data >> 16));
-    this->buffer[this->index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)data);
+    _index += 4;
+    _buffer[_index - 4] = this->writeByteInstruction((uint8_t)(data >> 24));
+    _buffer[_index - 3] = this->writeByteInstruction((uint8_t)(data >> 16));
+    _buffer[_index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)data);
 }
 
 void ModbusBuffer::writeU8(uint8_t data) {
-    this->index += 1;
-    this->buffer[this->index - 1] = this->writeByteInstruction(data);
+    _index += 1;
+    _buffer[_index - 1] = this->writeByteInstruction(data);
 }
 
 void ModbusBuffer::writeU16(uint16_t data) {
-    this->index += 2;
-    this->buffer[this->index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)data);
+    _index += 2;
+    _buffer[_index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)data);
 }
 
 void ModbusBuffer::writeU32(uint32_t data) {
-    this->index += 4;
-    this->buffer[this->index - 4] = this->writeByteInstruction((uint8_t)(data >> 24));
-    this->buffer[this->index - 3] = this->writeByteInstruction((uint8_t)(data >> 16));
-    this->buffer[this->index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)data);
+    _index += 4;
+    _buffer[_index - 4] = this->writeByteInstruction((uint8_t)(data >> 24));
+    _buffer[_index - 3] = this->writeByteInstruction((uint8_t)(data >> 16));
+    _buffer[_index - 2] = this->writeByteInstruction((uint8_t)(data >> 8));
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)data);
 }
 
 void ModbusBuffer::writeSGL(float data) {
-    memcpy(this->floatPointBuffer, &data, sizeof(float));
-    this->index += 4;
-    this->buffer[this->index - 4] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[3]);
-    this->buffer[this->index - 3] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[2]);
-    this->buffer[this->index - 2] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[1]);
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)this->floatPointBuffer[0]);
+    memcpy(_floatPointBuffer, &data, sizeof(float));
+    _index += 4;
+    _buffer[_index - 4] = this->writeByteInstruction((uint8_t)_floatPointBuffer[3]);
+    _buffer[_index - 3] = this->writeByteInstruction((uint8_t)_floatPointBuffer[2]);
+    _buffer[_index - 2] = this->writeByteInstruction((uint8_t)_floatPointBuffer[1]);
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)_floatPointBuffer[0]);
 }
 
 void ModbusBuffer::writeCRC(int32_t length) {
     uint16_t crc = this->calculateCRC(length);
-    this->index += 2;
-    this->buffer[this->index - 2] = this->writeByteInstruction((uint8_t)crc);
-    this->buffer[this->index - 1] = this->writeByteInstruction((uint8_t)(crc >> 8));
+    _index += 2;
+    _buffer[_index - 2] = this->writeByteInstruction((uint8_t)crc);
+    _buffer[_index - 1] = this->writeByteInstruction((uint8_t)(crc >> 8));
 }
 
 void ModbusBuffer::writeDelay(uint32_t delayMicros) {
-    this->index += 1;
-    this->buffer[this->index - 1] =
+    _index += 1;
+    _buffer[_index - 1] =
             delayMicros > 4095 ? (((delayMicros / 1000) + 1) | 0x5000) : (delayMicros | 0x4000);
 }
 
 void ModbusBuffer::writeEndOfFrame() {
-    this->index += 1;
-    this->buffer[this->index - 1] = FIFO_TX_FRAMEEND;
+    _index += 1;
+    _buffer[_index - 1] = FIFO_TX_FRAMEEND;
 }
 
 void ModbusBuffer::writeSoftwareTrigger() {
-    this->index += 1;
-    this->buffer[this->index - 1] = FIFO_TX_WAIT_TRIGGER;
+    _index += 1;
+    _buffer[_index - 1] = FIFO_TX_WAIT_TRIGGER;
 }
 
 void ModbusBuffer::writeTimestamp() {
-    this->index += 1;
-    this->buffer[this->index - 1] = FIFO_TX_TIMESTAMP;
+    _index += 1;
+    _buffer[_index - 1] = FIFO_TX_TIMESTAMP;
 }
 
 void ModbusBuffer::writeTriggerIRQ() {
-    this->index += 1;
-    this->buffer[this->index - 1] = FIFO_TX_IRQTRIGGER;
+    _index += 1;
+    _buffer[_index - 1] = FIFO_TX_IRQTRIGGER;
 }
 
 void ModbusBuffer::writeWaitForRx(uint32_t timeoutMicros) {
-    this->index += 1;
-    this->buffer[this->index - 1] = timeoutMicros > 4095
+    _index += 1;
+    _buffer[_index - 1] = timeoutMicros > 4095
                                             ? (((timeoutMicros / 1000) + 1) | FIFO_TX_WAIT_LONG_RX)
                                             : (timeoutMicros | FIFO_TX_WAIT_RX);
 }
@@ -298,12 +313,12 @@ void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint6
     endTs = 0;
     int endTsShift = 0;
     for (int i = 4; i < reportedLength; i++) {
-        switch (buffer[i] & FIFO_INSTRUCTION) {
+        switch (_buffer[i] & FIFO_INSTRUCTION) {
             case FIFO_RX_READ:
-                data.push_back(readInstructionByte(buffer[i]));
+                data.push_back(readInstructionByte(_buffer[i]));
                 break;
             case FIFO_RX_TIMESTAMP:
-                endTs |= (uint64_t)(buffer[i] & 0xFF) << endTsShift;
+                endTs |= (uint64_t)(_buffer[i] & 0xFF) << endTsShift;
                 endTsShift += 8;
                 break;
             case FIFO_RX_ENDFRAME:
@@ -325,7 +340,7 @@ void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint6
         throw std::runtime_error("ModbusBuffer::pollModbusResponse End timestamp not received");
     }
 
-    if (buffer[getLength() - 1] != FIFO_RX_ENDFRAME)
+    if (_buffer[getLength() - 1] != FIFO_RX_ENDFRAME)
         throw std::runtime_error("ModbusBuffer::pullModbusResponse: last received word isn't ENDFRAME");
 
     // remove CRC16

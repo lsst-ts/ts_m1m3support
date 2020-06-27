@@ -32,32 +32,32 @@ namespace SS {
 EnableHardpointChaseCommand::EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher,
                                                          int32_t commandID,
                                                          MTM1M3_command_enableHardpointChaseC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.hardpointActuator = data->hardpointActuator;
+    _data.hardpointActuator = data->hardpointActuator;
 }
 
 bool EnableHardpointChaseCommand::validate() {
-    if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
-        this->publisher->logCommandRejectionWarning("EnableHardpointChase",
+    if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
+        _publisher->logCommandRejectionWarning("EnableHardpointChase",
                                                     "The field HardpointActuator must be in range [1, 6].");
     }
-    return this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6;
+    return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }
 
-void EnableHardpointChaseCommand::execute() { this->context->enableHardpointChase(this); }
+void EnableHardpointChaseCommand::execute() { _context->enableHardpointChase(this); }
 
 void EnableHardpointChaseCommand::ackInProgress() {
-    this->publisher->ackCommandenableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandenableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableHardpointChaseCommand::ackComplete() {
-    this->publisher->ackCommandenableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandenableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnableHardpointChaseCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandenableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandenableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

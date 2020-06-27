@@ -42,19 +42,6 @@ class M1M3SSPublisher;
  * The class used to process gyro data.
  */
 class Gyro {
-private:
-    GyroSettings* gyroSettings;
-    M1M3SSPublisher* publisher;
-
-    MTM1M3_gyroDataC* gyroData;
-    MTM1M3_logevent_gyroWarningC* gyroWarning;
-
-    uint64_t lastSampleTimestamp;
-    uint64_t lastBITTimestamp;
-    uint64_t lastErrorTimestamp;
-
-    bool errorCleared;
-
 public:
     /*!
      * Instantiates the gyro sensor.
@@ -110,6 +97,18 @@ private:
      * @param[in] command The command.
      */
     void writeCommand(std::string command);
+
+    GyroSettings* _gyroSettings;
+    M1M3SSPublisher* _publisher;
+
+    MTM1M3_gyroDataC* _gyroData;
+    MTM1M3_logevent_gyroWarningC* _gyroWarning;
+
+    uint64_t _lastSampleTimestamp;
+    uint64_t _lastBITTimestamp;
+    uint64_t _lastErrorTimestamp;
+
+    bool _errorCleared;
 };
 
 } /* namespace SS */

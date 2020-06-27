@@ -31,23 +31,23 @@ namespace SS {
 
 TurnAirOffCommand::TurnAirOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                      MTM1M3_command_turnAirOffC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void TurnAirOffCommand::execute() { this->context->turnAirOff(this); }
+void TurnAirOffCommand::execute() { _context->turnAirOff(this); }
 
 void TurnAirOffCommand::ackInProgress() {
-    this->publisher->ackCommandturnAirOff(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandturnAirOff(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnAirOffCommand::ackComplete() {
-    this->publisher->ackCommandturnAirOff(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandturnAirOff(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnAirOffCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandturnAirOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandturnAirOff(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

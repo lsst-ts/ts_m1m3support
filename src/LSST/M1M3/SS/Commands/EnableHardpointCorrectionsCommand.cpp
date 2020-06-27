@@ -32,23 +32,23 @@ namespace SS {
 EnableHardpointCorrectionsCommand::EnableHardpointCorrectionsCommand(
         Context* context, M1M3SSPublisher* publisher, int32_t commandID,
         MTM1M3_command_enableHardpointCorrectionsC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void EnableHardpointCorrectionsCommand::execute() { this->context->enableHardpointCorrections(this); }
+void EnableHardpointCorrectionsCommand::execute() { _context->enableHardpointCorrections(this); }
 
 void EnableHardpointCorrectionsCommand::ackInProgress() {
-    this->publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableHardpointCorrectionsCommand::ackComplete() {
-    this->publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnableHardpointCorrectionsCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

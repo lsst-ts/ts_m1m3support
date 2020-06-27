@@ -34,8 +34,8 @@ namespace SS {
 
 ExpansionFPGA::ExpansionFPGA() {
     spdlog::debug("ExpansionFPGA: ExpansionFPGA()");
-    this->session = 0;
-    this->remaining = 0;
+    _session = 0;
+    _remaining = 0;
 }
 
 int32_t ExpansionFPGA::initialize() {
@@ -54,15 +54,15 @@ int32_t ExpansionFPGA::open() {
     int32_t status =
             NiFpga_Open("/home/admin/Bitfiles/" NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile,
                         NiFpga_ts_M1M3SupportExpansionFPGA_Signature,
-                        this->expansionFPGAApplicationSettings->Resource.c_str(), 0, &(this->session));
+                        this->expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session));
     if (status) {
         return NiReportError(__PRETTY_FUNCTION__, status);
     }
 
-    status = NiFpga_Abort(this->session);
-    status = NiFpga_Download(this->session);
-    status = NiFpga_Reset(this->session);
-    status = NiFpga_Run(this->session, 0);
+    status = NiFpga_Abort(_session);
+    status = NiFpga_Download(_session);
+    status = NiFpga_Reset(_session);
+    status = NiFpga_Run(_session, 0);
     usleep(1000000);
     return NiReportError(__PRETTY_FUNCTION__, status);
 }
@@ -72,7 +72,7 @@ int32_t ExpansionFPGA::close() {
     if (!this->expansionFPGAApplicationSettings->Enabled) {
         return 0;
     }
-    return NiReportError(__PRETTY_FUNCTION__, NiFpga_Close(this->session, 0));
+    return NiReportError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
 }
 
 int32_t ExpansionFPGA::finalize() {
@@ -97,7 +97,7 @@ int32_t ExpansionFPGA::sample() {
     }
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_WriteBool(this->session, NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample, true));
+            NiFpga_WriteBool(_session, NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample, true));
 }
 
 int32_t ExpansionFPGA::readSlot1(float* data) {
@@ -106,7 +106,7 @@ int32_t ExpansionFPGA::readSlot1(float* data) {
     }
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_ReadArraySgl(this->session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1,
+            NiFpga_ReadArraySgl(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1,
                                 data, 6));
 }
 
@@ -116,7 +116,7 @@ int32_t ExpansionFPGA::readSlot2(uint32_t* data) {
     }
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_ReadU32(this->session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorU32_Slot2, data));
+            NiFpga_ReadU32(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorU32_Slot2, data));
 }
 
 } /* namespace SS */

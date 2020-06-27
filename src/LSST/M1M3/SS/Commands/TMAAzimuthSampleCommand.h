@@ -34,17 +34,17 @@ namespace M1M3 {
 namespace SS {
 
 class TMAAzimuthSampleCommand : public Command {
-private:
-    Context* context;
-
-    MTMount_AzimuthC data;
-
 public:
     TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data);
 
-    MTMount_AzimuthC* getData() { return &this->data; }
+    MTMount_AzimuthC* getData() { return &_data; }
 
     void execute();
+
+private:
+    Context* _context;
+
+    MTMount_AzimuthC _data;
 };
 
 } /* namespace SS */

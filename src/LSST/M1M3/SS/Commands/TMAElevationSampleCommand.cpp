@@ -30,12 +30,12 @@ namespace M1M3 {
 namespace SS {
 
 TMAElevationSampleCommand::TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data) {
-    this->context = context;
+    _context = context;
     this->commandID = -1;
-    memcpy(&this->data, data, sizeof(MTMount_ElevationC));
+    memcpy(&_data, data, sizeof(MTMount_ElevationC));
 }
 
-void TMAElevationSampleCommand::execute() { this->context->storeTMAElevationSample(this); }
+void TMAElevationSampleCommand::execute() { _context->storeTMAElevationSample(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

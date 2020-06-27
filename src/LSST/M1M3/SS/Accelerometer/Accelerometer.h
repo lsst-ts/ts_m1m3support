@@ -38,18 +38,11 @@ class M1M3SSPublisher;
  * The class used to process accelerometer data.
  */
 class Accelerometer {
-private:
-    AccelerometerSettings* accelerometerSettings;
-    M1M3SSPublisher* publisher;
-
-    MTM1M3_accelerometerDataC* accelerometerData;
-    MTM1M3_logevent_accelerometerWarningC* accelerometerWarning;
-
 public:
     /*!
      * Instantiates the accelerometer.
      * @param[in] accelerometerSettings The accelerometer settings.
-     * @param[in] publisher The publisher.
+     * @param[in] _publisher The publisher.
      */
     Accelerometer(AccelerometerSettings* accelerometerSettings, M1M3SSPublisher* publisher);
 
@@ -57,6 +50,13 @@ public:
      * Processes currently available accelerometer data and publish it.
      */
     void processData();
+
+private:
+    AccelerometerSettings* _accelerometerSettings;
+    M1M3SSPublisher* _publisher;
+
+    MTM1M3_accelerometerDataC* _accelerometerData;
+    MTM1M3_logevent_accelerometerWarningC* _accelerometerWarning;
 };
 
 } /* namespace SS */

@@ -115,60 +115,59 @@ public:
     void zeroVelocityForces();
 
 private:
-    void sumAllForces();
-    void convertForcesToSetpoints();
+    void _sumAllForces();
+    void _convertForcesToSetpoints();
 
-    bool checkMirrorMoments();
-    bool checkNearNeighbors();
-    bool checkMirrorWeight();
-    bool checkFarNeighbors();
+    bool _checkMirrorMoments();
+    bool _checkNearNeighbors();
+    bool _checkMirrorWeight();
+    bool _checkFarNeighbors();
 
-    static double constexpr sqrt2 = 1.4142135623730950488016887242097;
-    static double constexpr reciprocalSqrt2 = 0.70710678118654752440084436210485;
+    static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    ForceActuatorSettings* forceActuatorSettings;
-    PIDSettings* pidSettings;
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+    PIDSettings* _pidSettings;
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
 
-    AberrationForceComponent aberrationForceComponent;
-    AccelerationForceComponent accelerationForceComponent;
-    ActiveOpticForceComponent activeOpticForceComponent;
-    AzimuthForceComponent azimuthForceComponent;
-    BalanceForceComponent balanceForceComponent;
-    ElevationForceComponent elevationForceComponent;
-    OffsetForceComponent offsetForceComponent;
-    StaticForceComponent staticForceComponent;
-    ThermalForceComponent thermalForceComponent;
-    VelocityForceComponent velocityForceComponent;
-    FinalForceComponent finalForceComponent;
+    AberrationForceComponent _aberrationForceComponent;
+    AccelerationForceComponent _accelerationForceComponent;
+    ActiveOpticForceComponent _activeOpticForceComponent;
+    AzimuthForceComponent _azimuthForceComponent;
+    BalanceForceComponent _balanceForceComponent;
+    ElevationForceComponent _elevationForceComponent;
+    OffsetForceComponent _offsetForceComponent;
+    StaticForceComponent _staticForceComponent;
+    ThermalForceComponent _thermalForceComponent;
+    VelocityForceComponent _velocityForceComponent;
+    FinalForceComponent _finalForceComponent;
 
-    MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces;
-    MTM1M3_logevent_appliedForcesC* appliedForces;
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-    MTM1M3_logevent_rejectedCylinderForcesC* rejectedCylinderForces;
+    MTM1M3_logevent_appliedCylinderForcesC* _appliedCylinderForces;
+    MTM1M3_logevent_appliedForcesC* _appliedForces;
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_rejectedCylinderForcesC* _rejectedCylinderForces;
 
-    MTM1M3_logevent_forceActuatorInfoC* forceActuatorInfo;
-    MTM1M3_forceActuatorDataC* forceActuatorData;
+    MTM1M3_logevent_forceActuatorInfoC* _forceActuatorInfo;
+    MTM1M3_forceActuatorDataC* _forceActuatorData;
 
-    MTM1M3_inclinometerDataC* inclinometerData;
-    MTM1M3_pidDataC* pidData;
-    MTM1M3_logevent_pidInfoC* pidInfo;
-    MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
-    MTM1M3_accelerometerDataC* accelerometerData;
-    MTM1M3_gyroDataC* gyroData;
+    MTM1M3_inclinometerDataC* _inclinometerData;
+    MTM1M3_pidDataC* _pidData;
+    MTM1M3_logevent_pidInfoC* _pidInfo;
+    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    MTM1M3_accelerometerDataC* _accelerometerData;
+    MTM1M3_gyroDataC* _gyroData;
 
-    double elevation_Timestamp;
-    double elevation_Angle_Actual;
+    double _elevation_Timestamp;
+    double _elevation_Angle_Actual;
 
-    std::vector<ForceActuatorNeighbors> neighbors;
+    std::vector<ForceActuatorNeighbors> _neighbors;
 
-    float zero[156];
-    float mirrorWeight;
+    float _zero[156];
+    float _mirrorWeight;
 
-    static int32_t toInt24(float force) { return (int32_t)(force * 1000.0); }
+    static int32_t _toInt24(float force) { return (int32_t)(force * 1000.0); }
 };
 
 } /* namespace SS */

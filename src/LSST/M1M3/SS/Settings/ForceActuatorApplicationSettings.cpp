@@ -41,54 +41,54 @@ void ForceActuatorApplicationSettings::load(const std::string &filename) {
     pugi::xml_document doc;
     XMLDocLoad(filename.c_str(), doc);
 
-    this->loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath")
+    _loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath")
                                          .node()
                                          .child_value());
-    this->XIndexToZIndex.clear();
-    this->YIndexToZIndex.clear();
-    this->SecondaryCylinderIndexToZIndex.clear();
-    this->ZIndexToXIndex.clear();
-    this->ZIndexToYIndex.clear();
-    this->ZIndexToSecondaryCylinderIndex.clear();
+    XIndexToZIndex.clear();
+    YIndexToZIndex.clear();
+    SecondaryCylinderIndexToZIndex.clear();
+    ZIndexToXIndex.clear();
+    ZIndexToYIndex.clear();
+    ZIndexToSecondaryCylinderIndex.clear();
     int xIndex = 0;
     int yIndex = 0;
     int sIndex = 0;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        ForceActuatorTypes::Type type = this->Table[zIndex].Type;
-        ForceActuatorOrientations::Type orientation = this->Table[zIndex].Orientation;
+        ForceActuatorTypes::Type type = Table[zIndex].Type;
+        ForceActuatorOrientations::Type orientation = Table[zIndex].Orientation;
         if (type == ForceActuatorTypes::DAA) {
             if (orientation == ForceActuatorOrientations::PositiveX ||
                 orientation == ForceActuatorOrientations::NegativeX) {
-                this->XIndexToZIndex.push_back(zIndex);
-                this->ZIndexToXIndex.push_back(xIndex);
-                this->ZIndexToYIndex.push_back(-1);
+                XIndexToZIndex.push_back(zIndex);
+                ZIndexToXIndex.push_back(xIndex);
+                ZIndexToYIndex.push_back(-1);
                 xIndex += 1;
             }
             if (orientation == ForceActuatorOrientations::PositiveY ||
                 orientation == ForceActuatorOrientations::NegativeY) {
-                this->YIndexToZIndex.push_back(zIndex);
-                this->ZIndexToXIndex.push_back(-1);
-                this->ZIndexToYIndex.push_back(yIndex);
+                YIndexToZIndex.push_back(zIndex);
+                ZIndexToXIndex.push_back(-1);
+                ZIndexToYIndex.push_back(yIndex);
                 yIndex += 1;
             }
             if (orientation != ForceActuatorOrientations::NA) {
-                this->SecondaryCylinderIndexToZIndex.push_back(zIndex);
-                this->ZIndexToSecondaryCylinderIndex.push_back(sIndex);
+                SecondaryCylinderIndexToZIndex.push_back(zIndex);
+                ZIndexToSecondaryCylinderIndex.push_back(sIndex);
                 sIndex += 1;
             }
         } else {
-            this->ZIndexToXIndex.push_back(-1);
-            this->ZIndexToYIndex.push_back(-1);
-            this->ZIndexToSecondaryCylinderIndex.push_back(-1);
+            ZIndexToXIndex.push_back(-1);
+            ZIndexToYIndex.push_back(-1);
+            ZIndexToSecondaryCylinderIndex.push_back(-1);
         }
     }
     spdlog::debug("ForceActuatorApplicationSettings: Index map sizes {:d} {:d} {:d} {:d} {:d} {:d}",
-                  (int)this->XIndexToZIndex.size(), (int)this->YIndexToZIndex.size(),
-                  (int)this->SecondaryCylinderIndexToZIndex.size(), (int)this->ZIndexToXIndex.size(),
-                  (int)this->ZIndexToYIndex.size(), (int)this->ZIndexToSecondaryCylinderIndex.size());
+                  (int)XIndexToZIndex.size(), (int)YIndexToZIndex.size(),
+                  (int)SecondaryCylinderIndexToZIndex.size(), (int)ZIndexToXIndex.size(),
+                  (int)ZIndexToYIndex.size(), (int)ZIndexToSecondaryCylinderIndex.size());
 }
 
-void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string &filename) {
+void ForceActuatorApplicationSettings::_loadForceActuatorTable(const std::string &filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
     std::string fullname = SettingReader::get().getFilePath(filename);
     std::ifstream inputStream(fullname.c_str());
@@ -131,7 +131,7 @@ void ForceActuatorApplicationSettings::loadForceActuatorTable(const std::string 
             else if (rawOrientation[0] == '-' && rawOrientation[1] == 'X')
                 orientation = ForceActuatorOrientations::NegativeX;
             row.Orientation = orientation;
-            this->Table.push_back(row);
+            Table.push_back(row);
         }
         lineNumber++;
     }

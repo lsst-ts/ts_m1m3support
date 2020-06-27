@@ -35,15 +35,6 @@ class M1M3SSPublisher;
 class PowerController;
 
 class AutomaticOperationsController {
-private:
-    PositionController* positionController;
-    ForceController* forceController;
-    SafetyController* safetyController;
-    M1M3SSPublisher* publisher;
-    PowerController* powerController;
-    double cachedTimestamp;
-    bool bypassMoveToReference;
-
 public:
     AutomaticOperationsController(PositionController* positionController, ForceController* forceController,
                                   SafetyController* safetyController, M1M3SSPublisher* publisher,
@@ -66,6 +57,15 @@ public:
     void timeoutLowerOperation();
 
     void uncontrolledLowerOperation();
+
+private:
+    PositionController* _positionController;
+    ForceController* _forceController;
+    SafetyController* _safetyController;
+    M1M3SSPublisher* _publisher;
+    PowerController* _powerController;
+    double _cachedTimestamp;
+    bool _bypassMoveToReference;
 };
 
 } /* namespace SS */
