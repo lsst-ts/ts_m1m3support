@@ -62,8 +62,7 @@ void Inclinometer::processData() {
     if (_fpgaData->InclinometerErrorTimestamp > _lastErrorTimestamp) {
         _lastErrorTimestamp = _fpgaData->InclinometerErrorTimestamp;
         _errorCleared = false;
-        _inclinometerWarning->timestamp =
-                Timestamp::fromFPGA(_fpgaData->InclinometerErrorTimestamp);
+        _inclinometerWarning->timestamp = Timestamp::fromFPGA(_fpgaData->InclinometerErrorTimestamp);
         _inclinometerWarning->unknownAddress = _fpgaData->InclinometerErrorCode == 1;
         _inclinometerWarning->unknownFunction = _fpgaData->InclinometerErrorCode == 2;
         _inclinometerWarning->invalidLength = _fpgaData->InclinometerErrorCode == 3;
@@ -71,8 +70,7 @@ void Inclinometer::processData() {
         _inclinometerWarning->unknownProblem = _fpgaData->InclinometerErrorCode == 5;
         _inclinometerWarning->responseTimeout = _fpgaData->InclinometerErrorCode == 6;
         _inclinometerWarning->sensorReportsIllegalFunction = _fpgaData->InclinometerErrorCode == 7;
-        _inclinometerWarning->sensorReportsIllegalDataAddress =
-                _fpgaData->InclinometerErrorCode == 8;
+        _inclinometerWarning->sensorReportsIllegalDataAddress = _fpgaData->InclinometerErrorCode == 8;
         _publisher->tryLogInclinometerSensorWarning();
         _safetyController->inclinometerNotifyUnknownAddress(_inclinometerWarning->unknownAddress);
         _safetyController->inclinometerNotifyUnknownFunction(_inclinometerWarning->unknownFunction);
@@ -99,8 +97,7 @@ void Inclinometer::processData() {
         if (!_errorCleared &&
             _fpgaData->InclinometerSampleTimestamp > _fpgaData->InclinometerErrorTimestamp) {
             _errorCleared = true;
-            _inclinometerWarning->timestamp =
-                    Timestamp::fromFPGA(_fpgaData->InclinometerSampleTimestamp);
+            _inclinometerWarning->timestamp = Timestamp::fromFPGA(_fpgaData->InclinometerSampleTimestamp);
             _inclinometerWarning->unknownAddress = false;
             _inclinometerWarning->unknownFunction = false;
             _inclinometerWarning->invalidLength = false;
@@ -110,16 +107,12 @@ void Inclinometer::processData() {
             _inclinometerWarning->sensorReportsIllegalFunction = false;
             _inclinometerWarning->sensorReportsIllegalDataAddress = false;
             _publisher->tryLogInclinometerSensorWarning();
-            _safetyController->inclinometerNotifyUnknownAddress(
-                    _inclinometerWarning->unknownAddress);
-            _safetyController->inclinometerNotifyUnknownFunction(
-                    _inclinometerWarning->unknownFunction);
+            _safetyController->inclinometerNotifyUnknownAddress(_inclinometerWarning->unknownAddress);
+            _safetyController->inclinometerNotifyUnknownFunction(_inclinometerWarning->unknownFunction);
             _safetyController->inclinometerNotifyInvalidLength(_inclinometerWarning->invalidLength);
             _safetyController->inclinometerNotifyInvalidCRC(_inclinometerWarning->invalidCRC);
-            _safetyController->inclinometerNotifyUnknownProblem(
-                    _inclinometerWarning->unknownProblem);
-            _safetyController->inclinometerNotifyResponseTimeout(
-                    _inclinometerWarning->responseTimeout);
+            _safetyController->inclinometerNotifyUnknownProblem(_inclinometerWarning->unknownProblem);
+            _safetyController->inclinometerNotifyResponseTimeout(_inclinometerWarning->responseTimeout);
             _safetyController->inclinometerNotifySensorReportsIllegalFunction(
                     _inclinometerWarning->sensorReportsIllegalFunction);
             _safetyController->inclinometerNotifySensorReportsIllegalDataAddress(

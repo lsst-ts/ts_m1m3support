@@ -274,8 +274,7 @@ bool FirmwareUpdate::UpdateAppDataCRC() {
             buffer[i] = _appData[i];
         }
     }
-    _appStats.DataCRC =
-            CRC::modbus(buffer, (int)_appStats.StartAddress, (int)_appStats.DataLength);
+    _appStats.DataCRC = CRC::modbus(buffer, (int)_appStats.StartAddress, (int)_appStats.DataLength);
     return ok;
 }
 
@@ -344,8 +343,7 @@ bool FirmwareUpdate::EraseILCApplication(int subnet, int address) {
 }
 
 bool FirmwareUpdate::WriteApplication(int subnet, int address) {
-    for (unsigned int i = _appStats.StartAddress;
-         i < (_appStats.StartAddress + _appStats.DataLength);) {
+    for (unsigned int i = _appStats.StartAddress; i < (_appStats.StartAddress + _appStats.DataLength);) {
         unsigned int startAddress = i;
         uint8_t buffer[192];
         for (int j = 0; j < 64; ++j) {

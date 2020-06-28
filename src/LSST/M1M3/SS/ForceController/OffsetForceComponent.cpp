@@ -127,9 +127,9 @@ void OffsetForceComponent::postUpdateActions() {
             float xLowFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
             _rejectedOffsetForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _rejectedOffsetForces->xForces[xIndex],
-                                                  _appliedOffsetForces->xForces + xIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedOffsetForces->xForces[xIndex],
+                                             _appliedOffsetForces->xForces + xIndex);
             _forceSetpointWarning->offsetForceWarning[zIndex] =
                     _forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
         }
@@ -138,9 +138,9 @@ void OffsetForceComponent::postUpdateActions() {
             float yLowFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
             _rejectedOffsetForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _rejectedOffsetForces->yForces[yIndex],
-                                                  _appliedOffsetForces->yForces + yIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedOffsetForces->yForces[yIndex],
+                                             _appliedOffsetForces->yForces + yIndex);
             _forceSetpointWarning->offsetForceWarning[zIndex] =
                     _forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
         }
@@ -148,18 +148,16 @@ void OffsetForceComponent::postUpdateActions() {
         float zLowFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
         _rejectedOffsetForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedOffsetForces->zForces[zIndex],
-                                         _appliedOffsetForces->zForces + zIndex);
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedOffsetForces->zForces[zIndex],
+                                              _appliedOffsetForces->zForces + zIndex);
         _forceSetpointWarning->offsetForceWarning[zIndex] =
                 _forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->offsetForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _appliedOffsetForces->xForces, _appliedOffsetForces->yForces,
-            _appliedOffsetForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedOffsetForces->xForces,
+            _appliedOffsetForces->yForces, _appliedOffsetForces->zForces);
     _appliedOffsetForces->fx = fm.Fx;
     _appliedOffsetForces->fy = fm.Fy;
     _appliedOffsetForces->fz = fm.Fz;
@@ -169,9 +167,8 @@ void OffsetForceComponent::postUpdateActions() {
     _appliedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _rejectedOffsetForces->xForces, _rejectedOffsetForces->yForces,
-            _rejectedOffsetForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedOffsetForces->xForces,
+            _rejectedOffsetForces->yForces, _rejectedOffsetForces->zForces);
     _rejectedOffsetForces->fx = fm.Fx;
     _rejectedOffsetForces->fy = fm.Fy;
     _rejectedOffsetForces->fz = fm.Fz;

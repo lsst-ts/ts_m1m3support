@@ -174,9 +174,9 @@ void BalanceForceComponent::postUpdateActions() {
             float xLowFault = _forceActuatorSettings->BalanceLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->BalanceLimitXTable[xIndex].HighFault;
             _rejectedBalanceForces->xForces[xIndex] = xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _rejectedBalanceForces->xForces[xIndex],
-                                                  _appliedBalanceForces->xForces + xIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedBalanceForces->xForces[xIndex],
+                                             _appliedBalanceForces->xForces + xIndex);
             _forceSetpointWarning->balanceForceWarning[zIndex] =
                     _forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
         }
@@ -185,9 +185,9 @@ void BalanceForceComponent::postUpdateActions() {
             float yLowFault = _forceActuatorSettings->BalanceLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->BalanceLimitYTable[yIndex].HighFault;
             _rejectedBalanceForces->yForces[yIndex] = yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _rejectedBalanceForces->yForces[yIndex],
-                                                  _appliedBalanceForces->yForces + yIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedBalanceForces->yForces[yIndex],
+                                             _appliedBalanceForces->yForces + yIndex);
             _forceSetpointWarning->balanceForceWarning[zIndex] =
                     _forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
         }
@@ -195,18 +195,16 @@ void BalanceForceComponent::postUpdateActions() {
         float zLowFault = _forceActuatorSettings->BalanceLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->BalanceLimitZTable[zIndex].HighFault;
         _rejectedBalanceForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedBalanceForces->zForces[zIndex],
-                                         _appliedBalanceForces->zForces + zIndex);
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedBalanceForces->zForces[zIndex],
+                                              _appliedBalanceForces->zForces + zIndex);
         _forceSetpointWarning->balanceForceWarning[zIndex] =
                 _forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->balanceForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _appliedBalanceForces->xForces, _appliedBalanceForces->yForces,
-            _appliedBalanceForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedBalanceForces->xForces,
+            _appliedBalanceForces->yForces, _appliedBalanceForces->zForces);
     _appliedBalanceForces->fx = fm.Fx;
     _appliedBalanceForces->fy = fm.Fy;
     _appliedBalanceForces->fz = fm.Fz;
@@ -216,9 +214,8 @@ void BalanceForceComponent::postUpdateActions() {
     _appliedBalanceForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _rejectedBalanceForces->xForces, _rejectedBalanceForces->yForces,
-            _rejectedBalanceForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedBalanceForces->xForces,
+            _rejectedBalanceForces->yForces, _rejectedBalanceForces->zForces);
     _rejectedBalanceForces->fx = fm.Fx;
     _rejectedBalanceForces->fy = fm.Fy;
     _rejectedBalanceForces->fz = fm.Fz;

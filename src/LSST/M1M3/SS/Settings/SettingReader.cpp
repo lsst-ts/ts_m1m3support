@@ -107,8 +107,7 @@ AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
 
 ForceActuatorApplicationSettings* SettingReader::loadForceActuatorApplicationSettings() {
     spdlog::debug("SettingReader: loadForceActuatorApplicationSettings()");
-    _forceActuatorApplicationSettings.load(
-            _getBasePath("ForceActuatorApplicationSettings.xml").c_str());
+    _forceActuatorApplicationSettings.load(_getBasePath("ForceActuatorApplicationSettings.xml").c_str());
     return &_forceActuatorApplicationSettings;
 }
 
@@ -139,8 +138,7 @@ ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
 
 RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
     spdlog::debug("SettingReader: loadRecommendedApplicationSettings()");
-    _recommendedApplicationSettings.load(
-            _getBasePath("RecommendedApplicationSettings.xml").c_str());
+    _recommendedApplicationSettings.load(_getBasePath("RecommendedApplicationSettings.xml").c_str());
     return &_recommendedApplicationSettings;
 }
 
@@ -189,8 +187,7 @@ GyroSettings* SettingReader::loadGyroSettings() {
 
 ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSettings() {
     spdlog::debug("SettingReader: loadExpansionFPGAApplicationSettings()");
-    _expansionFPGAApplicationSettings.load(
-            _getBasePath("ExpansionFPGAApplicationSettings.xml").c_str());
+    _expansionFPGAApplicationSettings.load(_getBasePath("ExpansionFPGAApplicationSettings.xml").c_str());
     return &_expansionFPGAApplicationSettings;
 }
 

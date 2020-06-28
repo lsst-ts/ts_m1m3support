@@ -44,8 +44,8 @@ bool TestForceActuatorCommand::validate() {
           (_data.forceActuator >= 301 && _data.forceActuator <= 343) ||
           (_data.forceActuator >= 407 && _data.forceActuator <= 443))) {
         _publisher->logCommandRejectionWarning("TestForceActuator",
-                                                    "The field ForceActuator must be in range [101, 143] or "
-                                                    "[207, 243] or [301, 343] or [407, 443].");
+                                               "The field ForceActuator must be in range [101, 143] or "
+                                               "[207, 243] or [301, 343] or [407, 443].");
     }
     return (_data.forceActuator >= 101 && _data.forceActuator <= 143) ||
            (_data.forceActuator >= 207 && _data.forceActuator <= 243) ||

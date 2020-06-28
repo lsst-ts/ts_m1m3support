@@ -57,12 +57,10 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandClearOffsetForces());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandRaiseM1M3());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandLowerM1M3());
-        _enqueueCommandIfAvailable(
-                _subscriber->tryAcceptCommandApplyAberrationForcesByBendingModes());
+        _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandApplyAberrationForcesByBendingModes());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandApplyAberrationForces());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandClearAberrationForces());
-        _enqueueCommandIfAvailable(
-                _subscriber->tryAcceptCommandApplyActiveOpticForcesByBendingModes());
+        _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandApplyActiveOpticForcesByBendingModes());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandApplyActiveOpticForces());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandClearActiveOpticForces());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandEnterEngineering());

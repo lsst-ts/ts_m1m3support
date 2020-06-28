@@ -436,7 +436,7 @@ bool ILCResponseParser::_validateCRC(ModbusBuffer* buffer, uint16_t* length, dou
 }
 
 void ILCResponseParser::_parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp,
-                                           bool valid) {
+                                            bool valid) {
     _grabResponse = false;
     _modbusResponse->timestamp = timestamp;
     _modbusResponse->responseValid = valid;
@@ -674,8 +674,7 @@ void ILCResponseParser::_parseStepMotorResponse(ModbusBuffer* buffer, ILCMap map
     _hardpointActuatorData->encoder[dataIndex] = buffer->readI32();
     _hardpointActuatorData->measuredForce[dataIndex] = buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
-            (_hardpointActuatorData->encoder[dataIndex] *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+            (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->MicrometersPerEncoder) /
             (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
     buffer->skipToNextFrame();
     _checkHardpointActuatorMeasuredForce(dataIndex);
@@ -717,8 +716,7 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
     // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
-            (_hardpointActuatorData->encoder[dataIndex] *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+            (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->MicrometersPerEncoder) /
             (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
     buffer->skipToNextFrame();
     _checkHardpointActuatorMeasuredForce(dataIndex);
@@ -813,7 +811,8 @@ void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer* buffer, 
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer* buffer, uint8_t address, ILCMap map) {
+void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer* buffer, uint8_t address,
+                                                           ILCMap map) {
     if (address <= 16) {
         _parseSingleAxisPneumaticForceStatusResponse(buffer, map);
     } else {
@@ -1070,10 +1069,8 @@ void ILCResponseParser::_checkForceActuatorMeasuredForce(ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
     float primaryForce = _forceActuatorData->primaryCylinderForce[dataIndex];
-    float primaryLowLimit =
-            _forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].LowFault;
-    float primaryHighLimit =
-            _forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].HighFault;
+    float primaryLowLimit = _forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].LowFault;
+    float primaryHighLimit = _forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].HighFault;
     bool primaryLimitWarning = primaryForce < primaryLowLimit || primaryForce > primaryHighLimit;
     bool previousPrimaryLimit = _forceWarning->primaryAxisMeasuredForceWarning[dataIndex];
     _forceWarning->primaryAxisMeasuredForceWarning[dataIndex] = primaryLimitWarning;
@@ -1084,8 +1081,7 @@ void ILCResponseParser::_checkForceActuatorMeasuredForce(ILCMap map) {
         float secondaryLowLimit =
                 _forceActuatorSettings->MeasuredSecondaryCylinderLimitTable[secondaryDataIndex].LowFault;
         float secondaryHighLimit =
-                _forceActuatorSettings->MeasuredSecondaryCylinderLimitTable[secondaryDataIndex]
-                        .HighFault;
+                _forceActuatorSettings->MeasuredSecondaryCylinderLimitTable[secondaryDataIndex].HighFault;
         bool secondaryLimitWarning =
                 secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit;
         bool previousSecondaryLimit = _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex];
@@ -1105,8 +1101,7 @@ void ILCResponseParser::_checkForceActuatorFollowingError(ILCMap map) {
 
     float primaryForce = _forceActuatorData->primaryCylinderForce[dataIndex];
     float primarySetpoint = _appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0;
-    float primaryLimit =
-            _forceActuatorSettings->FollowingErrorPrimaryCylinderLimitTable[dataIndex].HighFault;
+    float primaryLimit = _forceActuatorSettings->FollowingErrorPrimaryCylinderLimitTable[dataIndex].HighFault;
     float primaryFollowingError = primaryForce - primarySetpoint;
     bool primaryLimitWarning = std::abs(primaryFollowingError) > primaryLimit;
     bool previousPrimaryWarning = _forceWarning->primaryAxisFollowingErrorWarning[dataIndex];
@@ -1128,8 +1123,7 @@ void ILCResponseParser::_checkForceActuatorFollowingError(ILCMap map) {
         anyChange = anyChange || secondaryLimitWarning != previousSecondaryWarning;
     }
 
-    _safetyController->forceActuatorFollowingError(dataIndex,
-                                                        primaryLimitWarning || secondaryLimitWarning);
+    _safetyController->forceActuatorFollowingError(dataIndex, primaryLimitWarning || secondaryLimitWarning);
 
     if (anyChange) {
         _publishForceActuatorForceWarning();
@@ -1192,9 +1186,9 @@ void ILCResponseParser::_publishForceActuatorForceWarning() {
                 _forceWarning->secondaryAxisFollowingErrorWarning[i];
     }
     _forceWarning->anyWarning = _forceWarning->anyPrimaryAxisMeasuredForceWarning ||
-                                     _forceWarning->anySecondaryAxisMeasuredForceWarning ||
-                                     _forceWarning->anyPrimaryAxisFollowingErrorWarning ||
-                                     _forceWarning->anySecondaryAxisFollowingErrorWarning;
+                                _forceWarning->anySecondaryAxisMeasuredForceWarning ||
+                                _forceWarning->anyPrimaryAxisFollowingErrorWarning ||
+                                _forceWarning->anySecondaryAxisFollowingErrorWarning;
     _publisher->logForceActuatorForceWarning();
 }
 

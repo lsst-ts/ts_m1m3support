@@ -124,9 +124,9 @@ void ThermalForceComponent::postUpdateActions() {
             float xLowFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].HighFault;
             _rejectedThermalForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _rejectedThermalForces->xForces[xIndex],
-                                                  _appliedThermalForces->xForces + xIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedThermalForces->xForces[xIndex],
+                                             _appliedThermalForces->xForces + xIndex);
             _forceSetpointWarning->thermalForceWarning[zIndex] =
                     _forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
         }
@@ -135,9 +135,9 @@ void ThermalForceComponent::postUpdateActions() {
             float yLowFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].HighFault;
             _rejectedThermalForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _rejectedThermalForces->yForces[yIndex],
-                                                  _appliedThermalForces->yForces + yIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedThermalForces->yForces[yIndex],
+                                             _appliedThermalForces->yForces + yIndex);
             _forceSetpointWarning->thermalForceWarning[zIndex] =
                     _forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
         }
@@ -145,18 +145,16 @@ void ThermalForceComponent::postUpdateActions() {
         float zLowFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].HighFault;
         _rejectedThermalForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedThermalForces->zForces[zIndex],
-                                         _appliedThermalForces->zForces + zIndex);
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedThermalForces->zForces[zIndex],
+                                              _appliedThermalForces->zForces + zIndex);
         _forceSetpointWarning->thermalForceWarning[zIndex] =
                 _forceSetpointWarning->thermalForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->thermalForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _appliedThermalForces->xForces, _appliedThermalForces->yForces,
-            _appliedThermalForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedThermalForces->xForces,
+            _appliedThermalForces->yForces, _appliedThermalForces->zForces);
     _appliedThermalForces->fx = fm.Fx;
     _appliedThermalForces->fy = fm.Fy;
     _appliedThermalForces->fz = fm.Fz;
@@ -166,9 +164,8 @@ void ThermalForceComponent::postUpdateActions() {
     _appliedThermalForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _rejectedThermalForces->xForces, _rejectedThermalForces->yForces,
-            _rejectedThermalForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedThermalForces->xForces,
+            _rejectedThermalForces->yForces, _rejectedThermalForces->zForces);
     _rejectedThermalForces->fx = fm.Fx;
     _rejectedThermalForces->fy = fm.Fy;
     _rejectedThermalForces->fz = fm.Fz;

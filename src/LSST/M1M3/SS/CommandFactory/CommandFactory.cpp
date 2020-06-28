@@ -89,25 +89,19 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
         case Commands::StartCommand:
             return new StartCommand(_context, _publisher, commandID, (MTM1M3_command_startC*)data);
         case Commands::EnableCommand:
-            return new EnableCommand(_context, _publisher, commandID,
-                                     (MTM1M3_command_enableC*)data);
+            return new EnableCommand(_context, _publisher, commandID, (MTM1M3_command_enableC*)data);
         case Commands::DisableCommand:
-            return new DisableCommand(_context, _publisher, commandID,
-                                      (MTM1M3_command_disableC*)data);
+            return new DisableCommand(_context, _publisher, commandID, (MTM1M3_command_disableC*)data);
         case Commands::StandbyCommand:
-            return new StandbyCommand(_context, _publisher, commandID,
-                                      (MTM1M3_command_standbyC*)data);
+            return new StandbyCommand(_context, _publisher, commandID, (MTM1M3_command_standbyC*)data);
         case Commands::UpdateCommand:
             return new UpdateCommand(_context, (pthread_mutex_t*)data);
         case Commands::ShutdownCommand:
-            return new ShutdownCommand(_context, _publisher, commandID,
-                                       (MTM1M3_command_shutdownC*)data);
+            return new ShutdownCommand(_context, _publisher, commandID, (MTM1M3_command_shutdownC*)data);
         case Commands::TurnAirOnCommand:
-            return new TurnAirOnCommand(_context, _publisher, commandID,
-                                        (MTM1M3_command_turnAirOnC*)data);
+            return new TurnAirOnCommand(_context, _publisher, commandID, (MTM1M3_command_turnAirOnC*)data);
         case Commands::TurnAirOffCommand:
-            return new TurnAirOffCommand(_context, _publisher, commandID,
-                                         (MTM1M3_command_turnAirOffC*)data);
+            return new TurnAirOffCommand(_context, _publisher, commandID, (MTM1M3_command_turnAirOffC*)data);
         case Commands::ApplyOffsetForcesCommand:
             return new ApplyOffsetForcesCommand(_context, _publisher, commandID,
                                                 (MTM1M3_command_applyOffsetForcesC*)data);
@@ -115,11 +109,9 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new ClearOffsetForcesCommand(_context, _publisher, commandID,
                                                 (MTM1M3_command_clearOffsetForcesC*)data);
         case Commands::RaiseM1M3Command:
-            return new RaiseM1M3Command(_context, _publisher, commandID,
-                                        (MTM1M3_command_raiseM1M3C*)data);
+            return new RaiseM1M3Command(_context, _publisher, commandID, (MTM1M3_command_raiseM1M3C*)data);
         case Commands::LowerM1M3Command:
-            return new LowerM1M3Command(_context, _publisher, commandID,
-                                        (MTM1M3_command_lowerM1M3C*)data);
+            return new LowerM1M3Command(_context, _publisher, commandID, (MTM1M3_command_lowerM1M3C*)data);
         case Commands::ApplyAberrationForcesByBendingModesCommand:
             return new ApplyAberrationForcesByBendingModesCommand(
                     _context, _publisher, commandID,
@@ -147,8 +139,7 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new ExitEngineeringCommand(_context, _publisher, commandID,
                                               (MTM1M3_command_exitEngineeringC*)data);
         case Commands::TestAirCommand:
-            return new TestAirCommand(_context, _publisher, commandID,
-                                      (MTM1M3_command_testAirC*)data);
+            return new TestAirCommand(_context, _publisher, commandID, (MTM1M3_command_testAirC*)data);
         case Commands::TestHardpointCommand:
             return new TestHardpointCommand(_context, _publisher, commandID,
                                             (MTM1M3_command_testHardpointC*)data);
@@ -206,17 +197,13 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
                                            (MTM1M3_command_abortProfileC*)data);
         case Commands::ApplyOffsetForcesByMirrorForceCommand:
             return new ApplyOffsetForcesByMirrorForceCommand(
-                    _context, _publisher, commandID,
-                    (MTM1M3_command_applyOffsetForcesByMirrorForceC*)data);
+                    _context, _publisher, commandID, (MTM1M3_command_applyOffsetForcesByMirrorForceC*)data);
         case Commands::UpdatePIDCommand:
-            return new UpdatePIDCommand(_context, _publisher, commandID,
-                                        (MTM1M3_command_updatePIDC*)data);
+            return new UpdatePIDCommand(_context, _publisher, commandID, (MTM1M3_command_updatePIDC*)data);
         case Commands::ResetPIDCommand:
-            return new ResetPIDCommand(_context, _publisher, commandID,
-                                       (MTM1M3_command_resetPIDC*)data);
+            return new ResetPIDCommand(_context, _publisher, commandID, (MTM1M3_command_resetPIDC*)data);
         case Commands::ProgramILCCommand:
-            return new ProgramILCCommand(_context, _publisher, commandID,
-                                         (MTM1M3_command_programILCC*)data);
+            return new ProgramILCCommand(_context, _publisher, commandID, (MTM1M3_command_programILCC*)data);
         case Commands::ModbusTransmitCommand:
             return new ModbusTransmitCommand(_context, _publisher, commandID,
                                              (MTM1M3_command_modbusTransmitC*)data);

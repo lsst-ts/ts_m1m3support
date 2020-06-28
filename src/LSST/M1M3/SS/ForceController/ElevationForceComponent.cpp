@@ -156,9 +156,8 @@ void ElevationForceComponent::_postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            this->appliedElevationForces->xForces, this->appliedElevationForces->yForces,
-            this->appliedElevationForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, this->appliedElevationForces->xForces,
+            this->appliedElevationForces->yForces, this->appliedElevationForces->zForces);
     this->appliedElevationForces->fx = fm.Fx;
     this->appliedElevationForces->fy = fm.Fy;
     this->appliedElevationForces->fz = fm.Fz;
@@ -168,9 +167,8 @@ void ElevationForceComponent::_postUpdateActions() {
     this->appliedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            this->rejectedElevationForces->xForces, this->rejectedElevationForces->yForces,
-            this->rejectedElevationForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, this->rejectedElevationForces->xForces,
+            this->rejectedElevationForces->yForces, this->rejectedElevationForces->zForces);
     this->rejectedElevationForces->fx = fm.Fx;
     this->rejectedElevationForces->fy = fm.Fy;
     this->rejectedElevationForces->fz = fm.Fz;

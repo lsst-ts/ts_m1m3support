@@ -124,9 +124,9 @@ void AzimuthForceComponent::postUpdateActions() {
             float xLowFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].HighFault;
             _rejectedAzimuthForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _rejectedAzimuthForces->xForces[xIndex],
-                                                  _appliedAzimuthForces->xForces + xIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedAzimuthForces->xForces[xIndex],
+                                             _appliedAzimuthForces->xForces + xIndex);
             _forceSetpointWarning->azimuthForceWarning[zIndex] =
                     _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
         }
@@ -135,9 +135,9 @@ void AzimuthForceComponent::postUpdateActions() {
             float yLowFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].HighFault;
             _rejectedAzimuthForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _rejectedAzimuthForces->yForces[yIndex],
-                                                  _appliedAzimuthForces->yForces + yIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedAzimuthForces->yForces[yIndex],
+                                             _appliedAzimuthForces->yForces + yIndex);
             _forceSetpointWarning->azimuthForceWarning[zIndex] =
                     _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
         }
@@ -145,18 +145,16 @@ void AzimuthForceComponent::postUpdateActions() {
         float zLowFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].HighFault;
         _rejectedAzimuthForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAzimuthForces->zForces[zIndex],
-                                         _appliedAzimuthForces->zForces + zIndex);
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAzimuthForces->zForces[zIndex],
+                                              _appliedAzimuthForces->zForces + zIndex);
         _forceSetpointWarning->azimuthForceWarning[zIndex] =
                 _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->azimuthForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _appliedAzimuthForces->xForces, _appliedAzimuthForces->yForces,
-            _appliedAzimuthForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedAzimuthForces->xForces,
+            _appliedAzimuthForces->yForces, _appliedAzimuthForces->zForces);
     _appliedAzimuthForces->fx = fm.Fx;
     _appliedAzimuthForces->fy = fm.Fy;
     _appliedAzimuthForces->fz = fm.Fz;
@@ -166,9 +164,8 @@ void AzimuthForceComponent::postUpdateActions() {
     _appliedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _rejectedAzimuthForces->xForces, _rejectedAzimuthForces->yForces,
-            _rejectedAzimuthForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedAzimuthForces->xForces,
+            _rejectedAzimuthForces->yForces, _rejectedAzimuthForces->zForces);
     _rejectedAzimuthForces->fx = fm.Fx;
     _rejectedAzimuthForces->fy = fm.Fy;
     _rejectedAzimuthForces->fz = fm.Fz;

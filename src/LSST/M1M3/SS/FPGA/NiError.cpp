@@ -24,8 +24,7 @@
 #include "NiError.h"
 #include "NiStatus.h"
 
-NiError::NiError(const char *msg, NiFpga_Status status)
-        : std::runtime_error(NiStatus(status)) {
+NiError::NiError(const char *msg, NiFpga_Status status) : std::runtime_error(NiStatus(status)) {
     NiReportError(msg, status);
 }
 

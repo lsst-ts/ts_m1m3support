@@ -37,8 +37,7 @@ namespace SS {
 void ForceActuatorSettings::load(const std::string &filename) {
     pugi::xml_document doc;
     XMLDocLoad(filename.c_str(), doc);
-    _loadDisabledActuators(
-            doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
+    _loadDisabledActuators(doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
     TableLoader::loadTable(
             1, 1, 3, &AccelerationXTable,
             doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
@@ -239,10 +238,9 @@ void ForceActuatorSettings::load(const std::string &filename) {
         ForceActuatorNeighbors neighbors;
         this->Neighbors.push_back(neighbors);
     }
-    _loadNearNeighborZTable(
-            doc.select_node("//ForceActuatorSettings/ForceActuatorNearZNeighborsTablePath")
-                    .node()
-                    .child_value());
+    _loadNearNeighborZTable(doc.select_node("//ForceActuatorSettings/ForceActuatorNearZNeighborsTablePath")
+                                    .node()
+                                    .child_value());
     _loadNeighborsTable(
             doc.select_node("//ForceActuatorSettings/ForceActuatorNeighborsTablePath").node().child_value());
 

@@ -176,14 +176,11 @@ uint16_t ModbusBuffer::readCRC() {
 
 double ModbusBuffer::readTimestamp() {
     _index += 8;
-    uint64_t data = ((uint64_t)(_buffer[_index - 8] & 0xFF)) |
-                    ((uint64_t)(_buffer[_index - 7] & 0xFF)) << 8 |
-                    ((uint64_t)(_buffer[_index - 6] & 0xFF)) << 16 |
-                    ((uint64_t)(_buffer[_index - 5] & 0xFF)) << 24 |
-                    ((uint64_t)(_buffer[_index - 4] & 0xFF)) << 32 |
-                    ((uint64_t)(_buffer[_index - 3] & 0xFF)) << 40 |
-                    ((uint64_t)(_buffer[_index - 2] & 0xFF)) << 48 |
-                    ((uint64_t)(_buffer[_index - 1] & 0xFF)) << 56;
+    uint64_t data =
+            ((uint64_t)(_buffer[_index - 8] & 0xFF)) | ((uint64_t)(_buffer[_index - 7] & 0xFF)) << 8 |
+            ((uint64_t)(_buffer[_index - 6] & 0xFF)) << 16 | ((uint64_t)(_buffer[_index - 5] & 0xFF)) << 24 |
+            ((uint64_t)(_buffer[_index - 4] & 0xFF)) << 32 | ((uint64_t)(_buffer[_index - 3] & 0xFF)) << 40 |
+            ((uint64_t)(_buffer[_index - 2] & 0xFF)) << 48 | ((uint64_t)(_buffer[_index - 1] & 0xFF)) << 56;
     return Timestamp::fromRaw(data);
 }
 
@@ -262,8 +259,7 @@ void ModbusBuffer::writeCRC(int32_t length) {
 
 void ModbusBuffer::writeDelay(uint32_t delayMicros) {
     _index += 1;
-    _buffer[_index - 1] =
-            delayMicros > 4095 ? (((delayMicros / 1000) + 1) | 0x5000) : (delayMicros | 0x4000);
+    _buffer[_index - 1] = delayMicros > 4095 ? (((delayMicros / 1000) + 1) | 0x5000) : (delayMicros | 0x4000);
 }
 
 void ModbusBuffer::writeEndOfFrame() {
@@ -288,9 +284,8 @@ void ModbusBuffer::writeTriggerIRQ() {
 
 void ModbusBuffer::writeWaitForRx(uint32_t timeoutMicros) {
     _index += 1;
-    _buffer[_index - 1] = timeoutMicros > 4095
-                                            ? (((timeoutMicros / 1000) + 1) | FIFO_TX_WAIT_LONG_RX)
-                                            : (timeoutMicros | FIFO_TX_WAIT_RX);
+    _buffer[_index - 1] = timeoutMicros > 4095 ? (((timeoutMicros / 1000) + 1) | FIFO_TX_WAIT_LONG_RX)
+                                               : (timeoutMicros | FIFO_TX_WAIT_RX);
 }
 
 void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint64_t& endTs,

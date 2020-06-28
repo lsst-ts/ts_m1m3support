@@ -102,9 +102,9 @@ void StaticForceComponent::postUpdateActions() {
             float xLowFault = _forceActuatorSettings->StaticLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->StaticLimitXTable[xIndex].HighFault;
             _rejectedStaticForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _rejectedStaticForces->xForces[xIndex],
-                                                  _appliedStaticForces->xForces + xIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedStaticForces->xForces[xIndex],
+                                             _appliedStaticForces->xForces + xIndex);
             _forceSetpointWarning->staticForceWarning[zIndex] =
                     _forceSetpointWarning->staticForceWarning[zIndex] || notInRange;
         }
@@ -113,9 +113,9 @@ void StaticForceComponent::postUpdateActions() {
             float yLowFault = _forceActuatorSettings->StaticLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->StaticLimitYTable[yIndex].HighFault;
             _rejectedStaticForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _rejectedStaticForces->yForces[yIndex],
-                                                  _appliedStaticForces->yForces + yIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedStaticForces->yForces[yIndex],
+                                             _appliedStaticForces->yForces + yIndex);
             _forceSetpointWarning->staticForceWarning[zIndex] =
                     _forceSetpointWarning->staticForceWarning[zIndex] || notInRange;
         }
@@ -123,18 +123,16 @@ void StaticForceComponent::postUpdateActions() {
         float zLowFault = _forceActuatorSettings->StaticLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->StaticLimitZTable[zIndex].HighFault;
         _rejectedStaticForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedStaticForces->zForces[zIndex],
-                                         _appliedStaticForces->zForces + zIndex);
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedStaticForces->zForces[zIndex],
+                                              _appliedStaticForces->zForces + zIndex);
         _forceSetpointWarning->staticForceWarning[zIndex] =
                 _forceSetpointWarning->staticForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->staticForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _appliedStaticForces->xForces, _appliedStaticForces->yForces,
-            _appliedStaticForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedStaticForces->xForces,
+            _appliedStaticForces->yForces, _appliedStaticForces->zForces);
     _appliedStaticForces->fx = fm.Fx;
     _appliedStaticForces->fy = fm.Fy;
     _appliedStaticForces->fz = fm.Fz;
@@ -144,9 +142,8 @@ void StaticForceComponent::postUpdateActions() {
     _appliedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _rejectedStaticForces->xForces, _rejectedStaticForces->yForces,
-            _rejectedStaticForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedStaticForces->xForces,
+            _rejectedStaticForces->yForces, _rejectedStaticForces->zForces);
     _rejectedStaticForces->fx = fm.Fx;
     _rejectedStaticForces->fy = fm.Fy;
     _rejectedStaticForces->fz = fm.Fz;

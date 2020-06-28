@@ -41,7 +41,7 @@ DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M
 bool DisableHardpointChaseCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
         _publisher->logCommandRejectionWarning("DisableHardpointChase",
-                                                    "The field HardpointActuator must be in range [1, 6].");
+                                               "The field HardpointActuator must be in range [1, 6].");
     }
     return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }

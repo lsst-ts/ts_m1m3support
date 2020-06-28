@@ -73,8 +73,7 @@ void AutomaticOperationsController::tryIncrementingSupportPercentage() {
     if (!_forceController->supportPercentageFilled()) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
-        if (_positionController->forcesInTolerance() &&
-            _forceController->followingErrorInTolerance()) {
+        if (_positionController->forcesInTolerance() && _forceController->followingErrorInTolerance()) {
             // The forces on the hardpoints are within tolerance and
             // the force actuators are following their setpoints, we can continue to transfer the
             // support force from the static supports to the force actuators
@@ -115,8 +114,7 @@ void AutomaticOperationsController::completeRaiseOperation() {
 }
 
 bool AutomaticOperationsController::checkRaiseOperationTimeout() {
-    return _publisher->getTimestamp() >=
-           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
+    return _publisher->getTimestamp() >= (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
 }
 
 void AutomaticOperationsController::timeoutRaiseOperation() {
@@ -200,8 +198,7 @@ void AutomaticOperationsController::completeLowerOperation() {
 }
 
 bool AutomaticOperationsController::checkLowerOperationTimeout() {
-    return _publisher->getTimestamp() >=
-           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
+    return _publisher->getTimestamp() >= (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
 }
 
 void AutomaticOperationsController::timeoutLowerOperation() {

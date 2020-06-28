@@ -130,7 +130,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     _populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
-                                        positionControllerSettings);
+                                   positionControllerSettings);
     _populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
 
     delete _safetyController;
@@ -140,12 +140,12 @@ void Model::loadSettings(std::string settingsToApply) {
     delete _displacement;
     spdlog::info("Model: Creating displacement");
     _displacement = new Displacement(displacementSensorSettings, IFPGA::get().getSupportFPGAData(),
-                                          _publisher, _safetyController);
+                                     _publisher, _safetyController);
 
     delete _inclinometer;
     spdlog::info("Model: Creating inclinometer");
-    _inclinometer = new Inclinometer(IFPGA::get().getSupportFPGAData(), _publisher,
-                                          _safetyController, inclinometerSettings);
+    _inclinometer = new Inclinometer(IFPGA::get().getSupportFPGAData(), _publisher, _safetyController,
+                                     inclinometerSettings);
 
     delete _positionController;
     spdlog::info("Model: Creating position controller");
@@ -154,15 +154,14 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _ilc;
     spdlog::info("Model: Creating ILC");
-    _ilc = new ILC(_publisher, _positionController, ilcApplicationSettings,
-                        forceActuatorApplicationSettings, forceActuatorSettings,
-                        hardpointActuatorApplicationSettings, hardpointActuatorSettings,
-                        hardpointMonitorApplicationSettings, _safetyController);
+    _ilc = new ILC(_publisher, _positionController, ilcApplicationSettings, forceActuatorApplicationSettings,
+                   forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings,
+                   hardpointMonitorApplicationSettings, _safetyController);
 
     delete _forceController;
     spdlog::info("Model: Creating force controller");
     _forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings,
-                                                pidSettings, _publisher, _safetyController);
+                                           pidSettings, _publisher, _safetyController);
 
     spdlog::info("Model: Updating digital input output");
     _digitalInputOutput->setSafetyController(_safetyController);
@@ -177,9 +176,8 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _automaticOperationsController;
     spdlog::info("Model: Creating automatic operations controller");
-    _automaticOperationsController =
-            new AutomaticOperationsController(_positionController, _forceController,
-                                              _safetyController, _publisher, _powerController);
+    _automaticOperationsController = new AutomaticOperationsController(
+            _positionController, _forceController, _safetyController, _publisher, _powerController);
 
     delete _gyro;
     spdlog::info("Model: Creating gyro");
@@ -231,7 +229,7 @@ void Model::waitForShutdown() {
 }
 
 void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                      ForceActuatorSettings* forceActuatorSettings) {
+                                       ForceActuatorSettings* forceActuatorSettings) {
     spdlog::debug("Model: populateForceActuatorInfo()");
     MTM1M3_logevent_forceActuatorInfoC* forceInfo = _publisher->getEventForceActuatorInfo();
     for (int i = 0; i < FA_COUNT; i++) {
@@ -273,8 +271,7 @@ void Model::_populateHardpointActuatorInfo(
 void Model::_populateHardpointMonitorInfo(
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
     spdlog::debug("Model: populateHardpointMonitorInfo()");
-    MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo =
-            _publisher->getEventHardpointMonitorInfo();
+    MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo = _publisher->getEventHardpointMonitorInfo();
     for (int i = 0; i < HM_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
         hardpointMonitorInfo->referenceId[row.Index] = row.ActuatorID;

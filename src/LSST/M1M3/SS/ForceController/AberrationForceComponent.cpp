@@ -100,24 +100,22 @@ void AberrationForceComponent::postUpdateActions() {
         _forceSetpointWarning->aberrationForceWarning[zIndex] = false;
 
         _rejectedAberrationForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
-                                              _rejectedAberrationForces->zForces[zIndex],
-                                              _appliedAberrationForces->zForces + zIndex);
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAberrationForces->zForces[zIndex],
+                                         _appliedAberrationForces->zForces + zIndex);
         _forceSetpointWarning->aberrationForceWarning[zIndex] =
                 _forceSetpointWarning->aberrationForceWarning[zIndex] || notInRange;
 
         rejectionRequired = rejectionRequired || _forceSetpointWarning->aberrationForceWarning[zIndex];
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings,
-                                                                    _forceActuatorSettings,
-                                                                    _appliedAberrationForces->zForces);
+    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedAberrationForces->zForces);
     _appliedAberrationForces->fz = fm.Fz;
     _appliedAberrationForces->mx = fm.Mx;
     _appliedAberrationForces->my = fm.My;
 
-    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings,
-                                                   _forceActuatorSettings,
+    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
                                                    _rejectedAberrationForces->zForces);
     _rejectedAberrationForces->fz = fm.Fz;
     _rejectedAberrationForces->mx = fm.Mx;

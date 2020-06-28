@@ -92,7 +92,7 @@ public:
 
 private:
     void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                   ForceActuatorSettings* forceActuatorSettings);
+                                    ForceActuatorSettings* forceActuatorSettings);
     void _populateHardpointActuatorInfo(
             HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
             HardpointActuatorSettings* hardpointActuatorSettings,

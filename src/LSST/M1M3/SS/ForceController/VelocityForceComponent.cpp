@@ -128,9 +128,9 @@ void VelocityForceComponent::postUpdateActions() {
             float xLowFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].HighFault;
             _rejectedVelocityForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _rejectedVelocityForces->xForces[xIndex],
-                                                  _appliedVelocityForces->xForces + xIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedVelocityForces->xForces[xIndex],
+                                             _appliedVelocityForces->xForces + xIndex);
             _forceSetpointWarning->velocityForceWarning[zIndex] =
                     _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
         }
@@ -139,9 +139,9 @@ void VelocityForceComponent::postUpdateActions() {
             float yLowFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].HighFault;
             _rejectedVelocityForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _rejectedVelocityForces->yForces[yIndex],
-                                                  _appliedVelocityForces->yForces + yIndex);
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedVelocityForces->yForces[yIndex],
+                                             _appliedVelocityForces->yForces + yIndex);
             _forceSetpointWarning->velocityForceWarning[zIndex] =
                     _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
         }
@@ -149,18 +149,16 @@ void VelocityForceComponent::postUpdateActions() {
         float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].HighFault;
         _rejectedVelocityForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedVelocityForces->zForces[zIndex],
-                                         _appliedVelocityForces->zForces + zIndex);
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedVelocityForces->zForces[zIndex],
+                                              _appliedVelocityForces->zForces + zIndex);
         _forceSetpointWarning->velocityForceWarning[zIndex] =
                 _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->velocityForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _appliedVelocityForces->xForces, _appliedVelocityForces->yForces,
-            _appliedVelocityForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedVelocityForces->xForces,
+            _appliedVelocityForces->yForces, _appliedVelocityForces->zForces);
     _appliedVelocityForces->fx = fm.Fx;
     _appliedVelocityForces->fy = fm.Fy;
     _appliedVelocityForces->fz = fm.Fz;
@@ -170,9 +168,8 @@ void VelocityForceComponent::postUpdateActions() {
     _appliedVelocityForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _rejectedVelocityForces->xForces, _rejectedVelocityForces->yForces,
-            _rejectedVelocityForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedVelocityForces->xForces,
+            _rejectedVelocityForces->yForces, _rejectedVelocityForces->zForces);
     _rejectedVelocityForces->fx = fm.Fx;
     _rejectedVelocityForces->fy = fm.Fy;
     _rejectedVelocityForces->fz = fm.Fz;

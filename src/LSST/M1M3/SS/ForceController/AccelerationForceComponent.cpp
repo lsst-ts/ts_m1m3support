@@ -153,18 +153,17 @@ void AccelerationForceComponent::postUpdateActions() {
         float zLowFault = _forceActuatorSettings->AccelerationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AccelerationLimitZTable[zIndex].HighFault;
         _rejectedAccelerationForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
-                                              _rejectedAccelerationForces->zForces[zIndex],
-                                              _appliedAccelerationForces->zForces + zIndex);
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAccelerationForces->zForces[zIndex],
+                                         _appliedAccelerationForces->zForces + zIndex);
         _forceSetpointWarning->accelerationForceWarning[zIndex] =
                 _forceSetpointWarning->accelerationForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->accelerationForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _appliedAccelerationForces->xForces, _appliedAccelerationForces->yForces,
-            _appliedAccelerationForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedAccelerationForces->xForces,
+            _appliedAccelerationForces->yForces, _appliedAccelerationForces->zForces);
     _appliedAccelerationForces->fx = fm.Fx;
     _appliedAccelerationForces->fy = fm.Fy;
     _appliedAccelerationForces->fz = fm.Fz;
@@ -174,9 +173,8 @@ void AccelerationForceComponent::postUpdateActions() {
     _appliedAccelerationForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings,
-            _rejectedAccelerationForces->xForces, _rejectedAccelerationForces->yForces,
-            _rejectedAccelerationForces->zForces);
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedAccelerationForces->xForces,
+            _rejectedAccelerationForces->yForces, _rejectedAccelerationForces->zForces);
     _rejectedAccelerationForces->fx = fm.Fx;
     _rejectedAccelerationForces->fy = fm.Fy;
     _rejectedAccelerationForces->fz = fm.Fz;

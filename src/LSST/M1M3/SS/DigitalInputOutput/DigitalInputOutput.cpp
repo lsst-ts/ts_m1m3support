@@ -105,8 +105,7 @@ void DigitalInputOutput::processData() {
         if (_safetyController) {
             _safetyController->airControllerNotifyCommandOutputMismatch(
                     _airSupplyWarning->commandOutputMismatch);
-            _safetyController->cellLightNotifyOutputMismatch(
-                    _cellLightWarning->cellLightsOutputMismatch);
+            _safetyController->cellLightNotifyOutputMismatch(_cellLightWarning->cellLightsOutputMismatch);
             _safetyController->interlockNotifyHeartbeatStateOutputMismatch(
                     _interlockWarning->heartbeatStateOutputMismatch);
         }
@@ -146,12 +145,9 @@ void DigitalInputOutput::processData() {
         if (_safetyController) {
             _safetyController->airControllerNotifyCommandSensorMismatch(
                     _airSupplyWarning->commandSensorMismatch);
-            _safetyController->cellLightNotifySensorMismatch(
-                    _cellLightWarning->cellLightsSensorMismatch);
-            _safetyController->interlockNotifyAuxPowerNetworksOff(
-                    _interlockWarning->auxPowerNetworksOff);
-            _safetyController->interlockNotifyThermalEquipmentOff(
-                    _interlockWarning->thermalEquipmentOff);
+            _safetyController->cellLightNotifySensorMismatch(_cellLightWarning->cellLightsSensorMismatch);
+            _safetyController->interlockNotifyAuxPowerNetworksOff(_interlockWarning->auxPowerNetworksOff);
+            _safetyController->interlockNotifyThermalEquipmentOff(_interlockWarning->thermalEquipmentOff);
             _safetyController->interlockNotifyAirSupplyOff(_interlockWarning->airSupplyOff);
             _safetyController->interlockNotifyCabinetDoorOpen(_interlockWarning->cabinetDoorOpen);
             _safetyController->interlockNotifyTMAMotionStop(_interlockWarning->tmaMotionStop);
@@ -171,8 +167,7 @@ void DigitalInputOutput::processData() {
 void DigitalInputOutput::tryToggleHeartbeat() {
     spdlog::trace("DigitalInputOutput: tryToggleHeartbeat()");
     double timestamp = _publisher->getTimestamp();
-    if (timestamp >=
-        (_lastToggleTimestamp + _interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
+    if (timestamp >= (_lastToggleTimestamp + _interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
         spdlog::debug("DigitalInputOutput: toggleHeartbeat()");
         _lastToggleTimestamp = timestamp;
         _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
@@ -185,16 +180,14 @@ void DigitalInputOutput::tryToggleHeartbeat() {
 void DigitalInputOutput::turnAirOn() {
     spdlog::info("DigitalInputOutput: turnAirOn()");
     _airSupplyStatus->airCommandedOn = true;
-    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl,
-                          (uint16_t)_airSupplyStatus->airCommandedOn};
+    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnAirOff() {
     spdlog::info("DigitalInputOutput: turnAirOff()");
     _airSupplyStatus->airCommandedOn = false;
-    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl,
-                          (uint16_t)_airSupplyStatus->airCommandedOn};
+    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 

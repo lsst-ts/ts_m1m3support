@@ -51,10 +51,9 @@ int32_t ExpansionFPGA::open() {
     if (!this->expansionFPGAApplicationSettings->Enabled) {
         return 0;
     }
-    int32_t status =
-            NiFpga_Open("/home/admin/Bitfiles/" NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile,
-                        NiFpga_ts_M1M3SupportExpansionFPGA_Signature,
-                        this->expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session));
+    int32_t status = NiFpga_Open("/home/admin/Bitfiles/" NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile,
+                                 NiFpga_ts_M1M3SupportExpansionFPGA_Signature,
+                                 this->expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session));
     if (status) {
         return NiReportError(__PRETTY_FUNCTION__, status);
     }
@@ -106,8 +105,8 @@ int32_t ExpansionFPGA::readSlot1(float* data) {
     }
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_ReadArraySgl(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1,
-                                data, 6));
+            NiFpga_ReadArraySgl(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1, data,
+                                6));
 }
 
 int32_t ExpansionFPGA::readSlot2(uint32_t* data) {

@@ -52,8 +52,7 @@ void OuterLoopClockThread::run() {
         if (IFPGA::get().waitForOuterLoopClock(1000) == 0) {
             _controller->lock();
             if (_keepRunning) {
-                _controller->enqueue(
-                        _commandFactory->create(Commands::UpdateCommand, &_updateMutex));
+                _controller->enqueue(_commandFactory->create(Commands::UpdateCommand, &_updateMutex));
             }
             _controller->unlock();
             pthread_mutex_lock(&_updateMutex);

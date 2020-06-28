@@ -62,30 +62,23 @@ void Displacement::processData() {
     if (_fpgaData->DisplacementErrorTimestamp > _lastErrorTimestamp) {
         _lastErrorTimestamp = _fpgaData->DisplacementErrorTimestamp;
         _errorCleared = false;
-        _displacementWarning->timestamp =
-                Timestamp::fromFPGA(_fpgaData->DisplacementErrorTimestamp);
+        _displacementWarning->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementErrorTimestamp);
         _displacementWarning->anyWarning = _fpgaData->DisplacementErrorCode != 0;
         _displacementWarning->unknownProblem = _fpgaData->DisplacementErrorCode == 1;
         _displacementWarning->invalidResponse = _fpgaData->DisplacementErrorCode == 2;
         _displacementWarning->responseTimeout = _fpgaData->DisplacementErrorCode == 3;
         _displacementWarning->sensorReportsInvalidCommand = _fpgaData->DisplacementErrorCode == 4;
-        _displacementWarning->sensorReportsCommunicationTimeoutError =
-                _fpgaData->DisplacementErrorCode == 5;
+        _displacementWarning->sensorReportsCommunicationTimeoutError = _fpgaData->DisplacementErrorCode == 5;
         _displacementWarning->sensorReportsDataLengthError = _fpgaData->DisplacementErrorCode == 6;
-        _displacementWarning->sensorReportsNumberOfParametersError =
-                _fpgaData->DisplacementErrorCode == 7;
+        _displacementWarning->sensorReportsNumberOfParametersError = _fpgaData->DisplacementErrorCode == 7;
         _displacementWarning->sensorReportsParameterError = _fpgaData->DisplacementErrorCode == 8;
-        _displacementWarning->sensorReportsCommunicationError =
-                _fpgaData->DisplacementErrorCode == 9;
+        _displacementWarning->sensorReportsCommunicationError = _fpgaData->DisplacementErrorCode == 9;
         _displacementWarning->sensorReportsIDNumberError = _fpgaData->DisplacementErrorCode == 10;
-        _displacementWarning->sensorReportsExpansionLineError =
-                _fpgaData->DisplacementErrorCode == 11;
-        _displacementWarning->sensorReportsWriteControlError =
-                _fpgaData->DisplacementErrorCode == 12;
+        _displacementWarning->sensorReportsExpansionLineError = _fpgaData->DisplacementErrorCode == 11;
+        _displacementWarning->sensorReportsWriteControlError = _fpgaData->DisplacementErrorCode == 12;
         _safetyController->displacementNotifyUnknownProblem(_displacementWarning->unknownProblem);
         _safetyController->displacementNotifyInvalidResponse(_displacementWarning->invalidResponse);
-        _safetyController->displacementNotifyResponseTimeoutError(
-                _displacementWarning->responseTimeout);
+        _safetyController->displacementNotifyResponseTimeoutError(_displacementWarning->responseTimeout);
         _safetyController->displacementNotifySensorReportsInvalidCommand(
                 _displacementWarning->sensorReportsInvalidCommand);
         _safetyController->displacementNotifySensorReportsCommunicationTimeoutError(
@@ -112,25 +105,19 @@ void Displacement::processData() {
         // We need to swap the direction of the IMS reading, note sensor 5 and 7 are mounted opposite
         // We also need to convert the raw sensor values to millimeters
         _imsData->rawSensorData[0] =
-                50.0 -
-                ((_fpgaData->DisplacementRaw1 + _displacementSensorSettings->N1Offset) / 10000.0);
+                50.0 - ((_fpgaData->DisplacementRaw1 + _displacementSensorSettings->N1Offset) / 10000.0);
         _imsData->rawSensorData[1] =
-                50.0 -
-                ((_fpgaData->DisplacementRaw2 + _displacementSensorSettings->N2Offset) / 10000.0);
+                50.0 - ((_fpgaData->DisplacementRaw2 + _displacementSensorSettings->N2Offset) / 10000.0);
         _imsData->rawSensorData[2] =
-                50.0 -
-                ((_fpgaData->DisplacementRaw3 + _displacementSensorSettings->N3Offset) / 10000.0);
+                50.0 - ((_fpgaData->DisplacementRaw3 + _displacementSensorSettings->N3Offset) / 10000.0);
         _imsData->rawSensorData[3] =
-                50.0 -
-                ((_fpgaData->DisplacementRaw4 + _displacementSensorSettings->N4Offset) / 10000.0);
+                50.0 - ((_fpgaData->DisplacementRaw4 + _displacementSensorSettings->N4Offset) / 10000.0);
         _imsData->rawSensorData[4] =
-                50.0 -
-                ((_fpgaData->DisplacementRaw5 + _displacementSensorSettings->N5Offset) / 10000.0);
+                50.0 - ((_fpgaData->DisplacementRaw5 + _displacementSensorSettings->N5Offset) / 10000.0);
         _imsData->rawSensorData[5] =
                 ((_fpgaData->DisplacementRaw6 + _displacementSensorSettings->N6Offset) / 10000.0);
         _imsData->rawSensorData[6] =
-                50.0 -
-                ((_fpgaData->DisplacementRaw7 + _displacementSensorSettings->N7Offset) / 10000.0);
+                50.0 - ((_fpgaData->DisplacementRaw7 + _displacementSensorSettings->N7Offset) / 10000.0);
         _imsData->rawSensorData[7] =
                 ((_fpgaData->DisplacementRaw8 + _displacementSensorSettings->N8Offset) / 10000.0);
         int p1 = _displacementSensorSettings->N1Port;
@@ -211,8 +198,7 @@ void Displacement::processData() {
         if (!_errorCleared &&
             _fpgaData->DisplacementSampleTimestamp > _fpgaData->DisplacementErrorTimestamp) {
             _errorCleared = true;
-            _displacementWarning->timestamp =
-                    Timestamp::fromFPGA(_fpgaData->DisplacementSampleTimestamp);
+            _displacementWarning->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementSampleTimestamp);
             _displacementWarning->unknownProblem = false;
             _displacementWarning->invalidResponse = false;
             _displacementWarning->responseTimeout = false;
@@ -225,12 +211,9 @@ void Displacement::processData() {
             _displacementWarning->sensorReportsIDNumberError = false;
             _displacementWarning->sensorReportsExpansionLineError = false;
             _displacementWarning->sensorReportsWriteControlError = false;
-            _safetyController->displacementNotifyUnknownProblem(
-                    _displacementWarning->unknownProblem);
-            _safetyController->displacementNotifyInvalidResponse(
-                    _displacementWarning->invalidResponse);
-            _safetyController->displacementNotifyResponseTimeoutError(
-                    _displacementWarning->responseTimeout);
+            _safetyController->displacementNotifyUnknownProblem(_displacementWarning->unknownProblem);
+            _safetyController->displacementNotifyInvalidResponse(_displacementWarning->invalidResponse);
+            _safetyController->displacementNotifyResponseTimeoutError(_displacementWarning->responseTimeout);
             _safetyController->displacementNotifySensorReportsInvalidCommand(
                     _displacementWarning->sensorReportsInvalidCommand);
             _safetyController->displacementNotifySensorReportsCommunicationTimeoutError(

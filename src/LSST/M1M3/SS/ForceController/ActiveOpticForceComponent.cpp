@@ -101,23 +101,21 @@ void ActiveOpticForceComponent::postUpdateActions() {
         _forceSetpointWarning->activeOpticForceWarning[zIndex] = false;
 
         _rejectedActiveOpticForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
-                                              _rejectedActiveOpticForces->zForces[zIndex],
-                                              _appliedActiveOpticForces->zForces + zIndex);
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedActiveOpticForces->zForces[zIndex],
+                                         _appliedActiveOpticForces->zForces + zIndex);
         _forceSetpointWarning->activeOpticForceWarning[zIndex] =
                 _forceSetpointWarning->activeOpticForceWarning[zIndex] || notInRange;
         rejectionRequired = rejectionRequired || _forceSetpointWarning->activeOpticForceWarning[zIndex];
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings,
-                                                                    _forceActuatorSettings,
-                                                                    _appliedActiveOpticForces->zForces);
+    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedActiveOpticForces->zForces);
     _appliedActiveOpticForces->fz = fm.Fz;
     _appliedActiveOpticForces->mx = fm.Mx;
     _appliedActiveOpticForces->my = fm.My;
 
-    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings,
-                                                   _forceActuatorSettings,
+    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
                                                    _rejectedActiveOpticForces->zForces);
     _rejectedActiveOpticForces->fz = fm.Fz;
     _rejectedActiveOpticForces->mx = fm.Mx;

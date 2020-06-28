@@ -53,9 +53,7 @@ void StartCommand::ackInProgress() {
     _publisher->ackCommandstart(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
-void StartCommand::ackComplete() {
-    _publisher->ackCommandstart(this->commandID, ACK_COMPLETE, "Complete");
-}
+void StartCommand::ackComplete() { _publisher->ackCommandstart(this->commandID, ACK_COMPLETE, "Complete"); }
 
 void StartCommand::ackFailed(std::string reason) {
     _publisher->ackCommandstart(this->commandID, ACK_FAILED, "Failed: " + reason);

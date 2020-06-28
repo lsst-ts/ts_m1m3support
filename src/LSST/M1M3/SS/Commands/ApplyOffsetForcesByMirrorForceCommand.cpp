@@ -54,8 +54,7 @@ void ApplyOffsetForcesByMirrorForceCommand::ackComplete() {
 }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandapplyOffsetForcesByMirrorForce(this->commandID, ACK_FAILED,
-                                                              "Failed: " + reason);
+    _publisher->ackCommandapplyOffsetForcesByMirrorForce(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

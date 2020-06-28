@@ -111,10 +111,10 @@ bool PositionController::forcesInTolerance() {
     spdlog::trace("PositionController: forcesInTolerance()");
     bool inTolerance = true;
     for (int i = 0; i < HP_COUNT; i++) {
-        inTolerance = inTolerance &&
-                      Range::InRange((float)_positionControllerSettings->RaiseLowerForceLimitLow,
-                                     (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
-                                     _hardpointActuatorData->measuredForce[i]);
+        inTolerance =
+                inTolerance && Range::InRange((float)_positionControllerSettings->RaiseLowerForceLimitLow,
+                                              (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
+                                              _hardpointActuatorData->measuredForce[i]);
     }
     return inTolerance;
 }
@@ -152,15 +152,15 @@ bool PositionController::move(int32_t* steps) {
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointActuatorData->stepsQueued[i] = steps[i];
         _hardpointActuatorState->motionState[i] = steps[i] != 0 ? HardpointActuatorMotionStates::Stepping
-                                                                     : HardpointActuatorMotionStates::Standby;
+                                                                : HardpointActuatorMotionStates::Standby;
         loopCycles[i] = abs(steps[i]) / (double)_positionControllerSettings->MaxStepsPerLoop;
         if (loopCycles[i] > maxLoopCycles) {
             maxLoopCycles = loopCycles[i];
         }
     }
     for (int i = 0; i < HP_COUNT; ++i) {
-        _scaledMaxStepsPerLoop[i] = (int32_t)(_positionControllerSettings->MaxStepsPerLoop /
-                                                   (maxLoopCycles / loopCycles[i]));
+        _scaledMaxStepsPerLoop[i] =
+                (int32_t)(_positionControllerSettings->MaxStepsPerLoop / (maxLoopCycles / loopCycles[i]));
         if (_scaledMaxStepsPerLoop[i] == 0) {
             _scaledMaxStepsPerLoop[i] = 1;
         }
@@ -210,10 +210,9 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
         }
         _hardpointActuatorData->stepsQueued[i] =
                 deltaEncoder * _positionControllerSettings->EncoderToStepsCoefficient;
-        _hardpointActuatorState->motionState[i] =
-                _hardpointActuatorData->stepsQueued[i] != 0
-                        ? HardpointActuatorMotionStates::QuickPositioning
-                        : HardpointActuatorMotionStates::Standby;
+        _hardpointActuatorState->motionState[i] = _hardpointActuatorData->stepsQueued[i] != 0
+                                                          ? HardpointActuatorMotionStates::QuickPositioning
+                                                          : HardpointActuatorMotionStates::Standby;
         loopCycles[i] = abs(_hardpointActuatorData->stepsQueued[i]) /
                         (double)_positionControllerSettings->MaxStepsPerLoop;
         if (loopCycles[i] > maxLoopCycles) {
@@ -221,8 +220,8 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
         }
     }
     for (int i = 0; i < HP_COUNT; ++i) {
-        _scaledMaxStepsPerLoop[i] = (int32_t)(_positionControllerSettings->MaxStepsPerLoop /
-                                                   (maxLoopCycles / loopCycles[i]));
+        _scaledMaxStepsPerLoop[i] =
+                (int32_t)(_positionControllerSettings->MaxStepsPerLoop / (maxLoopCycles / loopCycles[i]));
         if (_scaledMaxStepsPerLoop[i] == 0) {
             _scaledMaxStepsPerLoop[i] = 1;
         }
@@ -285,18 +284,16 @@ void PositionController::updateSteps() {
                 break;
             case HardpointActuatorMotionStates::Chasing: {
                 float force = _hardpointActuatorData->measuredForce[i];
-                int32_t chaseSteps =
-                        (int32_t)(force * _positionControllerSettings->ForceToStepsCoefficient);
-                chaseSteps =
-                        Range::CoerceIntoRange(-_positionControllerSettings->MaxStepsPerLoop,
-                                               _positionControllerSettings->MaxStepsPerLoop, chaseSteps);
+                int32_t chaseSteps = (int32_t)(force * _positionControllerSettings->ForceToStepsCoefficient);
+                chaseSteps = Range::CoerceIntoRange(-_positionControllerSettings->MaxStepsPerLoop,
+                                                    _positionControllerSettings->MaxStepsPerLoop, chaseSteps);
                 _hardpointActuatorData->stepsCommanded[i] = (int16_t)chaseSteps;
                 break;
             }
             case HardpointActuatorMotionStates::Stepping: {
-                int32_t moveSteps = Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i],
-                                                           _scaledMaxStepsPerLoop[i],
-                                                           _hardpointActuatorData->stepsQueued[i]);
+                int32_t moveSteps =
+                        Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
+                                               _hardpointActuatorData->stepsQueued[i]);
                 _hardpointActuatorData->stepsQueued[i] -= moveSteps;
                 _hardpointActuatorData->stepsCommanded[i] = (int16_t)moveSteps;
                 if (_hardpointActuatorData->stepsQueued[i] == 0 &&
@@ -307,16 +304,15 @@ void PositionController::updateSteps() {
                 break;
             }
             case HardpointActuatorMotionStates::QuickPositioning: {
-                int32_t moveSteps = Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i],
-                                                           _scaledMaxStepsPerLoop[i],
-                                                           _hardpointActuatorData->stepsQueued[i]);
+                int32_t moveSteps =
+                        Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
+                                               _hardpointActuatorData->stepsQueued[i]);
                 _hardpointActuatorData->stepsQueued[i] -= moveSteps;
                 _hardpointActuatorData->stepsCommanded[i] = (int16_t)moveSteps;
                 if (_hardpointActuatorData->stepsQueued[i] == 0 &&
                     _hardpointActuatorData->stepsCommanded[i] == 0) {
                     publishState = true;
-                    _hardpointActuatorState->motionState[i] =
-                            HardpointActuatorMotionStates::FinePositioning;
+                    _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::FinePositioning;
                 }
                 break;
             }
@@ -337,9 +333,9 @@ void PositionController::updateSteps() {
                         _stableEncoderCount[i]++;
                     }
                 }
-                _hardpointActuatorData->stepsCommanded[i] = Range::CoerceIntoRange(
-                        -_positionControllerSettings->MaxStepsPerLoop,
-                        _positionControllerSettings->MaxStepsPerLoop, encoderSteps);
+                _hardpointActuatorData->stepsCommanded[i] =
+                        Range::CoerceIntoRange(-_positionControllerSettings->MaxStepsPerLoop,
+                                               _positionControllerSettings->MaxStepsPerLoop, encoderSteps);
                 if (deltaEncoder == 0 && _stableEncoderCount[i] >= 2) {
                     publishState = true;
                     _hardpointActuatorData->stepsCommanded[i] = 0;
@@ -355,7 +351,7 @@ void PositionController::updateSteps() {
 }
 
 void PositionController::_convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY,
-                                        double rZ) {
+                                         double rZ) {
     // The reason for defining HP 3 first (index 2) is due to the matrix. Review the
     // MirrorPositionToHardpointDisplacementTable for a description of the matrix.
     steps[2] = (_hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[0] * x +

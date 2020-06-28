@@ -385,8 +385,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
             response->push((uint16_t)(rawTimestamp >> 16));
             response->push((uint16_t)rawTimestamp);  // Write Global Timestamp
             int endIndex = i - 1 + dataLength - 1;
-            MTM1M3_hardpointActuatorDataC* hardpointActuatorData =
-                    _publisher->getHardpointActuatorData();
+            MTM1M3_hardpointActuatorDataC* hardpointActuatorData = _publisher->getHardpointActuatorData();
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
             while (i < endIndex) {
@@ -419,10 +418,9 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                         }
                     }
                     int pIndex = zIndex;
-                    int sIndex =
-                            _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
+                    int sIndex = _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
                     switch (function) {
-                        case 17:                                    // Report Server Id
+                        case 17:                               // Report Server Id
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 12);        // Write Message Length
@@ -451,8 +449,8 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
-                        case 65: {                                           // Change ILC Mode
-                            ++i;                                             // Read Reserved Byte
+                        case 65: {                                      // Change ILC Mode
+                            ++i;                                        // Read Reserved Byte
                             uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
                             _writeModbus(response, address);            // Write Address
                             _writeModbus(response, function);           // Write Function
@@ -461,14 +459,14 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 73:                                    // Set Boost Valve DCA Gains
+                        case 73:                               // Set Boost Valve DCA Gains
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
-                            i += 4;                                 // Read Primary Cylinder DCA Gain
-                            i += 4;                                 // Read Secondary Cylinder DCA Gain
+                            i += 4;                            // Read Primary Cylinder DCA Gain
+                            i += 4;                            // Read Secondary Cylinder DCA Gain
                             _writeModbusCRC(response);
                             break;
-                        case 74: {                                  // Read Boost Valve DCA Gains
+                        case 74: {                             // Read Boost Valve DCA Gains
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             uint8_t buffer[4];
@@ -493,8 +491,8 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response,
-                                              (uint8_t)_publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) +
                                           (this->getRnd() * 0.5);
@@ -518,12 +516,12 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 76: {                                  // Force And Status
+                        case 76: {                             // Force And Status
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response,
-                                              (uint8_t)_publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)_publisher->getEventAppliedCylinderForces()
                                                     ->primaryCylinderForces[pIndex]) /
@@ -556,20 +554,20 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 81:                                    // ADC Channel Offset and Sensitivity
-                            ++i;                                    // Read ADC Channel
-                            i += 4;                                 // Read Offset
-                            i += 4;                                 // Read Sensitivity
+                        case 81:                               // ADC Channel Offset and Sensitivity
+                            ++i;                               // Read ADC Channel
+                            i += 4;                            // Read Offset
+                            i += 4;                            // Read Sensitivity
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbusCRC(response);
                             break;
-                        case 107:                                   // Reset
+                        case 107:                              // Reset
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbusCRC(response);
                             break;
-                        case 110: {                                 // Read Calibration
+                        case 110: {                            // Read Calibration
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
@@ -584,7 +582,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 119: {                                 // Read DCA Pressure Values
+                        case 119: {                            // Read DCA Pressure Values
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
@@ -599,7 +597,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 120:                                   // Read DCA Id
+                        case 120:                              // Read DCA Id
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 0x00);
@@ -613,7 +611,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, 99);       // TODO: Write Minor Revision
                             _writeModbusCRC(response);
                             break;
-                        case 121:                                   // Read DCA Status
+                        case 121:                              // Read DCA Status
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 0x00);
@@ -625,7 +623,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                     }
                 } else if (subnet == 5 && address >= 1 && address <= 6) {
                     switch (function) {
-                        case 17:                                    // Report Server Id
+                        case 17:                               // Report Server Id
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 12);        // Write Message Length
@@ -654,8 +652,8 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
-                        case 65: {                                           // Change ILC Mode
-                            ++i;                                             // Read Reserved Byte
+                        case 65: {                                      // Change ILC Mode
+                            ++i;                                        // Read Reserved Byte
                             uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
                             _writeModbus(response, address);            // Write Address
                             _writeModbus(response, function);           // Write Function
@@ -664,13 +662,13 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 66: {                                  // Step Motor
-                            int steps = data[i++];                  // Read Steps
+                        case 66: {                             // Step Motor
+                            int steps = data[i++];             // Read Steps
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response,
-                                              (uint8_t)_publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             // Number of steps issued / 4 + current encoder
                             // The encoder is also inverted after being received to match axis direction
                             // So we have to also invert the encoder here to counteract that
@@ -702,8 +700,8 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response,
-                                              (uint8_t)_publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             // Number of steps issued / 4 + current encoder
                             // The encoder is also inverted after being received to match axis direction
                             // So we have to also invert the encoder here to counteract that
@@ -738,20 +736,20 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 81:                                    // ADC Channel Offset and Sensitivity
-                            ++i;                                    // Read ADC Channel
-                            i += 4;                                 // Read Offset
-                            i += 4;                                 // Read Sensitivity
+                        case 81:                               // ADC Channel Offset and Sensitivity
+                            ++i;                               // Read ADC Channel
+                            i += 4;                            // Read Offset
+                            i += 4;                            // Read Sensitivity
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbusCRC(response);
                             break;
-                        case 107:                                   // Reset
+                        case 107:                              // Reset
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbusCRC(response);
                             break;
-                        case 110: {                                 // Read Calibration
+                        case 110: {                            // Read Calibration
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
@@ -771,7 +769,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                     }
                 } else if (subnet == 5 && address >= 84 && address <= 89) {
                     switch (function) {
-                        case 17:                                    // Report Server Id
+                        case 17:                               // Report Server Id
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 12);        // Write Message Length
@@ -800,8 +798,8 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
-                        case 65: {                                           // Change ILC Mode
-                            ++i;                                             // Read Reserved Byte
+                        case 65: {                                      // Change ILC Mode
+                            ++i;                                        // Read Reserved Byte
                             uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
                             _writeModbus(response, address);            // Write Address
                             _writeModbus(response, function);           // Write Function
@@ -810,12 +808,12 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 107:                                   // Reset
+                        case 107:                              // Reset
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbusCRC(response);
                             break;
-                        case 119: {                                 // Read DCA Pressure Values
+                        case 119: {                            // Read DCA Pressure Values
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
@@ -830,7 +828,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 120:                                   // Read DCA Id
+                        case 120:                              // Read DCA Id
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 0x00);
@@ -844,14 +842,14 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, 99);       // TODO: Write Minor Revision
                             _writeModbusCRC(response);
                             break;
-                        case 121:                                   // Read DCA Status
+                        case 121:                              // Read DCA Status
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 0x00);
                             _writeModbus(response, 0x00);  // TODO: Write DCA Status
                             _writeModbusCRC(response);
                             break;
-                        case 122:                                   // Report LVDT
+                        case 122:                              // Report LVDT
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 2; ++j) {

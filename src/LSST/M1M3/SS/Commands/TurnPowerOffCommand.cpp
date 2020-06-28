@@ -45,15 +45,13 @@ TurnPowerOffCommand::TurnPowerOffCommand(Context* context, M1M3SSPublisher* publ
 }
 
 bool TurnPowerOffCommand::validate() {
-    if (!(_data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff ||
-          _data.turnPowerNetworkCOff || _data.turnPowerNetworkDOff ||
-          _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
+    if (!(_data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff || _data.turnPowerNetworkCOff ||
+          _data.turnPowerNetworkDOff || _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
           _data.turnAuxPowerNetworkCOff || _data.turnAuxPowerNetworkDOff)) {
         _publisher->logCommandRejectionWarning("TurnPowerOff", "At least one field is not TRUE.");
     }
-    return _data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff ||
-           _data.turnPowerNetworkCOff || _data.turnPowerNetworkDOff ||
-           _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
+    return _data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff || _data.turnPowerNetworkCOff ||
+           _data.turnPowerNetworkDOff || _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
            _data.turnAuxPowerNetworkCOff || _data.turnAuxPowerNetworkDOff;
 }
 

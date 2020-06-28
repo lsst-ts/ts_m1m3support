@@ -45,8 +45,7 @@ void ApplyAberrationForcesByBendingModesCommand::execute() {
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackInProgress() {
-    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_INPROGRESS,
-                                                                   "In-Progress");
+    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackComplete() {
@@ -55,7 +54,7 @@ void ApplyAberrationForcesByBendingModesCommand::ackComplete() {
 
 void ApplyAberrationForcesByBendingModesCommand::ackFailed(std::string reason) {
     _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_FAILED,
-                                                                   "Failed: " + reason);
+                                                              "Failed: " + reason);
 }
 
 } /* namespace SS */

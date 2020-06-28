@@ -40,7 +40,7 @@ TestHardpointCommand::TestHardpointCommand(Context* context, M1M3SSPublisher* pu
 bool TestHardpointCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
         _publisher->logCommandRejectionWarning("TestHardpoint",
-                                                    "The field HardpointActuator must be in range [1, 6].");
+                                               "The field HardpointActuator must be in range [1, 6].");
     }
     return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }

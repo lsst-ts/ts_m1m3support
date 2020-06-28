@@ -41,14 +41,14 @@ MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(Context* context, M
 }
 
 bool MoveHardpointActuatorsCommand::validate() {
-    if (_data.steps[0] == 0 && _data.steps[1] == 0 && _data.steps[2] == 0 &&
-        _data.steps[3] == 0 && _data.steps[4] == 0 && _data.steps[5] == 0) {
+    if (_data.steps[0] == 0 && _data.steps[1] == 0 && _data.steps[2] == 0 && _data.steps[3] == 0 &&
+        _data.steps[4] == 0 && _data.steps[5] == 0) {
         _publisher->logCommandRejectionWarning(
                 "MoveHardpointActuators",
                 "The field Steps must have at least one index with a step value not equal to zero.");
     }
-    return _data.steps[0] != 0 || _data.steps[1] != 0 || _data.steps[2] != 0 ||
-           _data.steps[3] != 0 || _data.steps[4] != 0 || _data.steps[5] != 0;
+    return _data.steps[0] != 0 || _data.steps[1] != 0 || _data.steps[2] != 0 || _data.steps[3] != 0 ||
+           _data.steps[4] != 0 || _data.steps[5] != 0;
 }
 
 void MoveHardpointActuatorsCommand::execute() { _context->moveHardpointActuators(this); }

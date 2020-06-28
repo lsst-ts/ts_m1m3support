@@ -71,8 +71,7 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
                         this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
                 if (address <= 16) {
-                    saaPrimary[address - 1] =
-                            _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+                    saaPrimary[address - 1] = _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
                 } else {
                     daaPrimary[address - 17] =
                             _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
@@ -80,9 +79,9 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
                             _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
                 }
             }
-            this->ilcMessageFactory->broadcastForceDemand(
-                    &this->buffer, _outerLoopData->broadcastCounter, _outerLoopData->slewFlag,
-                    saaPrimary, daaPrimary, daaSecondary);
+            this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
+                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
+                                                          daaSecondary);
             this->buffer.writeTimestamp();
             for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
                 uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
@@ -156,8 +155,7 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 }
 
 void RaisedBusList::update() {
-    _outerLoopData->broadcastCounter =
-            RoundRobin::BroadcastCounter(_outerLoopData->broadcastCounter);
+    _outerLoopData->broadcastCounter = RoundRobin::BroadcastCounter(_outerLoopData->broadcastCounter);
 
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         if (this->subnetData->getFACount(subnetIndex) > 0) {
@@ -174,8 +172,7 @@ void RaisedBusList::update() {
                         this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
                 if (address <= 16) {
-                    saaPrimary[address - 1] =
-                            _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+                    saaPrimary[address - 1] = _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
                 } else {
                     daaPrimary[address - 17] =
                             _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
@@ -184,9 +181,9 @@ void RaisedBusList::update() {
                 }
             }
             this->buffer.setIndex(_setForceCommandIndex[subnetIndex]);
-            this->ilcMessageFactory->broadcastForceDemand(
-                    &this->buffer, _outerLoopData->broadcastCounter, _outerLoopData->slewFlag,
-                    saaPrimary, daaPrimary, daaSecondary);
+            this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
+                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
+                                                          daaSecondary);
 
             int32_t statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;

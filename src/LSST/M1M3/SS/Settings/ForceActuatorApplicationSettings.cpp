@@ -42,8 +42,8 @@ void ForceActuatorApplicationSettings::load(const std::string &filename) {
     XMLDocLoad(filename.c_str(), doc);
 
     _loadForceActuatorTable(doc.select_node("//ForceActuatorApplicationSettings/ForceActuatorTablePath")
-                                         .node()
-                                         .child_value());
+                                    .node()
+                                    .child_value());
     XIndexToZIndex.clear();
     YIndexToZIndex.clear();
     SecondaryCylinderIndexToZIndex.clear();

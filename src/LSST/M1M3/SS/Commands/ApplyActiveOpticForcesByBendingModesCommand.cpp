@@ -46,17 +46,16 @@ void ApplyActiveOpticForcesByBendingModesCommand::execute() {
 
 void ApplyActiveOpticForcesByBendingModesCommand::ackInProgress() {
     _publisher->ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_INPROGRESS,
-                                                                    "In-Progress");
+                                                               "In-Progress");
 }
 
 void ApplyActiveOpticForcesByBendingModesCommand::ackComplete() {
-    _publisher->ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_COMPLETE,
-                                                                    "Complete");
+    _publisher->ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ApplyActiveOpticForcesByBendingModesCommand::ackFailed(std::string reason) {
     _publisher->ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_FAILED,
-                                                                    "Failed: " + reason);
+                                                               "Failed: " + reason);
 }
 
 } /* namespace SS */
