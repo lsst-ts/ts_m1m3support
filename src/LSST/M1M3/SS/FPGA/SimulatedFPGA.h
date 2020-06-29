@@ -95,9 +95,9 @@ public:
 private:
     M1M3SSPublisher* publisher;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    std::thread monitorMountElevationThread;
-    std::mutex elevationReadWriteLock;
-    SAL_MTMount mgr_MTMount;
+    std::thread _monitorMountElevationThread;
+    std::mutex _elevationReadWriteLock;
+    SAL_MTMount _mgrMTMount;
 
     int lastRequest;
     std::queue<uint16_t> u8Response;
@@ -113,11 +113,11 @@ private:
     void writeModbusCRC(std::queue<uint16_t>* response);
     uint16_t readModbus(uint16_t data);
 
-    void monitorElevation(void);
+    void _monitorElevation(void);
 
-    int exitThread = false;
+    int _exitThread = false;
     float rnd[RND_CNT];
-    float mountElevation = 90.;
+    float _mountElevation = 90.;
 
     int rndIndex;
     float getRnd();

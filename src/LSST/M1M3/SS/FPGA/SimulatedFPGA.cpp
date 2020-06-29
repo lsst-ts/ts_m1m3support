@@ -33,7 +33,6 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <spdlog/spdlog.h>
-#include <thread>
 #include "SAL_MTMount.h"
 #include "ccpp_sal_MTMount.h"
 
@@ -52,35 +51,37 @@ SimulatedFPGA::SimulatedFPGA() {
         this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
     }
     this->rndIndex = 0;
-    this->mgr_MTMount = SAL_MTMount();
-    this->mgr_MTMount.salTelemetrySub(const_cast<char*>("MTMount_Elevation"));
+    _mgrMTMount = SAL_MTMount();
+    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_Elevation"));
 
-    this->elevationReadWriteLock.unlock();
-
-    this->monitorMountElevationThread = std::thread(&SimulatedFPGA::monitorElevation, this);
+    _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
 }
 
 SimulatedFPGA::~SimulatedFPGA() {
-    this->exitThread = true;
+    _exitThread = true;
 
-    this->monitorMountElevationThread.join();
+    _monitorMountElevationThread.join();
+
+    _mgrMTMount.salShutdown();
 }
 
-void SimulatedFPGA::monitorElevation(void) {
+void SimulatedFPGA::_monitorElevation(void) {
     MTMount_ElevationC mountElevationInstance;
 
     spdlog::debug("Start monitoring mount elevation...");
 
-    while (!this->exitThread) {
-        ReturnCode_t status = mgr_MTMount.getSample_Elevation(&mountElevationInstance);
+    while (!_exitThread) {
+        ReturnCode_t status = _mgrMTMount.getSample_Elevation(&mountElevationInstance);
 
         if (status == 0) {
             spdlog::debug("Got valid elevation sample...");
-            this->elevationReadWriteLock.lock();
-            this->mountElevation = mountElevationInstance.Elevation_Angle_Actual;
-            this->elevationReadWriteLock.unlock();
+
+            {
+                std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
+                _mountElevation = mountElevationInstance.Elevation_Angle_Actual;
+            }
         }
-        usleep(20000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }
 
@@ -152,16 +153,14 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.InclinometerErrorCode = 0;
     this->supportFPGAData.InclinometerSampleTimestamp = timestamp;
 
-    // This comment is made in src/LSST/M1M3/SS/Inclinometer/Inclinometer.cpp
-    // 0 = Zenith, we want 0 to = Horizon
-    // Also we want below horizon to be negative
-    // Which I take to mean that the inclinometer is measuring Zenith angle,
-    // so I will convert elevation to zenith angle here.
+    // Inclinometer raw value is measured as (negative) zenith angle (0 = zenith, -90 = horizon).
+    // Converts elevation to zenith angle and adds random 1/200th deg (=18 arcsec) noise.
 
-    this->elevationReadWriteLock.lock();
-    this->supportFPGAData.InclinometerAngleRaw =
-            (int32_t)((this->mountElevation - 90.0) * 1000.0) + (this->getRnd() * 5.0);
-    this->elevationReadWriteLock.unlock();
+    {
+        std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
+        this->supportFPGAData.InclinometerAngleRaw =
+                (int32_t)((_mountElevation - 90.0) * 1000.0) + (this->getRnd() * 5.0);
+    }
 
     this->supportFPGAData.DisplacementTxBytes = 0;
     this->supportFPGAData.DisplacementRxBytes = 0;
