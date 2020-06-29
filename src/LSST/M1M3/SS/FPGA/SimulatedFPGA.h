@@ -95,8 +95,10 @@ public:
 private:
     M1M3SSPublisher* _publisher;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    MTMount_AzimuthC _tmaAzimuth;
-    MTMount_ElevationC _tmaElevation;
+    std::thread _monitorMountElevationThread;
+    std::mutex _elevationReadWriteLock;
+    SAL_MTMount _mgrMTMount;
+
     int _lastRequest;
     std::queue<uint16_t> _u8Response;
     std::queue<uint16_t> _u16Response;
@@ -112,6 +114,8 @@ private:
     uint16_t _readModbus(uint16_t data);
 
     void _monitorElevation(void);
+
+    float _mountElevation = 90.;
 
     bool _exitThread = false;
     float _rnd[RND_CNT];

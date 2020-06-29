@@ -159,7 +159,7 @@ void SimulatedFPGA::pullTelemetry() {
     {
         std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
         this->supportFPGAData.InclinometerAngleRaw =
-                (int32_t)((_mountElevation - 90.0) * 1000.0) + (this->getRnd() * 5.0);
+                (int32_t)((_mountElevation - 90.0) * 1000.0) + (_getRnd() * 5.0);
     }
 
     this->supportFPGAData.DisplacementTxBytes = 0;
@@ -169,24 +169,24 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.DisplacementErrorTimestamp = 0;
     this->supportFPGAData.DisplacementErrorCode = 0;
     this->supportFPGAData.DisplacementSampleTimestamp = timestamp;
-    this->supportFPGAData.DisplacementRaw1 = (int32_t)(this->getRnd() + 10) * 1000.0;
-    this->supportFPGAData.DisplacementRaw2 = (int32_t)(this->getRnd() + 20) * 1000.0;
-    this->supportFPGAData.DisplacementRaw3 = (int32_t)(this->getRnd() + 30) * 1000.0;
-    this->supportFPGAData.DisplacementRaw4 = (int32_t)(this->getRnd() + 40) * 1000.0;
-    this->supportFPGAData.DisplacementRaw5 = (int32_t)(this->getRnd() + 50) * 1000.0;
-    this->supportFPGAData.DisplacementRaw6 = (int32_t)(this->getRnd() + 60) * 1000.0;
-    this->supportFPGAData.DisplacementRaw7 = (int32_t)(this->getRnd() + 70) * 1000.0;
-    this->supportFPGAData.DisplacementRaw8 = (int32_t)(this->getRnd() + 80) * 1000.0;
+    this->supportFPGAData.DisplacementRaw1 = (int32_t)(_getRnd() + 10) * 1000.0;
+    this->supportFPGAData.DisplacementRaw2 = (int32_t)(_getRnd() + 20) * 1000.0;
+    this->supportFPGAData.DisplacementRaw3 = (int32_t)(_getRnd() + 30) * 1000.0;
+    this->supportFPGAData.DisplacementRaw4 = (int32_t)(_getRnd() + 40) * 1000.0;
+    this->supportFPGAData.DisplacementRaw5 = (int32_t)(_getRnd() + 50) * 1000.0;
+    this->supportFPGAData.DisplacementRaw6 = (int32_t)(_getRnd() + 60) * 1000.0;
+    this->supportFPGAData.DisplacementRaw7 = (int32_t)(_getRnd() + 70) * 1000.0;
+    this->supportFPGAData.DisplacementRaw8 = (int32_t)(_getRnd() + 80) * 1000.0;
     this->supportFPGAData.AccelerometerSampleCount++;
     this->supportFPGAData.AccelerometerSampleTimestamp = timestamp;
-    this->supportFPGAData.AccelerometerRaw1 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw2 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw3 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw4 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw5 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw6 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw7 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw8 = this->getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw1 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw2 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw3 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw4 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw5 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw6 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw7 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw8 = _getRnd() * 0.01;
     this->supportFPGAData.GyroTxBytes = 0;
     this->supportFPGAData.GyroRxBytes = 0;
     this->supportFPGAData.GyroTxFrames = 0;
@@ -194,15 +194,15 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.GyroErrorTimestamp = 0;
     this->supportFPGAData.GyroErrorCode = 0;
     this->supportFPGAData.GyroSampleTimestamp = timestamp;
-    this->supportFPGAData.GyroRawX = this->getRnd() * 0.01;
-    this->supportFPGAData.GyroRawY = this->getRnd() * 0.01;
-    this->supportFPGAData.GyroRawZ = this->getRnd() * 0.01;
+    this->supportFPGAData.GyroRawX = _getRnd() * 0.01;
+    this->supportFPGAData.GyroRawY = _getRnd() * 0.01;
+    this->supportFPGAData.GyroRawZ = _getRnd() * 0.01;
     this->supportFPGAData.GyroStatus = 0x7F;
     this->supportFPGAData.GyroSequenceNumber++;
     if (this->supportFPGAData.GyroSequenceNumber > 127) {
         this->supportFPGAData.GyroSequenceNumber = 0;
     }
-    this->supportFPGAData.GyroTemperature = 24 + int(this->getRnd() * 2);
+    this->supportFPGAData.GyroTemperature = 24 + int(_getRnd() * 2);
     this->supportFPGAData.GyroBITTimestamp = timestamp;
     this->supportFPGAData.GyroBIT0 = 0x7F;
     this->supportFPGAData.GyroBIT1 = 0x7F;
@@ -495,7 +495,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                                                  ->broadcastCounter);  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) +
-                                          (this->getRnd() * 0.5);
+                                          (_getRnd() * 0.5);
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
                             _writeModbus(response, buffer[2]);
@@ -506,7 +506,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                                 word2 = _readModbus(data[i++]);
                                 word3 = _readModbus(data[i++]);
                                 force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) +
-                                        (this->getRnd() * 0.5);
+                                        (_getRnd() * 0.5);
                                 memcpy(buffer, &force, 4);
                                 _writeModbus(response, buffer[3]);
                                 _writeModbus(response, buffer[2]);
@@ -526,7 +526,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             float force = (((float)_publisher->getEventAppliedCylinderForces()
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
-                                          (this->getRnd() * 0.5);  // Update to Primary Cylinder Force
+                                          (_getRnd() * 0.5);  // Update to Primary Cylinder Force
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
                             _writeModbus(response, buffer[2]);
@@ -536,7 +536,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                                 force = (((float)_publisher->getEventAppliedCylinderForces()
                                                   ->secondaryCylinderForces[sIndex]) /
                                          1000.0) +
-                                        (this->getRnd() * 0.5);  // Update to Secondary Cylinder Force
+                                        (_getRnd() * 0.5);  // Update to Secondary Cylinder Force
                                 memcpy(buffer, &force, 4);
                                 _writeModbus(response, buffer[3]);
                                 _writeModbus(response, buffer[2]);
@@ -683,7 +683,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, (encoder >> 8) & 0xFF);
                             _writeModbus(response, encoder & 0xFF);  // Write Encoder
                             uint8_t buffer[4];
-                            float force = this->getRnd() * 8.0;
+                            float force = _getRnd() * 8.0;
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
                             _writeModbus(response, buffer[2]);
@@ -719,7 +719,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             _writeModbus(response, (encoder >> 8) & 0xFF);
                             _writeModbus(response, encoder & 0xFF);  // Write Encoder
                             uint8_t buffer[4];
-                            float force = this->getRnd() * 8.0;
+                            float force = _getRnd() * 8.0;
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
                             _writeModbus(response, buffer[2]);
@@ -998,7 +998,7 @@ int32_t SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, i
     return -1;
 }
 
-float SimulatedFPGA::getRnd() {
+float SimulatedFPGA::_getRnd() {
     ++_rndIndex;
     if (_rndIndex > RND_CNT) {
         _rndIndex = 0;
