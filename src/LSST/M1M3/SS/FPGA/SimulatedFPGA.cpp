@@ -33,6 +33,8 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <spdlog/spdlog.h>
+#include "SAL_MTMount.h"
+#include "ccpp_sal_MTMount.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -49,6 +51,38 @@ SimulatedFPGA::SimulatedFPGA() {
         this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
     }
     this->rndIndex = 0;
+    _mgrMTMount = SAL_MTMount();
+    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_Elevation"));
+
+    _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
+}
+
+SimulatedFPGA::~SimulatedFPGA() {
+    _exitThread = true;
+
+    _monitorMountElevationThread.join();
+
+    _mgrMTMount.salShutdown();
+}
+
+void SimulatedFPGA::_monitorElevation(void) {
+    MTMount_ElevationC mountElevationInstance;
+
+    spdlog::debug("Start monitoring mount elevation...");
+
+    while (!_exitThread) {
+        ReturnCode_t status = _mgrMTMount.getSample_Elevation(&mountElevationInstance);
+
+        if (status == 0) {
+            spdlog::debug("Got valid elevation sample...");
+
+            {
+                std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
+                _mountElevation = mountElevationInstance.Elevation_Angle_Actual;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
 }
 
 void SimulatedFPGA::setPublisher(M1M3SSPublisher* publisher) {
@@ -118,8 +152,16 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.InclinometerErrorTimestamp = 0;
     this->supportFPGAData.InclinometerErrorCode = 0;
     this->supportFPGAData.InclinometerSampleTimestamp = timestamp;
-    this->supportFPGAData.InclinometerAngleRaw =
-            (int32_t)(tmaElevation.Elevation_Angle_Actual * 1000.0) + (this->getRnd() * 5.0);
+
+    // Inclinometer raw value is measured as (negative) zenith angle (0 = zenith, -90 = horizon).
+    // Converts elevation to zenith angle and adds random 1/200th deg (=18 arcsec) noise.
+
+    {
+        std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
+        this->supportFPGAData.InclinometerAngleRaw =
+                (int32_t)((_mountElevation - 90.0) * 1000.0) + (this->getRnd() * 5.0);
+    }
+
     this->supportFPGAData.DisplacementTxBytes = 0;
     this->supportFPGAData.DisplacementRxBytes = 0;
     this->supportFPGAData.DisplacementTxFrames = 0;

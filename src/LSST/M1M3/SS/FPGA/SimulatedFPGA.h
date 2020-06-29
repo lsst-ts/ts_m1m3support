@@ -25,10 +25,13 @@
 #define LSST_M1M3_SS_FPGA_SIMULATEDFPGA_H_
 
 #include <IFPGA.h>
+#include <thread>
+#include <mutex>
 #include <queue>
 #include <ILCSubnetData.h>
 
 #include <SAL_MTMountC.h>
+#include "SAL_MTMount.h"
 
 #define RND_CNT 50
 
@@ -52,6 +55,8 @@ class ForceActuatorApplicationSettings;
 class SimulatedFPGA : public IFPGA {
 public:
     SimulatedFPGA();
+
+    ~SimulatedFPGA();
 
     void setPublisher(M1M3SSPublisher* publisher);
     void setForceActuatorApplicationSettings(
@@ -90,8 +95,10 @@ public:
 private:
     M1M3SSPublisher* publisher;
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    MTMount_AzimuthC tmaAzimuth;
-    MTMount_ElevationC tmaElevation;
+    std::thread _monitorMountElevationThread;
+    std::mutex _elevationReadWriteLock;
+    SAL_MTMount _mgrMTMount;
+
     int lastRequest;
     std::queue<uint16_t> u8Response;
     std::queue<uint16_t> u16Response;
@@ -106,7 +113,12 @@ private:
     void writeModbusCRC(std::queue<uint16_t>* response);
     uint16_t readModbus(uint16_t data);
 
+    void _monitorElevation(void);
+
+    int _exitThread = false;
     float rnd[RND_CNT];
+    float _mountElevation = 90.;
+
     int rndIndex;
     float getRnd();
 };
