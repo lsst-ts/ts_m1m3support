@@ -48,29 +48,29 @@ namespace SS {
 class M1M3SSPublisher;
 
 class StaticStateFactory {
-private:
-    OfflineState offlineState;
-    StandbyState standbyState;
-    DisabledState disabledState;
-    EnabledState enabledState;
-    ParkedState parkedState;
-    RaisingState raisingState;
-    ActiveState activeState;
-    LoweringState loweringState;
-    EngineeringState engineeringState;
-    ParkedEngineeringState parkedEngineeringState;
-    RaisingEngineeringState raisingEngineeringState;
-    ActiveEngineeringState activeEngineeringState;
-    LoweringEngineeringState loweringEngineeringState;
-    FaultState faultState;
-    LoweringFaultState loweringFaultState;
-    ProfileHardpointCorrectionState profileHardpointCorrectionState;
-
 public:
     StaticStateFactory(M1M3SSPublisher* publisher);
 
     State* create(States::Type state);
     void destroy(State* state);
+
+private:
+    OfflineState _offlineState;
+    StandbyState _standbyState;
+    DisabledState _disabledState;
+    EnabledState _enabledState;
+    ParkedState _parkedState;
+    RaisingState _raisingState;
+    ActiveState _activeState;
+    LoweringState _loweringState;
+    EngineeringState _engineeringState;
+    ParkedEngineeringState _parkedEngineeringState;
+    RaisingEngineeringState _raisingEngineeringState;
+    ActiveEngineeringState _activeEngineeringState;
+    LoweringEngineeringState _loweringEngineeringState;
+    FaultState _faultState;
+    LoweringFaultState _loweringFaultState;
+    ProfileHardpointCorrectionState _profileHardpointCorrectionState;
 };
 
 } /* namespace SS */

@@ -33,46 +33,46 @@ namespace SS {
 
 Controller::Controller(CommandFactory* commandFactory) {
     spdlog::debug("Controller: Controller()");
-    this->commandFactory = commandFactory;
-    pthread_mutex_init(&this->mutex, NULL);
+    _commandFactory = commandFactory;
+    pthread_mutex_init(&_mutex, NULL);
 }
 
 Controller::~Controller() {
     this->clear();
-    pthread_mutex_destroy(&this->mutex);
+    pthread_mutex_destroy(&_mutex);
 }
 
 void Controller::lock() {
     spdlog::trace("Controller: lock()");
-    pthread_mutex_lock(&this->mutex);
+    pthread_mutex_lock(&_mutex);
 }
 
 void Controller::unlock() {
     spdlog::trace("Controller: unlock()");
-    pthread_mutex_unlock(&this->mutex);
+    pthread_mutex_unlock(&_mutex);
 }
 
 void Controller::clear() {
     spdlog::trace("Controller: clear()");
     this->lock();
     Command* command;
-    while (!this->queue.empty()) {
+    while (!_queue.empty()) {
         command = this->dequeue();
-        this->commandFactory->destroy(command);
+        _commandFactory->destroy(command);
     }
     this->unlock();
 }
 
 void Controller::enqueue(Command* command) {
     spdlog::trace("Controller: enqueue()");
-    this->queue.push(command);
+    _queue.push(command);
 }
 
 Command* Controller::dequeue() {
     spdlog::trace("Controller: dequeue()");
-    if (!this->queue.empty()) {
-        Command* command = this->queue.front();
-        this->queue.pop();
+    if (!_queue.empty()) {
+        Command* command = _queue.front();
+        _queue.pop();
         return command;
     }
     return 0;
@@ -89,7 +89,7 @@ void Controller::execute(Command* command) {
         command->ackFailed(e.what());
     }
 
-    this->commandFactory->destroy(command);
+    _commandFactory->destroy(command);
 }
 
 } /* namespace SS */

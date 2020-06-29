@@ -45,7 +45,7 @@ public:
     void load(const std::string &filename);
 
 private:
-    void loadForceActuatorTable(const std::string &filename);
+    void _loadForceActuatorTable(const std::string &filename);
 };
 
 } /* namespace SS */

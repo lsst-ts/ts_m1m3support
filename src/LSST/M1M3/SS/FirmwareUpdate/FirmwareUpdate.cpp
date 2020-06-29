@@ -40,12 +40,12 @@ namespace M1M3 {
 namespace SS {
 
 FirmwareUpdate::FirmwareUpdate(ILCSubnetData* subnetData) {
-    this->subnetData = subnetData;
-    this->desiredState = 255;
+    _subnetData = subnetData;
+    _desiredState = 255;
 }
 
 bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
-    ILCMap map = this->subnetData->getMap(actuatorId);
+    ILCMap map = _subnetData->getMap(actuatorId);
     int subnet = map.Subnet;
     int address = map.Address;
     if (subnet == 255 || address == 255) {
@@ -98,7 +98,7 @@ bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
         spdlog::error("FirmwareUpdate: Failed to write ILC application for actuator {}", actuatorId);
         return false;
     }
-    if (!this->WriteApplicationStats(subnet, address, this->appStats)) {
+    if (!this->WriteApplicationStats(subnet, address, _appStats)) {
         spdlog::error("FirmwareUpdate: Failed to write ILC application stats for actuator {}", actuatorId);
         return false;
     }
@@ -120,18 +120,18 @@ bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
 }
 
 bool FirmwareUpdate::CreateAppData() {
-    this->appData.clear();
+    _appData.clear();
     for (int i = 0; i < 16384; ++i) {
-        appData.push_back(0xFF);
-        appData.push_back(0xFF);
-        appData.push_back(0xFF);
-        appData.push_back(0x00);
+        _appData.push_back(0xFF);
+        _appData.push_back(0xFF);
+        _appData.push_back(0xFF);
+        _appData.push_back(0x00);
     }
     return true;
 }
 
 bool FirmwareUpdate::ProcessFile(std::string filePath) {
-    this->hexData.clear();
+    _hexData.clear();
     std::ifstream inputStream(filePath.c_str());
     std::string lineText;
     bool allZero = true;
@@ -144,7 +144,7 @@ bool FirmwareUpdate::ProcessFile(std::string filePath) {
             switch (hexLine.RecordType) {
                 case IntelRecordType::Data:
                     if (!ignoreData) {
-                        this->hexData.push_back(hexLine);
+                        _hexData.push_back(hexLine);
                     }
                     break;
                 case IntelRecordType::ExtendedLinearAddress:
@@ -238,31 +238,31 @@ bool FirmwareUpdate::ProcessLine(const char* line, IntelHexLine* hexLine) {
 
 bool FirmwareUpdate::UpdateAppData() {
     bool ok = true;
-    this->appStats.DataCRC = 0;
-    this->appStats.StartAddress = 65535;
-    this->appStats.DataLength = 0;
-    this->appStats.StatsCRC = 0;
+    _appStats.DataCRC = 0;
+    _appStats.StartAddress = 65535;
+    _appStats.DataLength = 0;
+    _appStats.StatsCRC = 0;
     unsigned short endAddress = 0;
-    for (unsigned int i = 0; i < this->hexData.size(); ++i) {
-        IntelHexLine line = this->hexData[i];
+    for (unsigned int i = 0; i < _hexData.size(); ++i) {
+        IntelHexLine line = _hexData[i];
         switch (line.RecordType) {
             case IntelRecordType::Data:
-                if (line.Address < this->appStats.StartAddress) {
-                    this->appStats.StartAddress = line.Address;
+                if (line.Address < _appStats.StartAddress) {
+                    _appStats.StartAddress = line.Address;
                 }
                 if ((line.Address + line.ByteCount) > endAddress) {
                     endAddress = (line.Address + line.ByteCount);
                 }
                 for (unsigned int j = 0; j < line.Data.size(); ++j) {
                     unsigned int address = line.Address + j;
-                    this->appData[address] = line.Data[j];
+                    _appData[address] = line.Data[j];
                 }
                 break;
             default:
                 break;
         }
     }
-    this->appStats.DataLength = endAddress - this->appStats.StartAddress;
+    _appStats.DataLength = endAddress - _appStats.StartAddress;
     return ok;
 }
 
@@ -270,36 +270,35 @@ bool FirmwareUpdate::UpdateAppDataCRC() {
     bool ok = true;
     unsigned char buffer[65536];
     for (unsigned int i = 0; i < 65536; ++i) {
-        if (i < this->appData.size()) {
-            buffer[i] = this->appData[i];
+        if (i < _appData.size()) {
+            buffer[i] = _appData[i];
         }
     }
-    this->appStats.DataCRC =
-            CRC::modbus(buffer, (int)this->appStats.StartAddress, (int)this->appStats.DataLength);
+    _appStats.DataCRC = CRC::modbus(buffer, (int)_appStats.StartAddress, (int)_appStats.DataLength);
     return ok;
 }
 
 bool FirmwareUpdate::UpdateAppStatCRC() {
     bool ok = true;
     unsigned char buffer[12];
-    buffer[1] = (unsigned char)((this->appStats.DataCRC >> 8) & 0xFF);
-    buffer[0] = (unsigned char)(this->appStats.DataCRC & 0xFF);
+    buffer[1] = (unsigned char)((_appStats.DataCRC >> 8) & 0xFF);
+    buffer[0] = (unsigned char)(_appStats.DataCRC & 0xFF);
     buffer[2] = 0;
     buffer[3] = 0;
-    buffer[5] = (unsigned char)((this->appStats.StartAddress >> 8) & 0xFF);
-    buffer[4] = (unsigned char)(this->appStats.StartAddress & 0xFF);
+    buffer[5] = (unsigned char)((_appStats.StartAddress >> 8) & 0xFF);
+    buffer[4] = (unsigned char)(_appStats.StartAddress & 0xFF);
     buffer[6] = 0;
     buffer[7] = 0;
-    buffer[9] = (unsigned char)((this->appStats.DataLength >> 8) & 0xFF);
-    buffer[8] = (unsigned char)(this->appStats.DataLength & 0xFF);
+    buffer[9] = (unsigned char)((_appStats.DataLength >> 8) & 0xFF);
+    buffer[8] = (unsigned char)(_appStats.DataLength & 0xFF);
     buffer[10] = 0;
     buffer[11] = 0;
-    this->appStats.StatsCRC = CRC::modbus(buffer, 0, 12);
+    _appStats.StatsCRC = CRC::modbus(buffer, 0, 12);
     return ok;
 }
 
 bool FirmwareUpdate::EnterFirmwareUpdate(int subnet, int address) {
-    this->desiredState = 4;
+    _desiredState = 4;
     ModbusBuffer buffer;
     this->SetupBuffer(&buffer, subnet);
     buffer.writeU8((uint8_t)address);
@@ -315,7 +314,7 @@ bool FirmwareUpdate::EnterFirmwareUpdate(int subnet, int address) {
 }
 
 bool FirmwareUpdate::ClearFaults(int subnet, int address) {
-    this->desiredState = 3;
+    _desiredState = 3;
     ModbusBuffer buffer;
     this->SetupBuffer(&buffer, subnet);
     buffer.writeU8((uint8_t)address);
@@ -344,14 +343,13 @@ bool FirmwareUpdate::EraseILCApplication(int subnet, int address) {
 }
 
 bool FirmwareUpdate::WriteApplication(int subnet, int address) {
-    for (unsigned int i = this->appStats.StartAddress;
-         i < (this->appStats.StartAddress + this->appStats.DataLength);) {
+    for (unsigned int i = _appStats.StartAddress; i < (_appStats.StartAddress + _appStats.DataLength);) {
         unsigned int startAddress = i;
         uint8_t buffer[192];
         for (int j = 0; j < 64; ++j) {
-            buffer[j * 3 + 0] = this->appData[i + 0];
-            buffer[j * 3 + 1] = this->appData[i + 1];
-            buffer[j * 3 + 2] = this->appData[i + 2];
+            buffer[j * 3 + 0] = _appData[i + 0];
+            buffer[j * 3 + 1] = _appData[i + 1];
+            buffer[j * 3 + 2] = _appData[i + 2];
             i += 4;
         }
         if (!this->WriteApplicationPage(subnet, address, startAddress, 192, buffer)) {
@@ -412,7 +410,7 @@ bool FirmwareUpdate::WriteVerifyApplication(int subnet, int address) {
 }
 
 bool FirmwareUpdate::RestartApplication(int subnet, int address) {
-    this->desiredState = 0;
+    _desiredState = 0;
     ModbusBuffer buffer;
     this->SetupBuffer(&buffer, subnet);
     buffer.writeU8((uint8_t)address);
@@ -428,7 +426,7 @@ bool FirmwareUpdate::RestartApplication(int subnet, int address) {
 }
 
 bool FirmwareUpdate::EnterDisable(int subnet, int address) {
-    this->desiredState = 1;
+    _desiredState = 1;
     ModbusBuffer buffer;
     this->SetupBuffer(&buffer, subnet);
     buffer.writeU8((uint8_t)address);
@@ -538,7 +536,7 @@ bool FirmwareUpdate::ValidateCRC(ModbusBuffer* buffer, uint16_t* length, double*
 bool FirmwareUpdate::ProcessStateChange(ModbusBuffer* buffer) {
     uint16_t state = buffer->readU16();
     buffer->skipToNextFrame();
-    return (int)state == this->desiredState;
+    return (int)state == _desiredState;
 }
 
 bool FirmwareUpdate::ProcessEraseILCApplication(ModbusBuffer* buffer) {

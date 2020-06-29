@@ -42,20 +42,20 @@ class M1M3SSPublisher;
  * the outer loop execution timing.
  */
 class OuterLoopClockThread : public IThread {
-private:
-    CommandFactory* commandFactory;
-    Controller* controller;
-    M1M3SSPublisher* publisher;
-    uint16_t timestampUpdateBuffer[5];
-    bool keepRunning;
-    pthread_mutex_t updateMutex;
-
 public:
     OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, M1M3SSPublisher* publisher);
     ~OuterLoopClockThread();
 
     void run();
     void stop();
+
+private:
+    CommandFactory* _commandFactory;
+    Controller* _controller;
+    M1M3SSPublisher* _publisher;
+    uint16_t _timestampUpdateBuffer[5];
+    bool _keepRunning;
+    pthread_mutex_t _updateMutex;
 };
 
 } /* namespace SS */

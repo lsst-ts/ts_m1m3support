@@ -71,12 +71,12 @@ public:
     int32_t readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) override;
 
 private:
-    uint32_t session;
-    size_t remaining;
+    uint32_t _session;
+    size_t _remaining;
     uint16_t u16Buffer[1];
-    NiFpga_IrqContext outerLoopIRQContext;
-    NiFpga_IrqContext modbusIRQContext;
-    NiFpga_IrqContext ppsIRQContext;
+    NiFpga_IrqContext _outerLoopIRQContext;
+    NiFpga_IrqContext _modbusIRQContext;
+    NiFpga_IrqContext _ppsIRQContext;
 };
 
 } /* namespace SS */

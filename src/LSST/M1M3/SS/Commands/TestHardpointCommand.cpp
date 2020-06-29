@@ -31,32 +31,32 @@ namespace SS {
 
 TestHardpointCommand::TestHardpointCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                            MTM1M3_command_testHardpointC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.hardpointActuator = data->hardpointActuator;
+    _data.hardpointActuator = data->hardpointActuator;
 }
 
 bool TestHardpointCommand::validate() {
-    if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
-        this->publisher->logCommandRejectionWarning("TestHardpoint",
-                                                    "The field HardpointActuator must be in range [1, 6].");
+    if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
+        _publisher->logCommandRejectionWarning("TestHardpoint",
+                                               "The field HardpointActuator must be in range [1, 6].");
     }
-    return this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6;
+    return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }
 
-void TestHardpointCommand::execute() { this->context->testHardpoint(this); }
+void TestHardpointCommand::execute() { _context->testHardpoint(this); }
 
 void TestHardpointCommand::ackInProgress() {
-    this->publisher->ackCommandtestHardpoint(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandtestHardpoint(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TestHardpointCommand::ackComplete() {
-    this->publisher->ackCommandtestHardpoint(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandtestHardpoint(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void TestHardpointCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandtestHardpoint(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandtestHardpoint(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

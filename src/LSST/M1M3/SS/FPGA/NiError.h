@@ -39,9 +39,6 @@ public:
      * @param status Ni error status.
      */
     NiError(const char *msg, NiFpga_Status status);
-
-private:
-    NiFpga_Status status;
 };
 
 /**

@@ -29,22 +29,22 @@ namespace M1M3 {
 namespace SS {
 
 StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher)
-        : offlineState(publisher),
-          standbyState(publisher),
-          disabledState(publisher),
-          enabledState(publisher),
-          parkedState(publisher),
-          raisingState(publisher),
-          activeState(publisher),
-          loweringState(publisher),
-          engineeringState(publisher),
-          parkedEngineeringState(publisher),
-          raisingEngineeringState(publisher),
-          activeEngineeringState(publisher),
-          loweringEngineeringState(publisher),
-          faultState(publisher),
-          loweringFaultState(publisher),
-          profileHardpointCorrectionState(publisher) {
+        : _offlineState(publisher),
+          _standbyState(publisher),
+          _disabledState(publisher),
+          _enabledState(publisher),
+          _parkedState(publisher),
+          _raisingState(publisher),
+          _activeState(publisher),
+          _loweringState(publisher),
+          _engineeringState(publisher),
+          _parkedEngineeringState(publisher),
+          _raisingEngineeringState(publisher),
+          _activeEngineeringState(publisher),
+          _loweringEngineeringState(publisher),
+          _faultState(publisher),
+          _loweringFaultState(publisher),
+          _profileHardpointCorrectionState(publisher) {
     spdlog::debug("StaticStateFactory: StaticStateFactor()");
 }
 
@@ -52,37 +52,37 @@ State* StaticStateFactory::create(States::Type state) {
     spdlog::trace("StaticStateFactory: create({:d})", state);
     switch (state) {
         case States::OfflineState:
-            return &this->offlineState;
+            return &_offlineState;
         case States::StandbyState:
-            return &this->standbyState;
+            return &_standbyState;
         case States::DisabledState:
-            return &this->disabledState;
+            return &this->_disabledState;
         case States::EnabledState:
-            return &this->enabledState;
+            return &_enabledState;
         case States::ParkedState:
-            return &this->parkedState;
+            return &_parkedState;
         case States::RaisingState:
-            return &this->raisingState;
+            return &_raisingState;
         case States::ActiveState:
-            return &this->activeState;
+            return &_activeState;
         case States::LoweringState:
-            return &this->loweringState;
+            return &_loweringState;
         case States::EngineeringState:
-            return &this->engineeringState;
+            return &_engineeringState;
         case States::ParkedEngineeringState:
-            return &this->parkedEngineeringState;
+            return &_parkedEngineeringState;
         case States::RaisingEngineeringState:
-            return &this->raisingEngineeringState;
+            return &_raisingEngineeringState;
         case States::ActiveEngineeringState:
-            return &this->activeEngineeringState;
+            return &_activeEngineeringState;
         case States::LoweringEngineeringState:
-            return &this->loweringEngineeringState;
+            return &_loweringEngineeringState;
         case States::FaultState:
-            return &this->faultState;
+            return &_faultState;
         case States::LoweringFaultState:
-            return &this->loweringFaultState;
+            return &_loweringFaultState;
         case States::ProfileHardpointCorrectionState:
-            return &this->profileHardpointCorrectionState;
+            return &_profileHardpointCorrectionState;
         default:
             return 0;
     }

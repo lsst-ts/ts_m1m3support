@@ -33,22 +33,22 @@ namespace M1M3 {
 namespace SS {
 
 class ApplyAberrationForcesByBendingModesCommand : public Command {
-private:
-    Context* context;
-    M1M3SSPublisher* publisher;
-    MTM1M3_command_applyAberrationForcesByBendingModesC data;
-
 public:
     ApplyAberrationForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher,
                                                int32_t commandID,
                                                MTM1M3_command_applyAberrationForcesByBendingModesC* data);
 
-    MTM1M3_command_applyAberrationForcesByBendingModesC* getData() { return &this->data; }
+    MTM1M3_command_applyAberrationForcesByBendingModesC* getData() { return &_data; }
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
+    MTM1M3_command_applyAberrationForcesByBendingModesC _data;
 };
 
 } /* namespace SS */

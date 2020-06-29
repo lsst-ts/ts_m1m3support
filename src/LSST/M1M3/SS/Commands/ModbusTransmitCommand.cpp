@@ -31,29 +31,29 @@ namespace SS {
 
 ModbusTransmitCommand::ModbusTransmitCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                              MTM1M3_command_modbusTransmitC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.actuatorId = data->actuatorId;
-    this->data.functionCode = data->functionCode;
+    _data.actuatorId = data->actuatorId;
+    _data.functionCode = data->functionCode;
     for (int i = 0; i < 252; i++) {
-        this->data.data[i] = data->data[i];
+        _data.data[i] = data->data[i];
     }
-    this->data.dataLength = data->dataLength;
+    _data.dataLength = data->dataLength;
 }
 
-void ModbusTransmitCommand::execute() { this->context->modbusTransmit(this); }
+void ModbusTransmitCommand::execute() { _context->modbusTransmit(this); }
 
 void ModbusTransmitCommand::ackInProgress() {
-    this->publisher->ackCommandmodbusTransmit(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandmodbusTransmit(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ModbusTransmitCommand::ackComplete() {
-    this->publisher->ackCommandmodbusTransmit(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandmodbusTransmit(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void ModbusTransmitCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandmodbusTransmit(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandmodbusTransmit(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

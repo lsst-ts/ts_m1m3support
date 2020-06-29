@@ -35,16 +35,16 @@ class FPGA;
 class M1M3SSPublisher;
 
 class PPSThread : public IThread {
-private:
-    M1M3SSPublisher* publisher;
-    uint16_t timestampUpdateBuffer[5];
-    bool keepRunning;
-
 public:
     PPSThread(M1M3SSPublisher* publisher);
 
     void run();
     void stop();
+
+private:
+    M1M3SSPublisher* _publisher;
+    uint16_t _timestampUpdateBuffer[5];
+    bool _keepRunning;
 };
 
 } /* namespace SS */

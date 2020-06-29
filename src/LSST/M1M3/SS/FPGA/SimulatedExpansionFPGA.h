@@ -50,9 +50,9 @@ public:
     int32_t readSlot2(uint32_t* data) override;
 
 private:
-    float rnd[RND_CNT];
-    int rndIndex;
-    float getRnd();
+    float _rnd[RND_CNT];
+    int _rndIndex;
+    float _getRnd();
 };
 
 } /* namespace SS */

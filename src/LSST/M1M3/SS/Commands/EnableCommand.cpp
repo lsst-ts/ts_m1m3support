@@ -31,23 +31,23 @@ namespace SS {
 
 EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                              MTM1M3_command_enableC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void EnableCommand::execute() { this->context->enable(this); }
+void EnableCommand::execute() { _context->enable(this); }
 
 void EnableCommand::ackInProgress() {
-    this->publisher->ackCommandenable(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandenable(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableCommand::ackComplete() {
-    this->publisher->ackCommandenable(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandenable(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnableCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandenable(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandenable(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

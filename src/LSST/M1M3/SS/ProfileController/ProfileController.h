@@ -31,9 +31,6 @@ namespace M1M3 {
 namespace SS {
 
 class ProfileController {
-private:
-    MirrorForceProfile mirrorForceProfile;
-
 public:
     ProfileController();
 
@@ -41,6 +38,9 @@ public:
                                  float* zMoment);
     bool incMirrorForceProfile();
     MirrorForceProfileRecord getMirrorForceProfileData();
+
+private:
+    MirrorForceProfile _mirrorForceProfile;
 };
 
 } /* namespace SS */

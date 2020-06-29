@@ -32,32 +32,32 @@ namespace SS {
 DisableHardpointChaseCommand::DisableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher,
                                                            int32_t commandID,
                                                            MTM1M3_command_disableHardpointChaseC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.hardpointActuator = data->hardpointActuator;
+    _data.hardpointActuator = data->hardpointActuator;
 }
 
 bool DisableHardpointChaseCommand::validate() {
-    if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
-        this->publisher->logCommandRejectionWarning("DisableHardpointChase",
-                                                    "The field HardpointActuator must be in range [1, 6].");
+    if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
+        _publisher->logCommandRejectionWarning("DisableHardpointChase",
+                                               "The field HardpointActuator must be in range [1, 6].");
     }
-    return this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6;
+    return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }
 
-void DisableHardpointChaseCommand::execute() { this->context->disableHardpointChase(this); }
+void DisableHardpointChaseCommand::execute() { _context->disableHardpointChase(this); }
 
 void DisableHardpointChaseCommand::ackInProgress() {
-    this->publisher->ackCommanddisableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommanddisableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableHardpointChaseCommand::ackComplete() {
-    this->publisher->ackCommanddisableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommanddisableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void DisableHardpointChaseCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommanddisableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommanddisableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -32,23 +32,23 @@ namespace SS {
 ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher,
                                                              int32_t commandID,
                                                              MTM1M3_command_clearActiveOpticForcesC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void ClearActiveOpticForcesCommand::execute() { this->context->clearActiveOpticForces(this); }
+void ClearActiveOpticForcesCommand::execute() { _context->clearActiveOpticForces(this); }
 
 void ClearActiveOpticForcesCommand::ackInProgress() {
-    this->publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ClearActiveOpticForcesCommand::ackComplete() {
-    this->publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ClearActiveOpticForcesCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

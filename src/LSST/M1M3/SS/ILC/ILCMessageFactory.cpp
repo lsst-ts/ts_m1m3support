@@ -31,7 +31,7 @@ namespace M1M3 {
 namespace SS {
 
 ILCMessageFactory::ILCMessageFactory(ILCApplicationSettings* ilcApplicationSettings) {
-    this->ilcApplicationSettings = ilcApplicationSettings;
+    _ilcApplicationSettings = ilcApplicationSettings;
 }
 
 void ILCMessageFactory::reportServerID(ModbusBuffer* buffer, uint8_t address) {
@@ -39,7 +39,7 @@ void ILCMessageFactory::reportServerID(ModbusBuffer* buffer, uint8_t address) {
     buffer->writeU8(17);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReportServerID);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReportServerID);
 }
 
 void ILCMessageFactory::reportServerStatus(ModbusBuffer* buffer, uint8_t address) {
@@ -47,7 +47,7 @@ void ILCMessageFactory::reportServerStatus(ModbusBuffer* buffer, uint8_t address
     buffer->writeU8(18);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReportServerStatus);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReportServerStatus);
 }
 
 void ILCMessageFactory::changeILCMode(ModbusBuffer* buffer, uint8_t address, uint16_t mode) {
@@ -57,7 +57,7 @@ void ILCMessageFactory::changeILCMode(ModbusBuffer* buffer, uint8_t address, uin
     buffer->writeU8((uint8_t)mode);
     buffer->writeCRC(4);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ChangeILCMode);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ChangeILCMode);
 }
 
 void ILCMessageFactory::reportILCMode(ModbusBuffer* buffer, uint8_t address) {
@@ -73,7 +73,7 @@ void ILCMessageFactory::broadcastStepMotor(ModbusBuffer* buffer, uint8_t broadca
     }
     buffer->writeCRC(81);
     buffer->writeEndOfFrame();
-    buffer->writeDelay(this->ilcApplicationSettings->BroadcastStepMotor);
+    buffer->writeDelay(_ilcApplicationSettings->BroadcastStepMotor);
 }
 
 void ILCMessageFactory::unicastStepMotor(ModbusBuffer* buffer, uint8_t address, int8_t steps) {
@@ -82,7 +82,7 @@ void ILCMessageFactory::unicastStepMotor(ModbusBuffer* buffer, uint8_t address, 
     buffer->writeI8(steps);
     buffer->writeCRC(3);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->UnicastStepMotor);
+    buffer->writeWaitForRx(_ilcApplicationSettings->UnicastStepMotor);
 }
 
 void ILCMessageFactory::electromechanicalForceAndStatus(ModbusBuffer* buffer, uint8_t address) {
@@ -90,7 +90,7 @@ void ILCMessageFactory::electromechanicalForceAndStatus(ModbusBuffer* buffer, ui
     buffer->writeU8(67);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ElectromechanicalForceAndStatus);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ElectromechanicalForceAndStatus);
 }
 
 void ILCMessageFactory::broadcastElectromechanicalFreezeSensorValues(ModbusBuffer* buffer,
@@ -100,7 +100,7 @@ void ILCMessageFactory::broadcastElectromechanicalFreezeSensorValues(ModbusBuffe
     buffer->writeU8(broadcastCounter);
     buffer->writeCRC(3);
     buffer->writeEndOfFrame();
-    buffer->writeDelay(this->ilcApplicationSettings->BroadcastFreezeSensorValues);
+    buffer->writeDelay(_ilcApplicationSettings->BroadcastFreezeSensorValues);
 }
 
 void ILCMessageFactory::broadcastPneumaticFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter) {
@@ -109,7 +109,7 @@ void ILCMessageFactory::broadcastPneumaticFreezeSensorValues(ModbusBuffer* buffe
     buffer->writeU8(broadcastCounter);
     buffer->writeCRC(3);
     buffer->writeEndOfFrame();
-    buffer->writeDelay(this->ilcApplicationSettings->BroadcastFreezeSensorValues);
+    buffer->writeDelay(_ilcApplicationSettings->BroadcastFreezeSensorValues);
 }
 
 void ILCMessageFactory::setBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address, float primaryGain,
@@ -120,7 +120,7 @@ void ILCMessageFactory::setBoostValveDCAGains(ModbusBuffer* buffer, uint8_t addr
     buffer->writeSGL(secondaryGain);
     buffer->writeCRC(10);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->SetBoostValveDCAGains);
+    buffer->writeWaitForRx(_ilcApplicationSettings->SetBoostValveDCAGains);
 }
 
 void ILCMessageFactory::readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address) {
@@ -128,7 +128,7 @@ void ILCMessageFactory::readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t add
     buffer->writeU8(74);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReadBoostValveDCAGains);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReadBoostValveDCAGains);
 }
 
 void ILCMessageFactory::broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, bool slewFlag,
@@ -147,7 +147,7 @@ void ILCMessageFactory::broadcastForceDemand(ModbusBuffer* buffer, uint8_t broad
     }
     buffer->writeCRC(244);
     buffer->writeEndOfFrame();
-    buffer->writeDelay(this->ilcApplicationSettings->BroadcastForceDemand);
+    buffer->writeDelay(_ilcApplicationSettings->BroadcastForceDemand);
 }
 
 void ILCMessageFactory::unicastForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
@@ -167,7 +167,7 @@ void ILCMessageFactory::unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8
     buffer->writeI24(primarySetpoint);
     buffer->writeCRC(6);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->UnicastSingleAxisForceDemand);
+    buffer->writeWaitForRx(_ilcApplicationSettings->UnicastSingleAxisForceDemand);
 }
 
 void ILCMessageFactory::unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
@@ -179,7 +179,7 @@ void ILCMessageFactory::unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t
     buffer->writeI24(secondarySetpoint);
     buffer->writeCRC(9);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->UnicastDualAxisForceDemand);
+    buffer->writeWaitForRx(_ilcApplicationSettings->UnicastDualAxisForceDemand);
 }
 
 void ILCMessageFactory::pneumaticForceStatus(ModbusBuffer* buffer, uint8_t address) {
@@ -187,7 +187,7 @@ void ILCMessageFactory::pneumaticForceStatus(ModbusBuffer* buffer, uint8_t addre
     buffer->writeU8(76);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->PneumaticForceAndStatus);
+    buffer->writeWaitForRx(_ilcApplicationSettings->PneumaticForceAndStatus);
 }
 
 void ILCMessageFactory::setADCScanRate(ModbusBuffer* buffer, uint8_t address, uint8_t rate) {
@@ -196,7 +196,7 @@ void ILCMessageFactory::setADCScanRate(ModbusBuffer* buffer, uint8_t address, ui
     buffer->writeU8(rate);
     buffer->writeCRC(3);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->SetADCScanRate);
+    buffer->writeWaitForRx(_ilcApplicationSettings->SetADCScanRate);
 }
 
 void ILCMessageFactory::reportADCScanRate(ModbusBuffer* buffer, uint8_t address) {
@@ -212,7 +212,7 @@ void ILCMessageFactory::setADCChannelOffsetAndSensitivity(ModbusBuffer* buffer, 
     buffer->writeSGL(sensitivity);
     buffer->writeCRC(11);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->SetADCChannelOffsetAndSensitivity);
+    buffer->writeWaitForRx(_ilcApplicationSettings->SetADCChannelOffsetAndSensitivity);
 }
 
 void ILCMessageFactory::reset(ModbusBuffer* buffer, uint8_t address) {
@@ -220,7 +220,7 @@ void ILCMessageFactory::reset(ModbusBuffer* buffer, uint8_t address) {
     buffer->writeU8(107);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->Reset);
+    buffer->writeWaitForRx(_ilcApplicationSettings->Reset);
 }
 
 void ILCMessageFactory::readCalibration(ModbusBuffer* buffer, uint8_t address) {
@@ -228,7 +228,7 @@ void ILCMessageFactory::readCalibration(ModbusBuffer* buffer, uint8_t address) {
     buffer->writeU8(110);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReadCalibration);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReadCalibration);
 }
 
 void ILCMessageFactory::reportDCAPressure(ModbusBuffer* buffer, uint8_t address) {
@@ -236,7 +236,7 @@ void ILCMessageFactory::reportDCAPressure(ModbusBuffer* buffer, uint8_t address)
     buffer->writeU8(119);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAPressure);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReportDCAPressure);
 }
 
 void ILCMessageFactory::reportDCAID(ModbusBuffer* buffer, uint8_t address) {
@@ -244,7 +244,7 @@ void ILCMessageFactory::reportDCAID(ModbusBuffer* buffer, uint8_t address) {
     buffer->writeU8(120);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAID);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReportDCAID);
 }
 
 void ILCMessageFactory::reportDCAStatus(ModbusBuffer* buffer, uint8_t address) {
@@ -252,7 +252,7 @@ void ILCMessageFactory::reportDCAStatus(ModbusBuffer* buffer, uint8_t address) {
     buffer->writeU8(121);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReportDCAStatus);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReportDCAStatus);
 }
 
 void ILCMessageFactory::reportLVDT(ModbusBuffer* buffer, uint8_t address) {
@@ -260,7 +260,7 @@ void ILCMessageFactory::reportLVDT(ModbusBuffer* buffer, uint8_t address) {
     buffer->writeU8(122);
     buffer->writeCRC(2);
     buffer->writeEndOfFrame();
-    buffer->writeWaitForRx(this->ilcApplicationSettings->ReportLVDT);
+    buffer->writeWaitForRx(_ilcApplicationSettings->ReportLVDT);
 }
 
 void ILCMessageFactory::nopReportLVDT(ModbusBuffer* buffer, uint8_t address) {

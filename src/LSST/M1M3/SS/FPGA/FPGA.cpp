@@ -40,12 +40,12 @@ namespace SS {
 
 FPGA::FPGA() {
     spdlog::debug("FPGA: FPGA()");
-    this->session = 0;
-    this->remaining = 0;
+    _session = 0;
+    _remaining = 0;
     this->u16Buffer[0] = 0;
-    this->outerLoopIRQContext = 0;
-    this->modbusIRQContext = 0;
-    this->ppsIRQContext = 0;
+    _outerLoopIRQContext = 0;
+    _modbusIRQContext = 0;
+    _ppsIRQContext = 0;
 }
 
 FPGA::~FPGA() {}
@@ -58,27 +58,27 @@ int32_t FPGA::initialize() {
 int32_t FPGA::open() {
     spdlog::debug("FPGA: open()");
     int32_t status = NiFpga_Open("/home/admin/Bitfiles/" NiFpga_M1M3SupportFPGA_Bitfile,
-                                 NiFpga_M1M3SupportFPGA_Signature, "RIO0", 0, &(this->session));
+                                 NiFpga_M1M3SupportFPGA_Signature, "RIO0", 0, &(_session));
     if (status) {
         return NiReportError(__PRETTY_FUNCTION__, status);
     }
-    status = NiFpga_Abort(this->session);
-    status = NiFpga_Download(this->session);
-    status = NiFpga_Reset(this->session);
-    status = NiFpga_Run(this->session, 0);
+    status = NiFpga_Abort(_session);
+    status = NiFpga_Download(_session);
+    status = NiFpga_Reset(_session);
+    status = NiFpga_Run(_session, 0);
     usleep(1000000);
-    NiFpga_ReserveIrqContext(this->session, &this->outerLoopIRQContext);
-    NiFpga_ReserveIrqContext(this->session, &this->modbusIRQContext);
-    NiFpga_ReserveIrqContext(this->session, &this->ppsIRQContext);
+    NiFpga_ReserveIrqContext(_session, &_outerLoopIRQContext);
+    NiFpga_ReserveIrqContext(_session, &_modbusIRQContext);
+    NiFpga_ReserveIrqContext(_session, &_ppsIRQContext);
     return NiReportError(__PRETTY_FUNCTION__, status);
 }
 
 int32_t FPGA::close() {
     spdlog::debug("FPGA: close()");
-    NiFpga_UnreserveIrqContext(this->session, this->outerLoopIRQContext);
-    NiFpga_UnreserveIrqContext(this->session, this->modbusIRQContext);
-    NiFpga_UnreserveIrqContext(this->session, this->ppsIRQContext);
-    return NiReportError(__PRETTY_FUNCTION__, NiFpga_Close(this->session, 0));
+    NiFpga_UnreserveIrqContext(_session, _outerLoopIRQContext);
+    NiFpga_UnreserveIrqContext(_session, _modbusIRQContext);
+    NiFpga_UnreserveIrqContext(_session, _ppsIRQContext);
+    return NiReportError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
 }
 
 int32_t FPGA::finalize() {
@@ -97,25 +97,24 @@ bool FPGA::isErrorCode(int32_t status) {
 int32_t FPGA::waitForOuterLoopClock(int32_t timeout) {
     uint32_t assertedIRQs = 0;
     uint8_t timedOut = false;
-    int32_t result = NiReportError(__PRETTY_FUNCTION__,
-                                   NiFpga_WaitOnIrqs(this->session, this->outerLoopIRQContext, NiFpga_Irq_0,
-                                                     timeout, &assertedIRQs, &timedOut));
+    int32_t result =
+            NiReportError(__PRETTY_FUNCTION__, NiFpga_WaitOnIrqs(_session, _outerLoopIRQContext, NiFpga_Irq_0,
+                                                                 timeout, &assertedIRQs, &timedOut));
     return result;
 }
 
 int32_t FPGA::ackOuterLoopClock() {
-    return NiReportError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(this->session, NiFpga_Irq_0));
+    return NiReportError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(_session, NiFpga_Irq_0));
 }
 
 int32_t FPGA::waitForPPS(int32_t timeout) {
     uint32_t assertedIRQs = 0;
     uint8_t timedOut = false;
-    return NiReportError(__PRETTY_FUNCTION__,
-                         NiFpga_WaitOnIrqs(this->session, this->ppsIRQContext, NiFpga_Irq_10, timeout,
-                                           &assertedIRQs, &timedOut));
+    return NiReportError(__PRETTY_FUNCTION__, NiFpga_WaitOnIrqs(_session, _ppsIRQContext, NiFpga_Irq_10,
+                                                                timeout, &assertedIRQs, &timedOut));
 }
 
-int32_t FPGA::ackPPS() { return NiFpga_AcknowledgeIrqs(this->session, NiFpga_Irq_10); }
+int32_t FPGA::ackPPS() { return NiFpga_AcknowledgeIrqs(_session, NiFpga_Irq_10); }
 
 int32_t FPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {
     uint32_t irqs = 0;
@@ -141,8 +140,8 @@ int32_t FPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {
     if (irqs != 0) {
         uint32_t assertedIRQs = 0;
         uint8_t timedOut = false;
-        return NiReportError(__PRETTY_FUNCTION__, NiFpga_WaitOnIrqs(this->session, this->modbusIRQContext,
-                                                                    irqs, timeout, &assertedIRQs, &timedOut));
+        return NiReportError(__PRETTY_FUNCTION__, NiFpga_WaitOnIrqs(_session, _modbusIRQContext, irqs,
+                                                                    timeout, &assertedIRQs, &timedOut));
     }
     return 0;
 }
@@ -169,7 +168,7 @@ int32_t FPGA::ackModbusIRQ(int32_t subnet) {
             break;
     }
     if (irqs != 0) {
-        return NiReportError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(this->session, irqs));
+        return NiReportError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(_session, irqs));
     }
     return 0;
 }
@@ -256,10 +255,9 @@ void FPGA::pullHealthAndStatus() {
 }
 
 int32_t FPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
-    return NiReportError(
-            __PRETTY_FUNCTION__,
-            NiFpga_WriteFifoU16(this->session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO, data,
-                                length, timeoutInMs, &this->remaining));
+    return NiReportError(__PRETTY_FUNCTION__,
+                         NiFpga_WriteFifoU16(_session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO,
+                                             data, length, timeoutInMs, &_remaining));
 }
 
 int32_t FPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {
@@ -269,8 +267,8 @@ int32_t FPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {
 
 void FPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_WriteFifoU16(this->session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO,
-                                     data, length, timeoutInMs, &this->remaining));
+                 NiFpga_WriteFifoU16(_session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO, data,
+                                     length, timeoutInMs, &_remaining));
 }
 
 void FPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
@@ -279,39 +277,37 @@ void FPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
 
 int32_t FPGA::writeTimestampFIFO(uint64_t timestamp) {
     uint64_t buffer[1] = {timestamp};
-    return NiReportError(__PRETTY_FUNCTION__,
-                         NiFpga_WriteFifoU64(this->session,
-                                             NiFpga_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO,
-                                             buffer, 1, 0, &this->remaining));
+    return NiReportError(
+            __PRETTY_FUNCTION__,
+            NiFpga_WriteFifoU64(_session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO,
+                                buffer, 1, 0, &_remaining));
 }
 
 int32_t FPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) {
-    return NiReportError(
-            __PRETTY_FUNCTION__,
-            NiFpga_ReadFifoU8(this->session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO, data,
-                              length, timeoutInMs, &this->remaining));
+    return NiReportError(__PRETTY_FUNCTION__,
+                         NiFpga_ReadFifoU8(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO,
+                                           data, length, timeoutInMs, &_remaining));
 }
 
 void FPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_ReadFifoU16(this->session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO,
-                                    data, length, timeoutInMs, &this->remaining));
+                 NiFpga_ReadFifoU16(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO,
+                                    data, length, timeoutInMs, &_remaining));
 }
 
 void FPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {
     uint16_t data[2] = {request, param};
     NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_WriteFifoU16(this->session,
+                 NiFpga_WriteFifoU16(_session,
                                      NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_HealthAndStatusControlFIFO,
-                                     data, 2, 0, &this->remaining));
+                                     data, 2, 0, &_remaining));
 }
 
 int32_t FPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs) {
     return NiReportError(
             __PRETTY_FUNCTION__,
-            NiFpga_ReadFifoU64(this->session,
-                               NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO, data,
-                               length, timeoutInMs, &this->remaining));
+            NiFpga_ReadFifoU64(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO,
+                               data, length, timeoutInMs, &_remaining));
 }
 
 } /* namespace SS */

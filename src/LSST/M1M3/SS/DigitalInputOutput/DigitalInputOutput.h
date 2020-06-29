@@ -47,23 +47,6 @@ class SafetyController;
  * The class used to process digital inputs and outputs.
  */
 class DigitalInputOutput {
-private:
-    InterlockApplicationSettings* interlockApplicationSettings;
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-
-    MTM1M3_logevent_airSupplyStatusC* airSupplyStatus;
-    MTM1M3_logevent_airSupplyWarningC* airSupplyWarning;
-    MTM1M3_logevent_cellLightStatusC* cellLightStatus;
-    MTM1M3_logevent_cellLightWarningC* cellLightWarning;
-    MTM1M3_logevent_interlockStatusC* interlockStatus;
-    MTM1M3_logevent_interlockWarningC* interlockWarning;
-
-    uint64_t lastDOTimestamp;
-    uint64_t lastDITimestamp;
-
-    double lastToggleTimestamp;
-
 public:
     /*!
      * Instantiates the accelerometer.
@@ -104,6 +87,23 @@ public:
      * Turns the cell lights off.
      */
     void turnCellLightsOff();
+
+private:
+    InterlockApplicationSettings* _interlockApplicationSettings;
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+
+    MTM1M3_logevent_airSupplyStatusC* _airSupplyStatus;
+    MTM1M3_logevent_airSupplyWarningC* _airSupplyWarning;
+    MTM1M3_logevent_cellLightStatusC* _cellLightStatus;
+    MTM1M3_logevent_cellLightWarningC* _cellLightWarning;
+    MTM1M3_logevent_interlockStatusC* _interlockStatus;
+    MTM1M3_logevent_interlockWarningC* _interlockWarning;
+
+    uint64_t _lastDOTimestamp;
+    uint64_t _lastDITimestamp;
+
+    double _lastToggleTimestamp;
 };
 
 } /* namespace SS */

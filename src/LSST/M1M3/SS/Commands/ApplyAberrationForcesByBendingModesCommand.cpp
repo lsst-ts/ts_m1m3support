@@ -32,30 +32,29 @@ namespace SS {
 ApplyAberrationForcesByBendingModesCommand::ApplyAberrationForcesByBendingModesCommand(
         Context* context, M1M3SSPublisher* publisher, int32_t commandID,
         MTM1M3_command_applyAberrationForcesByBendingModesC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
     for (int i = 0; i < BENDING_MODES; i++) {
-        this->data.coefficients[i] = data->coefficients[i];
+        _data.coefficients[i] = data->coefficients[i];
     }
 }
 
 void ApplyAberrationForcesByBendingModesCommand::execute() {
-    this->context->applyAberrationForcesByBendingModes(this);
+    _context->applyAberrationForcesByBendingModes(this);
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackInProgress() {
-    this->publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_INPROGRESS,
-                                                                   "In-Progress");
+    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackComplete() {
-    this->publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_FAILED,
-                                                                   "Failed: " + reason);
+    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_FAILED,
+                                                              "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -37,17 +37,6 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class AccelerationForceComponent : public ForceComponent {
-private:
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    ForceActuatorSettings* forceActuatorSettings;
-
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-    MTM1M3_logevent_appliedAccelerationForcesC* appliedAccelerationForces;
-    MTM1M3_logevent_rejectedAccelerationForcesC* rejectedAccelerationForces;
-
 public:
     AccelerationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
                                ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -60,6 +49,17 @@ public:
 protected:
     void postEnableDisableActions();
     void postUpdateActions();
+
+private:
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedAccelerationForcesC* _appliedAccelerationForces;
+    MTM1M3_logevent_rejectedAccelerationForcesC* _rejectedAccelerationForces;
 };
 
 } /* namespace SS */

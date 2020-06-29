@@ -38,11 +38,6 @@ namespace SS {
  * This is an external command and can be issued via SAL.
  */
 class DisableCommand : public Command {
-private:
-    Context* context;
-    M1M3SSPublisher* publisher;
-    MTM1M3_command_disableC data;
-
 public:
     DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                    MTM1M3_command_disableC* data);
@@ -51,6 +46,11 @@ public:
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
+    MTM1M3_command_disableC _data;
 };
 
 } /* namespace SS */

@@ -41,10 +41,6 @@ class Command;
  * memory leak will occur.
  */
 class CommandFactory {
-private:
-    M1M3SSPublisher* publisher;
-    Context* context;
-
 public:
     /*!
      * Instantiates the command factory.
@@ -67,6 +63,10 @@ public:
      * @param[in] command The command to destroy.
      */
     void destroy(Command* command);
+
+private:
+    M1M3SSPublisher* _publisher;
+    Context* _context;
 };
 
 } /* namespace SS */

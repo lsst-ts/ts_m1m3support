@@ -31,44 +31,42 @@ namespace SS {
 
 TurnPowerOnCommand::TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                        MTM1M3_command_turnPowerOnC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.turnPowerNetworkAOn = data->turnPowerNetworkAOn;
-    this->data.turnPowerNetworkBOn = data->turnPowerNetworkBOn;
-    this->data.turnPowerNetworkCOn = data->turnPowerNetworkCOn;
-    this->data.turnPowerNetworkDOn = data->turnPowerNetworkDOn;
-    this->data.turnAuxPowerNetworkAOn = data->turnAuxPowerNetworkAOn;
-    this->data.turnAuxPowerNetworkBOn = data->turnAuxPowerNetworkBOn;
-    this->data.turnAuxPowerNetworkCOn = data->turnAuxPowerNetworkCOn;
-    this->data.turnAuxPowerNetworkDOn = data->turnAuxPowerNetworkDOn;
+    _data.turnPowerNetworkAOn = data->turnPowerNetworkAOn;
+    _data.turnPowerNetworkBOn = data->turnPowerNetworkBOn;
+    _data.turnPowerNetworkCOn = data->turnPowerNetworkCOn;
+    _data.turnPowerNetworkDOn = data->turnPowerNetworkDOn;
+    _data.turnAuxPowerNetworkAOn = data->turnAuxPowerNetworkAOn;
+    _data.turnAuxPowerNetworkBOn = data->turnAuxPowerNetworkBOn;
+    _data.turnAuxPowerNetworkCOn = data->turnAuxPowerNetworkCOn;
+    _data.turnAuxPowerNetworkDOn = data->turnAuxPowerNetworkDOn;
 }
 
 bool TurnPowerOnCommand::validate() {
-    if (!(this->data.turnPowerNetworkAOn || this->data.turnPowerNetworkBOn ||
-          this->data.turnPowerNetworkCOn || this->data.turnPowerNetworkDOn ||
-          this->data.turnAuxPowerNetworkAOn || this->data.turnAuxPowerNetworkBOn ||
-          this->data.turnAuxPowerNetworkCOn || this->data.turnAuxPowerNetworkDOn)) {
-        this->publisher->logCommandRejectionWarning("TurnPowerOn", "At least one field is not TRUE.");
+    if (!(_data.turnPowerNetworkAOn || _data.turnPowerNetworkBOn || _data.turnPowerNetworkCOn ||
+          _data.turnPowerNetworkDOn || _data.turnAuxPowerNetworkAOn || _data.turnAuxPowerNetworkBOn ||
+          _data.turnAuxPowerNetworkCOn || _data.turnAuxPowerNetworkDOn)) {
+        _publisher->logCommandRejectionWarning("TurnPowerOn", "At least one field is not TRUE.");
     }
-    return this->data.turnPowerNetworkAOn || this->data.turnPowerNetworkBOn ||
-           this->data.turnPowerNetworkCOn || this->data.turnPowerNetworkDOn ||
-           this->data.turnAuxPowerNetworkAOn || this->data.turnAuxPowerNetworkBOn ||
-           this->data.turnAuxPowerNetworkCOn || this->data.turnAuxPowerNetworkDOn;
+    return _data.turnPowerNetworkAOn || _data.turnPowerNetworkBOn || _data.turnPowerNetworkCOn ||
+           _data.turnPowerNetworkDOn || _data.turnAuxPowerNetworkAOn || _data.turnAuxPowerNetworkBOn ||
+           _data.turnAuxPowerNetworkCOn || _data.turnAuxPowerNetworkDOn;
 }
 
-void TurnPowerOnCommand::execute() { this->context->turnPowerOn(this); }
+void TurnPowerOnCommand::execute() { _context->turnPowerOn(this); }
 
 void TurnPowerOnCommand::ackInProgress() {
-    this->publisher->ackCommandturnPowerOn(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandturnPowerOn(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnPowerOnCommand::ackComplete() {
-    this->publisher->ackCommandturnPowerOn(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandturnPowerOn(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnPowerOnCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandturnPowerOn(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandturnPowerOn(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

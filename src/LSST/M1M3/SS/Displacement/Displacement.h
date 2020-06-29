@@ -42,24 +42,11 @@ class SafetyController;
  * The class used to process displacement data.
  */
 class Displacement {
-private:
-    DisplacementSensorSettings* displacementSensorSettings;
-    SupportFPGAData* fpgaData;
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-
-    MTM1M3_imsDataC* imsData;
-    MTM1M3_logevent_displacementSensorWarningC* displacementWarning;
-
-    uint64_t lastSampleTimestamp;
-    uint64_t lastErrorTimestamp;
-    bool errorCleared;
-
 public:
     /*!
      * Instantiates the displacement sensor.
      * @param[in] displacementSensorSettings The displacement settings.
-     * @param[in] fpgaData The fpga data.
+     * @param[in] _fpgaData The fpga data.
      * @param[in] publisher The publisher.
      * @param[in] safetyController The safety controller.
      */
@@ -70,6 +57,19 @@ public:
      * Processes currently available displacement sensor data and publish it.
      */
     void processData();
+
+private:
+    DisplacementSensorSettings* _displacementSensorSettings;
+    SupportFPGAData* _fpgaData;
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+
+    MTM1M3_imsDataC* _imsData;
+    MTM1M3_logevent_displacementSensorWarningC* _displacementWarning;
+
+    uint64_t _lastSampleTimestamp;
+    uint64_t _lastErrorTimestamp;
+    bool _errorCleared;
 };
 
 } /* namespace SS */

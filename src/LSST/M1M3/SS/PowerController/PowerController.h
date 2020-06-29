@@ -45,17 +45,6 @@ class SafetyController;
  * The class used to control and process power data.
  */
 class PowerController {
-private:
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-
-    MTM1M3_powerSupplyDataC* powerSupplyData;
-    MTM1M3_logevent_powerStatusC* powerStatus;
-    MTM1M3_logevent_powerSupplyStatusC* powerSupplyStatus;
-    MTM1M3_logevent_powerWarningC* powerWarning;
-
-    uint64_t lastPowerTimestamp;
-
 public:
     /*!
      * Instantiates the power controller.
@@ -126,6 +115,17 @@ public:
      * @param[in] on True to turn on.
      */
     void setAuxPowerNetworkD(bool on);
+
+private:
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+
+    MTM1M3_powerSupplyDataC* _powerSupplyData;
+    MTM1M3_logevent_powerStatusC* _powerStatus;
+    MTM1M3_logevent_powerSupplyStatusC* _powerSupplyStatus;
+    MTM1M3_logevent_powerWarningC* _powerWarning;
+
+    uint64_t _lastPowerTimestamp;
 };
 
 } /* namespace SS */

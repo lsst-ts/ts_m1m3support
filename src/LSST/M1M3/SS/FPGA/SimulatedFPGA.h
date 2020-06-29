@@ -93,34 +93,34 @@ public:
     int32_t readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) override;
 
 private:
-    M1M3SSPublisher* publisher;
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
+    M1M3SSPublisher* _publisher;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     std::thread _monitorMountElevationThread;
     std::mutex _elevationReadWriteLock;
     SAL_MTMount _mgrMTMount;
 
-    int lastRequest;
-    std::queue<uint16_t> u8Response;
-    std::queue<uint16_t> u16Response;
-    std::queue<uint16_t> subnetAResponse;
-    std::queue<uint16_t> subnetBResponse;
-    std::queue<uint16_t> subnetCResponse;
-    std::queue<uint16_t> subnetDResponse;
-    std::queue<uint16_t> subnetEResponse;
+    int _lastRequest;
+    std::queue<uint16_t> _u8Response;
+    std::queue<uint16_t> _u16Response;
+    std::queue<uint16_t> _subnetAResponse;
+    std::queue<uint16_t> _subnetBResponse;
+    std::queue<uint16_t> _subnetCResponse;
+    std::queue<uint16_t> _subnetDResponse;
+    std::queue<uint16_t> _subnetEResponse;
 
-    std::queue<uint16_t> crcVector;
-    void writeModbus(std::queue<uint16_t>* response, uint16_t data);
-    void writeModbusCRC(std::queue<uint16_t>* response);
-    uint16_t readModbus(uint16_t data);
+    std::queue<uint16_t> _crcVector;
+    void _writeModbus(std::queue<uint16_t>* response, uint16_t data);
+    void _writeModbusCRC(std::queue<uint16_t>* response);
+    uint16_t _readModbus(uint16_t data);
 
     void _monitorElevation(void);
 
-    int _exitThread = false;
-    float rnd[RND_CNT];
     float _mountElevation = 90.;
 
-    int rndIndex;
-    float getRnd();
+    bool _exitThread = false;
+    float _rnd[RND_CNT];
+    int _rndIndex;
+    float _getRnd();
 };
 
 } /* namespace SS */

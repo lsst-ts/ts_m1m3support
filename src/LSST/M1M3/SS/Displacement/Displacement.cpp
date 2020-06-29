@@ -39,217 +39,200 @@ namespace SS {
 Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, SupportFPGAData* fpgaData,
                            M1M3SSPublisher* publisher, SafetyController* safetyController) {
     spdlog::debug("Displacement: Displacement()");
-    this->displacementSensorSettings = displacementSensorSettings;
-    this->fpgaData = fpgaData;
-    this->publisher = publisher;
-    this->safetyController = safetyController;
+    _displacementSensorSettings = displacementSensorSettings;
+    _fpgaData = fpgaData;
+    _publisher = publisher;
+    _safetyController = safetyController;
 
-    this->imsData = this->publisher->getIMSData();
-    this->displacementWarning = this->publisher->getEventDisplacementSensorWarning();
+    _imsData = _publisher->getIMSData();
+    _displacementWarning = _publisher->getEventDisplacementSensorWarning();
 
-    this->lastSampleTimestamp = 0;
-    this->lastErrorTimestamp = 0;
-    this->errorCleared = false;
+    _lastSampleTimestamp = 0;
+    _lastErrorTimestamp = 0;
+    _errorCleared = false;
 
-    memset(this->imsData, 0, sizeof(MTM1M3_imsDataC));
-    memset(this->displacementWarning, 0, sizeof(MTM1M3_logevent_displacementSensorWarningC));
+    memset(_imsData, 0, sizeof(MTM1M3_imsDataC));
+    memset(_displacementWarning, 0, sizeof(MTM1M3_logevent_displacementSensorWarningC));
 }
 
 void Displacement::processData() {
     // TODO: Handle no data available
     // TODO: Handle displacement limits, push to safety controller
     spdlog::trace("Displacement: processData()");
-    if (this->fpgaData->DisplacementErrorTimestamp > this->lastErrorTimestamp) {
-        this->lastErrorTimestamp = this->fpgaData->DisplacementErrorTimestamp;
-        this->errorCleared = false;
-        this->displacementWarning->timestamp =
-                Timestamp::fromFPGA(this->fpgaData->DisplacementErrorTimestamp);
-        this->displacementWarning->anyWarning = this->fpgaData->DisplacementErrorCode != 0;
-        this->displacementWarning->unknownProblem = this->fpgaData->DisplacementErrorCode == 1;
-        this->displacementWarning->invalidResponse = this->fpgaData->DisplacementErrorCode == 2;
-        this->displacementWarning->responseTimeout = this->fpgaData->DisplacementErrorCode == 3;
-        this->displacementWarning->sensorReportsInvalidCommand = this->fpgaData->DisplacementErrorCode == 4;
-        this->displacementWarning->sensorReportsCommunicationTimeoutError =
-                this->fpgaData->DisplacementErrorCode == 5;
-        this->displacementWarning->sensorReportsDataLengthError = this->fpgaData->DisplacementErrorCode == 6;
-        this->displacementWarning->sensorReportsNumberOfParametersError =
-                this->fpgaData->DisplacementErrorCode == 7;
-        this->displacementWarning->sensorReportsParameterError = this->fpgaData->DisplacementErrorCode == 8;
-        this->displacementWarning->sensorReportsCommunicationError =
-                this->fpgaData->DisplacementErrorCode == 9;
-        this->displacementWarning->sensorReportsIDNumberError = this->fpgaData->DisplacementErrorCode == 10;
-        this->displacementWarning->sensorReportsExpansionLineError =
-                this->fpgaData->DisplacementErrorCode == 11;
-        this->displacementWarning->sensorReportsWriteControlError =
-                this->fpgaData->DisplacementErrorCode == 12;
-        this->safetyController->displacementNotifyUnknownProblem(this->displacementWarning->unknownProblem);
-        this->safetyController->displacementNotifyInvalidResponse(this->displacementWarning->invalidResponse);
-        this->safetyController->displacementNotifyResponseTimeoutError(
-                this->displacementWarning->responseTimeout);
-        this->safetyController->displacementNotifySensorReportsInvalidCommand(
-                this->displacementWarning->sensorReportsInvalidCommand);
-        this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(
-                this->displacementWarning->sensorReportsCommunicationTimeoutError);
-        this->safetyController->displacementNotifySensorReportsDataLengthError(
-                this->displacementWarning->sensorReportsDataLengthError);
-        this->safetyController->displacementNotifySensorReportsNumberOfParametersError(
-                this->displacementWarning->sensorReportsNumberOfParametersError);
-        this->safetyController->displacementNotifySensorReportsParameterError(
-                this->displacementWarning->sensorReportsParameterError);
-        this->safetyController->displacementNotifySensorReportsCommunicationError(
-                this->displacementWarning->sensorReportsCommunicationError);
-        this->safetyController->displacementNotifySensorReportsIDNumberError(
-                this->displacementWarning->sensorReportsIDNumberError);
-        this->safetyController->displacementNotifySensorReportsExpansionLineError(
-                this->displacementWarning->sensorReportsExpansionLineError);
-        this->safetyController->displacementNotifySensorReportsWriteControlError(
-                this->displacementWarning->sensorReportsWriteControlError);
-        this->publisher->tryLogDisplacementSensorWarning();
+    if (_fpgaData->DisplacementErrorTimestamp > _lastErrorTimestamp) {
+        _lastErrorTimestamp = _fpgaData->DisplacementErrorTimestamp;
+        _errorCleared = false;
+        _displacementWarning->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementErrorTimestamp);
+        _displacementWarning->anyWarning = _fpgaData->DisplacementErrorCode != 0;
+        _displacementWarning->unknownProblem = _fpgaData->DisplacementErrorCode == 1;
+        _displacementWarning->invalidResponse = _fpgaData->DisplacementErrorCode == 2;
+        _displacementWarning->responseTimeout = _fpgaData->DisplacementErrorCode == 3;
+        _displacementWarning->sensorReportsInvalidCommand = _fpgaData->DisplacementErrorCode == 4;
+        _displacementWarning->sensorReportsCommunicationTimeoutError = _fpgaData->DisplacementErrorCode == 5;
+        _displacementWarning->sensorReportsDataLengthError = _fpgaData->DisplacementErrorCode == 6;
+        _displacementWarning->sensorReportsNumberOfParametersError = _fpgaData->DisplacementErrorCode == 7;
+        _displacementWarning->sensorReportsParameterError = _fpgaData->DisplacementErrorCode == 8;
+        _displacementWarning->sensorReportsCommunicationError = _fpgaData->DisplacementErrorCode == 9;
+        _displacementWarning->sensorReportsIDNumberError = _fpgaData->DisplacementErrorCode == 10;
+        _displacementWarning->sensorReportsExpansionLineError = _fpgaData->DisplacementErrorCode == 11;
+        _displacementWarning->sensorReportsWriteControlError = _fpgaData->DisplacementErrorCode == 12;
+        _safetyController->displacementNotifyUnknownProblem(_displacementWarning->unknownProblem);
+        _safetyController->displacementNotifyInvalidResponse(_displacementWarning->invalidResponse);
+        _safetyController->displacementNotifyResponseTimeoutError(_displacementWarning->responseTimeout);
+        _safetyController->displacementNotifySensorReportsInvalidCommand(
+                _displacementWarning->sensorReportsInvalidCommand);
+        _safetyController->displacementNotifySensorReportsCommunicationTimeoutError(
+                _displacementWarning->sensorReportsCommunicationTimeoutError);
+        _safetyController->displacementNotifySensorReportsDataLengthError(
+                _displacementWarning->sensorReportsDataLengthError);
+        _safetyController->displacementNotifySensorReportsNumberOfParametersError(
+                _displacementWarning->sensorReportsNumberOfParametersError);
+        _safetyController->displacementNotifySensorReportsParameterError(
+                _displacementWarning->sensorReportsParameterError);
+        _safetyController->displacementNotifySensorReportsCommunicationError(
+                _displacementWarning->sensorReportsCommunicationError);
+        _safetyController->displacementNotifySensorReportsIDNumberError(
+                _displacementWarning->sensorReportsIDNumberError);
+        _safetyController->displacementNotifySensorReportsExpansionLineError(
+                _displacementWarning->sensorReportsExpansionLineError);
+        _safetyController->displacementNotifySensorReportsWriteControlError(
+                _displacementWarning->sensorReportsWriteControlError);
+        _publisher->tryLogDisplacementSensorWarning();
     }
-    if (this->fpgaData->DisplacementSampleTimestamp > this->lastSampleTimestamp) {
-        this->lastSampleTimestamp = this->fpgaData->DisplacementSampleTimestamp;
-        this->imsData->timestamp = Timestamp::fromFPGA(this->fpgaData->DisplacementSampleTimestamp);
+    if (_fpgaData->DisplacementSampleTimestamp > _lastSampleTimestamp) {
+        _lastSampleTimestamp = _fpgaData->DisplacementSampleTimestamp;
+        _imsData->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementSampleTimestamp);
         // We need to swap the direction of the IMS reading, note sensor 5 and 7 are mounted opposite
         // We also need to convert the raw sensor values to millimeters
-        this->imsData->rawSensorData[0] =
-                50.0 -
-                ((this->fpgaData->DisplacementRaw1 + this->displacementSensorSettings->N1Offset) / 10000.0);
-        this->imsData->rawSensorData[1] =
-                50.0 -
-                ((this->fpgaData->DisplacementRaw2 + this->displacementSensorSettings->N2Offset) / 10000.0);
-        this->imsData->rawSensorData[2] =
-                50.0 -
-                ((this->fpgaData->DisplacementRaw3 + this->displacementSensorSettings->N3Offset) / 10000.0);
-        this->imsData->rawSensorData[3] =
-                50.0 -
-                ((this->fpgaData->DisplacementRaw4 + this->displacementSensorSettings->N4Offset) / 10000.0);
-        this->imsData->rawSensorData[4] =
-                50.0 -
-                ((this->fpgaData->DisplacementRaw5 + this->displacementSensorSettings->N5Offset) / 10000.0);
-        this->imsData->rawSensorData[5] =
-                ((this->fpgaData->DisplacementRaw6 + this->displacementSensorSettings->N6Offset) / 10000.0);
-        this->imsData->rawSensorData[6] =
-                50.0 -
-                ((this->fpgaData->DisplacementRaw7 + this->displacementSensorSettings->N7Offset) / 10000.0);
-        this->imsData->rawSensorData[7] =
-                ((this->fpgaData->DisplacementRaw8 + this->displacementSensorSettings->N8Offset) / 10000.0);
-        int p1 = this->displacementSensorSettings->N1Port;
-        int p2 = this->displacementSensorSettings->N2Port;
-        int p3 = this->displacementSensorSettings->N3Port;
-        int p4 = this->displacementSensorSettings->N4Port;
-        int p5 = this->displacementSensorSettings->N5Port;
-        int p6 = this->displacementSensorSettings->N6Port;
-        int p7 = this->displacementSensorSettings->N7Port;
-        int p8 = this->displacementSensorSettings->N8Port;
-        this->imsData->xPosition =
-                (this->displacementSensorSettings->ConverterMatrix[0] * this->imsData->rawSensorData[p1] +
-                 this->displacementSensorSettings->ConverterMatrix[1] * this->imsData->rawSensorData[p2] +
-                 this->displacementSensorSettings->ConverterMatrix[2] * this->imsData->rawSensorData[p3] +
-                 this->displacementSensorSettings->ConverterMatrix[3] * this->imsData->rawSensorData[p4] +
-                 this->displacementSensorSettings->ConverterMatrix[4] * this->imsData->rawSensorData[p5] +
-                 this->displacementSensorSettings->ConverterMatrix[5] * this->imsData->rawSensorData[p6] +
-                 this->displacementSensorSettings->ConverterMatrix[6] * this->imsData->rawSensorData[p7] +
-                 this->displacementSensorSettings->ConverterMatrix[7] * this->imsData->rawSensorData[p8]) /
+        _imsData->rawSensorData[0] =
+                50.0 - ((_fpgaData->DisplacementRaw1 + _displacementSensorSettings->N1Offset) / 10000.0);
+        _imsData->rawSensorData[1] =
+                50.0 - ((_fpgaData->DisplacementRaw2 + _displacementSensorSettings->N2Offset) / 10000.0);
+        _imsData->rawSensorData[2] =
+                50.0 - ((_fpgaData->DisplacementRaw3 + _displacementSensorSettings->N3Offset) / 10000.0);
+        _imsData->rawSensorData[3] =
+                50.0 - ((_fpgaData->DisplacementRaw4 + _displacementSensorSettings->N4Offset) / 10000.0);
+        _imsData->rawSensorData[4] =
+                50.0 - ((_fpgaData->DisplacementRaw5 + _displacementSensorSettings->N5Offset) / 10000.0);
+        _imsData->rawSensorData[5] =
+                ((_fpgaData->DisplacementRaw6 + _displacementSensorSettings->N6Offset) / 10000.0);
+        _imsData->rawSensorData[6] =
+                50.0 - ((_fpgaData->DisplacementRaw7 + _displacementSensorSettings->N7Offset) / 10000.0);
+        _imsData->rawSensorData[7] =
+                ((_fpgaData->DisplacementRaw8 + _displacementSensorSettings->N8Offset) / 10000.0);
+        int p1 = _displacementSensorSettings->N1Port;
+        int p2 = _displacementSensorSettings->N2Port;
+        int p3 = _displacementSensorSettings->N3Port;
+        int p4 = _displacementSensorSettings->N4Port;
+        int p5 = _displacementSensorSettings->N5Port;
+        int p6 = _displacementSensorSettings->N6Port;
+        int p7 = _displacementSensorSettings->N7Port;
+        int p8 = _displacementSensorSettings->N8Port;
+        _imsData->xPosition =
+                (_displacementSensorSettings->ConverterMatrix[0] * _imsData->rawSensorData[p1] +
+                 _displacementSensorSettings->ConverterMatrix[1] * _imsData->rawSensorData[p2] +
+                 _displacementSensorSettings->ConverterMatrix[2] * _imsData->rawSensorData[p3] +
+                 _displacementSensorSettings->ConverterMatrix[3] * _imsData->rawSensorData[p4] +
+                 _displacementSensorSettings->ConverterMatrix[4] * _imsData->rawSensorData[p5] +
+                 _displacementSensorSettings->ConverterMatrix[5] * _imsData->rawSensorData[p6] +
+                 _displacementSensorSettings->ConverterMatrix[6] * _imsData->rawSensorData[p7] +
+                 _displacementSensorSettings->ConverterMatrix[7] * _imsData->rawSensorData[p8]) /
                         MILLIMETERS_PER_METER +
-                this->displacementSensorSettings->XPositionOffset;
-        this->imsData->yPosition =
-                (this->displacementSensorSettings->ConverterMatrix[8] * this->imsData->rawSensorData[p1] +
-                 this->displacementSensorSettings->ConverterMatrix[9] * this->imsData->rawSensorData[p2] +
-                 this->displacementSensorSettings->ConverterMatrix[10] * this->imsData->rawSensorData[p3] +
-                 this->displacementSensorSettings->ConverterMatrix[11] * this->imsData->rawSensorData[p4] +
-                 this->displacementSensorSettings->ConverterMatrix[12] * this->imsData->rawSensorData[p5] +
-                 this->displacementSensorSettings->ConverterMatrix[13] * this->imsData->rawSensorData[p6] +
-                 this->displacementSensorSettings->ConverterMatrix[14] * this->imsData->rawSensorData[p7] +
-                 this->displacementSensorSettings->ConverterMatrix[15] * this->imsData->rawSensorData[p8]) /
+                _displacementSensorSettings->XPositionOffset;
+        _imsData->yPosition =
+                (_displacementSensorSettings->ConverterMatrix[8] * _imsData->rawSensorData[p1] +
+                 _displacementSensorSettings->ConverterMatrix[9] * _imsData->rawSensorData[p2] +
+                 _displacementSensorSettings->ConverterMatrix[10] * _imsData->rawSensorData[p3] +
+                 _displacementSensorSettings->ConverterMatrix[11] * _imsData->rawSensorData[p4] +
+                 _displacementSensorSettings->ConverterMatrix[12] * _imsData->rawSensorData[p5] +
+                 _displacementSensorSettings->ConverterMatrix[13] * _imsData->rawSensorData[p6] +
+                 _displacementSensorSettings->ConverterMatrix[14] * _imsData->rawSensorData[p7] +
+                 _displacementSensorSettings->ConverterMatrix[15] * _imsData->rawSensorData[p8]) /
                         MILLIMETERS_PER_METER +
-                this->displacementSensorSettings->YPositionOffset;
-        this->imsData->zPosition =
-                (this->displacementSensorSettings->ConverterMatrix[16] * this->imsData->rawSensorData[p1] +
-                 this->displacementSensorSettings->ConverterMatrix[17] * this->imsData->rawSensorData[p2] +
-                 this->displacementSensorSettings->ConverterMatrix[18] * this->imsData->rawSensorData[p3] +
-                 this->displacementSensorSettings->ConverterMatrix[19] * this->imsData->rawSensorData[p4] +
-                 this->displacementSensorSettings->ConverterMatrix[20] * this->imsData->rawSensorData[p5] +
-                 this->displacementSensorSettings->ConverterMatrix[21] * this->imsData->rawSensorData[p6] +
-                 this->displacementSensorSettings->ConverterMatrix[22] * this->imsData->rawSensorData[p7] +
-                 this->displacementSensorSettings->ConverterMatrix[23] * this->imsData->rawSensorData[p8]) /
+                _displacementSensorSettings->YPositionOffset;
+        _imsData->zPosition =
+                (_displacementSensorSettings->ConverterMatrix[16] * _imsData->rawSensorData[p1] +
+                 _displacementSensorSettings->ConverterMatrix[17] * _imsData->rawSensorData[p2] +
+                 _displacementSensorSettings->ConverterMatrix[18] * _imsData->rawSensorData[p3] +
+                 _displacementSensorSettings->ConverterMatrix[19] * _imsData->rawSensorData[p4] +
+                 _displacementSensorSettings->ConverterMatrix[20] * _imsData->rawSensorData[p5] +
+                 _displacementSensorSettings->ConverterMatrix[21] * _imsData->rawSensorData[p6] +
+                 _displacementSensorSettings->ConverterMatrix[22] * _imsData->rawSensorData[p7] +
+                 _displacementSensorSettings->ConverterMatrix[23] * _imsData->rawSensorData[p8]) /
                         MILLIMETERS_PER_METER +
-                this->displacementSensorSettings->ZPositionOffset;
-        this->imsData->xRotation =
-                (this->displacementSensorSettings->ConverterMatrix[24] * this->imsData->rawSensorData[p1] +
-                 this->displacementSensorSettings->ConverterMatrix[25] * this->imsData->rawSensorData[p2] +
-                 this->displacementSensorSettings->ConverterMatrix[26] * this->imsData->rawSensorData[p3] +
-                 this->displacementSensorSettings->ConverterMatrix[27] * this->imsData->rawSensorData[p4] +
-                 this->displacementSensorSettings->ConverterMatrix[28] * this->imsData->rawSensorData[p5] +
-                 this->displacementSensorSettings->ConverterMatrix[29] * this->imsData->rawSensorData[p6] +
-                 this->displacementSensorSettings->ConverterMatrix[30] * this->imsData->rawSensorData[p7] +
-                 this->displacementSensorSettings->ConverterMatrix[31] * this->imsData->rawSensorData[p8]) /
+                _displacementSensorSettings->ZPositionOffset;
+        _imsData->xRotation =
+                (_displacementSensorSettings->ConverterMatrix[24] * _imsData->rawSensorData[p1] +
+                 _displacementSensorSettings->ConverterMatrix[25] * _imsData->rawSensorData[p2] +
+                 _displacementSensorSettings->ConverterMatrix[26] * _imsData->rawSensorData[p3] +
+                 _displacementSensorSettings->ConverterMatrix[27] * _imsData->rawSensorData[p4] +
+                 _displacementSensorSettings->ConverterMatrix[28] * _imsData->rawSensorData[p5] +
+                 _displacementSensorSettings->ConverterMatrix[29] * _imsData->rawSensorData[p6] +
+                 _displacementSensorSettings->ConverterMatrix[30] * _imsData->rawSensorData[p7] +
+                 _displacementSensorSettings->ConverterMatrix[31] * _imsData->rawSensorData[p8]) /
                         MILLIMETERS_PER_METER +
-                this->displacementSensorSettings->XRotationOffset;
-        this->imsData->yRotation =
-                (this->displacementSensorSettings->ConverterMatrix[32] * this->imsData->rawSensorData[p1] +
-                 this->displacementSensorSettings->ConverterMatrix[33] * this->imsData->rawSensorData[p2] +
-                 this->displacementSensorSettings->ConverterMatrix[34] * this->imsData->rawSensorData[p3] +
-                 this->displacementSensorSettings->ConverterMatrix[35] * this->imsData->rawSensorData[p4] +
-                 this->displacementSensorSettings->ConverterMatrix[36] * this->imsData->rawSensorData[p5] +
-                 this->displacementSensorSettings->ConverterMatrix[37] * this->imsData->rawSensorData[p6] +
-                 this->displacementSensorSettings->ConverterMatrix[38] * this->imsData->rawSensorData[p7] +
-                 this->displacementSensorSettings->ConverterMatrix[39] * this->imsData->rawSensorData[p8]) /
+                _displacementSensorSettings->XRotationOffset;
+        _imsData->yRotation =
+                (_displacementSensorSettings->ConverterMatrix[32] * _imsData->rawSensorData[p1] +
+                 _displacementSensorSettings->ConverterMatrix[33] * _imsData->rawSensorData[p2] +
+                 _displacementSensorSettings->ConverterMatrix[34] * _imsData->rawSensorData[p3] +
+                 _displacementSensorSettings->ConverterMatrix[35] * _imsData->rawSensorData[p4] +
+                 _displacementSensorSettings->ConverterMatrix[36] * _imsData->rawSensorData[p5] +
+                 _displacementSensorSettings->ConverterMatrix[37] * _imsData->rawSensorData[p6] +
+                 _displacementSensorSettings->ConverterMatrix[38] * _imsData->rawSensorData[p7] +
+                 _displacementSensorSettings->ConverterMatrix[39] * _imsData->rawSensorData[p8]) /
                         MILLIMETERS_PER_METER +
-                this->displacementSensorSettings->YRotationOffset;
-        this->imsData->zRotation =
-                (this->displacementSensorSettings->ConverterMatrix[40] * this->imsData->rawSensorData[p1] +
-                 this->displacementSensorSettings->ConverterMatrix[41] * this->imsData->rawSensorData[p2] +
-                 this->displacementSensorSettings->ConverterMatrix[42] * this->imsData->rawSensorData[p3] +
-                 this->displacementSensorSettings->ConverterMatrix[43] * this->imsData->rawSensorData[p4] +
-                 this->displacementSensorSettings->ConverterMatrix[44] * this->imsData->rawSensorData[p5] +
-                 this->displacementSensorSettings->ConverterMatrix[45] * this->imsData->rawSensorData[p6] +
-                 this->displacementSensorSettings->ConverterMatrix[46] * this->imsData->rawSensorData[p7] +
-                 this->displacementSensorSettings->ConverterMatrix[47] * this->imsData->rawSensorData[p8]) /
+                _displacementSensorSettings->YRotationOffset;
+        _imsData->zRotation =
+                (_displacementSensorSettings->ConverterMatrix[40] * _imsData->rawSensorData[p1] +
+                 _displacementSensorSettings->ConverterMatrix[41] * _imsData->rawSensorData[p2] +
+                 _displacementSensorSettings->ConverterMatrix[42] * _imsData->rawSensorData[p3] +
+                 _displacementSensorSettings->ConverterMatrix[43] * _imsData->rawSensorData[p4] +
+                 _displacementSensorSettings->ConverterMatrix[44] * _imsData->rawSensorData[p5] +
+                 _displacementSensorSettings->ConverterMatrix[45] * _imsData->rawSensorData[p6] +
+                 _displacementSensorSettings->ConverterMatrix[46] * _imsData->rawSensorData[p7] +
+                 _displacementSensorSettings->ConverterMatrix[47] * _imsData->rawSensorData[p8]) /
                         MILLIMETERS_PER_METER +
-                this->displacementSensorSettings->ZRotationOffset;
-        this->publisher->putIMSData();
-        if (!this->errorCleared &&
-            this->fpgaData->DisplacementSampleTimestamp > this->fpgaData->DisplacementErrorTimestamp) {
-            this->errorCleared = true;
-            this->displacementWarning->timestamp =
-                    Timestamp::fromFPGA(this->fpgaData->DisplacementSampleTimestamp);
-            this->displacementWarning->unknownProblem = false;
-            this->displacementWarning->invalidResponse = false;
-            this->displacementWarning->responseTimeout = false;
-            this->displacementWarning->sensorReportsInvalidCommand = false;
-            this->displacementWarning->sensorReportsCommunicationTimeoutError = false;
-            this->displacementWarning->sensorReportsDataLengthError = false;
-            this->displacementWarning->sensorReportsNumberOfParametersError = false;
-            this->displacementWarning->sensorReportsParameterError = false;
-            this->displacementWarning->sensorReportsCommunicationError = false;
-            this->displacementWarning->sensorReportsIDNumberError = false;
-            this->displacementWarning->sensorReportsExpansionLineError = false;
-            this->displacementWarning->sensorReportsWriteControlError = false;
-            this->safetyController->displacementNotifyUnknownProblem(
-                    this->displacementWarning->unknownProblem);
-            this->safetyController->displacementNotifyInvalidResponse(
-                    this->displacementWarning->invalidResponse);
-            this->safetyController->displacementNotifyResponseTimeoutError(
-                    this->displacementWarning->responseTimeout);
-            this->safetyController->displacementNotifySensorReportsInvalidCommand(
-                    this->displacementWarning->sensorReportsInvalidCommand);
-            this->safetyController->displacementNotifySensorReportsCommunicationTimeoutError(
-                    this->displacementWarning->sensorReportsCommunicationTimeoutError);
-            this->safetyController->displacementNotifySensorReportsDataLengthError(
-                    this->displacementWarning->sensorReportsDataLengthError);
-            this->safetyController->displacementNotifySensorReportsNumberOfParametersError(
-                    this->displacementWarning->sensorReportsNumberOfParametersError);
-            this->safetyController->displacementNotifySensorReportsParameterError(
-                    this->displacementWarning->sensorReportsParameterError);
-            this->safetyController->displacementNotifySensorReportsCommunicationError(
-                    this->displacementWarning->sensorReportsCommunicationError);
-            this->safetyController->displacementNotifySensorReportsIDNumberError(
-                    this->displacementWarning->sensorReportsIDNumberError);
-            this->safetyController->displacementNotifySensorReportsExpansionLineError(
-                    this->displacementWarning->sensorReportsExpansionLineError);
-            this->safetyController->displacementNotifySensorReportsWriteControlError(
-                    this->displacementWarning->sensorReportsWriteControlError);
-            this->publisher->tryLogDisplacementSensorWarning();
+                _displacementSensorSettings->ZRotationOffset;
+        _publisher->putIMSData();
+        if (!_errorCleared &&
+            _fpgaData->DisplacementSampleTimestamp > _fpgaData->DisplacementErrorTimestamp) {
+            _errorCleared = true;
+            _displacementWarning->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementSampleTimestamp);
+            _displacementWarning->unknownProblem = false;
+            _displacementWarning->invalidResponse = false;
+            _displacementWarning->responseTimeout = false;
+            _displacementWarning->sensorReportsInvalidCommand = false;
+            _displacementWarning->sensorReportsCommunicationTimeoutError = false;
+            _displacementWarning->sensorReportsDataLengthError = false;
+            _displacementWarning->sensorReportsNumberOfParametersError = false;
+            _displacementWarning->sensorReportsParameterError = false;
+            _displacementWarning->sensorReportsCommunicationError = false;
+            _displacementWarning->sensorReportsIDNumberError = false;
+            _displacementWarning->sensorReportsExpansionLineError = false;
+            _displacementWarning->sensorReportsWriteControlError = false;
+            _safetyController->displacementNotifyUnknownProblem(_displacementWarning->unknownProblem);
+            _safetyController->displacementNotifyInvalidResponse(_displacementWarning->invalidResponse);
+            _safetyController->displacementNotifyResponseTimeoutError(_displacementWarning->responseTimeout);
+            _safetyController->displacementNotifySensorReportsInvalidCommand(
+                    _displacementWarning->sensorReportsInvalidCommand);
+            _safetyController->displacementNotifySensorReportsCommunicationTimeoutError(
+                    _displacementWarning->sensorReportsCommunicationTimeoutError);
+            _safetyController->displacementNotifySensorReportsDataLengthError(
+                    _displacementWarning->sensorReportsDataLengthError);
+            _safetyController->displacementNotifySensorReportsNumberOfParametersError(
+                    _displacementWarning->sensorReportsNumberOfParametersError);
+            _safetyController->displacementNotifySensorReportsParameterError(
+                    _displacementWarning->sensorReportsParameterError);
+            _safetyController->displacementNotifySensorReportsCommunicationError(
+                    _displacementWarning->sensorReportsCommunicationError);
+            _safetyController->displacementNotifySensorReportsIDNumberError(
+                    _displacementWarning->sensorReportsIDNumberError);
+            _safetyController->displacementNotifySensorReportsExpansionLineError(
+                    _displacementWarning->sensorReportsExpansionLineError);
+            _safetyController->displacementNotifySensorReportsWriteControlError(
+                    _displacementWarning->sensorReportsWriteControlError);
+            _publisher->tryLogDisplacementSensorWarning();
         }
     }
 }

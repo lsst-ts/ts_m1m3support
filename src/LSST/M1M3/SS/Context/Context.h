@@ -86,13 +86,6 @@ class ModbusTransmitCommand;
  * based functionality.
  */
 class Context {
-private:
-    StaticStateFactory* stateFactory;
-    Model* model;
-    States::Type currentState;
-
-    void updateCurrentStateIfRequired(States::Type potentialNewState);
-
 public:
     Context(StaticStateFactory* stateFactory, Model* model);
 
@@ -142,6 +135,13 @@ public:
     void resetPID(ResetPIDCommand* command);
     void programILC(ProgramILCCommand* command);
     void modbusTransmit(ModbusTransmitCommand* command);
+
+private:
+    StaticStateFactory* _stateFactory;
+    Model* _model;
+    States::Type _currentState;
+
+    void _updateCurrentStateIfRequired(States::Type potentialNewState);
 };
 
 } /* namespace SS */

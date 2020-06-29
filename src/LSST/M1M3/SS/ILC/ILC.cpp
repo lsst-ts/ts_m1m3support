@@ -57,65 +57,64 @@ ILC::ILC(M1M3SSPublisher* publisher, PositionController* positionController,
          HardpointActuatorSettings* hardpointActuatorSettings,
          HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
          SafetyController* safetyController)
-        : subnetData(forceActuatorApplicationSettings, forceActuatorSettings,
-                     hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
-          ilcMessageFactory(ilcApplicationSettings),
-          responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &this->subnetData,
-                         safetyController),
-          busListSetADCChannelOffsetAndSensitivity(&this->subnetData, &this->ilcMessageFactory,
-                                                   publisher->getEventForceActuatorInfo(),
-                                                   publisher->getEventHardpointActuatorInfo()),
-          busListSetADCScanRate(&this->subnetData, &this->ilcMessageFactory,
-                                publisher->getEventForceActuatorInfo(),
-                                publisher->getEventHardpointActuatorInfo()),
-          busListSetBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory,
-                                       publisher->getEventForceActuatorInfo()),
-          busListReset(&this->subnetData, &this->ilcMessageFactory),
-          busListReportServerID(&this->subnetData, &this->ilcMessageFactory),
-          busListReportServerStatus(&this->subnetData, &this->ilcMessageFactory),
-          busListReportADCScanRate(&this->subnetData, &this->ilcMessageFactory),
-          busListReadCalibration(&this->subnetData, &this->ilcMessageFactory),
-          busListReadBoostValveDCAGains(&this->subnetData, &this->ilcMessageFactory),
-          busListReportDCAID(&this->subnetData, &this->ilcMessageFactory),
-          busListReportDCAStatus(&this->subnetData, &this->ilcMessageFactory),
-          busListChangeILCModeDisabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Disabled,
+        : _subnetData(forceActuatorApplicationSettings, forceActuatorSettings,
+                      hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
+          _ilcMessageFactory(ilcApplicationSettings),
+          _responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &_subnetData,
+                          safetyController),
+          _busListSetADCChannelOffsetAndSensitivity(&_subnetData, &_ilcMessageFactory,
+                                                    publisher->getEventForceActuatorInfo(),
+                                                    publisher->getEventHardpointActuatorInfo()),
+          _busListSetADCScanRate(&_subnetData, &_ilcMessageFactory, publisher->getEventForceActuatorInfo(),
+                                 publisher->getEventHardpointActuatorInfo()),
+          _busListSetBoostValveDCAGains(&_subnetData, &_ilcMessageFactory,
+                                        publisher->getEventForceActuatorInfo()),
+          _busListReset(&_subnetData, &_ilcMessageFactory),
+          _busListReportServerID(&_subnetData, &_ilcMessageFactory),
+          _busListReportServerStatus(&_subnetData, &_ilcMessageFactory),
+          _busListReportADCScanRate(&_subnetData, &_ilcMessageFactory),
+          _busListReadCalibration(&_subnetData, &_ilcMessageFactory),
+          _busListReadBoostValveDCAGains(&_subnetData, &_ilcMessageFactory),
+          _busListReportDCAID(&_subnetData, &_ilcMessageFactory),
+          _busListReportDCAStatus(&_subnetData, &_ilcMessageFactory),
+          _busListChangeILCModeDisabled(&_subnetData, &_ilcMessageFactory, ILCModes::Disabled,
+                                        ILCModes::Enabled),
+          _busListChangeILCModeEnabled(&_subnetData, &_ilcMessageFactory, ILCModes::Enabled,
                                        ILCModes::Enabled),
-          busListChangeILCModeEnabled(&this->subnetData, &this->ilcMessageFactory, ILCModes::Enabled,
-                                      ILCModes::Enabled),
-          busListChangeILCModeStandby(&this->subnetData, &this->ilcMessageFactory, ILCModes::Standby,
-                                      ILCModes::Standby),
-          busListChangeILCModeClearFaults(&this->subnetData, &this->ilcMessageFactory, ILCModes::ClearFaults,
-                                          ILCModes::ClearFaults),
-          busListFreezeSensor(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData()),
-          busListRaised(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(),
-                        publisher->getForceActuatorData(), publisher->getHardpointActuatorData(),
-                        publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
-          busListActive(&this->subnetData, &this->ilcMessageFactory, publisher->getOuterLoopData(),
-                        publisher->getForceActuatorData(), publisher->getHardpointActuatorData(),
-                        publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
-          firmwareUpdate(&this->subnetData) {
+          _busListChangeILCModeStandby(&_subnetData, &_ilcMessageFactory, ILCModes::Standby,
+                                       ILCModes::Standby),
+          _busListChangeILCModeClearFaults(&_subnetData, &_ilcMessageFactory, ILCModes::ClearFaults,
+                                           ILCModes::ClearFaults),
+          _busListFreezeSensor(&_subnetData, &_ilcMessageFactory, publisher->getOuterLoopData()),
+          _busListRaised(&_subnetData, &_ilcMessageFactory, publisher->getOuterLoopData(),
+                         publisher->getForceActuatorData(), publisher->getHardpointActuatorData(),
+                         publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
+          _busListActive(&_subnetData, &_ilcMessageFactory, publisher->getOuterLoopData(),
+                         publisher->getForceActuatorData(), publisher->getHardpointActuatorData(),
+                         publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
+          _firmwareUpdate(&_subnetData) {
     spdlog::debug("ILC: ILC()");
-    this->publisher = publisher;
-    this->safetyController = safetyController;
-    this->hardpointActuatorSettings = hardpointActuatorSettings;
-    this->hardpointActuatorData = this->publisher->getHardpointActuatorData();
-    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    this->forceActuatorSettings = forceActuatorSettings;
-    this->forceActuatorData = this->publisher->getForceActuatorData();
-    this->hardpointActuatorInfo = this->publisher->getEventHardpointActuatorInfo();
-    this->controlListToggle = 0;
-    this->positionController = positionController;
+    _publisher = publisher;
+    _safetyController = safetyController;
+    _hardpointActuatorSettings = hardpointActuatorSettings;
+    _hardpointActuatorData = _publisher->getHardpointActuatorData();
+    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    _forceActuatorSettings = forceActuatorSettings;
+    _forceActuatorData = _publisher->getForceActuatorData();
+    _hardpointActuatorInfo = _publisher->getEventHardpointActuatorInfo();
+    _controlListToggle = 0;
+    _positionController = positionController;
 }
 
 ILC::~ILC() {}
 
 void ILC::programILC(int32_t actuatorId, std::string filePath) {
     spdlog::debug("ILC: programILC({},{})", actuatorId, filePath);
-    this->firmwareUpdate.Program(actuatorId, filePath);
+    _firmwareUpdate.Program(actuatorId, filePath);
 }
 
 void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data) {
-    ILCMap map = this->subnetData.getMap(actuatorId);
+    ILCMap map = _subnetData.getMap(actuatorId);
     int subnet = map.Subnet;
     int address = map.Address;
     if (subnet == 255 || address == 255) {
@@ -125,7 +124,7 @@ void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataL
     ModbusBuffer buffer;
     buffer.setIndex(0);
     buffer.setLength(0);
-    buffer.writeSubnet((uint8_t)this->subnetToTxAddress(subnet));
+    buffer.writeSubnet((uint8_t)_subnetToTxAddress(subnet));
     buffer.writeLength(0);
     buffer.writeSoftwareTrigger();
 
@@ -142,114 +141,114 @@ void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataL
     buffer.set(1, buffer.getIndex() - 2);
     buffer.setLength(buffer.getIndex());
 
-    this->responseParser.grabNextResponse();
+    _responseParser.grabNextResponse();
     IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
-    this->waitForSubnet(subnet, 5000);
-    this->read(subnet);
+    waitForSubnet(subnet, 5000);
+    read(subnet);
 }
 
 void ILC::writeCalibrationDataBuffer() {
     spdlog::debug("ILC: writeCalibrationDataBuffer()");
-    this->writeBusList(&this->busListSetADCChannelOffsetAndSensitivity);
+    _writeBusList(&_busListSetADCChannelOffsetAndSensitivity);
 }
 
 void ILC::writeSetADCScanRateBuffer() {
     spdlog::debug("ILC: writeSetADCScanRateBuffer()");
-    this->writeBusList(&this->busListSetADCScanRate);
+    _writeBusList(&_busListSetADCScanRate);
 }
 
 void ILC::writeSetBoostValveDCAGainBuffer() {
     spdlog::debug("ILC: writeSetBoostValveDCAGainBuffer()");
-    this->writeBusList(&this->busListSetBoostValveDCAGains);
+    _writeBusList(&_busListSetBoostValveDCAGains);
 }
 
 void ILC::writeResetBuffer() {
     spdlog::debug("ILC: writeResetBuffer()");
-    this->writeBusList(&this->busListReset);
+    _writeBusList(&_busListReset);
 }
 
 void ILC::writeReportServerIDBuffer() {
     spdlog::debug("ILC: writeReportServerIDBuffer()");
-    this->writeBusList(&this->busListReportServerID);
+    _writeBusList(&_busListReportServerID);
 }
 
 void ILC::writeReportServerStatusBuffer() {
     spdlog::debug("ILC: writeReportServerStatusBuffer()");
-    this->writeBusList(&this->busListReportServerStatus);
+    _writeBusList(&_busListReportServerStatus);
 }
 
 void ILC::writeReportADCScanRateBuffer() {
     spdlog::debug("ILC: writeReportADCScanRateBuffer()");
-    this->writeBusList(&this->busListReportADCScanRate);
+    _writeBusList(&_busListReportADCScanRate);
 }
 
 void ILC::writeReadCalibrationDataBuffer() {
     spdlog::debug("ILC: writeReadCalibrationDataBuffer()");
-    this->writeBusList(&this->busListReadCalibration);
+    _writeBusList(&_busListReadCalibration);
 }
 
 void ILC::writeReadBoostValveDCAGainBuffer() {
     spdlog::debug("ILC: writeReadBoostValveDCAGainBuffer()");
-    this->writeBusList(&this->busListReadBoostValveDCAGains);
+    _writeBusList(&_busListReadBoostValveDCAGains);
 }
 
 void ILC::writeReportDCAIDBuffer() {
     spdlog::debug("ILC: writeReportDCAIDBuffer()");
-    this->writeBusList(&this->busListReportDCAID);
+    _writeBusList(&_busListReportDCAID);
 }
 
 void ILC::writeReportDCAStatusBuffer() {
     spdlog::debug("ILC: writeReportDCAStatusBuffer()");
-    this->writeBusList(&this->busListReportDCAStatus);
+    _writeBusList(&_busListReportDCAStatus);
 }
 
 void ILC::writeSetModeDisableBuffer() {
     spdlog::debug("ILC: writeSetModeDisableBuffer()");
-    this->writeBusList(&this->busListChangeILCModeDisabled);
+    _writeBusList(&_busListChangeILCModeDisabled);
 }
 
 void ILC::writeSetModeEnableBuffer() {
     spdlog::debug("ILC: writeSetModeEnableBuffer()");
-    this->writeBusList(&this->busListChangeILCModeEnabled);
+    _writeBusList(&_busListChangeILCModeEnabled);
 }
 
 void ILC::writeSetModeStandbyBuffer() {
     spdlog::debug("ILC: writeSetModeStandbyBuffer()");
-    this->writeBusList(&this->busListChangeILCModeStandby);
+    _writeBusList(&_busListChangeILCModeStandby);
 }
 
 void ILC::writeSetModeClearFaultsBuffer() {
     spdlog::debug("ILC: writeSetModeClearFaultsBuffer()");
-    this->writeBusList(&this->busListChangeILCModeClearFaults);
+    _writeBusList(&_busListChangeILCModeClearFaults);
 }
 
 void ILC::writeFreezeSensorListBuffer() {
     spdlog::debug("ILC: writeFreezeSensorListBuffer()");
-    this->busListFreezeSensor.update();
-    this->writeBusList(&this->busListFreezeSensor);
+    _busListFreezeSensor.update();
+    _writeBusList(&_busListFreezeSensor);
 }
 
 void ILC::writeRaisedListBuffer() {
     spdlog::debug("ILC: writeRaisedListBuffer()");
-    this->positionController->updateSteps();
-    this->busListRaised.update();
-    this->writeBusList(&this->busListRaised);
+    _positionController->updateSteps();
+    _busListRaised.update();
+    _writeBusList(&_busListRaised);
 }
 
 void ILC::writeActiveListBuffer() {
     spdlog::debug("ILC: writeActiveListBuffer()");
-    this->busListActive.update();
-    this->writeBusList(&this->busListActive);
+    _busListActive.update();
+    _writeBusList(&_busListActive);
 }
 
 void ILC::writeControlListBuffer() {
     spdlog::debug("ILC: writeControlListBuffer()");
-    if (this->controlListToggle == 0) {
-        this->writeRaisedListBuffer();
+    if (_controlListToggle == 0) {
+        writeRaisedListBuffer();
     } else {
-        this->writeActiveListBuffer();
+        writeActiveListBuffer();
     }
-    this->controlListToggle = RoundRobin::Inc(this->controlListToggle, 3);
+    _controlListToggle = RoundRobin::Inc(_controlListToggle, 3);
 }
 
 void ILC::triggerModbus() {
@@ -265,207 +264,205 @@ void ILC::waitForSubnet(int32_t subnet, int32_t timeout) {
 
 void ILC::waitForAllSubnets(int32_t timeout) {
     spdlog::debug("ILC: waitForAllSubnets({:d})", timeout);
-    this->waitForSubnet(1, timeout);
-    this->waitForSubnet(2, timeout);
-    this->waitForSubnet(3, timeout);
-    this->waitForSubnet(4, timeout);
-    this->waitForSubnet(5, timeout);
+    waitForSubnet(1, timeout);
+    waitForSubnet(2, timeout);
+    waitForSubnet(3, timeout);
+    waitForSubnet(4, timeout);
+    waitForSubnet(5, timeout);
 }
 
 void ILC::read(uint8_t subnet) {
     spdlog::debug("ILC: read({:d})", subnet);
-    this->u16Buffer[0] = this->subnetToRxAddress(subnet);
-    IFPGA::get().writeRequestFIFO(this->u16Buffer, 1, 0);
-    this->rxBuffer.setIndex(0);
-    IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
-    uint16_t reportedLength = this->rxBuffer.readLength();
+    _u16Buffer[0] = _subnetToRxAddress(subnet);
+    IFPGA::get().writeRequestFIFO(_u16Buffer, 1, 0);
+    _rxBuffer.setIndex(0);
+    IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
+    uint16_t reportedLength = _rxBuffer.readLength();
     if (reportedLength == 0) {
         spdlog::error("ILC: Timeout on response");
         return;
     }
 
-    rxBuffer.setIndex(0);
-    IFPGA::get().readU16ResponseFIFO(rxBuffer.getBuffer(), reportedLength, 10);
-    rxBuffer.setLength(reportedLength);
-    responseParser.parse(&rxBuffer, subnet);
+    _rxBuffer.setIndex(0);
+    IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), reportedLength, 10);
+    _rxBuffer.setLength(reportedLength);
+    _responseParser.parse(&_rxBuffer, subnet);
 }
 
 void ILC::readAll() {
     spdlog::debug("ILC: readAll()");
-    this->read(1);
-    this->read(2);
-    this->read(3);
-    this->read(4);
-    this->read(5);
+    read(1);
+    read(2);
+    read(3);
+    read(4);
+    read(5);
 }
 
 void ILC::flush(uint8_t subnet) {
     spdlog::debug("ILC: flush({:d})", (int32_t)subnet);
-    this->u16Buffer[0] = this->subnetToRxAddress(subnet);
-    IFPGA::get().writeRequestFIFO(this->u16Buffer, 1, 0);
-    this->rxBuffer.setIndex(0);
-    IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), 1, 10);
-    uint16_t reportedLength = this->rxBuffer.readLength();
+    _u16Buffer[0] = _subnetToRxAddress(subnet);
+    IFPGA::get().writeRequestFIFO(_u16Buffer, 1, 0);
+    _rxBuffer.setIndex(0);
+    IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
+    uint16_t reportedLength = _rxBuffer.readLength();
     if (reportedLength > 0) {
-        this->rxBuffer.setIndex(0);
-        IFPGA::get().readU16ResponseFIFO(this->rxBuffer.getBuffer(), reportedLength, 10);
-        this->rxBuffer.setLength(reportedLength);
+        _rxBuffer.setIndex(0);
+        IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), reportedLength, 10);
+        _rxBuffer.setLength(reportedLength);
     }
 }
 
 void ILC::flushAll() {
     spdlog::debug("ILC: flushAll()");
-    this->flush(1);
-    this->flush(2);
-    this->flush(3);
-    this->flush(4);
-    this->flush(5);
+    flush(1);
+    flush(2);
+    flush(3);
+    flush(4);
+    flush(5);
 }
 
 void ILC::calculateHPPostion() {
     double displacement[] = {
-            ((this->hardpointActuatorData->encoder[0] - this->hardpointActuatorInfo->referencePosition[0]) *
-             this->hardpointActuatorSettings->MicrometersPerEncoder) /
+            ((_hardpointActuatorData->encoder[0] - _hardpointActuatorInfo->referencePosition[0]) *
+             _hardpointActuatorSettings->MicrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
-            ((this->hardpointActuatorData->encoder[1] - this->hardpointActuatorInfo->referencePosition[1]) *
-             this->hardpointActuatorSettings->MicrometersPerEncoder) /
+            ((_hardpointActuatorData->encoder[1] - _hardpointActuatorInfo->referencePosition[1]) *
+             _hardpointActuatorSettings->MicrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
-            ((this->hardpointActuatorData->encoder[2] - this->hardpointActuatorInfo->referencePosition[2]) *
-             this->hardpointActuatorSettings->MicrometersPerEncoder) /
+            ((_hardpointActuatorData->encoder[2] - _hardpointActuatorInfo->referencePosition[2]) *
+             _hardpointActuatorSettings->MicrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
-            ((this->hardpointActuatorData->encoder[3] - this->hardpointActuatorInfo->referencePosition[3]) *
-             this->hardpointActuatorSettings->MicrometersPerEncoder) /
+            ((_hardpointActuatorData->encoder[3] - _hardpointActuatorInfo->referencePosition[3]) *
+             _hardpointActuatorSettings->MicrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
-            ((this->hardpointActuatorData->encoder[4] - this->hardpointActuatorInfo->referencePosition[4]) *
-             this->hardpointActuatorSettings->MicrometersPerEncoder) /
+            ((_hardpointActuatorData->encoder[4] - _hardpointActuatorInfo->referencePosition[4]) *
+             _hardpointActuatorSettings->MicrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
-            ((this->hardpointActuatorData->encoder[5] - this->hardpointActuatorInfo->referencePosition[5]) *
-             this->hardpointActuatorSettings->MicrometersPerEncoder) /
+            ((_hardpointActuatorData->encoder[5] - _hardpointActuatorInfo->referencePosition[5]) *
+             _hardpointActuatorSettings->MicrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
     };
-    this->hardpointActuatorData->xPosition =
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * displacement[2] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * displacement[3] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[2] * displacement[4] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[3] * displacement[5] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[4] * displacement[0] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * displacement[1];
-    this->hardpointActuatorData->yPosition =
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * displacement[2] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[7] * displacement[3] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[8] * displacement[4] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[9] * displacement[5] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[10] * displacement[0] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * displacement[1];
-    this->hardpointActuatorData->zPosition =
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * displacement[2] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[13] * displacement[3] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[14] * displacement[4] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[15] * displacement[5] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[16] * displacement[0] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * displacement[1];
-    this->hardpointActuatorData->xRotation =
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * displacement[2] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[19] * displacement[3] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[20] * displacement[4] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[21] * displacement[5] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[22] * displacement[0] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * displacement[1];
-    this->hardpointActuatorData->yRotation =
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * displacement[2] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[25] * displacement[3] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[26] * displacement[4] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[27] * displacement[5] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[28] * displacement[0] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * displacement[1];
-    this->hardpointActuatorData->zRotation =
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * displacement[2] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[31] * displacement[3] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[32] * displacement[4] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * displacement[5] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * displacement[0] +
-            this->hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * displacement[1];
+    _hardpointActuatorData->xPosition =
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[0] * displacement[2] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[1] * displacement[3] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[2] * displacement[4] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[3] * displacement[5] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[4] * displacement[0] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[5] * displacement[1];
+    _hardpointActuatorData->yPosition =
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[6] * displacement[2] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[7] * displacement[3] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[8] * displacement[4] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[9] * displacement[5] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[10] * displacement[0] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[11] * displacement[1];
+    _hardpointActuatorData->zPosition =
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[12] * displacement[2] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[13] * displacement[3] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[14] * displacement[4] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[15] * displacement[5] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[16] * displacement[0] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[17] * displacement[1];
+    _hardpointActuatorData->xRotation =
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[18] * displacement[2] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[19] * displacement[3] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[20] * displacement[4] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[21] * displacement[5] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[22] * displacement[0] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[23] * displacement[1];
+    _hardpointActuatorData->yRotation =
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[24] * displacement[2] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[25] * displacement[3] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[26] * displacement[4] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[27] * displacement[5] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[28] * displacement[0] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[29] * displacement[1];
+    _hardpointActuatorData->zRotation =
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[30] * displacement[2] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[31] * displacement[3] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[32] * displacement[4] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[33] * displacement[5] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[34] * displacement[0] +
+            _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * displacement[1];
 }
 
 void ILC::calculateHPMirrorForces() {
-    std::vector<float> m = this->forceActuatorSettings->HardpointForceMomentTable;
-    float* force = this->hardpointActuatorData->measuredForce;
-    this->hardpointActuatorData->fx = m[0] * force[0] + m[1] * force[1] + m[2] * force[2] + m[3] * force[3] +
-                                      m[4] * force[4] + m[5] * force[5];
-    this->hardpointActuatorData->fy = m[6] * force[0] + m[7] * force[1] + m[8] * force[2] + m[9] * force[3] +
-                                      m[10] * force[4] + m[11] * force[5];
-    this->hardpointActuatorData->fz = m[12] * force[0] + m[13] * force[1] + m[14] * force[2] +
-                                      m[15] * force[3] + m[16] * force[4] + m[17] * force[5];
-    this->hardpointActuatorData->mx = m[18] * force[0] + m[19] * force[1] + m[20] * force[2] +
-                                      m[21] * force[3] + m[22] * force[4] + m[23] * force[5];
-    this->hardpointActuatorData->my = m[24] * force[0] + m[25] * force[1] + m[26] * force[2] +
-                                      m[27] * force[3] + m[28] * force[4] + m[29] * force[5];
-    this->hardpointActuatorData->mz = m[30] * force[0] + m[31] * force[1] + m[32] * force[2] +
-                                      m[33] * force[3] + m[34] * force[4] + m[35] * force[5];
-    this->hardpointActuatorData->forceMagnitude =
-            sqrt(this->hardpointActuatorData->fx * this->hardpointActuatorData->fx +
-                 this->hardpointActuatorData->fy * this->hardpointActuatorData->fy +
-                 this->hardpointActuatorData->fz * this->hardpointActuatorData->fz);
+    std::vector<float> m = _forceActuatorSettings->HardpointForceMomentTable;
+    float* force = _hardpointActuatorData->measuredForce;
+    _hardpointActuatorData->fx = m[0] * force[0] + m[1] * force[1] + m[2] * force[2] + m[3] * force[3] +
+                                 m[4] * force[4] + m[5] * force[5];
+    _hardpointActuatorData->fy = m[6] * force[0] + m[7] * force[1] + m[8] * force[2] + m[9] * force[3] +
+                                 m[10] * force[4] + m[11] * force[5];
+    _hardpointActuatorData->fz = m[12] * force[0] + m[13] * force[1] + m[14] * force[2] + m[15] * force[3] +
+                                 m[16] * force[4] + m[17] * force[5];
+    _hardpointActuatorData->mx = m[18] * force[0] + m[19] * force[1] + m[20] * force[2] + m[21] * force[3] +
+                                 m[22] * force[4] + m[23] * force[5];
+    _hardpointActuatorData->my = m[24] * force[0] + m[25] * force[1] + m[26] * force[2] + m[27] * force[3] +
+                                 m[28] * force[4] + m[29] * force[5];
+    _hardpointActuatorData->mz = m[30] * force[0] + m[31] * force[1] + m[32] * force[2] + m[33] * force[3] +
+                                 m[34] * force[4] + m[35] * force[5];
+    _hardpointActuatorData->forceMagnitude = sqrt(_hardpointActuatorData->fx * _hardpointActuatorData->fx +
+                                                  _hardpointActuatorData->fy * _hardpointActuatorData->fy +
+                                                  _hardpointActuatorData->fz * _hardpointActuatorData->fz);
 }
 
 void ILC::calculateFAMirrorForces() {
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            this->forceActuatorApplicationSettings, this->forceActuatorSettings,
-            this->forceActuatorData->xForce, this->forceActuatorData->yForce,
-            this->forceActuatorData->zForce);
-    this->forceActuatorData->fx = fm.Fx;
-    this->forceActuatorData->fy = fm.Fy;
-    this->forceActuatorData->fz = fm.Fz;
-    this->forceActuatorData->mx = fm.Mx;
-    this->forceActuatorData->my = fm.My;
-    this->forceActuatorData->mz = fm.Mz;
-    this->forceActuatorData->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _forceActuatorData->xForce,
+            _forceActuatorData->yForce, _forceActuatorData->zForce);
+    _forceActuatorData->fx = fm.Fx;
+    _forceActuatorData->fy = fm.Fy;
+    _forceActuatorData->fz = fm.Fz;
+    _forceActuatorData->mx = fm.Mx;
+    _forceActuatorData->my = fm.My;
+    _forceActuatorData->mz = fm.Mz;
+    _forceActuatorData->forceMagnitude = fm.ForceMagnitude;
 }
 
 void ILC::clearResponses() {
     spdlog::debug("ILC: clearResponses()");
-    this->responseParser.clearResponses();
+    _responseParser.clearResponses();
 }
 
 void ILC::verifyResponses() {
     spdlog::debug("ILC: verifyResponses()");
-    this->responseParser.verifyResponses();
+    _responseParser.verifyResponses();
 }
 
 void ILC::publishForceActuatorInfo() {
-    this->publisher->getEventForceActuatorInfo()->timestamp = this->publisher->getTimestamp();
-    this->publisher->logForceActuatorInfo();
+    _publisher->getEventForceActuatorInfo()->timestamp = _publisher->getTimestamp();
+    _publisher->logForceActuatorInfo();
 }
 
 void ILC::publishForceActuatorStatus() {
-    // this->publisher->putForceActuatorStatus();
+    // _publisher->putForceActuatorStatus();
 }
 
-void ILC::publishForceActuatorData() { this->publisher->putForceActuatorData(); }
+void ILC::publishForceActuatorData() { _publisher->putForceActuatorData(); }
 
 void ILC::publishHardpointActuatorInfo() {
-    this->publisher->getEventHardpointActuatorInfo()->timestamp = this->publisher->getTimestamp();
-    this->publisher->logHardpointActuatorInfo();
+    _publisher->getEventHardpointActuatorInfo()->timestamp = _publisher->getTimestamp();
+    _publisher->logHardpointActuatorInfo();
 }
 
 void ILC::publishHardpointStatus() {
-    // this->publisher->putHardpointStatus();
+    // _publisher->putHardpointStatus();
 }
 
-void ILC::publishHardpointData() { this->publisher->putHardpointActuatorData(); }
+void ILC::publishHardpointData() { _publisher->putHardpointActuatorData(); }
 
 void ILC::publishHardpointMonitorInfo() {
-    this->publisher->getEventHardpointMonitorInfo()->timestamp = this->publisher->getTimestamp();
-    this->publisher->logHardpointMonitorInfo();
+    _publisher->getEventHardpointMonitorInfo()->timestamp = _publisher->getTimestamp();
+    _publisher->logHardpointMonitorInfo();
 }
 
 void ILC::publishHardpointMonitorStatus() {
-    // this->publisher->putHardpointMonitorStatus();
+    // _publisher->putHardpointMonitorStatus();
 }
 
-void ILC::publishHardpointMonitorData() { this->publisher->putHardpointMonitorData(); }
+void ILC::publishHardpointMonitorData() { _publisher->putHardpointMonitorData(); }
 
-uint8_t ILC::subnetToRxAddress(uint8_t subnet) {
+uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:
             return FPGAAddresses::ModbusSubnetARx;
@@ -482,7 +479,7 @@ uint8_t ILC::subnetToRxAddress(uint8_t subnet) {
     }
 }
 
-uint8_t ILC::subnetToTxAddress(uint8_t subnet) {
+uint8_t ILC::_subnetToTxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:
             return FPGAAddresses::ModbusSubnetATx;
@@ -499,28 +496,27 @@ uint8_t ILC::subnetToTxAddress(uint8_t subnet) {
     }
 }
 
-void ILC::writeBusList(IBusList* busList) {
+void ILC::_writeBusList(IBusList* busList) {
     IFPGA::get().writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
-    this->responseParser.incExpectedResponses(busList->getExpectedFAResponses(),
-                                              busList->getExpectedHPResponses(),
-                                              busList->getExpectedHMResponses());
+    _responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(),
+                                         busList->getExpectedHMResponses());
 }
 
-void ILC::updateHPSteps() {
+void ILC::_updateHPSteps() {
     for (int i = 0; i < 6; i++) {
-        if (this->hpSteps[i] != 0) {
-            if (this->hpSteps[i] > 100) {
-                this->hpSteps[i] -= 100;
-                this->hpStepCommand[i] = 100;
-            } else if (this->hpSteps[i] < -100) {
-                this->hpSteps[i] += 100;
-                this->hpStepCommand[i] = -100;
+        if (_hpSteps[i] != 0) {
+            if (_hpSteps[i] > 100) {
+                _hpSteps[i] -= 100;
+                _hpStepCommand[i] = 100;
+            } else if (_hpSteps[i] < -100) {
+                _hpSteps[i] += 100;
+                _hpStepCommand[i] = -100;
             } else {
-                this->hpStepCommand[i] = this->hpSteps[i];
-                this->hpSteps[i] = 0;
+                _hpStepCommand[i] = _hpSteps[i];
+                _hpSteps[i] = 0;
             }
         } else {
-            this->hpStepCommand[i] = 0;
+            _hpStepCommand[i] = 0;
         }
     }
 }

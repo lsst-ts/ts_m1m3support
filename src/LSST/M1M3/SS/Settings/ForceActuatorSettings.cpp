@@ -37,8 +37,7 @@ namespace SS {
 void ForceActuatorSettings::load(const std::string &filename) {
     pugi::xml_document doc;
     XMLDocLoad(filename.c_str(), doc);
-    this->loadDisabledActuators(
-            doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
+    _loadDisabledActuators(doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
     TableLoader::loadTable(
             1, 1, 3, &AccelerationXTable,
             doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
@@ -239,11 +238,10 @@ void ForceActuatorSettings::load(const std::string &filename) {
         ForceActuatorNeighbors neighbors;
         this->Neighbors.push_back(neighbors);
     }
-    this->loadNearNeighborZTable(
-            doc.select_node("//ForceActuatorSettings/ForceActuatorNearZNeighborsTablePath")
-                    .node()
-                    .child_value());
-    this->loadNeighborsTable(
+    _loadNearNeighborZTable(doc.select_node("//ForceActuatorSettings/ForceActuatorNearZNeighborsTablePath")
+                                    .node()
+                                    .child_value());
+    _loadNeighborsTable(
             doc.select_node("//ForceActuatorSettings/ForceActuatorNeighborsTablePath").node().child_value());
 
     this->UseInclinometer =
@@ -415,7 +413,7 @@ bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
     return false;
 }
 
-void ForceActuatorSettings::loadDisabledActuators(const std::string line) {
+void ForceActuatorSettings::_loadDisabledActuators(const std::string line) {
     typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
     tokenizer tok(line);
     tokenizer::iterator i = tok.begin();
@@ -428,7 +426,7 @@ void ForceActuatorSettings::loadDisabledActuators(const std::string line) {
     }
 }
 
-void ForceActuatorSettings::loadNearNeighborZTable(const std::string &filename) {
+void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
     std::string fullname = SettingReader::get().getFilePath(filename);
     std::ifstream inputStream(fullname.c_str());
@@ -461,7 +459,7 @@ void ForceActuatorSettings::loadNearNeighborZTable(const std::string &filename) 
     inputStream.close();
 }
 
-void ForceActuatorSettings::loadNeighborsTable(const std::string &filename) {
+void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
     std::string fullname = SettingReader::get().getFilePath(filename);
     std::ifstream inputStream(fullname.c_str());

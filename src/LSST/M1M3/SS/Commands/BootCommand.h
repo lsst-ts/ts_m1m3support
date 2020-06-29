@@ -36,13 +36,13 @@ namespace SS {
  * This is an internal command only and cannot be issued via SAL.
  */
 class BootCommand : public Command {
-private:
-    Context* context;
-
 public:
     BootCommand(Context* context);
 
     void execute();
+
+private:
+    Context* _context;
 };
 
 } /* namespace SS */

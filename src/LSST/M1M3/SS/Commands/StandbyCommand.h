@@ -38,10 +38,6 @@ namespace SS {
  * This is an external command and can be issued via SAL.
  */
 class StandbyCommand : public Command {
-private:
-    Context* context;
-    M1M3SSPublisher* publisher;
-
 public:
     StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_standbyC*);
 
@@ -49,6 +45,10 @@ public:
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

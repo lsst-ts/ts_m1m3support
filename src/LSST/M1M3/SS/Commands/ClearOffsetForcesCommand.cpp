@@ -31,23 +31,23 @@ namespace SS {
 
 ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher,
                                                    int32_t commandID, MTM1M3_command_clearOffsetForcesC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void ClearOffsetForcesCommand::execute() { this->context->clearOffsetForces(this); }
+void ClearOffsetForcesCommand::execute() { _context->clearOffsetForces(this); }
 
 void ClearOffsetForcesCommand::ackInProgress() {
-    this->publisher->ackCommandclearOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandclearOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ClearOffsetForcesCommand::ackComplete() {
-    this->publisher->ackCommandclearOffsetForces(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandclearOffsetForces(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ClearOffsetForcesCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandclearOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandclearOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

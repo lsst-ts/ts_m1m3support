@@ -36,7 +36,7 @@ SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetDa
                                                          MTM1M3_logevent_forceActuatorInfoC* forceInfo)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("SetBoostValveDCAGainBusList: SetBoostValveDCAGainBusList()");
-    this->forceInfo = forceInfo;
+    _forceInfo = forceInfo;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
@@ -45,8 +45,8 @@ SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetDa
             bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
             if (!disabled) {
                 this->ilcMessageFactory->setBoostValveDCAGains(
-                        &this->buffer, address, this->forceInfo->mezzaninePrimaryCylinderGain[dataIndex],
-                        this->forceInfo->mezzanineSecondaryCylinderGain[dataIndex]);
+                        &this->buffer, address, _forceInfo->mezzaninePrimaryCylinderGain[dataIndex],
+                        _forceInfo->mezzanineSecondaryCylinderGain[dataIndex]);
                 this->expectedFAResponses[dataIndex] = 1;
             }
         }
