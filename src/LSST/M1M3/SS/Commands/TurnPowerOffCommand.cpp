@@ -31,44 +31,42 @@ namespace SS {
 
 TurnPowerOffCommand::TurnPowerOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                          MTM1M3_command_turnPowerOffC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.turnPowerNetworkAOff = data->turnPowerNetworkAOff;
-    this->data.turnPowerNetworkBOff = data->turnPowerNetworkBOff;
-    this->data.turnPowerNetworkCOff = data->turnPowerNetworkCOff;
-    this->data.turnPowerNetworkDOff = data->turnPowerNetworkDOff;
-    this->data.turnAuxPowerNetworkAOff = data->turnAuxPowerNetworkAOff;
-    this->data.turnAuxPowerNetworkBOff = data->turnAuxPowerNetworkBOff;
-    this->data.turnAuxPowerNetworkCOff = data->turnAuxPowerNetworkCOff;
-    this->data.turnAuxPowerNetworkDOff = data->turnAuxPowerNetworkDOff;
+    _data.turnPowerNetworkAOff = data->turnPowerNetworkAOff;
+    _data.turnPowerNetworkBOff = data->turnPowerNetworkBOff;
+    _data.turnPowerNetworkCOff = data->turnPowerNetworkCOff;
+    _data.turnPowerNetworkDOff = data->turnPowerNetworkDOff;
+    _data.turnAuxPowerNetworkAOff = data->turnAuxPowerNetworkAOff;
+    _data.turnAuxPowerNetworkBOff = data->turnAuxPowerNetworkBOff;
+    _data.turnAuxPowerNetworkCOff = data->turnAuxPowerNetworkCOff;
+    _data.turnAuxPowerNetworkDOff = data->turnAuxPowerNetworkDOff;
 }
 
 bool TurnPowerOffCommand::validate() {
-    if (!(this->data.turnPowerNetworkAOff || this->data.turnPowerNetworkBOff ||
-          this->data.turnPowerNetworkCOff || this->data.turnPowerNetworkDOff ||
-          this->data.turnAuxPowerNetworkAOff || this->data.turnAuxPowerNetworkBOff ||
-          this->data.turnAuxPowerNetworkCOff || this->data.turnAuxPowerNetworkDOff)) {
-        this->publisher->logCommandRejectionWarning("TurnPowerOff", "At least one field is not TRUE.");
+    if (!(_data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff || _data.turnPowerNetworkCOff ||
+          _data.turnPowerNetworkDOff || _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
+          _data.turnAuxPowerNetworkCOff || _data.turnAuxPowerNetworkDOff)) {
+        _publisher->logCommandRejectionWarning("TurnPowerOff", "At least one field is not TRUE.");
     }
-    return this->data.turnPowerNetworkAOff || this->data.turnPowerNetworkBOff ||
-           this->data.turnPowerNetworkCOff || this->data.turnPowerNetworkDOff ||
-           this->data.turnAuxPowerNetworkAOff || this->data.turnAuxPowerNetworkBOff ||
-           this->data.turnAuxPowerNetworkCOff || this->data.turnAuxPowerNetworkDOff;
+    return _data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff || _data.turnPowerNetworkCOff ||
+           _data.turnPowerNetworkDOff || _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
+           _data.turnAuxPowerNetworkCOff || _data.turnAuxPowerNetworkDOff;
 }
 
-void TurnPowerOffCommand::execute() { this->context->turnPowerOff(this); }
+void TurnPowerOffCommand::execute() { _context->turnPowerOff(this); }
 
 void TurnPowerOffCommand::ackInProgress() {
-    this->publisher->ackCommandturnPowerOff(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandturnPowerOff(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnPowerOffCommand::ackComplete() {
-    this->publisher->ackCommandturnPowerOff(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandturnPowerOff(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnPowerOffCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandturnPowerOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandturnPowerOff(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

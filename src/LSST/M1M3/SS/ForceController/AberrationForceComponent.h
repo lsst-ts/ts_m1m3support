@@ -37,17 +37,6 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class AberrationForceComponent : public ForceComponent {
-private:
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    ForceActuatorSettings* forceActuatorSettings;
-
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-    MTM1M3_logevent_appliedAberrationForcesC* appliedAberrationForces;
-    MTM1M3_logevent_rejectedAberrationForcesC* rejectedAberrationForces;
-
 public:
     AberrationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
                              ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -59,6 +48,17 @@ public:
 protected:
     void postEnableDisableActions();
     void postUpdateActions();
+
+private:
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedAberrationForcesC* _appliedAberrationForces;
+    MTM1M3_logevent_rejectedAberrationForcesC* _rejectedAberrationForces;
 };
 
 } /* namespace SS */

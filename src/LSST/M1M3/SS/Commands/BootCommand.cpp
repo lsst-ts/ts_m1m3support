@@ -29,11 +29,11 @@ namespace M1M3 {
 namespace SS {
 
 BootCommand::BootCommand(Context* context) {
-    this->context = context;
+    _context = context;
     this->commandID = -1;
 }
 
-void BootCommand::execute() { this->context->boot(this); }
+void BootCommand::execute() { _context->boot(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

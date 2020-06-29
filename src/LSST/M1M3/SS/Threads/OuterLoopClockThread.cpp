@@ -37,27 +37,26 @@ namespace SS {
 
 OuterLoopClockThread::OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller,
                                            M1M3SSPublisher* publisher) {
-    this->commandFactory = commandFactory;
-    this->controller = controller;
-    this->publisher = publisher;
-    this->keepRunning = true;
-    pthread_mutex_init(&this->updateMutex, NULL);
+    _commandFactory = commandFactory;
+    _controller = controller;
+    _publisher = publisher;
+    _keepRunning = true;
+    pthread_mutex_init(&_updateMutex, NULL);
 }
 
-OuterLoopClockThread::~OuterLoopClockThread() { pthread_mutex_destroy(&this->updateMutex); }
+OuterLoopClockThread::~OuterLoopClockThread() { pthread_mutex_destroy(&_updateMutex); }
 
 void OuterLoopClockThread::run() {
     spdlog::info("OuterLoopClockThread: Start");
-    while (this->keepRunning) {
+    while (_keepRunning) {
         if (IFPGA::get().waitForOuterLoopClock(1000) == 0) {
-            this->controller->lock();
-            if (this->keepRunning) {
-                this->controller->enqueue(
-                        this->commandFactory->create(Commands::UpdateCommand, &this->updateMutex));
+            _controller->lock();
+            if (_keepRunning) {
+                _controller->enqueue(_commandFactory->create(Commands::UpdateCommand, &_updateMutex));
             }
-            this->controller->unlock();
-            pthread_mutex_lock(&this->updateMutex);
-            pthread_mutex_unlock(&this->updateMutex);
+            _controller->unlock();
+            pthread_mutex_lock(&_updateMutex);
+            pthread_mutex_unlock(&_updateMutex);
             IFPGA::get().ackOuterLoopClock();
         } else {
             spdlog::warn("OuterLoopClockThread: Failed to receive outer loop clock");
@@ -66,7 +65,7 @@ void OuterLoopClockThread::run() {
     spdlog::info("OuterLoopClockThread: Completed");
 }
 
-void OuterLoopClockThread::stop() { this->keepRunning = false; }
+void OuterLoopClockThread::stop() { _keepRunning = false; }
 
 } /* namespace SS */
 } /* namespace M1M3 */

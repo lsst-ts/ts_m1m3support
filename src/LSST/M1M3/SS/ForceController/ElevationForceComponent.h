@@ -37,17 +37,6 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class ElevationForceComponent : public ForceComponent {
-private:
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    ForceActuatorSettings* forceActuatorSettings;
-
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-    MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
-    MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
-
 public:
     ElevationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
                             ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -57,8 +46,18 @@ public:
     void applyElevationForcesByElevationAngle(float elevationAngle);
 
 protected:
-    void postEnableDisableActions();
-    void postUpdateActions();
+    void _postEnableDisableActions();
+    void _postUpdateActions();
+
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
+    MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
+    MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
 };
 
 } /* namespace SS */

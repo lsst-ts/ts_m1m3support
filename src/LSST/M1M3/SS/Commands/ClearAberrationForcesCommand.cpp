@@ -32,23 +32,23 @@ namespace SS {
 ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher,
                                                            int32_t commandID,
                                                            MTM1M3_command_clearAberrationForcesC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void ClearAberrationForcesCommand::execute() { this->context->clearAberrationForces(this); }
+void ClearAberrationForcesCommand::execute() { _context->clearAberrationForces(this); }
 
 void ClearAberrationForcesCommand::ackInProgress() {
-    this->publisher->ackCommandclearAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandclearAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ClearAberrationForcesCommand::ackComplete() {
-    this->publisher->ackCommandclearAberrationForces(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandclearAberrationForces(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ClearAberrationForcesCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandclearAberrationForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandclearAberrationForces(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

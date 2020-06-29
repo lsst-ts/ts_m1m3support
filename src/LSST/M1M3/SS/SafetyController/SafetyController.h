@@ -37,17 +37,6 @@ class M1M3SSPublisher;
 class SafetyControllerSettings;
 
 class SafetyController {
-private:
-    M1M3SSPublisher* publisher;
-    SafetyControllerSettings* safetyControllerSettings;
-
-    MTM1M3_logevent_errorCodeC* errorCodeData;
-
-    std::list<int> ilcCommunicationTimeoutData;
-    std::list<int> forceActuatorFollowingErrorData[156];
-    std::list<int> hardpointActuatorMeasuredForceData[6];
-    std::list<int> hardpointActuatorAirPressureData[6];
-
 public:
     SafetyController(M1M3SSPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
 
@@ -136,7 +125,17 @@ public:
     States::Type checkSafety(States::Type preferredNextState);
 
 private:
-    void updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag);
+    void _updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag);
+
+    M1M3SSPublisher* _publisher;
+    SafetyControllerSettings* _safetyControllerSettings;
+
+    MTM1M3_logevent_errorCodeC* _errorCodeData;
+
+    std::list<int> _ilcCommunicationTimeoutData;
+    std::list<int> _forceActuatorFollowingErrorData[156];
+    std::list<int> _hardpointActuatorMeasuredForceData[6];
+    std::list<int> _hardpointActuatorAirPressureData[6];
 };
 
 } /* namespace SS */

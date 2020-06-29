@@ -33,22 +33,22 @@ namespace M1M3 {
 namespace SS {
 
 class RunMirrorForceProfileCommand : public Command {
-private:
-    Context* context;
-    M1M3SSPublisher* publisher;
-    MTM1M3_command_runMirrorForceProfileC data;
-
 public:
     RunMirrorForceProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                  MTM1M3_command_runMirrorForceProfileC* data);
 
-    MTM1M3_command_runMirrorForceProfileC* getData() { return &this->data; }
+    MTM1M3_command_runMirrorForceProfileC* getData() { return &_data; }
 
     bool validate();
     void execute();
     void ackInProgress();
     void ackComplete();
     void ackFailed(std::string reason);
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
+    MTM1M3_command_runMirrorForceProfileC _data;
 };
 
 } /* namespace SS */

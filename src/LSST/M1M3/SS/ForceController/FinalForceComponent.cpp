@@ -41,27 +41,27 @@ FinalForceComponent::FinalForceComponent(M1M3SSPublisher* publisher, SafetyContr
                                          ForceActuatorSettings* forceActuatorSettings) {
     this->name = "Final";
 
-    this->publisher = publisher;
-    this->safetyController = safetyController;
-    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    this->forceActuatorSettings = forceActuatorSettings;
-    this->forceActuatorState = this->publisher->getEventForceActuatorState();
-    this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
-    this->appliedForces = this->publisher->getEventAppliedForces();
-    this->rejectedForces = this->publisher->getEventRejectedForces();
-    this->maxRateOfChange = this->forceActuatorSettings->FinalComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = this->forceActuatorSettings->FinalComponentSettings.NearZeroValue;
+    _publisher = publisher;
+    _safetyController = safetyController;
+    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    _forceActuatorSettings = forceActuatorSettings;
+    _forceActuatorState = _publisher->getEventForceActuatorState();
+    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
+    _appliedForces = _publisher->getEventAppliedForces();
+    _rejectedForces = _publisher->getEventRejectedForces();
+    this->maxRateOfChange = _forceActuatorSettings->FinalComponentSettings.MaxRateOfChange;
+    this->nearZeroValue = _forceActuatorSettings->FinalComponentSettings.NearZeroValue;
 
-    this->appliedAberrationForces = this->publisher->getEventAppliedAberrationForces();
-    this->appliedAccelerationForces = this->publisher->getEventAppliedAccelerationForces();
-    this->appliedActiveOpticForces = this->publisher->getEventAppliedActiveOpticForces();
-    this->appliedAzimuthForces = this->publisher->getEventAppliedAzimuthForces();
-    this->appliedBalanceForces = this->publisher->getEventAppliedBalanceForces();
-    this->appliedElevationForces = this->publisher->getEventAppliedElevationForces();
-    this->appliedOffsetForces = this->publisher->getEventAppliedOffsetForces();
-    this->appliedStaticForces = this->publisher->getEventAppliedStaticForces();
-    this->appliedThermalForces = this->publisher->getEventAppliedThermalForces();
-    this->appliedVelocityForces = this->publisher->getEventAppliedVelocityForces();
+    _appliedAberrationForces = _publisher->getEventAppliedAberrationForces();
+    _appliedAccelerationForces = _publisher->getEventAppliedAccelerationForces();
+    _appliedActiveOpticForces = _publisher->getEventAppliedActiveOpticForces();
+    _appliedAzimuthForces = _publisher->getEventAppliedAzimuthForces();
+    _appliedBalanceForces = _publisher->getEventAppliedBalanceForces();
+    _appliedElevationForces = _publisher->getEventAppliedElevationForces();
+    _appliedOffsetForces = _publisher->getEventAppliedOffsetForces();
+    _appliedStaticForces = _publisher->getEventAppliedStaticForces();
+    _appliedThermalForces = _publisher->getEventAppliedThermalForces();
+    _appliedVelocityForces = _publisher->getEventAppliedVelocityForces();
 
     this->enable();
 }
@@ -91,27 +91,24 @@ void FinalForceComponent::applyForcesByComponents() {
     }
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] =
-                    (this->appliedAccelerationForces->xForces[i] + this->appliedAzimuthForces->xForces[i] +
-                     this->appliedBalanceForces->xForces[i] + this->appliedElevationForces->xForces[i] +
-                     this->appliedOffsetForces->xForces[i] + this->appliedStaticForces->xForces[i] +
-                     this->appliedThermalForces->xForces[i] + this->appliedVelocityForces->xForces[i]);
+            this->xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
+                                _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
+                                _appliedOffsetForces->xForces[i] + _appliedStaticForces->xForces[i] +
+                                _appliedThermalForces->xForces[i] + _appliedVelocityForces->xForces[i]);
         }
 
         if (i < 100) {
-            this->yTarget[i] =
-                    (this->appliedAccelerationForces->yForces[i] + this->appliedAzimuthForces->yForces[i] +
-                     this->appliedBalanceForces->yForces[i] + this->appliedElevationForces->yForces[i] +
-                     this->appliedOffsetForces->yForces[i] + this->appliedStaticForces->yForces[i] +
-                     this->appliedThermalForces->yForces[i] + this->appliedVelocityForces->yForces[i]);
+            this->yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +
+                                _appliedBalanceForces->yForces[i] + _appliedElevationForces->yForces[i] +
+                                _appliedOffsetForces->yForces[i] + _appliedStaticForces->yForces[i] +
+                                _appliedThermalForces->yForces[i] + _appliedVelocityForces->yForces[i]);
         }
 
-        this->zTarget[i] =
-                (this->appliedAberrationForces->zForces[i] + this->appliedAccelerationForces->zForces[i] +
-                 this->appliedActiveOpticForces->zForces[i] + this->appliedAzimuthForces->zForces[i] +
-                 this->appliedBalanceForces->zForces[i] + this->appliedElevationForces->zForces[i] +
-                 this->appliedOffsetForces->zForces[i] + this->appliedStaticForces->zForces[i] +
-                 this->appliedThermalForces->zForces[i] + this->appliedVelocityForces->zForces[i]);
+        this->zTarget[i] = (_appliedAberrationForces->zForces[i] + _appliedAccelerationForces->zForces[i] +
+                            _appliedActiveOpticForces->zForces[i] + _appliedAzimuthForces->zForces[i] +
+                            _appliedBalanceForces->zForces[i] + _appliedElevationForces->zForces[i] +
+                            _appliedOffsetForces->zForces[i] + _appliedStaticForces->zForces[i] +
+                            _appliedThermalForces->zForces[i] + _appliedVelocityForces->zForces[i]);
     }
 }
 
@@ -124,75 +121,73 @@ void FinalForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    this->appliedForces->timestamp = this->publisher->getTimestamp();
-    this->rejectedForces->timestamp = this->appliedForces->timestamp;
+    _appliedForces->timestamp = _publisher->getTimestamp();
+    _rejectedForces->timestamp = _appliedForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
-        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
-        this->forceSetpointWarning->forceWarning[zIndex] = false;
+        _forceSetpointWarning->forceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = this->forceActuatorSettings->ForceLimitXTable[xIndex].LowFault;
-            float xHighFault = this->forceActuatorSettings->ForceLimitXTable[xIndex].HighFault;
-            this->rejectedForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, this->rejectedForces->xForces[xIndex],
-                                             this->appliedForces->xForces + xIndex);
-            this->forceSetpointWarning->forceWarning[zIndex] =
-                    this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
+            float xLowFault = _forceActuatorSettings->ForceLimitXTable[xIndex].LowFault;
+            float xHighFault = _forceActuatorSettings->ForceLimitXTable[xIndex].HighFault;
+            _rejectedForces->xForces[xIndex] = this->xCurrent[xIndex];
+            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedForces->xForces[xIndex],
+                                                  _appliedForces->xForces + xIndex);
+            _forceSetpointWarning->forceWarning[zIndex] =
+                    _forceSetpointWarning->forceWarning[zIndex] || notInRange;
         }
 
         if (yIndex != -1) {
-            float yLowFault = this->forceActuatorSettings->ForceLimitYTable[yIndex].LowFault;
-            float yHighFault = this->forceActuatorSettings->ForceLimitYTable[yIndex].HighFault;
-            this->rejectedForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, this->rejectedForces->yForces[yIndex],
-                                             this->appliedForces->yForces + yIndex);
-            this->forceSetpointWarning->forceWarning[zIndex] =
-                    this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
+            float yLowFault = _forceActuatorSettings->ForceLimitYTable[yIndex].LowFault;
+            float yHighFault = _forceActuatorSettings->ForceLimitYTable[yIndex].HighFault;
+            _rejectedForces->yForces[yIndex] = this->yCurrent[yIndex];
+            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedForces->yForces[yIndex],
+                                                  _appliedForces->yForces + yIndex);
+            _forceSetpointWarning->forceWarning[zIndex] =
+                    _forceSetpointWarning->forceWarning[zIndex] || notInRange;
         }
 
-        float zLowFault = this->forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
-        float zHighFault = this->forceActuatorSettings->ForceLimitZTable[zIndex].HighFault;
-        this->rejectedForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedForces->zForces[zIndex],
-                                              this->appliedForces->zForces + zIndex);
-        this->forceSetpointWarning->forceWarning[zIndex] =
-                this->forceSetpointWarning->forceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || this->forceSetpointWarning->forceWarning[zIndex];
+        float zLowFault = _forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
+        float zHighFault = _forceActuatorSettings->ForceLimitZTable[zIndex].HighFault;
+        _rejectedForces->zForces[zIndex] = this->zCurrent[zIndex];
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedForces->zForces[zIndex],
+                                              _appliedForces->zForces + zIndex);
+        _forceSetpointWarning->forceWarning[zIndex] =
+                _forceSetpointWarning->forceWarning[zIndex] || notInRange;
+        rejectionRequired = rejectionRequired || _forceSetpointWarning->forceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            this->forceActuatorApplicationSettings, this->forceActuatorSettings, this->appliedForces->xForces,
-            this->appliedForces->yForces, this->appliedForces->zForces);
-    this->appliedForces->fx = fm.Fx;
-    this->appliedForces->fy = fm.Fy;
-    this->appliedForces->fz = fm.Fz;
-    this->appliedForces->mx = fm.Mx;
-    this->appliedForces->my = fm.My;
-    this->appliedForces->mz = fm.Mz;
-    this->appliedForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedForces->xForces,
+            _appliedForces->yForces, _appliedForces->zForces);
+    _appliedForces->fx = fm.Fx;
+    _appliedForces->fy = fm.Fy;
+    _appliedForces->fz = fm.Fz;
+    _appliedForces->mx = fm.Mx;
+    _appliedForces->my = fm.My;
+    _appliedForces->mz = fm.Mz;
+    _appliedForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceConverter::calculateForcesAndMoments(
-            this->forceActuatorApplicationSettings, this->forceActuatorSettings,
-            this->rejectedForces->xForces, this->rejectedForces->yForces, this->rejectedForces->zForces);
-    this->rejectedForces->fx = fm.Fx;
-    this->rejectedForces->fy = fm.Fy;
-    this->rejectedForces->fz = fm.Fz;
-    this->rejectedForces->mx = fm.Mx;
-    this->rejectedForces->my = fm.My;
-    this->rejectedForces->mz = fm.Mz;
-    this->rejectedForces->forceMagnitude = fm.ForceMagnitude;
+    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
+                                                   _rejectedForces->xForces, _rejectedForces->yForces,
+                                                   _rejectedForces->zForces);
+    _rejectedForces->fx = fm.Fx;
+    _rejectedForces->fy = fm.Fy;
+    _rejectedForces->fz = fm.Fz;
+    _rejectedForces->mx = fm.Mx;
+    _rejectedForces->my = fm.My;
+    _rejectedForces->mz = fm.Mz;
+    _rejectedForces->forceMagnitude = fm.ForceMagnitude;
 
-    this->safetyController->forceControllerNotifyForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyForceClipping(rejectionRequired);
 
-    this->publisher->tryLogForceSetpointWarning();
+    _publisher->tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        this->publisher->logRejectedForces();
+        _publisher->logRejectedForces();
     }
-    this->publisher->logAppliedForces();
+    _publisher->logAppliedForces();
 }
 
 } /* namespace SS */

@@ -37,37 +37,33 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class ForceConverter {
-private:
-    static double constexpr sqrt2 = 1.4142135623730950488016887242097;
-    static double constexpr reciprocalSqrt2 = 0.70710678118654752440084436210485;
-
 public:
     static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
                                      float* yForce, float* zForce) {
-        *xForce = secondaryCylinder * reciprocalSqrt2;
+        *xForce = secondaryCylinder * _reciprocalSqrt2;
         *yForce = 0;
-        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+        *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
     static void daaNegativeXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
                                      float* yForce, float* zForce) {
-        *xForce = -secondaryCylinder * reciprocalSqrt2;
+        *xForce = -secondaryCylinder * _reciprocalSqrt2;
         *yForce = 0;
-        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+        *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
     static void daaPositiveYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
                                      float* yForce, float* zForce) {
         *xForce = 0;
-        *yForce = secondaryCylinder * reciprocalSqrt2;
-        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+        *yForce = secondaryCylinder * _reciprocalSqrt2;
+        *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
     static void daaNegativeYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
                                      float* yForce, float* zForce) {
         *xForce = 0;
-        *yForce = -secondaryCylinder * reciprocalSqrt2;
-        *zForce = secondaryCylinder * reciprocalSqrt2 + primaryCylinder;
+        *yForce = -secondaryCylinder * _reciprocalSqrt2;
+        *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
     static void saaToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce,
@@ -101,6 +97,9 @@ public:
     static DistributedForces calculateForceDistribution(ForceActuatorSettings* forceActuatorSettings,
                                                         float xForce, float yForce, float zForce,
                                                         float xMoment, float yMoment, float zMoment);
+
+private:
+    static double constexpr _reciprocalSqrt2 = 0.70710678118654752440084436210485;
 };
 
 } /* namespace SS */

@@ -34,14 +34,14 @@ namespace M1M3 {
 namespace SS {
 
 class SetADCChanneOffsetAndSensitivityBusList : public BusList {
-private:
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo;
-    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
-
 public:
     SetADCChanneOffsetAndSensitivityBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
                                             MTM1M3_logevent_forceActuatorInfoC* forceInfo,
                                             MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo);
+
+private:
+    MTM1M3_logevent_forceActuatorInfoC* _forceInfo;
+    MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 };
 
 } /* namespace SS */

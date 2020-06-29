@@ -53,7 +53,7 @@ namespace SS {
  */
 class SettingReader {
 public:
-    SettingReader() : rootPath("UNDEFINED") {}
+    SettingReader() : _rootPath("UNDEFINED") {}
 
     /**
      * Returns SettingReader singleton.
@@ -96,30 +96,30 @@ public:
     InclinometerSettings* loadInclinometerSettings();
 
 private:
-    std::string getBasePath(std::string file);
-    std::string getSetPath(std::string file);
+    std::string _getBasePath(std::string file);
+    std::string _getSetPath(std::string file);
 
-    AliasApplicationSettings aliasApplicationSettings;
-    ForceActuatorApplicationSettings forceActuatorApplicationSettings;
-    ForceActuatorSettings forceActuatorSettings;
-    HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
-    HardpointActuatorSettings hardpointActuatorSettings;
-    ILCApplicationSettings ilcApplicationSettings;
-    RecommendedApplicationSettings recommendedApplicationSettings;
-    SafetyControllerSettings safetyControllerSettings;
-    PositionControllerSettings positionControllerSettings;
-    AccelerometerSettings accelerometerSettings;
-    DisplacementSensorSettings displacementSensorSettings;
-    HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
-    InterlockApplicationSettings interlockApplicationSettings;
-    GyroSettings gyroSettings;
-    ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
-    PIDSettings pidSettings;
-    InclinometerSettings inclinometerSettings;
+    AliasApplicationSettings _aliasApplicationSettings;
+    ForceActuatorApplicationSettings _forceActuatorApplicationSettings;
+    ForceActuatorSettings _forceActuatorSettings;
+    HardpointActuatorApplicationSettings _hardpointActuatorApplicationSettings;
+    HardpointActuatorSettings _hardpointActuatorSettings;
+    ILCApplicationSettings _ilcApplicationSettings;
+    RecommendedApplicationSettings _recommendedApplicationSettings;
+    SafetyControllerSettings _safetyControllerSettings;
+    PositionControllerSettings _positionControllerSettings;
+    AccelerometerSettings _accelerometerSettings;
+    DisplacementSensorSettings _displacementSensorSettings;
+    HardpointMonitorApplicationSettings _hardpointMonitorApplicationSettings;
+    InterlockApplicationSettings _interlockApplicationSettings;
+    GyroSettings _gyroSettings;
+    ExpansionFPGAApplicationSettings _expansionFPGAApplicationSettings;
+    PIDSettings _pidSettings;
+    InclinometerSettings _inclinometerSettings;
 
-    std::string rootPath;
-    std::string currentSet;
-    std::string currentVersion;
+    std::string _rootPath;
+    std::string _currentSet;
+    std::string _currentVersion;
 };
 
 } /* namespace SS */

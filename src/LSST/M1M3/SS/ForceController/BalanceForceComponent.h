@@ -39,25 +39,6 @@ class ForceActuatorSettings;
 class PIDSettings;
 
 class BalanceForceComponent : public ForceComponent {
-private:
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    ForceActuatorSettings* forceActuatorSettings;
-    PIDSettings* pidSettings;
-
-    PID fx;
-    PID fy;
-    PID fz;
-    PID mx;
-    PID my;
-    PID mz;
-
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-    MTM1M3_logevent_appliedBalanceForcesC* appliedBalanceForces;
-    MTM1M3_logevent_rejectedBalanceForcesC* rejectedBalanceForces;
-
 public:
     BalanceForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
                           ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -76,7 +57,25 @@ protected:
     void postUpdateActions();
 
 private:
-    PID* idToPID(int id);
+    PID* _idToPID(int id);
+
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+    PIDSettings* _pidSettings;
+
+    PID _fx;
+    PID _fy;
+    PID _fz;
+    PID _mx;
+    PID _my;
+    PID _mz;
+
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedBalanceForcesC* _appliedBalanceForces;
+    MTM1M3_logevent_rejectedBalanceForcesC* _rejectedBalanceForces;
 };
 
 } /* namespace SS */

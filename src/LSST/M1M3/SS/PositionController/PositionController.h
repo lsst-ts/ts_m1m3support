@@ -36,19 +36,6 @@ class HardpointActuatorSettings;
 class M1M3SSPublisher;
 
 class PositionController {
-private:
-    PositionControllerSettings* positionControllerSettings;
-    HardpointActuatorSettings* hardpointActuatorSettings;
-    M1M3SSPublisher* publisher;
-
-    MTM1M3_hardpointActuatorDataC* hardpointActuatorData;
-    MTM1M3_logevent_hardpointActuatorStateC* hardpointActuatorState;
-    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo;
-
-    int32_t scaledMaxStepsPerLoop[6];
-    int32_t targetEncoderValues[6];
-    int32_t stableEncoderCount[6];
-
 public:
     PositionController(PositionControllerSettings* positionControllerSettings,
                        HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher);
@@ -73,8 +60,19 @@ public:
     void updateSteps();
 
 private:
-    void convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
-    int32_t abs(int32_t x);
+    void _convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
+
+    PositionControllerSettings* _positionControllerSettings;
+    HardpointActuatorSettings* _hardpointActuatorSettings;
+    M1M3SSPublisher* _publisher;
+
+    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
+    MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
+
+    int32_t _scaledMaxStepsPerLoop[6];
+    int32_t _targetEncoderValues[6];
+    int32_t _stableEncoderCount[6];
 };
 
 } /* namespace SS */

@@ -47,8 +47,8 @@ public:
     int32_t readSlot2(uint32_t* data) override;
 
 private:
-    uint32_t session;
-    size_t remaining;
+    uint32_t _session;
+    size_t _remaining;
 };
 
 } /* namespace SS */

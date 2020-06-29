@@ -63,13 +63,6 @@ struct ILCApplicationStats {
 };
 
 class FirmwareUpdate {
-private:
-    std::vector<unsigned char> appData;
-    std::vector<IntelHexLine> hexData;
-    ILCApplicationStats appStats;
-    ILCSubnetData* subnetData;
-    int desiredState;
-
 public:
     FirmwareUpdate(ILCSubnetData* subnetData);
 
@@ -106,6 +99,13 @@ public:
     void EndBuffer(ModbusBuffer* buffer);
 
     bool PrintBuffer(ModbusBuffer* buffer, std::string text);
+
+private:
+    std::vector<unsigned char> _appData;
+    std::vector<IntelHexLine> _hexData;
+    ILCApplicationStats _appStats;
+    ILCSubnetData* _subnetData;
+    int _desiredState;
 };
 
 } /* namespace SS */

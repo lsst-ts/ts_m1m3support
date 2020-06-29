@@ -42,19 +42,6 @@ class InclinometerSettings;
  * The class used to process inclinometer data.
  */
 class Inclinometer {
-private:
-    SupportFPGAData* fpgaData;
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-    InclinometerSettings* inclinometerSettings;
-
-    MTM1M3_inclinometerDataC* inclinometerData;
-    MTM1M3_logevent_inclinometerSensorWarningC* inclinometerWarning;
-
-    uint64_t lastSampleTimestamp;
-    uint64_t lastErrorTimestamp;
-    bool errorCleared;
-
 public:
     /*!
      * Instantiates the inclinometer.
@@ -69,6 +56,19 @@ public:
      * Processes currently available inclinometer data and publish it.
      */
     void processData();
+
+private:
+    SupportFPGAData* _fpgaData;
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    InclinometerSettings* _inclinometerSettings;
+
+    MTM1M3_inclinometerDataC* _inclinometerData;
+    MTM1M3_logevent_inclinometerSensorWarningC* _inclinometerWarning;
+
+    uint64_t _lastSampleTimestamp;
+    uint64_t _lastErrorTimestamp;
+    bool _errorCleared;
 };
 
 } /* namespace SS */

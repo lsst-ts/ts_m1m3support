@@ -37,17 +37,6 @@ class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
 class OffsetForceComponent : public ForceComponent {
-private:
-    M1M3SSPublisher* publisher;
-    SafetyController* safetyController;
-    ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-    ForceActuatorSettings* forceActuatorSettings;
-
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-    MTM1M3_logevent_appliedOffsetForcesC* appliedOffsetForces;
-    MTM1M3_logevent_rejectedOffsetForcesC* rejectedOffsetForces;
-
 public:
     OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -60,6 +49,17 @@ public:
 protected:
     void postEnableDisableActions();
     void postUpdateActions();
+
+private:
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedOffsetForcesC* _appliedOffsetForces;
+    MTM1M3_logevent_rejectedOffsetForcesC* _rejectedOffsetForces;
 };
 
 } /* namespace SS */

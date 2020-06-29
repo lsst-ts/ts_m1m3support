@@ -33,22 +33,22 @@ namespace M1M3 {
 namespace SS {
 
 class TurnPowerOnCommand : public Command {
-private:
-    Context* context;
-    M1M3SSPublisher* publisher;
-    MTM1M3_command_turnPowerOnC data;
-
 public:
     TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                        MTM1M3_command_turnPowerOnC* data);
 
-    MTM1M3_command_turnPowerOnC* getData() { return &this->data; }
+    MTM1M3_command_turnPowerOnC* getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
+    MTM1M3_command_turnPowerOnC _data;
 };
 
 } /* namespace SS */

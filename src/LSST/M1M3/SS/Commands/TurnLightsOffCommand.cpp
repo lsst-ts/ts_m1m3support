@@ -31,23 +31,23 @@ namespace SS {
 
 TurnLightsOffCommand::TurnLightsOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                            MTM1M3_command_turnLightsOffC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void TurnLightsOffCommand::execute() { this->context->turnLightsOff(this); }
+void TurnLightsOffCommand::execute() { _context->turnLightsOff(this); }
 
 void TurnLightsOffCommand::ackInProgress() {
-    this->publisher->ackCommandturnLightsOff(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandturnLightsOff(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnLightsOffCommand::ackComplete() {
-    this->publisher->ackCommandturnLightsOff(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandturnLightsOff(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnLightsOffCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandturnLightsOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandturnLightsOff(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -36,8 +36,8 @@ SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessa
                                              MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("SetADCScanRateBusList: SetADCScanRateBusList()");
-    this->forceInfo = forceInfo;
-    this->hardpointInfo = hardpointInfo;
+    _forceInfo = forceInfo;
+    _hardpointInfo = hardpointInfo;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
@@ -46,7 +46,7 @@ SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessa
             bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
             if (!disabled) {
                 this->ilcMessageFactory->setADCScanRate(&this->buffer, address,
-                                                        this->forceInfo->adcScanRate[dataIndex]);
+                                                        _forceInfo->adcScanRate[dataIndex]);
                 this->expectedFAResponses[dataIndex] = 1;
             }
         }
@@ -56,7 +56,7 @@ SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessa
             bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
             if (!disabled) {
                 this->ilcMessageFactory->setADCScanRate(&this->buffer, address,
-                                                        this->hardpointInfo->adcScanRate[dataIndex]);
+                                                        _hardpointInfo->adcScanRate[dataIndex]);
                 this->expectedHPResponses[dataIndex] = 1;
             }
         }

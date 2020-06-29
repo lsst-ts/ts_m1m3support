@@ -71,7 +71,7 @@ public:
     void nopReportLVDT(ModbusBuffer* buffer, uint8_t address);
 
 private:
-    ILCApplicationSettings* ilcApplicationSettings;
+    ILCApplicationSettings* _ilcApplicationSettings;
 };
 
 } /* namespace SS */
