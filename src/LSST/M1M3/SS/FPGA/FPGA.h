@@ -73,7 +73,7 @@ public:
 private:
     uint32_t _session;
     size_t _remaining;
-    uint16_t u16Buffer[1];
+    uint16_t _u16Buffer[1];
     NiFpga_IrqContext _outerLoopIRQContext;
     NiFpga_IrqContext _modbusIRQContext;
     NiFpga_IrqContext _ppsIRQContext;
