@@ -27,6 +27,7 @@
 #include <spdlog/spdlog.h>
 #include <Timestamp.h>
 #include <FPGAAddresses.h>
+#include <NiError.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,14 +41,16 @@ PPSThread::PPSThread(M1M3SSPublisher* publisher) {
 void PPSThread::run() {
     spdlog::info("PPSThread: Start");
     while (_keepRunning) {
-        if (IFPGA::get().waitForPPS(2500) == 0) {
-            IFPGA::get().ackPPS();
-            uint64_t timestamp = Timestamp::toFPGA(_publisher->getTimestamp());
-            if (_keepRunning) {
-                IFPGA::get().writeTimestampFIFO(timestamp);
-            }
-        } else {
+        try {
+            IFPGA::get().waitForPPS(2500);
+        } catch (NiError& er) {
             spdlog::warn("PPSThread: Failed to receive pps");
+            continue;
+        }
+        IFPGA::get().ackPPS();
+        uint64_t timestamp = Timestamp::toFPGA(_publisher->getTimestamp());
+        if (_keepRunning) {
+            IFPGA::get().writeTimestampFIFO(timestamp);
         }
     }
     spdlog::info("PPSThread: Completed");

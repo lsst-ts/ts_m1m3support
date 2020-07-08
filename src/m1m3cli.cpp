@@ -192,24 +192,33 @@ int serials(command_vec cmds) {
     return 0;
 }
 
-int closeFPGA() { return IFPGA::get().close(); }
+void closeFPGA() { IFPGA::get().close(); }
 
-int openFPGA() {
+void openFPGA() {
     IFPGA::get().initialize();
-    return IFPGA::get().open();
+    IFPGA::get().open();
 }
 
 M1M3cli cli("M1M3 Command Line Interface");
 
-command_t commands[] = {
-        {"close", [=](command_vec cmds) { return closeFPGA(); }, "", 0, NULL, "Close FPGA connection"},
-        {"help", [=](command_vec cmds) { return cli.helpCommands(cmds); }, "", 0, NULL,
-         "Print commands help"},
-        {"info", [=](command_vec cmds) { return cli.info(cmds); }, "S?", 0, "<ID|subnet,address>..",
-         "Print ILC info"},
-        {"open", [=](command_vec) { return openFPGA(); }, "", 0, NULL, "Open FPGA"},
-        {"serials", &serials, "s", 0, NULL, "Report serial port status"},
-        {NULL, NULL, NULL, 0, NULL, NULL}};
+command_t commands[] = {{"close",
+                         [=](command_vec cmds) {
+                             closeFPGA();
+                             return 0;
+                         },
+                         "", 0, NULL, "Close FPGA connection"},
+                        {"help", [=](command_vec cmds) { return cli.helpCommands(cmds); }, "", 0, NULL,
+                         "Print commands help"},
+                        {"info", [=](command_vec cmds) { return cli.info(cmds); }, "S?", 0,
+                         "<ID|subnet,address>..", "Print ILC info"},
+                        {"open",
+                         [=](command_vec) {
+                             openFPGA();
+                             return 0;
+                         },
+                         "", 0, NULL, "Open FPGA"},
+                        {"serials", &serials, "s", 0, NULL, "Report serial port status"},
+                        {NULL, NULL, NULL, 0, NULL, NULL}};
 
 int main(int argc, char* const argv[]) {
     command_vec cmds = cli.init(commands, "hOv", argc, argv);

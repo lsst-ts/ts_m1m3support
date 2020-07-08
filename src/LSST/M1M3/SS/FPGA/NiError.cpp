@@ -33,3 +33,7 @@ void NiThrowError(const char *msg, int32_t status) {
         throw NiError(msg, status);
     }
 }
+
+void NiThrowError(const char *func, const char *ni_func, int32_t status) {
+    NiThrowError(std::string(func) + " " + ni_func, status);
+}

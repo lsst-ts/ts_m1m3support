@@ -35,7 +35,7 @@ namespace SS {
  */
 class IExpansionFPGA {
 public:
-    IExpansionFPGA() { this->expansionFPGAApplicationSettings = NULL; };
+    IExpansionFPGA() { expansionFPGAApplicationSettings = NULL; };
     virtual ~IExpansionFPGA(){};
 
     static IExpansionFPGA& get();
@@ -45,17 +45,15 @@ public:
         this->expansionFPGAApplicationSettings = expansionFPGAApplicationSettings;
     }
 
-    virtual int32_t initialize() = 0;
-    virtual int32_t open() = 0;
-    virtual int32_t close() = 0;
-    virtual int32_t finalize() = 0;
+    virtual void initialize() = 0;
+    virtual void open() = 0;
+    virtual void close() = 0;
+    virtual void finalize() = 0;
 
-    virtual bool isErrorCode(int32_t status) = 0;
+    virtual void sample() = 0;
 
-    virtual int32_t sample() = 0;
-
-    virtual int32_t readSlot1(float* data) = 0;
-    virtual int32_t readSlot2(uint32_t* data) = 0;
+    virtual void readSlot1(float* data) = 0;
+    virtual void readSlot2(uint32_t* data) = 0;
 
 protected:
     ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;

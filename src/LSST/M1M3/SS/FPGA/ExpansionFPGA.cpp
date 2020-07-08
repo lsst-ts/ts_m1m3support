@@ -24,8 +24,11 @@
 #include <ExpansionFPGA.h>
 #include <ExpansionFPGAApplicationSettings.h>
 #include <NiFpga_ts_M1M3SupportExpansionFPGA.h>
-#include <NiStatus.h>
+#include <NiError.h>
+
+#include <thread>
 #include <unistd.h>
+
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -38,84 +41,70 @@ ExpansionFPGA::ExpansionFPGA() {
     _remaining = 0;
 }
 
-int32_t ExpansionFPGA::initialize() {
+void ExpansionFPGA::initialize() {
     spdlog::debug("ExpansionFPGA: initialize()");
-    if (!this->expansionFPGAApplicationSettings->Enabled) {
-        return 0;
+    if (!expansionFPGAApplicationSettings->Enabled) {
+        return;
     }
-    return NiFpga_Initialize();
+    NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
 }
 
-int32_t ExpansionFPGA::open() {
+void ExpansionFPGA::open() {
     spdlog::debug("ExpansionFPGA: open({})", expansionFPGAApplicationSettings->Resource);
-    if (!this->expansionFPGAApplicationSettings->Enabled) {
-        return 0;
+    if (!expansionFPGAApplicationSettings->Enabled) {
+        return;
     }
-    int32_t status = NiFpga_Open("/home/admin/Bitfiles/" NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile,
-                                 NiFpga_ts_M1M3SupportExpansionFPGA_Signature,
-                                 this->expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session));
-    if (status) {
-        return NiReportError(__PRETTY_FUNCTION__, status);
-    }
+    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Open",
+                 NiFpga_Open("/home/admin/Bitfiles/" NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile,
+                             NiFpga_ts_M1M3SupportExpansionFPGA_Signature,
+                             expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session)));
 
-    status = NiFpga_Abort(_session);
-    status = NiFpga_Download(_session);
-    status = NiFpga_Reset(_session);
-    status = NiFpga_Run(_session, 0);
-    usleep(1000000);
-    return NiReportError(__PRETTY_FUNCTION__, status);
+    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
+    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
+    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
+    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
-int32_t ExpansionFPGA::close() {
+void ExpansionFPGA::close() {
     spdlog::debug("ExpansionFPGA: close()");
-    if (!this->expansionFPGAApplicationSettings->Enabled) {
-        return 0;
+    if (!expansionFPGAApplicationSettings->Enabled) {
+        return;
     }
-    return NiReportError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
+    NiThrowError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
 }
 
-int32_t ExpansionFPGA::finalize() {
+void ExpansionFPGA::finalize() {
     spdlog::debug("ExpansionFPGA: finalize()");
-    if (!this->expansionFPGAApplicationSettings->Enabled) {
-        return 0;
+    if (!expansionFPGAApplicationSettings->Enabled) {
+        return;
     }
-    return NiReportError(__PRETTY_FUNCTION__, NiFpga_Finalize());
+    NiThrowError(__PRETTY_FUNCTION__, NiFpga_Finalize());
 }
 
-bool ExpansionFPGA::isErrorCode(int32_t status) {
-    bool isError = NiFpga_IsError(status);
-    if (isError) {
-        spdlog::error("ExpansionFPGA: Error code {:d}", status);
+void ExpansionFPGA::sample() {
+    if (!expansionFPGAApplicationSettings->Enabled) {
+        return;
     }
-    return isError;
+    NiThrowError(__PRETTY_FUNCTION__,
+                 NiFpga_WriteBool(_session, NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample, true));
 }
 
-int32_t ExpansionFPGA::sample() {
-    if (!this->expansionFPGAApplicationSettings->Enabled) {
-        return 0;
+void ExpansionFPGA::readSlot1(float* data) {
+    if (!expansionFPGAApplicationSettings->Enabled) {
+        return;
     }
-    return NiReportError(
-            __PRETTY_FUNCTION__,
-            NiFpga_WriteBool(_session, NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample, true));
+    NiThrowError(__PRETTY_FUNCTION__,
+                 NiFpga_ReadArraySgl(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1,
+                                     data, 6));
 }
 
-int32_t ExpansionFPGA::readSlot1(float* data) {
-    if (!this->expansionFPGAApplicationSettings->Enabled) {
-        return 0;
+void ExpansionFPGA::readSlot2(uint32_t* data) {
+    if (!expansionFPGAApplicationSettings->Enabled) {
+        return;
     }
-    return NiReportError(
-            __PRETTY_FUNCTION__,
-            NiFpga_ReadArraySgl(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1, data,
-                                6));
-}
-
-int32_t ExpansionFPGA::readSlot2(uint32_t* data) {
-    if (!this->expansionFPGAApplicationSettings->Enabled) {
-        return 0;
-    }
-    return NiReportError(
-            __PRETTY_FUNCTION__,
-            NiFpga_ReadU32(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorU32_Slot2, data));
+    NiThrowError(__PRETTY_FUNCTION__,
+                 NiFpga_ReadU32(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorU32_Slot2, data));
 }
 
 } /* namespace SS */

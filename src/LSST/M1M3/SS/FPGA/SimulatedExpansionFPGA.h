@@ -37,17 +37,15 @@ class SimulatedExpansionFPGA : public IExpansionFPGA {
 public:
     SimulatedExpansionFPGA();
 
-    int32_t initialize() override;
-    int32_t open() override;
-    int32_t close() override;
-    int32_t finalize() override;
+    void initialize() override;
+    void open() override;
+    void close() override;
+    void finalize() override;
 
-    bool isErrorCode(int32_t status) override;
+    void sample() override;
 
-    int32_t sample() override;
-
-    int32_t readSlot1(float* data) override;
-    int32_t readSlot2(uint32_t* data) override;
+    void readSlot1(float* data) override;
+    void readSlot2(uint32_t* data) override;
 
 private:
     float _rnd[RND_CNT];
