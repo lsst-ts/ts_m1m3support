@@ -30,6 +30,8 @@
 #include <Timestamp.h>
 #include <CRC.h>
 #include <ForceActuatorApplicationSettings.h>
+
+#include <thread>
 #include <unistd.h>
 #include <cstdlib>
 #include <spdlog/spdlog.h>
@@ -101,45 +103,27 @@ void SimulatedFPGA::setForceActuatorApplicationSettings(
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 }
 
-int32_t SimulatedFPGA::initialize() {
-    spdlog::debug("SimulatedFPGA: initialize()");
-    return 0;
+void SimulatedFPGA::initialize() { spdlog::debug("SimulatedFPGA: initialize()"); }
+
+void SimulatedFPGA::open() { spdlog::debug("SimulatedFPGA: open()"); }
+
+void SimulatedFPGA::close() { spdlog::debug("SimulatedFPGA: close()"); }
+
+void SimulatedFPGA::finalize() { spdlog::debug("SimulatedFPGA: finalize()"); }
+
+void SimulatedFPGA::waitForOuterLoopClock(int32_t timeout) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
 }
 
-int32_t SimulatedFPGA::open() {
-    spdlog::debug("SimulatedFPGA: open()");
-    return 0;
-}
+void SimulatedFPGA::ackOuterLoopClock() {}
 
-int32_t SimulatedFPGA::close() {
-    spdlog::debug("SimulatedFPGA: close()");
-    return 0;
-}
+void SimulatedFPGA::waitForPPS(int32_t timeout) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 
-int32_t SimulatedFPGA::finalize() {
-    spdlog::debug("SimulatedFPGA: finalize()");
-    return 0;
-}
+void SimulatedFPGA::ackPPS() {}
 
-bool SimulatedFPGA::isErrorCode(int32_t status) { return status != 0; }
+void SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {}
 
-int32_t SimulatedFPGA::waitForOuterLoopClock(int32_t timeout) {
-    usleep(20000);
-    return 0;
-}
-
-int32_t SimulatedFPGA::ackOuterLoopClock() { return 0; }
-
-int32_t SimulatedFPGA::waitForPPS(int32_t timeout) {
-    usleep(1000000);
-    return 0;
-}
-
-int32_t SimulatedFPGA::ackPPS() { return 0; }
-
-int32_t SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) { return 0; }
-
-int32_t SimulatedFPGA::ackModbusIRQ(int32_t subnet) { return 0; }
+void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
 
 void SimulatedFPGA::pullTelemetry() {
     spdlog::trace("SimulatedFPGA: pullTelemetry()");
@@ -225,7 +209,7 @@ void SimulatedFPGA::pullTelemetry() {
 
 void SimulatedFPGA::pullHealthAndStatus() {}
 
-int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
+void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     for (int i = 0; i < length;) {
         uint16_t signal = data[i++];
         uint16_t dataLength = 0;
@@ -874,7 +858,6 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
             ++i;  // Read Write Trigger IRQ
         }
     }
-    return 0;
 }
 
 void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
@@ -901,7 +884,7 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
 
 uint16_t SimulatedFPGA::_readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
-int32_t SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) { return 0; }
+void SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {}
 
 void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     int signal = data[0];
@@ -978,12 +961,12 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t tim
 void SimulatedFPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
     uint16_t newData[1];
     newData[0] = data;
-    return this->writeRequestFIFO(newData, 1, timeoutInMs);
+    writeRequestFIFO(newData, 1, timeoutInMs);
 }
 
-int32_t SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) { return 0; }
+void SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) {}
 
-int32_t SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) { return 0; }
+void SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) {}
 
 void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     for (int i = 0; i < length; ++i) {
@@ -994,8 +977,10 @@ void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t 
 
 void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}
 
-int32_t SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs) {
-    return -1;
+void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs) {
+    for (int i = 0; i < length; i++) {
+        data[i] = i;
+    }
 }
 
 float SimulatedFPGA::_getRnd() {
