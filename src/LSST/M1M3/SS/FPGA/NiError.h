@@ -25,7 +25,9 @@
 #define LSST_M1M3_SS_FPGA_NiError_H_
 
 #include "NiFpga.h"
+
 #include <stdexcept>
+#include <string>
 
 /**
  * Error thrown on FPGA problems. Provides what routine with explanatory
@@ -43,7 +45,15 @@ public:
 
 /**
  * Throws NI exception if an error occurred.
+ *
+ * @throw NiError if status != 0
+ *
+ * @see NiError
  */
 void NiThrowError(const char *msg, int32_t status);
+
+inline void NiThrowError(const std::string &msg, int32_t status) { NiThrowError(msg.c_str(), status); }
+
+void NiThrowError(const char *func, const char *ni_func, int32_t status);
 
 #endif  // !LSST_M1M3_SS_FPGA_NiError_H_

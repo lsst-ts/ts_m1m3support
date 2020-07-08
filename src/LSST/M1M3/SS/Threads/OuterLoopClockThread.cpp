@@ -29,6 +29,8 @@
 #include <Command.h>
 #include <M1M3SSPublisher.h>
 #include <Timestamp.h>
+#include <NiError.h>
+
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -49,18 +51,20 @@ OuterLoopClockThread::~OuterLoopClockThread() { pthread_mutex_destroy(&_updateMu
 void OuterLoopClockThread::run() {
     spdlog::info("OuterLoopClockThread: Start");
     while (_keepRunning) {
-        if (IFPGA::get().waitForOuterLoopClock(1000) == 0) {
-            _controller->lock();
-            if (_keepRunning) {
-                _controller->enqueue(_commandFactory->create(Commands::UpdateCommand, &_updateMutex));
-            }
-            _controller->unlock();
-            pthread_mutex_lock(&_updateMutex);
-            pthread_mutex_unlock(&_updateMutex);
-            IFPGA::get().ackOuterLoopClock();
-        } else {
+        try {
+            IFPGA::get().waitForOuterLoopClock(1000);
+        } catch (NiError& er) {
             spdlog::warn("OuterLoopClockThread: Failed to receive outer loop clock");
         }
+
+        _controller->lock();
+        if (_keepRunning) {
+            _controller->enqueue(_commandFactory->create(Commands::UpdateCommand, &_updateMutex));
+        }
+        _controller->unlock();
+        pthread_mutex_lock(&_updateMutex);
+        pthread_mutex_unlock(&_updateMutex);
+        IFPGA::get().ackOuterLoopClock();
     }
     spdlog::info("OuterLoopClockThread: Completed");
 }

@@ -46,41 +46,26 @@ float SimulatedExpansionFPGA::_getRnd() {
     return _rnd[_rndIndex];
 }
 
-int32_t SimulatedExpansionFPGA::initialize() {
-    spdlog::debug("SimulatedExpansionFPGA: initialize()");
-    return 0;
-}
+void SimulatedExpansionFPGA::initialize() { spdlog::debug("SimulatedExpansionFPGA: initialize()"); }
 
-int32_t SimulatedExpansionFPGA::open() {
-    spdlog::debug("SimulatedExpansionFPGA: open()");
-    return 0;
-}
+void SimulatedExpansionFPGA::open() { spdlog::debug("SimulatedExpansionFPGA: open()"); }
 
-int32_t SimulatedExpansionFPGA::close() {
-    spdlog::debug("SimulatedExpansionFPGA: close()");
-    return 0;
-}
+void SimulatedExpansionFPGA::close() { spdlog::debug("SimulatedExpansionFPGA: close()"); }
 
-int32_t SimulatedExpansionFPGA::finalize() {
-    spdlog::debug("SimulatedExpansionFPGA: finalize()");
-    return 0;
-}
+void SimulatedExpansionFPGA::finalize() { spdlog::debug("SimulatedExpansionFPGA: finalize()"); }
 
-bool SimulatedExpansionFPGA::isErrorCode(int32_t status) { return status != 0; }
+void SimulatedExpansionFPGA::sample() {}
 
-int32_t SimulatedExpansionFPGA::sample() { return 0; }
-
-int32_t SimulatedExpansionFPGA::readSlot1(float* data) {
+void SimulatedExpansionFPGA::readSlot1(float* data) {
     data[0] = 1.0 + _getRnd() * 0.5;
     data[1] = 1.0 + _getRnd() * 0.5;
     data[2] = 1.0 + _getRnd() * 0.5;
     data[3] = 1.0 + _getRnd() * 0.5;
     data[4] = 1.0 + _getRnd() * 0.5;
     data[5] = 1.0 + _getRnd() * 0.5;
-    return 0;
 }
 
-int32_t SimulatedExpansionFPGA::readSlot2(uint32_t* data) { return 0; }
+void SimulatedExpansionFPGA::readSlot2(uint32_t* data) {}
 
 } /* namespace SS */
 } /* namespace M1M3 */

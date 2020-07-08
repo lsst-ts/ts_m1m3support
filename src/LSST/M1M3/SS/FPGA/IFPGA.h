@@ -47,35 +47,33 @@ public:
     SupportFPGAData* getSupportFPGAData() { return &supportFPGAData; }
     HealthAndStatusFPGAData* getHealthAndStatusFPGAData() { return &healthAndStatusFPGAData; }
 
-    virtual int32_t initialize() = 0;
-    virtual int32_t open() = 0;
-    virtual int32_t close() = 0;
-    virtual int32_t finalize() = 0;
+    virtual void initialize() = 0;
+    virtual void open() = 0;
+    virtual void close() = 0;
+    virtual void finalize() = 0;
 
-    virtual bool isErrorCode(int32_t status) = 0;
+    virtual void waitForOuterLoopClock(int32_t timeout) = 0;
+    virtual void ackOuterLoopClock() = 0;
 
-    virtual int32_t waitForOuterLoopClock(int32_t timeout) = 0;
-    virtual int32_t ackOuterLoopClock() = 0;
+    virtual void waitForPPS(int32_t timeout) = 0;
+    virtual void ackPPS() = 0;
 
-    virtual int32_t waitForPPS(int32_t timeout) = 0;
-    virtual int32_t ackPPS() = 0;
-
-    virtual int32_t waitForModbusIRQ(int32_t subnet, int32_t timeout) = 0;
-    virtual int32_t ackModbusIRQ(int32_t subnet) = 0;
+    virtual void waitForModbusIRQ(int32_t subnet, int32_t timeout) = 0;
+    virtual void ackModbusIRQ(int32_t subnet) = 0;
 
     virtual void pullTelemetry() = 0;
     virtual void pullHealthAndStatus() = 0;
 
-    virtual int32_t writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
-    virtual int32_t writeCommandFIFO(uint16_t data, int32_t timeoutInMs) = 0;
+    virtual void writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
+    virtual void writeCommandFIFO(uint16_t data, int32_t timeoutInMs) = 0;
     virtual void writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
     virtual void writeRequestFIFO(uint16_t data, int32_t timeoutInMs) = 0;
-    virtual int32_t writeTimestampFIFO(uint64_t timestamp) = 0;
-    virtual int32_t readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) = 0;
+    virtual void writeTimestampFIFO(uint64_t timestamp) = 0;
+    virtual void readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) = 0;
     virtual void readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
 
     virtual void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) = 0;
-    virtual int32_t readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) = 0;
+    virtual void readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) = 0;
 
 protected:
     SupportFPGAData supportFPGAData;
