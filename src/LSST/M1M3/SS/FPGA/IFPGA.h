@@ -35,7 +35,11 @@ namespace SS {
  * Abstract interface for FPGA. Both real FPGA and simulated class implements
  * this. Singleton.
  *
- * Methods throws NiError on error.
+ * \emoji :exclamation: Please see LSST::M1M3::SS::FPGA class for communication
+ * details.
+ *
+ * @see FPGA
+ * @see https://github.com/lsst-ts/ts_m1m3SupportFPGA
  */
 class IFPGA {
 public:
@@ -44,35 +48,237 @@ public:
 
     static IFPGA& get();
 
+    /**
+     * Call after pullTelemetry to retrieve telemetry data.
+     *
+     * @return telemetry data
+     */
     SupportFPGAData* getSupportFPGAData() { return &supportFPGAData; }
+
+    /**
+     * Call after pullHealthAndStatus to retrieve HealthAndStatus data.
+     *
+     * @return HealthAndStatus data
+     */
     HealthAndStatusFPGAData* getHealthAndStatusFPGAData() { return &healthAndStatusFPGAData; }
 
+    /**
+     * Initialize FPGA.
+     *
+     * @throw NiError on NI error
+     */
     virtual void initialize() = 0;
+
+    /**
+     * Load & run FPGA code, setup interrupts.
+     *
+     * @throw NiError on NI error
+     */
     virtual void open() = 0;
+
+    /**
+     * Close FPGA, stop FPGA code.
+     *
+     * @throw NiError on NI error
+     */
     virtual void close() = 0;
+
+    /**
+     * Should be called after closing FPGA.
+     *
+     * @throw NiError on NI error
+     */
     virtual void finalize() = 0;
 
+    /**
+     * Wait for outer loop clock interrupt for synchronization between C++ and
+     * FPGA code. The interrupt (0) is raised every 20 ms inside FPGA code
+     * (OuterLoop/OuterLoopClock.vi).
+     *
+     * @param timeout call timeout in microseconds
+     *
+     * @throw NiError on NI error
+     *
+     * @see writeTimestampFIFO
+     */
     virtual void waitForOuterLoopClock(int32_t timeout) = 0;
+
+    /**
+     * Acknowledge (clear interrupt 0) outer loop clock.
+     *
+     * @throw NiError on NI error
+     */
     virtual void ackOuterLoopClock() = 0;
 
+    /**
+     * Waits for Peer-to-Peer Synchronization interrupt (10). The interrupt is
+     * raised in Timestamp/Timestamp.vi and signals FPGA is ready to read peer
+     * time offset from TimestampControlFIFO.
+     *
+     * @param timeout call timeout in microseconds. TimeStamp VI introduces 1
+     * millisecond delay between successive waits for interrupt, so this value
+     * shall be larger than 1000.
+     *
+     * @throw NiError on NI error
+     */
     virtual void waitForPPS(int32_t timeout) = 0;
+
+    /**
+     * Acknowledge (clear) Peer-to-Peer Synchronization interrupt.
+     *
+     * @throw NiError on NI error
+     */
     virtual void ackPPS() = 0;
 
+    /**
+     * Wait for ModBus interrupt. The interrupt is generated when ModBus
+     * command 0x7 is processed.
+     *
+     * @param subnet ModBus subnet (1-5)
+     * @param timeout timeout in microseconds
+     *
+     * @throw NiError on NI error
+     */
     virtual void waitForModbusIRQ(int32_t subnet, int32_t timeout) = 0;
+
+    /**
+     * Acknowledge ModBus interrupt reception. Interrupt can be generated
+     * (raised) again after being acknowledged.
+     *
+     * @param subnet ModBus subnet (1-5)
+     *
+     * @throw NiError on NI error
+     */
     virtual void ackModbusIRQ(int32_t subnet) = 0;
 
+    /**
+     * Retrieve telemetry data.
+     *
+     * @throw NiError on NI error
+     */
     virtual void pullTelemetry() = 0;
+
+    /**
+     * Retrieve Health&Status data.
+     *
+     * @throw NiError on NI error
+     */
     virtual void pullHealthAndStatus() = 0;
 
+    /**
+     * Writes buffer to command FIFO. Command FIFO is processed in
+     * CommandMultiplexer Vi.
+     *
+     * @param data buffer to write to FIFO. First should be command
+     * address/number, followed by command data.
+     *
+     * @param length lenght of the data buffer
+     *
+     * @param timeoutInMs timeout for write operation. 0 for no timeout
+     * (throw exception when data cannot be written), -1 for no timeout (waits
+     * indefintely for FIFO availability).
+     *
+     * @throw NiError on NI error
+     *
+     * @see FPGAAddresses for command list.
+     */
     virtual void writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
+
+    /**
+     * Writes buffer to command FIFO. Command FIFO is processed in
+     * CommandMultiplexer Vi.
+     *
+     * @param data data to write to the command FIFO. First should be command
+     * address/number, followed by command data.
+     *
+     * @param timeoutInMs timeout for write operation. 0 for no timeout
+     * (throw exception when data cannot be written), -1 for no timeout (waits
+     * indefintely for FIFO availability).
+     *
+     * @throw NiError on NI error
+     *
+     * @see FPGAAddresses for command list.
+     */
     virtual void writeCommandFIFO(uint16_t data, int32_t timeoutInMs) = 0;
+
+    /**
+     * Performs request for various data stored inside FPGA. This allows access
+     * for modbus responses etc.
+     *
+     * @param data request command followed by request parameters
+     * @param length length of data buffer
+     *
+     * @param timeoutInMs timeout for write operation. 0 for no timeout
+     * (throw exception when data cannot be written), -1 for no timeout (waits
+     * indefinitely for FIFO availability).
+     *
+     * @throw NiError on NI error
+     *
+     * @see readU8ResponseFIFO
+     * @see readU16ResponseFIFO
+     */
     virtual void writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
+
+    /**
+     * Write single command into requestFIFO.
+     *
+     * @param data data to write
+     * @param timeoutInMs timeout for data write in milliseconds
+     *
+     * @throw NiError on NI error
+     */
     virtual void writeRequestFIFO(uint16_t data, int32_t timeoutInMs) = 0;
+
+    /**
+     * Write current timestamp value into timestampFIFO. Shall be called after
+     * PPS interrupt is received. See [NI forum for
+     * details](https://forums.ni.com/t5/LabVIEW-Time-Sensitive/Time-Synchronization-FPGA-I-Os/gpm-p/3538972?profile.language=en).
+     *
+     * @param timestamp current system timestamp in nanoseconds
+     *
+     * @throw NiError on NI error
+     */
     virtual void writeTimestampFIFO(uint64_t timestamp) = 0;
+
+    /**
+     *
+     * @throw NiError on NI error
+     */
     virtual void readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) = 0;
+
+    /**
+     *
+     * @throw NiError on NI error
+     */
     virtual void readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) = 0;
 
+    /**
+     * Requests HealthAndStatus data. Response can be read calling
+     * readHealthAndStatusFIFO method.
+     *
+     * Request types are:
+     *
+     * * **1** return single U64 value at address param
+     * * **2** return full HealthAndStatus memory. Size is specified when
+     *         creating HealthAndStatus memory.
+     * * **3** clear health and status memory
+     *
+     * @param request request type, see above
+     * @param param relevant only for request 1
+     *
+     * @throw NiError on NI error
+     */
     virtual void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) = 0;
+
+    /**
+     * Copy HealthAndStatus data into supplied data buffer.
+     *
+     * @param data memory data will be copied
+     * @param length buffer length. Must match FPGA defined memory size (64)
+     * @param timeoutInMs timeout in microseconds
+     *
+     * @throw NiError on NI error
+     */
     virtual void readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) = 0;
 
 protected:

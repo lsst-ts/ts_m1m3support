@@ -258,11 +258,10 @@ void FPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs)
 void FPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) { writeRequestFIFO(&data, 1, timeoutInMs); }
 
 void FPGA::writeTimestampFIFO(uint64_t timestamp) {
-    uint64_t buffer[1] = {timestamp};
     NiThrowError(
             __PRETTY_FUNCTION__,
             NiFpga_WriteFifoU64(_session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO,
-                                buffer, 1, 0, &_remaining));
+                                &timestamp, 1, 0, &_remaining));
 }
 
 void FPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) {
