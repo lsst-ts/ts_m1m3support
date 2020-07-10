@@ -46,14 +46,38 @@ public:
 /**
  * Throws NI exception if an error occurred.
  *
+ * @param msg message associated with the error
+ * @param status NI status
+ *
  * @throw NiError if status != 0
  *
  * @see NiError
  */
 void NiThrowError(const char *msg, int32_t status);
 
+/**
+ * Throws NI exception if an error occurred.
+ *
+ * @param msg message associated with the error
+ * @param status NI status
+ *
+ * @throw NiError if status != 0
+ *
+ * @see NiError
+ */
 inline void NiThrowError(const std::string &msg, int32_t status) { NiThrowError(msg.c_str(), status); }
 
+/**
+ * Throws NI exception if an error occurred.
+ *
+ * @param func reporting function
+ * @param ni_func Ni function name signaling the exception
+ * @param status NI status
+ *
+ * @throw NiError if status != 0
+ *
+ * @see NiError
+ */
 void NiThrowError(const char *func, const char *ni_func, int32_t status);
 
 #endif  // !LSST_M1M3_SS_FPGA_NiError_H_
