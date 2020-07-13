@@ -22,8 +22,6 @@
  */
 
 #include <PositionM1M3Command.h>
-#include <Context.h>
-#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {

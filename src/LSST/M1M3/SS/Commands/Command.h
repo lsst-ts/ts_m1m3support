@@ -25,14 +25,14 @@
 #define COMMAND_H_
 
 #include <string>
+#include <Context.h>
 #include <DataTypes.h>
+// TODO remove/refactor with M1M3SSPublisher as singleton
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-
-class Context;
-class M1M3SSPublisher;
 
 class Command {
 protected:
