@@ -46,15 +46,13 @@ States::Type ActiveState::update(UpdateCommand* command, Model* model) {
 
 States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command, Model* model) {
     spdlog::info("ActiveState: enterEngineering()");
-    States::Type newState = States::ActiveEngineeringState;
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }
 
 States::Type ActiveState::lowerM1M3(LowerM1M3Command* command, Model* model) {
     spdlog::info("ActiveState: lowerM1M3()");
-    States::Type newState = States::LoweringState;
     model->getAutomaticOperationsController()->startLowerOperation();
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::LoweringState);
 }
 
 States::Type ActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command,

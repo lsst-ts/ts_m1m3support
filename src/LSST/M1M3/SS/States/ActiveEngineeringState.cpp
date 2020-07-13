@@ -73,15 +73,13 @@ States::Type ActiveEngineeringState::update(UpdateCommand* command, Model* model
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, Model* model) {
     spdlog::info("ActiveEngineeringState: lowerM1M3()");
-    States::Type newState = States::LoweringEngineeringState;
     model->getForceController()->resetPIDs();
     model->getAutomaticOperationsController()->startLowerOperation();
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 
 States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* command, Model* model) {
     spdlog::info("ActiveEngineeringState: exitEngineering()");
-    States::Type newState = States::ActiveState;
     model->getForceController()->resetPIDs();
     model->getDigitalInputOutput()->turnAirOn();
     model->getPositionController()->stopMotion();
@@ -92,7 +90,7 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     model->getDigitalInputOutput()->turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     model->getPowerController()->setAllPowerNetworks(true);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::ActiveState);
 }
 
 States::Type ActiveEngineeringState::applyAberrationForcesByBendingModes(

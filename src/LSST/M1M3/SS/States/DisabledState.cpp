@@ -80,7 +80,6 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
 
 States::Type DisabledState::enable(EnableCommand* command, Model* model) {
     spdlog::info("DisabledState: enable()");
-    States::Type newState = States::ParkedState;
     model->getILC()->writeSetModeEnableBuffer();
     model->getILC()->triggerModbus();
     model->getILC()->waitForAllSubnets(5000);
@@ -88,12 +87,11 @@ States::Type DisabledState::enable(EnableCommand* command, Model* model) {
     model->getILC()->verifyResponses();
     model->getDigitalInputOutput()->turnAirOn();
     model->getPowerController()->setAllAuxPowerNetworks(true);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::ParkedState);
 }
 
 States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
     spdlog::info("DisabledState: standby()");
-    States::Type newState = States::StandbyState;
     model->getILC()->writeSetModeStandbyBuffer();
     model->getILC()->triggerModbus();
     model->getILC()->waitForAllSubnets(5000);
@@ -101,7 +99,7 @@ States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
     model->getILC()->verifyResponses();
     model->getPublisher()->tryLogForceActuatorState();
     model->getPowerController()->setBothPowerNetworks(false);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::StandbyState);
 }
 
 States::Type DisabledState::programILC(ProgramILCCommand* command, Model* model) {

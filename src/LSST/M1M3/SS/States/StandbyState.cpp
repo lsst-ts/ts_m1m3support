@@ -48,7 +48,6 @@ States::Type StandbyState::update(UpdateCommand* command, Model* model) {
 
 States::Type StandbyState::start(StartCommand* command, Model* model) {
     spdlog::info("StandbyState: start()");
-    States::Type newState = States::DisabledState;
     model->loadSettings(command->getData()->settingsToApply);
     PowerController* powerController = model->getPowerController();
     ILC* ilc = model->getILC();
@@ -123,14 +122,13 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
     gyro->exitConfigurationMode();
     gyro->bit();
     digitalInputOutput->tryToggleHeartbeat();
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::DisabledState);
 }
 
 States::Type StandbyState::exitControl(ExitControlCommand* command, Model* model) {
     spdlog::info("StandbyState: ExitControl()");
-    States::Type newState = States::OfflineState;
     model->exitControl();
-    return newState;
+    return States::OfflineState;
 }
 
 } /* namespace SS */
