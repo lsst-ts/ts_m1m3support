@@ -61,15 +61,13 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
     spdlog::info("ParkedEngineeringState: raiseM1M3()");
-    States::Type newState = States::RaisingEngineeringState;
     model->getAutomaticOperationsController()->startRaiseOperation(
             command->getData()->bypassReferencePosition);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::RaisingEngineeringState);
 }
 
 States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command, Model* model) {
     spdlog::info("ParkedEngineeringState: exitEngineering()");
-    States::Type newState = States::ParkedState;
     model->getDigitalInputOutput()->turnAirOn();
     model->getPositionController()->stopMotion();
     model->getForceController()->zeroOffsetForces();
@@ -77,12 +75,11 @@ States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* com
     model->getDigitalInputOutput()->turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     model->getPowerController()->setAllPowerNetworks(true);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::ParkedState);
 }
 
 States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* model) {
     spdlog::info("ParkedEngineeringState: disable()");
-    States::Type newState = States::DisabledState;
     // Stop any existing motion (chase and move commands)
     model->getPositionController()->stopMotion();
     model->getForceController()->reset();
@@ -95,7 +92,7 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* mod
     // TODO: Uncomment this later when its not so hot outside
     // model->getDigitalInputOutput()->turnAirOff();
     model->getPowerController()->setAllAuxPowerNetworks(false);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::DisabledState);
 }
 
 } /* namespace SS */

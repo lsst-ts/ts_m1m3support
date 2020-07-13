@@ -35,7 +35,6 @@ OfflineState::OfflineState(M1M3SSPublisher* publisher) : State(publisher, "Offli
 
 States::Type OfflineState::enterControl(EnterControlCommand* command, Model* model) {
     spdlog::info("OfflineState: enterControl()");
-    States::Type newState = States::StandbyState;
     model->publishRecommendedSettings();
     // model->getDigitalInputOutput()->turnAirOff();
     // model->getDigitalInputOutput()->turnCellLightsOff();
@@ -43,7 +42,7 @@ States::Type OfflineState::enterControl(EnterControlCommand* command, Model* mod
     model->getDigitalInputOutput()->turnAirOn();
     // TODO: May need to change power controller to act like digital input output
     // model->getPowerController()->setBothPowerNetworks(false);
-    return newState;
+    return States::StandbyState;
 }
 
 } /* namespace SS */

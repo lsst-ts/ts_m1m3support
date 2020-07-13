@@ -57,20 +57,17 @@ States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
                 "The BypassReferencePosition parameter of the RaiseM1M3 cannot be true in the ParkedState.");
         return model->getSafetyController()->checkSafety(States::NoStateTransition);
     }
-    States::Type newState = States::RaisingState;
     model->getAutomaticOperationsController()->startRaiseOperation(false);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::RaisingState);
 }
 
 States::Type ParkedState::enterEngineering(EnterEngineeringCommand* command, Model* model) {
     spdlog::info("ParkedState: enterEngineering()");
-    States::Type newState = States::ParkedEngineeringState;
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::ParkedEngineeringState);
 }
 
 States::Type ParkedState::disable(DisableCommand* command, Model* model) {
     spdlog::info("ParkedState: disable()");
-    States::Type newState = States::DisabledState;
     model->getILC()->writeSetModeDisableBuffer();
     model->getILC()->triggerModbus();
     model->getILC()->waitForAllSubnets(5000);
@@ -80,7 +77,7 @@ States::Type ParkedState::disable(DisableCommand* command, Model* model) {
     // TODO: Uncomment this when its not so hot outside
     // model->getDigitalInputOutput()->turnAirOff();
     model->getPowerController()->setAllAuxPowerNetworks(false);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::DisabledState);
 }
 
 } /* namespace SS */

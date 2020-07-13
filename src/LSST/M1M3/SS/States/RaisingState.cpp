@@ -52,9 +52,8 @@ States::Type RaisingState::update(UpdateCommand* command, Model* model) {
 
 States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) {
     spdlog::info("RaisingState: abortRaiseM1M3()");
-    States::Type newState = States::LoweringState;
     model->getAutomaticOperationsController()->abortRaiseM1M3();
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::LoweringState);
 }
 
 } /* namespace SS */
