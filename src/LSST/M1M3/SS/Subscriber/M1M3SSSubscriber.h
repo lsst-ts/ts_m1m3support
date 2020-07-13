@@ -50,7 +50,7 @@ public:
     Command* tryAcceptCommandEnable();
     Command* tryAcceptCommandDisable();
     Command* tryAcceptCommandStandby();
-    Command* tryAcceptCommandShutdown();
+    Command* tryAcceptCommandExitControl();
     Command* tryAcceptCommandTurnAirOn();
     Command* tryAcceptCommandTurnAirOff();
     Command* tryAcceptCommandApplyOffsetForces();
@@ -99,7 +99,7 @@ private:
     MTM1M3_command_enableC _enableData;
     MTM1M3_command_disableC _disableData;
     MTM1M3_command_standbyC _standbyData;
-    MTM1M3_command_shutdownC _shutdownData;
+    MTM1M3_command_exitControlC _exitControlData;
     MTM1M3_command_turnAirOnC _turnAirOnData;
     MTM1M3_command_turnAirOffC _turnAirOffData;
     MTM1M3_command_applyOffsetForcesC _applyOffsetForcesData;

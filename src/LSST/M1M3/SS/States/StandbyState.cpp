@@ -126,10 +126,10 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
     return model->getSafetyController()->checkSafety(newState);
 }
 
-States::Type StandbyState::shutdown(ShutdownCommand* command, Model* model) {
-    spdlog::info("StandbyState: shutdown()");
+States::Type StandbyState::exitControl(ExitControlCommand* command, Model* model) {
+    spdlog::info("StandbyState: ExitControl()");
     States::Type newState = States::OfflineState;
-    model->shutdown();
+    model->exitControl();
     return newState;
 }
 

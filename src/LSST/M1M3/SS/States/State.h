@@ -36,7 +36,7 @@
 #include <EnableCommand.h>
 #include <DisableCommand.h>
 #include <StandbyCommand.h>
-#include <ShutdownCommand.h>
+#include <ExitControlCommand.h>
 #include <UpdateCommand.h>
 #include <TurnAirOnCommand.h>
 #include <TurnAirOffCommand.h>
@@ -98,7 +98,7 @@ public:
     virtual States::Type enable(EnableCommand* command, Model* model);
     virtual States::Type disable(DisableCommand* command, Model* model);
     virtual States::Type standby(StandbyCommand* command, Model* model);
-    virtual States::Type shutdown(ShutdownCommand* command, Model* model);
+    virtual States::Type exitControl(ExitControlCommand* command, Model* model);
     virtual States::Type update(UpdateCommand* command, Model* model);
     virtual States::Type turnAirOn(TurnAirOnCommand* command, Model* model);
     virtual States::Type turnAirOff(TurnAirOffCommand* command, Model* model);

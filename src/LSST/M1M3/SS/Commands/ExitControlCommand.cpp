@@ -21,7 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ShutdownCommand.h>
+#include <ExitControlCommand.h>
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 
@@ -29,25 +29,25 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                 MTM1M3_command_shutdownC*) {
+ExitControlCommand::ExitControlCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                                       MTM1M3_command_exitControlC*) {
     _context = context;
     _publisher = publisher;
     this->commandID = commandID;
 }
 
-void ShutdownCommand::execute() { _context->shutdown(this); }
+void ExitControlCommand::execute() { _context->exitControl(this); }
 
-void ShutdownCommand::ackInProgress() {
-    _publisher->ackCommandshutdown(this->commandID, ACK_INPROGRESS, "In-Progress");
+void ExitControlCommand::ackInProgress() {
+    _publisher->ackCommandexitControl(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
-void ShutdownCommand::ackComplete() {
-    _publisher->ackCommandshutdown(this->commandID, ACK_COMPLETE, "Complete");
+void ExitControlCommand::ackComplete() {
+    _publisher->ackCommandexitControl(this->commandID, ACK_COMPLETE, "Complete");
 }
 
-void ShutdownCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandshutdown(this->commandID, ACK_FAILED, "Failed: " + reason);
+void ExitControlCommand::ackFailed(std::string reason) {
+    _publisher->ackCommandexitControl(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

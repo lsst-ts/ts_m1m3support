@@ -41,7 +41,7 @@ M1M3SSSubscriber::M1M3SSSubscriber(std::shared_ptr<SAL_MTM1M3> m1m3SAL,
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enable");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disable");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_standby");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_shutdown");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitControl");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOn");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOff");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForces");
@@ -115,10 +115,10 @@ Command* M1M3SSSubscriber::tryAcceptCommandStandby() {
     return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandShutdown() {
-    int32_t commandID = _m1m3SAL->acceptCommand_shutdown(&_shutdownData);
+Command* M1M3SSSubscriber::tryAcceptCommandExitControl() {
+    int32_t commandID = _m1m3SAL->acceptCommand_exitControl(&_exitControlData);
     if (commandID > 0) {
-        return _commandFactory->create(Commands::ShutdownCommand, &_shutdownData, commandID);
+        return _commandFactory->create(Commands::ExitControlCommand, &_exitControlData, commandID);
     }
     return 0;
 }

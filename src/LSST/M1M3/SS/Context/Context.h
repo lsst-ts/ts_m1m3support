@@ -37,7 +37,7 @@ class StartCommand;
 class EnableCommand;
 class DisableCommand;
 class StandbyCommand;
-class ShutdownCommand;
+class ExitControlCommand;
 class UpdateCommand;
 class TurnAirOnCommand;
 class TurnAirOffCommand;
@@ -94,7 +94,7 @@ public:
     void enable(EnableCommand* command);
     void disable(DisableCommand* command);
     void standby(StandbyCommand* command);
-    void shutdown(ShutdownCommand* command);
+    void exitControl(ExitControlCommand* command);
     void update(UpdateCommand* command);
     void turnAirOn(TurnAirOnCommand* command);
     void turnAirOff(TurnAirOffCommand* command);
