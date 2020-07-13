@@ -22,7 +22,6 @@
  */
 
 #include <EnterControlCommand.h>
-#include <Context.h>
 
 namespace LSST {
 namespace M1M3 {

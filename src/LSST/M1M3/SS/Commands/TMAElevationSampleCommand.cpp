@@ -22,7 +22,6 @@
  */
 
 #include <TMAElevationSampleCommand.h>
-#include <Context.h>
 #include <cstring>
 
 namespace LSST {
