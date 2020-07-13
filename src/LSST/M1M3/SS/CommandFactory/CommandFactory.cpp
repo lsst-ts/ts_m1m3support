@@ -28,7 +28,7 @@
 #include <DisableCommand.h>
 #include <StandbyCommand.h>
 #include <UpdateCommand.h>
-#include <ShutdownCommand.h>
+#include <ExitControlCommand.h>
 #include <TurnAirOnCommand.h>
 #include <TurnAirOffCommand.h>
 #include <ApplyOffsetForcesCommand.h>
@@ -96,8 +96,9 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new StandbyCommand(_context, _publisher, commandID, (MTM1M3_command_standbyC*)data);
         case Commands::UpdateCommand:
             return new UpdateCommand(_context, (pthread_mutex_t*)data);
-        case Commands::ShutdownCommand:
-            return new ShutdownCommand(_context, _publisher, commandID, (MTM1M3_command_shutdownC*)data);
+        case Commands::ExitControlCommand:
+            return new ExitControlCommand(_context, _publisher, commandID,
+                                          (MTM1M3_command_exitControlC*)data);
         case Commands::TurnAirOnCommand:
             return new TurnAirOnCommand(_context, _publisher, commandID, (MTM1M3_command_turnAirOnC*)data);
         case Commands::TurnAirOffCommand:

@@ -50,7 +50,7 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandEnable());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandDisable());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandStandby());
-        _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandShutdown());
+        _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandExitControl());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandTurnAirOn());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandTurnAirOff());
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandApplyOffsetForces());

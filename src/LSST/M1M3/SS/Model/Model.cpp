@@ -221,9 +221,9 @@ void Model::publishOuterLoop(double executionTime) {
     _publisher->putOuterLoopData();
 }
 
-void Model::shutdown() { pthread_mutex_unlock(&_mutex); }
+void Model::exitControl() { pthread_mutex_unlock(&_mutex); }
 
-void Model::waitForShutdown() {
+void Model::waitForExitControl() {
     pthread_mutex_lock(&_mutex);
     pthread_mutex_unlock(&_mutex);
 }

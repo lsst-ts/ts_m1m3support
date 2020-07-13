@@ -36,7 +36,7 @@ public:
 
     virtual States::Type update(UpdateCommand* command, Model* model) override;
     virtual States::Type start(StartCommand* command, Model* model) override;
-    virtual States::Type shutdown(ShutdownCommand* command, Model* model) override;
+    virtual States::Type exitControl(ExitControlCommand* command, Model* model) override;
 };
 
 } /* namespace SS */

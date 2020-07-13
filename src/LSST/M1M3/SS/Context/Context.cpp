@@ -73,10 +73,10 @@ void Context::standby(StandbyCommand* command) {
     _stateFactory->destroy(state);
 }
 
-void Context::shutdown(ShutdownCommand* command) {
-    spdlog::debug("Context: shutdown()");
+void Context::exitControl(ExitControlCommand* command) {
+    spdlog::debug("Context: exitControl()");
     State* state = _stateFactory->create(_currentState);
-    _updateCurrentStateIfRequired(state->shutdown(command, _model));
+    _updateCurrentStateIfRequired(state->exitControl(command, _model));
     _stateFactory->destroy(state);
 }
 

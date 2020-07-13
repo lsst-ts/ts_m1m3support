@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SHUTDOWNCOMMAND_H_
-#define SHUTDOWNCOMMAND_H_
+#ifndef EXITCONTROLCOMMAND_H_
+#define EXITCONTROLCOMMAND_H_
 
 #include <Command.h>
 #include <SAL_MTM1M3C.h>
@@ -38,10 +38,10 @@ namespace SS {
  * This is an external command and can be issued via SAL.
  * Once this command has been executed the software will stop running.
  */
-class ShutdownCommand : public Command {
+class ExitControlCommand : public Command {
 public:
-    ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                    MTM1M3_command_shutdownC*);
+    ExitControlCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                       MTM1M3_command_exitControlC*);
 
     void execute() override;
     void ackInProgress() override;
@@ -57,4 +57,4 @@ private:
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* SHUTDOWNCOMMAND_H_ */
+#endif /* EXITCONTROLCOMMAND_H_ */

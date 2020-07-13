@@ -49,8 +49,8 @@ States::Type State::disable(DisableCommand* command, Model* model) {
 States::Type State::standby(StandbyCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "Standby");
 }
-States::Type State::shutdown(ShutdownCommand* command, Model* model) {
-    return this->rejectCommandInvalidState(command, "Shutdown");
+States::Type State::exitControl(ExitControlCommand* command, Model* model) {
+    return this->rejectCommandInvalidState(command, "ExitControl");
 }
 States::Type State::update(UpdateCommand* command, Model* model) { return States::NoStateTransition; }
 States::Type State::turnAirOn(TurnAirOnCommand* command, Model* model) {
