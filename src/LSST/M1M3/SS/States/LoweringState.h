@@ -34,7 +34,7 @@ class LoweringState : public EnabledState {
 public:
     LoweringState(M1M3SSPublisher* publisher);
 
-    States::Type update(UpdateCommand* command, Model* model);
+    virtual States::Type update(UpdateCommand* command, Model* model) override;
 };
 
 } /* namespace SS */
