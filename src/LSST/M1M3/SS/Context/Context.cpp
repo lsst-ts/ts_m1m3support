@@ -38,10 +38,10 @@ Context::Context(StaticStateFactory* stateFactory, Model* model) {
     _currentState = States::OfflineState;
 }
 
-void Context::boot(BootCommand* command) {
-    spdlog::debug("Context: boot()");
+void Context::enterControl(EnterControlCommand* command) {
+    spdlog::debug("Context: enterControl()");
     State* state = _stateFactory->create(_currentState);
-    _updateCurrentStateIfRequired(state->boot(command, _model));
+    _updateCurrentStateIfRequired(state->enterControl(command, _model));
     _stateFactory->destroy(state);
 }
 

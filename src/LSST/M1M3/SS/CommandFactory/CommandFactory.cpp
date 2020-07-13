@@ -22,7 +22,7 @@
  */
 
 #include <CommandFactory.h>
-#include <BootCommand.h>
+#include <EnterControlCommand.h>
 #include <StartCommand.h>
 #include <EnableCommand.h>
 #include <DisableCommand.h>
@@ -84,8 +84,8 @@ CommandFactory::CommandFactory(M1M3SSPublisher* publisher, Context* context) {
 Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) {
     spdlog::trace("CommandFactory: create({}, data, {})", commandType, commandID);
     switch (commandType) {
-        case Commands::BootCommand:
-            return new BootCommand(_context);
+        case Commands::EnterControlCommand:
+            return new EnterControlCommand(_context);
         case Commands::StartCommand:
             return new StartCommand(_context, _publisher, commandID, (MTM1M3_command_startC*)data);
         case Commands::EnableCommand:

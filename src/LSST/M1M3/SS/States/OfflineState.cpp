@@ -33,8 +33,8 @@ namespace SS {
 
 OfflineState::OfflineState(M1M3SSPublisher* publisher) : State(publisher, "OfflineState") {}
 
-States::Type OfflineState::boot(BootCommand* command, Model* model) {
-    spdlog::info("OfflineState: boot()");
+States::Type OfflineState::enterControl(EnterControlCommand* command, Model* model) {
+    spdlog::info("OfflineState: enterControl()");
     States::Type newState = States::StandbyState;
     model->publishRecommendedSettings();
     // model->getDigitalInputOutput()->turnAirOff();

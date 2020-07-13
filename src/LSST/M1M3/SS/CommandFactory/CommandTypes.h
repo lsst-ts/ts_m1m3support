@@ -33,7 +33,7 @@ namespace SS {
  */
 struct Commands {
     enum Type {
-        BootCommand = 0,
+        EnterControlCommand = 0,
         StartCommand = 1,
         EnableCommand = 2,
         DisableCommand = 3,
