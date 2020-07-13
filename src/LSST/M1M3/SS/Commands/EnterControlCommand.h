@@ -21,20 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <BootCommand.h>
-#include <Context.h>
+#ifndef ENTERCONTROLCOMMAND_H_
+#define ENTERCONTROLCOMMAND_H_
+
+#include <Command.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-BootCommand::BootCommand(Context* context) {
-    _context = context;
-    this->commandID = -1;
-}
+/*!
+ * This command is responsible for transitioning the state
+ * machine from the offline state to the standby state.
+ * This is an internal command only and cannot be issued via SAL, as
+ * M1M3Subscriber isn't registering it.
+ */
+class EnterControlCommand : public Command {
+public:
+    EnterControlCommand(Context* context);
 
-void BootCommand::execute() { _context->boot(this); }
+    void execute();
+
+private:
+    Context* _context;
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif /* ENTERCONTROLCOMMAND_H_ */

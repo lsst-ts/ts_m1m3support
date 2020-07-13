@@ -32,7 +32,7 @@ namespace SS {
 
 class StaticStateFactory;
 class Model;
-class BootCommand;
+class EnterControlCommand;
 class StartCommand;
 class EnableCommand;
 class DisableCommand;
@@ -89,7 +89,7 @@ class Context {
 public:
     Context(StaticStateFactory* stateFactory, Model* model);
 
-    void boot(BootCommand* command);
+    void enterControl(EnterControlCommand* command);
     void start(StartCommand* command);
     void enable(EnableCommand* command);
     void disable(DisableCommand* command);

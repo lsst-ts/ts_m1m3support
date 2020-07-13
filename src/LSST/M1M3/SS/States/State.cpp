@@ -36,7 +36,9 @@ State::State(M1M3SSPublisher* publisher, std::string name) {
 
 State::~State() {}
 
-States::Type State::boot(BootCommand* command, Model* model) { return States::NoStateTransition; }
+States::Type State::enterControl(EnterControlCommand* command, Model* model) {
+    return States::NoStateTransition;
+}
 States::Type State::start(StartCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "Start");
 }

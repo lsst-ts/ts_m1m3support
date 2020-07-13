@@ -152,8 +152,8 @@ void runFPGAs(M1M3SSPublisher* publisher, std::shared_ptr<SAL_MTM1M3> m1m3SAL,
     OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, publisher);
     spdlog::info("Main: Creating pps thread");
     PPSThread ppsThread = PPSThread(publisher);
-    spdlog::info("Main: Queuing boot command");
-    controller.enqueue(commandFactory.create(Commands::BootCommand));
+    spdlog::info("Main: Queuing EnterControl command");
+    controller.enqueue(commandFactory.create(Commands::EnterControlCommand));
 
     pthread_t subscriberThreadId;
     pthread_t controllerThreadId;
