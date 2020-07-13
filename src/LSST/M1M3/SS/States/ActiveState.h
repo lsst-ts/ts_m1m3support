@@ -34,11 +34,13 @@ class ActiveState : public EnabledState {
 public:
     ActiveState(M1M3SSPublisher* publisher);
 
-    States::Type update(UpdateCommand* command, Model* model);
-    States::Type enterEngineering(EnterEngineeringCommand* command, Model* model);
-    States::Type lowerM1M3(LowerM1M3Command* command, Model* model);
-    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
-    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command, Model* model);
+    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type enterEngineering(EnterEngineeringCommand* command, Model* model) override;
+    virtual States::Type lowerM1M3(LowerM1M3Command* command, Model* model) override;
+    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command,
+                                                    Model* model) override;
+    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command,
+                                                     Model* model) override;
 };
 
 } /* namespace SS */
