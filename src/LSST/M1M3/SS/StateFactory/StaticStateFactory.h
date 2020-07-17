@@ -52,7 +52,6 @@ public:
     StaticStateFactory(M1M3SSPublisher* publisher);
 
     State* create(States::Type state);
-    void destroy(State* state);
 
 private:
     OfflineState _offlineState;
