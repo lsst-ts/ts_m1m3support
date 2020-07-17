@@ -22,8 +22,6 @@
  */
 
 #include <TurnAirOnCommand.h>
-#include <Context.h>
-#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {

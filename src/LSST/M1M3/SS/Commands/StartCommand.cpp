@@ -22,8 +22,6 @@
  */
 
 #include <StartCommand.h>
-#include <Context.h>
-#include <M1M3SSPublisher.h>
 
 #include <SAL_defines.h>
 

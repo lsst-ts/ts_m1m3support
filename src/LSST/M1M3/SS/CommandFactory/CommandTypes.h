@@ -33,13 +33,13 @@ namespace SS {
  */
 struct Commands {
     enum Type {
-        BootCommand = 0,
+        EnterControlCommand = 0,
         StartCommand = 1,
         EnableCommand = 2,
         DisableCommand = 3,
         StandbyCommand = 4,
         UpdateCommand = 5,
-        ShutdownCommand = 6,
+        ExitControlCommand = 6,
         TurnAirOnCommand = 7,
         TurnAirOffCommand = 8,
         ApplyOffsetForcesCommand = 9,

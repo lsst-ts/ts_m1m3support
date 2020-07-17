@@ -78,7 +78,6 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
 
 States::Type FaultState::standby(StandbyCommand* command, Model* model) {
     spdlog::trace("FaultState: standby()");
-    States::Type newState = States::StandbyState;
     model->getILC()->writeSetModeStandbyBuffer();
     model->getILC()->triggerModbus();
     model->getILC()->waitForAllSubnets(5000);
@@ -86,7 +85,7 @@ States::Type FaultState::standby(StandbyCommand* command, Model* model) {
     model->getILC()->verifyResponses();
     model->getPowerController()->setAllPowerNetworks(false);
     model->getSafetyController()->clearErrorCode();
-    return newState;
+    return States::StandbyState;
 }
 
 } /* namespace SS */

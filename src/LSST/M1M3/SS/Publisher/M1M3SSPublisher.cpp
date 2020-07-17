@@ -2252,8 +2252,8 @@ void M1M3SSPublisher::ackCommandstandby(int32_t commandID, int32_t ackCode, std:
     _m1m3SAL->ackCommand_standby(commandID, ackCode, 0, (char*)description.c_str());
 }
 
-void M1M3SSPublisher::ackCommandshutdown(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_shutdown(commandID, ackCode, 0, (char*)description.c_str());
+void M1M3SSPublisher::ackCommandexitControl(int32_t commandID, int32_t ackCode, std::string description) {
+    _m1m3SAL->ackCommand_exitControl(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 void M1M3SSPublisher::ackCommandturnAirOn(int32_t commandID, int32_t ackCode, std::string description) {

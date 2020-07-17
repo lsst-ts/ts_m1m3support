@@ -35,8 +35,8 @@ public:
     FaultState(M1M3SSPublisher* publisher);
     FaultState(M1M3SSPublisher* publisher, std::string name);
 
-    States::Type update(UpdateCommand* command, Model* model);
-    States::Type standby(StandbyCommand* command, Model* model);
+    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type standby(StandbyCommand* command, Model* model) override;
 };
 
 } /* namespace SS */

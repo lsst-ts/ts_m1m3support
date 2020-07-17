@@ -34,8 +34,8 @@ class RaisingEngineeringState : public EngineeringState {
 public:
     RaisingEngineeringState(M1M3SSPublisher* publisher);
 
-    States::Type update(UpdateCommand* command, Model* model);
-    States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model);
+    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) override;
 };
 
 } /* namespace SS */

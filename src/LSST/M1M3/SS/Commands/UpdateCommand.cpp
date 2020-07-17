@@ -22,7 +22,6 @@
  */
 
 #include <UpdateCommand.h>
-#include <Context.h>
 
 namespace LSST {
 namespace M1M3 {

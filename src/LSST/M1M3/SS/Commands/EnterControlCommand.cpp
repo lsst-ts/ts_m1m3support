@@ -21,34 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ShutdownCommand.h>
-#include <Context.h>
-#include <M1M3SSPublisher.h>
+#include <EnterControlCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ShutdownCommand::ShutdownCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                 MTM1M3_command_shutdownC*) {
+EnterControlCommand::EnterControlCommand(Context* context) {
     _context = context;
-    _publisher = publisher;
-    this->commandID = commandID;
+    this->commandID = -1;
 }
 
-void ShutdownCommand::execute() { _context->shutdown(this); }
-
-void ShutdownCommand::ackInProgress() {
-    _publisher->ackCommandshutdown(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void ShutdownCommand::ackComplete() {
-    _publisher->ackCommandshutdown(this->commandID, ACK_COMPLETE, "Complete");
-}
-
-void ShutdownCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandshutdown(this->commandID, ACK_FAILED, "Failed: " + reason);
-}
+void EnterControlCommand::execute() { _context->enterControl(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

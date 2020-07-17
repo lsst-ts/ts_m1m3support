@@ -34,7 +34,7 @@ class OfflineState : public State {
 public:
     OfflineState(M1M3SSPublisher* publisher);
 
-    virtual States::Type boot(BootCommand* command, Model* model);
+    virtual States::Type enterControl(EnterControlCommand* command, Model* model) override;
 };
 
 } /* namespace SS */
