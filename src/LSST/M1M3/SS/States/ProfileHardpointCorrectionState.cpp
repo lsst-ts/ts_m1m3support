@@ -34,7 +34,7 @@ namespace M1M3 {
 namespace SS {
 
 ProfileHardpointCorrectionState::ProfileHardpointCorrectionState(M1M3SSPublisher* publisher)
-        : EnabledState(publisher, "LoweringFaultState") {}
+        : EnabledState(publisher, "ProfileHardpointCorrectionState") {}
 
 States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("ProfileHardpointCorrectionState: update()");

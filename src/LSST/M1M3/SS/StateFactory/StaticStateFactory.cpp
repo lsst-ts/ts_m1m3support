@@ -88,8 +88,6 @@ State* StaticStateFactory::create(States::Type state) {
     }
 }
 
-void StaticStateFactory::destroy(State* state) { spdlog::trace("StaticStateFactory: destroy()"); }
-
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
