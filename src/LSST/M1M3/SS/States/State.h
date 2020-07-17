@@ -31,12 +31,12 @@
 #include <Model.h>
 #include <M1M3SSPublisher.h>
 #include <Command.h>
-#include <BootCommand.h>
+#include <EnterControlCommand.h>
 #include <StartCommand.h>
 #include <EnableCommand.h>
 #include <DisableCommand.h>
 #include <StandbyCommand.h>
-#include <ShutdownCommand.h>
+#include <ExitControlCommand.h>
 #include <UpdateCommand.h>
 #include <TurnAirOnCommand.h>
 #include <TurnAirOffCommand.h>
@@ -93,12 +93,12 @@ public:
     State(M1M3SSPublisher* publisher, std::string name);
     virtual ~State();
 
-    virtual States::Type boot(BootCommand* command, Model* model);
+    virtual States::Type enterControl(EnterControlCommand* command, Model* model);
     virtual States::Type start(StartCommand* command, Model* model);
     virtual States::Type enable(EnableCommand* command, Model* model);
     virtual States::Type disable(DisableCommand* command, Model* model);
     virtual States::Type standby(StandbyCommand* command, Model* model);
-    virtual States::Type shutdown(ShutdownCommand* command, Model* model);
+    virtual States::Type exitControl(ExitControlCommand* command, Model* model);
     virtual States::Type update(UpdateCommand* command, Model* model);
     virtual States::Type turnAirOn(TurnAirOnCommand* command, Model* model);
     virtual States::Type turnAirOff(TurnAirOffCommand* command, Model* model);

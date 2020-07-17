@@ -87,8 +87,8 @@ public:
     void publishRecommendedSettings();
     void publishOuterLoop(double executionTime);
 
-    void shutdown();
-    void waitForShutdown();
+    void exitControl();
+    void waitForExitControl();
 
 private:
     void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,

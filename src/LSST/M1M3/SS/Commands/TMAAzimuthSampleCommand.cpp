@@ -22,7 +22,6 @@
  */
 
 #include <TMAAzimuthSampleCommand.h>
-#include <Context.h>
 #include <cstring>
 
 namespace LSST {

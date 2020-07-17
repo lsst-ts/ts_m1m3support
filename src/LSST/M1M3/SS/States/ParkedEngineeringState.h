@@ -34,10 +34,10 @@ class ParkedEngineeringState : public EngineeringState {
 public:
     ParkedEngineeringState(M1M3SSPublisher* publisher);
 
-    States::Type update(UpdateCommand* command, Model* model);
-    States::Type raiseM1M3(RaiseM1M3Command* command, Model* model);
-    States::Type exitEngineering(ExitEngineeringCommand* command, Model* model);
-    States::Type disable(DisableCommand* command, Model* model);
+    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type raiseM1M3(RaiseM1M3Command* command, Model* model) override;
+    virtual States::Type exitEngineering(ExitEngineeringCommand* command, Model* model) override;
+    virtual States::Type disable(DisableCommand* command, Model* model) override;
 };
 
 } /* namespace SS */

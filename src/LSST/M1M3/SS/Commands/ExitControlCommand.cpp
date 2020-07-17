@@ -21,32 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BOOTCOMMAND_H_
-#define BOOTCOMMAND_H_
-
-#include <Command.h>
+#include <ExitControlCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * This command is responsible for transitioning the state
- * machine from the offline state to the standby state.
- * This is an internal command only and cannot be issued via SAL.
- */
-class BootCommand : public Command {
-public:
-    BootCommand(Context* context);
+ExitControlCommand::ExitControlCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                                       MTM1M3_command_exitControlC*) {
+    _context = context;
+    _publisher = publisher;
+    this->commandID = commandID;
+}
 
-    void execute();
+void ExitControlCommand::execute() { _context->exitControl(this); }
 
-private:
-    Context* _context;
-};
+void ExitControlCommand::ackInProgress() {
+    _publisher->ackCommandexitControl(this->commandID, ACK_INPROGRESS, "In-Progress");
+}
+
+void ExitControlCommand::ackComplete() {
+    _publisher->ackCommandexitControl(this->commandID, ACK_COMPLETE, "Complete");
+}
+
+void ExitControlCommand::ackFailed(std::string reason) {
+    _publisher->ackCommandexitControl(this->commandID, ACK_FAILED, "Failed: " + reason);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
-
-#endif /* BOOTCOMMAND_H_ */
