@@ -23,6 +23,7 @@
 
 #include <State.h>
 #include <DataTypes.h>
+#include <Timestamp.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -183,24 +184,10 @@ void State::stopTimer() { clock_gettime(CLOCK_REALTIME, &this->stopTime); }
 double State::getCurrentTimer() {
     timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
-    double deltaNano = now.tv_nsec - this->startTime.tv_nsec;
-    double deltaSec = now.tv_sec - this->startTime.tv_sec;
-    if (deltaNano < 0) {
-        deltaSec -= 1;
-        deltaNano += 1000000000;
-    }
-    return deltaSec + (deltaNano / 1000000000.0);
+    return Timestamp::timespecdiff(&startTime, &now);
 }
 
-double State::getTimer() {
-    double deltaNano = this->stopTime.tv_nsec - this->startTime.tv_nsec;
-    double deltaSec = this->stopTime.tv_sec - this->startTime.tv_sec;
-    if (deltaNano < 0) {
-        deltaSec -= 1;
-        deltaNano += 1000000000;
-    }
-    return deltaSec + (deltaNano / 1000000000.0);
-}
+double State::getTimer() { return Timestamp::timespecdiff(&startTime, &stopTime); }
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";
