@@ -87,7 +87,7 @@ int CliApp::helpCommands(command_vec cmds) {
 
     for (auto cm : cmds) {
         if (cm == "all") {
-            for (const command_t* c = commands; c->action != NULL; c++) {
+            for (const command_t* c = commands; c->command != NULL; c++) {
                 printCommandHelp(c);
             }
 
@@ -342,7 +342,7 @@ int verifyArguments(const command_vec& cmds, const char* args) {
 int CliApp::processCommand(const command_t* cmd, const command_vec& args) {
     try {
         if (verifyArguments(args, cmd->args) >= 0) {
-            return (*(cmd->action))(args);
+            return cmd->action(args);
         }
     }
 
@@ -365,7 +365,7 @@ int CliApp::processUnmached(command_vec cmds) {
 }
 
 void CliApp::printCommands() {
-    for (const command_t* p = commands; p->action != NULL; p++) {
+    for (const command_t* p = commands; p->command != NULL; p++) {
         std::cout << " " << p->command << std::endl;
     }
 }
@@ -373,7 +373,7 @@ void CliApp::printCommands() {
 const command_t* CliApp::findCommand(std::string cmd, command_vec& matchedCmds) {
     const command_t* ret = NULL;
 
-    for (const command_t* tc = commands; tc->action != NULL; tc++) {
+    for (const command_t* tc = commands; tc->command != NULL; tc++) {
         if (strncmp(cmd.c_str(), tc->command, cmd.length()) == 0) {
             matchedCmds.push_back(tc->command);
             ret = tc;

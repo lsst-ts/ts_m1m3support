@@ -1,3 +1,26 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <ForceController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorOrientations.h>
@@ -24,165 +47,161 @@ namespace SS {
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                  ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
                                  M1M3SSPublisher* publisher, SafetyController* safetyController)
-        : aberrationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                   forceActuatorSettings),
-          accelerationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                     forceActuatorSettings),
-          activeOpticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+        : _aberrationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
                                     forceActuatorSettings),
-          azimuthForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                forceActuatorSettings),
-          balanceForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                forceActuatorSettings, pidSettings),
-          elevationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                  forceActuatorSettings),
-          offsetForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                               forceActuatorSettings),
-          staticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                               forceActuatorSettings),
-          thermalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                forceActuatorSettings),
-          velocityForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+          _accelerationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                      forceActuatorSettings),
+          _activeOpticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                     forceActuatorSettings),
+          _azimuthForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
                                  forceActuatorSettings),
-          finalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                              forceActuatorSettings) {
+          _balanceForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                 forceActuatorSettings, pidSettings),
+          _elevationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                   forceActuatorSettings),
+          _offsetForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                forceActuatorSettings),
+          _staticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                forceActuatorSettings),
+          _thermalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                 forceActuatorSettings),
+          _velocityForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                  forceActuatorSettings),
+          _finalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                               forceActuatorSettings) {
     spdlog::debug("ForceController: ForceController()");
-    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    this->forceActuatorSettings = forceActuatorSettings;
-    this->publisher = publisher;
-    this->safetyController = safetyController;
-    this->pidSettings = pidSettings;
+    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    _forceActuatorSettings = forceActuatorSettings;
+    _publisher = publisher;
+    _safetyController = safetyController;
+    _pidSettings = pidSettings;
 
-    appliedCylinderForces = publisher->getEventAppliedCylinderForces();
-    appliedForces = publisher->getEventAppliedForces();
-    forceActuatorState = publisher->getEventForceActuatorState();
-    forceSetpointWarning = publisher->getEventForceSetpointWarning();
-    rejectedCylinderForces = publisher->getEventRejectedCylinderForces();
+    _appliedCylinderForces = publisher->getEventAppliedCylinderForces();
+    _appliedForces = publisher->getEventAppliedForces();
+    _forceActuatorState = publisher->getEventForceActuatorState();
+    _forceSetpointWarning = publisher->getEventForceSetpointWarning();
+    _rejectedCylinderForces = publisher->getEventRejectedCylinderForces();
 
-    forceActuatorInfo = publisher->getEventForceActuatorInfo();
-    inclinometerData = publisher->getInclinometerData();
-    forceActuatorData = publisher->getForceActuatorData();
+    _forceActuatorInfo = publisher->getEventForceActuatorInfo();
+    _inclinometerData = publisher->getInclinometerData();
+    _forceActuatorData = publisher->getForceActuatorData();
 
-    pidData = publisher->getPIDData();
-    pidInfo = publisher->getEventPIDInfo();
-    hardpointActuatorData = publisher->getHardpointActuatorData();
-    accelerometerData = publisher->getAccelerometerData();
-    gyroData = publisher->getGyroData();
+    _pidData = publisher->getPIDData();
+    _pidInfo = publisher->getEventPIDInfo();
+    _hardpointActuatorData = publisher->getHardpointActuatorData();
+    _accelerometerData = publisher->getAccelerometerData();
+    _gyroData = publisher->getGyroData();
 
-    elevation_Timestamp = 0;
-    elevation_Angle_Actual = NAN;
+    _elevation_Timestamp = 0;
+    _elevation_Angle_Actual = NAN;
 
-    this->aberrationForceComponent.reset();
-    this->accelerationForceComponent.reset();
-    this->activeOpticForceComponent.reset();
-    this->azimuthForceComponent.reset();
-    this->balanceForceComponent.reset();
-    this->elevationForceComponent.reset();
-    this->offsetForceComponent.reset();
-    this->staticForceComponent.reset();
-    this->thermalForceComponent.reset();
-    this->velocityForceComponent.reset();
-    this->finalForceComponent.reset();
+    _aberrationForceComponent.reset();
+    _accelerationForceComponent.reset();
+    _activeOpticForceComponent.reset();
+    _azimuthForceComponent.reset();
+    _balanceForceComponent.reset();
+    _elevationForceComponent.reset();
+    _offsetForceComponent.reset();
+    _staticForceComponent.reset();
+    _thermalForceComponent.reset();
+    _velocityForceComponent.reset();
+    _finalForceComponent.reset();
 
-    double timestamp = this->publisher->getTimestamp();
-    this->forceActuatorState->timestamp = timestamp;
-    this->forceSetpointWarning->timestamp = timestamp;
+    double timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = timestamp;
+    _forceSetpointWarning->timestamp = timestamp;
 
-    this->publisher->logForceActuatorState();
-    this->publisher->logForceSetpointWarning();
+    _publisher->logForceActuatorState();
+    _publisher->logForceSetpointWarning();
 
-    this->mirrorWeight = 0.0;
-    float* zForces =
-            ForceConverter::calculateForceFromElevationAngle(this->forceActuatorSettings, 0.0).ZForces;
+    _mirrorWeight = 0.0;
+    float* zForces = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0).ZForces;
     for (int i = 0; i < FA_COUNT; i++) {
-        this->mirrorWeight += zForces[i];
-        this->zero[i] = 0;
+        _mirrorWeight += zForces[i];
+        _zero[i] = 0;
         ForceActuatorNeighbors neighbors;
-        for (unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
-            int32_t id = this->forceActuatorSettings->Neighbors[i].NearZIDs[j];
-            for (unsigned int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
-                if (this->forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
+        for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
+            int32_t id = _forceActuatorSettings->Neighbors[i].NearZIDs[j];
+            for (unsigned int k = 0; k < _forceActuatorApplicationSettings->Table.size(); ++k) {
+                if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
                     neighbors.NearZIDs.push_back(k);
                     break;
                 }
             }
         }
-        for (unsigned int j = 0; j < this->forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
-            int32_t id = this->forceActuatorSettings->Neighbors[i].FarIDs[j];
-            for (unsigned int k = 0; k < this->forceActuatorApplicationSettings->Table.size(); ++k) {
-                if (this->forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
+        for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
+            int32_t id = _forceActuatorSettings->Neighbors[i].FarIDs[j];
+            for (unsigned int k = 0; k < _forceActuatorApplicationSettings->Table.size(); ++k) {
+                if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
                     neighbors.FarIDs.push_back(k);
                     break;
                 }
             }
         }
-        this->neighbors.push_back(neighbors);
+        _neighbors.push_back(neighbors);
     }
 }
 
 void ForceController::reset() {
     spdlog::info("ForceController: reset()");
-    this->aberrationForceComponent.reset();
-    this->accelerationForceComponent.reset();
-    this->activeOpticForceComponent.reset();
-    this->azimuthForceComponent.reset();
-    this->balanceForceComponent.reset();
-    this->elevationForceComponent.reset();
-    this->offsetForceComponent.reset();
-    this->staticForceComponent.reset();
-    this->thermalForceComponent.reset();
-    this->velocityForceComponent.reset();
-    this->finalForceComponent.reset();
+    _aberrationForceComponent.reset();
+    _accelerationForceComponent.reset();
+    _activeOpticForceComponent.reset();
+    _azimuthForceComponent.reset();
+    _balanceForceComponent.reset();
+    _elevationForceComponent.reset();
+    _offsetForceComponent.reset();
+    _staticForceComponent.reset();
+    _thermalForceComponent.reset();
+    _velocityForceComponent.reset();
+    _finalForceComponent.reset();
 }
 
 void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationData) {
     spdlog::trace("ForceController: updateTMAElevationData()");
-    elevation_Angle_Actual = tmaElevationData->Elevation_Angle_Actual;
-    elevation_Timestamp = tmaElevationData->timestamp;
+    _elevation_Angle_Actual = tmaElevationData->Elevation_Angle_Actual;
+    _elevation_Timestamp = tmaElevationData->timestamp;
 }
 
 void ForceController::incSupportPercentage() {
     spdlog::trace("ForceController: incSupportPercentage()");
-    this->forceActuatorState->supportPercentage += this->forceActuatorSettings->RaiseIncrementPercentage;
+    _forceActuatorState->supportPercentage += _forceActuatorSettings->RaiseIncrementPercentage;
     if (this->supportPercentageFilled()) {
-        this->forceActuatorState->supportPercentage = 1.0;
+        _forceActuatorState->supportPercentage = 1.0;
     }
 }
 
 void ForceController::decSupportPercentage() {
     spdlog::trace("ForceController: decSupportPercentage()");
-    this->forceActuatorState->supportPercentage -= this->forceActuatorSettings->LowerDecrementPercentage;
+    _forceActuatorState->supportPercentage -= _forceActuatorSettings->LowerDecrementPercentage;
     if (this->supportPercentageZeroed()) {
-        this->forceActuatorState->supportPercentage = 0.0;
+        _forceActuatorState->supportPercentage = 0.0;
     }
 }
 
 void ForceController::zeroSupportPercentage() {
     spdlog::info("ForceController: zeroSupportPercentage()");
-    this->forceActuatorState->supportPercentage = 0.0;
+    _forceActuatorState->supportPercentage = 0.0;
 }
 
 void ForceController::fillSupportPercentage() {
     spdlog::info("ForceController: fillSupportPercentage()");
-    this->forceActuatorState->supportPercentage = 1.0;
+    _forceActuatorState->supportPercentage = 1.0;
 }
 
-bool ForceController::supportPercentageFilled() { return this->forceActuatorState->supportPercentage >= 1.0; }
+bool ForceController::supportPercentageFilled() { return _forceActuatorState->supportPercentage >= 1.0; }
 
-bool ForceController::supportPercentageZeroed() { return this->forceActuatorState->supportPercentage <= 0.0; }
+bool ForceController::supportPercentageZeroed() { return _forceActuatorState->supportPercentage <= 0.0; }
 
 bool ForceController::followingErrorInTolerance() {
     spdlog::trace("ForceController: followingErrorInTolerance()");
-    float limit = this->forceActuatorSettings->RaiseLowerFollowingErrorLimit;
+    float limit = _forceActuatorSettings->RaiseLowerFollowingErrorLimit;
     for (int i = 0; i < FA_COUNT; ++i) {
         if ((i < FA_X_COUNT &&
-             !Range::InRange(-limit, limit,
-                             this->forceActuatorData->xForce[i] - this->appliedForces->xForces[i])) ||
+             !Range::InRange(-limit, limit, _forceActuatorData->xForce[i] - _appliedForces->xForces[i])) ||
             (i < FA_Y_COUNT &&
-             !Range::InRange(-limit, limit,
-                             this->forceActuatorData->yForce[i] - this->appliedForces->yForces[i])) ||
-            (!Range::InRange(-limit, limit,
-                             this->forceActuatorData->zForce[i] - this->appliedForces->zForces[i]))) {
+             !Range::InRange(-limit, limit, _forceActuatorData->yForce[i] - _appliedForces->yForces[i])) ||
+            (!Range::InRange(-limit, limit, _forceActuatorData->zForce[i] - _appliedForces->zForces[i]))) {
             return false;
         }
     }
@@ -192,202 +211,199 @@ bool ForceController::followingErrorInTolerance() {
 void ForceController::updateAppliedForces() {
     spdlog::trace("ForceController: updateAppliedForces()");
 
-    if (this->aberrationForceComponent.isEnabled() || this->aberrationForceComponent.isDisabling()) {
-        this->aberrationForceComponent.update();
+    if (_aberrationForceComponent.isEnabled() || _aberrationForceComponent.isDisabling()) {
+        _aberrationForceComponent.update();
     }
-    if (this->accelerationForceComponent.isEnabled() || this->accelerationForceComponent.isDisabling()) {
-        if (this->accelerationForceComponent.isEnabled()) {
-            this->accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(
-                    this->accelerometerData->angularAccelerationX,
-                    this->accelerometerData->angularAccelerationY,
-                    this->accelerometerData->angularAccelerationZ);
+    if (_accelerationForceComponent.isEnabled() || _accelerationForceComponent.isDisabling()) {
+        if (_accelerationForceComponent.isEnabled()) {
+            _accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(
+                    _accelerometerData->angularAccelerationX, _accelerometerData->angularAccelerationY,
+                    _accelerometerData->angularAccelerationZ);
         }
-        this->accelerationForceComponent.update();
+        _accelerationForceComponent.update();
     }
-    if (this->activeOpticForceComponent.isEnabled() || this->activeOpticForceComponent.isDisabling()) {
-        this->activeOpticForceComponent.update();
+    if (_activeOpticForceComponent.isEnabled() || _activeOpticForceComponent.isDisabling()) {
+        _activeOpticForceComponent.update();
     }
-    if (this->azimuthForceComponent.isEnabled() || this->azimuthForceComponent.isDisabling()) {
-        this->azimuthForceComponent.update();
+    if (_azimuthForceComponent.isEnabled() || _azimuthForceComponent.isDisabling()) {
+        _azimuthForceComponent.update();
     }
-    if (this->balanceForceComponent.isEnabled() || this->balanceForceComponent.isDisabling()) {
-        if (this->balanceForceComponent.isEnabled()) {
-            this->balanceForceComponent.applyBalanceForcesByMirrorForces(
-                    this->hardpointActuatorData->fx, this->hardpointActuatorData->fy,
-                    this->hardpointActuatorData->fz, this->hardpointActuatorData->mx,
-                    this->hardpointActuatorData->my, this->hardpointActuatorData->mz);
+    if (_balanceForceComponent.isEnabled() || _balanceForceComponent.isDisabling()) {
+        if (_balanceForceComponent.isEnabled()) {
+            _balanceForceComponent.applyBalanceForcesByMirrorForces(
+                    _hardpointActuatorData->fx, _hardpointActuatorData->fy, _hardpointActuatorData->fz,
+                    _hardpointActuatorData->mx, _hardpointActuatorData->my, _hardpointActuatorData->mz);
         }
-        this->balanceForceComponent.update();
+        _balanceForceComponent.update();
     }
-    if (this->elevationForceComponent.isEnabled() || this->elevationForceComponent.isDisabling()) {
-        if (this->elevationForceComponent.isEnabled()) {
-            double elevationAngle = this->forceActuatorSettings->UseInclinometer
-                                            ? this->inclinometerData->inclinometerAngle
-                                            : elevation_Angle_Actual;
+    if (_elevationForceComponent.isEnabled() || _elevationForceComponent.isDisabling()) {
+        if (_elevationForceComponent.isEnabled()) {
+            double elevationAngle = _forceActuatorSettings->UseInclinometer
+                                            ? _inclinometerData->inclinometerAngle
+                                            : _elevation_Angle_Actual;
             // Convert elevation angle to zenith angle (used by matrix)
             elevationAngle = 90.0 - elevationAngle;
-            this->elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);
+            _elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);
         }
-        this->elevationForceComponent.update();
+        _elevationForceComponent.update();
     }
-    if (this->offsetForceComponent.isEnabled() || this->offsetForceComponent.isDisabling()) {
-        this->offsetForceComponent.update();
+    if (_offsetForceComponent.isEnabled() || _offsetForceComponent.isDisabling()) {
+        _offsetForceComponent.update();
     }
-    if (this->staticForceComponent.isEnabled() || this->staticForceComponent.isDisabling()) {
-        this->staticForceComponent.update();
+    if (_staticForceComponent.isEnabled() || _staticForceComponent.isDisabling()) {
+        _staticForceComponent.update();
     }
-    if (this->thermalForceComponent.isEnabled() || this->thermalForceComponent.isDisabling()) {
-        this->thermalForceComponent.update();
+    if (_thermalForceComponent.isEnabled() || _thermalForceComponent.isDisabling()) {
+        _thermalForceComponent.update();
     }
-    if (this->velocityForceComponent.isEnabled() || this->velocityForceComponent.isDisabling()) {
-        if (this->velocityForceComponent.isEnabled()) {
-            this->velocityForceComponent.applyVelocityForcesByAngularVelocity(
-                    this->gyroData->angularVelocityX, this->gyroData->angularVelocityY,
-                    this->gyroData->angularVelocityZ);
+    if (_velocityForceComponent.isEnabled() || _velocityForceComponent.isDisabling()) {
+        if (_velocityForceComponent.isEnabled()) {
+            _velocityForceComponent.applyVelocityForcesByAngularVelocity(
+                    _gyroData->angularVelocityX, _gyroData->angularVelocityY, _gyroData->angularVelocityZ);
         }
-        this->velocityForceComponent.update();
+        _velocityForceComponent.update();
     }
 }
 
 void ForceController::processAppliedForces() {
     spdlog::trace("ForceController: processAppliedForces()");
-    this->sumAllForces();
-    this->convertForcesToSetpoints();
-    this->checkMirrorMoments();
-    this->checkNearNeighbors();
-    this->checkMirrorWeight();
-    this->checkFarNeighbors();
-    this->publisher->tryLogForceSetpointWarning();
+    _sumAllForces();
+    _convertForcesToSetpoints();
+    _checkMirrorMoments();
+    _checkNearNeighbors();
+    _checkMirrorWeight();
+    _checkFarNeighbors();
+    _publisher->tryLogForceSetpointWarning();
 }
 
 void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
     spdlog::info("ForceController: applyAberrationForcesByBendingModes()");
-    if (!this->aberrationForceComponent.isEnabled()) {
-        this->aberrationForceComponent.enable();
+    if (!_aberrationForceComponent.isEnabled()) {
+        _aberrationForceComponent.enable();
     }
-    this->aberrationForceComponent.applyAberrationForcesByBendingModes(coefficients);
+    _aberrationForceComponent.applyAberrationForcesByBendingModes(coefficients);
 }
 
 void ForceController::applyAberrationForces(float* z) {
     spdlog::info("ForceController: applyAberrationForces()");
-    if (!this->aberrationForceComponent.isEnabled()) {
-        this->aberrationForceComponent.enable();
+    if (!_aberrationForceComponent.isEnabled()) {
+        _aberrationForceComponent.enable();
     }
-    this->aberrationForceComponent.applyAberrationForces(z);
+    _aberrationForceComponent.applyAberrationForces(z);
 }
 
 void ForceController::zeroAberrationForces() {
     spdlog::info("ForceController: zeroAberrationForces()");
-    if (this->aberrationForceComponent.isEnabled()) {
-        this->aberrationForceComponent.disable();
+    if (_aberrationForceComponent.isEnabled()) {
+        _aberrationForceComponent.disable();
     }
 }
 
 void ForceController::applyAccelerationForces() {
     spdlog::info("ForceController: applyAccelerationForces()");
-    if (!this->accelerationForceComponent.isEnabled()) {
-        this->accelerationForceComponent.enable();
+    if (!_accelerationForceComponent.isEnabled()) {
+        _accelerationForceComponent.enable();
     }
 }
 
 void ForceController::zeroAccelerationForces() {
     spdlog::info("ForceController: zeroAccelerationForces()");
-    if (this->accelerationForceComponent.isEnabled()) {
-        this->accelerationForceComponent.disable();
+    if (_accelerationForceComponent.isEnabled()) {
+        _accelerationForceComponent.disable();
     }
 }
 
 void ForceController::applyActiveOpticForcesByBendingModes(float* coefficients) {
     spdlog::info("ForceController: applyActiveOpticForcesByBendingModes()");
-    if (!this->activeOpticForceComponent.isEnabled()) {
-        this->activeOpticForceComponent.enable();
+    if (!_activeOpticForceComponent.isEnabled()) {
+        _activeOpticForceComponent.enable();
     }
-    this->activeOpticForceComponent.applyActiveOpticForcesByBendingModes(coefficients);
+    _activeOpticForceComponent.applyActiveOpticForcesByBendingModes(coefficients);
 }
 
 void ForceController::applyActiveOpticForces(float* z) {
     spdlog::info("ForceController: applyActiveOpticForces()");
-    if (!this->activeOpticForceComponent.isEnabled()) {
-        this->activeOpticForceComponent.enable();
+    if (!_activeOpticForceComponent.isEnabled()) {
+        _activeOpticForceComponent.enable();
     }
-    this->activeOpticForceComponent.applyActiveOpticForces(z);
+    _activeOpticForceComponent.applyActiveOpticForces(z);
 }
 
 void ForceController::zeroActiveOpticForces() {
     spdlog::info("ForceController: zeroActiveOpticForces()");
-    if (this->activeOpticForceComponent.isEnabled()) {
-        this->activeOpticForceComponent.disable();
+    if (_activeOpticForceComponent.isEnabled()) {
+        _activeOpticForceComponent.disable();
     }
 }
 
 void ForceController::applyAzimuthForces() {
     spdlog::info("ForceController: applyAzimuthForces()");
-    if (!this->azimuthForceComponent.isEnabled()) {
-        this->azimuthForceComponent.enable();
+    if (!_azimuthForceComponent.isEnabled()) {
+        _azimuthForceComponent.enable();
     }
 }
 
 void ForceController::updateAzimuthForces(float azimuthAngle) {
     spdlog::trace("ForceController: updateAzimuthForces()");
-    this->azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(azimuthAngle);
+    _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(azimuthAngle);
 }
 
 void ForceController::zeroAzimuthForces() {
     spdlog::info("ForceController: zeroAzimuthForces()");
-    if (this->azimuthForceComponent.isEnabled()) {
-        this->azimuthForceComponent.disable();
+    if (_azimuthForceComponent.isEnabled()) {
+        _azimuthForceComponent.disable();
     }
 }
 
 void ForceController::applyBalanceForces() {
     spdlog::info("ForceController: applyBalanceForces()");
-    if (!this->balanceForceComponent.isEnabled()) {
-        this->balanceForceComponent.enable();
+    if (!_balanceForceComponent.isEnabled()) {
+        _balanceForceComponent.enable();
     }
 }
 
 void ForceController::zeroBalanceForces() {
     spdlog::info("ForceController: zeroBalanceForces()");
-    if (this->balanceForceComponent.isEnabled()) {
-        this->balanceForceComponent.disable();
+    if (_balanceForceComponent.isEnabled()) {
+        _balanceForceComponent.disable();
     }
 }
 
 void ForceController::updatePID(int id, PIDParameters parameters) {
     spdlog::info("ForceController: updatePID()");
-    this->balanceForceComponent.updatePID(id, parameters);
+    _balanceForceComponent.updatePID(id, parameters);
 }
 
 void ForceController::resetPID(int id) {
     spdlog::info("ForceController: resetPID()");
-    this->balanceForceComponent.resetPID(id);
+    _balanceForceComponent.resetPID(id);
 }
 
 void ForceController::resetPIDs() {
     spdlog::info("ForceController: resetPIDs()");
-    this->balanceForceComponent.resetPIDs();
+    _balanceForceComponent.resetPIDs();
 }
 
 void ForceController::applyElevationForces() {
     spdlog::info("ForceController: applyElevationForces()");
-    if (!this->elevationForceComponent.isEnabled()) {
-        this->elevationForceComponent.enable();
+    if (!_elevationForceComponent.isEnabled()) {
+        _elevationForceComponent.enable();
     }
 }
 
 void ForceController::zeroElevationForces() {
     spdlog::info("ForceController: zeroElevationForces()");
-    if (this->elevationForceComponent.isEnabled()) {
-        this->elevationForceComponent.disable();
+    if (_elevationForceComponent.isEnabled()) {
+        _elevationForceComponent.disable();
     }
 }
 
 void ForceController::applyOffsetForces(float* x, float* y, float* z) {
     spdlog::info("ForceController: applyOffsetForces()");
-    if (!this->offsetForceComponent.isEnabled()) {
-        this->offsetForceComponent.enable();
+    if (!_offsetForceComponent.isEnabled()) {
+        _offsetForceComponent.enable();
     }
-    this->offsetForceComponent.applyOffsetForces(x, y, z);
+    _offsetForceComponent.applyOffsetForces(x, y, z);
 }
 
 void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
@@ -396,300 +412,289 @@ void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce
             "ForceController: applyOffsetForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
-    if (!this->offsetForceComponent.isEnabled()) {
-        this->offsetForceComponent.enable();
+    if (!_offsetForceComponent.isEnabled()) {
+        _offsetForceComponent.enable();
     }
-    this->offsetForceComponent.applyOffsetForcesByMirrorForces(xForce, yForce, zForce, xMoment, yMoment,
-                                                               zMoment);
+    _offsetForceComponent.applyOffsetForcesByMirrorForces(xForce, yForce, zForce, xMoment, yMoment, zMoment);
 }
 
 void ForceController::zeroOffsetForces() {
     spdlog::info("ForceController: zeroOffsetForces()");
-    if (this->offsetForceComponent.isEnabled()) {
-        this->offsetForceComponent.disable();
+    if (_offsetForceComponent.isEnabled()) {
+        _offsetForceComponent.disable();
     }
 }
 
 void ForceController::applyStaticForces() {
     spdlog::info("ForceController: applyStaticForces()");
-    if (!this->staticForceComponent.isEnabled()) {
-        this->staticForceComponent.enable();
+    if (!_staticForceComponent.isEnabled()) {
+        _staticForceComponent.enable();
     }
-    this->staticForceComponent.applyStaticForces(&this->forceActuatorSettings->StaticXTable,
-                                                 &this->forceActuatorSettings->StaticYTable,
-                                                 &this->forceActuatorSettings->StaticZTable);
+    _staticForceComponent.applyStaticForces(&_forceActuatorSettings->StaticXTable,
+                                            &_forceActuatorSettings->StaticYTable,
+                                            &_forceActuatorSettings->StaticZTable);
 }
 
 void ForceController::zeroStaticForces() {
     spdlog::info("ForceController: zeroStaticForces()");
-    if (this->staticForceComponent.isEnabled()) {
-        this->staticForceComponent.disable();
+    if (_staticForceComponent.isEnabled()) {
+        _staticForceComponent.disable();
     }
 }
 
 void ForceController::applyThermalForces() {
     spdlog::info("ForceController: applyThermalForces()");
-    if (!this->thermalForceComponent.isEnabled()) {
-        this->thermalForceComponent.enable();
+    if (!_thermalForceComponent.isEnabled()) {
+        _thermalForceComponent.enable();
     }
 }
 
 void ForceController::updateThermalForces(float temperature) {
     spdlog::trace("ForceController: updateThermalForces()");
-    this->thermalForceComponent.applyThermalForcesByMirrorTemperature(temperature);
+    _thermalForceComponent.applyThermalForcesByMirrorTemperature(temperature);
 }
 
 void ForceController::zeroThermalForces() {
     spdlog::info("ForceController: zeroThermalForces()");
-    if (this->thermalForceComponent.isEnabled()) {
-        this->thermalForceComponent.disable();
+    if (_thermalForceComponent.isEnabled()) {
+        _thermalForceComponent.disable();
     }
 }
 
 void ForceController::applyVelocityForces() {
     spdlog::info("ForceController: applyVelocityForces()");
-    if (!this->velocityForceComponent.isEnabled()) {
-        this->velocityForceComponent.enable();
+    if (!_velocityForceComponent.isEnabled()) {
+        _velocityForceComponent.enable();
     }
 }
 
 void ForceController::zeroVelocityForces() {
     spdlog::info("ForceController: zeroVelocityForces()");
-    if (this->velocityForceComponent.isEnabled()) {
-        this->velocityForceComponent.disable();
+    if (_velocityForceComponent.isEnabled()) {
+        _velocityForceComponent.disable();
     }
 }
 
-void ForceController::sumAllForces() {
+void ForceController::_sumAllForces() {
     spdlog::trace("ForceController: sumAllForces()");
-    this->finalForceComponent.applyForcesByComponents();
-    this->finalForceComponent.update();
+    _finalForceComponent.applyForcesByComponents();
+    _finalForceComponent.update();
 }
 
-void ForceController::convertForcesToSetpoints() {
+void ForceController::_convertForcesToSetpoints() {
     spdlog::trace("ForceController: convertForcesToSetpoints()");
     bool rejectionRequired = false;
     for (int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
-        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
-        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
-        int sIndex = this->forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[pIndex];
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
+        int sIndex = _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[pIndex];
 
-        this->forceSetpointWarning->safetyLimitWarning[pIndex] = false;
+        _forceSetpointWarning->safetyLimitWarning[pIndex] = false;
 
         if (sIndex != -1) {
-            float secondaryLowFault =
-                    this->forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].LowFault;
-            float secondaryHighFault =
-                    this->forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].HighFault;
-            switch (this->forceActuatorInfo->actuatorOrientation[pIndex]) {
+            float secondaryLowFault = _forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].LowFault;
+            float secondaryHighFault = _forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].HighFault;
+            switch (_forceActuatorInfo->actuatorOrientation[pIndex]) {
                 case ForceActuatorOrientations::PositiveY:
-                    this->rejectedCylinderForces->secondaryCylinderForces[sIndex] =
-                            toInt24(this->appliedForces->yForces[yIndex] * sqrt2);
+                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                            _toInt24(_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::PositiveX:
-                    this->rejectedCylinderForces->secondaryCylinderForces[sIndex] =
-                            toInt24(this->appliedForces->xForces[xIndex] * sqrt2);
+                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                            _toInt24(_appliedForces->xForces[xIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::NegativeX:
-                    this->rejectedCylinderForces->secondaryCylinderForces[sIndex] =
-                            toInt24(-this->appliedForces->xForces[xIndex] * sqrt2);
+                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                            _toInt24(-_appliedForces->xForces[xIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::NegativeY:
-                    this->rejectedCylinderForces->secondaryCylinderForces[sIndex] =
-                            toInt24(-this->appliedForces->yForces[yIndex] * sqrt2);
+                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                            _toInt24(-_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
             }
-            this->forceSetpointWarning->safetyLimitWarning[pIndex] =
-                    this->forceSetpointWarning->safetyLimitWarning[pIndex] ||
+            _forceSetpointWarning->safetyLimitWarning[pIndex] =
+                    _forceSetpointWarning->safetyLimitWarning[pIndex] ||
                     !Range::InRangeAndCoerce((int)secondaryLowFault, (int)secondaryHighFault,
-                                             this->rejectedCylinderForces->secondaryCylinderForces[sIndex],
-                                             this->appliedCylinderForces->secondaryCylinderForces + sIndex);
+                                             _rejectedCylinderForces->secondaryCylinderForces[sIndex],
+                                             _appliedCylinderForces->secondaryCylinderForces + sIndex);
         }
 
-        float primaryLowFault = this->forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].LowFault;
-        float primaryHighFault = this->forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].HighFault;
-        switch (this->forceActuatorInfo->actuatorOrientation[pIndex]) {
+        float primaryLowFault = _forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].LowFault;
+        float primaryHighFault = _forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].HighFault;
+        switch (_forceActuatorInfo->actuatorOrientation[pIndex]) {
             case ForceActuatorOrientations::PositiveY:
-                this->rejectedCylinderForces->primaryCylinderForces[pIndex] =
-                        toInt24(this->appliedForces->zForces[pIndex] - this->appliedForces->yForces[yIndex]);
+                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                        _toInt24(_appliedForces->zForces[pIndex] - _appliedForces->yForces[yIndex]);
                 break;
             case ForceActuatorOrientations::NA:
-                this->rejectedCylinderForces->primaryCylinderForces[pIndex] =
-                        toInt24(this->appliedForces->zForces[pIndex]);
+                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                        _toInt24(_appliedForces->zForces[pIndex]);
                 break;
             case ForceActuatorOrientations::PositiveX:
-                this->rejectedCylinderForces->primaryCylinderForces[pIndex] =
-                        toInt24(this->appliedForces->zForces[pIndex] - this->appliedForces->xForces[xIndex]);
+                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                        _toInt24(_appliedForces->zForces[pIndex] - _appliedForces->xForces[xIndex]);
                 break;
             case ForceActuatorOrientations::NegativeX:
-                this->rejectedCylinderForces->primaryCylinderForces[pIndex] =
-                        toInt24(this->appliedForces->zForces[pIndex] - -this->appliedForces->xForces[xIndex]);
+                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                        _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->xForces[xIndex]);
                 break;
             case ForceActuatorOrientations::NegativeY:
-                this->rejectedCylinderForces->primaryCylinderForces[pIndex] =
-                        toInt24(this->appliedForces->zForces[pIndex] - -this->appliedForces->yForces[yIndex]);
+                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                        _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->yForces[yIndex]);
                 break;
         }
-        this->forceSetpointWarning->safetyLimitWarning[pIndex] =
-                this->forceSetpointWarning->safetyLimitWarning[pIndex] ||
+        _forceSetpointWarning->safetyLimitWarning[pIndex] =
+                _forceSetpointWarning->safetyLimitWarning[pIndex] ||
                 !Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault,
-                                         this->rejectedCylinderForces->primaryCylinderForces[pIndex],
-                                         this->appliedCylinderForces->primaryCylinderForces + pIndex);
+                                         _rejectedCylinderForces->primaryCylinderForces[pIndex],
+                                         _appliedCylinderForces->primaryCylinderForces + pIndex);
 
-        rejectionRequired = rejectionRequired || this->forceSetpointWarning->safetyLimitWarning[pIndex];
+        rejectionRequired = rejectionRequired || _forceSetpointWarning->safetyLimitWarning[pIndex];
     }
-    this->appliedCylinderForces->timestamp = this->publisher->getTimestamp();
-    this->rejectedCylinderForces->timestamp = this->appliedCylinderForces->timestamp;
-    this->safetyController->forceControllerNotifySafetyLimit(rejectionRequired);
+    _appliedCylinderForces->timestamp = _publisher->getTimestamp();
+    _rejectedCylinderForces->timestamp = _appliedCylinderForces->timestamp;
+    _safetyController->forceControllerNotifySafetyLimit(rejectionRequired);
     if (rejectionRequired) {
-        this->publisher->logRejectedCylinderForces();
+        _publisher->logRejectedCylinderForces();
     }
-    this->publisher->logAppliedCylinderForces();
+    _publisher->logAppliedCylinderForces();
 }
 
-bool ForceController::checkMirrorMoments() {
+bool ForceController::_checkMirrorMoments() {
     spdlog::trace("ForceController: checkMirrorMoments()");
-    float xMoment = this->appliedForces->mx;
-    float yMoment = this->appliedForces->my;
-    float zMoment = this->appliedForces->mz;
-    this->forceSetpointWarning->xMomentWarning =
-            !Range::InRange(this->forceActuatorSettings->MirrorXMoment *
-                                    this->forceActuatorSettings->SetpointXMomentHighLimitPercentage,
-                            this->forceActuatorSettings->MirrorXMoment *
-                                    this->forceActuatorSettings->SetpointXMomentLowLimitPercentage,
-                            xMoment);
-    this->forceSetpointWarning->yMomentWarning =
-            !Range::InRange(this->forceActuatorSettings->MirrorYMoment *
-                                    this->forceActuatorSettings->SetpointYMomentHighLimitPercentage,
-                            this->forceActuatorSettings->MirrorYMoment *
-                                    this->forceActuatorSettings->SetpointYMomentLowLimitPercentage,
-                            yMoment);
-    this->forceSetpointWarning->zMomentWarning =
-            !Range::InRange(this->forceActuatorSettings->MirrorZMoment *
-                                    this->forceActuatorSettings->SetpointZMomentHighLimitPercentage,
-                            this->forceActuatorSettings->MirrorZMoment *
-                                    this->forceActuatorSettings->SetpointZMomentLowLimitPercentage,
-                            zMoment);
-    this->safetyController->forceControllerNotifyXMomentLimit(this->forceSetpointWarning->xMomentWarning);
-    this->safetyController->forceControllerNotifyYMomentLimit(this->forceSetpointWarning->yMomentWarning);
-    this->safetyController->forceControllerNotifyZMomentLimit(this->forceSetpointWarning->zMomentWarning);
-    return this->forceSetpointWarning->xMomentWarning || this->forceSetpointWarning->yMomentWarning ||
-           this->forceSetpointWarning->zMomentWarning;
+    float xMoment = _appliedForces->mx;
+    float yMoment = _appliedForces->my;
+    float zMoment = _appliedForces->mz;
+    _forceSetpointWarning->xMomentWarning = !Range::InRange(
+            _forceActuatorSettings->MirrorXMoment *
+                    _forceActuatorSettings->SetpointXMomentHighLimitPercentage,
+            _forceActuatorSettings->MirrorXMoment * _forceActuatorSettings->SetpointXMomentLowLimitPercentage,
+            xMoment);
+    _forceSetpointWarning->yMomentWarning = !Range::InRange(
+            _forceActuatorSettings->MirrorYMoment *
+                    _forceActuatorSettings->SetpointYMomentHighLimitPercentage,
+            _forceActuatorSettings->MirrorYMoment * _forceActuatorSettings->SetpointYMomentLowLimitPercentage,
+            yMoment);
+    _forceSetpointWarning->zMomentWarning = !Range::InRange(
+            _forceActuatorSettings->MirrorZMoment *
+                    _forceActuatorSettings->SetpointZMomentHighLimitPercentage,
+            _forceActuatorSettings->MirrorZMoment * _forceActuatorSettings->SetpointZMomentLowLimitPercentage,
+            zMoment);
+    _safetyController->forceControllerNotifyXMomentLimit(_forceSetpointWarning->xMomentWarning);
+    _safetyController->forceControllerNotifyYMomentLimit(_forceSetpointWarning->yMomentWarning);
+    _safetyController->forceControllerNotifyZMomentLimit(_forceSetpointWarning->zMomentWarning);
+    return _forceSetpointWarning->xMomentWarning || _forceSetpointWarning->yMomentWarning ||
+           _forceSetpointWarning->zMomentWarning;
 }
 
-bool ForceController::checkNearNeighbors() {
+bool ForceController::_checkNearNeighbors() {
     spdlog::trace("ForceController: checkNearNeighbors()");
-    float nominalZ = this->mirrorWeight / (float)FA_COUNT;
+    float nominalZ = _mirrorWeight / (float)FA_COUNT;
     bool warningChanged = false;
-    this->forceSetpointWarning->anyNearNeighborWarning = false;
+    _forceSetpointWarning->anyNearNeighborWarning = false;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         float nearZ = 0;
-        int nearNeighbors = this->neighbors[zIndex].NearZIDs.size();
+        int nearNeighbors = _neighbors[zIndex].NearZIDs.size();
         for (int j = 0; j < nearNeighbors; ++j) {
-            int neighborZIndex = this->neighbors[zIndex].NearZIDs[j];
+            int neighborZIndex = _neighbors[zIndex].NearZIDs[j];
 
-            nearZ += this->appliedForces->zForces[neighborZIndex];
+            nearZ += _appliedForces->zForces[neighborZIndex];
         }
         nearZ /= nearNeighbors;
         float deltaZ = 0;
 
-        deltaZ = std::abs(this->appliedForces->zForces[zIndex] - nearZ);
+        deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
 
-        bool previousWarning = this->forceSetpointWarning->nearNeighborWarning[zIndex];
-        this->forceSetpointWarning->nearNeighborWarning[zIndex] =
-                deltaZ > (nominalZ * this->forceActuatorSettings->SetpointNearNeighborLimitPercentage);
-        this->forceSetpointWarning->anyNearNeighborWarning =
-                this->forceSetpointWarning->anyNearNeighborWarning ||
-                this->forceSetpointWarning->nearNeighborWarning[zIndex];
-        warningChanged = warningChanged ||
-                         (this->forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning);
+        bool previousWarning = _forceSetpointWarning->nearNeighborWarning[zIndex];
+        _forceSetpointWarning->nearNeighborWarning[zIndex] =
+                deltaZ > (nominalZ * _forceActuatorSettings->SetpointNearNeighborLimitPercentage);
+        _forceSetpointWarning->anyNearNeighborWarning = _forceSetpointWarning->anyNearNeighborWarning ||
+                                                        _forceSetpointWarning->nearNeighborWarning[zIndex];
+        warningChanged =
+                warningChanged || (_forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning);
     }
-    this->safetyController->forceControllerNotifyNearNeighborCheck(
-            this->forceSetpointWarning->anyNearNeighborWarning);
+    _safetyController->forceControllerNotifyNearNeighborCheck(_forceSetpointWarning->anyNearNeighborWarning);
     return warningChanged;
 }
 
-bool ForceController::checkMirrorWeight() {
+bool ForceController::_checkMirrorWeight() {
     spdlog::trace("ForceController: checkMirrorWeight()");
     float x = 0;
     float y = 0;
     float z = 0;
     for (int i = 0; i < FA_COUNT; ++i) {
         if (i < FA_X_COUNT) {
-            x += abs(this->appliedForces->xForces[i]);
+            x += abs(_appliedForces->xForces[i]);
         }
         if (i < FA_Y_COUNT) {
-            y += abs(this->appliedForces->yForces[i]);
+            y += abs(_appliedForces->yForces[i]);
         }
-        z += abs(this->appliedForces->zForces[i]);
+        z += abs(_appliedForces->zForces[i]);
     }
     float globalForce = x + y + z;
-    bool previousWarning = this->forceSetpointWarning->magnitudeWarning;
-    this->forceSetpointWarning->magnitudeWarning =
-            globalForce >
-            (this->mirrorWeight * this->forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
-    this->safetyController->forceControllerNotifyMagnitudeLimit(this->forceSetpointWarning->magnitudeWarning);
-    return this->forceSetpointWarning->magnitudeWarning != previousWarning;
+    bool previousWarning = _forceSetpointWarning->magnitudeWarning;
+    _forceSetpointWarning->magnitudeWarning =
+            globalForce > (_mirrorWeight * _forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
+    _safetyController->forceControllerNotifyMagnitudeLimit(_forceSetpointWarning->magnitudeWarning);
+    return _forceSetpointWarning->magnitudeWarning != previousWarning;
 }
 
-bool ForceController::checkFarNeighbors() {
+bool ForceController::_checkFarNeighbors() {
     spdlog::trace("ForceController: checkFarNeighbors()");
-    float globalX = this->appliedForces->fx;
-    float globalY = this->appliedForces->fy;
-    float globalZ = this->appliedForces->fz;
+    float globalX = _appliedForces->fx;
+    float globalY = _appliedForces->fy;
+    float globalZ = _appliedForces->fz;
     float globalForce = sqrt(globalX * globalX + globalY * globalY + globalZ * globalZ);
     float globalAverageForce = globalForce / FA_COUNT;
-    float tolerance = globalAverageForce * this->forceActuatorSettings->SetpointNearNeighborLimitPercentage;
+    float tolerance = globalAverageForce * _forceActuatorSettings->SetpointNearNeighborLimitPercentage;
     if (tolerance < 1) {
         tolerance = 1;
     }
     bool warningChanged = false;
-    this->forceSetpointWarning->anyFarNeighborWarning = false;
+    _forceSetpointWarning->anyFarNeighborWarning = false;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
-        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
         double x = 0;
         double y = 0;
         double z = 0;
         if (xIndex != -1) {
-            x = this->appliedForces->xForces[xIndex];
+            x = _appliedForces->xForces[xIndex];
         }
 
         if (yIndex != -1) {
-            y = this->appliedForces->yForces[yIndex];
+            y = _appliedForces->yForces[yIndex];
         }
 
-        z = this->appliedForces->zForces[zIndex];
-        int farNeighbors = this->neighbors[zIndex].FarIDs.size();
+        z = _appliedForces->zForces[zIndex];
+        int farNeighbors = _neighbors[zIndex].FarIDs.size();
         for (int j = 0; j < farNeighbors; ++j) {
-            int neighborZIndex = this->neighbors[zIndex].FarIDs[j];
-            int neighborXIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[neighborZIndex];
-            int neighborYIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[neighborZIndex];
+            int neighborZIndex = _neighbors[zIndex].FarIDs[j];
+            int neighborXIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[neighborZIndex];
+            int neighborYIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[neighborZIndex];
 
             if (neighborXIndex != -1) {
-                x += this->appliedForces->xForces[neighborXIndex];
+                x += _appliedForces->xForces[neighborXIndex];
             }
 
             if (neighborYIndex != -1) {
-                y += this->appliedForces->yForces[neighborYIndex];
+                y += _appliedForces->yForces[neighborYIndex];
             }
 
-            z += this->appliedForces->zForces[neighborZIndex];
+            z += _appliedForces->zForces[neighborZIndex];
         }
         float magnitude = sqrt(x * x + y * y + z * z);
         float magnitudeAverage = magnitude / (farNeighbors + 1.0);
-        bool previousWarning = this->forceSetpointWarning->farNeighborWarning[zIndex];
-        this->forceSetpointWarning->farNeighborWarning[zIndex] =
+        bool previousWarning = _forceSetpointWarning->farNeighborWarning[zIndex];
+        _forceSetpointWarning->farNeighborWarning[zIndex] =
                 !Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce);
-        this->forceSetpointWarning->anyFarNeighborWarning =
-                this->forceSetpointWarning->anyFarNeighborWarning ||
-                this->forceSetpointWarning->farNeighborWarning[zIndex];
+        _forceSetpointWarning->anyFarNeighborWarning = _forceSetpointWarning->anyFarNeighborWarning ||
+                                                       _forceSetpointWarning->farNeighborWarning[zIndex];
         warningChanged =
-                warningChanged || (this->forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning);
+                warningChanged || (_forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning);
     }
-    this->safetyController->forceControllerNotifyFarNeighborCheck(
-            this->forceSetpointWarning->anyFarNeighborWarning);
+    _safetyController->forceControllerNotifyFarNeighborCheck(_forceSetpointWarning->anyFarNeighborWarning);
     return warningChanged;
 }
 

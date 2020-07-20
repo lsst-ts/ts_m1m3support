@@ -1,3 +1,26 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <FaultState.h>
 #include <DigitalInputOutput.h>
 #include <Model.h>
@@ -55,7 +78,6 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
 
 States::Type FaultState::standby(StandbyCommand* command, Model* model) {
     spdlog::trace("FaultState: standby()");
-    States::Type newState = States::StandbyState;
     model->getILC()->writeSetModeStandbyBuffer();
     model->getILC()->triggerModbus();
     model->getILC()->waitForAllSubnets(5000);
@@ -63,7 +85,7 @@ States::Type FaultState::standby(StandbyCommand* command, Model* model) {
     model->getILC()->verifyResponses();
     model->getPowerController()->setAllPowerNetworks(false);
     model->getSafetyController()->clearErrorCode();
-    return newState;
+    return States::StandbyState;
 }
 
 } /* namespace SS */

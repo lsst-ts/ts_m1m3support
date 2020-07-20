@@ -1,8 +1,24 @@
 /*
- * AliasApplicationSettings.cpp
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Sep 29, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <AliasApplicationSettings.h>
@@ -15,26 +31,26 @@ namespace M1M3 {
 namespace SS {
 
 void AliasApplicationSettings::load(const std::string &filename) {
-	pugi::xml_document doc;
-        XMLDocLoad(filename, doc);
-	pugi::xpath_node_set nodes = doc.select_nodes("//AliasApplicationSettings/Aliases/Alias");
+    pugi::xml_document doc;
+    XMLDocLoad(filename, doc);
+    pugi::xpath_node_set nodes = doc.select_nodes("//AliasApplicationSettings/Aliases/Alias");
 
-	typedef boost::tokenizer< boost::escaped_list_separator<char> > tokenizer;
+    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
 
-	this->Aliases.clear();
-	for(pugi::xpath_node_set::const_iterator node = nodes.begin(); node != nodes.end(); ++node) {
-		std::string value = node->node().child_value();
-		tokenizer tokenize(value);
-		tokenizer::iterator token = tokenize.begin();
-		Alias alias;
-		alias.Name = *token;
-		++token;
-		alias.Set = *token;
-		++token;
-		alias.Version = *token;
+    this->Aliases.clear();
+    for (pugi::xpath_node_set::const_iterator node = nodes.begin(); node != nodes.end(); ++node) {
+        std::string value = node->node().child_value();
+        tokenizer tokenize(value);
+        tokenizer::iterator token = tokenize.begin();
+        Alias alias;
+        alias.Name = *token;
+        ++token;
+        alias.Set = *token;
+        ++token;
+        alias.Version = *token;
 
-		this->Aliases.push_back(alias);
-	}
+        this->Aliases.push_back(alias);
+    }
 }
 
 } /* namespace SS */

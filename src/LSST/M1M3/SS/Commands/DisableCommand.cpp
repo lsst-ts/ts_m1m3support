@@ -1,6 +1,27 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <DisableCommand.h>
-#include <Context.h>
-#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -8,23 +29,23 @@ namespace SS {
 
 DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                MTM1M3_command_disableC*) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void DisableCommand::execute() { this->context->disable(this); }
+void DisableCommand::execute() { _context->disable(this); }
 
 void DisableCommand::ackInProgress() {
-    this->publisher->ackCommanddisable(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommanddisable(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableCommand::ackComplete() {
-    this->publisher->ackCommanddisable(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommanddisable(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void DisableCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommanddisable(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommanddisable(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

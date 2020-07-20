@@ -1,6 +1,27 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <EnableHardpointChaseCommand.h>
-#include <Context.h>
-#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -9,32 +30,32 @@ namespace SS {
 EnableHardpointChaseCommand::EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher,
                                                          int32_t commandID,
                                                          MTM1M3_command_enableHardpointChaseC* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.hardpointActuator = data->hardpointActuator;
+    _data.hardpointActuator = data->hardpointActuator;
 }
 
 bool EnableHardpointChaseCommand::validate() {
-    if (!(this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6)) {
-        this->publisher->logCommandRejectionWarning("EnableHardpointChase",
-                                                    "The field HardpointActuator must be in range [1, 6].");
+    if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
+        _publisher->logCommandRejectionWarning("EnableHardpointChase",
+                                               "The field HardpointActuator must be in range [1, 6].");
     }
-    return this->data.hardpointActuator >= 1 && this->data.hardpointActuator <= 6;
+    return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }
 
-void EnableHardpointChaseCommand::execute() { this->context->enableHardpointChase(this); }
+void EnableHardpointChaseCommand::execute() { _context->enableHardpointChase(this); }
 
 void EnableHardpointChaseCommand::ackInProgress() {
-    this->publisher->ackCommandenableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandenableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableHardpointChaseCommand::ackComplete() {
-    this->publisher->ackCommandenableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
+    _publisher->ackCommandenableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnableHardpointChaseCommand::ackFailed(std::string reason) {
-    this->publisher->ackCommandenableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandenableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -1,8 +1,24 @@
 /*
- * SimulatedFPGA.cpp
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Nov 2, 2018
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <SimulatedFPGA.h>
@@ -14,9 +30,13 @@
 #include <Timestamp.h>
 #include <CRC.h>
 #include <ForceActuatorApplicationSettings.h>
+
+#include <thread>
 #include <unistd.h>
 #include <cstdlib>
 #include <spdlog/spdlog.h>
+#include "SAL_MTMount.h"
+#include "ccpp_sal_MTMount.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -24,20 +44,52 @@ namespace SS {
 
 SimulatedFPGA::SimulatedFPGA() {
     spdlog::info("SimulatedFPGA: SimulatedFPGA()");
-    this->publisher = NULL;
-    this->forceActuatorApplicationSettings = NULL;
-    this->lastRequest = -1;
+    _publisher = NULL;
+    _forceActuatorApplicationSettings = NULL;
+    _lastRequest = -1;
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
     supportFPGAData.DigitalInputStates = 0x0001 | 0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
     for (int i = 0; i < RND_CNT; ++i) {
-        this->rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
+        _rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
     }
-    this->rndIndex = 0;
+    _rndIndex = 0;
+    _mgrMTMount = SAL_MTMount();
+    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_Elevation"));
+
+    _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
+}
+
+SimulatedFPGA::~SimulatedFPGA() {
+    _exitThread = true;
+
+    _monitorMountElevationThread.join();
+
+    _mgrMTMount.salShutdown();
+}
+
+void SimulatedFPGA::_monitorElevation(void) {
+    MTMount_ElevationC mountElevationInstance;
+
+    spdlog::debug("Start monitoring mount elevation...");
+
+    while (!_exitThread) {
+        ReturnCode_t status = _mgrMTMount.getSample_Elevation(&mountElevationInstance);
+
+        if (status == 0) {
+            spdlog::debug("Got valid elevation sample...");
+
+            {
+                std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
+                _mountElevation = mountElevationInstance.Elevation_Angle_Actual;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
 }
 
 void SimulatedFPGA::setPublisher(M1M3SSPublisher* publisher) {
-    this->publisher = publisher;
-    MTM1M3_hardpointActuatorDataC* hardpointActuatorData = this->publisher->getHardpointActuatorData();
+    _publisher = publisher;
+    MTM1M3_hardpointActuatorDataC* hardpointActuatorData = _publisher->getHardpointActuatorData();
     hardpointActuatorData->encoder[0] = 15137;
     hardpointActuatorData->encoder[1] = 20079;
     hardpointActuatorData->encoder[2] = 26384;
@@ -48,52 +100,34 @@ void SimulatedFPGA::setPublisher(M1M3SSPublisher* publisher) {
 
 void SimulatedFPGA::setForceActuatorApplicationSettings(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings) {
-    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 }
 
-int32_t SimulatedFPGA::initialize() {
-    spdlog::debug("SimulatedFPGA: initialize()");
-    return 0;
+void SimulatedFPGA::initialize() { spdlog::debug("SimulatedFPGA: initialize()"); }
+
+void SimulatedFPGA::open() { spdlog::debug("SimulatedFPGA: open()"); }
+
+void SimulatedFPGA::close() { spdlog::debug("SimulatedFPGA: close()"); }
+
+void SimulatedFPGA::finalize() { spdlog::debug("SimulatedFPGA: finalize()"); }
+
+void SimulatedFPGA::waitForOuterLoopClock(int32_t timeout) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
 }
 
-int32_t SimulatedFPGA::open() {
-    spdlog::debug("SimulatedFPGA: open()");
-    return 0;
-}
+void SimulatedFPGA::ackOuterLoopClock() {}
 
-int32_t SimulatedFPGA::close() {
-    spdlog::debug("SimulatedFPGA: close()");
-    return 0;
-}
+void SimulatedFPGA::waitForPPS(int32_t timeout) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 
-int32_t SimulatedFPGA::finalize() {
-    spdlog::debug("SimulatedFPGA: finalize()");
-    return 0;
-}
+void SimulatedFPGA::ackPPS() {}
 
-bool SimulatedFPGA::isErrorCode(int32_t status) { return status != 0; }
+void SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {}
 
-int32_t SimulatedFPGA::waitForOuterLoopClock(int32_t timeout) {
-    usleep(20000);
-    return 0;
-}
-
-int32_t SimulatedFPGA::ackOuterLoopClock() { return 0; }
-
-int32_t SimulatedFPGA::waitForPPS(int32_t timeout) {
-    usleep(1000000);
-    return 0;
-}
-
-int32_t SimulatedFPGA::ackPPS() { return 0; }
-
-int32_t SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) { return 0; }
-
-int32_t SimulatedFPGA::ackModbusIRQ(int32_t subnet) { return 0; }
+void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
 
 void SimulatedFPGA::pullTelemetry() {
     spdlog::trace("SimulatedFPGA: pullTelemetry()");
-    uint64_t timestamp = Timestamp::toRaw(this->publisher->getTimestamp());
+    uint64_t timestamp = Timestamp::toRaw(_publisher->getTimestamp());
     this->supportFPGAData.Reserved = 0;
     this->supportFPGAData.InclinometerTxBytes = 0;
     this->supportFPGAData.InclinometerRxBytes = 0;
@@ -102,8 +136,16 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.InclinometerErrorTimestamp = 0;
     this->supportFPGAData.InclinometerErrorCode = 0;
     this->supportFPGAData.InclinometerSampleTimestamp = timestamp;
-    this->supportFPGAData.InclinometerAngleRaw =
-            (int32_t)(tmaElevation.Elevation_Angle_Actual * 1000.0) + (this->getRnd() * 5.0);
+
+    // Inclinometer raw value is measured as (negative) zenith angle (0 = zenith, -90 = horizon).
+    // Converts elevation to zenith angle and adds random 1/200th deg (=18 arcsec) noise.
+
+    {
+        std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
+        this->supportFPGAData.InclinometerAngleRaw =
+                (int32_t)((_mountElevation - 90.0) * 1000.0) + (_getRnd() * 5.0);
+    }
+
     this->supportFPGAData.DisplacementTxBytes = 0;
     this->supportFPGAData.DisplacementRxBytes = 0;
     this->supportFPGAData.DisplacementTxFrames = 0;
@@ -111,24 +153,24 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.DisplacementErrorTimestamp = 0;
     this->supportFPGAData.DisplacementErrorCode = 0;
     this->supportFPGAData.DisplacementSampleTimestamp = timestamp;
-    this->supportFPGAData.DisplacementRaw1 = (int32_t)(this->getRnd() + 10) * 1000.0;
-    this->supportFPGAData.DisplacementRaw2 = (int32_t)(this->getRnd() + 20) * 1000.0;
-    this->supportFPGAData.DisplacementRaw3 = (int32_t)(this->getRnd() + 30) * 1000.0;
-    this->supportFPGAData.DisplacementRaw4 = (int32_t)(this->getRnd() + 40) * 1000.0;
-    this->supportFPGAData.DisplacementRaw5 = (int32_t)(this->getRnd() + 50) * 1000.0;
-    this->supportFPGAData.DisplacementRaw6 = (int32_t)(this->getRnd() + 60) * 1000.0;
-    this->supportFPGAData.DisplacementRaw7 = (int32_t)(this->getRnd() + 70) * 1000.0;
-    this->supportFPGAData.DisplacementRaw8 = (int32_t)(this->getRnd() + 80) * 1000.0;
+    this->supportFPGAData.DisplacementRaw1 = (int32_t)(_getRnd() + 10) * 1000.0;
+    this->supportFPGAData.DisplacementRaw2 = (int32_t)(_getRnd() + 20) * 1000.0;
+    this->supportFPGAData.DisplacementRaw3 = (int32_t)(_getRnd() + 30) * 1000.0;
+    this->supportFPGAData.DisplacementRaw4 = (int32_t)(_getRnd() + 40) * 1000.0;
+    this->supportFPGAData.DisplacementRaw5 = (int32_t)(_getRnd() + 50) * 1000.0;
+    this->supportFPGAData.DisplacementRaw6 = (int32_t)(_getRnd() + 60) * 1000.0;
+    this->supportFPGAData.DisplacementRaw7 = (int32_t)(_getRnd() + 70) * 1000.0;
+    this->supportFPGAData.DisplacementRaw8 = (int32_t)(_getRnd() + 80) * 1000.0;
     this->supportFPGAData.AccelerometerSampleCount++;
     this->supportFPGAData.AccelerometerSampleTimestamp = timestamp;
-    this->supportFPGAData.AccelerometerRaw1 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw2 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw3 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw4 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw5 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw6 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw7 = this->getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw8 = this->getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw1 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw2 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw3 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw4 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw5 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw6 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw7 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw8 = _getRnd() * 0.01;
     this->supportFPGAData.GyroTxBytes = 0;
     this->supportFPGAData.GyroRxBytes = 0;
     this->supportFPGAData.GyroTxFrames = 0;
@@ -136,15 +178,15 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.GyroErrorTimestamp = 0;
     this->supportFPGAData.GyroErrorCode = 0;
     this->supportFPGAData.GyroSampleTimestamp = timestamp;
-    this->supportFPGAData.GyroRawX = this->getRnd() * 0.01;
-    this->supportFPGAData.GyroRawY = this->getRnd() * 0.01;
-    this->supportFPGAData.GyroRawZ = this->getRnd() * 0.01;
+    this->supportFPGAData.GyroRawX = _getRnd() * 0.01;
+    this->supportFPGAData.GyroRawY = _getRnd() * 0.01;
+    this->supportFPGAData.GyroRawZ = _getRnd() * 0.01;
     this->supportFPGAData.GyroStatus = 0x7F;
     this->supportFPGAData.GyroSequenceNumber++;
     if (this->supportFPGAData.GyroSequenceNumber > 127) {
         this->supportFPGAData.GyroSequenceNumber = 0;
     }
-    this->supportFPGAData.GyroTemperature = 24 + int(this->getRnd() * 2);
+    this->supportFPGAData.GyroTemperature = 24 + int(_getRnd() * 2);
     this->supportFPGAData.GyroBITTimestamp = timestamp;
     this->supportFPGAData.GyroBIT0 = 0x7F;
     this->supportFPGAData.GyroBIT1 = 0x7F;
@@ -165,12 +207,9 @@ void SimulatedFPGA::pullTelemetry() {
     //	this->supportFPGAData.PowerSupplyStates = 0;
 }
 
-void SimulatedFPGA::pullHealthAndStatus()
-{
+void SimulatedFPGA::pullHealthAndStatus() {}
 
-}
-
-int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
+void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     for (int i = 0; i < length;) {
         uint16_t signal = data[i++];
         uint16_t dataLength = 0;
@@ -188,22 +227,22 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                 break;
             case FPGAAddresses::ModbusSubnetATx:
                 subnet = 1;
-                response = &this->subnetAResponse;
+                response = &_subnetAResponse;
                 dataLength = data[i++];
                 break;
             case FPGAAddresses::ModbusSubnetBTx:
                 subnet = 2;
-                response = &this->subnetBResponse;
+                response = &_subnetBResponse;
                 dataLength = data[i++];
                 break;
             case FPGAAddresses::ModbusSubnetCTx:
                 subnet = 3;
-                response = &this->subnetCResponse;
+                response = &_subnetCResponse;
                 dataLength = data[i++];
                 break;
             case FPGAAddresses::ModbusSubnetDTx:
                 subnet = 4;
-                response = &this->subnetDResponse;
+                response = &_subnetDResponse;
                 dataLength = data[i++];
                 break;
             case FPGAAddresses::ModbusSubnetARx:
@@ -213,7 +252,7 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                 break;
             case FPGAAddresses::ModbusSubnetETx:
                 subnet = 5;
-                response = &this->subnetEResponse;
+                response = &_subnetEResponse;
                 dataLength = data[i++];
                 break;
             case FPGAAddresses::GyroTx: {
@@ -315,7 +354,6 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
             case FPGAAddresses::Inclinometer:
             case FPGAAddresses::ModbusSoftwareTrigger:
             case FPGAAddresses::Telemetry:
-            case FPGAAddresses::HealthAndStatus:
             case FPGAAddresses::Timestamp:
                 break;
             default:
@@ -325,19 +363,18 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
             bool stepMotorBroadcast = false;
             ++i;  // Read Software Trigger
             // Response length is prepended at request
-            uint64_t rawTimestamp = Timestamp::toRaw(this->publisher->getTimestamp());
+            uint64_t rawTimestamp = Timestamp::toRaw(_publisher->getTimestamp());
             response->push((uint16_t)(rawTimestamp >> 48));
             response->push((uint16_t)(rawTimestamp >> 32));
             response->push((uint16_t)(rawTimestamp >> 16));
             response->push((uint16_t)rawTimestamp);  // Write Global Timestamp
             int endIndex = i - 1 + dataLength - 1;
-            MTM1M3_hardpointActuatorDataC* hardpointActuatorData =
-                    this->publisher->getHardpointActuatorData();
+            MTM1M3_hardpointActuatorDataC* hardpointActuatorData = _publisher->getHardpointActuatorData();
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
             while (i < endIndex) {
-                uint16_t address = this->readModbus(data[i++]);   // Read Address
-                uint16_t function = this->readModbus(data[i++]);  // Read Function Code
+                uint16_t address = _readModbus(data[i++]);   // Read Address
+                uint16_t function = _readModbus(data[i++]);  // Read Function Code
                 if (address == 248 && function == 66) {
                     stepMotorBroadcast = true;
                 }
@@ -358,265 +395,264 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                 } else if (subnet >= 1 && subnet <= 4) {
                     int zIndex = -1;
                     for (int j = 0; j < FA_COUNT; ++j) {
-                        if (this->forceActuatorApplicationSettings->Table[j].Subnet == subnet &&
-                            this->forceActuatorApplicationSettings->Table[j].Address == address) {
+                        if (_forceActuatorApplicationSettings->Table[j].Subnet == subnet &&
+                            _forceActuatorApplicationSettings->Table[j].Address == address) {
                             zIndex = j;
                             break;
                         }
                     }
                     int pIndex = zIndex;
-                    int sIndex =
-                            this->forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
+                    int sIndex = _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
                     switch (function) {
-                        case 17:                                    // Report Server Id
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, 12);        // Write Message Length
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, signal);
-                            this->writeModbus(response, address);  // Write ILC Unique Id
-                            this->writeModbus(response, 0);        // TODO: Write ILC Application Type
-                            this->writeModbus(response, 0);        // TODO: Write Network Node Type
-                            this->writeModbus(response, 0);        // TODO: Write ILC Selected Options
-                            this->writeModbus(response, 0);        // TODO: Write Network Node Options
-                            this->writeModbus(response, 99);       // TODO: Write Major Revision
-                            this->writeModbus(response, 99);       // TODO: Write Minor Revision
+                        case 17:                               // Report Server Id
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, 12);        // Write Message Length
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, signal);
+                            _writeModbus(response, address);  // Write ILC Unique Id
+                            _writeModbus(response, 0);        // TODO: Write ILC Application Type
+                            _writeModbus(response, 0);        // TODO: Write Network Node Type
+                            _writeModbus(response, 0);        // TODO: Write ILC Selected Options
+                            _writeModbus(response, 0);        // TODO: Write Network Node Options
+                            _writeModbus(response, 99);       // TODO: Write Major Revision
+                            _writeModbus(response, 99);       // TODO: Write Minor Revision
                             // TODO: Write Firmware Name
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         case 18:  // Report Server Status
-                            this->writeModbus(response, address);
-                            this->writeModbus(response, function);
-                            this->writeModbus(response, 0);  // TODO: Write IlC State
-                            this->writeModbus(response, 0);
-                            this->writeModbus(response, 0);  // TODO: Write ILC Status
-                            this->writeModbus(response, 0);
-                            this->writeModbus(response, 0);  // TODO: Write ILC Faults
-                            this->writeModbusCRC(response);
+                            _writeModbus(response, address);
+                            _writeModbus(response, function);
+                            _writeModbus(response, 0);  // TODO: Write IlC State
+                            _writeModbus(response, 0);
+                            _writeModbus(response, 0);  // TODO: Write ILC Status
+                            _writeModbus(response, 0);
+                            _writeModbus(response, 0);  // TODO: Write ILC Faults
+                            _writeModbusCRC(response);
                             break;
-                        case 65: {                                           // Change ILC Mode
-                            ++i;                                             // Read Reserved Byte
-                            uint16_t newMode = this->readModbus(data[i++]);  // Read New Mode
-                            this->writeModbus(response, address);            // Write Address
-                            this->writeModbus(response, function);           // Write Function
-                            this->writeModbus(response, 0);                  // Write Reserved Byte
-                            this->writeModbus(response, newMode);            // Write ILC State
-                            this->writeModbusCRC(response);
+                        case 65: {                                      // Change ILC Mode
+                            ++i;                                        // Read Reserved Byte
+                            uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
+                            _writeModbus(response, address);            // Write Address
+                            _writeModbus(response, function);           // Write Function
+                            _writeModbus(response, 0);                  // Write Reserved Byte
+                            _writeModbus(response, newMode);            // Write ILC State
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 73:                                    // Set Boost Valve DCA Gains
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            i += 4;                                 // Read Primary Cylinder DCA Gain
-                            i += 4;                                 // Read Secondary Cylinder DCA Gain
-                            this->writeModbusCRC(response);
+                        case 73:                               // Set Boost Valve DCA Gains
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            i += 4;                            // Read Primary Cylinder DCA Gain
+                            i += 4;                            // Read Secondary Cylinder DCA Gain
+                            _writeModbusCRC(response);
                             break;
-                        case 74: {                                  // Read Boost Valve DCA Gains
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
+                        case 74: {                             // Read Boost Valve DCA Gains
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
                             uint8_t buffer[4];
                             float gain = 1.0;
                             memcpy(buffer, &gain, 4);
-                            this->writeModbus(response, buffer[3]);
-                            this->writeModbus(response, buffer[2]);
-                            this->writeModbus(response, buffer[1]);
-                            this->writeModbus(response, buffer[0]);  // Write Primary Cylinder DCA Gain
-                            this->writeModbus(response, buffer[3]);
-                            this->writeModbus(response, buffer[2]);
-                            this->writeModbus(response, buffer[1]);
-                            this->writeModbus(response, buffer[0]);  // Write Secondary Cylinder DCA Gain
-                            this->writeModbusCRC(response);
+                            _writeModbus(response, buffer[3]);
+                            _writeModbus(response, buffer[2]);
+                            _writeModbus(response, buffer[1]);
+                            _writeModbus(response, buffer[0]);  // Write Primary Cylinder DCA Gain
+                            _writeModbus(response, buffer[3]);
+                            _writeModbus(response, buffer[2]);
+                            _writeModbus(response, buffer[1]);
+                            _writeModbus(response, buffer[0]);  // Write Secondary Cylinder DCA Gain
+                            _writeModbusCRC(response);
                             break;
                         }
                         case 75: {  // Force Demand
                             ++i;    // Read Slew Flag
-                            uint16_t word1 = this->readModbus(data[i++]);
-                            uint16_t word2 = this->readModbus(data[i++]);
-                            uint16_t word3 = this->readModbus(data[i++]);
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response,
-                                              (uint8_t)this->publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                            uint16_t word1 = _readModbus(data[i++]);
+                            uint16_t word2 = _readModbus(data[i++]);
+                            uint16_t word3 = _readModbus(data[i++]);
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response,
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) +
-                                          (this->getRnd() * 0.5);
+                                          (_getRnd() * 0.5);
                             memcpy(buffer, &force, 4);
-                            this->writeModbus(response, buffer[3]);
-                            this->writeModbus(response, buffer[2]);
-                            this->writeModbus(response, buffer[1]);
-                            this->writeModbus(response, buffer[0]);  // Write Primary Cylinder Force
+                            _writeModbus(response, buffer[3]);
+                            _writeModbus(response, buffer[2]);
+                            _writeModbus(response, buffer[1]);
+                            _writeModbus(response, buffer[0]);  // Write Primary Cylinder Force
                             if (address > 16) {
-                                word1 = this->readModbus(data[i++]);
-                                word2 = this->readModbus(data[i++]);
-                                word3 = this->readModbus(data[i++]);
+                                word1 = _readModbus(data[i++]);
+                                word2 = _readModbus(data[i++]);
+                                word3 = _readModbus(data[i++]);
                                 force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) +
-                                        (this->getRnd() * 0.5);
+                                        (_getRnd() * 0.5);
                                 memcpy(buffer, &force, 4);
-                                this->writeModbus(response, buffer[3]);
-                                this->writeModbus(response, buffer[2]);
-                                this->writeModbus(response, buffer[1]);
-                                this->writeModbus(response, buffer[0]);  // Write Secondary Cylinder Force
+                                _writeModbus(response, buffer[3]);
+                                _writeModbus(response, buffer[2]);
+                                _writeModbus(response, buffer[1]);
+                                _writeModbus(response, buffer[0]);  // Write Secondary Cylinder Force
                             }
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 76: {                                  // Force And Status
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response,
-                                              (uint8_t)this->publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                        case 76: {                             // Force And Status
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response,
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             uint8_t buffer[4];
-                            float force = (((float)this->publisher->getEventAppliedCylinderForces()
+                            float force = (((float)_publisher->getEventAppliedCylinderForces()
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
-                                          (this->getRnd() * 0.5);  // Update to Primary Cylinder Force
+                                          (_getRnd() * 0.5);  // Update to Primary Cylinder Force
                             memcpy(buffer, &force, 4);
-                            this->writeModbus(response, buffer[3]);
-                            this->writeModbus(response, buffer[2]);
-                            this->writeModbus(response, buffer[1]);
-                            this->writeModbus(response, buffer[0]);  // Write Primary Cylinder Force
+                            _writeModbus(response, buffer[3]);
+                            _writeModbus(response, buffer[2]);
+                            _writeModbus(response, buffer[1]);
+                            _writeModbus(response, buffer[0]);  // Write Primary Cylinder Force
                             if (address > 16) {
-                                force = (((float)this->publisher->getEventAppliedCylinderForces()
+                                force = (((float)_publisher->getEventAppliedCylinderForces()
                                                   ->secondaryCylinderForces[sIndex]) /
                                          1000.0) +
-                                        (this->getRnd() * 0.5);  // Update to Secondary Cylinder Force
+                                        (_getRnd() * 0.5);  // Update to Secondary Cylinder Force
                                 memcpy(buffer, &force, 4);
-                                this->writeModbus(response, buffer[3]);
-                                this->writeModbus(response, buffer[2]);
-                                this->writeModbus(response, buffer[1]);
-                                this->writeModbus(response, buffer[0]);  // Write Secondary Cylinder Force
+                                _writeModbus(response, buffer[3]);
+                                _writeModbus(response, buffer[2]);
+                                _writeModbus(response, buffer[1]);
+                                _writeModbus(response, buffer[0]);  // Write Secondary Cylinder Force
                             }
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         }
                         case 80: {  // ADC Scan Rate
-                            uint16_t scanRate = this->readModbus(data[i++]);
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, scanRate);  // Write ADC Scan Rate
-                            this->writeModbusCRC(response);
+                            uint16_t scanRate = _readModbus(data[i++]);
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, scanRate);  // Write ADC Scan Rate
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 81:                                    // ADC Channel Offset and Sensitivity
-                            ++i;                                    // Read ADC Channel
-                            i += 4;                                 // Read Offset
-                            i += 4;                                 // Read Sensitivity
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbusCRC(response);
+                        case 81:                               // ADC Channel Offset and Sensitivity
+                            ++i;                               // Read ADC Channel
+                            i += 4;                            // Read Offset
+                            i += 4;                            // Read Sensitivity
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbusCRC(response);
                             break;
-                        case 107:                                   // Reset
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbusCRC(response);
+                        case 107:                              // Reset
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbusCRC(response);
                             break;
-                        case 110: {                                 // Read Calibration
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
+                        case 110: {                            // Read Calibration
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
                                 uint8_t buffer[4];
                                 float value = 0.0;
                                 memcpy(buffer, &value, 4);
-                                this->writeModbus(response, buffer[3]);
-                                this->writeModbus(response, buffer[2]);
-                                this->writeModbus(response, buffer[1]);
-                                this->writeModbus(response, buffer[0]);  // Write Calibration Data
+                                _writeModbus(response, buffer[3]);
+                                _writeModbus(response, buffer[2]);
+                                _writeModbus(response, buffer[1]);
+                                _writeModbus(response, buffer[0]);  // Write Calibration Data
                             }
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 119: {                                 // Read DCA Pressure Values
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
+                        case 119: {                            // Read DCA Pressure Values
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
                                 uint8_t buffer[4];
                                 float value = 120.0;
                                 memcpy(buffer, &value, 4);
-                                this->writeModbus(response, buffer[3]);
-                                this->writeModbus(response, buffer[2]);
-                                this->writeModbus(response, buffer[1]);
-                                this->writeModbus(response, buffer[0]);  // Write DCA Pressure
+                                _writeModbus(response, buffer[3]);
+                                _writeModbus(response, buffer[2]);
+                                _writeModbus(response, buffer[1]);
+                                _writeModbus(response, buffer[0]);  // Write DCA Pressure
                             }
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 120:                                   // Read DCA Id
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x01);
-                            this->writeModbus(response, signal);
-                            this->writeModbus(response, address);  // Write DCA Unique Id
-                            this->writeModbus(response, 0);        // TODO: Write DCA Firmware Type
-                            this->writeModbus(response, 99);       // TODO: Write Major Revision
-                            this->writeModbus(response, 99);       // TODO: Write Minor Revision
-                            this->writeModbusCRC(response);
+                        case 120:                              // Read DCA Id
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x01);
+                            _writeModbus(response, signal);
+                            _writeModbus(response, address);  // Write DCA Unique Id
+                            _writeModbus(response, 0);        // TODO: Write DCA Firmware Type
+                            _writeModbus(response, 99);       // TODO: Write Major Revision
+                            _writeModbus(response, 99);       // TODO: Write Minor Revision
+                            _writeModbusCRC(response);
                             break;
-                        case 121:                                   // Read DCA Status
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);  // TODO: Write DCA Status
-                            this->writeModbusCRC(response);
+                        case 121:                              // Read DCA Status
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);  // TODO: Write DCA Status
+                            _writeModbusCRC(response);
                             break;
                         default:
                             break;
                     }
                 } else if (subnet == 5 && address >= 1 && address <= 6) {
                     switch (function) {
-                        case 17:                                    // Report Server Id
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, 12);        // Write Message Length
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, signal);
-                            this->writeModbus(response, address);  // Write ILC Unique Id
-                            this->writeModbus(response, 0);        // TODO: Write ILC Application Type
-                            this->writeModbus(response, 0);        // TODO: Write Network Node Type
-                            this->writeModbus(response, 0);        // TODO: Write ILC Selected Options
-                            this->writeModbus(response, 0);        // TODO: Write Network Node Options
-                            this->writeModbus(response, 99);       // TODO: Write Major Revision
-                            this->writeModbus(response, 99);       // TODO: Write Minor Revision
+                        case 17:                               // Report Server Id
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, 12);        // Write Message Length
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, signal);
+                            _writeModbus(response, address);  // Write ILC Unique Id
+                            _writeModbus(response, 0);        // TODO: Write ILC Application Type
+                            _writeModbus(response, 0);        // TODO: Write Network Node Type
+                            _writeModbus(response, 0);        // TODO: Write ILC Selected Options
+                            _writeModbus(response, 0);        // TODO: Write Network Node Options
+                            _writeModbus(response, 99);       // TODO: Write Major Revision
+                            _writeModbus(response, 99);       // TODO: Write Minor Revision
                             // TODO: Write Firmware Name
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         case 18:  // Report Server Status
-                            this->writeModbus(response, address);
-                            this->writeModbus(response, function);
-                            this->writeModbus(response, 0);  // TODO: Write IlC State
-                            this->writeModbus(response, 0);
-                            this->writeModbus(response, 0);  // TODO: Write ILC Status
-                            this->writeModbus(response, 0);
-                            this->writeModbus(response, 0);  // TODO: Write ILC Faults
-                            this->writeModbusCRC(response);
+                            _writeModbus(response, address);
+                            _writeModbus(response, function);
+                            _writeModbus(response, 0);  // TODO: Write IlC State
+                            _writeModbus(response, 0);
+                            _writeModbus(response, 0);  // TODO: Write ILC Status
+                            _writeModbus(response, 0);
+                            _writeModbus(response, 0);  // TODO: Write ILC Faults
+                            _writeModbusCRC(response);
                             break;
-                        case 65: {                                           // Change ILC Mode
-                            ++i;                                             // Read Reserved Byte
-                            uint16_t newMode = this->readModbus(data[i++]);  // Read New Mode
-                            this->writeModbus(response, address);            // Write Address
-                            this->writeModbus(response, function);           // Write Function
-                            this->writeModbus(response, 0);                  // Write Reserved Byte
-                            this->writeModbus(response, newMode);            // Write ILC State
-                            this->writeModbusCRC(response);
+                        case 65: {                                      // Change ILC Mode
+                            ++i;                                        // Read Reserved Byte
+                            uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
+                            _writeModbus(response, address);            // Write Address
+                            _writeModbus(response, function);           // Write Function
+                            _writeModbus(response, 0);                  // Write Reserved Byte
+                            _writeModbus(response, newMode);            // Write ILC State
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 66: {                                  // Step Motor
-                            int steps = data[i++];                  // Read Steps
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response,
-                                              (uint8_t)this->publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                        case 66: {                             // Step Motor
+                            int steps = data[i++];             // Read Steps
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response,
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             // Number of steps issued / 4 + current encoder
                             // The encoder is also inverted after being received to match axis direction
                             // So we have to also invert the encoder here to counteract that
@@ -626,30 +662,30 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                                 steps = -4;
                             }
                             int32_t encoder = -hardpointActuatorData->encoder[address - 1] - (steps / 4);
-                            this->writeModbus(response, (encoder >> 24) & 0xFF);
-                            this->writeModbus(response, (encoder >> 16) & 0xFF);
-                            this->writeModbus(response, (encoder >> 8) & 0xFF);
-                            this->writeModbus(response, encoder & 0xFF);  // Write Encoder
+                            _writeModbus(response, (encoder >> 24) & 0xFF);
+                            _writeModbus(response, (encoder >> 16) & 0xFF);
+                            _writeModbus(response, (encoder >> 8) & 0xFF);
+                            _writeModbus(response, encoder & 0xFF);  // Write Encoder
                             uint8_t buffer[4];
-                            float force = this->getRnd() * 8.0;
+                            float force = _getRnd() * 8.0;
                             memcpy(buffer, &force, 4);
-                            this->writeModbus(response, buffer[3]);
-                            this->writeModbus(response, buffer[2]);
-                            this->writeModbus(response, buffer[1]);
-                            this->writeModbus(response, buffer[0]);  // Write Measured Force
-                            this->writeModbusCRC(response);
+                            _writeModbus(response, buffer[3]);
+                            _writeModbus(response, buffer[2]);
+                            _writeModbus(response, buffer[1]);
+                            _writeModbus(response, buffer[0]);  // Write Measured Force
+                            _writeModbusCRC(response);
                             break;
                         }
                         case 67: {  // Force And Status
                                     //						int steps =
-                                    // this->publisher->getEventAppliedHardpointSteps()->commandedSteps[address
+                                    // _publisher->getEventAppliedHardpointSteps()->commandedSteps[address
                                     // -  1];
                             int steps = 0;
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response,
-                                              (uint8_t)this->publisher->getOuterLoopData()
-                                                      ->broadcastCounter);  // Write ILC Status
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response,
+                                         (uint8_t)_publisher->getOuterLoopData()
+                                                 ->broadcastCounter);  // Write ILC Status
                             // Number of steps issued / 4 + current encoder
                             // The encoder is also inverted after being received to match axis direction
                             // So we have to also invert the encoder here to counteract that
@@ -662,54 +698,54 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                             if (stepMotorBroadcast) {
                                 encoder = encoder - (steps / 4);
                             }
-                            this->writeModbus(response, (encoder >> 24) & 0xFF);
-                            this->writeModbus(response, (encoder >> 16) & 0xFF);
-                            this->writeModbus(response, (encoder >> 8) & 0xFF);
-                            this->writeModbus(response, encoder & 0xFF);  // Write Encoder
+                            _writeModbus(response, (encoder >> 24) & 0xFF);
+                            _writeModbus(response, (encoder >> 16) & 0xFF);
+                            _writeModbus(response, (encoder >> 8) & 0xFF);
+                            _writeModbus(response, encoder & 0xFF);  // Write Encoder
                             uint8_t buffer[4];
-                            float force = this->getRnd() * 8.0;
+                            float force = _getRnd() * 8.0;
                             memcpy(buffer, &force, 4);
-                            this->writeModbus(response, buffer[3]);
-                            this->writeModbus(response, buffer[2]);
-                            this->writeModbus(response, buffer[1]);
-                            this->writeModbus(response, buffer[0]);  // Write Measured Force
-                            this->writeModbusCRC(response);
+                            _writeModbus(response, buffer[3]);
+                            _writeModbus(response, buffer[2]);
+                            _writeModbus(response, buffer[1]);
+                            _writeModbus(response, buffer[0]);  // Write Measured Force
+                            _writeModbusCRC(response);
                             break;
                         }
                         case 80: {  // ADC Scan Rate
-                            uint16_t scanRate = this->readModbus(data[i++]);
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, scanRate);  // Write ADC Scan Rate
-                            this->writeModbusCRC(response);
+                            uint16_t scanRate = _readModbus(data[i++]);
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, scanRate);  // Write ADC Scan Rate
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 81:                                    // ADC Channel Offset and Sensitivity
-                            ++i;                                    // Read ADC Channel
-                            i += 4;                                 // Read Offset
-                            i += 4;                                 // Read Sensitivity
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbusCRC(response);
+                        case 81:                               // ADC Channel Offset and Sensitivity
+                            ++i;                               // Read ADC Channel
+                            i += 4;                            // Read Offset
+                            i += 4;                            // Read Sensitivity
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbusCRC(response);
                             break;
-                        case 107:                                   // Reset
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbusCRC(response);
+                        case 107:                              // Reset
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbusCRC(response);
                             break;
-                        case 110: {                                 // Read Calibration
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
+                        case 110: {                            // Read Calibration
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
                                 uint8_t buffer[4];
                                 float value = 0.0;
                                 memcpy(buffer, &value, 4);
-                                this->writeModbus(response, buffer[3]);
-                                this->writeModbus(response, buffer[2]);
-                                this->writeModbus(response, buffer[1]);
-                                this->writeModbus(response, buffer[0]);  // Write Calibration Data
+                                _writeModbus(response, buffer[3]);
+                                _writeModbus(response, buffer[2]);
+                                _writeModbus(response, buffer[1]);
+                                _writeModbus(response, buffer[0]);  // Write Calibration Data
                             }
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         }
                         default:
@@ -717,99 +753,99 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
                     }
                 } else if (subnet == 5 && address >= 84 && address <= 89) {
                     switch (function) {
-                        case 17:                                    // Report Server Id
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, 12);        // Write Message Length
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, signal);
-                            this->writeModbus(response, address);  // Write ILC Unique Id
-                            this->writeModbus(response, 0);        // TODO: Write ILC Application Type
-                            this->writeModbus(response, 0);        // TODO: Write Network Node Type
-                            this->writeModbus(response, 0);        // TODO: Write ILC Selected Options
-                            this->writeModbus(response, 0);        // TODO: Write Network Node Options
-                            this->writeModbus(response, 99);       // TODO: Write Major Revision
-                            this->writeModbus(response, 99);       // TODO: Write Minor Revision
+                        case 17:                               // Report Server Id
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, 12);        // Write Message Length
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, signal);
+                            _writeModbus(response, address);  // Write ILC Unique Id
+                            _writeModbus(response, 0);        // TODO: Write ILC Application Type
+                            _writeModbus(response, 0);        // TODO: Write Network Node Type
+                            _writeModbus(response, 0);        // TODO: Write ILC Selected Options
+                            _writeModbus(response, 0);        // TODO: Write Network Node Options
+                            _writeModbus(response, 99);       // TODO: Write Major Revision
+                            _writeModbus(response, 99);       // TODO: Write Minor Revision
                             // TODO: Write Firmware Name
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         case 18:  // Report Server Status
-                            this->writeModbus(response, address);
-                            this->writeModbus(response, function);
-                            this->writeModbus(response, 0);  // TODO: Write IlC State
-                            this->writeModbus(response, 0);
-                            this->writeModbus(response, 0);  // TODO: Write ILC Status
-                            this->writeModbus(response, 0);
-                            this->writeModbus(response, 0);  // TODO: Write ILC Faults
-                            this->writeModbusCRC(response);
+                            _writeModbus(response, address);
+                            _writeModbus(response, function);
+                            _writeModbus(response, 0);  // TODO: Write IlC State
+                            _writeModbus(response, 0);
+                            _writeModbus(response, 0);  // TODO: Write ILC Status
+                            _writeModbus(response, 0);
+                            _writeModbus(response, 0);  // TODO: Write ILC Faults
+                            _writeModbusCRC(response);
                             break;
-                        case 65: {                                           // Change ILC Mode
-                            ++i;                                             // Read Reserved Byte
-                            uint16_t newMode = this->readModbus(data[i++]);  // Read New Mode
-                            this->writeModbus(response, address);            // Write Address
-                            this->writeModbus(response, function);           // Write Function
-                            this->writeModbus(response, 0);                  // Write Reserved Byte
-                            this->writeModbus(response, newMode);            // Write ILC State
-                            this->writeModbusCRC(response);
+                        case 65: {                                      // Change ILC Mode
+                            ++i;                                        // Read Reserved Byte
+                            uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
+                            _writeModbus(response, address);            // Write Address
+                            _writeModbus(response, function);           // Write Function
+                            _writeModbus(response, 0);                  // Write Reserved Byte
+                            _writeModbus(response, newMode);            // Write ILC State
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 107:                                   // Reset
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbusCRC(response);
+                        case 107:                              // Reset
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbusCRC(response);
                             break;
-                        case 119: {                                 // Read DCA Pressure Values
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
+                        case 119: {                            // Read DCA Pressure Values
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
                                 uint8_t buffer[4];
                                 float value = 120.0;
                                 memcpy(buffer, &value, 4);
-                                this->writeModbus(response, buffer[3]);
-                                this->writeModbus(response, buffer[2]);
-                                this->writeModbus(response, buffer[1]);
-                                this->writeModbus(response, buffer[0]);  // Write DCA Pressure
+                                _writeModbus(response, buffer[3]);
+                                _writeModbus(response, buffer[2]);
+                                _writeModbus(response, buffer[1]);
+                                _writeModbus(response, buffer[0]);  // Write DCA Pressure
                             }
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         }
-                        case 120:                                   // Read DCA Id
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x01);
-                            this->writeModbus(response, signal);
-                            this->writeModbus(response, address);  // Write DCA Unique Id
-                            this->writeModbus(response, 0);        // TODO: Write DCA Firmware Type
-                            this->writeModbus(response, 99);       // TODO: Write Major Revision
-                            this->writeModbus(response, 99);       // TODO: Write Minor Revision
-                            this->writeModbusCRC(response);
+                        case 120:                              // Read DCA Id
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x01);
+                            _writeModbus(response, signal);
+                            _writeModbus(response, address);  // Write DCA Unique Id
+                            _writeModbus(response, 0);        // TODO: Write DCA Firmware Type
+                            _writeModbus(response, 99);       // TODO: Write Major Revision
+                            _writeModbus(response, 99);       // TODO: Write Minor Revision
+                            _writeModbusCRC(response);
                             break;
-                        case 121:                                   // Read DCA Status
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
-                            this->writeModbus(response, 0x00);
-                            this->writeModbus(response, 0x00);  // TODO: Write DCA Status
-                            this->writeModbusCRC(response);
+                        case 121:                              // Read DCA Status
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
+                            _writeModbus(response, 0x00);
+                            _writeModbus(response, 0x00);  // TODO: Write DCA Status
+                            _writeModbusCRC(response);
                             break;
-                        case 122:                                   // Report LVDT
-                            this->writeModbus(response, address);   // Write Address
-                            this->writeModbus(response, function);  // Write Function
+                        case 122:                              // Report LVDT
+                            _writeModbus(response, address);   // Write Address
+                            _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 2; ++j) {
                                 uint8_t buffer[4];
                                 float value = 0.0;
                                 memcpy(buffer, &value, 4);
-                                this->writeModbus(response, buffer[3]);
-                                this->writeModbus(response, buffer[2]);
-                                this->writeModbus(response, buffer[1]);
-                                this->writeModbus(response, buffer[0]);  // Write LVDT
+                                _writeModbus(response, buffer[3]);
+                                _writeModbus(response, buffer[2]);
+                                _writeModbus(response, buffer[1]);
+                                _writeModbus(response, buffer[0]);  // Write LVDT
                             }
-                            this->writeModbusCRC(response);
+                            _writeModbusCRC(response);
                             break;
                         default:
                             break;
@@ -822,21 +858,20 @@ int32_t SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t 
             ++i;  // Read Write Trigger IRQ
         }
     }
-    return 0;
 }
 
-void SimulatedFPGA::writeModbus(std::queue<uint16_t>* response, uint16_t data) {
-    this->crcVector.push(data);
+void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
+    _crcVector.push(data);
     response->push((data << 1) | 0x9000);
 }
 
-void SimulatedFPGA::writeModbusCRC(std::queue<uint16_t>* response) {
+void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     uint16_t buffer[256];
     int i = 0;
-    while (!this->crcVector.empty()) {
-        buffer[i] = this->crcVector.front();
+    while (!_crcVector.empty()) {
+        buffer[i] = _crcVector.front();
         i++;
-        this->crcVector.pop();
+        _crcVector.pop();
     }
     uint16_t crc = CRC::modbus(buffer, 0, i);
     response->push((((crc >> 0) & 0xFF) << 1) | 0x9000);
@@ -847,9 +882,9 @@ void SimulatedFPGA::writeModbusCRC(std::queue<uint16_t>* response) {
     response->push(0xA000);  // Write End of Frame
 }
 
-uint16_t SimulatedFPGA::readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
+uint16_t SimulatedFPGA::_readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
-int32_t SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) { return 0; }
+void SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {}
 
 void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     int signal = data[0];
@@ -868,21 +903,21 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t tim
         case FPGAAddresses::ModbusSubnetCTx:
         case FPGAAddresses::ModbusSubnetDTx:
         case FPGAAddresses::ModbusSubnetARx:
-            modbusResponse = &this->subnetAResponse;
+            modbusResponse = &_subnetAResponse;
             break;
         case FPGAAddresses::ModbusSubnetBRx:
-            modbusResponse = &this->subnetBResponse;
+            modbusResponse = &_subnetBResponse;
             break;
         case FPGAAddresses::ModbusSubnetCRx:
-            modbusResponse = &this->subnetCResponse;
+            modbusResponse = &_subnetCResponse;
             break;
         case FPGAAddresses::ModbusSubnetDRx:
-            modbusResponse = &this->subnetDResponse;
+            modbusResponse = &_subnetDResponse;
             break;
         case FPGAAddresses::ModbusSubnetETx:
         case FPGAAddresses::GyroTx:
         case FPGAAddresses::ModbusSubnetERx:
-            modbusResponse = &this->subnetEResponse;
+            modbusResponse = &_subnetEResponse;
             break;
         case FPGAAddresses::GyroRx:
         case FPGAAddresses::ILCPowerInterlockStatus:
@@ -909,16 +944,15 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t tim
         case FPGAAddresses::Inclinometer:
         case FPGAAddresses::ModbusSoftwareTrigger:
         case FPGAAddresses::Telemetry:
-        case FPGAAddresses::HealthAndStatus:
         case FPGAAddresses::Timestamp:
             break;
         default:
             break;
     }
     if (modbusResponse != 0) {
-        this->u16Response.push((uint16_t)modbusResponse->size());
+        _u16Response.push((uint16_t)modbusResponse->size());
         while (modbusResponse->size() > 0) {
-            this->u16Response.push(modbusResponse->front());
+            _u16Response.push(modbusResponse->front());
             modbusResponse->pop();
         }
     }
@@ -927,27 +961,34 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t tim
 void SimulatedFPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
     uint16_t newData[1];
     newData[0] = data;
-    return this->writeRequestFIFO(newData, 1, timeoutInMs);
+    writeRequestFIFO(newData, 1, timeoutInMs);
 }
 
-int32_t SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) { return 0; }
+void SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) {}
 
-int32_t SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) { return 0; }
+void SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) {}
 
-int32_t SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
+void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
     for (int i = 0; i < length; ++i) {
-        data[i] = this->u16Response.front();
-        this->u16Response.pop();
+        data[i] = _u16Response.front();
+        _u16Response.pop();
     }
-    return 0;
 }
 
-float SimulatedFPGA::getRnd() {
-    ++this->rndIndex;
-    if (this->rndIndex > RND_CNT) {
-        this->rndIndex = 0;
+void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}
+
+void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs) {
+    for (int i = 0; i < length; i++) {
+        data[i] = i;
     }
-    return this->rnd[rndIndex];
+}
+
+float SimulatedFPGA::_getRnd() {
+    ++_rndIndex;
+    if (_rndIndex > RND_CNT) {
+        _rndIndex = 0;
+    }
+    return _rnd[_rndIndex];
 }
 
 } /* namespace SS */

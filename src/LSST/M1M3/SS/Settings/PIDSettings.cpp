@@ -1,8 +1,24 @@
 /*
- * PIDSettings.cpp
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Feb 13, 2018
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <PIDSettings.h>
@@ -15,38 +31,44 @@ namespace M1M3 {
 namespace SS {
 
 void PIDSettings::load(const std::string &filename) {
-	pugi::xml_document doc;
-	XMLDocLoad(filename.c_str(), doc);
-	this->Fx.Timestep = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/Timestep").node().child_value());
-	this->Fx.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/P").node().child_value());
-	this->Fx.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/I").node().child_value());
-	this->Fx.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/D").node().child_value());
-	this->Fx.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/N").node().child_value());
-	this->Fy.Timestep = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/Timestep").node().child_value());
-	this->Fy.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/P").node().child_value());
-	this->Fy.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/I").node().child_value());
-	this->Fy.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/D").node().child_value());
-	this->Fy.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/N").node().child_value());
-	this->Fz.Timestep = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/Timestep").node().child_value());
-	this->Fz.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/P").node().child_value());
-	this->Fz.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/I").node().child_value());
-	this->Fz.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/D").node().child_value());
-	this->Fz.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/N").node().child_value());
-	this->Mx.Timestep = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/Timestep").node().child_value());
-	this->Mx.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/P").node().child_value());
-	this->Mx.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/I").node().child_value());
-	this->Mx.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/D").node().child_value());
-	this->Mx.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/N").node().child_value());
-	this->My.Timestep = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/Timestep").node().child_value());
-	this->My.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/P").node().child_value());
-	this->My.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/I").node().child_value());
-	this->My.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/D").node().child_value());
-	this->My.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/N").node().child_value());
-	this->Mz.Timestep = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/Timestep").node().child_value());
-	this->Mz.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/P").node().child_value());
-	this->Mz.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/I").node().child_value());
-	this->Mz.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/D").node().child_value());
-	this->Mz.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/N").node().child_value());
+    pugi::xml_document doc;
+    XMLDocLoad(filename.c_str(), doc);
+    this->Fx.Timestep =
+            boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/Timestep").node().child_value());
+    this->Fx.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/P").node().child_value());
+    this->Fx.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/I").node().child_value());
+    this->Fx.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/D").node().child_value());
+    this->Fx.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fx/N").node().child_value());
+    this->Fy.Timestep =
+            boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/Timestep").node().child_value());
+    this->Fy.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/P").node().child_value());
+    this->Fy.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/I").node().child_value());
+    this->Fy.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/D").node().child_value());
+    this->Fy.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fy/N").node().child_value());
+    this->Fz.Timestep =
+            boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/Timestep").node().child_value());
+    this->Fz.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/P").node().child_value());
+    this->Fz.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/I").node().child_value());
+    this->Fz.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/D").node().child_value());
+    this->Fz.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Fz/N").node().child_value());
+    this->Mx.Timestep =
+            boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/Timestep").node().child_value());
+    this->Mx.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/P").node().child_value());
+    this->Mx.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/I").node().child_value());
+    this->Mx.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/D").node().child_value());
+    this->Mx.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mx/N").node().child_value());
+    this->My.Timestep =
+            boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/Timestep").node().child_value());
+    this->My.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/P").node().child_value());
+    this->My.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/I").node().child_value());
+    this->My.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/D").node().child_value());
+    this->My.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/My/N").node().child_value());
+    this->Mz.Timestep =
+            boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/Timestep").node().child_value());
+    this->Mz.P = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/P").node().child_value());
+    this->Mz.I = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/I").node().child_value());
+    this->Mz.D = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/D").node().child_value());
+    this->Mz.N = boost::lexical_cast<double>(doc.select_node("//PIDSettings/Mz/N").node().child_value());
 }
 
 } /* namespace SS */

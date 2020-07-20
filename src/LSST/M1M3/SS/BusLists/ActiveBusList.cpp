@@ -1,8 +1,24 @@
 /*
- * ActiveBusList.cpp
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Apr 9, 2018
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <ActiveBusList.h>
@@ -26,22 +42,22 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
                              MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("RaisedBusList: RaisedBusList()");
-    this->outerLoopData = outerLoopData;
-    this->forceActuatorData = forceActuatorData;
-    this->appliedCylinderForces = appliedCylinderForces;
-    this->hardpointActuatorData = hardpointActuatorData;
-    this->forceInfo = forceInfo;
-    this->lvdtSampleClock = 0;
+    _outerLoopData = outerLoopData;
+    this->_forceActuatorData = forceActuatorData;
+    this->_appliedCylinderForces = appliedCylinderForces;
+    this->_hardpointActuatorData = hardpointActuatorData;
+    this->_forceInfo = forceInfo;
+    _lvdtSampleClock = 0;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
-        this->setForceCommandIndex[subnetIndex] = -1;
-        this->hpFreezeCommandIndex[subnetIndex] = -1;
-        this->faStatusCommandIndex[subnetIndex] = -1;
-        this->roundRobinFAReportServerStatusIndex[subnetIndex] = 0;
+        _setForceCommandIndex[subnetIndex] = -1;
+        _hpFreezeCommandIndex[subnetIndex] = -1;
+        _faStatusCommandIndex[subnetIndex] = -1;
+        _roundRobinFAReportServerStatusIndex[subnetIndex] = 0;
     }
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         if (this->subnetData->getFACount(subnetIndex) > 0) {
-            this->setForceCommandIndex[subnetIndex] = this->buffer.getIndex();
+            _setForceCommandIndex[subnetIndex] = this->buffer.getIndex();
             int32_t saaPrimary[16];
             int32_t daaPrimary[32];
             int32_t daaSecondary[32];
@@ -55,18 +71,17 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
                         this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
                 if (address <= 16) {
-                    saaPrimary[address - 1] =
-                            this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+                    saaPrimary[address - 1] = _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
                 } else {
                     daaPrimary[address - 17] =
-                            this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+                            _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
                     daaSecondary[address - 17] =
-                            this->appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
+                            _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
                 }
             }
-            this->ilcMessageFactory->broadcastForceDemand(
-                    &this->buffer, this->outerLoopData->broadcastCounter, this->outerLoopData->slewFlag,
-                    saaPrimary, daaPrimary, daaSecondary);
+            this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
+                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
+                                                          daaSecondary);
             this->buffer.writeTimestamp();
             for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
                 uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
@@ -77,22 +92,22 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
                     this->expectedFAResponses[dataIndex] = 1;
                 }
             }
-            int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+            int32_t statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             while (this->subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
-                this->roundRobinFAReportServerStatusIndex[subnetIndex] =
+                _roundRobinFAReportServerStatusIndex[subnetIndex] =
                         RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
-                statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+                statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             }
             uint8_t address = this->subnetData->getFAIndex(subnetIndex, statusIndex).Address;
             int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
-            this->faStatusCommandIndex[subnetIndex] = this->buffer.getIndex();
+            _faStatusCommandIndex[subnetIndex] = this->buffer.getIndex();
             this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
             this->expectedFAResponses[dataIndex] = 2;
         }
         if (this->subnetData->getHPCount(subnetIndex) > 0) {
-            this->hpFreezeCommandIndex[subnetIndex] = this->buffer.getIndex();
+            _hpFreezeCommandIndex[subnetIndex] = this->buffer.getIndex();
             this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(
-                    &this->buffer, this->outerLoopData->broadcastCounter);
+                    &this->buffer, _outerLoopData->broadcastCounter);
             this->buffer.writeTimestamp();
             for (int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
                 uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
@@ -117,7 +132,7 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
             }
         }
         if (this->subnetData->getHMCount(subnetIndex) > 0) {
-            this->hmLVDTCommandIndex[subnetIndex] = this->buffer.getIndex();
+            _hmLVDTCommandIndex[subnetIndex] = this->buffer.getIndex();
             for (int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
                 uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
                 bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
@@ -132,8 +147,7 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 }
 
 void ActiveBusList::update() {
-    this->outerLoopData->broadcastCounter =
-            RoundRobin::BroadcastCounter(this->outerLoopData->broadcastCounter);
+    _outerLoopData->broadcastCounter = RoundRobin::BroadcastCounter(_outerLoopData->broadcastCounter);
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         if (this->subnetData->getFACount(subnetIndex) > 0) {
             int32_t saaPrimary[16];
@@ -149,51 +163,50 @@ void ActiveBusList::update() {
                         this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
                 if (address <= 16) {
-                    saaPrimary[address - 1] =
-                            this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+                    saaPrimary[address - 1] = _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
                 } else {
                     daaPrimary[address - 17] =
-                            this->appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
+                            _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
                     daaSecondary[address - 17] =
-                            this->appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
+                            _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
                 }
             }
-            this->buffer.setIndex(this->setForceCommandIndex[subnetIndex]);
-            this->ilcMessageFactory->broadcastForceDemand(
-                    &this->buffer, this->outerLoopData->broadcastCounter, this->outerLoopData->slewFlag,
-                    saaPrimary, daaPrimary, daaSecondary);
+            this->buffer.setIndex(_setForceCommandIndex[subnetIndex]);
+            this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
+                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
+                                                          daaSecondary);
 
-            int32_t statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+            int32_t statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
             this->expectedFAResponses[dataIndex] = 1;
-            this->roundRobinFAReportServerStatusIndex[subnetIndex] =
+            _roundRobinFAReportServerStatusIndex[subnetIndex] =
                     RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
-            statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+            statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             while (this->subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
-                this->roundRobinFAReportServerStatusIndex[subnetIndex] =
+                _roundRobinFAReportServerStatusIndex[subnetIndex] =
                         RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
-                statusIndex = this->roundRobinFAReportServerStatusIndex[subnetIndex];
+                statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             }
             uint8_t address = this->subnetData->getFAIndex(subnetIndex, statusIndex).Address;
             dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
 
-            this->buffer.setIndex(this->faStatusCommandIndex[subnetIndex]);
+            this->buffer.setIndex(_faStatusCommandIndex[subnetIndex]);
             this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
             this->expectedFAResponses[dataIndex] = 2;
         }
         if (this->subnetData->getHPCount(subnetIndex) > 0) {
-            this->buffer.setIndex(this->hpFreezeCommandIndex[subnetIndex]);
+            this->buffer.setIndex(_hpFreezeCommandIndex[subnetIndex]);
             this->ilcMessageFactory->broadcastElectromechanicalFreezeSensorValues(
-                    &this->buffer, this->outerLoopData->broadcastCounter);
+                    &this->buffer, _outerLoopData->broadcastCounter);
         }
         if (this->subnetData->getHMCount(subnetIndex) > 0) {
-            this->buffer.setIndex(this->hmLVDTCommandIndex[subnetIndex]);
+            this->buffer.setIndex(_hmLVDTCommandIndex[subnetIndex]);
             for (int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
                 uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
                 int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
                 bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
                 if (!disabled) {
-                    if (this->lvdtSampleClock == 0) {
+                    if (_lvdtSampleClock == 0) {
                         this->ilcMessageFactory->reportLVDT(&this->buffer, address);
                         this->expectedHMResponses[dataIndex] = 4;
                     } else {
@@ -202,9 +215,9 @@ void ActiveBusList::update() {
                     }
                 }
             }
-            this->lvdtSampleClock--;
-            if (this->lvdtSampleClock < 0) {
-                this->lvdtSampleClock = 4;
+            _lvdtSampleClock--;
+            if (_lvdtSampleClock < 0) {
+                _lvdtSampleClock = 4;
             }
         }
     }

@@ -1,8 +1,24 @@
 /*
- * StaticStateFactory.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Sep 27, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef STATICSTATEFACTORY_H_
@@ -32,29 +48,29 @@ namespace SS {
 class M1M3SSPublisher;
 
 class StaticStateFactory {
-private:
-	OfflineState offlineState;
-	StandbyState standbyState;
-	DisabledState disabledState;
-	EnabledState enabledState;
-	ParkedState parkedState;
-	RaisingState raisingState;
-	ActiveState activeState;
-	LoweringState loweringState;
-	EngineeringState engineeringState;
-	ParkedEngineeringState parkedEngineeringState;
-	RaisingEngineeringState raisingEngineeringState;
-	ActiveEngineeringState activeEngineeringState;
-	LoweringEngineeringState loweringEngineeringState;
-	FaultState faultState;
-	LoweringFaultState loweringFaultState;
-	ProfileHardpointCorrectionState profileHardpointCorrectionState;
-
 public:
-	StaticStateFactory(M1M3SSPublisher* publisher);
+    StaticStateFactory(M1M3SSPublisher* publisher);
 
-	State* create(States::Type state);
-	void destroy(State* state);
+    State* create(States::Type state);
+    void destroy(State* state);
+
+private:
+    OfflineState _offlineState;
+    StandbyState _standbyState;
+    DisabledState _disabledState;
+    EnabledState _enabledState;
+    ParkedState _parkedState;
+    RaisingState _raisingState;
+    ActiveState _activeState;
+    LoweringState _loweringState;
+    EngineeringState _engineeringState;
+    ParkedEngineeringState _parkedEngineeringState;
+    RaisingEngineeringState _raisingEngineeringState;
+    ActiveEngineeringState _activeEngineeringState;
+    LoweringEngineeringState _loweringEngineeringState;
+    FaultState _faultState;
+    LoweringFaultState _loweringFaultState;
+    ProfileHardpointCorrectionState _profileHardpointCorrectionState;
 };
 
 } /* namespace SS */

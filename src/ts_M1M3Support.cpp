@@ -30,11 +30,10 @@
 #else
 #include <FPGA.h>
 #endif
+#include <NiError.h>
 
 using namespace std;
 using namespace LSST::M1M3::SS;
-
-void* runThread(void* data);
 
 void printHelp() {
     std::cout << "M1M3 Static Support controller. Runs either as simulator or as simulator or as "
@@ -49,11 +48,11 @@ void printHelp() {
               << "  -h prints this help" << std::endl;
 }
 
-int main(int argc, char* const argv[]) {
-    int opt;
+void processArgs(int argc, char* const argv[], const char*& configRoot) {
     int enabledSinks = 0x3;
     int debugLevel = 0;
-    const char* configRoot = getenv("PWD");
+
+    int opt;
     while ((opt = getopt(argc, argv, "bc:dfh")) != -1) {
         switch (opt) {
             case 'b':
@@ -95,84 +94,66 @@ int main(int argc, char* const argv[]) {
     spdlog::set_default_logger(logger);
     spdlog::set_level((debugLevel == 0 ? spdlog::level::info
                                        : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace)));
+}
 
-
-    spdlog::info("Main: Creating setting reader");
-    SettingReader::get().setRootPath(configRoot);
-    spdlog::info("Main: Initializing M1M3 SAL");
-    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
-    m1m3SAL->setDebugLevel(0);
-    spdlog::info("Main: Initializing MTMount SAL");
-    std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
-    spdlog::info("Main: Creating publisher");
-    M1M3SSPublisher publisher = M1M3SSPublisher(m1m3SAL);
-    spdlog::info("Main: Creating fpga");
-
-    IFPGA* fpga = &IFPGA::get();
+void initializeFPGAs(M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
 #ifdef SIMULATOR
-    ((SimulatedFPGA*)fpga)->setPublisher(&publisher);
+    ((SimulatedFPGA*)fpga)->setPublisher(publisher);
     ((SimulatedFPGA*)fpga)
             ->setForceActuatorApplicationSettings(
                     SettingReader::get().loadForceActuatorApplicationSettings());
     spdlog::warn("Starting Simulator version!");
 #endif
 
-    if (fpga->isErrorCode(fpga->initialize())) {
-        spdlog::critical("Main: Error initializing FPGA");
-        mtMountSAL->salShutdown();
-        m1m3SAL->salShutdown();
-        return -1;
-    }
-    if (fpga->isErrorCode(fpga->open())) {
-        spdlog::critical("Main: Error opening FPGA");
-        fpga->finalize();
-        mtMountSAL->salShutdown();
-        m1m3SAL->salShutdown();
-        return -1;
-    }
+    spdlog::info("Main: Creating fpga");
+
+    fpga->initialize();
+    fpga->open();
+
     spdlog::info("Main: Load expansion FPGA application settings");
     ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings =
             SettingReader::get().loadExpansionFPGAApplicationSettings();
     spdlog::info("Main: Create expansion FPGA");
-    IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
     expansionFPGA->setExpansionFPGAApplicationSettings(expansionFPGAApplicationSettings);
-    if (expansionFPGA->isErrorCode(expansionFPGA->open())) {
-        spdlog::critical("Main: Error opening expansion FPGA");
-        fpga->close();
-        fpga->finalize();
-        mtMountSAL->salShutdown();
-        m1m3SAL->salShutdown();
-        return -1;
-    }
+    expansionFPGA->open();
+}
+
+void* runThread(void* data) {
+    IThread* thread = (IThread*)data;
+    thread->run();
+    return 0;
+}
+
+void runFPGAs(M1M3SSPublisher* publisher, std::shared_ptr<SAL_MTM1M3> m1m3SAL,
+              std::shared_ptr<SAL_MTMount> mtMountSAL) {
     spdlog::info("Main: Creating state factory");
-    StaticStateFactory stateFactory = StaticStateFactory(&publisher);
+    StaticStateFactory stateFactory = StaticStateFactory(publisher);
     spdlog::info("Main: Load interlock application settings");
     InterlockApplicationSettings* interlockApplicationSettings =
             SettingReader::get().loadInterlockApplicationSettings();
     spdlog::info("Main: Creating digital input output");
-    DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings, &publisher);
+    DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings, publisher);
     spdlog::info("Main: Creating model");
-    Model model = Model(&publisher, &digitalInputOutput);
+    Model model = Model(publisher, &digitalInputOutput);
     spdlog::info("Main: Creating context");
     Context context = Context(&stateFactory, &model);
     spdlog::info("Main: Creating command factory");
-    CommandFactory commandFactory = CommandFactory(&publisher, &context);
+    CommandFactory commandFactory = CommandFactory(publisher, &context);
     spdlog::info("Main: Creating subscriber");
     M1M3SSSubscriber subscriber = M1M3SSSubscriber(m1m3SAL, mtMountSAL, &commandFactory);
     spdlog::info("Main: Creating controller");
     Controller controller = Controller(&commandFactory);
     spdlog::info("Main: Creating subscriber thread");
     SubscriberThread subscriberThread =
-            SubscriberThread(&subscriber, &controller, &publisher, &commandFactory);
+            SubscriberThread(&subscriber, &controller, publisher, &commandFactory);
     spdlog::info("Main: Creating controller thread");
     ControllerThread controllerThread = ControllerThread(&controller);
     spdlog::info("Main: Creating outer loop clock thread");
-    OuterLoopClockThread outerLoopClockThread =
-            OuterLoopClockThread(&commandFactory, &controller, &publisher);
+    OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, publisher);
     spdlog::info("Main: Creating pps thread");
-    PPSThread ppsThread = PPSThread(&publisher);
-    spdlog::info("Main: Queuing boot command");
-    controller.enqueue(commandFactory.create(Commands::BootCommand));
+    PPSThread ppsThread = PPSThread(publisher);
+    spdlog::info("Main: Queuing EnterControl command");
+    controller.enqueue(commandFactory.create(Commands::EnterControlCommand));
 
     pthread_t subscriberThreadId;
     pthread_t controllerThreadId;
@@ -197,9 +178,9 @@ int main(int argc, char* const argv[]) {
                 rc = pthread_create(&outerLoopClockThreadId, &threadAttribute, runThread,
                                     (void*)(&outerLoopClockThread));
                 if (!rc) {
-                    spdlog::info("Main: Waiting for shutdown");
-                    model.waitForShutdown();
-                    spdlog::info("Main: Shutdown received");
+                    spdlog::info("Main: Waiting for ExitControl");
+                    model.waitForExitControl();
+                    spdlog::info("Main: ExitControl received");
                     spdlog::info("Main: Stopping pps thread");
                     ppsThread.stop();
                     spdlog::info("Main: Stopping subscriber thread");
@@ -256,19 +237,41 @@ int main(int argc, char* const argv[]) {
     }
 
     pthread_attr_destroy(&threadAttribute);
+}
 
-    if (expansionFPGA->isErrorCode(expansionFPGA->close())) {
-        spdlog::error("Main: Error closing expansion FPGA");
+int main(int argc, char* const argv[]) {
+    const char* configRoot = getenv("PWD");
+
+    processArgs(argc, argv, configRoot);
+
+    spdlog::info("Main: Creating setting reader, root {}", configRoot);
+    SettingReader::get().setRootPath(configRoot);
+    spdlog::info("Main: Initializing M1M3 SAL");
+    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
+    m1m3SAL->setDebugLevel(0);
+    spdlog::info("Main: Initializing MTMount SAL");
+    std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
+    spdlog::info("Main: Creating publisher");
+    M1M3SSPublisher publisher = M1M3SSPublisher(m1m3SAL);
+
+    IFPGA* fpga = &IFPGA::get();
+    IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
+
+    try {
+        initializeFPGAs(&publisher, fpga, expansionFPGA);
+        runFPGAs(&publisher, m1m3SAL, mtMountSAL);
+
+        expansionFPGA->close();
+
+        fpga->close();
+        fpga->finalize();
+    } catch (NiError& nie) {
+        spdlog::critical("Main: Error initializing FPGA: {}", nie.what());
+        fpga->finalize();
+        mtMountSAL->salShutdown();
+        m1m3SAL->salShutdown();
+        return -1;
     }
-
-    if (fpga->isErrorCode(fpga->close())) {
-        spdlog::error("Main: Error closing FPGA");
-    }
-
-    if (fpga->isErrorCode(fpga->finalize())) {
-        spdlog::error("Main: Error finalizing FPGA");
-    }
-
     spdlog::info("Main: Shutting down MTMount SAL");
     mtMountSAL->salShutdown();
 
@@ -277,11 +280,5 @@ int main(int argc, char* const argv[]) {
 
     spdlog::info("Main: Shutdown complete");
 
-    return 0;
-}
-
-void* runThread(void* data) {
-    IThread* thread = (IThread*)data;
-    thread->run();
     return 0;
 }

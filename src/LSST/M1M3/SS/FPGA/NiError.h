@@ -1,8 +1,33 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef LSST_M1M3_SS_FPGA_NiError_H_
 #define LSST_M1M3_SS_FPGA_NiError_H_
 
 #include "NiFpga.h"
+
 #include <stdexcept>
+#include <string>
 
 /**
  * Error thrown on FPGA problems. Provides what routine with explanatory
@@ -16,14 +41,43 @@ public:
      * @param status Ni error status.
      */
     NiError(const char *msg, NiFpga_Status status);
-
-private:
-    NiFpga_Status status;
 };
 
 /**
  * Throws NI exception if an error occurred.
+ *
+ * @param msg message associated with the error
+ * @param status NI status
+ *
+ * @throw NiError if status != 0
+ *
+ * @see NiError
  */
 void NiThrowError(const char *msg, int32_t status);
+
+/**
+ * Throws NI exception if an error occurred.
+ *
+ * @param msg message associated with the error
+ * @param status NI status
+ *
+ * @throw NiError if status != 0
+ *
+ * @see NiError
+ */
+inline void NiThrowError(const std::string &msg, int32_t status) { NiThrowError(msg.c_str(), status); }
+
+/**
+ * Throws NI exception if an error occurred.
+ *
+ * @param func reporting function
+ * @param ni_func Ni function name signaling the exception
+ * @param status NI status
+ *
+ * @throw NiError if status != 0
+ *
+ * @see NiError
+ */
+void NiThrowError(const char *func, const char *ni_func, int32_t status);
 
 #endif  // !LSST_M1M3_SS_FPGA_NiError_H_

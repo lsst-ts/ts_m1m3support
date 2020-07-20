@@ -1,8 +1,24 @@
 /*
- * SetADCChanneOffsetAndSensitivityBusList.cpp
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Oct 19, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <SetADCChanneOffsetAndSensitivityBusList.h>
@@ -20,32 +36,32 @@ SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList
         MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("SetADCChanneOffsetAndSensitivityBusList: SetADCChanneOffsetAndSensitivityBusList()");
-    this->forceInfo = forceInfo;
-    this->hardpointInfo = hardpointInfo;
+    _forceInfo = forceInfo;
+    _hardpointInfo = hardpointInfo;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; ++subnetIndex) {
-        this->startSubnet(subnetIndex);
-        for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); ++faIndex) {
-            uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
-            int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-            bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
+        startSubnet(subnetIndex);
+        for (int faIndex = 0; faIndex < subnetData->getFACount(subnetIndex); ++faIndex) {
+            uint8_t address = subnetData->getFAIndex(subnetIndex, faIndex).Address;
+            int32_t dataIndex = subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
+            bool disabled = subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
             if (!disabled) {
-                this->ilcMessageFactory->setADCChannelOffsetAndSensitivity(&this->buffer, address, 1, 0, 0);
-                this->ilcMessageFactory->setADCChannelOffsetAndSensitivity(&this->buffer, address, 2, 0, 0);
-                this->expectedFAResponses[dataIndex] = 2;
+                ilcMessageFactory->setADCChannelOffsetAndSensitivity(&buffer, address, 1, 0, 0);
+                ilcMessageFactory->setADCChannelOffsetAndSensitivity(&buffer, address, 2, 0, 0);
+                expectedFAResponses[dataIndex] = 2;
             }
         }
-        for (int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); ++hpIndex) {
-            uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
-            int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-            bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
+        for (int hpIndex = 0; hpIndex < subnetData->getHPCount(subnetIndex); ++hpIndex) {
+            uint8_t address = subnetData->getHPIndex(subnetIndex, hpIndex).Address;
+            int32_t dataIndex = subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
+            bool disabled = subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
             if (!disabled) {
-                this->ilcMessageFactory->setADCChannelOffsetAndSensitivity(&this->buffer, address, 1, 0, 0);
-                this->expectedHPResponses[dataIndex] = 1;
+                ilcMessageFactory->setADCChannelOffsetAndSensitivity(&buffer, address, 1, 0, 0);
+                expectedHPResponses[dataIndex] = 1;
             }
         }
-        this->endSubnet();
+        endSubnet();
     }
-    this->buffer.setLength(this->buffer.getIndex());
+    buffer.setLength(buffer.getIndex());
 }
 
 } /* namespace SS */

@@ -1,3 +1,26 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef SETTINGREADER_H_
 #define SETTINGREADER_H_
 
@@ -30,7 +53,7 @@ namespace SS {
  */
 class SettingReader {
 public:
-    SettingReader() : rootPath("UNDEFINED") {}
+    SettingReader() : _rootPath("UNDEFINED") {}
 
     /**
      * Returns SettingReader singleton.
@@ -49,9 +72,9 @@ public:
     std::string getFilePath(std::string filename);
 
     /**
-     * Select given configuration set. 
+     * Select given configuration set.
      *
-     * @throw runtime_error if configuration is 
+     * @throw runtime_error if configuration is
      */
     void configure(std::string settingsToApply);
     AliasApplicationSettings* loadAliasApplicationSettings();
@@ -73,30 +96,30 @@ public:
     InclinometerSettings* loadInclinometerSettings();
 
 private:
-    std::string getBasePath(std::string file);
-    std::string getSetPath(std::string file);
+    std::string _getBasePath(std::string file);
+    std::string _getSetPath(std::string file);
 
-    AliasApplicationSettings aliasApplicationSettings;
-    ForceActuatorApplicationSettings forceActuatorApplicationSettings;
-    ForceActuatorSettings forceActuatorSettings;
-    HardpointActuatorApplicationSettings hardpointActuatorApplicationSettings;
-    HardpointActuatorSettings hardpointActuatorSettings;
-    ILCApplicationSettings ilcApplicationSettings;
-    RecommendedApplicationSettings recommendedApplicationSettings;
-    SafetyControllerSettings safetyControllerSettings;
-    PositionControllerSettings positionControllerSettings;
-    AccelerometerSettings accelerometerSettings;
-    DisplacementSensorSettings displacementSensorSettings;
-    HardpointMonitorApplicationSettings hardpointMonitorApplicationSettings;
-    InterlockApplicationSettings interlockApplicationSettings;
-    GyroSettings gyroSettings;
-    ExpansionFPGAApplicationSettings expansionFPGAApplicationSettings;
-    PIDSettings pidSettings;
-    InclinometerSettings inclinometerSettings;
+    AliasApplicationSettings _aliasApplicationSettings;
+    ForceActuatorApplicationSettings _forceActuatorApplicationSettings;
+    ForceActuatorSettings _forceActuatorSettings;
+    HardpointActuatorApplicationSettings _hardpointActuatorApplicationSettings;
+    HardpointActuatorSettings _hardpointActuatorSettings;
+    ILCApplicationSettings _ilcApplicationSettings;
+    RecommendedApplicationSettings _recommendedApplicationSettings;
+    SafetyControllerSettings _safetyControllerSettings;
+    PositionControllerSettings _positionControllerSettings;
+    AccelerometerSettings _accelerometerSettings;
+    DisplacementSensorSettings _displacementSensorSettings;
+    HardpointMonitorApplicationSettings _hardpointMonitorApplicationSettings;
+    InterlockApplicationSettings _interlockApplicationSettings;
+    GyroSettings _gyroSettings;
+    ExpansionFPGAApplicationSettings _expansionFPGAApplicationSettings;
+    PIDSettings _pidSettings;
+    InclinometerSettings _inclinometerSettings;
 
-    std::string rootPath;
-    std::string currentSet;
-    std::string currentVersion;
+    std::string _rootPath;
+    std::string _currentSet;
+    std::string _currentVersion;
 };
 
 } /* namespace SS */

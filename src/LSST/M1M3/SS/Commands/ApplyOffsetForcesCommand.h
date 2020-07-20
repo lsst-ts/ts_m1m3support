@@ -1,8 +1,24 @@
 /*
- * ApplyOffsetForcesCommand.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Oct 24, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef APPLYOFFSETFORCESCOMMAND_H_
@@ -16,22 +32,23 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ApplyOffsetForcesCommand: public Command {
-private:
-	Context* context;
-	M1M3SSPublisher* publisher;
-	MTM1M3_command_applyOffsetForcesC data;
-
+class ApplyOffsetForcesCommand : public Command {
 public:
-	ApplyOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_applyOffsetForcesC* data);
+    ApplyOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+                             MTM1M3_command_applyOffsetForcesC* data);
 
-	MTM1M3_command_applyOffsetForcesC* getData() { return &this->data; }
+    MTM1M3_command_applyOffsetForcesC* getData() { return &_data; }
 
-	bool validate();
-	void execute();
-	void ackInProgress();
-	void ackComplete();
-	void ackFailed(std::string reason);
+    bool validate();
+    void execute();
+    void ackInProgress();
+    void ackComplete();
+    void ackFailed(std::string reason);
+
+private:
+    Context* _context;
+    M1M3SSPublisher* _publisher;
+    MTM1M3_command_applyOffsetForcesC _data;
 };
 
 } /* namespace SS */
