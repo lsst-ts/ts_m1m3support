@@ -1,6 +1,27 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <RaiseM1M3Command.h>
-#include <Context.h>
-#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -8,32 +29,32 @@ namespace SS {
 
 RaiseM1M3Command::RaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
                                    MTM1M3_command_raiseM1M3C* data) {
-    this->context = context;
-    this->publisher = publisher;
+    _context = context;
+    _publisher = publisher;
     this->commandID = commandID;
-    this->data.raiseM1M3 = data->raiseM1M3;
-    this->data.bypassReferencePosition = data->bypassReferencePosition;
+    _data.raiseM1M3 = data->raiseM1M3;
+    _data.bypassReferencePosition = data->bypassReferencePosition;
 }
 
 bool RaiseM1M3Command::validate() {
-    if (!this->data.raiseM1M3) {
-        this->publisher->logCommandRejectionWarning("RaiseM1M3", "The field RaiseM1M3 is not TRUE.");
+    if (!_data.raiseM1M3) {
+        _publisher->logCommandRejectionWarning("RaiseM1M3", "The field RaiseM1M3 is not TRUE.");
     }
-    return this->data.raiseM1M3;
+    return _data.raiseM1M3;
 }
 
-void RaiseM1M3Command::execute() { this->context->raiseM1M3(this); }
+void RaiseM1M3Command::execute() { _context->raiseM1M3(this); }
 
 void RaiseM1M3Command::ackInProgress() {
-    this->publisher->ackCommandraiseM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
+    _publisher->ackCommandraiseM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void RaiseM1M3Command::ackComplete() {
-    this->publisher->ackCommandraiseM1M3(this->commandID, ACK_COMPLETE, "Complete");
+    _publisher->ackCommandraiseM1M3(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void RaiseM1M3Command::ackFailed(std::string reason) {
-    this->publisher->ackCommandraiseM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+    _publisher->ackCommandraiseM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

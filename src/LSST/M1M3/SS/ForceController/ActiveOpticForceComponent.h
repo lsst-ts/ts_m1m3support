@@ -1,8 +1,24 @@
 /*
- * ActiveOpticForceComponent.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Jul 9, 2018
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_ACTIVEOPTICFORCECOMPONENT_H_
@@ -20,27 +36,29 @@ class SafetyController;
 class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 
-class ActiveOpticForceComponent: public ForceComponent {
-private:
-	M1M3SSPublisher* publisher;
-	SafetyController* safetyController;
-	ForceActuatorApplicationSettings* forceActuatorApplicationSettings;
-	ForceActuatorSettings* forceActuatorSettings;
-
-	MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-	MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-	MTM1M3_logevent_appliedActiveOpticForcesC* appliedActiveOpticForces;
-	MTM1M3_logevent_rejectedActiveOpticForcesC* rejectedActiveOpticForces;
-
+class ActiveOpticForceComponent : public ForceComponent {
 public:
-	ActiveOpticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController, ForceActuatorApplicationSettings* forceActuatorApplicationSettings, ForceActuatorSettings* forceActuatorSettings);
+    ActiveOpticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+                              ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+                              ForceActuatorSettings* forceActuatorSettings);
 
-	void applyActiveOpticForces(float* z);
-	void applyActiveOpticForcesByBendingModes(float* coefficients);
+    void applyActiveOpticForces(float* z);
+    void applyActiveOpticForcesByBendingModes(float* coefficients);
 
 protected:
-	void postEnableDisableActions();
-	void postUpdateActions();
+    void postEnableDisableActions();
+    void postUpdateActions();
+
+private:
+    M1M3SSPublisher* _publisher;
+    SafetyController* _safetyController;
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorSettings* _forceActuatorSettings;
+
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedActiveOpticForcesC* _appliedActiveOpticForces;
+    MTM1M3_logevent_rejectedActiveOpticForcesC* _rejectedActiveOpticForces;
 };
 
 } /* namespace SS */

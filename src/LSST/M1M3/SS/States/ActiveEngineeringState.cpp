@@ -1,8 +1,24 @@
 /*
- * ActiveEngineeringState.cpp
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Oct 25, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <ActiveEngineeringState.h>
@@ -57,15 +73,13 @@ States::Type ActiveEngineeringState::update(UpdateCommand* command, Model* model
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command, Model* model) {
     spdlog::info("ActiveEngineeringState: lowerM1M3()");
-    States::Type newState = States::LoweringEngineeringState;
     model->getForceController()->resetPIDs();
     model->getAutomaticOperationsController()->startLowerOperation();
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 
 States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* command, Model* model) {
     spdlog::info("ActiveEngineeringState: exitEngineering()");
-    States::Type newState = States::ActiveState;
     model->getForceController()->resetPIDs();
     model->getDigitalInputOutput()->turnAirOn();
     model->getPositionController()->stopMotion();
@@ -76,7 +90,7 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     model->getDigitalInputOutput()->turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     model->getPowerController()->setAllPowerNetworks(true);
-    return model->getSafetyController()->checkSafety(newState);
+    return model->getSafetyController()->checkSafety(States::ActiveState);
 }
 
 States::Type ActiveEngineeringState::applyAberrationForcesByBendingModes(

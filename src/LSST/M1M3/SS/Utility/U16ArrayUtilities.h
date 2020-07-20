@@ -1,8 +1,24 @@
 /*
- * U16ArrayUtilities.h
+ * This file is part of LSST M1M3 support system package.
  *
- *  Created on: Oct 12, 2017
- *      Author: ccontaxis
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef U16ARRAYUTILITIES_H_
@@ -16,14 +32,12 @@ namespace SS {
 
 class U16ArrayUtilities {
 public:
-	virtual ~U16ArrayUtilities();
+    virtual ~U16ArrayUtilities();
 
-	static uint64_t u64(uint16_t* buffer, int32_t index) {
-		return ((uint64_t)buffer[index] << 48) |
-				((uint64_t)buffer[index + 1] << 32) |
-				((uint64_t)buffer[index + 2] << 16) |
-				((uint64_t)buffer[index + 3]);
-	}
+    static uint64_t u64(uint16_t* buffer, int32_t index) {
+        return ((uint64_t)buffer[index] << 48) | ((uint64_t)buffer[index + 1] << 32) |
+               ((uint64_t)buffer[index + 2] << 16) | ((uint64_t)buffer[index + 3]);
+    }
 };
 
 } /* namespace SS */

@@ -1,3 +1,26 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <AzimuthForceComponent.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
@@ -17,18 +40,18 @@ AzimuthForceComponent::AzimuthForceComponent(
         M1M3SSPublisher* publisher, SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Azimuth";
+    name = "Azimuth";
 
-    this->publisher = publisher;
-    this->safetyController = safetyController;
-    this->forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    this->forceActuatorSettings = forceActuatorSettings;
-    this->forceActuatorState = this->publisher->getEventForceActuatorState();
-    this->forceSetpointWarning = this->publisher->getEventForceSetpointWarning();
-    this->appliedAzimuthForces = this->publisher->getEventAppliedAzimuthForces();
-    this->rejectedAzimuthForces = this->publisher->getEventRejectedAzimuthForces();
-    this->maxRateOfChange = this->forceActuatorSettings->AzimuthComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = this->forceActuatorSettings->AzimuthComponentSettings.NearZeroValue;
+    _publisher = publisher;
+    _safetyController = safetyController;
+    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    _forceActuatorSettings = forceActuatorSettings;
+    _forceActuatorState = _publisher->getEventForceActuatorState();
+    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
+    _appliedAzimuthForces = _publisher->getEventAppliedAzimuthForces();
+    _rejectedAzimuthForces = _publisher->getEventRejectedAzimuthForces();
+    maxRateOfChange = _forceActuatorSettings->AzimuthComponentSettings.MaxRateOfChange;
+    nearZeroValue = _forceActuatorSettings->AzimuthComponentSettings.NearZeroValue;
 }
 
 void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
@@ -57,13 +80,13 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
     spdlog::trace("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
     DistributedForces forces =
-            ForceConverter::calculateForceFromAzimuthAngle(this->forceActuatorSettings, azimuthAngle);
+            ForceConverter::calculateForceFromAzimuthAngle(_forceActuatorSettings, azimuthAngle);
     float xForces[12];
     float yForces[100];
     float zForces[156];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -79,9 +102,9 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
 void AzimuthForceComponent::postEnableDisableActions() {
     spdlog::debug("AzimuthForceComponent: postEnableDisableActions()");
 
-    this->forceActuatorState->timestamp = this->publisher->getTimestamp();
-    this->forceActuatorState->azimuthForcesApplied = this->enabled;
-    this->publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->azimuthForcesApplied = this->enabled;
+    _publisher->tryLogForceActuatorState();
 }
 
 void AzimuthForceComponent::postUpdateActions() {
@@ -89,78 +112,75 @@ void AzimuthForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    this->appliedAzimuthForces->timestamp = this->publisher->getTimestamp();
-    this->rejectedAzimuthForces->timestamp = this->appliedAzimuthForces->timestamp;
+    _appliedAzimuthForces->timestamp = _publisher->getTimestamp();
+    _rejectedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
-        int xIndex = this->forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = this->forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
-        this->forceSetpointWarning->azimuthForceWarning[zIndex] = false;
+        _forceSetpointWarning->azimuthForceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = this->forceActuatorSettings->AzimuthLimitXTable[xIndex].LowFault;
-            float xHighFault = this->forceActuatorSettings->AzimuthLimitXTable[xIndex].HighFault;
-            this->rejectedAzimuthForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  this->rejectedAzimuthForces->xForces[xIndex],
-                                                  this->appliedAzimuthForces->xForces + xIndex);
-            this->forceSetpointWarning->azimuthForceWarning[zIndex] =
-                    this->forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
+            float xLowFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].LowFault;
+            float xHighFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].HighFault;
+            _rejectedAzimuthForces->xForces[xIndex] = this->xCurrent[xIndex];
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedAzimuthForces->xForces[xIndex],
+                                             _appliedAzimuthForces->xForces + xIndex);
+            _forceSetpointWarning->azimuthForceWarning[zIndex] =
+                    _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
         }
 
         if (yIndex != -1) {
-            float yLowFault = this->forceActuatorSettings->AzimuthLimitYTable[yIndex].LowFault;
-            float yHighFault = this->forceActuatorSettings->AzimuthLimitYTable[yIndex].HighFault;
-            this->rejectedAzimuthForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  this->rejectedAzimuthForces->yForces[yIndex],
-                                                  this->appliedAzimuthForces->yForces + yIndex);
-            this->forceSetpointWarning->azimuthForceWarning[zIndex] =
-                    this->forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
+            float yLowFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].LowFault;
+            float yHighFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].HighFault;
+            _rejectedAzimuthForces->yForces[yIndex] = this->yCurrent[yIndex];
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedAzimuthForces->yForces[yIndex],
+                                             _appliedAzimuthForces->yForces + yIndex);
+            _forceSetpointWarning->azimuthForceWarning[zIndex] =
+                    _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
         }
 
-        float zLowFault = this->forceActuatorSettings->AzimuthLimitZTable[zIndex].LowFault;
-        float zHighFault = this->forceActuatorSettings->AzimuthLimitZTable[zIndex].HighFault;
-        this->rejectedAzimuthForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, this->rejectedAzimuthForces->zForces[zIndex],
-                                         this->appliedAzimuthForces->zForces + zIndex);
-        this->forceSetpointWarning->azimuthForceWarning[zIndex] =
-                this->forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || this->forceSetpointWarning->azimuthForceWarning[zIndex];
+        float zLowFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].LowFault;
+        float zHighFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].HighFault;
+        _rejectedAzimuthForces->zForces[zIndex] = this->zCurrent[zIndex];
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAzimuthForces->zForces[zIndex],
+                                              _appliedAzimuthForces->zForces + zIndex);
+        _forceSetpointWarning->azimuthForceWarning[zIndex] =
+                _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
+        rejectionRequired = rejectionRequired || _forceSetpointWarning->azimuthForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            this->forceActuatorApplicationSettings, this->forceActuatorSettings,
-            this->appliedAzimuthForces->xForces, this->appliedAzimuthForces->yForces,
-            this->appliedAzimuthForces->zForces);
-    this->appliedAzimuthForces->fx = fm.Fx;
-    this->appliedAzimuthForces->fy = fm.Fy;
-    this->appliedAzimuthForces->fz = fm.Fz;
-    this->appliedAzimuthForces->mx = fm.Mx;
-    this->appliedAzimuthForces->my = fm.My;
-    this->appliedAzimuthForces->mz = fm.Mz;
-    this->appliedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedAzimuthForces->xForces,
+            _appliedAzimuthForces->yForces, _appliedAzimuthForces->zForces);
+    _appliedAzimuthForces->fx = fm.Fx;
+    _appliedAzimuthForces->fy = fm.Fy;
+    _appliedAzimuthForces->fz = fm.Fz;
+    _appliedAzimuthForces->mx = fm.Mx;
+    _appliedAzimuthForces->my = fm.My;
+    _appliedAzimuthForces->mz = fm.Mz;
+    _appliedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            this->forceActuatorApplicationSettings, this->forceActuatorSettings,
-            this->rejectedAzimuthForces->xForces, this->rejectedAzimuthForces->yForces,
-            this->rejectedAzimuthForces->zForces);
-    this->rejectedAzimuthForces->fx = fm.Fx;
-    this->rejectedAzimuthForces->fy = fm.Fy;
-    this->rejectedAzimuthForces->fz = fm.Fz;
-    this->rejectedAzimuthForces->mx = fm.Mx;
-    this->rejectedAzimuthForces->my = fm.My;
-    this->rejectedAzimuthForces->mz = fm.Mz;
-    this->rejectedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedAzimuthForces->xForces,
+            _rejectedAzimuthForces->yForces, _rejectedAzimuthForces->zForces);
+    _rejectedAzimuthForces->fx = fm.Fx;
+    _rejectedAzimuthForces->fy = fm.Fy;
+    _rejectedAzimuthForces->fz = fm.Fz;
+    _rejectedAzimuthForces->mx = fm.Mx;
+    _rejectedAzimuthForces->my = fm.My;
+    _rejectedAzimuthForces->mz = fm.Mz;
+    _rejectedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
 
-    this->safetyController->forceControllerNotifyAzimuthForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyAzimuthForceClipping(rejectionRequired);
 
-    this->publisher->tryLogForceSetpointWarning();
+    _publisher->tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        this->publisher->logRejectedAzimuthForces();
+        _publisher->logRejectedAzimuthForces();
     }
-    this->publisher->logAppliedAzimuthForces();
+    _publisher->logAppliedAzimuthForces();
 }
 
 } /* namespace SS */
