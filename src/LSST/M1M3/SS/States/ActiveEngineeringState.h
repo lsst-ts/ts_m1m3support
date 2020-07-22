@@ -30,6 +30,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Active Engineering state. Similar to Active state, mirror is raised and it's
+ * weight is supported by force actuators. This state allows execution of
+ * commands to position the mirror and change its shape.
+ */
 class ActiveEngineeringState : public EngineeringState {
 public:
     ActiveEngineeringState(M1M3SSPublisher* publisher);

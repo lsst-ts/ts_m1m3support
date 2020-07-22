@@ -22,7 +22,6 @@
  */
 
 #include <ProfileHardpointCorrectionState.h>
-#include <Model.h>
 #include <ForceController.h>
 #include <ProfileController.h>
 #include <MirrorForceProfile.h>
@@ -41,7 +40,7 @@ States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command, Mod
     MirrorForceProfileRecord force = model->getProfileController()->getMirrorForceProfileData();
     model->getForceController()->applyOffsetForcesByMirrorForces(force.XForce, force.YForce, force.ZForce,
                                                                  force.XMoment, force.YMoment, force.ZMoment);
-    EnabledState::update(command, model);
+    sendTelemetry(model);
     if (model->getProfileController()->incMirrorForceProfile()) {
         return model->getSafetyController()->checkSafety(States::ActiveEngineeringState);
     }

@@ -52,10 +52,7 @@ ParkedEngineeringState::ParkedEngineeringState(M1M3SSPublisher* publisher)
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("ParkedEngineeringState: update()");
-    this->startTimer();
-    EnabledState::update(command, model);
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
+    sendTelemetry(model);
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

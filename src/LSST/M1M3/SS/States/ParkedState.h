@@ -30,6 +30,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Parked state. Mirror is on static supports, air is on. Raise command is
+ * accepted to raise the mirror. Engineering command switch mirror to
+ * engineering state. Disable command transition mirror back to disable state.
+ */
 class ParkedState : public EnabledState {
 public:
     ParkedState(M1M3SSPublisher* publisher);

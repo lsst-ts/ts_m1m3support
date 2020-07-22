@@ -30,6 +30,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Engineering state. Parent class for all engineering classes. Allows manual
+ * control of air, force actuators and hard-points.
+ */
 class EngineeringState : public EnabledState {
 public:
     EngineeringState(M1M3SSPublisher* publisher);

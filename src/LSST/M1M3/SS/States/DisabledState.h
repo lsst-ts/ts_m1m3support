@@ -30,6 +30,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Disabled state. Mirror is on static supports, everything is powered off.
+ * Sends telemetry. Enable Command commands transition to Parked State.
+ * Standby Command commands transition to Standby State.
+ */
 class DisabledState : public State {
 public:
     DisabledState(M1M3SSPublisher* publisher);

@@ -68,15 +68,3 @@ TEST_CASE("fromFPGA<->toFPGA", "[Timestamp]") {
     REQUIRE(Timestamp::fromFPGA(Timestamp::toFPGA(1)) == 1);
     REQUIRE(Timestamp::fromFPGA(Timestamp::toFPGA(33567335.12)) == 33567335.12);
 }
-
-TEST_CASE("timespecdiff", "[Timestamp]") {
-    struct timespec t1 = {1, 23000};
-    struct timespec t2 = {2, 12000};
-    REQUIRE(Timestamp::timespecdiff(&t1, &t2) == 0.999989);
-    REQUIRE(Timestamp::timespecdiff(&t2, &t1) == -0.999989);
-
-    struct timespec t3 = {99999998, 23000};
-    struct timespec t4 = {99999999, 12000};
-    REQUIRE(Timestamp::timespecdiff(&t3, &t4) == 0.999989);
-    REQUIRE(Timestamp::timespecdiff(&t4, &t3) == -0.999989);
-}
