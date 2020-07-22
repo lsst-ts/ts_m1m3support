@@ -32,12 +32,10 @@ StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher)
         : _offlineState(publisher),
           _standbyState(publisher),
           _disabledState(publisher),
-          _enabledState(publisher),
           _parkedState(publisher),
           _raisingState(publisher),
           _activeState(publisher),
           _loweringState(publisher),
-          _engineeringState(publisher),
           _parkedEngineeringState(publisher),
           _raisingEngineeringState(publisher),
           _activeEngineeringState(publisher),
@@ -57,8 +55,6 @@ State* StaticStateFactory::create(States::Type state) {
             return &_standbyState;
         case States::DisabledState:
             return &this->_disabledState;
-        case States::EnabledState:
-            return &_enabledState;
         case States::ParkedState:
             return &_parkedState;
         case States::RaisingState:
@@ -67,8 +63,6 @@ State* StaticStateFactory::create(States::Type state) {
             return &_activeState;
         case States::LoweringState:
             return &_loweringState;
-        case States::EngineeringState:
-            return &_engineeringState;
         case States::ParkedEngineeringState:
             return &_parkedEngineeringState;
         case States::RaisingEngineeringState:
