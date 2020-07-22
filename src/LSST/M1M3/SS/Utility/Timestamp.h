@@ -70,11 +70,6 @@ inline double fromFPGA(uint64_t timestamp) { return ((double)timestamp) / NSINSE
  * @return FPGA value (nanoseconds)
  */
 inline uint64_t toFPGA(double timestamp) { return (uint64_t)(timestamp * (double)NSINSEC); }
-
-/**
- * Returns difference (in seconds) between two timespec structures.
- */
-double timespecdiff(struct timespec *start, struct timespec *stop);
 }  // namespace Timestamp
 
 }  // namespace SS

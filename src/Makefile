@@ -68,9 +68,9 @@ clean:
 	${co}$(C) -c -fmessage-length=0 -o $@ $<
 
 %.cpp.d: %.cpp
-	@echo '[DPP] $^'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@ -MT '$*.o $*.cpp.d'
+	@echo '[DPP] $<'
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@ -MT '$(patsubst %.cpp,%.o,$<)'
 
 %.c.d: %.c
 	@echo '[DEP] $^'
-	${co}$(C) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@ -MT '$*.o $*.c.d'
+	${co}$(C) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@ -MT '$(patsubst %.c,%.o,$<)'

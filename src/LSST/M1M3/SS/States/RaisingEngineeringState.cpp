@@ -23,6 +23,7 @@
 
 #include <RaisingEngineeringState.h>
 #include <Model.h>
+#include <ModelPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
 #include <spdlog/spdlog.h>
@@ -35,20 +36,12 @@ RaisingEngineeringState::RaisingEngineeringState(M1M3SSPublisher* publisher)
         : EngineeringState(publisher, "RaisingEngineeringState") {}
 
 States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* model) {
+    ModelPublisher publishModel(model);
     spdlog::trace("RaisingEngineeringState: update()");
-    this->startTimer();
-    States::Type newState = States::NoStateTransition;
     model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();
-    EnabledState::update(command, model);
-    if (model->getAutomaticOperationsController()->checkRaiseOperationComplete()) {
-        model->getAutomaticOperationsController()->completeRaiseOperation();
-        newState = States::ActiveEngineeringState;
-    } else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
-        model->getAutomaticOperationsController()->timeoutRaiseOperation();
-    }
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
-    return model->getSafetyController()->checkSafety(newState);
+    runLoop(model);
+    return model->getSafetyController()->checkSafety(raiseCompleted(model) ? States::ActiveEngineeringState
+                                                                           : States::NoStateTransition);
 }
 
 States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) {

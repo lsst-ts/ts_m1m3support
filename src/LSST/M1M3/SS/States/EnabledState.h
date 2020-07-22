@@ -30,15 +30,25 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Parent class for all enabled sub-states. Enabled state is defined in SAL,
+ * this class provides basic functionality for it.
+ */
 class EnabledState : public State {
 public:
     EnabledState(M1M3SSPublisher* publisher);
     EnabledState(M1M3SSPublisher* publisher, std::string name);
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
     virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) override;
     virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) override;
     virtual States::Type testAir(TestAirCommand* command, Model* model) override;
+
+protected:
+    void runLoop(Model* model);
+    void sendTelemetry(Model* model);
+
+    bool raiseCompleted(Model* model);
+    bool lowerCompleted(Model* model);
 };
 
 } /* namespace SS */

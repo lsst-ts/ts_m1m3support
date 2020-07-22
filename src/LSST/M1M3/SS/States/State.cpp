@@ -55,7 +55,6 @@ States::Type State::standby(StandbyCommand* command, Model* model) {
 States::Type State::exitControl(ExitControlCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "ExitControl");
 }
-States::Type State::update(UpdateCommand* command, Model* model) { return States::NoStateTransition; }
 States::Type State::turnAirOn(TurnAirOnCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "TurnAirOn");
 }
@@ -176,18 +175,6 @@ States::Type State::programILC(ProgramILCCommand* command, Model* model) {
 States::Type State::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "ModbusTransmit");
 }
-
-void State::startTimer() { clock_gettime(CLOCK_REALTIME, &this->startTime); }
-
-void State::stopTimer() { clock_gettime(CLOCK_REALTIME, &this->stopTime); }
-
-double State::getCurrentTimer() {
-    timespec now;
-    clock_gettime(CLOCK_REALTIME, &now);
-    return Timestamp::timespecdiff(&startTime, &now);
-}
-
-double State::getTimer() { return Timestamp::timespecdiff(&startTime, &stopTime); }
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";

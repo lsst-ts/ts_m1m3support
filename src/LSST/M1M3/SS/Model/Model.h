@@ -46,6 +46,7 @@
 #include <ProfileController.h>
 #include <SafetyController.h>
 #include <StateTypes.h>
+#include <chrono>
 #include <pthread.h>
 #include <string>
 
@@ -83,7 +84,7 @@ public:
 
     void publishStateChange(States::Type newState);
     void publishRecommendedSettings();
-    void publishOuterLoop(double executionTime);
+    void publishOuterLoop(std::chrono::nanoseconds executionTime);
 
     void exitControl();
     void waitForExitControl();

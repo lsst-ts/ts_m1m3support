@@ -35,10 +35,13 @@
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <M1M3SSPublisher.h>
+#include <ModelPublisher.h>
 #include <Gyro.h>
 #include <spdlog/spdlog.h>
 #include <FPGA.h>
 #include <SAL_MTM1M3C.h>
+
+#include <chrono>
 
 namespace LSST {
 namespace M1M3 {
@@ -47,8 +50,32 @@ namespace SS {
 EnabledState::EnabledState(M1M3SSPublisher* publisher) : State(publisher, "EnabledState") {}
 EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) {}
 
-States::Type EnabledState::update(UpdateCommand* command, Model* model) {
-    spdlog::trace("EnabledState: update()");
+States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
+    spdlog::trace("EnabledState: storeTMAAzimuthSample()");
+    model->getForceController()->updateAzimuthForces((float)command->getData()->Azimuth_Angle_Actual);
+    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) {
+    spdlog::trace("EnabledState: storeTMAElevationSample()");
+    model->getForceController()->updateTMAElevationData(command->getData());
+    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
+    // TODO: Remove, this is a test command that has been taken for toggling boost valve control
+    MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
+            model->getPublisher()->getEventForceActuatorState();
+    MTM1M3_outerLoopDataC* outerLoop = model->getPublisher()->getOuterLoopData();
+    spdlog::info("EnabledState: toggleBoostValve to {}", !forceActuatorState->slewFlag);
+    forceActuatorState->slewFlag = !forceActuatorState->slewFlag;
+    outerLoop->slewFlag = forceActuatorState->slewFlag;
+
+    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+void EnabledState::runLoop(Model* model) {
+    spdlog::trace("EnabledState: runLoop()");
     ILC* ilc = model->getILC();
     model->getForceController()->updateAppliedForces();
     model->getForceController()->processAppliedForces();
@@ -76,31 +103,31 @@ States::Type EnabledState::update(UpdateCommand* command, Model* model) {
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
     model->getPublisher()->tryLogHardpointActuatorWarning();
-    return States::NoStateTransition;
 }
 
-States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
-    spdlog::trace("EnabledState: storeTMAAzimuthSample()");
-    model->getForceController()->updateAzimuthForces((float)command->getData()->Azimuth_Angle_Actual);
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+void EnabledState::sendTelemetry(Model* model) {
+    ModelPublisher publishIt(Model);
+    runLoop(model);
 }
 
-States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) {
-    spdlog::trace("EnabledState: storeTMAElevationSample()");
-    model->getForceController()->updateTMAElevationData(command->getData());
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+bool EnabledState::raiseCompleted(Model* model) {
+    if (model->getAutomaticOperationsController()->checkRaiseOperationComplete()) {
+        model->getAutomaticOperationsController()->completeRaiseOperation();
+        return true;
+    } else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
+        model->getAutomaticOperationsController()->timeoutRaiseOperation();
+    }
+    return false;
 }
 
-States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
-    // TODO: Remove, this is a test command that has been taken for toggling boost valve control
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
-            model->getPublisher()->getEventForceActuatorState();
-    MTM1M3_outerLoopDataC* outerLoop = model->getPublisher()->getOuterLoopData();
-    spdlog::info("EnabledState: toggleBoostValve to {}", !forceActuatorState->slewFlag);
-    forceActuatorState->slewFlag = !forceActuatorState->slewFlag;
-    outerLoop->slewFlag = forceActuatorState->slewFlag;
-
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+bool EnabledState::lowerCompleted(Model* model) {
+    if (model->getAutomaticOperationsController()->checkLowerOperationComplete()) {
+        model->getAutomaticOperationsController()->completeLowerOperation();
+        return true;
+    } else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
+        model->getAutomaticOperationsController()->timeoutLowerOperation();
+    }
+    return false;
 }
 
 } /* namespace SS */

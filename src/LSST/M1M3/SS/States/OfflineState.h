@@ -30,10 +30,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Offline state. Only acceptable command is the enterControl command to switch
+ * state to Disabled.
+ */
 class OfflineState : public State {
 public:
     OfflineState(M1M3SSPublisher* publisher);
 
+    virtual States::Type update(UpdateCommand* command, Model* model) override;
     virtual States::Type enterControl(EnterControlCommand* command, Model* model) override;
 };
 

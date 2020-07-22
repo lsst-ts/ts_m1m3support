@@ -21,24 +21,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Timestamp.h>
+#ifndef MODELPUBLISHER_H_
+#define MODELPUBLISHER_H_
+
+#include <Model.h>
+
+#include <chrono>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-namespace Timestamp {
 
-double timespecdiff(struct timespec *start, struct timespec *stop) {
-    double deltaNano = stop->tv_nsec - start->tv_nsec;
-    double deltaSec = stop->tv_sec - start->tv_sec;
-    if (deltaNano < 0) {
-        deltaSec -= 1;
-        deltaNano += NSINSEC;
+/**
+ * Measure time to acquire data and publish model data. Uses RAII-like approach to measure time it takes to
+ * execute an action, and pass elapsed time to Model::publishOuterLoop call.
+ *
+ * @see Model
+ */
+class ModelPublisher {
+public:
+    ModelPublisher(Model *model) {
+        _model = model;
+        start = std::chrono::high_resolution_clock::now();
     }
-    return deltaSec + (deltaNano / NSINSEC);
-}
+    ~ModelPublisher() { _model->publishOuterLoop(std::chrono::high_resolution_clock::now() - start); }
 
-} /* namespace Timestamp */
+private:
+    Model *_model;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start;
+};
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif  // MODELPUBLISHER_H_
