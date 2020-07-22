@@ -27,12 +27,10 @@
 #include <OfflineState.h>
 #include <StandbyState.h>
 #include <DisabledState.h>
-#include <EnabledState.h>
 #include <ParkedState.h>
 #include <RaisingState.h>
 #include <ActiveState.h>
 #include <LoweringState.h>
-#include <EngineeringState.h>
 #include <ParkedEngineeringState.h>
 #include <RaisingEngineeringState.h>
 #include <ActiveEngineeringState.h>
@@ -57,12 +55,10 @@ private:
     OfflineState _offlineState;
     StandbyState _standbyState;
     DisabledState _disabledState;
-    EnabledState _enabledState;
     ParkedState _parkedState;
     RaisingState _raisingState;
     ActiveState _activeState;
     LoweringState _loweringState;
-    EngineeringState _engineeringState;
     ParkedEngineeringState _parkedEngineeringState;
     RaisingEngineeringState _raisingEngineeringState;
     ActiveEngineeringState _activeEngineeringState;
