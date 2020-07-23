@@ -42,12 +42,12 @@
 #include <SAL_MTM1M3C.h>
 
 #include <chrono>
+#include <thread>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnabledState::EnabledState(M1M3SSPublisher* publisher) : State(publisher, "EnabledState") {}
 EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) {}
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
@@ -82,7 +82,7 @@ void EnabledState::runLoop(Model* model) {
     ilc->writeControlListBuffer();
     ilc->triggerModbus();
     model->getDigitalInputOutput()->tryToggleHeartbeat();
-    usleep(1000);
+    std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     model->getAccelerometer()->processData();
     model->getDigitalInputOutput()->processData();

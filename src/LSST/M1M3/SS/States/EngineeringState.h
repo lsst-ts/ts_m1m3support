@@ -36,7 +36,6 @@ namespace SS {
  */
 class EngineeringState : public EnabledState {
 public:
-    EngineeringState(M1M3SSPublisher* publisher);
     EngineeringState(M1M3SSPublisher* publisher, std::string name);
 
     virtual States::Type turnAirOn(TurnAirOnCommand* command, Model* model) override;
