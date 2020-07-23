@@ -37,9 +37,9 @@
 #include <ModbusTransmitCommand.h>
 #include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
-#include <unistd.h>
 #include <FPGA.h>
 #include <chrono>
+#include <thread>
 
 namespace LSST {
 namespace M1M3 {
@@ -54,7 +54,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
     model->getDigitalInputOutput()->tryToggleHeartbeat();
-    usleep(1000);
+    std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     model->getAccelerometer()->processData();
     model->getDigitalInputOutput()->processData();

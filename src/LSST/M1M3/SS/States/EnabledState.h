@@ -32,11 +32,11 @@ namespace SS {
 
 /**
  * Parent class for all enabled sub-states. Enabled state is defined in SAL,
- * this class provides basic functionality for it.
+ * this class provides basic functionality for it. Subclasses needs to
+ * implement update method (and shall implement commands methods).
  */
 class EnabledState : public State {
 public:
-    EnabledState(M1M3SSPublisher* publisher);
     EnabledState(M1M3SSPublisher* publisher, std::string name);
 
     virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) override;
@@ -44,10 +44,29 @@ public:
     virtual States::Type testAir(TestAirCommand* command, Model* model) override;
 
 protected:
+    /**
+     * Actions to be performed during a loop in enabled sub-state. Calculate
+     * forces, send updates, collects data needed for telemetry.
+     */
     void runLoop(Model* model);
+
+    /**
+     * Collects and sends telemetry.
+     */
     void sendTelemetry(Model* model);
 
+    /**
+     * Query mirror raising completion.
+     *
+     * @return true if mirror is raised
+     */
     bool raiseCompleted(Model* model);
+
+    /**
+     * Query mirror lowering completion.
+     *
+     * @return true if mirror is lowered
+     */
     bool lowerCompleted(Model* model);
 };
 

@@ -30,6 +30,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Raises mirror in engineering state. Transition to ActiveEngineering on raise
+ * completed, or Lowering Engineering state on abort.
+ */
 class RaisingEngineeringState : public EngineeringState {
 public:
     RaisingEngineeringState(M1M3SSPublisher* publisher);

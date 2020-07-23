@@ -32,7 +32,8 @@ namespace SS {
 
 /**
  * Offline state. Only acceptable command is the enterControl command to switch
- * state to Disabled.
+ * state to StandbyState. Turns on air and mirror cell lights on transtion to
+ * StandbyState.
  */
 class OfflineState : public State {
 public:
