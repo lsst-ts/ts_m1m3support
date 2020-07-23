@@ -20,6 +20,9 @@
 #include <cstring>
 #include <iostream>
 
+#include <chrono>
+#include <thread>
+
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -166,7 +169,7 @@ void runFPGAs(M1M3SSPublisher* publisher, std::shared_ptr<SAL_MTM1M3> m1m3SAL,
     void* status;
     spdlog::info("Main: Starting pps thread");
     int rc = pthread_create(&ppsThreadId, &threadAttribute, runThread, (void*)(&ppsThread));
-    usleep(1500000);
+    std::this_thread::sleep_for(1500ms);
     if (!rc) {
         spdlog::info("Main: Starting subscriber thread");
         int rc = pthread_create(&subscriberThreadId, &threadAttribute, runThread, (void*)(&subscriberThread));
@@ -189,7 +192,7 @@ void runFPGAs(M1M3SSPublisher* publisher, std::shared_ptr<SAL_MTM1M3> m1m3SAL,
                     controllerThread.stop();
                     spdlog::info("Main: Stopping outer loop clock thread");
                     outerLoopClockThread.stop();
-                    usleep(100000);
+                    std::this_thread::sleep_for(100ms);
                     controller.clear();
                     spdlog::info("Main: Joining pps thread");
                     pthread_join(ppsThreadId, &status);
