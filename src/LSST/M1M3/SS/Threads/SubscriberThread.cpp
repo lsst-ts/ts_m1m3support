@@ -27,7 +27,8 @@
 #include <M1M3SSPublisher.h>
 #include <CommandFactory.h>
 #include <Command.h>
-#include <unistd.h>
+#include <chrono>
+#include <thread>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -90,7 +91,7 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(_subscriber->tryAcceptCommandModbusTransmit());
         _enqueueCommandIfAvailable(_subscriber->tryGetSampleTMAAzimuth());
         _enqueueCommandIfAvailable(_subscriber->tryGetSampleTMAElevation());
-        usleep(100);
+        std::this_thread::sleep_for(100us);
     }
     spdlog::info("SubscriberThread: Completed");
 }

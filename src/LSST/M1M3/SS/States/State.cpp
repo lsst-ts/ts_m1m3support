@@ -23,6 +23,7 @@
 
 #include <State.h>
 #include <DataTypes.h>
+#include <Timestamp.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -54,7 +55,6 @@ States::Type State::standby(StandbyCommand* command, Model* model) {
 States::Type State::exitControl(ExitControlCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "ExitControl");
 }
-States::Type State::update(UpdateCommand* command, Model* model) { return States::NoStateTransition; }
 States::Type State::turnAirOn(TurnAirOnCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "TurnAirOn");
 }
@@ -174,32 +174,6 @@ States::Type State::programILC(ProgramILCCommand* command, Model* model) {
 }
 States::Type State::modbusTransmit(ModbusTransmitCommand* command, Model* model) {
     return this->rejectCommandInvalidState(command, "ModbusTransmit");
-}
-
-void State::startTimer() { clock_gettime(CLOCK_REALTIME, &this->startTime); }
-
-void State::stopTimer() { clock_gettime(CLOCK_REALTIME, &this->stopTime); }
-
-double State::getCurrentTimer() {
-    timespec now;
-    clock_gettime(CLOCK_REALTIME, &now);
-    double deltaNano = now.tv_nsec - this->startTime.tv_nsec;
-    double deltaSec = now.tv_sec - this->startTime.tv_sec;
-    if (deltaNano < 0) {
-        deltaSec -= 1;
-        deltaNano += 1000000000;
-    }
-    return deltaSec + (deltaNano / 1000000000.0);
-}
-
-double State::getTimer() {
-    double deltaNano = this->stopTime.tv_nsec - this->startTime.tv_nsec;
-    double deltaSec = this->stopTime.tv_sec - this->startTime.tv_sec;
-    if (deltaNano < 0) {
-        deltaSec -= 1;
-        deltaNano += 1000000000;
-    }
-    return deltaSec + (deltaNano / 1000000000.0);
 }
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {

@@ -37,10 +37,7 @@ ActiveState::ActiveState(M1M3SSPublisher* publisher) : EnabledState(publisher, "
 
 States::Type ActiveState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("ActiveState: update()");
-    this->startTimer();
-    EnabledState::update(command, model);
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
+    sendTelemetry(model);
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

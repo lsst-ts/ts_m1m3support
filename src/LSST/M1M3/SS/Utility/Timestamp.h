@@ -25,21 +25,55 @@
 #define TIMESTAMP_H_
 
 #include <DataTypes.h>
+#include <sys/time.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+/**
+ * Utility functions for time manipulations.
+ */
+namespace Timestamp {
+const uint64_t NSINSEC = 1000000000;  //* seconds in nanosecond
+/**
+ * Converts raw (nanoseconds) timestamp into seconds.
+ *
+ * @param raw raw value (nanoseconds)
+ *
+ * @return seconds
+ */
+inline double fromRaw(uint64_t raw) { return ((double)raw) / NSINSEC; }
 
-class Timestamp {
-public:
-    static double fromRaw(uint64_t raw) { return ((double)raw) / 1000000000.0; }
-    static uint64_t toRaw(double timestamp) { return (uint64_t)(timestamp * 1000000000.0); }
-    static uint64_t toFPGA(double timestamp) { return (uint64_t)(timestamp * 1000000000.0); }
-    static double fromFPGA(uint64_t timestamp) { return ((double)timestamp) / 1000000000.0; }
-};
+/**
+ * Converts seconds into raw value (nanoseconds).
+ *
+ * @param timestamp value (seconds)
+ *
+ * @return raw value (nanoseconds)
+ */
+inline uint64_t toRaw(double timestamp) { return (uint64_t)(timestamp * (double)NSINSEC); }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+/**
+ * Converts FPGA (nanoseconds) timestamp into seconds.
+ *
+ * @param raw FPGA value (nanoseconds)
+ *
+ * @return seconds
+ */
+inline double fromFPGA(uint64_t timestamp) { return ((double)timestamp) / NSINSEC; }
+
+/**
+ * Converts seconds into FPGA value (nanoseconds).
+ *
+ * @param timestamp value (seconds)
+ *
+ * @return FPGA value (nanoseconds)
+ */
+inline uint64_t toFPGA(double timestamp) { return (uint64_t)(timestamp * (double)NSINSEC); }
+}  // namespace Timestamp
+
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
 #endif /* TIMESTAMP_H_ */

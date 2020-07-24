@@ -32,10 +32,13 @@
 #include <ForceController.h>
 #include <unistd.h>
 #include <M1M3SSPublisher.h>
+#include <ModelPublisher.h>
 #include <Accelerometer.h>
 #include <spdlog/spdlog.h>
 #include <Gyro.h>
 #include <FPGA.h>
+#include <chrono>
+#include <thread>
 
 namespace LSST {
 namespace M1M3 {
@@ -45,13 +48,13 @@ FaultState::FaultState(M1M3SSPublisher* publisher) : State(publisher, "FaultStat
 FaultState::FaultState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) {}
 
 States::Type FaultState::update(UpdateCommand* command, Model* model) {
+    ModelPublisher publishIt(model);
     spdlog::trace("FaultState: update()");
-    this->startTimer();
     ILC* ilc = model->getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
     model->getDigitalInputOutput()->tryToggleHeartbeat();
-    usleep(1000);
+    std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     model->getAccelerometer()->processData();
     model->getDigitalInputOutput()->processData();
@@ -71,8 +74,6 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
     return States::NoStateTransition;
 }
 

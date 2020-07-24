@@ -82,13 +82,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Abstract class for M1M3 state. Any M1M3 state should inherit this class and
+ * implements command functions it executed. Calls to functions not implemented
+ * for the state shall be rejected.
+ */
 class State {
-protected:
-    M1M3SSPublisher* publisher;
-    std::string name;
-    timespec startTime;
-    timespec stopTime;
-
 public:
     State(M1M3SSPublisher* publisher, std::string name);
     virtual ~State();
@@ -99,7 +98,7 @@ public:
     virtual States::Type disable(DisableCommand* command, Model* model);
     virtual States::Type standby(StandbyCommand* command, Model* model);
     virtual States::Type exitControl(ExitControlCommand* command, Model* model);
-    virtual States::Type update(UpdateCommand* command, Model* model);
+    virtual States::Type update(UpdateCommand* command, Model* model) = 0;
     virtual States::Type turnAirOn(TurnAirOnCommand* command, Model* model);
     virtual States::Type turnAirOff(TurnAirOffCommand* command, Model* model);
     virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model);
@@ -145,10 +144,8 @@ public:
     virtual States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model);
 
 protected:
-    void startTimer();
-    void stopTimer();
-    double getCurrentTimer();
-    double getTimer();
+    M1M3SSPublisher* publisher;
+    std::string name;
 
     States::Type rejectCommandInvalidState(Command* command, std::string cmd_name);
 };

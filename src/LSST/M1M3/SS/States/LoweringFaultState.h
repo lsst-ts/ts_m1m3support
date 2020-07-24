@@ -34,6 +34,9 @@ class M1M3SSPublisher;
 class UpdateCommand;
 class Model;
 
+/**
+ * Lowering mirror during fault.
+ */
 class LoweringFaultState : public FaultState {
 public:
     LoweringFaultState(M1M3SSPublisher* publisher);

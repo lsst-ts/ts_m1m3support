@@ -30,6 +30,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Parked Engineering State. Mirror can be raised, switched into Disabled State
+ * or returned to Parked State with Exit Engineering command.
+ */
 class ParkedEngineeringState : public EngineeringState {
 public:
     ParkedEngineeringState(M1M3SSPublisher* publisher);

@@ -24,36 +24,35 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 
+#include <Accelerometer.h>
+#include <AutomaticOperationsController.h>
+#include <DigitalInputOutput.h>
+#include <Displacement.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <ForceController.h>
+#include <Gyro.h>
+#include <HardpointActuatorApplicationSettings.h>
+#include <HardpointActuatorSettings.h>
+#include <HardpointMonitorApplicationSettings.h>
+#include <Inclinometer.h>
+#include <InclinometerSettings.h>
+#include <ILC.h>
+#include <M1M3SSPublisher.h>
+#include <PIDSettings.h>
+#include <PositionController.h>
+#include <PositionControllerSettings.h>
+#include <PowerController.h>
 #include <ProfileController.h>
+#include <SafetyController.h>
 #include <StateTypes.h>
+#include <chrono>
 #include <pthread.h>
 #include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-
-class M1M3SSPublisher;
-class Displacement;
-class Inclinometer;
-class ILC;
-class ForceController;
-class SafetyController;
-class PositionController;
-class Accelerometer;
-class PowerController;
-class AutomaticOperationsController;
-class Gyro;
-class ForceCalculator;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-class HardpointActuatorApplicationSettings;
-class HardpointActuatorSettings;
-class HardpointMonitorApplicationSettings;
-class PIDSettings;
-class DigitalInputOutput;
-class InclinometerSettings;
-class PositionControllerSettings;
 
 class Model {
 public:
@@ -85,7 +84,7 @@ public:
 
     void publishStateChange(States::Type newState);
     void publishRecommendedSettings();
-    void publishOuterLoop(double executionTime);
+    void publishOuterLoop(std::chrono::nanoseconds executionTime);
 
     void exitControl();
     void waitForExitControl();
