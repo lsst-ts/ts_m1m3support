@@ -30,8 +30,9 @@
 #include <StartCommand.h>
 #include <Gyro.h>
 #include <M1M3SSPublisher.h>
-#include <unistd.h>
 
+#include <thread>
+#include <chrono>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -58,7 +59,7 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
     powerController->setAllPowerNetworks(true);
     for (int i = 0; i < 2; ++i) {
         digitalInputOutput->tryToggleHeartbeat();
-        usleep(500000);
+        std::this_thread::sleep_for(500ms);
     }
 
     ilc->flushAll();
@@ -108,7 +109,7 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
     ilc->readAll();
     digitalInputOutput->tryToggleHeartbeat();
     model->getPublisher()->tryLogForceActuatorState();
-    usleep(20000);
+    std::this_thread::sleep_for(20ms);
     ilc->verifyResponses();
     ilc->publishForceActuatorInfo();
     ilc->publishHardpointActuatorInfo();

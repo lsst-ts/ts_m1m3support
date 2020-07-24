@@ -21,30 +21,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OFFLINESTATE_H_
-#define OFFLINESTATE_H_
+#ifndef MODELPUBLISHER_H_
+#define MODELPUBLISHER_H_
 
-#include <State.h>
+#include <Model.h>
+
+#include <chrono>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Offline state. Only acceptable command is the enterControl command to switch
- * state to StandbyState. Turns on air and mirror cell lights on transtion to
- * StandbyState.
+ * Measure time to acquire data and publish model data. Uses RAII-like approach to measure time it takes to
+ * execute an action, and pass elapsed time to Model::publishOuterLoop call.
+ *
+ * @see Model
  */
-class OfflineState : public State {
+class ModelPublisher {
 public:
-    OfflineState(M1M3SSPublisher* publisher);
+    ModelPublisher(Model *model) {
+        _model = model;
+        start = std::chrono::high_resolution_clock::now();
+    }
+    ~ModelPublisher() { _model->publishOuterLoop(std::chrono::high_resolution_clock::now() - start); }
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type enterControl(EnterControlCommand* command, Model* model) override;
+private:
+    Model *_model;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start;
 };
-
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* OFFLINESTATE_H_ */
+#endif  // MODELPUBLISHER_H_

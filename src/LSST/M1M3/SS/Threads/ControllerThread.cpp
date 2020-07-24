@@ -23,8 +23,11 @@
 
 #include <ControllerThread.h>
 #include <Controller.h>
-#include <unistd.h>
+#include <chrono>
+#include <thread>
 #include <spdlog/spdlog.h>
+
+using namespace std::chrono_literals;
 
 namespace LSST {
 namespace M1M3 {
@@ -44,7 +47,7 @@ void ControllerThread::run() {
         if (command) {
             _controller->execute(command);
         } else {
-            usleep(100);
+            std::this_thread::sleep_for(100us);
         }
     }
     spdlog::info("ControllerThread: Completed");

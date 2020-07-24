@@ -27,12 +27,10 @@
 #include <OfflineState.h>
 #include <StandbyState.h>
 #include <DisabledState.h>
-#include <EnabledState.h>
 #include <ParkedState.h>
 #include <RaisingState.h>
 #include <ActiveState.h>
 #include <LoweringState.h>
-#include <EngineeringState.h>
 #include <ParkedEngineeringState.h>
 #include <RaisingEngineeringState.h>
 #include <ActiveEngineeringState.h>
@@ -52,18 +50,15 @@ public:
     StaticStateFactory(M1M3SSPublisher* publisher);
 
     State* create(States::Type state);
-    void destroy(State* state);
 
 private:
     OfflineState _offlineState;
     StandbyState _standbyState;
     DisabledState _disabledState;
-    EnabledState _enabledState;
     ParkedState _parkedState;
     RaisingState _raisingState;
     ActiveState _activeState;
     LoweringState _loweringState;
-    EngineeringState _engineeringState;
     ParkedEngineeringState _parkedEngineeringState;
     RaisingEngineeringState _raisingEngineeringState;
     ActiveEngineeringState _activeEngineeringState;

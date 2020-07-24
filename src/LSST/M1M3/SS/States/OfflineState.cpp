@@ -33,6 +33,10 @@ namespace SS {
 
 OfflineState::OfflineState(M1M3SSPublisher* publisher) : State(publisher, "OfflineState") {}
 
+States::Type OfflineState::update(UpdateCommand* command, Model* model) {
+    return rejectCommandInvalidState(command, "Update");
+}
+
 States::Type OfflineState::enterControl(EnterControlCommand* command, Model* model) {
     spdlog::info("OfflineState: enterControl()");
     model->publishRecommendedSettings();

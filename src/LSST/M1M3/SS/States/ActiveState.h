@@ -30,6 +30,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Active State. Mirror is raised, supported by force actuators. Mirror can be
+ * lowered with Lower M1M3 Command. The controller can be switched to
+ * engineering mode with Enter Engineering command.
+ */
 class ActiveState : public EnabledState {
 public:
     ActiveState(M1M3SSPublisher* publisher);

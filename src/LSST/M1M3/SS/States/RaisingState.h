@@ -30,6 +30,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * State during mirror raise. Transition to active state when raise finished,
+ * or to lowering state on abort.
+ */
 class RaisingState : public EnabledState {
 public:
     RaisingState(M1M3SSPublisher* publisher);

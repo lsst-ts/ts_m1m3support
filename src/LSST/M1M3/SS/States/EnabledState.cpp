@@ -35,49 +35,20 @@
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <M1M3SSPublisher.h>
+#include <ModelPublisher.h>
 #include <Gyro.h>
 #include <spdlog/spdlog.h>
 #include <FPGA.h>
 #include <SAL_MTM1M3C.h>
 
+#include <chrono>
+#include <thread>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnabledState::EnabledState(M1M3SSPublisher* publisher) : State(publisher, "EnabledState") {}
 EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) {}
-
-States::Type EnabledState::update(UpdateCommand* command, Model* model) {
-    spdlog::trace("EnabledState: update()");
-    ILC* ilc = model->getILC();
-    model->getForceController()->updateAppliedForces();
-    model->getForceController()->processAppliedForces();
-    ilc->writeControlListBuffer();
-    ilc->triggerModbus();
-    model->getDigitalInputOutput()->tryToggleHeartbeat();
-    usleep(1000);
-    IFPGA::get().pullTelemetry();
-    model->getAccelerometer()->processData();
-    model->getDigitalInputOutput()->processData();
-    model->getDisplacement()->processData();
-    model->getGyro()->processData();
-    model->getInclinometer()->processData();
-    model->getPowerController()->processData();
-    ilc->waitForAllSubnets(5000);
-    ilc->readAll();
-    ilc->calculateHPPostion();
-    ilc->calculateHPMirrorForces();
-    ilc->calculateFAMirrorForces();
-    ilc->verifyResponses();
-    ilc->publishForceActuatorStatus();
-    ilc->publishForceActuatorData();
-    ilc->publishHardpointStatus();
-    ilc->publishHardpointData();
-    ilc->publishHardpointMonitorStatus();
-    ilc->publishHardpointMonitorData();
-    model->getPublisher()->tryLogHardpointActuatorWarning();
-    return States::NoStateTransition;
-}
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
     spdlog::trace("EnabledState: storeTMAAzimuthSample()");
@@ -101,6 +72,62 @@ States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
     outerLoop->slewFlag = forceActuatorState->slewFlag;
 
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+void EnabledState::runLoop(Model* model) {
+    spdlog::trace("EnabledState: runLoop()");
+    ILC* ilc = model->getILC();
+    model->getForceController()->updateAppliedForces();
+    model->getForceController()->processAppliedForces();
+    ilc->writeControlListBuffer();
+    ilc->triggerModbus();
+    model->getDigitalInputOutput()->tryToggleHeartbeat();
+    std::this_thread::sleep_for(1ms);
+    IFPGA::get().pullTelemetry();
+    model->getAccelerometer()->processData();
+    model->getDigitalInputOutput()->processData();
+    model->getDisplacement()->processData();
+    model->getGyro()->processData();
+    model->getInclinometer()->processData();
+    model->getPowerController()->processData();
+    ilc->waitForAllSubnets(5000);
+    ilc->readAll();
+    ilc->calculateHPPostion();
+    ilc->calculateHPMirrorForces();
+    ilc->calculateFAMirrorForces();
+    ilc->verifyResponses();
+    ilc->publishForceActuatorStatus();
+    ilc->publishForceActuatorData();
+    ilc->publishHardpointStatus();
+    ilc->publishHardpointData();
+    ilc->publishHardpointMonitorStatus();
+    ilc->publishHardpointMonitorData();
+    model->getPublisher()->tryLogHardpointActuatorWarning();
+}
+
+void EnabledState::sendTelemetry(Model* model) {
+    ModelPublisher publishIt(Model);
+    runLoop(model);
+}
+
+bool EnabledState::raiseCompleted(Model* model) {
+    if (model->getAutomaticOperationsController()->checkRaiseOperationComplete()) {
+        model->getAutomaticOperationsController()->completeRaiseOperation();
+        return true;
+    } else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
+        model->getAutomaticOperationsController()->timeoutRaiseOperation();
+    }
+    return false;
+}
+
+bool EnabledState::lowerCompleted(Model* model) {
+    if (model->getAutomaticOperationsController()->checkLowerOperationComplete()) {
+        model->getAutomaticOperationsController()->completeLowerOperation();
+        return true;
+    } else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
+        model->getAutomaticOperationsController()->timeoutLowerOperation();
+    }
+    return false;
 }
 
 } /* namespace SS */

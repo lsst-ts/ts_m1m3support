@@ -35,9 +35,11 @@
 #include <M1M3SSPublisher.h>
 #include <ProgramILCCommand.h>
 #include <ModbusTransmitCommand.h>
+#include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
-#include <unistd.h>
 #include <FPGA.h>
+#include <chrono>
+#include <thread>
 
 namespace LSST {
 namespace M1M3 {
@@ -46,13 +48,13 @@ namespace SS {
 DisabledState::DisabledState(M1M3SSPublisher* publisher) : State(publisher, "DisabledState") {}
 
 States::Type DisabledState::update(UpdateCommand* command, Model* model) {
+    ModelPublisher publishIt(model);
     spdlog::trace("DisabledState::update()");
-    this->startTimer();
     ILC* ilc = model->getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
     model->getDigitalInputOutput()->tryToggleHeartbeat();
-    usleep(1000);
+    std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     model->getAccelerometer()->processData();
     model->getDigitalInputOutput()->processData();
@@ -73,8 +75,6 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
     model->getPublisher()->tryLogHardpointActuatorWarning();
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

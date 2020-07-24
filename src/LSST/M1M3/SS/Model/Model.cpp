@@ -214,10 +214,10 @@ void Model::publishRecommendedSettings() {
     _publisher->logSettingVersions();
 }
 
-void Model::publishOuterLoop(double executionTime) {
+void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
     spdlog::trace("Model: publishOuterLoop()");
     MTM1M3_outerLoopDataC* data = _publisher->getOuterLoopData();
-    data->executionTime = executionTime;
+    data->executionTime = executionTime.count() / 1000000000.0;
     _publisher->putOuterLoopData();
 }
 
