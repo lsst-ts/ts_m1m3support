@@ -29,7 +29,6 @@
 #include <PowerController.h>
 #include <StartCommand.h>
 #include <Gyro.h>
-#include <M1M3SSPublisher.h>
 
 #include <thread>
 #include <chrono>
@@ -39,7 +38,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StandbyState::StandbyState(M1M3SSPublisher* publisher) : State(publisher, "StandbyState") {}
+StandbyState::StandbyState() : State("StandbyState") {}
 
 States::Type StandbyState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("StandbyState: update()");
@@ -108,7 +107,7 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     digitalInputOutput->tryToggleHeartbeat();
-    model->getPublisher()->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
     std::this_thread::sleep_for(20ms);
     ilc->verifyResponses();
     ilc->publishForceActuatorInfo();

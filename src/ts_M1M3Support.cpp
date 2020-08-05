@@ -99,9 +99,8 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                                        : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace)));
 }
 
-void initializeFPGAs(M1M3SSPublisher* publisher, IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
+void initializeFPGAs(IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
 #ifdef SIMULATOR
-    ((SimulatedFPGA*)fpga)->setPublisher(publisher);
     ((SimulatedFPGA*)fpga)
             ->setForceActuatorApplicationSettings(
                     SettingReader::get().loadForceActuatorApplicationSettings());
@@ -127,34 +126,32 @@ void* runThread(void* data) {
     return 0;
 }
 
-void runFPGAs(M1M3SSPublisher* publisher, std::shared_ptr<SAL_MTM1M3> m1m3SAL,
-              std::shared_ptr<SAL_MTMount> mtMountSAL) {
+void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL) {
     spdlog::info("Main: Creating state factory");
-    StaticStateFactory stateFactory = StaticStateFactory(publisher);
+    StaticStateFactory stateFactory = StaticStateFactory();
     spdlog::info("Main: Load interlock application settings");
     InterlockApplicationSettings* interlockApplicationSettings =
             SettingReader::get().loadInterlockApplicationSettings();
     spdlog::info("Main: Creating digital input output");
-    DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings, publisher);
+    DigitalInputOutput digitalInputOutput = DigitalInputOutput(interlockApplicationSettings);
     spdlog::info("Main: Creating model");
-    Model model = Model(publisher, &digitalInputOutput);
+    Model model = Model(&digitalInputOutput);
     spdlog::info("Main: Creating context");
     Context context = Context(&stateFactory, &model);
     spdlog::info("Main: Creating command factory");
-    CommandFactory commandFactory = CommandFactory(publisher, &context);
+    CommandFactory commandFactory = CommandFactory(&context);
     spdlog::info("Main: Creating subscriber");
     M1M3SSSubscriber subscriber = M1M3SSSubscriber(m1m3SAL, mtMountSAL, &commandFactory);
     spdlog::info("Main: Creating controller");
     Controller controller = Controller(&commandFactory);
     spdlog::info("Main: Creating subscriber thread");
-    SubscriberThread subscriberThread =
-            SubscriberThread(&subscriber, &controller, publisher, &commandFactory);
+    SubscriberThread subscriberThread = SubscriberThread(&subscriber, &controller, &commandFactory);
     spdlog::info("Main: Creating controller thread");
     ControllerThread controllerThread = ControllerThread(&controller);
     spdlog::info("Main: Creating outer loop clock thread");
-    OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller, publisher);
+    OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread(&commandFactory, &controller);
     spdlog::info("Main: Creating pps thread");
-    PPSThread ppsThread = PPSThread(publisher);
+    PPSThread ppsThread = PPSThread();
     spdlog::info("Main: Queuing EnterControl command");
     controller.enqueue(commandFactory.create(Commands::EnterControlCommand));
 
@@ -255,14 +252,14 @@ int main(int argc, char* const argv[]) {
     spdlog::info("Main: Initializing MTMount SAL");
     std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
     spdlog::info("Main: Creating publisher");
-    M1M3SSPublisher publisher = M1M3SSPublisher(m1m3SAL);
+    M1M3SSPublisher::get().setSAL(m1m3SAL);
 
     IFPGA* fpga = &IFPGA::get();
     IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
 
     try {
-        initializeFPGAs(&publisher, fpga, expansionFPGA);
-        runFPGAs(&publisher, m1m3SAL, mtMountSAL);
+        initializeFPGAs(fpga, expansionFPGA);
+        runFPGAs(m1m3SAL, mtMountSAL);
 
         expansionFPGA->close();
 

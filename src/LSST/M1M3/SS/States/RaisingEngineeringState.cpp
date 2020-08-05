@@ -32,8 +32,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisingEngineeringState::RaisingEngineeringState(M1M3SSPublisher* publisher)
-        : EngineeringState(publisher, "RaisingEngineeringState") {}
+RaisingEngineeringState::RaisingEngineeringState() : EngineeringState("RaisingEngineeringState") {}
 
 States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* model) {
     ModelPublisher publishModel(model);

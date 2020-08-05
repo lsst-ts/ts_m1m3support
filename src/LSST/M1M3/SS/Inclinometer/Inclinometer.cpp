@@ -36,16 +36,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Inclinometer::Inclinometer(SupportFPGAData* fpgaData, M1M3SSPublisher* publisher,
-                           SafetyController* safetyController, InclinometerSettings* inclinometerSettings) {
+Inclinometer::Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController,
+                           InclinometerSettings* inclinometerSettings) {
     spdlog::debug("Inclinometer: Inclinometer()");
     _fpgaData = fpgaData;
-    _publisher = publisher;
     _safetyController = safetyController;
     _inclinometerSettings = inclinometerSettings;
 
-    _inclinometerData = _publisher->getInclinometerData();
-    _inclinometerWarning = _publisher->getEventInclinometerSensorWarning();
+    _inclinometerData = M1M3SSPublisher::get().getInclinometerData();
+    _inclinometerWarning = M1M3SSPublisher::get().getEventInclinometerSensorWarning();
 
     _lastSampleTimestamp = 0;
     _lastErrorTimestamp = 0;
@@ -71,7 +70,7 @@ void Inclinometer::processData() {
         _inclinometerWarning->responseTimeout = _fpgaData->InclinometerErrorCode == 6;
         _inclinometerWarning->sensorReportsIllegalFunction = _fpgaData->InclinometerErrorCode == 7;
         _inclinometerWarning->sensorReportsIllegalDataAddress = _fpgaData->InclinometerErrorCode == 8;
-        _publisher->tryLogInclinometerSensorWarning();
+        M1M3SSPublisher::get().tryLogInclinometerSensorWarning();
         _safetyController->inclinometerNotifyUnknownAddress(_inclinometerWarning->unknownAddress);
         _safetyController->inclinometerNotifyUnknownFunction(_inclinometerWarning->unknownFunction);
         _safetyController->inclinometerNotifyInvalidLength(_inclinometerWarning->invalidLength);
@@ -93,7 +92,7 @@ void Inclinometer::processData() {
             angle = angle - 360.0;
         }
         _inclinometerData->inclinometerAngle = angle + _inclinometerSettings->Offset;
-        _publisher->putInclinometerData();
+        M1M3SSPublisher::get().putInclinometerData();
         if (!_errorCleared &&
             _fpgaData->InclinometerSampleTimestamp > _fpgaData->InclinometerErrorTimestamp) {
             _errorCleared = true;
@@ -106,7 +105,7 @@ void Inclinometer::processData() {
             _inclinometerWarning->responseTimeout = false;
             _inclinometerWarning->sensorReportsIllegalFunction = false;
             _inclinometerWarning->sensorReportsIllegalDataAddress = false;
-            _publisher->tryLogInclinometerSensorWarning();
+            M1M3SSPublisher::get().tryLogInclinometerSensorWarning();
             _safetyController->inclinometerNotifyUnknownAddress(_inclinometerWarning->unknownAddress);
             _safetyController->inclinometerNotifyUnknownFunction(_inclinometerWarning->unknownFunction);
             _safetyController->inclinometerNotifyInvalidLength(_inclinometerWarning->invalidLength);

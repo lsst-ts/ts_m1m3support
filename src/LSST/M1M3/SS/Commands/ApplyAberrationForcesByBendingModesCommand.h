@@ -34,8 +34,7 @@ namespace SS {
 
 class ApplyAberrationForcesByBendingModesCommand : public Command {
 public:
-    ApplyAberrationForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher,
-                                               int32_t commandID,
+    ApplyAberrationForcesByBendingModesCommand(Context* context, int32_t commandID,
                                                MTM1M3_command_applyAberrationForcesByBendingModesC* data);
 
     MTM1M3_command_applyAberrationForcesByBendingModesC* getData() { return &_data; }
@@ -47,7 +46,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_applyAberrationForcesByBendingModesC _data;
 };
 

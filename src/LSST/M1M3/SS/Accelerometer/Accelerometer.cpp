@@ -36,13 +36,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings, M1M3SSPublisher* publisher) {
+Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings) {
     spdlog::debug("Accelerometer: Accelerometer()");
     _accelerometerSettings = accelerometerSettings;
-    _publisher = publisher;
 
-    _accelerometerData = _publisher->getAccelerometerData();
-    _accelerometerWarning = _publisher->getEventAccelerometerWarning();
+    _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
+    _accelerometerWarning = M1M3SSPublisher::get().getEventAccelerometerWarning();
 
     memset(_accelerometerData, 0, sizeof(MTM1M3_accelerometerDataC));
     memset(_accelerometerWarning, 0, sizeof(MTM1M3_logevent_accelerometerWarningC));
@@ -112,7 +111,7 @@ void Accelerometer::processData() {
             (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
              _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
             (_accelerometerSettings->AngularAccelerationZDistance * 2);
-    _publisher->putAccelerometerData();
+    M1M3SSPublisher::get().putAccelerometerData();
 }
 
 } /* namespace SS */

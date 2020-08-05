@@ -44,8 +44,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FaultState::FaultState(M1M3SSPublisher* publisher) : State(publisher, "FaultState") {}
-FaultState::FaultState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) {}
+FaultState::FaultState() : State("FaultState") {}
+FaultState::FaultState(std::string name) : State(name) {}
 
 States::Type FaultState::update(UpdateCommand* command, Model* model) {
     ModelPublisher publishIt(model);

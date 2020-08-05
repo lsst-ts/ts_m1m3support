@@ -34,7 +34,7 @@ namespace SS {
 
 class DisableHardpointCorrectionsCommand : public Command {
 public:
-    DisableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+    DisableHardpointCorrectionsCommand(Context* context, int32_t commandID,
                                        MTM1M3_command_disableHardpointCorrectionsC*);
 
     void execute() override;
@@ -44,7 +44,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

@@ -37,19 +37,18 @@ namespace M1M3 {
 namespace SS {
 
 ActiveOpticForceComponent::ActiveOpticForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
     this->name = "ActiveOptic";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedActiveOpticForces = _publisher->getEventAppliedActiveOpticForces();
-    _rejectedActiveOpticForces = _publisher->getEventRejectedActiveOpticForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
+    _rejectedActiveOpticForces = M1M3SSPublisher::get().getEventRejectedActiveOpticForces();
     maxRateOfChange = _forceActuatorSettings->ActiveOpticComponentSettings.MaxRateOfChange;
     nearZeroValue = _forceActuatorSettings->ActiveOpticComponentSettings.NearZeroValue;
 }
@@ -82,9 +81,9 @@ void ActiveOpticForceComponent::applyActiveOpticForcesByBendingModes(float* coef
 void ActiveOpticForceComponent::postEnableDisableActions() {
     spdlog::debug("ActiveOpticForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->activeOpticForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void ActiveOpticForceComponent::postUpdateActions() {
@@ -92,7 +91,7 @@ void ActiveOpticForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedActiveOpticForces->timestamp = _publisher->getTimestamp();
+    _appliedActiveOpticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedActiveOpticForces->timestamp = _appliedActiveOpticForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         float zLowFault = _forceActuatorSettings->ActiveOpticLimitZTable[zIndex].LowFault;
@@ -136,11 +135,11 @@ void ActiveOpticForceComponent::postUpdateActions() {
     _safetyController->forceControllerNotifyActiveOpticNetForceCheck(
             _forceSetpointWarning->activeOpticNetForceWarning);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedActiveOpticForces();
+        M1M3SSPublisher::get().logRejectedActiveOpticForces();
     }
-    _publisher->logAppliedActiveOpticForces();
+    M1M3SSPublisher::get().logAppliedActiveOpticForces();
 }
 
 } /* namespace SS */

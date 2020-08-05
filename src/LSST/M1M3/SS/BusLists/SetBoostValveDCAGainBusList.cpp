@@ -24,6 +24,7 @@
 #include <SetBoostValveDCAGainBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <M1M3SSPublisher.h>
 #include <SAL_MTM1M3C.h>
 #include <spdlog/spdlog.h>
 
@@ -32,11 +33,10 @@ namespace M1M3 {
 namespace SS {
 
 SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetData,
-                                                         ILCMessageFactory* ilcMessageFactory,
-                                                         MTM1M3_logevent_forceActuatorInfoC* forceInfo)
+                                                         ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("SetBoostValveDCAGainBusList: SetBoostValveDCAGainBusList()");
-    _forceInfo = forceInfo;
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
@@ -45,8 +45,8 @@ SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetDa
             bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
             if (!disabled) {
                 this->ilcMessageFactory->setBoostValveDCAGains(
-                        &this->buffer, address, _forceInfo->mezzaninePrimaryCylinderGain[dataIndex],
-                        _forceInfo->mezzanineSecondaryCylinderGain[dataIndex]);
+                        &this->buffer, address, forceInfo->mezzaninePrimaryCylinderGain[dataIndex],
+                        forceInfo->mezzanineSecondaryCylinderGain[dataIndex]);
                 this->expectedFAResponses[dataIndex] = 1;
             }
         }

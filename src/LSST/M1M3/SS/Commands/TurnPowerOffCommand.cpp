@@ -22,15 +22,15 @@
  */
 
 #include <TurnPowerOffCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnPowerOffCommand::TurnPowerOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+TurnPowerOffCommand::TurnPowerOffCommand(Context* context, int32_t commandID,
                                          MTM1M3_command_turnPowerOffC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.turnPowerNetworkAOff = data->turnPowerNetworkAOff;
     _data.turnPowerNetworkBOff = data->turnPowerNetworkBOff;
@@ -46,7 +46,7 @@ bool TurnPowerOffCommand::validate() {
     if (!(_data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff || _data.turnPowerNetworkCOff ||
           _data.turnPowerNetworkDOff || _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
           _data.turnAuxPowerNetworkCOff || _data.turnAuxPowerNetworkDOff)) {
-        _publisher->logCommandRejectionWarning("TurnPowerOff", "At least one field is not TRUE.");
+        M1M3SSPublisher::get().logCommandRejectionWarning("TurnPowerOff", "At least one field is not TRUE.");
     }
     return _data.turnPowerNetworkAOff || _data.turnPowerNetworkBOff || _data.turnPowerNetworkCOff ||
            _data.turnPowerNetworkDOff || _data.turnAuxPowerNetworkAOff || _data.turnAuxPowerNetworkBOff ||
@@ -56,15 +56,15 @@ bool TurnPowerOffCommand::validate() {
 void TurnPowerOffCommand::execute() { _context->turnPowerOff(this); }
 
 void TurnPowerOffCommand::ackInProgress() {
-    _publisher->ackCommandturnPowerOff(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandturnPowerOff(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnPowerOffCommand::ackComplete() {
-    _publisher->ackCommandturnPowerOff(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandturnPowerOff(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnPowerOffCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandturnPowerOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandturnPowerOff(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

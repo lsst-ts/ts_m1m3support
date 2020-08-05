@@ -37,7 +37,7 @@ namespace SS {
  */
 class DisabledState : public State {
 public:
-    DisabledState(M1M3SSPublisher* publisher);
+    DisabledState();
 
     virtual States::Type update(UpdateCommand* command, Model* model) override;
     virtual States::Type enable(EnableCommand* command, Model* model) override;

@@ -35,7 +35,6 @@
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
 #include <DigitalInputOutput.h>
-#include <M1M3SSPublisher.h>
 #include <PowerController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
@@ -47,8 +46,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ParkedEngineeringState::ParkedEngineeringState(M1M3SSPublisher* publisher)
-        : EngineeringState(publisher, "ParkedEngineeringState") {}
+ParkedEngineeringState::ParkedEngineeringState() : EngineeringState("ParkedEngineeringState") {}
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("ParkedEngineeringState: update()");

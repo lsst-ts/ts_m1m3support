@@ -36,19 +36,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StaticForceComponent::StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                            ForceActuatorSettings* forceActuatorSettings) {
     this->name = "Static";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedStaticForces = _publisher->getEventAppliedStaticForces();
-    _rejectedStaticForces = _publisher->getEventRejectedStaticForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
+    _rejectedStaticForces = M1M3SSPublisher::get().getEventRejectedStaticForces();
     this->maxRateOfChange = _forceActuatorSettings->StaticComponentSettings.MaxRateOfChange;
     this->nearZeroValue = _forceActuatorSettings->StaticComponentSettings.NearZeroValue;
 }
@@ -80,9 +79,9 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
 void StaticForceComponent::postEnableDisableActions() {
     spdlog::debug("StaticForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->staticForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void StaticForceComponent::postUpdateActions() {
@@ -90,7 +89,7 @@ void StaticForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedStaticForces->timestamp = _publisher->getTimestamp();
+    _appliedStaticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedStaticForces->timestamp = _appliedStaticForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -154,11 +153,11 @@ void StaticForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyStaticForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedStaticForces();
+        M1M3SSPublisher::get().logRejectedStaticForces();
     }
-    _publisher->logAppliedStaticForces();
+    M1M3SSPublisher::get().logAppliedStaticForces();
 }
 
 } /* namespace SS */

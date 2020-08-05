@@ -37,19 +37,18 @@ namespace M1M3 {
 namespace SS {
 
 AzimuthForceComponent::AzimuthForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
     name = "Azimuth";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedAzimuthForces = _publisher->getEventAppliedAzimuthForces();
-    _rejectedAzimuthForces = _publisher->getEventRejectedAzimuthForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
+    _rejectedAzimuthForces = M1M3SSPublisher::get().getEventRejectedAzimuthForces();
     maxRateOfChange = _forceActuatorSettings->AzimuthComponentSettings.MaxRateOfChange;
     nearZeroValue = _forceActuatorSettings->AzimuthComponentSettings.NearZeroValue;
 }
@@ -102,9 +101,9 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
 void AzimuthForceComponent::postEnableDisableActions() {
     spdlog::debug("AzimuthForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->azimuthForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void AzimuthForceComponent::postUpdateActions() {
@@ -112,7 +111,7 @@ void AzimuthForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedAzimuthForces->timestamp = _publisher->getTimestamp();
+    _appliedAzimuthForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -176,11 +175,11 @@ void AzimuthForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyAzimuthForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedAzimuthForces();
+        M1M3SSPublisher::get().logRejectedAzimuthForces();
     }
-    _publisher->logAppliedAzimuthForces();
+    M1M3SSPublisher::get().logAppliedAzimuthForces();
 }
 
 } /* namespace SS */

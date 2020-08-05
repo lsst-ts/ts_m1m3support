@@ -27,6 +27,8 @@
 #include <DataTypes.h>
 #include <IFPGA.h>
 #include <IExpansionFPGA.h>
+#include <SupportFPGAData.h>
+#include <SafetyController.h>
 
 struct MTM1M3_powerSupplyDataC;
 struct MTM1M3_logevent_powerStatusC;
@@ -37,10 +39,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct SupportFPGAData;
-class M1M3SSPublisher;
-class SafetyController;
-
 /*!
  * The class used to control and process power data.
  */
@@ -48,10 +46,9 @@ class PowerController {
 public:
     /*!
      * Instantiates the power controller.
-     * @param[in] publisher The publisher.
      * @param[in] safetyController The safety controller.
      */
-    PowerController(M1M3SSPublisher* publisher, SafetyController* safetyController);
+    PowerController(SafetyController* safetyController);
 
     /*!
      * Processes currently available power data and publish it.
@@ -117,7 +114,6 @@ public:
     void setAuxPowerNetworkD(bool on);
 
 private:
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
 
     MTM1M3_powerSupplyDataC* _powerSupplyData;

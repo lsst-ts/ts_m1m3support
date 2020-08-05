@@ -37,7 +37,7 @@ namespace SS {
  */
 class EnabledState : public State {
 public:
-    EnabledState(M1M3SSPublisher* publisher, std::string name);
+    EnabledState(std::string name);
 
     virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) override;
     virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) override;

@@ -22,15 +22,15 @@
  */
 
 #include <TurnPowerOnCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnPowerOnCommand::TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+TurnPowerOnCommand::TurnPowerOnCommand(Context* context, int32_t commandID,
                                        MTM1M3_command_turnPowerOnC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.turnPowerNetworkAOn = data->turnPowerNetworkAOn;
     _data.turnPowerNetworkBOn = data->turnPowerNetworkBOn;
@@ -46,7 +46,7 @@ bool TurnPowerOnCommand::validate() {
     if (!(_data.turnPowerNetworkAOn || _data.turnPowerNetworkBOn || _data.turnPowerNetworkCOn ||
           _data.turnPowerNetworkDOn || _data.turnAuxPowerNetworkAOn || _data.turnAuxPowerNetworkBOn ||
           _data.turnAuxPowerNetworkCOn || _data.turnAuxPowerNetworkDOn)) {
-        _publisher->logCommandRejectionWarning("TurnPowerOn", "At least one field is not TRUE.");
+        M1M3SSPublisher::get().logCommandRejectionWarning("TurnPowerOn", "At least one field is not TRUE.");
     }
     return _data.turnPowerNetworkAOn || _data.turnPowerNetworkBOn || _data.turnPowerNetworkCOn ||
            _data.turnPowerNetworkDOn || _data.turnAuxPowerNetworkAOn || _data.turnAuxPowerNetworkBOn ||
@@ -56,15 +56,15 @@ bool TurnPowerOnCommand::validate() {
 void TurnPowerOnCommand::execute() { _context->turnPowerOn(this); }
 
 void TurnPowerOnCommand::ackInProgress() {
-    _publisher->ackCommandturnPowerOn(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandturnPowerOn(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnPowerOnCommand::ackComplete() {
-    _publisher->ackCommandturnPowerOn(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandturnPowerOn(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnPowerOnCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandturnPowerOn(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandturnPowerOn(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

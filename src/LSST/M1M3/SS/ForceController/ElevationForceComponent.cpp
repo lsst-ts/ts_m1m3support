@@ -37,19 +37,18 @@ namespace M1M3 {
 namespace SS {
 
 ElevationForceComponent::ElevationForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
     this->name = "Elevation";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    this->forceActuatorState = _publisher->getEventForceActuatorState();
-    this->forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    this->appliedElevationForces = _publisher->getEventAppliedElevationForces();
-    this->rejectedElevationForces = _publisher->getEventRejectedElevationForces();
+    this->forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    this->forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    this->appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
+    this->rejectedElevationForces = M1M3SSPublisher::get().getEventRejectedElevationForces();
     this->maxRateOfChange = _forceActuatorSettings->ElevationComponentSettings.MaxRateOfChange;
     this->nearZeroValue = _forceActuatorSettings->ElevationComponentSettings.NearZeroValue;
 }
@@ -104,9 +103,9 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
 void ElevationForceComponent::_postEnableDisableActions() {
     spdlog::debug("ElevationForceComponent: postEnableDisableActions()");
 
-    this->forceActuatorState->timestamp = _publisher->getTimestamp();
+    this->forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     this->forceActuatorState->elevationForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void ElevationForceComponent::_postUpdateActions() {
@@ -114,7 +113,7 @@ void ElevationForceComponent::_postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    this->appliedElevationForces->timestamp = _publisher->getTimestamp();
+    this->appliedElevationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     this->rejectedElevationForces->timestamp = this->appliedElevationForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -179,11 +178,11 @@ void ElevationForceComponent::_postUpdateActions() {
 
     _safetyController->forceControllerNotifyElevationForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedElevationForces();
+        M1M3SSPublisher::get().logRejectedElevationForces();
     }
-    _publisher->logAppliedElevationForces();
+    M1M3SSPublisher::get().logAppliedElevationForces();
 }
 
 } /* namespace SS */

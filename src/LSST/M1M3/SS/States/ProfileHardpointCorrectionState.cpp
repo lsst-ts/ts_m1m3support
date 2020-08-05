@@ -32,8 +32,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ProfileHardpointCorrectionState::ProfileHardpointCorrectionState(M1M3SSPublisher* publisher)
-        : EnabledState(publisher, "ProfileHardpointCorrectionState") {}
+ProfileHardpointCorrectionState::ProfileHardpointCorrectionState()
+        : EnabledState("ProfileHardpointCorrectionState") {}
 
 States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("ProfileHardpointCorrectionState: update()");

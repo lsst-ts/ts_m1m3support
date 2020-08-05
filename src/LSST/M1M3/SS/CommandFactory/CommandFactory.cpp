@@ -75,9 +75,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-CommandFactory::CommandFactory(M1M3SSPublisher* publisher, Context* context) {
+CommandFactory::CommandFactory(Context* context) {
     spdlog::debug("CommandFactory: CommandFactory()");
-    _publisher = publisher;
     _context = context;
 }
 
@@ -87,127 +86,112 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
         case Commands::EnterControlCommand:
             return new EnterControlCommand(_context);
         case Commands::StartCommand:
-            return new StartCommand(_context, _publisher, commandID, (MTM1M3_command_startC*)data);
+            return new StartCommand(_context, commandID, (MTM1M3_command_startC*)data);
         case Commands::EnableCommand:
-            return new EnableCommand(_context, _publisher, commandID, (MTM1M3_command_enableC*)data);
+            return new EnableCommand(_context, commandID, (MTM1M3_command_enableC*)data);
         case Commands::DisableCommand:
-            return new DisableCommand(_context, _publisher, commandID, (MTM1M3_command_disableC*)data);
+            return new DisableCommand(_context, commandID, (MTM1M3_command_disableC*)data);
         case Commands::StandbyCommand:
-            return new StandbyCommand(_context, _publisher, commandID, (MTM1M3_command_standbyC*)data);
+            return new StandbyCommand(_context, commandID, (MTM1M3_command_standbyC*)data);
         case Commands::UpdateCommand:
             return new UpdateCommand(_context, (pthread_mutex_t*)data);
         case Commands::ExitControlCommand:
-            return new ExitControlCommand(_context, _publisher, commandID,
-                                          (MTM1M3_command_exitControlC*)data);
+            return new ExitControlCommand(_context, commandID, (MTM1M3_command_exitControlC*)data);
         case Commands::TurnAirOnCommand:
-            return new TurnAirOnCommand(_context, _publisher, commandID, (MTM1M3_command_turnAirOnC*)data);
+            return new TurnAirOnCommand(_context, commandID, (MTM1M3_command_turnAirOnC*)data);
         case Commands::TurnAirOffCommand:
-            return new TurnAirOffCommand(_context, _publisher, commandID, (MTM1M3_command_turnAirOffC*)data);
+            return new TurnAirOffCommand(_context, commandID, (MTM1M3_command_turnAirOffC*)data);
         case Commands::ApplyOffsetForcesCommand:
-            return new ApplyOffsetForcesCommand(_context, _publisher, commandID,
+            return new ApplyOffsetForcesCommand(_context, commandID,
                                                 (MTM1M3_command_applyOffsetForcesC*)data);
         case Commands::ClearOffsetForcesCommand:
-            return new ClearOffsetForcesCommand(_context, _publisher, commandID,
+            return new ClearOffsetForcesCommand(_context, commandID,
                                                 (MTM1M3_command_clearOffsetForcesC*)data);
         case Commands::RaiseM1M3Command:
-            return new RaiseM1M3Command(_context, _publisher, commandID, (MTM1M3_command_raiseM1M3C*)data);
+            return new RaiseM1M3Command(_context, commandID, (MTM1M3_command_raiseM1M3C*)data);
         case Commands::LowerM1M3Command:
-            return new LowerM1M3Command(_context, _publisher, commandID, (MTM1M3_command_lowerM1M3C*)data);
+            return new LowerM1M3Command(_context, commandID, (MTM1M3_command_lowerM1M3C*)data);
         case Commands::ApplyAberrationForcesByBendingModesCommand:
             return new ApplyAberrationForcesByBendingModesCommand(
-                    _context, _publisher, commandID,
-                    (MTM1M3_command_applyAberrationForcesByBendingModesC*)data);
+                    _context, commandID, (MTM1M3_command_applyAberrationForcesByBendingModesC*)data);
         case Commands::ApplyAberrationForcesCommand:
-            return new ApplyAberrationForcesCommand(_context, _publisher, commandID,
+            return new ApplyAberrationForcesCommand(_context, commandID,
                                                     (MTM1M3_command_applyAberrationForcesC*)data);
         case Commands::ClearAberrationForcesCommand:
-            return new ClearAberrationForcesCommand(_context, _publisher, commandID,
+            return new ClearAberrationForcesCommand(_context, commandID,
                                                     (MTM1M3_command_clearAberrationForcesC*)data);
         case Commands::ApplyActiveOpticForcesByBendingModesCommand:
             return new ApplyActiveOpticForcesByBendingModesCommand(
-                    _context, _publisher, commandID,
-                    (MTM1M3_command_applyActiveOpticForcesByBendingModesC*)data);
+                    _context, commandID, (MTM1M3_command_applyActiveOpticForcesByBendingModesC*)data);
         case Commands::ApplyActiveOpticForcesCommand:
-            return new ApplyActiveOpticForcesCommand(_context, _publisher, commandID,
+            return new ApplyActiveOpticForcesCommand(_context, commandID,
                                                      (MTM1M3_command_applyActiveOpticForcesC*)data);
         case Commands::ClearActiveOpticForcesCommand:
-            return new ClearActiveOpticForcesCommand(_context, _publisher, commandID,
+            return new ClearActiveOpticForcesCommand(_context, commandID,
                                                      (MTM1M3_command_clearActiveOpticForcesC*)data);
         case Commands::EnterEngineeringCommand:
-            return new EnterEngineeringCommand(_context, _publisher, commandID,
-                                               (MTM1M3_command_enterEngineeringC*)data);
+            return new EnterEngineeringCommand(_context, commandID, (MTM1M3_command_enterEngineeringC*)data);
         case Commands::ExitEngineeringCommand:
-            return new ExitEngineeringCommand(_context, _publisher, commandID,
-                                              (MTM1M3_command_exitEngineeringC*)data);
+            return new ExitEngineeringCommand(_context, commandID, (MTM1M3_command_exitEngineeringC*)data);
         case Commands::TestAirCommand:
-            return new TestAirCommand(_context, _publisher, commandID, (MTM1M3_command_testAirC*)data);
+            return new TestAirCommand(_context, commandID, (MTM1M3_command_testAirC*)data);
         case Commands::TestHardpointCommand:
-            return new TestHardpointCommand(_context, _publisher, commandID,
-                                            (MTM1M3_command_testHardpointC*)data);
+            return new TestHardpointCommand(_context, commandID, (MTM1M3_command_testHardpointC*)data);
         case Commands::TestForceActuatorCommand:
-            return new TestForceActuatorCommand(_context, _publisher, commandID,
+            return new TestForceActuatorCommand(_context, commandID,
                                                 (MTM1M3_command_testForceActuatorC*)data);
         case Commands::MoveHardpointActuatorsCommand:
-            return new MoveHardpointActuatorsCommand(_context, _publisher, commandID,
+            return new MoveHardpointActuatorsCommand(_context, commandID,
                                                      (MTM1M3_command_moveHardpointActuatorsC*)data);
         case Commands::EnableHardpointChaseCommand:
-            return new EnableHardpointChaseCommand(_context, _publisher, commandID,
+            return new EnableHardpointChaseCommand(_context, commandID,
                                                    (MTM1M3_command_enableHardpointChaseC*)data);
         case Commands::DisableHardpointChaseCommand:
-            return new DisableHardpointChaseCommand(_context, _publisher, commandID,
+            return new DisableHardpointChaseCommand(_context, commandID,
                                                     (MTM1M3_command_disableHardpointChaseC*)data);
         case Commands::AbortRaiseM1M3Command:
-            return new AbortRaiseM1M3Command(_context, _publisher, commandID,
-                                             (MTM1M3_command_abortRaiseM1M3C*)data);
+            return new AbortRaiseM1M3Command(_context, commandID, (MTM1M3_command_abortRaiseM1M3C*)data);
         case Commands::TranslateM1M3Command:
-            return new TranslateM1M3Command(_context, _publisher, commandID,
-                                            (MTM1M3_command_translateM1M3C*)data);
+            return new TranslateM1M3Command(_context, commandID, (MTM1M3_command_translateM1M3C*)data);
         case Commands::StopHardpointMotionCommand:
-            return new StopHardpointMotionCommand(_context, _publisher, commandID,
+            return new StopHardpointMotionCommand(_context, commandID,
                                                   (MTM1M3_command_stopHardpointMotionC*)data);
         case Commands::TMAAzimuthSampleCommand:
             return new TMAAzimuthSampleCommand(_context, (MTMount_AzimuthC*)data);
         case Commands::TMAElevationSampleCommand:
             return new TMAElevationSampleCommand(_context, (MTMount_ElevationC*)data);
         case Commands::PositionM1M3Command:
-            return new PositionM1M3Command(_context, _publisher, commandID,
-                                           (MTM1M3_command_positionM1M3C*)data);
+            return new PositionM1M3Command(_context, commandID, (MTM1M3_command_positionM1M3C*)data);
         case Commands::TurnLightsOnCommand:
-            return new TurnLightsOnCommand(_context, _publisher, commandID,
-                                           (MTM1M3_command_turnLightsOnC*)data);
+            return new TurnLightsOnCommand(_context, commandID, (MTM1M3_command_turnLightsOnC*)data);
         case Commands::TurnLightsOffCommand:
-            return new TurnLightsOffCommand(_context, _publisher, commandID,
-                                            (MTM1M3_command_turnLightsOffC*)data);
+            return new TurnLightsOffCommand(_context, commandID, (MTM1M3_command_turnLightsOffC*)data);
         case Commands::TurnPowerOnCommand:
-            return new TurnPowerOnCommand(_context, _publisher, commandID,
-                                          (MTM1M3_command_turnPowerOnC*)data);
+            return new TurnPowerOnCommand(_context, commandID, (MTM1M3_command_turnPowerOnC*)data);
         case Commands::TurnPowerOffCommand:
-            return new TurnPowerOffCommand(_context, _publisher, commandID,
-                                           (MTM1M3_command_turnPowerOffC*)data);
+            return new TurnPowerOffCommand(_context, commandID, (MTM1M3_command_turnPowerOffC*)data);
         case Commands::EnableHardpointCorrectionsCommand:
-            return new EnableHardpointCorrectionsCommand(_context, _publisher, commandID,
+            return new EnableHardpointCorrectionsCommand(_context, commandID,
                                                          (MTM1M3_command_enableHardpointCorrectionsC*)data);
         case Commands::DisableHardpointCorrectionsCommand:
-            return new DisableHardpointCorrectionsCommand(_context, _publisher, commandID,
+            return new DisableHardpointCorrectionsCommand(_context, commandID,
                                                           (MTM1M3_command_disableHardpointCorrectionsC*)data);
         case Commands::RunMirrorForceProfileCommand:
-            return new RunMirrorForceProfileCommand(_context, _publisher, commandID,
+            return new RunMirrorForceProfileCommand(_context, commandID,
                                                     (MTM1M3_command_runMirrorForceProfileC*)data);
         case Commands::AbortProfileCommand:
-            return new AbortProfileCommand(_context, _publisher, commandID,
-                                           (MTM1M3_command_abortProfileC*)data);
+            return new AbortProfileCommand(_context, commandID, (MTM1M3_command_abortProfileC*)data);
         case Commands::ApplyOffsetForcesByMirrorForceCommand:
             return new ApplyOffsetForcesByMirrorForceCommand(
-                    _context, _publisher, commandID, (MTM1M3_command_applyOffsetForcesByMirrorForceC*)data);
+                    _context, commandID, (MTM1M3_command_applyOffsetForcesByMirrorForceC*)data);
         case Commands::UpdatePIDCommand:
-            return new UpdatePIDCommand(_context, _publisher, commandID, (MTM1M3_command_updatePIDC*)data);
+            return new UpdatePIDCommand(_context, commandID, (MTM1M3_command_updatePIDC*)data);
         case Commands::ResetPIDCommand:
-            return new ResetPIDCommand(_context, _publisher, commandID, (MTM1M3_command_resetPIDC*)data);
+            return new ResetPIDCommand(_context, commandID, (MTM1M3_command_resetPIDC*)data);
         case Commands::ProgramILCCommand:
-            return new ProgramILCCommand(_context, _publisher, commandID, (MTM1M3_command_programILCC*)data);
+            return new ProgramILCCommand(_context, commandID, (MTM1M3_command_programILCC*)data);
         case Commands::ModbusTransmitCommand:
-            return new ModbusTransmitCommand(_context, _publisher, commandID,
-                                             (MTM1M3_command_modbusTransmitC*)data);
+            return new ModbusTransmitCommand(_context, commandID, (MTM1M3_command_modbusTransmitC*)data);
     }
     return 0;
 }

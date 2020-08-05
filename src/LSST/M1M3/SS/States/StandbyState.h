@@ -37,7 +37,7 @@ namespace SS {
  */
 class StandbyState : public State {
 public:
-    StandbyState(M1M3SSPublisher* publisher);
+    StandbyState();
 
     virtual States::Type update(UpdateCommand* command, Model* model) override;
     virtual States::Type start(StartCommand* command, Model* model) override;

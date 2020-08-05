@@ -22,30 +22,29 @@
  */
 
 #include <AbortProfileCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AbortProfileCommand::AbortProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                         MTM1M3_command_abortProfileC*) {
+AbortProfileCommand::AbortProfileCommand(Context* context, int32_t commandID, MTM1M3_command_abortProfileC*) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
 }
 
 void AbortProfileCommand::execute() { _context->abortProfile(this); }
 
 void AbortProfileCommand::ackInProgress() {
-    _publisher->ackCommandabortProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandabortProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void AbortProfileCommand::ackComplete() {
-    _publisher->ackCommandabortProfile(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandabortProfile(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void AbortProfileCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandabortProfile(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandabortProfile(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

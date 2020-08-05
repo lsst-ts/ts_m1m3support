@@ -22,16 +22,15 @@
  */
 
 #include <MoveHardpointActuatorsCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(Context* context, M1M3SSPublisher* publisher,
-                                                             int32_t commandID,
+MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(Context* context, int32_t commandID,
                                                              MTM1M3_command_moveHardpointActuatorsC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     for (int i = 0; i < 6; i++) {
         _data.steps[i] = data->steps[i];
@@ -41,7 +40,7 @@ MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(Context* context, M
 bool MoveHardpointActuatorsCommand::validate() {
     if (_data.steps[0] == 0 && _data.steps[1] == 0 && _data.steps[2] == 0 && _data.steps[3] == 0 &&
         _data.steps[4] == 0 && _data.steps[5] == 0) {
-        _publisher->logCommandRejectionWarning(
+        M1M3SSPublisher::get().logCommandRejectionWarning(
                 "MoveHardpointActuators",
                 "The field Steps must have at least one index with a step value not equal to zero.");
     }
@@ -52,15 +51,15 @@ bool MoveHardpointActuatorsCommand::validate() {
 void MoveHardpointActuatorsCommand::execute() { _context->moveHardpointActuators(this); }
 
 void MoveHardpointActuatorsCommand::ackInProgress() {
-    _publisher->ackCommandmoveHardpointActuators(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandmoveHardpointActuators(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void MoveHardpointActuatorsCommand::ackComplete() {
-    _publisher->ackCommandmoveHardpointActuators(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandmoveHardpointActuators(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void MoveHardpointActuatorsCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandmoveHardpointActuators(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandmoveHardpointActuators(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

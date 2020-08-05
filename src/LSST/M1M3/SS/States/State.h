@@ -29,7 +29,6 @@
 #include <string>
 
 #include <Model.h>
-#include <M1M3SSPublisher.h>
 #include <Command.h>
 #include <EnterControlCommand.h>
 #include <StartCommand.h>
@@ -89,7 +88,7 @@ namespace SS {
  */
 class State {
 public:
-    State(M1M3SSPublisher* publisher, std::string name);
+    State(std::string name);
     virtual ~State();
 
     virtual States::Type enterControl(EnterControlCommand* command, Model* model);

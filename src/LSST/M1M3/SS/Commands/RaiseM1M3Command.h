@@ -34,8 +34,7 @@ namespace SS {
 
 class RaiseM1M3Command : public Command {
 public:
-    RaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                     MTM1M3_command_raiseM1M3C* data);
+    RaiseM1M3Command(Context* context, int32_t commandID, MTM1M3_command_raiseM1M3C* data);
 
     MTM1M3_command_raiseM1M3C* getData() { return &_data; }
 
@@ -47,7 +46,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_raiseM1M3C _data;
 };
 

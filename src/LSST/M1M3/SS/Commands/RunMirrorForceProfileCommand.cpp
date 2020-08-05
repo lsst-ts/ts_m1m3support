@@ -22,16 +22,15 @@
  */
 
 #include <RunMirrorForceProfileCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(Context* context, M1M3SSPublisher* publisher,
-                                                           int32_t commandID,
+RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(Context* context, int32_t commandID,
                                                            MTM1M3_command_runMirrorForceProfileC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     for (int i = 0; i < 1000; ++i) {
         _data.xForce[i] = data->xForce[i];
@@ -48,15 +47,15 @@ bool RunMirrorForceProfileCommand::validate() { return true; }
 void RunMirrorForceProfileCommand::execute() { _context->runMirrorForceProfile(this); }
 
 void RunMirrorForceProfileCommand::ackInProgress() {
-    _publisher->ackCommandrunMirrorForceProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void RunMirrorForceProfileCommand::ackComplete() {
-    _publisher->ackCommandrunMirrorForceProfile(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void RunMirrorForceProfileCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandrunMirrorForceProfile(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

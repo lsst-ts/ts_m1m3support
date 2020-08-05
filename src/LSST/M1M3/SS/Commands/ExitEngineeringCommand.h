@@ -34,8 +34,7 @@ namespace SS {
 
 class ExitEngineeringCommand : public Command {
 public:
-    ExitEngineeringCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                           MTM1M3_command_exitEngineeringC*);
+    ExitEngineeringCommand(Context* context, int32_t commandID, MTM1M3_command_exitEngineeringC*);
 
     void execute() override;
     void ackInProgress() override;
@@ -44,7 +43,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

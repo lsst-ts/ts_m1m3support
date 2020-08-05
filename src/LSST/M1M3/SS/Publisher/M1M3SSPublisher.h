@@ -25,18 +25,26 @@
 #define M1M3SSPUBLISHER_H_
 
 #include <DataTypes.h>
+#include <SAL_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
-#include <memory>
+#include <ccpp_sal_MTM1M3.h>
 
-class SAL_MTM1M3;
+#include <memory>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Singleton class for M1M3 DDS communication.
+ */
 class M1M3SSPublisher {
 public:
-    M1M3SSPublisher(std::shared_ptr<SAL_MTM1M3> m1m3SAL);
+    M1M3SSPublisher();
+
+    static M1M3SSPublisher& get();
+
+    void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL);
 
     MTM1M3_accelerometerDataC* getAccelerometerData() { return &_accelerometerData; }
     MTM1M3_forceActuatorDataC* getForceActuatorData() { return &_forceActuatorData; }

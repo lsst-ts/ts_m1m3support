@@ -28,21 +28,21 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StaticStateFactory::StaticStateFactory(M1M3SSPublisher* publisher)
-        : _offlineState(publisher),
-          _standbyState(publisher),
-          _disabledState(publisher),
-          _parkedState(publisher),
-          _raisingState(publisher),
-          _activeState(publisher),
-          _loweringState(publisher),
-          _parkedEngineeringState(publisher),
-          _raisingEngineeringState(publisher),
-          _activeEngineeringState(publisher),
-          _loweringEngineeringState(publisher),
-          _faultState(publisher),
-          _loweringFaultState(publisher),
-          _profileHardpointCorrectionState(publisher) {
+StaticStateFactory::StaticStateFactory()
+        : _offlineState(),
+          _standbyState(),
+          _disabledState(),
+          _parkedState(),
+          _raisingState(),
+          _activeState(),
+          _loweringState(),
+          _parkedEngineeringState(),
+          _raisingEngineeringState(),
+          _activeEngineeringState(),
+          _loweringEngineeringState(),
+          _faultState(),
+          _loweringFaultState(),
+          _profileHardpointCorrectionState() {
     spdlog::debug("StaticStateFactory: StaticStateFactor()");
 }
 

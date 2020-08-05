@@ -22,9 +22,7 @@
  */
 
 #include <SubscriberThread.h>
-#include <M1M3SSSubscriber.h>
 #include <Controller.h>
-#include <M1M3SSPublisher.h>
 #include <CommandFactory.h>
 #include <Command.h>
 #include <chrono>
@@ -36,10 +34,9 @@ namespace M1M3 {
 namespace SS {
 
 SubscriberThread::SubscriberThread(M1M3SSSubscriber* subscriber, Controller* controller,
-                                   M1M3SSPublisher* publisher, CommandFactory* commandFactory) {
+                                   CommandFactory* commandFactory) {
     _subscriber = subscriber;
     _controller = controller;
-    _publisher = publisher;
     _commandFactory = commandFactory;
     _keepRunning = true;
 }

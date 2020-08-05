@@ -22,30 +22,29 @@
  */
 
 #include <EnableCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnableCommand::EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                             MTM1M3_command_enableC*) {
+EnableCommand::EnableCommand(Context* context, int32_t commandID, MTM1M3_command_enableC*) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
 }
 
 void EnableCommand::execute() { _context->enable(this); }
 
 void EnableCommand::ackInProgress() {
-    _publisher->ackCommandenable(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandenable(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableCommand::ackComplete() {
-    _publisher->ackCommandenable(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandenable(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnableCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandenable(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandenable(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

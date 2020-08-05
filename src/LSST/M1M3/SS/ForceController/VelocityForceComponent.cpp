@@ -37,19 +37,18 @@ namespace M1M3 {
 namespace SS {
 
 VelocityForceComponent::VelocityForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
     this->name = "Velocity";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedVelocityForces = _publisher->getEventAppliedVelocityForces();
-    _rejectedVelocityForces = _publisher->getEventRejectedVelocityForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
+    _rejectedVelocityForces = M1M3SSPublisher::get().getEventRejectedVelocityForces();
     this->maxRateOfChange = _forceActuatorSettings->VelocityComponentSettings.MaxRateOfChange;
     this->nearZeroValue = _forceActuatorSettings->VelocityComponentSettings.NearZeroValue;
 }
@@ -106,9 +105,9 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
 void VelocityForceComponent::postEnableDisableActions() {
     spdlog::debug("VelocityForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->velocityForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void VelocityForceComponent::postUpdateActions() {
@@ -116,7 +115,7 @@ void VelocityForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedVelocityForces->timestamp = _publisher->getTimestamp();
+    _appliedVelocityForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -180,11 +179,11 @@ void VelocityForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyVelocityForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedVelocityForces();
+        M1M3SSPublisher::get().logRejectedVelocityForces();
     }
-    _publisher->logAppliedVelocityForces();
+    M1M3SSPublisher::get().logAppliedVelocityForces();
 }
 
 } /* namespace SS */

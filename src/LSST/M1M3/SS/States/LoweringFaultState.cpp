@@ -32,8 +32,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringFaultState::LoweringFaultState(M1M3SSPublisher* publisher)
-        : FaultState(publisher, "LoweringFaultState") {}
+LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
 
 States::Type LoweringFaultState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("LoweringFaultState: update()");

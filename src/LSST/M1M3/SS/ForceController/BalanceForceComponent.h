@@ -25,22 +25,20 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_BALANCEFORCECOMPONENT_H_
 
 #include <ForceComponent.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <PIDSettings.h>
 #include <PID.h>
+#include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class SafetyController;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-class PIDSettings;
-
 class BalanceForceComponent : public ForceComponent {
 public:
-    BalanceForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+    BalanceForceComponent(SafetyController* safetyController,
                           ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                           ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
 
@@ -59,7 +57,6 @@ protected:
 private:
     PID* _idToPID(int id);
 
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;

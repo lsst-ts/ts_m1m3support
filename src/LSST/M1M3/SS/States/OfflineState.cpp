@@ -31,7 +31,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OfflineState::OfflineState(M1M3SSPublisher* publisher) : State(publisher, "OfflineState") {}
+OfflineState::OfflineState() : State("OfflineState") {}
 
 States::Type OfflineState::update(UpdateCommand* command, Model* model) {
     return rejectCommandInvalidState(command, "Update");

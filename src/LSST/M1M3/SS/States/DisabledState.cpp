@@ -45,7 +45,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisabledState::DisabledState(M1M3SSPublisher* publisher) : State(publisher, "DisabledState") {}
+DisabledState::DisabledState() : State("DisabledState") {}
 
 States::Type DisabledState::update(UpdateCommand* command, Model* model) {
     ModelPublisher publishIt(model);
@@ -74,7 +74,7 @@ States::Type DisabledState::update(UpdateCommand* command, Model* model) {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
-    model->getPublisher()->tryLogHardpointActuatorWarning();
+    M1M3SSPublisher::get().tryLogHardpointActuatorWarning();
     return model->getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -97,7 +97,7 @@ States::Type DisabledState::standby(StandbyCommand* command, Model* model) {
     model->getILC()->waitForAllSubnets(5000);
     model->getILC()->readAll();
     model->getILC()->verifyResponses();
-    model->getPublisher()->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
     model->getPowerController()->setBothPowerNetworks(false);
     return model->getSafetyController()->checkSafety(States::StandbyState);
 }
