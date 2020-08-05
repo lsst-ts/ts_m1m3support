@@ -37,7 +37,7 @@ namespace SS {
  */
 class ParkedState : public EnabledState {
 public:
-    ParkedState(M1M3SSPublisher* publisher);
+    ParkedState();
 
     virtual States::Type update(UpdateCommand* command, Model* model) override;
     virtual States::Type raiseM1M3(RaiseM1M3Command* command, Model* model) override;

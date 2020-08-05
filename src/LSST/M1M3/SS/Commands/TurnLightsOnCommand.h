@@ -34,8 +34,7 @@ namespace SS {
 
 class TurnLightsOnCommand : public Command {
 public:
-    TurnLightsOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                        MTM1M3_command_turnLightsOnC*);
+    TurnLightsOnCommand(Context* context, int32_t commandID, MTM1M3_command_turnLightsOnC*);
 
     void execute() override;
     void ackInProgress() override;
@@ -44,7 +43,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

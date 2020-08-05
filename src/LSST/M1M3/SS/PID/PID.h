@@ -32,8 +32,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-
 /**
  * Implements PID discrete time controller.
  *
@@ -52,7 +50,7 @@ public:
      * @param parameters PID parameters struct
      * @param publisher SAL interface
      */
-    PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher);
+    PID(int id, PIDParameters parameters);
 
     /**
      * Update PID parameters.
@@ -73,7 +71,6 @@ private:
 
     //* initial parameters passed in constructor
     PIDParameters _initialParameters;
-    M1M3SSPublisher* _publisher;
     MTM1M3_logevent_pidInfoC* _pidInfo;
     MTM1M3_pidDataC* _pidData;
 

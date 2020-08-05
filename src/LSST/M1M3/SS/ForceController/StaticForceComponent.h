@@ -25,6 +25,9 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_STATICFORCECOMPONENT_H_
 
 #include <ForceComponent.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 #include <vector>
 
@@ -32,14 +35,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class SafetyController;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-
 class StaticForceComponent : public ForceComponent {
 public:
-    StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+    StaticForceComponent(SafetyController* safetyController,
                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                          ForceActuatorSettings* forceActuatorSettings);
 
@@ -50,7 +48,6 @@ protected:
     void postUpdateActions();
 
 private:
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;

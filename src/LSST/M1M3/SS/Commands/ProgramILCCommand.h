@@ -34,8 +34,7 @@ namespace SS {
 
 class ProgramILCCommand : public Command {
 public:
-    ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                      MTM1M3_command_programILCC* data);
+    ProgramILCCommand(Context* context, int32_t commandID, MTM1M3_command_programILCC* data);
 
     MTM1M3_command_programILCC* getData() { return &_data; }
 
@@ -46,7 +45,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_programILCC _data;
 };
 

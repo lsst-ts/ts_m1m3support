@@ -59,8 +59,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveEngineeringState::ActiveEngineeringState(M1M3SSPublisher* publisher)
-        : EngineeringState(publisher, "ActiveEngineeringState") {}
+ActiveEngineeringState::ActiveEngineeringState() : EngineeringState("ActiveEngineeringState") {}
 
 States::Type ActiveEngineeringState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("ActiveEngineeringState: update()");
@@ -144,7 +143,7 @@ States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command
                 command->getData()->xTranslation, command->getData()->xTranslation,
                 command->getData()->zTranslation, command->getData()->xRotation,
                 command->getData()->yRotation, command->getData()->zRotation)) {
-        model->getPublisher()->logCommandRejectionWarning(
+        M1M3SSPublisher::get().logCommandRejectionWarning(
                 "TranslateM1M3",
                 "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
     }
@@ -157,7 +156,7 @@ States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command, 
                 command->getData()->xPosition, command->getData()->yPosition, command->getData()->zPosition,
                 command->getData()->xRotation, command->getData()->yRotation,
                 command->getData()->zRotation)) {
-        model->getPublisher()->logCommandRejectionWarning(
+        M1M3SSPublisher::get().logCommandRejectionWarning(
                 "PositionM1M3",
                 "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
     }

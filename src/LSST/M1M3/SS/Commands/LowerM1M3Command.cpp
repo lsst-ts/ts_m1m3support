@@ -22,30 +22,29 @@
  */
 
 #include <LowerM1M3Command.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LowerM1M3Command::LowerM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                   MTM1M3_command_lowerM1M3C*) {
+LowerM1M3Command::LowerM1M3Command(Context* context, int32_t commandID, MTM1M3_command_lowerM1M3C*) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
 }
 
 void LowerM1M3Command::execute() { _context->lowerM1M3(this); }
 
 void LowerM1M3Command::ackInProgress() {
-    _publisher->ackCommandlowerM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandlowerM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void LowerM1M3Command::ackComplete() {
-    _publisher->ackCommandlowerM1M3(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandlowerM1M3(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void LowerM1M3Command::ackFailed(std::string reason) {
-    _publisher->ackCommandlowerM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandlowerM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

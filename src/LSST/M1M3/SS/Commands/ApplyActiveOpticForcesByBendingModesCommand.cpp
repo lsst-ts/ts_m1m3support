@@ -22,16 +22,15 @@
  */
 
 #include <ApplyActiveOpticForcesByBendingModesCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 ApplyActiveOpticForcesByBendingModesCommand::ApplyActiveOpticForcesByBendingModesCommand(
-        Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-        MTM1M3_command_applyActiveOpticForcesByBendingModesC* data) {
+        Context* context, int32_t commandID, MTM1M3_command_applyActiveOpticForcesByBendingModesC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     for (int i = 0; i < BENDING_MODES; i++) {
         _data.coefficients[i] = data->coefficients[i];
@@ -43,17 +42,18 @@ void ApplyActiveOpticForcesByBendingModesCommand::execute() {
 }
 
 void ApplyActiveOpticForcesByBendingModesCommand::ackInProgress() {
-    _publisher->ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_INPROGRESS,
-                                                               "In-Progress");
+    M1M3SSPublisher::get().ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_INPROGRESS,
+                                                                          "In-Progress");
 }
 
 void ApplyActiveOpticForcesByBendingModesCommand::ackComplete() {
-    _publisher->ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_COMPLETE,
+                                                                          "Complete");
 }
 
 void ApplyActiveOpticForcesByBendingModesCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_FAILED,
-                                                               "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandapplyActiveOpticForcesByBendingModes(this->commandID, ACK_FAILED,
+                                                                          "Failed: " + reason);
 }
 
 } /* namespace SS */

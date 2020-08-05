@@ -22,31 +22,32 @@
  */
 
 #include <DisableHardpointCorrectionsCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(
-        Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-        MTM1M3_command_disableHardpointCorrectionsC*) {
+        Context* context, int32_t commandID, MTM1M3_command_disableHardpointCorrectionsC*) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
 }
 
 void DisableHardpointCorrectionsCommand::execute() { _context->disableHardpointCorrections(this); }
 
 void DisableHardpointCorrectionsCommand::ackInProgress() {
-    _publisher->ackCommanddisableHardpointCorrections(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(this->commandID, ACK_INPROGRESS,
+                                                                 "In-Progress");
 }
 
 void DisableHardpointCorrectionsCommand::ackComplete() {
-    _publisher->ackCommanddisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void DisableHardpointCorrectionsCommand::ackFailed(std::string reason) {
-    _publisher->ackCommanddisableHardpointCorrections(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(this->commandID, ACK_FAILED,
+                                                                 "Failed: " + reason);
 }
 
 } /* namespace SS */

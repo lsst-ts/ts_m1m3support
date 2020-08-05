@@ -34,8 +34,7 @@ namespace SS {
 
 class EnableHardpointChaseCommand : public Command {
 public:
-    EnableHardpointChaseCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                MTM1M3_command_enableHardpointChaseC*);
+    EnableHardpointChaseCommand(Context* context, int32_t commandID, MTM1M3_command_enableHardpointChaseC*);
 
     MTM1M3_command_enableHardpointChaseC* getData() { return &_data; }
 
@@ -47,7 +46,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_enableHardpointChaseC _data;
 };
 

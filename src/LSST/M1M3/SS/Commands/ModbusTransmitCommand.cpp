@@ -22,15 +22,15 @@
  */
 
 #include <ModbusTransmitCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ModbusTransmitCommand::ModbusTransmitCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
+ModbusTransmitCommand::ModbusTransmitCommand(Context* context, int32_t commandID,
                                              MTM1M3_command_modbusTransmitC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.actuatorId = data->actuatorId;
     _data.functionCode = data->functionCode;
@@ -43,15 +43,15 @@ ModbusTransmitCommand::ModbusTransmitCommand(Context* context, M1M3SSPublisher* 
 void ModbusTransmitCommand::execute() { _context->modbusTransmit(this); }
 
 void ModbusTransmitCommand::ackInProgress() {
-    _publisher->ackCommandmodbusTransmit(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandmodbusTransmit(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ModbusTransmitCommand::ackComplete() {
-    _publisher->ackCommandmodbusTransmit(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandmodbusTransmit(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void ModbusTransmitCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandmodbusTransmit(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandmodbusTransmit(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

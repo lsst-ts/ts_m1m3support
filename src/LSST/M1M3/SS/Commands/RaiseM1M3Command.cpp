@@ -22,15 +22,14 @@
  */
 
 #include <RaiseM1M3Command.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaiseM1M3Command::RaiseM1M3Command(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                   MTM1M3_command_raiseM1M3C* data) {
+RaiseM1M3Command::RaiseM1M3Command(Context* context, int32_t commandID, MTM1M3_command_raiseM1M3C* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.raiseM1M3 = data->raiseM1M3;
     _data.bypassReferencePosition = data->bypassReferencePosition;
@@ -38,7 +37,7 @@ RaiseM1M3Command::RaiseM1M3Command(Context* context, M1M3SSPublisher* publisher,
 
 bool RaiseM1M3Command::validate() {
     if (!_data.raiseM1M3) {
-        _publisher->logCommandRejectionWarning("RaiseM1M3", "The field RaiseM1M3 is not TRUE.");
+        M1M3SSPublisher::get().logCommandRejectionWarning("RaiseM1M3", "The field RaiseM1M3 is not TRUE.");
     }
     return _data.raiseM1M3;
 }
@@ -46,15 +45,15 @@ bool RaiseM1M3Command::validate() {
 void RaiseM1M3Command::execute() { _context->raiseM1M3(this); }
 
 void RaiseM1M3Command::ackInProgress() {
-    _publisher->ackCommandraiseM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandraiseM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void RaiseM1M3Command::ackComplete() {
-    _publisher->ackCommandraiseM1M3(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandraiseM1M3(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void RaiseM1M3Command::ackFailed(std::string reason) {
-    _publisher->ackCommandraiseM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandraiseM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

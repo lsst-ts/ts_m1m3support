@@ -34,8 +34,7 @@ namespace SS {
 
 class ClearOffsetForcesCommand : public Command {
 public:
-    ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                             MTM1M3_command_clearOffsetForcesC*);
+    ClearOffsetForcesCommand(Context* context, int32_t commandID, MTM1M3_command_clearOffsetForcesC*);
 
     void execute() override;
     void ackInProgress() override;
@@ -44,7 +43,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

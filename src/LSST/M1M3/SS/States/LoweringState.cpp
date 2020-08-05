@@ -23,7 +23,6 @@
 
 #include <LoweringState.h>
 #include <Model.h>
-#include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
 #include <ModelPublisher.h>
@@ -33,7 +32,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringState::LoweringState(M1M3SSPublisher* publisher) : EnabledState(publisher, "LoweringState") {}
+LoweringState::LoweringState() : EnabledState("LoweringState") {}
 
 States::Type LoweringState::update(UpdateCommand* command, Model* model) {
     ModelPublisher publishIt(model);

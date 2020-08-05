@@ -22,6 +22,7 @@
  */
 
 #include <StartCommand.h>
+#include <M1M3SSPublisher.h>
 
 #include <SAL_defines.h>
 
@@ -29,17 +30,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StartCommand::StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                           MTM1M3_command_startC* data) {
+StartCommand::StartCommand(Context* context, int32_t commandID, MTM1M3_command_startC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.settingsToApply = data->settingsToApply;
 }
 
 bool StartCommand::validate() {
     if (_data.settingsToApply.empty()) {
-        _publisher->logCommandRejectionWarning("StartCommand", "Command is missing settings argument!");
+        M1M3SSPublisher::get().logCommandRejectionWarning("StartCommand",
+                                                          "Command is missing settings argument!");
         return false;
     }
     return true;
@@ -48,13 +48,15 @@ bool StartCommand::validate() {
 void StartCommand::execute() { _context->start(this); }
 
 void StartCommand::ackInProgress() {
-    _publisher->ackCommandstart(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandstart(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
-void StartCommand::ackComplete() { _publisher->ackCommandstart(this->commandID, ACK_COMPLETE, "Complete"); }
+void StartCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandstart(this->commandID, ACK_COMPLETE, "Complete");
+}
 
 void StartCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandstart(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandstart(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -38,7 +38,6 @@
 #include <Inclinometer.h>
 #include <InclinometerSettings.h>
 #include <ILC.h>
-#include <M1M3SSPublisher.h>
 #include <PIDSettings.h>
 #include <PositionController.h>
 #include <PositionControllerSettings.h>
@@ -56,10 +55,9 @@ namespace SS {
 
 class Model {
 public:
-    Model(M1M3SSPublisher* publisher, DigitalInputOutput* digitalInputOutput);
+    Model(DigitalInputOutput* digitalInputOutput);
     virtual ~Model();
 
-    inline M1M3SSPublisher* getPublisher() { return _publisher; }
     inline Displacement* getDisplacement() { return _displacement; }
     inline Inclinometer* getInclinometer() { return _inclinometer; }
     inline ILC* getILC() { return _ilc; }
@@ -99,7 +97,6 @@ private:
     void _populateHardpointMonitorInfo(
             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
-    M1M3SSPublisher* _publisher;
     Displacement* _displacement;
     Inclinometer* _inclinometer;
     ILC* _ilc;

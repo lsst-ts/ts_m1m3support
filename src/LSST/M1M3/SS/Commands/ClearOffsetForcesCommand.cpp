@@ -22,30 +22,30 @@
  */
 
 #include <ClearOffsetForcesCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher,
-                                                   int32_t commandID, MTM1M3_command_clearOffsetForcesC*) {
+ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, int32_t commandID,
+                                                   MTM1M3_command_clearOffsetForcesC*) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
 }
 
 void ClearOffsetForcesCommand::execute() { _context->clearOffsetForces(this); }
 
 void ClearOffsetForcesCommand::ackInProgress() {
-    _publisher->ackCommandclearOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandclearOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ClearOffsetForcesCommand::ackComplete() {
-    _publisher->ackCommandclearOffsetForces(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandclearOffsetForces(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ClearOffsetForcesCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandclearOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandclearOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

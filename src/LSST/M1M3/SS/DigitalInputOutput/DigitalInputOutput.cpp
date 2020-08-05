@@ -38,19 +38,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DigitalInputOutput::DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings,
-                                       M1M3SSPublisher* publisher) {
+DigitalInputOutput::DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings) {
     spdlog::debug("DigitalInputOutput: DigitalInputOutput()");
     _interlockApplicationSettings = interlockApplicationSettings;
-    _publisher = publisher;
     _safetyController = 0;
 
-    _airSupplyStatus = _publisher->getEventAirSupplyStatus();
-    _airSupplyWarning = _publisher->getEventAirSupplyWarning();
-    _cellLightStatus = _publisher->getEventCellLightStatus();
-    _cellLightWarning = _publisher->getEventCellLightWarning();
-    _interlockStatus = _publisher->getEventInterlockStatus();
-    _interlockWarning = _publisher->getEventInterlockWarning();
+    M1M3SSPublisher publisher = M1M3SSPublisher::get();
+
+    _airSupplyStatus = publisher.getEventAirSupplyStatus();
+    _airSupplyWarning = publisher.getEventAirSupplyWarning();
+    _cellLightStatus = publisher.getEventCellLightStatus();
+    _cellLightWarning = publisher.getEventCellLightWarning();
+    _interlockStatus = publisher.getEventInterlockStatus();
+    _interlockWarning = publisher.getEventInterlockWarning();
 
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
@@ -155,18 +155,19 @@ void DigitalInputOutput::processData() {
         }
     }
     if (tryPublish) {
-        _publisher->tryLogAirSupplyStatus();
-        _publisher->tryLogAirSupplyWarning();
-        _publisher->tryLogCellLightStatus();
-        _publisher->tryLogCellLightWarning();
-        _publisher->tryLogInterlockStatus();
-        _publisher->tryLogInterlockWarning();
+        M1M3SSPublisher publisher = M1M3SSPublisher::get();
+        publisher.tryLogAirSupplyStatus();
+        publisher.tryLogAirSupplyWarning();
+        publisher.tryLogCellLightStatus();
+        publisher.tryLogCellLightWarning();
+        publisher.tryLogInterlockStatus();
+        publisher.tryLogInterlockWarning();
     }
 }
 
 void DigitalInputOutput::tryToggleHeartbeat() {
     spdlog::trace("DigitalInputOutput: tryToggleHeartbeat()");
-    double timestamp = _publisher->getTimestamp();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
     if (timestamp >= (_lastToggleTimestamp + _interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
         spdlog::debug("DigitalInputOutput: toggleHeartbeat()");
         _lastToggleTimestamp = timestamp;

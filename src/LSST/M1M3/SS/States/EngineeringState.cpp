@@ -44,8 +44,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EngineeringState::EngineeringState(M1M3SSPublisher* publisher, std::string name)
-        : EnabledState(publisher, name) {}
+EngineeringState::EngineeringState(std::string name) : EnabledState(name) {}
 
 States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command, Model* model) {
     spdlog::info("{}: turnAirOn()", this->name);
@@ -68,7 +67,7 @@ States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand* c
 States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model) {
     spdlog::info("{}: moveHardpointActuators()", this->name);
     if (!model->getPositionController()->move(command->getData()->steps)) {
-        model->getPublisher()->logCommandRejectionWarning(
+        M1M3SSPublisher::get().logCommandRejectionWarning(
                 "MoveHardpointActuators",
                 "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
     }
@@ -78,7 +77,7 @@ States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsComm
 States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) {
     spdlog::info("{}: enableHardpointChase()", this->name);
     if (!model->getPositionController()->enableChase(command->getData()->hardpointActuator)) {
-        model->getPublisher()->logCommandRejectionWarning(
+        M1M3SSPublisher::get().logCommandRejectionWarning(
                 "EnableHardpointChase",
                 "At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
     }

@@ -37,11 +37,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OuterLoopClockThread::OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller,
-                                           M1M3SSPublisher* publisher) {
+OuterLoopClockThread::OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller) {
     _commandFactory = commandFactory;
     _controller = controller;
-    _publisher = publisher;
     _keepRunning = true;
     pthread_mutex_init(&_updateMutex, NULL);
 }

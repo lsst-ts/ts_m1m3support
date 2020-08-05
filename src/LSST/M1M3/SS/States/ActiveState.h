@@ -37,7 +37,7 @@ namespace SS {
  */
 class ActiveState : public EnabledState {
 public:
-    ActiveState(M1M3SSPublisher* publisher);
+    ActiveState();
 
     virtual States::Type update(UpdateCommand* command, Model* model) override;
     virtual States::Type enterEngineering(EnterEngineeringCommand* command, Model* model) override;

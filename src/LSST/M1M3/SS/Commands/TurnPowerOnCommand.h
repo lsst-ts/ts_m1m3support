@@ -34,8 +34,7 @@ namespace SS {
 
 class TurnPowerOnCommand : public Command {
 public:
-    TurnPowerOnCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                       MTM1M3_command_turnPowerOnC* data);
+    TurnPowerOnCommand(Context* context, int32_t commandID, MTM1M3_command_turnPowerOnC* data);
 
     MTM1M3_command_turnPowerOnC* getData() { return &_data; }
 
@@ -47,7 +46,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_turnPowerOnC _data;
 };
 

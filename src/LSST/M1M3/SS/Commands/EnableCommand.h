@@ -39,7 +39,7 @@ namespace SS {
  */
 class EnableCommand : public Command {
 public:
-    EnableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID, MTM1M3_command_enableC*);
+    EnableCommand(Context* context, int32_t commandID, MTM1M3_command_enableC*);
 
     void execute();
     void ackInProgress();
@@ -48,7 +48,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

@@ -25,7 +25,9 @@
 #define DIGITALINPUTOUTPUT_H_
 
 #include <DataTypes.h>
+#include <InterlockApplicationSettings.h>
 #include <IFPGA.h>
+#include <SafetyController.h>
 
 struct MTM1M3_logevent_airSupplyStatusC;
 struct MTM1M3_logevent_airSupplyWarningC;
@@ -38,11 +40,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class InterlockApplicationSettings;
-struct SupportFPGAData;
-class M1M3SSPublisher;
-class SafetyController;
-
 /*!
  * The class used to process digital inputs and outputs.
  */
@@ -51,10 +48,8 @@ public:
     /*!
      * Instantiates the accelerometer.
      * @param[in] accelerometerSettings The accelerometer settings.
-     * @param[in] publisher The publisher.
      */
-    DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings,
-                       M1M3SSPublisher* publisher);
+    DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings);
 
     /*!
      * Sets the safety controller.
@@ -90,7 +85,6 @@ public:
 
 private:
     InterlockApplicationSettings* _interlockApplicationSettings;
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
 
     MTM1M3_logevent_airSupplyStatusC* _airSupplyStatus;

@@ -22,22 +22,22 @@
  */
 
 #include <ResetPIDCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ResetPIDCommand::ResetPIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                 MTM1M3_command_resetPIDC* data) {
+ResetPIDCommand::ResetPIDCommand(Context* context, int32_t commandID, MTM1M3_command_resetPIDC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.pid = data->pid;
 }
 
 bool ResetPIDCommand::validate() {
     if (_data.pid < 1 || _data.pid > 6) {
-        _publisher->logCommandRejectionWarning("ResetPID", "The field PID must be in range [1, 6].");
+        M1M3SSPublisher::get().logCommandRejectionWarning("ResetPID",
+                                                          "The field PID must be in range [1, 6].");
     }
     return _data.pid >= 1 && _data.pid <= 6;
 }
@@ -45,15 +45,15 @@ bool ResetPIDCommand::validate() {
 void ResetPIDCommand::execute() { _context->resetPID(this); }
 
 void ResetPIDCommand::ackInProgress() {
-    _publisher->ackCommandresetPID(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandresetPID(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ResetPIDCommand::ackComplete() {
-    _publisher->ackCommandresetPID(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandresetPID(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ResetPIDCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandresetPID(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandresetPID(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

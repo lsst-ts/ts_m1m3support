@@ -34,8 +34,7 @@ namespace SS {
 
 class StopHardpointMotionCommand : public Command {
 public:
-    StopHardpointMotionCommand(Context* context, M1M3SSPublisher* _publisher, int32_t commandID,
-                               MTM1M3_command_stopHardpointMotionC*);
+    StopHardpointMotionCommand(Context* context, int32_t commandID, MTM1M3_command_stopHardpointMotionC*);
 
     void execute() override;
     void ackInProgress() override;
@@ -44,7 +43,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

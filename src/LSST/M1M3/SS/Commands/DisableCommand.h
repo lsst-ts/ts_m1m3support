@@ -39,8 +39,7 @@ namespace SS {
  */
 class DisableCommand : public Command {
 public:
-    DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                   MTM1M3_command_disableC* data);
+    DisableCommand(Context* context, int32_t commandID, MTM1M3_command_disableC* data);
 
     void execute() override;
     void ackInProgress() override;
@@ -49,7 +48,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_disableC _data;
 };
 

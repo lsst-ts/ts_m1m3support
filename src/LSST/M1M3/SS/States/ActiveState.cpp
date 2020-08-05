@@ -33,7 +33,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveState::ActiveState(M1M3SSPublisher* publisher) : EnabledState(publisher, "ActiveState") {}
+ActiveState::ActiveState() : EnabledState("ActiveState") {}
 
 States::Type ActiveState::update(UpdateCommand* command, Model* model) {
     spdlog::trace("ActiveState: update()");

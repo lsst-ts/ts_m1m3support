@@ -36,19 +36,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OffsetForceComponent::OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                            ForceActuatorSettings* forceActuatorSettings) {
     this->name = "Offset";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedOffsetForces = _publisher->getEventAppliedOffsetForces();
-    _rejectedOffsetForces = _publisher->getEventRejectedOffsetForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
+    _rejectedOffsetForces = M1M3SSPublisher::get().getEventRejectedOffsetForces();
     this->maxRateOfChange = _forceActuatorSettings->OffsetComponentSettings.MaxRateOfChange;
     this->nearZeroValue = _forceActuatorSettings->OffsetComponentSettings.NearZeroValue;
 }
@@ -105,9 +104,9 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
 void OffsetForceComponent::postEnableDisableActions() {
     spdlog::debug("OffsetForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->offsetForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void OffsetForceComponent::postUpdateActions() {
@@ -115,7 +114,7 @@ void OffsetForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedOffsetForces->timestamp = _publisher->getTimestamp();
+    _appliedOffsetForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedOffsetForces->timestamp = _appliedOffsetForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -179,11 +178,11 @@ void OffsetForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyOffsetForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedOffsetForces();
+        M1M3SSPublisher::get().logRejectedOffsetForces();
     }
-    _publisher->logAppliedOffsetForces();
+    M1M3SSPublisher::get().logAppliedOffsetForces();
 }
 
 } /* namespace SS */

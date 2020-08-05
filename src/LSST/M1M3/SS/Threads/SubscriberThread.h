@@ -24,25 +24,22 @@
 #ifndef SUBSCRIBERTHREAD_H_
 #define SUBSCRIBERTHREAD_H_
 
+#include <Controller.h>
+#include <M1M3SSSubscriber.h>
+#include <Command.h>
+#include <CommandFactory.h>
 #include <IThread.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSSubscriber;
-class Controller;
-class M1M3SSPublisher;
-class Command;
-class CommandFactory;
-
 /*!
  * The _subscriber thread is responsible for accepting commands.
  */
 class SubscriberThread : public IThread {
 public:
-    SubscriberThread(M1M3SSSubscriber* subscriber, Controller* controller, M1M3SSPublisher* publisher,
-                     CommandFactory* commandFactory);
+    SubscriberThread(M1M3SSSubscriber* subscriber, Controller* controller, CommandFactory* commandFactory);
 
     void run();
     void stop();
@@ -50,9 +47,8 @@ public:
 private:
     void _enqueueCommandIfAvailable(Command* command);
 
-    M1M3SSSubscriber* _subscriber;
     Controller* _controller;
-    M1M3SSPublisher* _publisher;
+    M1M3SSSubscriber* _subscriber;
     CommandFactory* _commandFactory;
     bool _keepRunning;
 };

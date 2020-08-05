@@ -26,14 +26,12 @@
 
 #include <DataTypes.h>
 #include <CommandTypes.h>
+#include <Context.h>
+#include <Command.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-
-class M1M3SSPublisher;
-class Context;
-class Command;
 
 /*!
  * A command factory that creates dynamically allocated command objects.
@@ -44,10 +42,9 @@ class CommandFactory {
 public:
     /*!
      * Instantiates the command factory.
-     * @param[in] publisher The publisher that will be provided to the commands created by this factory.
      * @param[in] context The context that will be provided to the commands created by this factory.
      */
-    CommandFactory(M1M3SSPublisher* publisher, Context* context);
+    CommandFactory(Context* context);
 
     /*!
      * Creates a command.
@@ -65,7 +62,6 @@ public:
     void destroy(Command* command);
 
 private:
-    M1M3SSPublisher* _publisher;
     Context* _context;
 };
 

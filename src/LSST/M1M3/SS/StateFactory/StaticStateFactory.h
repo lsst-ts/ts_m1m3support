@@ -43,11 +43,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-
 class StaticStateFactory {
 public:
-    StaticStateFactory(M1M3SSPublisher* publisher);
+    StaticStateFactory();
 
     State* create(States::Type state);
 

@@ -34,8 +34,7 @@ namespace SS {
 
 class UpdatePIDCommand : public Command {
 public:
-    UpdatePIDCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                     MTM1M3_command_updatePIDC* data);
+    UpdatePIDCommand(Context* context, int32_t commandID, MTM1M3_command_updatePIDC* data);
 
     MTM1M3_command_updatePIDC* getData() { return &_data; }
 
@@ -47,7 +46,6 @@ public:
 
 private:
     Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_updatePIDC _data;
 };
 

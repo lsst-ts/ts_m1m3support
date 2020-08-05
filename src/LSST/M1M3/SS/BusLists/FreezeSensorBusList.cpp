@@ -24,6 +24,7 @@
 #include <FreezeSensorBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <M1M3SSPublisher.h>
 #include <RoundRobin.h>
 #include <spdlog/spdlog.h>
 
@@ -31,11 +32,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
-                                         MTM1M3_outerLoopDataC* outerLoopData)
+FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("FreezeSensorBusList: FreezeSensorBusList()");
-    _outerLoopData = outerLoopData;
+    _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
     _lvdtSampleClock = 0;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         _freezeSensorCommandIndex[subnetIndex] = -1;

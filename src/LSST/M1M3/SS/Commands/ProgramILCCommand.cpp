@@ -22,15 +22,14 @@
  */
 
 #include <ProgramILCCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                     MTM1M3_command_programILCC* data) {
+ProgramILCCommand::ProgramILCCommand(Context* context, int32_t commandID, MTM1M3_command_programILCC* data) {
     _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.actuatorId = data->actuatorId;
     _data.filePath = data->filePath;
@@ -39,15 +38,15 @@ ProgramILCCommand::ProgramILCCommand(Context* context, M1M3SSPublisher* publishe
 void ProgramILCCommand::execute() { _context->programILC(this); }
 
 void ProgramILCCommand::ackInProgress() {
-    _publisher->ackCommandprogramILC(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandprogramILC(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ProgramILCCommand::ackComplete() {
-    _publisher->ackCommandprogramILC(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandprogramILC(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void ProgramILCCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandprogramILC(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandprogramILC(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -37,19 +37,18 @@ namespace M1M3 {
 namespace SS {
 
 AccelerationForceComponent::AccelerationForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
     this->name = "Acceleration";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedAccelerationForces = _publisher->getEventAppliedAccelerationForces();
-    _rejectedAccelerationForces = _publisher->getEventRejectedAccelerationForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
+    _rejectedAccelerationForces = M1M3SSPublisher::get().getEventRejectedAccelerationForces();
     this->maxRateOfChange = _forceActuatorSettings->AccelerationComponentSettings.MaxRateOfChange;
     this->nearZeroValue = _forceActuatorSettings->AccelerationComponentSettings.NearZeroValue;
 }
@@ -110,9 +109,9 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
 void AccelerationForceComponent::postEnableDisableActions() {
     spdlog::debug("AccelerationForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->accelerationForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void AccelerationForceComponent::postUpdateActions() {
@@ -120,7 +119,7 @@ void AccelerationForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedAccelerationForces->timestamp = _publisher->getTimestamp();
+    _appliedAccelerationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAccelerationForces->timestamp = _appliedAccelerationForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -185,11 +184,11 @@ void AccelerationForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyAccelerationForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedAccelerationForces();
+        M1M3SSPublisher::get().logRejectedAccelerationForces();
     }
-    _publisher->logAppliedAccelerationForces();
+    M1M3SSPublisher::get().logAppliedAccelerationForces();
 }
 
 } /* namespace SS */

@@ -48,7 +48,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnabledState::EnabledState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) {}
+EnabledState::EnabledState(std::string name) : State(name) {}
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
     spdlog::trace("EnabledState: storeTMAAzimuthSample()");
@@ -65,8 +65,8 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* co
 States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
     // TODO: Remove, this is a test command that has been taken for toggling boost valve control
     MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
-            model->getPublisher()->getEventForceActuatorState();
-    MTM1M3_outerLoopDataC* outerLoop = model->getPublisher()->getOuterLoopData();
+            M1M3SSPublisher::get().getEventForceActuatorState();
+    MTM1M3_outerLoopDataC* outerLoop = M1M3SSPublisher::get().getOuterLoopData();
     spdlog::info("EnabledState: toggleBoostValve to {}", !forceActuatorState->slewFlag);
     forceActuatorState->slewFlag = !forceActuatorState->slewFlag;
     outerLoop->slewFlag = forceActuatorState->slewFlag;
@@ -102,7 +102,7 @@ void EnabledState::runLoop(Model* model) {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
-    model->getPublisher()->tryLogHardpointActuatorWarning();
+    M1M3SSPublisher::get().tryLogHardpointActuatorWarning();
 }
 
 void EnabledState::sendTelemetry(Model* model) {
