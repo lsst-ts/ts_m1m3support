@@ -52,6 +52,9 @@ public:
     State* create(States::Type state);
 
 private:
+    StaticStateFactory& operator=(const StaticStateFactory&) = delete;
+    StaticStateFactory(const StaticStateFactory&) = delete;
+
     OfflineState _offlineState;
     StandbyState _standbyState;
     DisabledState _disabledState;

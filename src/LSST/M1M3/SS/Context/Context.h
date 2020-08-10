@@ -139,6 +139,9 @@ public:
     void modbusTransmit(ModbusTransmitCommand* command);
 
 private:
+    Context& operator=(const Context&) = delete;
+    Context(const Context&) = delete;
+
     States::Type _currentState;
 
     void _updateCurrentStateIfRequired(States::Type potentialNewState);

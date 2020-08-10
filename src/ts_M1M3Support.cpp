@@ -11,7 +11,6 @@
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 #include <SettingReader.h>
-#include <StaticStateFactory.h>
 #include <SubscriberThread.h>
 
 #include <pthread.h>
@@ -126,8 +125,6 @@ void* runThread(void* data) {
 }
 
 void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL) {
-    spdlog::info("Main: Creating state factory");
-    StaticStateFactory stateFactory = StaticStateFactory();
     spdlog::info("Main: Creating subscriber");
     M1M3SSSubscriber::get().setSAL(m1m3SAL, mtMountSAL);
     spdlog::info("Main: Creating subscriber thread");

@@ -95,6 +95,9 @@ public:
     Command* tryGetSampleTMAElevation();
 
 private:
+    M1M3SSSubscriber& operator=(const M1M3SSSubscriber&) = delete;
+    M1M3SSSubscriber(const M1M3SSSubscriber&) = delete;
+
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
     std::shared_ptr<SAL_MTMount> _mtMountSAL;
 

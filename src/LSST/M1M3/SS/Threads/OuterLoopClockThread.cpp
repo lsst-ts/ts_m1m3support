@@ -46,7 +46,6 @@ OuterLoopClockThread::~OuterLoopClockThread() { pthread_mutex_destroy(&_updateMu
 
 void OuterLoopClockThread::run() {
     spdlog::info("OuterLoopClockThread: Start");
-    Controller controller = Controller::get();
     while (_keepRunning) {
         try {
             IFPGA::get().waitForOuterLoopClock(1000);
@@ -54,11 +53,11 @@ void OuterLoopClockThread::run() {
             spdlog::warn("OuterLoopClockThread: Failed to receive outer loop clock");
         }
 
-        controller.lock();
+        Controller::get().lock();
         if (_keepRunning) {
-            controller.enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
+            Controller::get().enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
         }
-        controller.unlock();
+        Controller::get().unlock();
         pthread_mutex_lock(&_updateMutex);
         pthread_mutex_unlock(&_updateMutex);
         IFPGA::get().ackOuterLoopClock();

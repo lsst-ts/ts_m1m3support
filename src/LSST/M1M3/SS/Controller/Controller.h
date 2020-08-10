@@ -59,6 +59,9 @@ public:
     void execute(Command* command);
 
 private:
+    Controller& operator=(const Controller&) = delete;
+    Controller(const Controller&) = delete;
+
     pthread_mutex_t _mutex;
     std::queue<Command*> _queue;
 };

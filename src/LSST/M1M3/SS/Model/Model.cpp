@@ -43,7 +43,6 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
-#include <InterlockApplicationSettings.h>
 #include <PowerController.h>
 #include <AutomaticOperationsController.h>
 #include <Gyro.h>
@@ -59,7 +58,6 @@ namespace SS {
 Model::Model() {
     spdlog::debug("Model: Model()");
     _safetyController = NULL;
-    _digitalInputOutput = NULL;
     _displacement = NULL;
     _inclinometer = NULL;
     _ilc = NULL;
@@ -79,7 +77,6 @@ Model::~Model() {
     pthread_mutex_destroy(&_mutex);
 
     delete _safetyController;
-    delete _digitalInputOutput;
     delete _displacement;
     delete _inclinometer;
     delete _ilc;
@@ -99,43 +96,42 @@ Model& Model::get() {
 void Model::loadSettings(std::string settingsToApply) {
     spdlog::info("Model: loadSettings({})", settingsToApply);
 
-    SettingReader& settingReader = SettingReader::get();
-    settingReader.configure(settingsToApply);
+    SettingReader::get().configure(settingsToApply);
 
     M1M3SSPublisher::get().getOuterLoopData()->slewFlag = false;
 
     spdlog::info("Model: Loading ILC application settings");
-    ILCApplicationSettings* ilcApplicationSettings = settingReader.loadILCApplicationSettings();
+    ILCApplicationSettings* ilcApplicationSettings = SettingReader::get().loadILCApplicationSettings();
     spdlog::info("Model: Loading force actuator application settings");
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-            settingReader.loadForceActuatorApplicationSettings();
+            SettingReader::get().loadForceActuatorApplicationSettings();
     spdlog::info("Model: Loading force actuator settings");
-    ForceActuatorSettings* forceActuatorSettings = settingReader.loadForceActuatorSettings();
+    ForceActuatorSettings* forceActuatorSettings = SettingReader::get().loadForceActuatorSettings();
     spdlog::info("Model: Loading hardpoint actuator application settings");
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
-            settingReader.loadHardpointActuatorApplicationSettings();
+            SettingReader::get().loadHardpointActuatorApplicationSettings();
     spdlog::info("Model: Loading hardpoint actuator settings");
-    HardpointActuatorSettings* hardpointActuatorSettings = settingReader.loadHardpointActuatorSettings();
+    HardpointActuatorSettings* hardpointActuatorSettings =
+            SettingReader::get().loadHardpointActuatorSettings();
     spdlog::info("Model: Loading safety controller settings");
-    SafetyControllerSettings* safetyControllerSettings = settingReader.loadSafetyControllerSettings();
+    SafetyControllerSettings* safetyControllerSettings = SettingReader::get().loadSafetyControllerSettings();
     spdlog::info("Model: Loading position controller settings");
-    PositionControllerSettings* positionControllerSettings = settingReader.loadPositionControllerSettings();
+    PositionControllerSettings* positionControllerSettings =
+            SettingReader::get().loadPositionControllerSettings();
     spdlog::info("Model: Loading accelerometer settings");
-    AccelerometerSettings* accelerometerSettings = settingReader.loadAccelerometerSettings();
-    spdlog::info("Main: Load interlock application settings");
-    InterlockApplicationSettings* interlockApplicationSettings =
-            SettingReader::get().loadInterlockApplicationSettings();
+    AccelerometerSettings* accelerometerSettings = SettingReader::get().loadAccelerometerSettings();
     spdlog::info("Model: Loading displacement settings");
-    DisplacementSensorSettings* displacementSensorSettings = settingReader.loadDisplacementSensorSettings();
+    DisplacementSensorSettings* displacementSensorSettings =
+            SettingReader::get().loadDisplacementSensorSettings();
     spdlog::info("Model: Loading hardpoint monitor application settings");
     HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
-            settingReader.loadHardpointMonitorApplicationSettings();
+            SettingReader::get().loadHardpointMonitorApplicationSettings();
     spdlog::info("Model: Loading gyro settings");
-    GyroSettings* gyroSettings = settingReader.loadGyroSettings();
+    GyroSettings* gyroSettings = SettingReader::get().loadGyroSettings();
     spdlog::info("Model: Loading PID settings");
-    PIDSettings* pidSettings = settingReader.loadPIDSettings();
+    PIDSettings* pidSettings = SettingReader::get().loadPIDSettings();
     spdlog::info("Model: Loading inclinometer settings");
-    InclinometerSettings* inclinometerSettings = settingReader.loadInclinometerSettings();
+    InclinometerSettings* inclinometerSettings = SettingReader::get().loadInclinometerSettings();
 
     _populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
@@ -145,10 +141,6 @@ void Model::loadSettings(std::string settingsToApply) {
     delete _safetyController;
     spdlog::info("Model: Creating safety controller");
     _safetyController = new SafetyController(safetyControllerSettings);
-
-    delete _digitalInputOutput;
-    spdlog::info("Model: Creating digital input output");
-    _digitalInputOutput = new DigitalInputOutput(interlockApplicationSettings);
 
     delete _displacement;
     spdlog::info("Model: Creating displacement");
@@ -176,7 +168,7 @@ void Model::loadSettings(std::string settingsToApply) {
                                            pidSettings, _safetyController);
 
     spdlog::info("Model: Updating digital input output");
-    _digitalInputOutput->setSafetyController(_safetyController);
+    _digitalInputOutput.setSafetyController(_safetyController);
 
     delete _accelerometer;
     spdlog::info("Model: Creating accelerometer");

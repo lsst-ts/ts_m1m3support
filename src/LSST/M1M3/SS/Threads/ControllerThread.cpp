@@ -37,13 +37,12 @@ ControllerThread::ControllerThread() { _keepRunning = true; }
 
 void ControllerThread::run() {
     spdlog::info("ControllerThread: Start");
-    Controller controller = Controller::get();
     while (_keepRunning) {
-        controller.lock();
-        Command* command = controller.dequeue();
-        controller.unlock();
+        Controller::get().lock();
+        Command* command = Controller::get().dequeue();
+        Controller::get().unlock();
         if (command) {
-            controller.execute(command);
+            Controller::get().execute(command);
         } else {
             std::this_thread::sleep_for(100us);
         }
