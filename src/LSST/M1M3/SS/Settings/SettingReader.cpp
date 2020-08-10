@@ -173,12 +173,6 @@ HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicat
     return &_hardpointMonitorApplicationSettings;
 }
 
-InterlockApplicationSettings* SettingReader::loadInterlockApplicationSettings() {
-    spdlog::debug("SettingReader: loadInterlockApplicationSettings()");
-    _interlockApplicationSettings.load(_getBasePath("InterlockApplicationSettings.xml").c_str());
-    return &_interlockApplicationSettings;
-}
-
 GyroSettings* SettingReader::loadGyroSettings() {
     spdlog::debug("SettingReader: loadGyroSettings()");
     _gyroSettings.load(_getSetPath("GyroSettings.xml").c_str());
