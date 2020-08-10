@@ -25,7 +25,6 @@
 #define DIGITALINPUTOUTPUT_H_
 
 #include <DataTypes.h>
-#include <InterlockApplicationSettings.h>
 #include <IFPGA.h>
 #include <SafetyController.h>
 
@@ -48,7 +47,7 @@ public:
     /*!
      * Instantiates the accelerometer.
      */
-    DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings);
+    DigitalInputOutput();
 
     /*!
      * Sets the safety controller.
@@ -83,7 +82,6 @@ public:
     void turnCellLightsOff();
 
 private:
-    InterlockApplicationSettings* _interlockApplicationSettings;
     SafetyController* _safetyController;
 
     MTM1M3_logevent_airSupplyStatusC* _airSupplyStatus;
