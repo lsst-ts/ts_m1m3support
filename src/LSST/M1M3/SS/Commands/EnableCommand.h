@@ -39,15 +39,12 @@ namespace SS {
  */
 class EnableCommand : public Command {
 public:
-    EnableCommand(Context* context, int32_t commandID, MTM1M3_command_enableC*);
+    EnableCommand(int32_t commandID, MTM1M3_command_enableC*);
 
     void execute();
     void ackInProgress();
     void ackComplete();
     void ackFailed(std::string reason);
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

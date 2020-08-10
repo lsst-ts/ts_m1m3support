@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <PositionM1M3Command.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PositionM1M3Command::PositionM1M3Command(Context* context, int32_t commandID,
-                                         MTM1M3_command_positionM1M3C* data) {
-    _context = context;
+PositionM1M3Command::PositionM1M3Command(int32_t commandID, MTM1M3_command_positionM1M3C* data) {
     this->commandID = commandID;
     _data.xPosition = data->xPosition;
     _data.yPosition = data->yPosition;
@@ -40,7 +39,7 @@ PositionM1M3Command::PositionM1M3Command(Context* context, int32_t commandID,
     _data.zRotation = data->zRotation;
 }
 
-void PositionM1M3Command::execute() { _context->positionM1M3(this); }
+void PositionM1M3Command::execute() { Context::get().positionM1M3(this); }
 
 void PositionM1M3Command::ackInProgress() {
     M1M3SSPublisher::get().ackCommandpositionM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");

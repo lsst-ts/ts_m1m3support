@@ -34,15 +34,12 @@ namespace SS {
 
 class TurnAirOffCommand : public Command {
 public:
-    TurnAirOffCommand(Context* context, int32_t commandID, MTM1M3_command_turnAirOffC*);
+    TurnAirOffCommand(int32_t commandID, MTM1M3_command_turnAirOffC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

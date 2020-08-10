@@ -22,19 +22,19 @@
  */
 
 #include <ClearAberrationForcesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearAberrationForcesCommand::ClearAberrationForcesCommand(Context* context, int32_t commandID,
+ClearAberrationForcesCommand::ClearAberrationForcesCommand(int32_t commandID,
                                                            MTM1M3_command_clearAberrationForcesC*) {
-    _context = context;
     this->commandID = commandID;
 }
 
-void ClearAberrationForcesCommand::execute() { _context->clearAberrationForces(this); }
+void ClearAberrationForcesCommand::execute() { Context::get().clearAberrationForces(this); }
 
 void ClearAberrationForcesCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandclearAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");

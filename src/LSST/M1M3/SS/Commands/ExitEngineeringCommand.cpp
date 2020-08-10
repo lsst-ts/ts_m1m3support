@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <ExitEngineeringCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,13 +29,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitEngineeringCommand::ExitEngineeringCommand(Context* context, int32_t commandID,
-                                               MTM1M3_command_exitEngineeringC*) {
-    _context = context;
+ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID, MTM1M3_command_exitEngineeringC*) {
     this->commandID = commandID;
 }
 
-void ExitEngineeringCommand::execute() { _context->exitEngineering(this); }
+void ExitEngineeringCommand::execute() { Context::get().exitEngineering(this); }
 
 void ExitEngineeringCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandexitEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");

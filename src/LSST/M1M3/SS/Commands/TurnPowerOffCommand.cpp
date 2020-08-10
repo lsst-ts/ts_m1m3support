@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TurnPowerOffCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnPowerOffCommand::TurnPowerOffCommand(Context* context, int32_t commandID,
-                                         MTM1M3_command_turnPowerOffC* data) {
-    _context = context;
+TurnPowerOffCommand::TurnPowerOffCommand(int32_t commandID, MTM1M3_command_turnPowerOffC* data) {
     this->commandID = commandID;
     _data.turnPowerNetworkAOff = data->turnPowerNetworkAOff;
     _data.turnPowerNetworkBOff = data->turnPowerNetworkBOff;
@@ -53,7 +52,7 @@ bool TurnPowerOffCommand::validate() {
            _data.turnAuxPowerNetworkCOff || _data.turnAuxPowerNetworkDOff;
 }
 
-void TurnPowerOffCommand::execute() { _context->turnPowerOff(this); }
+void TurnPowerOffCommand::execute() { Context::get().turnPowerOff(this); }
 
 void TurnPowerOffCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandturnPowerOff(this->commandID, ACK_INPROGRESS, "In-Progress");

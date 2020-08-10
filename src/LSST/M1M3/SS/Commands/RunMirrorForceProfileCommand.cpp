@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <RunMirrorForceProfileCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(Context* context, int32_t commandID,
+RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(int32_t commandID,
                                                            MTM1M3_command_runMirrorForceProfileC* data) {
-    _context = context;
     this->commandID = commandID;
     for (int i = 0; i < 1000; ++i) {
         _data.xForce[i] = data->xForce[i];
@@ -44,7 +44,7 @@ RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(Context* context, int
 
 bool RunMirrorForceProfileCommand::validate() { return true; }
 
-void RunMirrorForceProfileCommand::execute() { _context->runMirrorForceProfile(this); }
+void RunMirrorForceProfileCommand::execute() { Context::get().runMirrorForceProfile(this); }
 
 void RunMirrorForceProfileCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(this->commandID, ACK_INPROGRESS, "In-Progress");

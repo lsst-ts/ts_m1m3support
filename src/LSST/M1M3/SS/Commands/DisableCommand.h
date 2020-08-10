@@ -39,7 +39,7 @@ namespace SS {
  */
 class DisableCommand : public Command {
 public:
-    DisableCommand(Context* context, int32_t commandID, MTM1M3_command_disableC* data);
+    DisableCommand(int32_t commandID, MTM1M3_command_disableC* data);
 
     void execute() override;
     void ackInProgress() override;
@@ -47,7 +47,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_disableC _data;
 };
 

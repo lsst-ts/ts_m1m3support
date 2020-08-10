@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TurnPowerOnCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnPowerOnCommand::TurnPowerOnCommand(Context* context, int32_t commandID,
-                                       MTM1M3_command_turnPowerOnC* data) {
-    _context = context;
+TurnPowerOnCommand::TurnPowerOnCommand(int32_t commandID, MTM1M3_command_turnPowerOnC* data) {
     this->commandID = commandID;
     _data.turnPowerNetworkAOn = data->turnPowerNetworkAOn;
     _data.turnPowerNetworkBOn = data->turnPowerNetworkBOn;
@@ -53,7 +52,7 @@ bool TurnPowerOnCommand::validate() {
            _data.turnAuxPowerNetworkCOn || _data.turnAuxPowerNetworkDOn;
 }
 
-void TurnPowerOnCommand::execute() { _context->turnPowerOn(this); }
+void TurnPowerOnCommand::execute() { Context::get().turnPowerOn(this); }
 
 void TurnPowerOnCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandturnPowerOn(this->commandID, ACK_INPROGRESS, "In-Progress");

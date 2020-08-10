@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <EnableHardpointChaseCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnableHardpointChaseCommand::EnableHardpointChaseCommand(Context* context, int32_t commandID,
+EnableHardpointChaseCommand::EnableHardpointChaseCommand(int32_t commandID,
                                                          MTM1M3_command_enableHardpointChaseC* data) {
-    _context = context;
     this->commandID = commandID;
     _data.hardpointActuator = data->hardpointActuator;
 }
@@ -43,7 +43,7 @@ bool EnableHardpointChaseCommand::validate() {
     return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }
 
-void EnableHardpointChaseCommand::execute() { _context->enableHardpointChase(this); }
+void EnableHardpointChaseCommand::execute() { Context::get().enableHardpointChase(this); }
 
 void EnableHardpointChaseCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandenableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");

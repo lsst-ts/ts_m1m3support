@@ -30,20 +30,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class Controller;
-
 /*!
  * The controller thread is responsible for executing commands.
  */
 class ControllerThread : public IThread {
 public:
-    ControllerThread(Controller* controller);
+    ControllerThread();
 
     void run();
     void stop();
 
 private:
-    Controller* _controller;
     bool _keepRunning;
 };
 

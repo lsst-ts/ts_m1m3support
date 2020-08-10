@@ -22,22 +22,22 @@
  */
 
 #include <ApplyActiveOpticForcesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(Context* context, int32_t commandID,
+ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
                                                              MTM1M3_command_applyActiveOpticForcesC* data) {
-    _context = context;
     this->commandID = commandID;
     for (int i = 0; i < FA_COUNT; i++) {
         _data.zForces[i] = data->zForces[i];
     }
 }
 
-void ApplyActiveOpticForcesCommand::execute() { _context->applyActiveOpticForces(this); }
+void ApplyActiveOpticForcesCommand::execute() { Context::get().applyActiveOpticForces(this); }
 
 void ApplyActiveOpticForcesCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");

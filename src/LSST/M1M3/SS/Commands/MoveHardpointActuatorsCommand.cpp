@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(Context* context, int32_t commandID,
+MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(int32_t commandID,
                                                              MTM1M3_command_moveHardpointActuatorsC* data) {
-    _context = context;
     this->commandID = commandID;
     for (int i = 0; i < 6; i++) {
         _data.steps[i] = data->steps[i];
@@ -48,7 +48,7 @@ bool MoveHardpointActuatorsCommand::validate() {
            _data.steps[4] != 0 || _data.steps[5] != 0;
 }
 
-void MoveHardpointActuatorsCommand::execute() { _context->moveHardpointActuators(this); }
+void MoveHardpointActuatorsCommand::execute() { Context::get().moveHardpointActuators(this); }
 
 void MoveHardpointActuatorsCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandmoveHardpointActuators(this->commandID, ACK_INPROGRESS, "In-Progress");

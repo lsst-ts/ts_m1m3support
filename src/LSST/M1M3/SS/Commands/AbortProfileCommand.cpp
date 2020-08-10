@@ -22,18 +22,18 @@
  */
 
 #include <AbortProfileCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AbortProfileCommand::AbortProfileCommand(Context* context, int32_t commandID, MTM1M3_command_abortProfileC*) {
-    _context = context;
+AbortProfileCommand::AbortProfileCommand(int32_t commandID, MTM1M3_command_abortProfileC*) {
     this->commandID = commandID;
 }
 
-void AbortProfileCommand::execute() { _context->abortProfile(this); }
+void AbortProfileCommand::execute() { Context::get().abortProfile(this); }
 
 void AbortProfileCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandabortProfile(this->commandID, ACK_INPROGRESS, "In-Progress");

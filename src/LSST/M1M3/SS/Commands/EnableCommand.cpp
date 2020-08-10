@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <EnableCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,12 +29,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnableCommand::EnableCommand(Context* context, int32_t commandID, MTM1M3_command_enableC*) {
-    _context = context;
-    this->commandID = commandID;
-}
+EnableCommand::EnableCommand(int32_t commandID, MTM1M3_command_enableC*) { this->commandID = commandID; }
 
-void EnableCommand::execute() { _context->enable(this); }
+void EnableCommand::execute() { Context::get().enable(this); }
 
 void EnableCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandenable(this->commandID, ACK_INPROGRESS, "In-Progress");

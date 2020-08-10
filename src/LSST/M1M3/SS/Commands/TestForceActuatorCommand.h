@@ -34,7 +34,7 @@ namespace SS {
 
 class TestForceActuatorCommand : public Command {
 public:
-    TestForceActuatorCommand(Context* context, int32_t commandID, MTM1M3_command_testForceActuatorC* data);
+    TestForceActuatorCommand(int32_t commandID, MTM1M3_command_testForceActuatorC* data);
 
     bool validate() override;
     void execute() override;
@@ -43,7 +43,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_testForceActuatorC _data;
 };
 

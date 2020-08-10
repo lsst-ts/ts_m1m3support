@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TestForceActuatorCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestForceActuatorCommand::TestForceActuatorCommand(Context* context, int32_t commandID,
+TestForceActuatorCommand::TestForceActuatorCommand(int32_t commandID,
                                                    MTM1M3_command_testForceActuatorC* data) {
-    _context = context;
     this->commandID = commandID;
     _data.forceActuator = data->forceActuator;
 }
@@ -51,7 +51,7 @@ bool TestForceActuatorCommand::validate() {
            (_data.forceActuator >= 407 && _data.forceActuator <= 443);
 }
 
-void TestForceActuatorCommand::execute() { _context->testForceActuator(this); }
+void TestForceActuatorCommand::execute() { Context::get().testForceActuator(this); }
 
 void TestForceActuatorCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandtestForceActuator(this->commandID, ACK_INPROGRESS, "In-Progress");

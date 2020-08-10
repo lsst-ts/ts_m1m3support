@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TranslateM1M3Command.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TranslateM1M3Command::TranslateM1M3Command(Context* context, int32_t commandID,
-                                           MTM1M3_command_translateM1M3C* data) {
-    _context = context;
+TranslateM1M3Command::TranslateM1M3Command(int32_t commandID, MTM1M3_command_translateM1M3C* data) {
     this->commandID = commandID;
     _data.xTranslation = data->xTranslation;
     _data.yTranslation = data->yTranslation;
@@ -40,7 +39,7 @@ TranslateM1M3Command::TranslateM1M3Command(Context* context, int32_t commandID,
     _data.zRotation = data->zRotation;
 }
 
-void TranslateM1M3Command::execute() { _context->translateM1M3(this); }
+void TranslateM1M3Command::execute() { Context::get().translateM1M3(this); }
 
 void TranslateM1M3Command::ackInProgress() {
     M1M3SSPublisher::get().ackCommandtranslateM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");

@@ -34,7 +34,7 @@ namespace SS {
 
 class PositionM1M3Command : public Command {
 public:
-    PositionM1M3Command(Context* context, int32_t commandID, MTM1M3_command_positionM1M3C* data);
+    PositionM1M3Command(int32_t commandID, MTM1M3_command_positionM1M3C* data);
 
     MTM1M3_command_positionM1M3C* getData() { return &_data; }
 
@@ -44,7 +44,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_positionM1M3C _data;
 };
 

@@ -34,7 +34,7 @@ namespace SS {
 
 class ResetPIDCommand : public Command {
 public:
-    ResetPIDCommand(Context* context, int32_t commandID, MTM1M3_command_resetPIDC* data);
+    ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* data);
 
     MTM1M3_command_resetPIDC* getData() { return &_data; }
 
@@ -45,7 +45,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_resetPIDC _data;
 };
 

@@ -22,6 +22,7 @@
  */
 
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
@@ -29,8 +30,7 @@ namespace M1M3 {
 namespace SS {
 
 ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
-        Context* context, int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data) {
-    _context = context;
+        int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data) {
     this->commandID = commandID;
     _data.xForce = data->xForce;
     _data.yForce = data->yForce;
@@ -40,7 +40,7 @@ ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
     _data.zMoment = data->zMoment;
 }
 
-void ApplyOffsetForcesByMirrorForceCommand::execute() { _context->applyOffsetForcesByMirrorForce(this); }
+void ApplyOffsetForcesByMirrorForceCommand::execute() { Context::get().applyOffsetForcesByMirrorForce(this); }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(this->commandID, ACK_INPROGRESS,

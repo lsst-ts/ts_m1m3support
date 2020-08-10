@@ -25,7 +25,6 @@
 #define COMMAND_H_
 
 #include <string>
-#include <Context.h>
 #include <DataTypes.h>
 
 namespace LSST {

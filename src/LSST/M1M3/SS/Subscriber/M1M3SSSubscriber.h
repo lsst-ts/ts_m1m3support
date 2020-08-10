@@ -43,8 +43,11 @@ class Command;
  */
 class M1M3SSSubscriber {
 public:
-    M1M3SSSubscriber(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL,
-                     CommandFactory* commandFactory);
+    M1M3SSSubscriber();
+
+    static M1M3SSSubscriber& get();
+
+    void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL);
 
     Command* tryAcceptCommandStart();
     Command* tryAcceptCommandEnable();
@@ -94,7 +97,7 @@ public:
 private:
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
     std::shared_ptr<SAL_MTMount> _mtMountSAL;
-    CommandFactory* _commandFactory;
+
     MTM1M3_command_startC _startData;
     MTM1M3_command_enableC _enableData;
     MTM1M3_command_disableC _disableData;

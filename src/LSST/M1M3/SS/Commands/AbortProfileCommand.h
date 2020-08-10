@@ -34,15 +34,12 @@ namespace SS {
 
 class AbortProfileCommand : public Command {
 public:
-    AbortProfileCommand(Context* context, int32_t commandID, MTM1M3_command_abortProfileC*);
+    AbortProfileCommand(int32_t commandID, MTM1M3_command_abortProfileC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

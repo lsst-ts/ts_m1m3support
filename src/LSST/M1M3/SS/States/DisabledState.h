@@ -39,11 +39,11 @@ class DisabledState : public State {
 public:
     DisabledState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type enable(EnableCommand* command, Model* model) override;
-    virtual States::Type standby(StandbyCommand* command, Model* model) override;
-    virtual States::Type programILC(ProgramILCCommand* command, Model* model) override;
-    virtual States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type enable(EnableCommand* command) override;
+    virtual States::Type standby(StandbyCommand* command) override;
+    virtual States::Type programILC(ProgramILCCommand* command) override;
+    virtual States::Type modbusTransmit(ModbusTransmitCommand* command) override;
 };
 
 } /* namespace SS */

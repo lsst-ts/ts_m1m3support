@@ -34,16 +34,12 @@ namespace SS {
 
 class ClearActiveOpticForcesCommand : public Command {
 public:
-    ClearActiveOpticForcesCommand(Context* context, int32_t commandID,
-                                  MTM1M3_command_clearActiveOpticForcesC*);
+    ClearActiveOpticForcesCommand(int32_t commandID, MTM1M3_command_clearActiveOpticForcesC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

@@ -22,15 +22,15 @@
  */
 
 #include <ApplyOffsetForcesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(Context* context, int32_t commandID,
+ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(int32_t commandID,
                                                    MTM1M3_command_applyOffsetForcesC* data) {
-    _context = context;
     this->commandID = commandID;
     for (int i = 0; i < FA_COUNT; i++) {
         if (i < FA_X_COUNT) {
@@ -45,7 +45,7 @@ ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(Context* context, int32_t com
 
 bool ApplyOffsetForcesCommand::validate() { return true; }
 
-void ApplyOffsetForcesCommand::execute() { _context->applyOffsetForces(this); }
+void ApplyOffsetForcesCommand::execute() { Context::get().applyOffsetForces(this); }
 
 void ApplyOffsetForcesCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandapplyOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");

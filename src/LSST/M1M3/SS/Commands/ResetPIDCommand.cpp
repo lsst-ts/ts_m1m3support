@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <ResetPIDCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,8 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ResetPIDCommand::ResetPIDCommand(Context* context, int32_t commandID, MTM1M3_command_resetPIDC* data) {
-    _context = context;
+ResetPIDCommand::ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* data) {
     this->commandID = commandID;
     _data.pid = data->pid;
 }
@@ -42,7 +42,7 @@ bool ResetPIDCommand::validate() {
     return _data.pid >= 1 && _data.pid <= 6;
 }
 
-void ResetPIDCommand::execute() { _context->resetPID(this); }
+void ResetPIDCommand::execute() { Context::get().resetPID(this); }
 
 void ResetPIDCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandresetPID(this->commandID, ACK_INPROGRESS, "In-Progress");

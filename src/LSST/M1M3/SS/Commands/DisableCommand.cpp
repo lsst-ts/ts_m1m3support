@@ -22,18 +22,16 @@
  */
 
 #include <DisableCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableCommand::DisableCommand(Context* context, int32_t commandID, MTM1M3_command_disableC*) {
-    _context = context;
-    this->commandID = commandID;
-}
+DisableCommand::DisableCommand(int32_t commandID, MTM1M3_command_disableC*) { this->commandID = commandID; }
 
-void DisableCommand::execute() { _context->disable(this); }
+void DisableCommand::execute() { Context::get().disable(this); }
 
 void DisableCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommanddisable(this->commandID, ACK_INPROGRESS, "In-Progress");

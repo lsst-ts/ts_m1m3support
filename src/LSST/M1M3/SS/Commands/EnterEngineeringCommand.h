@@ -34,15 +34,12 @@ namespace SS {
 
 class EnterEngineeringCommand : public Command {
 public:
-    EnterEngineeringCommand(Context* context, int32_t commandID, MTM1M3_command_enterEngineeringC*);
+    EnterEngineeringCommand(int32_t commandID, MTM1M3_command_enterEngineeringC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <EnterEngineeringCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,13 +29,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnterEngineeringCommand::EnterEngineeringCommand(Context* context, int32_t commandID,
-                                                 MTM1M3_command_enterEngineeringC*) {
-    _context = context;
+EnterEngineeringCommand::EnterEngineeringCommand(int32_t commandID, MTM1M3_command_enterEngineeringC*) {
     this->commandID = commandID;
 }
 
-void EnterEngineeringCommand::execute() { _context->enterEngineering(this); }
+void EnterEngineeringCommand::execute() { Context::get().enterEngineering(this); }
 
 void EnterEngineeringCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandenterEngineering(this->commandID, ACK_INPROGRESS, "In-Progress");

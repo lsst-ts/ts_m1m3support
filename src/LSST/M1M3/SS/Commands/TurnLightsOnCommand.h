@@ -34,15 +34,12 @@ namespace SS {
 
 class TurnLightsOnCommand : public Command {
 public:
-    TurnLightsOnCommand(Context* context, int32_t commandID, MTM1M3_command_turnLightsOnC*);
+    TurnLightsOnCommand(int32_t commandID, MTM1M3_command_turnLightsOnC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

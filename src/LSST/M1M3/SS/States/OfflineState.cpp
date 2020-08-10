@@ -33,19 +33,19 @@ namespace SS {
 
 OfflineState::OfflineState() : State("OfflineState") {}
 
-States::Type OfflineState::update(UpdateCommand* command, Model* model) {
+States::Type OfflineState::update(UpdateCommand* command) {
     return rejectCommandInvalidState(command, "Update");
 }
 
-States::Type OfflineState::enterControl(EnterControlCommand* command, Model* model) {
+States::Type OfflineState::enterControl(EnterControlCommand* command) {
     spdlog::info("OfflineState: enterControl()");
-    model->publishRecommendedSettings();
-    // model->getDigitalInputOutput()->turnAirOff();
-    // model->getDigitalInputOutput()->turnCellLightsOff();
-    model->getDigitalInputOutput()->turnCellLightsOn();
-    model->getDigitalInputOutput()->turnAirOn();
+    Model::get().publishRecommendedSettings();
+    // Model::get().getDigitalInputOutput()->turnAirOff();
+    // Model::get().getDigitalInputOutput()->turnCellLightsOff();
+    Model::get().getDigitalInputOutput()->turnCellLightsOn();
+    Model::get().getDigitalInputOutput()->turnAirOn();
     // TODO: May need to change power controller to act like digital input output
-    // model->getPowerController()->setBothPowerNetworks(false);
+    // Model::get().getPowerController()->setBothPowerNetworks(false);
     return States::StandbyState;
 }
 

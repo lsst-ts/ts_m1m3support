@@ -22,7 +22,6 @@
  */
 
 #include <DigitalInputOutput.h>
-#include <InterlockApplicationSettings.h>
 #include <FPGAAddresses.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
@@ -168,7 +167,7 @@ void DigitalInputOutput::processData() {
 void DigitalInputOutput::tryToggleHeartbeat() {
     spdlog::trace("DigitalInputOutput: tryToggleHeartbeat()");
     double timestamp = M1M3SSPublisher::get().getTimestamp();
-    if (timestamp >= (_lastToggleTimestamp + _interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
+    if (timestamp >= (_lastToggleTimestamp + _interlockApplicationSettings->heartbeatPeriodInSeconds)) {
         spdlog::debug("DigitalInputOutput: toggleHeartbeat()");
         _lastToggleTimestamp = timestamp;
         _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;

@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <ExitControlCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,12 +29,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitControlCommand::ExitControlCommand(Context* context, int32_t commandID, MTM1M3_command_exitControlC*) {
-    _context = context;
+ExitControlCommand::ExitControlCommand(int32_t commandID, MTM1M3_command_exitControlC*) {
     this->commandID = commandID;
 }
 
-void ExitControlCommand::execute() { _context->exitControl(this); }
+void ExitControlCommand::execute() { Context::get().exitControl(this); }
 
 void ExitControlCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandexitControl(this->commandID, ACK_INPROGRESS, "In-Progress");

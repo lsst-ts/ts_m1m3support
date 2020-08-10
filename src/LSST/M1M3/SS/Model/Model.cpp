@@ -43,6 +43,7 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
+#include <InterlockApplicationSettings.h>
 #include <PowerController.h>
 #include <AutomaticOperationsController.h>
 #include <Gyro.h>
@@ -55,15 +56,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(DigitalInputOutput* digitalInputOutput) {
+Model::Model() {
     spdlog::debug("Model: Model()");
     _safetyController = NULL;
+    _digitalInputOutput = NULL;
     _displacement = NULL;
     _inclinometer = NULL;
     _ilc = NULL;
     _forceController = NULL;
     _positionController = NULL;
-    _digitalInputOutput = digitalInputOutput;
     _accelerometer = NULL;
     _powerController = NULL;
     _automaticOperationsController = NULL;
@@ -78,6 +79,7 @@ Model::~Model() {
     pthread_mutex_destroy(&_mutex);
 
     delete _safetyController;
+    delete _digitalInputOutput;
     delete _displacement;
     delete _inclinometer;
     delete _ilc;
@@ -87,6 +89,11 @@ Model::~Model() {
     delete _powerController;
     delete _automaticOperationsController;
     delete _gyro;
+}
+
+Model& Model::get() {
+    static Model model;
+    return model;
 }
 
 void Model::loadSettings(std::string settingsToApply) {
@@ -115,6 +122,9 @@ void Model::loadSettings(std::string settingsToApply) {
     PositionControllerSettings* positionControllerSettings = settingReader.loadPositionControllerSettings();
     spdlog::info("Model: Loading accelerometer settings");
     AccelerometerSettings* accelerometerSettings = settingReader.loadAccelerometerSettings();
+    spdlog::info("Main: Load interlock application settings");
+    InterlockApplicationSettings* interlockApplicationSettings =
+            SettingReader::get().loadInterlockApplicationSettings();
     spdlog::info("Model: Loading displacement settings");
     DisplacementSensorSettings* displacementSensorSettings = settingReader.loadDisplacementSensorSettings();
     spdlog::info("Model: Loading hardpoint monitor application settings");
@@ -135,6 +145,10 @@ void Model::loadSettings(std::string settingsToApply) {
     delete _safetyController;
     spdlog::info("Model: Creating safety controller");
     _safetyController = new SafetyController(safetyControllerSettings);
+
+    delete _digitalInputOutput;
+    spdlog::info("Model: Creating digital input output");
+    _digitalInputOutput = new DigitalInputOutput(interlockApplicationSettings);
 
     delete _displacement;
     spdlog::info("Model: Creating displacement");

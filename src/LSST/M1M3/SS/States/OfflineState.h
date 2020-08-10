@@ -39,8 +39,8 @@ class OfflineState : public State {
 public:
     OfflineState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type enterControl(EnterControlCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type enterControl(EnterControlCommand* command) override;
 };
 
 } /* namespace SS */

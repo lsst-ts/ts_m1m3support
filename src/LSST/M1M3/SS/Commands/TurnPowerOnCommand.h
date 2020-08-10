@@ -34,7 +34,7 @@ namespace SS {
 
 class TurnPowerOnCommand : public Command {
 public:
-    TurnPowerOnCommand(Context* context, int32_t commandID, MTM1M3_command_turnPowerOnC* data);
+    TurnPowerOnCommand(int32_t commandID, MTM1M3_command_turnPowerOnC* data);
 
     MTM1M3_command_turnPowerOnC* getData() { return &_data; }
 
@@ -45,7 +45,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_turnPowerOnC _data;
 };
 

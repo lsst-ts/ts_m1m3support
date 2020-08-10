@@ -50,19 +50,19 @@ namespace SS {
 
 EnabledState::EnabledState(std::string name) : State(name) {}
 
-States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) {
+States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     spdlog::trace("EnabledState: storeTMAAzimuthSample()");
-    model->getForceController()->updateAzimuthForces((float)command->getData()->Azimuth_Angle_Actual);
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::get().getForceController()->updateAzimuthForces((float)command->getData()->Azimuth_Angle_Actual);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) {
+States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command) {
     spdlog::trace("EnabledState: storeTMAElevationSample()");
-    model->getForceController()->updateTMAElevationData(command->getData());
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::get().getForceController()->updateTMAElevationData(command->getData());
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
+States::Type EnabledState::testAir(TestAirCommand* command) {
     // TODO: Remove, this is a test command that has been taken for toggling boost valve control
     MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
             M1M3SSPublisher::get().getEventForceActuatorState();
@@ -71,25 +71,25 @@ States::Type EnabledState::testAir(TestAirCommand* command, Model* model) {
     forceActuatorState->slewFlag = !forceActuatorState->slewFlag;
     outerLoop->slewFlag = forceActuatorState->slewFlag;
 
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-void EnabledState::runLoop(Model* model) {
+void EnabledState::runLoop() {
     spdlog::trace("EnabledState: runLoop()");
-    ILC* ilc = model->getILC();
-    model->getForceController()->updateAppliedForces();
-    model->getForceController()->processAppliedForces();
+    ILC* ilc = Model::get().getILC();
+    Model::get().getForceController()->updateAppliedForces();
+    Model::get().getForceController()->processAppliedForces();
     ilc->writeControlListBuffer();
     ilc->triggerModbus();
-    model->getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
     std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
-    model->getAccelerometer()->processData();
-    model->getDigitalInputOutput()->processData();
-    model->getDisplacement()->processData();
-    model->getGyro()->processData();
-    model->getInclinometer()->processData();
-    model->getPowerController()->processData();
+    Model::get().getAccelerometer()->processData();
+    Model::get().getDigitalInputOutput()->processData();
+    Model::get().getDisplacement()->processData();
+    Model::get().getGyro()->processData();
+    Model::get().getInclinometer()->processData();
+    Model::get().getPowerController()->processData();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     ilc->calculateHPPostion();
@@ -105,27 +105,27 @@ void EnabledState::runLoop(Model* model) {
     M1M3SSPublisher::get().tryLogHardpointActuatorWarning();
 }
 
-void EnabledState::sendTelemetry(Model* model) {
+void EnabledState::sendTelemetry() {
     ModelPublisher publishIt(Model);
-    runLoop(model);
+    runLoop();
 }
 
-bool EnabledState::raiseCompleted(Model* model) {
-    if (model->getAutomaticOperationsController()->checkRaiseOperationComplete()) {
-        model->getAutomaticOperationsController()->completeRaiseOperation();
+bool EnabledState::raiseCompleted() {
+    if (Model::get().getAutomaticOperationsController()->checkRaiseOperationComplete()) {
+        Model::get().getAutomaticOperationsController()->completeRaiseOperation();
         return true;
-    } else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
-        model->getAutomaticOperationsController()->timeoutRaiseOperation();
+    } else if (Model::get().getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
+        Model::get().getAutomaticOperationsController()->timeoutRaiseOperation();
     }
     return false;
 }
 
-bool EnabledState::lowerCompleted(Model* model) {
-    if (model->getAutomaticOperationsController()->checkLowerOperationComplete()) {
-        model->getAutomaticOperationsController()->completeLowerOperation();
+bool EnabledState::lowerCompleted() {
+    if (Model::get().getAutomaticOperationsController()->checkLowerOperationComplete()) {
+        Model::get().getAutomaticOperationsController()->completeLowerOperation();
         return true;
-    } else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
-        model->getAutomaticOperationsController()->timeoutLowerOperation();
+    } else if (Model::get().getAutomaticOperationsController()->checkLowerOperationTimeout()) {
+        Model::get().getAutomaticOperationsController()->timeoutLowerOperation();
     }
     return false;
 }

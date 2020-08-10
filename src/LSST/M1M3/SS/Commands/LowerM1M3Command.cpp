@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <LowerM1M3Command.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,12 +29,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LowerM1M3Command::LowerM1M3Command(Context* context, int32_t commandID, MTM1M3_command_lowerM1M3C*) {
-    _context = context;
+LowerM1M3Command::LowerM1M3Command(int32_t commandID, MTM1M3_command_lowerM1M3C*) {
     this->commandID = commandID;
 }
 
-void LowerM1M3Command::execute() { _context->lowerM1M3(this); }
+void LowerM1M3Command::execute() { Context::get().lowerM1M3(this); }
 
 void LowerM1M3Command::ackInProgress() {
     M1M3SSPublisher::get().ackCommandlowerM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
