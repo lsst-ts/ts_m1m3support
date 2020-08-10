@@ -364,6 +364,9 @@ public:
     void ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
 
 private:
+    M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;
+    M1M3SSPublisher(const M1M3SSPublisher&) = delete;
+
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
 
     MTM1M3_accelerometerDataC _accelerometerData;

@@ -37,52 +37,53 @@ SubscriberThread::SubscriberThread() { _keepRunning = true; }
 
 void SubscriberThread::run() {
     spdlog::info("SubscriberThread: Start");
-    M1M3SSSubscriber subscriber = M1M3SSSubscriber::get();
     while (_keepRunning) {
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandStart());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandEnable());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandDisable());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandStandby());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandExitControl());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTurnAirOn());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTurnAirOff());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandApplyOffsetForces());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandClearOffsetForces());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandRaiseM1M3());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandLowerM1M3());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandApplyAberrationForcesByBendingModes());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandApplyAberrationForces());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandClearAberrationForces());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandApplyActiveOpticForcesByBendingModes());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandApplyActiveOpticForces());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandClearActiveOpticForces());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandEnterEngineering());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandExitEngineering());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTestAir());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTestHardpoint());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTestForceActuator());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandMoveHardpointActuators());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandEnableHardpointChase());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandDisableHardpointChase());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandAbortRaiseM1M3());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTranslateM1M3());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandStopHardpointMotion());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandPositionM1M3());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTurnLightsOn());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTurnLightsOff());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTurnPowerOn());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandTurnPowerOff());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandEnableHardpointCorrections());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandDisableHardpointCorrections());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandRunMirrorForceProfile());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandAbortProfile());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandApplyOffsetForcesByMirrorForce());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandUpdatePID());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandResetPID());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandProgramILC());
-        _enqueueCommandIfAvailable(subscriber.tryAcceptCommandModbusTransmit());
-        _enqueueCommandIfAvailable(subscriber.tryGetSampleTMAAzimuth());
-        _enqueueCommandIfAvailable(subscriber.tryGetSampleTMAElevation());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandStart());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnable());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisable());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandStandby());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandExitControl());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnAirOn());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnAirOff());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyOffsetForces());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearOffsetForces());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandRaiseM1M3());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandLowerM1M3());
+        _enqueueCommandIfAvailable(
+                M1M3SSSubscriber::get().tryAcceptCommandApplyAberrationForcesByBendingModes());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyAberrationForces());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearAberrationForces());
+        _enqueueCommandIfAvailable(
+                M1M3SSSubscriber::get().tryAcceptCommandApplyActiveOpticForcesByBendingModes());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyActiveOpticForces());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearActiveOpticForces());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnterEngineering());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandExitEngineering());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTestAir());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTestHardpoint());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTestForceActuator());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandMoveHardpointActuators());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableHardpointChase());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisableHardpointChase());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandAbortRaiseM1M3());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTranslateM1M3());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandStopHardpointMotion());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandPositionM1M3());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnLightsOn());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnLightsOff());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnPowerOn());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnPowerOff());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableHardpointCorrections());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisableHardpointCorrections());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandRunMirrorForceProfile());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandAbortProfile());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyOffsetForcesByMirrorForce());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandUpdatePID());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandResetPID());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandProgramILC());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandModbusTransmit());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAAzimuth());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAElevation());
         std::this_thread::sleep_for(100us);
     }
     spdlog::info("SubscriberThread: Completed");
@@ -93,10 +94,9 @@ void SubscriberThread::stop() { _keepRunning = false; }
 void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
     if (command) {
         if (command->validate()) {
-            Controller controller = Controller::get();
-            controller.lock();
-            controller.enqueue(command);
-            controller.unlock();
+            Controller::get().lock();
+            Controller::get().enqueue(command);
+            Controller::get().unlock();
         } else {
             command->ackFailed("Validation");
             delete command;

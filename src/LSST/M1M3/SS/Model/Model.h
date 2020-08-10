@@ -60,7 +60,7 @@ public:
 
     static Model& get();
 
-    inline DigitalInputOutput* getDigitalInputOutput() { return _digitalInputOutput; }
+    inline DigitalInputOutput* getDigitalInputOutput() { return &_digitalInputOutput; }
     inline Displacement* getDisplacement() { return _displacement; }
     inline Inclinometer* getInclinometer() { return _inclinometer; }
     inline ILC* getILC() { return _ilc; }
@@ -90,6 +90,9 @@ public:
     void waitForExitControl();
 
 private:
+    Model& operator=(const Model&) = delete;
+    Model(const Model&) = delete;
+
     void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                     ForceActuatorSettings* forceActuatorSettings);
     void _populateHardpointActuatorInfo(
@@ -99,7 +102,7 @@ private:
     void _populateHardpointMonitorInfo(
             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
-    DigitalInputOutput* _digitalInputOutput;
+    DigitalInputOutput _digitalInputOutput;
     Displacement* _displacement;
     Inclinometer* _inclinometer;
     ILC* _ilc;

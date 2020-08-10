@@ -284,6 +284,10 @@ public:
 protected:
     SupportFPGAData supportFPGAData;
     HealthAndStatusFPGAData healthAndStatusFPGAData;
+
+private:
+    IFPGA& operator=(const IFPGA&) = delete;
+    IFPGA(const IFPGA&) = delete;
 };
 
 } /* namespace SS */
