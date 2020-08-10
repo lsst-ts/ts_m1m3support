@@ -32,7 +32,7 @@ namespace SS {
 
 class InterlockApplicationSettings {
 public:
-    double HeartbeatPeriodInSeconds;
+    double heartbeatPeriodInSeconds;
 
     void load(const std::string &filename);
 };

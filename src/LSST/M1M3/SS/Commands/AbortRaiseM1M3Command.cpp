@@ -22,19 +22,18 @@
  */
 
 #include <AbortRaiseM1M3Command.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AbortRaiseM1M3Command::AbortRaiseM1M3Command(Context* context, int32_t commandID,
-                                             MTM1M3_command_abortRaiseM1M3C*) {
-    _context = context;
+AbortRaiseM1M3Command::AbortRaiseM1M3Command(int32_t commandID, MTM1M3_command_abortRaiseM1M3C*) {
     this->commandID = commandID;
 }
 
-void AbortRaiseM1M3Command::execute() { _context->abortRaiseM1M3(this); }
+void AbortRaiseM1M3Command::execute() { Context::get().abortRaiseM1M3(this); }
 
 void AbortRaiseM1M3Command::ackInProgress() {
     M1M3SSPublisher::get().ackCommandabortRaiseM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");

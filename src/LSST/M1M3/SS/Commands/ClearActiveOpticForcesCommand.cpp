@@ -22,19 +22,19 @@
  */
 
 #include <ClearActiveOpticForcesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, int32_t commandID,
+ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(int32_t commandID,
                                                              MTM1M3_command_clearActiveOpticForcesC*) {
-    _context = context;
     this->commandID = commandID;
 }
 
-void ClearActiveOpticForcesCommand::execute() { _context->clearActiveOpticForces(this); }
+void ClearActiveOpticForcesCommand::execute() { Context::get().clearActiveOpticForces(this); }
 
 void ClearActiveOpticForcesCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandclearActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");

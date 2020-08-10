@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <EnableHardpointCorrectionsCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -29,12 +30,11 @@ namespace M1M3 {
 namespace SS {
 
 EnableHardpointCorrectionsCommand::EnableHardpointCorrectionsCommand(
-        Context* context, int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC*) {
-    _context = context;
+        int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC*) {
     this->commandID = commandID;
 }
 
-void EnableHardpointCorrectionsCommand::execute() { _context->enableHardpointCorrections(this); }
+void EnableHardpointCorrectionsCommand::execute() { Context::get().enableHardpointCorrections(this); }
 
 void EnableHardpointCorrectionsCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandenableHardpointCorrections(this->commandID, ACK_INPROGRESS,

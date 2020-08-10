@@ -33,19 +33,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ControllerThread::ControllerThread(Controller* controller) {
-    _controller = controller;
-    _keepRunning = true;
-}
+ControllerThread::ControllerThread() { _keepRunning = true; }
 
 void ControllerThread::run() {
     spdlog::info("ControllerThread: Start");
+    Controller controller = Controller::get();
     while (_keepRunning) {
-        _controller->lock();
-        Command* command = _controller->dequeue();
-        _controller->unlock();
+        controller.lock();
+        Command* command = controller.dequeue();
+        controller.unlock();
         if (command) {
-            _controller->execute(command);
+            controller.execute(command);
         } else {
             std::this_thread::sleep_for(100us);
         }

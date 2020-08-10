@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <StartCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -30,8 +31,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StartCommand::StartCommand(Context* context, int32_t commandID, MTM1M3_command_startC* data) {
-    _context = context;
+StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) {
     this->commandID = commandID;
     _data.settingsToApply = data->settingsToApply;
 }
@@ -45,7 +45,7 @@ bool StartCommand::validate() {
     return true;
 }
 
-void StartCommand::execute() { _context->start(this); }
+void StartCommand::execute() { Context::get().start(this); }
 
 void StartCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandstart(this->commandID, ACK_INPROGRESS, "In-Progress");

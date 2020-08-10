@@ -34,7 +34,7 @@ namespace SS {
 
 class ModbusTransmitCommand : public Command {
 public:
-    ModbusTransmitCommand(Context* context, int32_t commandID, MTM1M3_command_modbusTransmitC* data);
+    ModbusTransmitCommand(int32_t commandID, MTM1M3_command_modbusTransmitC* data);
 
     MTM1M3_command_modbusTransmitC* getData() { return &_data; }
 
@@ -44,7 +44,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_modbusTransmitC _data;
 };
 

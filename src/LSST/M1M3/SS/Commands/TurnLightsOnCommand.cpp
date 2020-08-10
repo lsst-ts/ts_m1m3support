@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TurnLightsOnCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,12 +29,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnLightsOnCommand::TurnLightsOnCommand(Context* context, int32_t commandID, MTM1M3_command_turnLightsOnC*) {
-    _context = context;
+TurnLightsOnCommand::TurnLightsOnCommand(int32_t commandID, MTM1M3_command_turnLightsOnC*) {
     this->commandID = commandID;
 }
 
-void TurnLightsOnCommand::execute() { _context->turnLightsOn(this); }
+void TurnLightsOnCommand::execute() { Context::get().turnLightsOn(this); }
 
 void TurnLightsOnCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandturnLightsOn(this->commandID, ACK_INPROGRESS, "In-Progress");

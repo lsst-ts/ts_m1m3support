@@ -22,22 +22,22 @@
  */
 
 #include <ApplyAberrationForcesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(Context* context, int32_t commandID,
+ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(int32_t commandID,
                                                            MTM1M3_command_applyAberrationForcesC* data) {
-    _context = context;
     this->commandID = commandID;
     for (int i = 0; i < FA_COUNT; i++) {
         _data.zForces[i] = data->zForces[i];
     }
 }
 
-void ApplyAberrationForcesCommand::execute() { _context->applyAberrationForces(this); }
+void ApplyAberrationForcesCommand::execute() { Context::get().applyAberrationForces(this); }
 
 void ApplyAberrationForcesCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandapplyAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");

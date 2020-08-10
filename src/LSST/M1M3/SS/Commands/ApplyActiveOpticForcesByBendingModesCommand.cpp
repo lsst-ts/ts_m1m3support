@@ -22,6 +22,7 @@
  */
 
 #include <ApplyActiveOpticForcesByBendingModesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
@@ -29,8 +30,7 @@ namespace M1M3 {
 namespace SS {
 
 ApplyActiveOpticForcesByBendingModesCommand::ApplyActiveOpticForcesByBendingModesCommand(
-        Context* context, int32_t commandID, MTM1M3_command_applyActiveOpticForcesByBendingModesC* data) {
-    _context = context;
+        int32_t commandID, MTM1M3_command_applyActiveOpticForcesByBendingModesC* data) {
     this->commandID = commandID;
     for (int i = 0; i < BENDING_MODES; i++) {
         _data.coefficients[i] = data->coefficients[i];
@@ -38,7 +38,7 @@ ApplyActiveOpticForcesByBendingModesCommand::ApplyActiveOpticForcesByBendingMode
 }
 
 void ApplyActiveOpticForcesByBendingModesCommand::execute() {
-    _context->applyActiveOpticForcesByBendingModes(this);
+    Context::get().applyActiveOpticForcesByBendingModes(this);
 }
 
 void ApplyActiveOpticForcesByBendingModesCommand::ackInProgress() {

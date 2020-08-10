@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <UpdatePIDCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,8 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-UpdatePIDCommand::UpdatePIDCommand(Context* context, int32_t commandID, MTM1M3_command_updatePIDC* data) {
-    _context = context;
+UpdatePIDCommand::UpdatePIDCommand(int32_t commandID, MTM1M3_command_updatePIDC* data) {
     this->commandID = commandID;
     _data.pid = data->pid;
     _data.timestep = data->timestep;
@@ -47,7 +47,7 @@ bool UpdatePIDCommand::validate() {
     return _data.pid >= 1 && _data.pid <= 6;
 }
 
-void UpdatePIDCommand::execute() { _context->updatePID(this); }
+void UpdatePIDCommand::execute() { Context::get().updatePID(this); }
 
 void UpdatePIDCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandupdatePID(this->commandID, ACK_INPROGRESS, "In-Progress");

@@ -24,8 +24,6 @@
 #ifndef OUTERLOOPCLOCKTHREAD_H_
 #define OUTERLOOPCLOCKTHREAD_H_
 
-#include <CommandFactory.h>
-#include <Controller.h>
 #include <IThread.h>
 #include <DataTypes.h>
 #include <pthread.h>
@@ -40,15 +38,13 @@ namespace SS {
  */
 class OuterLoopClockThread : public IThread {
 public:
-    OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller);
+    OuterLoopClockThread();
     ~OuterLoopClockThread();
 
     void run();
     void stop();
 
 private:
-    CommandFactory* _commandFactory;
-    Controller* _controller;
     uint16_t _timestampUpdateBuffer[5];
     bool _keepRunning;
     pthread_mutex_t _updateMutex;

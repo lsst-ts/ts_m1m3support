@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <StopHardpointMotionCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,13 +29,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StopHardpointMotionCommand::StopHardpointMotionCommand(Context* context, int32_t commandID,
+StopHardpointMotionCommand::StopHardpointMotionCommand(int32_t commandID,
                                                        MTM1M3_command_stopHardpointMotionC*) {
-    _context = context;
     this->commandID = commandID;
 }
 
-void StopHardpointMotionCommand::execute() { _context->stopHardpointMotion(this); }
+void StopHardpointMotionCommand::execute() { Context::get().stopHardpointMotion(this); }
 
 void StopHardpointMotionCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandstopHardpointMotion(this->commandID, ACK_INPROGRESS, "In-Progress");

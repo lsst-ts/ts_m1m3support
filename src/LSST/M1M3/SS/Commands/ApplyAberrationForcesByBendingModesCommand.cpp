@@ -22,6 +22,7 @@
  */
 
 #include <ApplyAberrationForcesByBendingModesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
@@ -29,8 +30,7 @@ namespace M1M3 {
 namespace SS {
 
 ApplyAberrationForcesByBendingModesCommand::ApplyAberrationForcesByBendingModesCommand(
-        Context* context, int32_t commandID, MTM1M3_command_applyAberrationForcesByBendingModesC* data) {
-    _context = context;
+        int32_t commandID, MTM1M3_command_applyAberrationForcesByBendingModesC* data) {
     this->commandID = commandID;
     for (int i = 0; i < BENDING_MODES; i++) {
         _data.coefficients[i] = data->coefficients[i];
@@ -38,7 +38,7 @@ ApplyAberrationForcesByBendingModesCommand::ApplyAberrationForcesByBendingModesC
 }
 
 void ApplyAberrationForcesByBendingModesCommand::execute() {
-    _context->applyAberrationForcesByBendingModes(this);
+    Context::get().applyAberrationForcesByBendingModes(this);
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackInProgress() {

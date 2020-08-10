@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <RaiseM1M3Command.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,8 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaiseM1M3Command::RaiseM1M3Command(Context* context, int32_t commandID, MTM1M3_command_raiseM1M3C* data) {
-    _context = context;
+RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data) {
     this->commandID = commandID;
     _data.raiseM1M3 = data->raiseM1M3;
     _data.bypassReferencePosition = data->bypassReferencePosition;
@@ -42,7 +42,7 @@ bool RaiseM1M3Command::validate() {
     return _data.raiseM1M3;
 }
 
-void RaiseM1M3Command::execute() { _context->raiseM1M3(this); }
+void RaiseM1M3Command::execute() { Context::get().raiseM1M3(this); }
 
 void RaiseM1M3Command::ackInProgress() {
     M1M3SSPublisher::get().ackCommandraiseM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");

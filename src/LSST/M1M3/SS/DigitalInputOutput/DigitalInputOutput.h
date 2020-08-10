@@ -47,7 +47,6 @@ class DigitalInputOutput {
 public:
     /*!
      * Instantiates the accelerometer.
-     * @param[in] accelerometerSettings The accelerometer settings.
      */
     DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings);
 

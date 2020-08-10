@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <ModbusTransmitCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,9 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ModbusTransmitCommand::ModbusTransmitCommand(Context* context, int32_t commandID,
-                                             MTM1M3_command_modbusTransmitC* data) {
-    _context = context;
+ModbusTransmitCommand::ModbusTransmitCommand(int32_t commandID, MTM1M3_command_modbusTransmitC* data) {
     this->commandID = commandID;
     _data.actuatorId = data->actuatorId;
     _data.functionCode = data->functionCode;
@@ -40,7 +39,7 @@ ModbusTransmitCommand::ModbusTransmitCommand(Context* context, int32_t commandID
     _data.dataLength = data->dataLength;
 }
 
-void ModbusTransmitCommand::execute() { _context->modbusTransmit(this); }
+void ModbusTransmitCommand::execute() { Context::get().modbusTransmit(this); }
 
 void ModbusTransmitCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandmodbusTransmit(this->commandID, ACK_INPROGRESS, "In-Progress");

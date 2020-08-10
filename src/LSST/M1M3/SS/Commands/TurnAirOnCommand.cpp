@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TurnAirOnCommand.h>
 #include <M1M3SSPublisher.h>
 
@@ -28,12 +29,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnAirOnCommand::TurnAirOnCommand(Context* context, int32_t commandID, MTM1M3_command_turnAirOnC*) {
-    _context = context;
+TurnAirOnCommand::TurnAirOnCommand(int32_t commandID, MTM1M3_command_turnAirOnC*) {
     this->commandID = commandID;
 }
 
-void TurnAirOnCommand::execute() { _context->turnAirOn(this); }
+void TurnAirOnCommand::execute() { Context::get().turnAirOn(this); }
 
 void TurnAirOnCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandturnAirOn(this->commandID, ACK_INPROGRESS, "In-Progress");

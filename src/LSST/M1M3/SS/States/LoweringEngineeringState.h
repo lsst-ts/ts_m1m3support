@@ -38,7 +38,7 @@ class LoweringEngineeringState : public EngineeringState {
 public:
     LoweringEngineeringState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
 };
 
 } /* namespace SS */

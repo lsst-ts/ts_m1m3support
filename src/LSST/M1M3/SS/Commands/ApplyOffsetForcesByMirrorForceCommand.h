@@ -34,7 +34,7 @@ namespace SS {
 
 class ApplyOffsetForcesByMirrorForceCommand : public Command {
 public:
-    ApplyOffsetForcesByMirrorForceCommand(Context* context, int32_t commandID,
+    ApplyOffsetForcesByMirrorForceCommand(int32_t commandID,
                                           MTM1M3_command_applyOffsetForcesByMirrorForceC* data);
 
     MTM1M3_command_applyOffsetForcesByMirrorForceC* getData() { return &_data; }
@@ -45,7 +45,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_applyOffsetForcesByMirrorForceC _data;
 };
 

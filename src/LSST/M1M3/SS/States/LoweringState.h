@@ -38,7 +38,7 @@ class LoweringState : public EnabledState {
 public:
     LoweringState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
 };
 
 } /* namespace SS */

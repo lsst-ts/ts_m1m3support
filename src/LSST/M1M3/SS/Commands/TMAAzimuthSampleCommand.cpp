@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <cstring>
 
@@ -28,13 +29,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(Context* context, MTMount_AzimuthC* data) {
-    _context = context;
+TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_AzimuthC* data) {
     this->commandID = -1;
     memcpy(&_data, data, sizeof(MTMount_AzimuthC));
 }
 
-void TMAAzimuthSampleCommand::execute() { _context->storeTMAAzimuthSample(this); }
+void TMAAzimuthSampleCommand::execute() { Context::get().storeTMAAzimuthSample(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

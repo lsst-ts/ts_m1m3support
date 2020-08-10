@@ -38,10 +38,10 @@ class ParkedEngineeringState : public EngineeringState {
 public:
     ParkedEngineeringState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command, Model* model) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command, Model* model) override;
-    virtual States::Type disable(DisableCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
+    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
+    virtual States::Type disable(DisableCommand* command) override;
 };
 
 } /* namespace SS */

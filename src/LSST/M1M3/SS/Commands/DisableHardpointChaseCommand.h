@@ -34,8 +34,7 @@ namespace SS {
 
 class DisableHardpointChaseCommand : public Command {
 public:
-    DisableHardpointChaseCommand(Context* context, int32_t commandID,
-                                 MTM1M3_command_disableHardpointChaseC* data);
+    DisableHardpointChaseCommand(int32_t commandID, MTM1M3_command_disableHardpointChaseC* data);
 
     MTM1M3_command_disableHardpointChaseC* getData() { return &_data; }
 
@@ -46,7 +45,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_disableHardpointChaseC _data;
 };
 

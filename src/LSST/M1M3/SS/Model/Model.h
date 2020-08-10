@@ -55,16 +55,18 @@ namespace SS {
 
 class Model {
 public:
-    Model(DigitalInputOutput* digitalInputOutput);
+    Model();
     virtual ~Model();
 
+    static Model& get();
+
+    inline DigitalInputOutput* getDigitalInputOutput() { return _digitalInputOutput; }
     inline Displacement* getDisplacement() { return _displacement; }
     inline Inclinometer* getInclinometer() { return _inclinometer; }
     inline ILC* getILC() { return _ilc; }
     inline ForceController* getForceController() { return _forceController; }
     inline SafetyController* getSafetyController() { return _safetyController; }
     inline PositionController* getPositionController() { return _positionController; }
-    inline DigitalInputOutput* getDigitalInputOutput() { return _digitalInputOutput; }
     inline Accelerometer* getAccelerometer() { return _accelerometer; }
     inline PowerController* getPowerController() { return _powerController; }
     inline AutomaticOperationsController* getAutomaticOperationsController() {
@@ -97,6 +99,7 @@ private:
     void _populateHardpointMonitorInfo(
             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
+    DigitalInputOutput* _digitalInputOutput;
     Displacement* _displacement;
     Inclinometer* _inclinometer;
     ILC* _ilc;
@@ -108,7 +111,6 @@ private:
     AutomaticOperationsController* _automaticOperationsController;
     Gyro* _gyro;
     ProfileController _profileController;
-    DigitalInputOutput* _digitalInputOutput;
 
     pthread_mutex_t _mutex;
 

@@ -34,13 +34,13 @@ namespace SS {
 
 LoweringEngineeringState::LoweringEngineeringState() : EngineeringState("LoweringEngineeringState") {}
 
-States::Type LoweringEngineeringState::update(UpdateCommand* command, Model* model) {
-    ModelPublisher publishIt(model);
+States::Type LoweringEngineeringState::update(UpdateCommand* command) {
+    ModelPublisher publishIt();
     spdlog::trace("LoweringEngineeringState: update()");
-    model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
-    runLoop(model);
-    return model->getSafetyController()->checkSafety(lowerCompleted(model) ? States::ParkedEngineeringState
-                                                                           : States::NoStateTransition);
+    Model::get().getAutomaticOperationsController()->tryDecrementSupportPercentage();
+    runLoop();
+    return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedEngineeringState
+                                                                            : States::NoStateTransition);
 }
 
 } /* namespace SS */

@@ -34,7 +34,7 @@ namespace SS {
 
 class TestHardpointCommand : public Command {
 public:
-    TestHardpointCommand(Context* context, int32_t commandID, MTM1M3_command_testHardpointC* data);
+    TestHardpointCommand(int32_t commandID, MTM1M3_command_testHardpointC* data);
 
     MTM1M3_command_testHardpointC* getData() { return &_data; }
 
@@ -45,7 +45,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_testHardpointC _data;
 };
 

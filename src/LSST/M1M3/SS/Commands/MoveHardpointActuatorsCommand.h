@@ -34,8 +34,7 @@ namespace SS {
 
 class MoveHardpointActuatorsCommand : public Command {
 public:
-    MoveHardpointActuatorsCommand(Context* context, int32_t commandID,
-                                  MTM1M3_command_moveHardpointActuatorsC* data);
+    MoveHardpointActuatorsCommand(int32_t commandID, MTM1M3_command_moveHardpointActuatorsC* data);
 
     MTM1M3_command_moveHardpointActuatorsC* getData() { return &_data; }
 
@@ -46,7 +45,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_moveHardpointActuatorsC _data;
 };
 

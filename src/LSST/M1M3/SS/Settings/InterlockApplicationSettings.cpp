@@ -33,7 +33,7 @@ void InterlockApplicationSettings::load(const std::string &filename) {
     pugi::xml_document doc;
     XMLDocLoad(filename.c_str(), doc);
 
-    this->HeartbeatPeriodInSeconds = boost::lexical_cast<double>(
+    heartbeatPeriodInSeconds = boost::lexical_cast<double>(
             doc.select_node("//InterlockApplicationSettings/HeartbeatPeriodInSeconds").node().child_value());
 }
 

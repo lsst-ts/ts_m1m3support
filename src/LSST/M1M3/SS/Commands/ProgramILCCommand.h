@@ -34,7 +34,7 @@ namespace SS {
 
 class ProgramILCCommand : public Command {
 public:
-    ProgramILCCommand(Context* context, int32_t commandID, MTM1M3_command_programILCC* data);
+    ProgramILCCommand(int32_t commandID, MTM1M3_command_programILCC* data);
 
     MTM1M3_command_programILCC* getData() { return &_data; }
 
@@ -44,7 +44,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_programILCC _data;
 };
 

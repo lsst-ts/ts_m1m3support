@@ -29,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher() { spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()"); }
+M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) { spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()"); }
 
 M1M3SSPublisher& M1M3SSPublisher::get() {
     static M1M3SSPublisher publisher;

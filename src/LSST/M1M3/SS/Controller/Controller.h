@@ -24,6 +24,8 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
+#include <Command.h>
+
 #include <queue>
 #include <pthread.h>
 
@@ -31,16 +33,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class Command;
-class CommandFactory;
-
-/*!
+/**
  * The main controller for the application.
  */
 class Controller {
 public:
-    Controller(CommandFactory* commandFactory);
+    Controller();
     ~Controller();
+
+    static Controller& get();
 
     void lock();
     void unlock();
@@ -49,10 +50,15 @@ public:
 
     void enqueue(Command* command);
     Command* dequeue();
+
+    /**
+     * Executes command. Command is deleted after it is executed.
+     *
+     * @param command command to execute
+     */
     void execute(Command* command);
 
 private:
-    CommandFactory* _commandFactory;
     pthread_mutex_t _mutex;
     std::queue<Command*> _queue;
 };

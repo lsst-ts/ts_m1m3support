@@ -47,6 +47,8 @@ class StaticStateFactory {
 public:
     StaticStateFactory();
 
+    static StaticStateFactory& get();
+
     State* create(States::Type state);
 
 private:

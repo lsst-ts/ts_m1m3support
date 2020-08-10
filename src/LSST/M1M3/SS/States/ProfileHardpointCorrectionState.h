@@ -36,8 +36,8 @@ class ProfileHardpointCorrectionState : public EnabledState {
 public:
     ProfileHardpointCorrectionState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type abortProfile(AbortProfileCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type abortProfile(AbortProfileCommand* command) override;
 };
 
 } /* namespace SS */

@@ -22,19 +22,18 @@
  */
 
 #include <ClearOffsetForcesCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearOffsetForcesCommand::ClearOffsetForcesCommand(Context* context, int32_t commandID,
-                                                   MTM1M3_command_clearOffsetForcesC*) {
-    _context = context;
+ClearOffsetForcesCommand::ClearOffsetForcesCommand(int32_t commandID, MTM1M3_command_clearOffsetForcesC*) {
     this->commandID = commandID;
 }
 
-void ClearOffsetForcesCommand::execute() { _context->clearOffsetForces(this); }
+void ClearOffsetForcesCommand::execute() { Context::get().clearOffsetForces(this); }
 
 void ClearOffsetForcesCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommandclearOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");

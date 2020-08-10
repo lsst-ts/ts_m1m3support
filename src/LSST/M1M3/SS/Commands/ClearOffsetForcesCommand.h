@@ -34,15 +34,12 @@ namespace SS {
 
 class ClearOffsetForcesCommand : public Command {
 public:
-    ClearOffsetForcesCommand(Context* context, int32_t commandID, MTM1M3_command_clearOffsetForcesC*);
+    ClearOffsetForcesCommand(int32_t commandID, MTM1M3_command_clearOffsetForcesC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

@@ -46,6 +46,11 @@ StaticStateFactory::StaticStateFactory()
     spdlog::debug("StaticStateFactory: StaticStateFactor()");
 }
 
+StaticStateFactory& StaticStateFactory::get() {
+    static StaticStateFactory stateFactory;
+    return stateFactory;
+}
+
 State* StaticStateFactory::create(States::Type state) {
     spdlog::trace("StaticStateFactory: create({:d})", state);
     switch (state) {

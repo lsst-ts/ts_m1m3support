@@ -34,8 +34,7 @@ namespace SS {
 
 class ApplyActiveOpticForcesCommand : public Command {
 public:
-    ApplyActiveOpticForcesCommand(Context* context, int32_t commandID,
-                                  MTM1M3_command_applyActiveOpticForcesC* data);
+    ApplyActiveOpticForcesCommand(int32_t commandID, MTM1M3_command_applyActiveOpticForcesC* data);
 
     MTM1M3_command_applyActiveOpticForcesC* getData() { return &_data; }
 
@@ -45,7 +44,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
     MTM1M3_command_applyActiveOpticForcesC _data;
 };
 
