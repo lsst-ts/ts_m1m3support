@@ -43,22 +43,20 @@
 #include <ThermalForceComponent.h>
 #include <VelocityForceComponent.h>
 #include <FinalForceComponent.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <SafetyController.h>
+#include <PIDSettings.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-class M1M3SSPublisher;
-class SafetyController;
-class PIDSettings;
-
 class ForceController {
 public:
     ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                     ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
-                    M1M3SSPublisher* publisher, SafetyController* safetyController);
+                    SafetyController* safetyController);
 
     void reset();
 
@@ -128,7 +126,6 @@ private:
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;
     PIDSettings* _pidSettings;
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
 
     AberrationForceComponent _aberrationForceComponent;

@@ -36,32 +36,31 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FinalForceComponent::FinalForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
                                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                          ForceActuatorSettings* forceActuatorSettings) {
     this->name = "Final";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedForces = _publisher->getEventAppliedForces();
-    _rejectedForces = _publisher->getEventRejectedForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+    _rejectedForces = M1M3SSPublisher::get().getEventRejectedForces();
     this->maxRateOfChange = _forceActuatorSettings->FinalComponentSettings.MaxRateOfChange;
     this->nearZeroValue = _forceActuatorSettings->FinalComponentSettings.NearZeroValue;
 
-    _appliedAberrationForces = _publisher->getEventAppliedAberrationForces();
-    _appliedAccelerationForces = _publisher->getEventAppliedAccelerationForces();
-    _appliedActiveOpticForces = _publisher->getEventAppliedActiveOpticForces();
-    _appliedAzimuthForces = _publisher->getEventAppliedAzimuthForces();
-    _appliedBalanceForces = _publisher->getEventAppliedBalanceForces();
-    _appliedElevationForces = _publisher->getEventAppliedElevationForces();
-    _appliedOffsetForces = _publisher->getEventAppliedOffsetForces();
-    _appliedStaticForces = _publisher->getEventAppliedStaticForces();
-    _appliedThermalForces = _publisher->getEventAppliedThermalForces();
-    _appliedVelocityForces = _publisher->getEventAppliedVelocityForces();
+    _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
+    _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
+    _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
+    _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
+    _appliedBalanceForces = M1M3SSPublisher::get().getEventAppliedBalanceForces();
+    _appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
+    _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
+    _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
+    _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
+    _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
 
     this->enable();
 }
@@ -121,7 +120,7 @@ void FinalForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedForces->timestamp = _publisher->getTimestamp();
+    _appliedForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedForces->timestamp = _appliedForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -183,11 +182,11 @@ void FinalForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedForces();
+        M1M3SSPublisher::get().logRejectedForces();
     }
-    _publisher->logAppliedForces();
+    M1M3SSPublisher::get().logAppliedForces();
 }
 
 } /* namespace SS */

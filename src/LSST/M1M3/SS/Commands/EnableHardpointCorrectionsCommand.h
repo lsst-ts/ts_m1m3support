@@ -34,17 +34,12 @@ namespace SS {
 
 class EnableHardpointCorrectionsCommand : public Command {
 public:
-    EnableHardpointCorrectionsCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                      MTM1M3_command_enableHardpointCorrectionsC*);
+    EnableHardpointCorrectionsCommand(int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

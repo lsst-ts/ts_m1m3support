@@ -46,51 +46,43 @@ namespace SS {
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                  ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
-                                 M1M3SSPublisher* publisher, SafetyController* safetyController)
-        : _aberrationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                 SafetyController* safetyController)
+        : _aberrationForceComponent(safetyController, forceActuatorApplicationSettings,
                                     forceActuatorSettings),
-          _accelerationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+          _accelerationForceComponent(safetyController, forceActuatorApplicationSettings,
                                       forceActuatorSettings),
-          _activeOpticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+          _activeOpticForceComponent(safetyController, forceActuatorApplicationSettings,
                                      forceActuatorSettings),
-          _azimuthForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                 forceActuatorSettings),
-          _balanceForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                 forceActuatorSettings, pidSettings),
-          _elevationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                   forceActuatorSettings),
-          _offsetForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                forceActuatorSettings),
-          _staticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                forceActuatorSettings),
-          _thermalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                 forceActuatorSettings),
-          _velocityForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                  forceActuatorSettings),
-          _finalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                               forceActuatorSettings) {
+          _azimuthForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _balanceForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings,
+                                 pidSettings),
+          _elevationForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _offsetForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _staticForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _thermalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _velocityForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _finalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings) {
     spdlog::debug("ForceController: ForceController()");
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _publisher = publisher;
     _safetyController = safetyController;
     _pidSettings = pidSettings;
 
-    _appliedCylinderForces = publisher->getEventAppliedCylinderForces();
-    _appliedForces = publisher->getEventAppliedForces();
-    _forceActuatorState = publisher->getEventForceActuatorState();
-    _forceSetpointWarning = publisher->getEventForceSetpointWarning();
-    _rejectedCylinderForces = publisher->getEventRejectedCylinderForces();
+    _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
+    _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _rejectedCylinderForces = M1M3SSPublisher::get().getEventRejectedCylinderForces();
 
-    _forceActuatorInfo = publisher->getEventForceActuatorInfo();
-    _inclinometerData = publisher->getInclinometerData();
-    _forceActuatorData = publisher->getForceActuatorData();
+    _forceActuatorInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
+    _inclinometerData = M1M3SSPublisher::get().getInclinometerData();
+    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
 
-    _pidData = publisher->getPIDData();
-    _pidInfo = publisher->getEventPIDInfo();
-    _hardpointActuatorData = publisher->getHardpointActuatorData();
-    _accelerometerData = publisher->getAccelerometerData();
-    _gyroData = publisher->getGyroData();
+    _pidData = M1M3SSPublisher::get().getPIDData();
+    _pidInfo = M1M3SSPublisher::get().getEventPIDInfo();
+    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
+    _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
+    _gyroData = M1M3SSPublisher::get().getGyroData();
 
     _elevation_Timestamp = 0;
     _elevation_Angle_Actual = NAN;
@@ -107,12 +99,12 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _velocityForceComponent.reset();
     _finalForceComponent.reset();
 
-    double timestamp = _publisher->getTimestamp();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->timestamp = timestamp;
     _forceSetpointWarning->timestamp = timestamp;
 
-    _publisher->logForceActuatorState();
-    _publisher->logForceSetpointWarning();
+    M1M3SSPublisher::get().logForceActuatorState();
+    M1M3SSPublisher::get().logForceSetpointWarning();
 
     _mirrorWeight = 0.0;
     float* zForces = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0).ZForces;
@@ -273,7 +265,7 @@ void ForceController::processAppliedForces() {
     _checkNearNeighbors();
     _checkMirrorWeight();
     _checkFarNeighbors();
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
 
 void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
@@ -551,13 +543,13 @@ void ForceController::_convertForcesToSetpoints() {
 
         rejectionRequired = rejectionRequired || _forceSetpointWarning->safetyLimitWarning[pIndex];
     }
-    _appliedCylinderForces->timestamp = _publisher->getTimestamp();
+    _appliedCylinderForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedCylinderForces->timestamp = _appliedCylinderForces->timestamp;
     _safetyController->forceControllerNotifySafetyLimit(rejectionRequired);
     if (rejectionRequired) {
-        _publisher->logRejectedCylinderForces();
+        M1M3SSPublisher::get().logRejectedCylinderForces();
     }
-    _publisher->logAppliedCylinderForces();
+    M1M3SSPublisher::get().logAppliedCylinderForces();
 }
 
 bool ForceController::_checkMirrorMoments() {

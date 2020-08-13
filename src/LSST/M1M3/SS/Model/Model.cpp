@@ -55,16 +55,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Model::Model(M1M3SSPublisher* publisher, DigitalInputOutput* digitalInputOutput) {
+Model::Model() {
     spdlog::debug("Model: Model()");
-    _publisher = publisher;
     _safetyController = NULL;
     _displacement = NULL;
     _inclinometer = NULL;
     _ilc = NULL;
     _forceController = NULL;
     _positionController = NULL;
-    _digitalInputOutput = digitalInputOutput;
     _accelerometer = NULL;
     _powerController = NULL;
     _automaticOperationsController = NULL;
@@ -90,43 +88,50 @@ Model::~Model() {
     delete _gyro;
 }
 
+Model& Model::get() {
+    static Model model;
+    return model;
+}
+
 void Model::loadSettings(std::string settingsToApply) {
     spdlog::info("Model: loadSettings({})", settingsToApply);
 
-    SettingReader& settingReader = SettingReader::get();
-    settingReader.configure(settingsToApply);
+    SettingReader::get().configure(settingsToApply);
 
-    _publisher->getOuterLoopData()->slewFlag = false;
+    M1M3SSPublisher::get().getOuterLoopData()->slewFlag = false;
 
     spdlog::info("Model: Loading ILC application settings");
-    ILCApplicationSettings* ilcApplicationSettings = settingReader.loadILCApplicationSettings();
+    ILCApplicationSettings* ilcApplicationSettings = SettingReader::get().loadILCApplicationSettings();
     spdlog::info("Model: Loading force actuator application settings");
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-            settingReader.loadForceActuatorApplicationSettings();
+            SettingReader::get().loadForceActuatorApplicationSettings();
     spdlog::info("Model: Loading force actuator settings");
-    ForceActuatorSettings* forceActuatorSettings = settingReader.loadForceActuatorSettings();
+    ForceActuatorSettings* forceActuatorSettings = SettingReader::get().loadForceActuatorSettings();
     spdlog::info("Model: Loading hardpoint actuator application settings");
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
-            settingReader.loadHardpointActuatorApplicationSettings();
+            SettingReader::get().loadHardpointActuatorApplicationSettings();
     spdlog::info("Model: Loading hardpoint actuator settings");
-    HardpointActuatorSettings* hardpointActuatorSettings = settingReader.loadHardpointActuatorSettings();
+    HardpointActuatorSettings* hardpointActuatorSettings =
+            SettingReader::get().loadHardpointActuatorSettings();
     spdlog::info("Model: Loading safety controller settings");
-    SafetyControllerSettings* safetyControllerSettings = settingReader.loadSafetyControllerSettings();
+    SafetyControllerSettings* safetyControllerSettings = SettingReader::get().loadSafetyControllerSettings();
     spdlog::info("Model: Loading position controller settings");
-    PositionControllerSettings* positionControllerSettings = settingReader.loadPositionControllerSettings();
+    PositionControllerSettings* positionControllerSettings =
+            SettingReader::get().loadPositionControllerSettings();
     spdlog::info("Model: Loading accelerometer settings");
-    AccelerometerSettings* accelerometerSettings = settingReader.loadAccelerometerSettings();
+    AccelerometerSettings* accelerometerSettings = SettingReader::get().loadAccelerometerSettings();
     spdlog::info("Model: Loading displacement settings");
-    DisplacementSensorSettings* displacementSensorSettings = settingReader.loadDisplacementSensorSettings();
+    DisplacementSensorSettings* displacementSensorSettings =
+            SettingReader::get().loadDisplacementSensorSettings();
     spdlog::info("Model: Loading hardpoint monitor application settings");
     HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
-            settingReader.loadHardpointMonitorApplicationSettings();
+            SettingReader::get().loadHardpointMonitorApplicationSettings();
     spdlog::info("Model: Loading gyro settings");
-    GyroSettings* gyroSettings = settingReader.loadGyroSettings();
+    GyroSettings* gyroSettings = SettingReader::get().loadGyroSettings();
     spdlog::info("Model: Loading PID settings");
-    PIDSettings* pidSettings = settingReader.loadPIDSettings();
+    PIDSettings* pidSettings = SettingReader::get().loadPIDSettings();
     spdlog::info("Model: Loading inclinometer settings");
-    InclinometerSettings* inclinometerSettings = settingReader.loadInclinometerSettings();
+    InclinometerSettings* inclinometerSettings = SettingReader::get().loadInclinometerSettings();
 
     _populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
@@ -135,53 +140,52 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _safetyController;
     spdlog::info("Model: Creating safety controller");
-    _safetyController = new SafetyController(_publisher, safetyControllerSettings);
+    _safetyController = new SafetyController(safetyControllerSettings);
 
     delete _displacement;
     spdlog::info("Model: Creating displacement");
     _displacement = new Displacement(displacementSensorSettings, IFPGA::get().getSupportFPGAData(),
-                                     _publisher, _safetyController);
+                                     _safetyController);
 
     delete _inclinometer;
     spdlog::info("Model: Creating inclinometer");
-    _inclinometer = new Inclinometer(IFPGA::get().getSupportFPGAData(), _publisher, _safetyController,
-                                     inclinometerSettings);
+    _inclinometer =
+            new Inclinometer(IFPGA::get().getSupportFPGAData(), _safetyController, inclinometerSettings);
 
     delete _positionController;
     spdlog::info("Model: Creating position controller");
-    _positionController =
-            new PositionController(positionControllerSettings, hardpointActuatorSettings, _publisher);
+    _positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings);
 
     delete _ilc;
     spdlog::info("Model: Creating ILC");
-    _ilc = new ILC(_publisher, _positionController, ilcApplicationSettings, forceActuatorApplicationSettings,
+    _ilc = new ILC(_positionController, ilcApplicationSettings, forceActuatorApplicationSettings,
                    forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings,
                    hardpointMonitorApplicationSettings, _safetyController);
 
     delete _forceController;
     spdlog::info("Model: Creating force controller");
     _forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings,
-                                           pidSettings, _publisher, _safetyController);
+                                           pidSettings, _safetyController);
 
     spdlog::info("Model: Updating digital input output");
-    _digitalInputOutput->setSafetyController(_safetyController);
+    _digitalInputOutput.setSafetyController(_safetyController);
 
     delete _accelerometer;
     spdlog::info("Model: Creating accelerometer");
-    _accelerometer = new Accelerometer(accelerometerSettings, _publisher);
+    _accelerometer = new Accelerometer(accelerometerSettings);
 
     delete _powerController;
     spdlog::info("Model: Creating power controller");
-    _powerController = new PowerController(_publisher, _safetyController);
+    _powerController = new PowerController(_safetyController);
 
     delete _automaticOperationsController;
     spdlog::info("Model: Creating automatic operations controller");
-    _automaticOperationsController = new AutomaticOperationsController(
-            _positionController, _forceController, _safetyController, _publisher, _powerController);
+    _automaticOperationsController = new AutomaticOperationsController(_positionController, _forceController,
+                                                                       _safetyController, _powerController);
 
     delete _gyro;
     spdlog::info("Model: Creating gyro");
-    _gyro = new Gyro(gyroSettings, _publisher);
+    _gyro = new Gyro(gyroSettings);
 
     spdlog::info("Model: Settings applied");
 }
@@ -191,34 +195,34 @@ void Model::queryFPGAData() {}
 void Model::publishStateChange(States::Type newState) {
     spdlog::debug("Model: publishStateChange({:d})", newState);
     uint64_t state = (uint64_t)newState;
-    double timestamp = _publisher->getTimestamp();
-    MTM1M3_logevent_summaryStateC* summaryStateData = _publisher->getEventSummaryState();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::get().getEventSummaryState();
     // summaryStateData->timestamp = timestamp;
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
-    _publisher->logSummaryState();
-    MTM1M3_logevent_detailedStateC* detailedStateData = _publisher->getEventDetailedState();
+    M1M3SSPublisher::get().logSummaryState();
+    MTM1M3_logevent_detailedStateC* detailedStateData = M1M3SSPublisher::get().getEventDetailedState();
     detailedStateData->timestamp = timestamp;
     detailedStateData->detailedState = (int32_t)(state & 0x00000000FFFFFFFF);
-    _publisher->logDetailedState();
+    M1M3SSPublisher::get().logDetailedState();
 }
 
 void Model::publishRecommendedSettings() {
     spdlog::debug("Model: publishRecommendedSettings()");
     RecommendedApplicationSettings* recommendedApplicationSettings =
             SettingReader::get().loadRecommendedApplicationSettings();
-    MTM1M3_logevent_settingVersionsC* data = _publisher->getEventSettingVersions();
+    MTM1M3_logevent_settingVersionsC* data = M1M3SSPublisher::get().getEventSettingVersions();
     data->recommendedSettingsVersion = "";
     for (uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
         data->recommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
     }
-    _publisher->logSettingVersions();
+    M1M3SSPublisher::get().logSettingVersions();
 }
 
 void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
     spdlog::trace("Model: publishOuterLoop()");
-    MTM1M3_outerLoopDataC* data = _publisher->getOuterLoopData();
+    MTM1M3_outerLoopDataC* data = M1M3SSPublisher::get().getOuterLoopData();
     data->executionTime = executionTime.count() / 1000000000.0;
-    _publisher->putOuterLoopData();
+    M1M3SSPublisher::get().putOuterLoopData();
 }
 
 void Model::exitControl() { pthread_mutex_unlock(&_mutex); }
@@ -231,7 +235,7 @@ void Model::waitForExitControl() {
 void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                        ForceActuatorSettings* forceActuatorSettings) {
     spdlog::debug("Model: populateForceActuatorInfo()");
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo = _publisher->getEventForceActuatorInfo();
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     for (int i = 0; i < FA_COUNT; i++) {
         ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
         forceInfo->referenceId[row.Index] = row.ActuatorID;
@@ -250,7 +254,8 @@ void Model::_populateHardpointActuatorInfo(
         HardpointActuatorSettings* hardpointActuatorSettings,
         PositionControllerSettings* positionControllerSettings) {
     spdlog::debug("Model: populateHardpointActuatorInfo()");
-    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo = _publisher->getEventHardpointActuatorInfo();
+    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
+            M1M3SSPublisher::get().getEventHardpointActuatorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
         hardpointInfo->referenceId[row.Index] = row.ActuatorID;
@@ -271,7 +276,8 @@ void Model::_populateHardpointActuatorInfo(
 void Model::_populateHardpointMonitorInfo(
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
     spdlog::debug("Model: populateHardpointMonitorInfo()");
-    MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo = _publisher->getEventHardpointMonitorInfo();
+    MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo =
+            M1M3SSPublisher::get().getEventHardpointMonitorInfo();
     for (int i = 0; i < HM_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
         hardpointMonitorInfo->referenceId[row.Index] = row.ActuatorID;

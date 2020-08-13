@@ -25,21 +25,19 @@
 #define PROFILEHARDPOINTCORRECTIONSTATE_H_
 
 #include <EnabledState.h>
+#include <UpdateCommand.h>
+#include <Model.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class UpdateCommand;
-class Model;
-
 class ProfileHardpointCorrectionState : public EnabledState {
 public:
-    ProfileHardpointCorrectionState(M1M3SSPublisher* publisher);
+    ProfileHardpointCorrectionState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type abortProfile(AbortProfileCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type abortProfile(AbortProfileCommand* command) override;
 };
 
 } /* namespace SS */

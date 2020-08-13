@@ -36,10 +36,10 @@ namespace SS {
  */
 class RaisingEngineeringState : public EngineeringState {
 public:
-    RaisingEngineeringState(M1M3SSPublisher* publisher);
+    RaisingEngineeringState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command) override;
 };
 
 } /* namespace SS */

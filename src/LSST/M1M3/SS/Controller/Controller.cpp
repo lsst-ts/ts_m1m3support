@@ -31,15 +31,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Controller::Controller(CommandFactory* commandFactory) {
+Controller::Controller() {
     spdlog::debug("Controller: Controller()");
-    _commandFactory = commandFactory;
     pthread_mutex_init(&_mutex, NULL);
 }
 
 Controller::~Controller() {
     this->clear();
     pthread_mutex_destroy(&_mutex);
+}
+
+Controller& Controller::get() {
+    static Controller controller;
+    return controller;
 }
 
 void Controller::lock() {
@@ -55,10 +59,9 @@ void Controller::unlock() {
 void Controller::clear() {
     spdlog::trace("Controller: clear()");
     this->lock();
-    Command* command;
     while (!_queue.empty()) {
-        command = this->dequeue();
-        _commandFactory->destroy(command);
+        Command* command = this->dequeue();
+        delete command;
     }
     this->unlock();
 }
@@ -89,7 +92,7 @@ void Controller::execute(Command* command) {
         command->ackFailed(e.what());
     }
 
-    _commandFactory->destroy(command);
+    delete command;
 }
 
 } /* namespace SS */

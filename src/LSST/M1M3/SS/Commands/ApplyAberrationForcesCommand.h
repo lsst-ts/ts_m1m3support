@@ -34,8 +34,7 @@ namespace SS {
 
 class ApplyAberrationForcesCommand : public Command {
 public:
-    ApplyAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                 MTM1M3_command_applyAberrationForcesC* data);
+    ApplyAberrationForcesCommand(int32_t commandID, MTM1M3_command_applyAberrationForcesC* data);
 
     MTM1M3_command_applyAberrationForcesC* getData() { return &_data; }
 
@@ -45,8 +44,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_applyAberrationForcesC _data;
 };
 

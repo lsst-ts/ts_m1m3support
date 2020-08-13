@@ -29,6 +29,7 @@
 #include <mutex>
 #include <queue>
 #include <ILCSubnetData.h>
+#include <ForceActuatorApplicationSettings.h>
 
 #include <SAL_MTMountC.h>
 #include "SAL_MTMount.h"
@@ -46,9 +47,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class ForceActuatorApplicationSettings;
-
 /**
  * FPGA simulator. Simulates MODBUS communication with devices.
  */
@@ -58,7 +56,6 @@ public:
 
     ~SimulatedFPGA();
 
-    void setPublisher(M1M3SSPublisher* publisher);
     void setForceActuatorApplicationSettings(
             ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
@@ -91,7 +88,6 @@ public:
     void readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) override;
 
 private:
-    M1M3SSPublisher* _publisher;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     std::thread _monitorMountElevationThread;
     std::mutex _elevationReadWriteLock;

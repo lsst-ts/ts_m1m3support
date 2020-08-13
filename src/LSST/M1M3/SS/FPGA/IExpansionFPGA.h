@@ -137,6 +137,10 @@ public:
 
 protected:
     ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;
+
+private:
+    IExpansionFPGA& operator=(const IExpansionFPGA&) = delete;
+    IExpansionFPGA(const IExpansionFPGA&) = delete;
 };
 
 } /* namespace SS */

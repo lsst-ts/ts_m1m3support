@@ -33,11 +33,7 @@ namespace SS {
 
 class SetBoostValveDCAGainBusList : public BusList {
 public:
-    SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
-                                MTM1M3_logevent_forceActuatorInfoC* forceInfo);
-
-private:
-    MTM1M3_logevent_forceActuatorInfoC* _forceInfo;
+    SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 
 } /* namespace SS */

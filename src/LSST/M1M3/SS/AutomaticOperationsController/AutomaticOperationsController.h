@@ -24,21 +24,19 @@
 #ifndef AUTOMATICOPERATIONSCONTROLLER_H_
 #define AUTOMATICOPERATIONSCONTROLLER_H_
 
+#include <PositionController.h>
+#include <ForceController.h>
+#include <SafetyController.h>
+#include <PowerController.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class PositionController;
-class ForceController;
-class SafetyController;
-class M1M3SSPublisher;
-class PowerController;
-
 class AutomaticOperationsController {
 public:
     AutomaticOperationsController(PositionController* positionController, ForceController* forceController,
-                                  SafetyController* safetyController, M1M3SSPublisher* publisher,
-                                  PowerController* powerController);
+                                  SafetyController* safetyController, PowerController* powerController);
 
     void startRaiseOperation(bool bypassMoveToReference);
     void tryIncrementingSupportPercentage();
@@ -62,7 +60,6 @@ private:
     PositionController* _positionController;
     ForceController* _forceController;
     SafetyController* _safetyController;
-    M1M3SSPublisher* _publisher;
     PowerController* _powerController;
     double _cachedTimestamp;
     bool _bypassMoveToReference;

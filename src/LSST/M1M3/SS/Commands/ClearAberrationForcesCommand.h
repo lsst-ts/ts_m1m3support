@@ -34,17 +34,12 @@ namespace SS {
 
 class ClearAberrationForcesCommand : public Command {
 public:
-    ClearAberrationForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                 MTM1M3_command_clearAberrationForcesC*);
+    ClearAberrationForcesCommand(int32_t commandID, MTM1M3_command_clearAberrationForcesC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

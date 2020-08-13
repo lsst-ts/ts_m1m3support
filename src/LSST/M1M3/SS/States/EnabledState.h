@@ -37,37 +37,37 @@ namespace SS {
  */
 class EnabledState : public State {
 public:
-    EnabledState(M1M3SSPublisher* publisher, std::string name);
+    EnabledState(std::string name);
 
-    virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model) override;
-    virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model) override;
-    virtual States::Type testAir(TestAirCommand* command, Model* model) override;
+    virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) override;
+    virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command) override;
+    virtual States::Type testAir(TestAirCommand* command) override;
 
 protected:
     /**
      * Actions to be performed during a loop in enabled sub-state. Calculate
      * forces, send updates, collects data needed for telemetry.
      */
-    void runLoop(Model* model);
+    void runLoop();
 
     /**
      * Collects and sends telemetry.
      */
-    void sendTelemetry(Model* model);
+    void sendTelemetry();
 
     /**
      * Query mirror raising completion.
      *
      * @return true if mirror is raised
      */
-    bool raiseCompleted(Model* model);
+    bool raiseCompleted();
 
     /**
      * Query mirror lowering completion.
      *
      * @return true if mirror is lowered
      */
-    bool lowerCompleted(Model* model);
+    bool lowerCompleted();
 };
 
 } /* namespace SS */

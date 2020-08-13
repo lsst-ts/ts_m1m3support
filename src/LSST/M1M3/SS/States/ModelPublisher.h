@@ -40,14 +40,10 @@ namespace SS {
  */
 class ModelPublisher {
 public:
-    ModelPublisher(Model *model) {
-        _model = model;
-        start = std::chrono::high_resolution_clock::now();
-    }
-    ~ModelPublisher() { _model->publishOuterLoop(std::chrono::high_resolution_clock::now() - start); }
+    ModelPublisher() { start = std::chrono::high_resolution_clock::now(); }
+    ~ModelPublisher() { Model::get().publishOuterLoop(std::chrono::high_resolution_clock::now() - start); }
 
 private:
-    Model *_model;
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
 };
 } /* namespace SS */

@@ -34,8 +34,7 @@ namespace SS {
 
 class RunMirrorForceProfileCommand : public Command {
 public:
-    RunMirrorForceProfileCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                 MTM1M3_command_runMirrorForceProfileC* data);
+    RunMirrorForceProfileCommand(int32_t commandID, MTM1M3_command_runMirrorForceProfileC* data);
 
     MTM1M3_command_runMirrorForceProfileC* getData() { return &_data; }
 
@@ -46,8 +45,6 @@ public:
     void ackFailed(std::string reason);
 
 private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_runMirrorForceProfileC _data;
 };
 

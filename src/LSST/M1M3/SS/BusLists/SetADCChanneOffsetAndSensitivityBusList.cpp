@@ -32,12 +32,9 @@ namespace M1M3 {
 namespace SS {
 
 SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(
-        ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
-        MTM1M3_logevent_forceActuatorInfoC* forceInfo, MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo)
+        ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("SetADCChanneOffsetAndSensitivityBusList: SetADCChanneOffsetAndSensitivityBusList()");
-    _forceInfo = forceInfo;
-    _hardpointInfo = hardpointInfo;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; ++subnetIndex) {
         startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < subnetData->getFACount(subnetIndex); ++faIndex) {

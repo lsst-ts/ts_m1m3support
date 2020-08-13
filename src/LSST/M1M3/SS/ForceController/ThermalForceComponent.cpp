@@ -37,19 +37,18 @@ namespace M1M3 {
 namespace SS {
 
 ThermalForceComponent::ThermalForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings) {
     name = "Thermal";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedThermalForces = _publisher->getEventAppliedThermalForces();
-    _rejectedThermalForces = _publisher->getEventRejectedThermalForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
+    _rejectedThermalForces = M1M3SSPublisher::get().getEventRejectedThermalForces();
     maxRateOfChange = _forceActuatorSettings->ThermalComponentSettings.MaxRateOfChange;
     nearZeroValue = _forceActuatorSettings->ThermalComponentSettings.NearZeroValue;
 }
@@ -102,9 +101,9 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
 void ThermalForceComponent::postEnableDisableActions() {
     spdlog::debug("ThermalForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->thermalForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void ThermalForceComponent::postUpdateActions() {
@@ -112,7 +111,7 @@ void ThermalForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedThermalForces->timestamp = _publisher->getTimestamp();
+    _appliedThermalForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedThermalForces->timestamp = _appliedThermalForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -176,11 +175,11 @@ void ThermalForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyThermalForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedThermalForces();
+        M1M3SSPublisher::get().logRejectedThermalForces();
     }
-    _publisher->logAppliedThermalForces();
+    M1M3SSPublisher::get().logAppliedThermalForces();
 }
 
 } /* namespace SS */

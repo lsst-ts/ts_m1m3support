@@ -21,18 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <EnterControlCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnterControlCommand::EnterControlCommand(Context* context) {
-    _context = context;
-    this->commandID = -1;
-}
+EnterControlCommand::EnterControlCommand() { this->commandID = -1; }
 
-void EnterControlCommand::execute() { _context->enterControl(this); }
+void EnterControlCommand::execute() { Context::get().enterControl(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

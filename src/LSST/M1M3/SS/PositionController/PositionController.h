@@ -25,20 +25,18 @@
 #define POSITIONCONTROLLER_H_
 
 #include <DataTypes.h>
+#include <HardpointActuatorSettings.h>
+#include <PositionControllerSettings.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class PositionControllerSettings;
-class HardpointActuatorSettings;
-class M1M3SSPublisher;
-
 class PositionController {
 public:
     PositionController(PositionControllerSettings* positionControllerSettings,
-                       HardpointActuatorSettings* hardpointActuatorSettings, M1M3SSPublisher* publisher);
+                       HardpointActuatorSettings* hardpointActuatorSettings);
 
     double getRaiseLowerTimeout();
 
@@ -64,7 +62,6 @@ private:
 
     PositionControllerSettings* _positionControllerSettings;
     HardpointActuatorSettings* _hardpointActuatorSettings;
-    M1M3SSPublisher* _publisher;
 
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;

@@ -38,26 +38,25 @@ namespace M1M3 {
 namespace SS {
 
 BalanceForceComponent::BalanceForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
-        : _fx(0, pidSettings->Fx, publisher),
-          _fy(1, pidSettings->Fy, publisher),
-          _fz(2, pidSettings->Fz, publisher),
-          _mx(3, pidSettings->Mx, publisher),
-          _my(4, pidSettings->My, publisher),
-          _mz(5, pidSettings->Mz, publisher) {
+        : _fx(0, pidSettings->Fx),
+          _fy(1, pidSettings->Fy),
+          _fz(2, pidSettings->Fz),
+          _mx(3, pidSettings->Mx),
+          _my(4, pidSettings->My),
+          _mz(5, pidSettings->Mz) {
     name = "Balance";
 
-    _publisher = publisher;
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _pidSettings = pidSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedBalanceForces = _publisher->getEventAppliedBalanceForces();
-    _rejectedBalanceForces = _publisher->getEventRejectedBalanceForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedBalanceForces = M1M3SSPublisher::get().getEventAppliedBalanceForces();
+    _rejectedBalanceForces = M1M3SSPublisher::get().getEventRejectedBalanceForces();
     maxRateOfChange = _forceActuatorSettings->BalanceComponentSettings.MaxRateOfChange;
     nearZeroValue = _forceActuatorSettings->BalanceComponentSettings.NearZeroValue;
 }
@@ -152,9 +151,9 @@ void BalanceForceComponent::postEnableDisableActions() {
         resetPIDs();
     }
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->balanceForcesApplied = enabled;
-    _publisher->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void BalanceForceComponent::postUpdateActions() {
@@ -162,7 +161,7 @@ void BalanceForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    _appliedBalanceForces->timestamp = _publisher->getTimestamp();
+    _appliedBalanceForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedBalanceForces->timestamp = _appliedBalanceForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -226,11 +225,11 @@ void BalanceForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyBalanceForceClipping(rejectionRequired);
 
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (rejectionRequired) {
-        _publisher->logRejectedBalanceForces();
+        M1M3SSPublisher::get().logRejectedBalanceForces();
     }
-    _publisher->logAppliedBalanceForces();
+    M1M3SSPublisher::get().logAppliedBalanceForces();
 }
 
 PID* BalanceForceComponent::_idToPID(int id) {

@@ -38,13 +38,12 @@ namespace SS {
  */
 class UpdateCommand : public Command {
 public:
-    UpdateCommand(Context* context, pthread_mutex_t* updateMutext);
+    UpdateCommand(pthread_mutex_t* updateMutext);
     ~UpdateCommand();
 
     void execute() override;
 
 private:
-    Context* _context;
     pthread_mutex_t* _updateMutex;
 };
 

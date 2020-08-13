@@ -37,11 +37,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OuterLoopClockThread::OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller,
-                                           M1M3SSPublisher* publisher) {
-    _commandFactory = commandFactory;
-    _controller = controller;
-    _publisher = publisher;
+OuterLoopClockThread::OuterLoopClockThread() {
     _keepRunning = true;
     pthread_mutex_init(&_updateMutex, NULL);
 }
@@ -57,11 +53,11 @@ void OuterLoopClockThread::run() {
             spdlog::warn("OuterLoopClockThread: Failed to receive outer loop clock");
         }
 
-        _controller->lock();
+        Controller::get().lock();
         if (_keepRunning) {
-            _controller->enqueue(_commandFactory->create(Commands::UpdateCommand, &_updateMutex));
+            Controller::get().enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
         }
-        _controller->unlock();
+        Controller::get().unlock();
         pthread_mutex_lock(&_updateMutex);
         pthread_mutex_unlock(&_updateMutex);
         IFPGA::get().ackOuterLoopClock();

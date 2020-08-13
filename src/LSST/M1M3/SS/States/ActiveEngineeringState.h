@@ -37,30 +37,26 @@ namespace SS {
  */
 class ActiveEngineeringState : public EngineeringState {
 public:
-    ActiveEngineeringState(M1M3SSPublisher* publisher);
+    ActiveEngineeringState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type lowerM1M3(LowerM1M3Command* command, Model* model) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type lowerM1M3(LowerM1M3Command* command) override;
+    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
     virtual States::Type applyAberrationForcesByBendingModes(
-            ApplyAberrationForcesByBendingModesCommand* command, Model* model) override;
-    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command, Model* model) override;
-    virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command, Model* model) override;
+            ApplyAberrationForcesByBendingModesCommand* command) override;
+    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command) override;
+    virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command) override;
     virtual States::Type applyActiveOpticForcesByBendingModes(
-            ApplyActiveOpticForcesByBendingModesCommand* command, Model* model) override;
-    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command,
-                                                Model* model) override;
-    virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command,
-                                                Model* model) override;
-    virtual States::Type translateM1M3(TranslateM1M3Command* command, Model* model) override;
-    virtual States::Type positionM1M3(PositionM1M3Command* command, Model* model) override;
-    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command,
-                                                    Model* model) override;
-    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command,
-                                                     Model* model) override;
-    virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model) override;
-    virtual States::Type updatePID(UpdatePIDCommand* command, Model* model) override;
-    virtual States::Type resetPID(ResetPIDCommand* command, Model* model) override;
+            ApplyActiveOpticForcesByBendingModesCommand* command) override;
+    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
+    virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
+    virtual States::Type translateM1M3(TranslateM1M3Command* command) override;
+    virtual States::Type positionM1M3(PositionM1M3Command* command) override;
+    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
+    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
+    virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command) override;
+    virtual States::Type updatePID(UpdatePIDCommand* command) override;
+    virtual States::Type resetPID(ResetPIDCommand* command) override;
 };
 
 } /* namespace SS */

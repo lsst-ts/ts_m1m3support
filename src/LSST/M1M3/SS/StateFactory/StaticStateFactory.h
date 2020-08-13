@@ -43,15 +43,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-
 class StaticStateFactory {
 public:
-    StaticStateFactory(M1M3SSPublisher* publisher);
+    StaticStateFactory();
+
+    static StaticStateFactory& get();
 
     State* create(States::Type state);
 
 private:
+    StaticStateFactory& operator=(const StaticStateFactory&) = delete;
+    StaticStateFactory(const StaticStateFactory&) = delete;
+
     OfflineState _offlineState;
     StandbyState _standbyState;
     DisabledState _disabledState;

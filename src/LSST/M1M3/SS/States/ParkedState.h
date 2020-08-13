@@ -37,12 +37,12 @@ namespace SS {
  */
 class ParkedState : public EnabledState {
 public:
-    ParkedState(M1M3SSPublisher* publisher);
+    ParkedState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command, Model* model) override;
-    virtual States::Type enterEngineering(EnterEngineeringCommand* command, Model* model) override;
-    virtual States::Type disable(DisableCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
+    virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
+    virtual States::Type disable(DisableCommand* command) override;
 };
 
 } /* namespace SS */

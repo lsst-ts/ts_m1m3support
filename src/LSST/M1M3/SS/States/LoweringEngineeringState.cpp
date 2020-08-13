@@ -23,7 +23,6 @@
 
 #include <LoweringEngineeringState.h>
 #include <Model.h>
-#include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
 #include <ModelPublisher.h>
@@ -33,16 +32,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringEngineeringState::LoweringEngineeringState(M1M3SSPublisher* publisher)
-        : EngineeringState(publisher, "LoweringEngineeringState") {}
+LoweringEngineeringState::LoweringEngineeringState() : EngineeringState("LoweringEngineeringState") {}
 
-States::Type LoweringEngineeringState::update(UpdateCommand* command, Model* model) {
-    ModelPublisher publishIt(model);
+States::Type LoweringEngineeringState::update(UpdateCommand* command) {
+    ModelPublisher publishIt();
     spdlog::trace("LoweringEngineeringState: update()");
-    model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
-    runLoop(model);
-    return model->getSafetyController()->checkSafety(lowerCompleted(model) ? States::ParkedEngineeringState
-                                                                           : States::NoStateTransition);
+    Model::get().getAutomaticOperationsController()->tryDecrementSupportPercentage();
+    runLoop();
+    return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedEngineeringState
+                                                                            : States::NoStateTransition);
 }
 
 } /* namespace SS */
