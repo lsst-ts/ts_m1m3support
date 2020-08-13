@@ -32,22 +32,21 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisingEngineeringState::RaisingEngineeringState(M1M3SSPublisher* publisher)
-        : EngineeringState(publisher, "RaisingEngineeringState") {}
+RaisingEngineeringState::RaisingEngineeringState() : EngineeringState("RaisingEngineeringState") {}
 
-States::Type RaisingEngineeringState::update(UpdateCommand* command, Model* model) {
-    ModelPublisher publishModel(model);
+States::Type RaisingEngineeringState::update(UpdateCommand* command) {
+    ModelPublisher publishModel();
     spdlog::trace("RaisingEngineeringState: update()");
-    model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();
-    runLoop(model);
-    return model->getSafetyController()->checkSafety(raiseCompleted(model) ? States::ActiveEngineeringState
-                                                                           : States::NoStateTransition);
+    Model::get().getAutomaticOperationsController()->tryIncrementingSupportPercentage();
+    runLoop();
+    return Model::get().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveEngineeringState
+                                                                            : States::NoStateTransition);
 }
 
-States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) {
+States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     spdlog::info("RaisingEngineeringState: abortRaiseM1M3()");
-    model->getAutomaticOperationsController()->abortRaiseM1M3();
-    return model->getSafetyController()->checkSafety(States::LoweringEngineeringState);
+    Model::get().getAutomaticOperationsController()->abortRaiseM1M3();
+    return Model::get().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 
 } /* namespace SS */

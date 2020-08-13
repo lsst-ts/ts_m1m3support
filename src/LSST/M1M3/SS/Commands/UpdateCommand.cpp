@@ -21,14 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <UpdateCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-UpdateCommand::UpdateCommand(Context* context, pthread_mutex_t* updateMutex) {
-    _context = context;
+UpdateCommand::UpdateCommand(pthread_mutex_t* updateMutex) {
     _updateMutex = updateMutex;
     this->commandID = -1;
 
@@ -43,7 +43,7 @@ UpdateCommand::~UpdateCommand() {
     pthread_mutex_unlock(_updateMutex);
 }
 
-void UpdateCommand::execute() { _context->update(this); }
+void UpdateCommand::execute() { Context::get().update(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

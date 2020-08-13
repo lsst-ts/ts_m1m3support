@@ -25,20 +25,18 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_ACCELERATIONFORCECOMPONENT_H_
 
 #include <ForceComponent.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class SafetyController;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-
 class AccelerationForceComponent : public ForceComponent {
 public:
-    AccelerationForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+    AccelerationForceComponent(SafetyController* safetyController,
                                ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                ForceActuatorSettings* forceActuatorSettings);
 
@@ -51,7 +49,6 @@ protected:
     void postUpdateActions();
 
 private:
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;

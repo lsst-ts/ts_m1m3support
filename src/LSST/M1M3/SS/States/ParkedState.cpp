@@ -38,43 +38,43 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ParkedState::ParkedState(M1M3SSPublisher* publisher) : EnabledState(publisher, "ParkedState") {}
+ParkedState::ParkedState() : EnabledState("ParkedState") {}
 
-States::Type ParkedState::update(UpdateCommand* command, Model* model) {
+States::Type ParkedState::update(UpdateCommand* command) {
     spdlog::trace("ParkedState: update()");
-    sendTelemetry(model);
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    sendTelemetry();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
+States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command) {
     spdlog::info("ParkedState: raiseM1M3()");
     if (command->getData()->bypassReferencePosition) {
-        model->getPublisher()->logCommandRejectionWarning(
+        M1M3SSPublisher::get().logCommandRejectionWarning(
                 "RaiseM1M3",
                 "The BypassReferencePosition parameter of the RaiseM1M3 cannot be true in the ParkedState.");
-        return model->getSafetyController()->checkSafety(States::NoStateTransition);
+        return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
     }
-    model->getAutomaticOperationsController()->startRaiseOperation(false);
-    return model->getSafetyController()->checkSafety(States::RaisingState);
+    Model::get().getAutomaticOperationsController()->startRaiseOperation(false);
+    return Model::get().getSafetyController()->checkSafety(States::RaisingState);
 }
 
-States::Type ParkedState::enterEngineering(EnterEngineeringCommand* command, Model* model) {
+States::Type ParkedState::enterEngineering(EnterEngineeringCommand* command) {
     spdlog::info("ParkedState: enterEngineering()");
-    return model->getSafetyController()->checkSafety(States::ParkedEngineeringState);
+    return Model::get().getSafetyController()->checkSafety(States::ParkedEngineeringState);
 }
 
-States::Type ParkedState::disable(DisableCommand* command, Model* model) {
+States::Type ParkedState::disable(DisableCommand* command) {
     spdlog::info("ParkedState: disable()");
-    model->getILC()->writeSetModeDisableBuffer();
-    model->getILC()->triggerModbus();
-    model->getILC()->waitForAllSubnets(5000);
-    model->getILC()->readAll();
-    model->getILC()->verifyResponses();
-    model->getForceController()->reset();
+    Model::get().getILC()->writeSetModeDisableBuffer();
+    Model::get().getILC()->triggerModbus();
+    Model::get().getILC()->waitForAllSubnets(5000);
+    Model::get().getILC()->readAll();
+    Model::get().getILC()->verifyResponses();
+    Model::get().getForceController()->reset();
     // TODO: Uncomment this when its not so hot outside
-    // model->getDigitalInputOutput()->turnAirOff();
-    model->getPowerController()->setAllAuxPowerNetworks(false);
-    return model->getSafetyController()->checkSafety(States::DisabledState);
+    // Model::get().getDigitalInputOutput()->turnAirOff();
+    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
+    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
 }
 
 } /* namespace SS */

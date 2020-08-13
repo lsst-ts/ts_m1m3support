@@ -29,7 +29,6 @@
 #include <PowerController.h>
 #include <StartCommand.h>
 #include <Gyro.h>
-#include <M1M3SSPublisher.h>
 
 #include <thread>
 #include <chrono>
@@ -39,21 +38,21 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StandbyState::StandbyState(M1M3SSPublisher* publisher) : State(publisher, "StandbyState") {}
+StandbyState::StandbyState() : State("StandbyState") {}
 
-States::Type StandbyState::update(UpdateCommand* command, Model* model) {
+States::Type StandbyState::update(UpdateCommand* command) {
     spdlog::trace("StandbyState: update()");
-    model->getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
     return States::NoStateTransition;
 }
 
-States::Type StandbyState::start(StartCommand* command, Model* model) {
+States::Type StandbyState::start(StartCommand* command) {
     spdlog::info("StandbyState: start()");
-    model->loadSettings(command->getData()->settingsToApply);
-    PowerController* powerController = model->getPowerController();
-    ILC* ilc = model->getILC();
-    DigitalInputOutput* digitalInputOutput = model->getDigitalInputOutput();
-    Gyro* gyro = model->getGyro();
+    Model::get().loadSettings(command->getData()->settingsToApply);
+    PowerController* powerController = Model::get().getPowerController();
+    ILC* ilc = Model::get().getILC();
+    DigitalInputOutput* digitalInputOutput = Model::get().getDigitalInputOutput();
+    Gyro* gyro = Model::get().getGyro();
 
     powerController->setAllAuxPowerNetworks(false);
     powerController->setAllPowerNetworks(true);
@@ -108,7 +107,7 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     digitalInputOutput->tryToggleHeartbeat();
-    model->getPublisher()->tryLogForceActuatorState();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
     std::this_thread::sleep_for(20ms);
     ilc->verifyResponses();
     ilc->publishForceActuatorInfo();
@@ -123,12 +122,12 @@ States::Type StandbyState::start(StartCommand* command, Model* model) {
     gyro->exitConfigurationMode();
     gyro->bit();
     digitalInputOutput->tryToggleHeartbeat();
-    return model->getSafetyController()->checkSafety(States::DisabledState);
+    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
 }
 
-States::Type StandbyState::exitControl(ExitControlCommand* command, Model* model) {
+States::Type StandbyState::exitControl(ExitControlCommand* command) {
     spdlog::info("StandbyState: ExitControl()");
-    model->exitControl();
+    Model::get().exitControl();
     return States::OfflineState;
 }
 

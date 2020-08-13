@@ -24,6 +24,7 @@
 #include <ActiveBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <M1M3SSPublisher.h>
 #include <RoundRobin.h>
 #include <ForceConverter.h>
 #include <SAL_MTM1M3C.h>
@@ -34,19 +35,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
-                             MTM1M3_outerLoopDataC* outerLoopData,
-                             MTM1M3_forceActuatorDataC* forceActuatorData,
-                             MTM1M3_hardpointActuatorDataC* hardpointActuatorData,
-                             MTM1M3_logevent_forceActuatorInfoC* forceInfo,
-                             MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces)
+ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     spdlog::debug("RaisedBusList: RaisedBusList()");
-    _outerLoopData = outerLoopData;
-    this->_forceActuatorData = forceActuatorData;
-    this->_appliedCylinderForces = appliedCylinderForces;
-    this->_hardpointActuatorData = hardpointActuatorData;
-    this->_forceInfo = forceInfo;
+    _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
+    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
+    _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
+    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
+    _forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     _lvdtSampleClock = 0;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         _setForceCommandIndex[subnetIndex] = -1;

@@ -32,27 +32,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class CommandFactory;
-class Controller;
-class FPGA;
-class M1M3SSPublisher;
-
 /*!
  * The outer loop clock thread is responsible for controlling
  * the outer loop execution timing.
  */
 class OuterLoopClockThread : public IThread {
 public:
-    OuterLoopClockThread(CommandFactory* commandFactory, Controller* controller, M1M3SSPublisher* publisher);
+    OuterLoopClockThread();
     ~OuterLoopClockThread();
 
     void run();
     void stop();
 
 private:
-    CommandFactory* _commandFactory;
-    Controller* _controller;
-    M1M3SSPublisher* _publisher;
     uint16_t _timestampUpdateBuffer[5];
     bool _keepRunning;
     pthread_mutex_t _updateMutex;

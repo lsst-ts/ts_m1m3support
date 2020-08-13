@@ -22,31 +22,30 @@
  */
 
 #include <ClearActiveOpticForcesCommand.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(Context* context, M1M3SSPublisher* publisher,
-                                                             int32_t commandID,
+ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(int32_t commandID,
                                                              MTM1M3_command_clearActiveOpticForcesC*) {
-    _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
 }
 
-void ClearActiveOpticForcesCommand::execute() { _context->clearActiveOpticForces(this); }
+void ClearActiveOpticForcesCommand::execute() { Context::get().clearActiveOpticForces(this); }
 
 void ClearActiveOpticForcesCommand::ackInProgress() {
-    _publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandclearActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void ClearActiveOpticForcesCommand::ackComplete() {
-    _publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandclearActiveOpticForces(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void ClearActiveOpticForcesCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandclearActiveOpticForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandclearActiveOpticForces(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

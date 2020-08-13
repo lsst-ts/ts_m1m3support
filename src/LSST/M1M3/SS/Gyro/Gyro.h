@@ -25,6 +25,8 @@
 #define GYRO_H_
 
 #include <DataTypes.h>
+#include <GyroSettings.h>
+#include <SupportFPGAData.h>
 #include <string>
 
 struct MTM1M3_gyroDataC;
@@ -34,10 +36,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class GyroSettings;
-struct SupportFPGAData;
-class M1M3SSPublisher;
-
 /*!
  * The class used to process gyro data.
  */
@@ -46,9 +44,8 @@ public:
     /*!
      * Instantiates the gyro sensor.
      * @param[in] gyroSettings The gyro settings.
-     * @param[in] publisher The publisher.
      */
-    Gyro(GyroSettings* gyroSettings, M1M3SSPublisher* publisher);
+    Gyro(GyroSettings* gyroSettings);
 
     /*!
      * Executes a built in test.
@@ -99,7 +96,6 @@ private:
     void writeCommand(std::string command);
 
     GyroSettings* _gyroSettings;
-    M1M3SSPublisher* _publisher;
 
     MTM1M3_gyroDataC* _gyroData;
     MTM1M3_logevent_gyroWarningC* _gyroWarning;

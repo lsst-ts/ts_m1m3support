@@ -22,8 +22,6 @@
  */
 
 #include <M1M3SSPublisher.h>
-#include <SAL_MTM1M3.h>
-#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
 
 #include <spdlog/spdlog.h>
 
@@ -31,8 +29,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
-    spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()");
+M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) { spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()"); }
+
+M1M3SSPublisher& M1M3SSPublisher::get() {
+    static M1M3SSPublisher publisher;
+    return publisher;
+}
+
+void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL = m1m3SAL;
 
     spdlog::debug("M1M3SSPublisher: Initializing SAL Telemetry");

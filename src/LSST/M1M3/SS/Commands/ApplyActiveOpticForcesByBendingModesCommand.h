@@ -34,8 +34,7 @@ namespace SS {
 
 class ApplyActiveOpticForcesByBendingModesCommand : public Command {
 public:
-    ApplyActiveOpticForcesByBendingModesCommand(Context* context, M1M3SSPublisher* publisher,
-                                                int32_t commandID,
+    ApplyActiveOpticForcesByBendingModesCommand(int32_t commandID,
                                                 MTM1M3_command_applyActiveOpticForcesByBendingModesC* data);
 
     MTM1M3_command_applyActiveOpticForcesByBendingModesC* getData() { return &_data; }
@@ -46,8 +45,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_applyActiveOpticForcesByBendingModesC _data;
 };
 
