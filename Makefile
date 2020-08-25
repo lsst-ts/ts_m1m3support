@@ -1,6 +1,6 @@
 include Makefile.inc
 
-.PHONY: all clean dependents deploy tests FORCE
+.PHONY: all clean deploy tests FORCE doc
 
 # Add inputs and outputs from these tool invocations to the build variables 
 #
@@ -24,7 +24,7 @@ m1m3cli: src/m1m3cli.o $(M1M3_OBJS) src/libM1M3SS.a
 
 # Other Targets
 clean:
-	@$(foreach file,ts_M1M3Support src/ts_M1M3Support.o src/m1m3cli.o, echo '[RM ] ${file}'; $(RM) -r $(file);)
+	@$(foreach file,ts_M1M3Support src/ts_M1M3Support.o src/m1m3cli.o doc, echo '[RM ] ${file}'; $(RM) -r $(file);)
 	@$(foreach dir,src tests,$(MAKE) -C ${dir} $@;)
 
 # file targets
@@ -47,3 +47,6 @@ run_tests: tests
 
 junit: tests
 	@${MAKE} -C tests junit
+
+doc:
+	${co}doxygen Doxyfile
