@@ -58,9 +58,9 @@ public:
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL);
 
     /**
-     * @brief Check for start command.
+     * @brief Check for a Start command.
      *
-     * @return 
+     * @return NULL if the Start command isn't available. Start command if one is available.
      */
     Command* tryAcceptCommandStart();
     Command* tryAcceptCommandEnable();
