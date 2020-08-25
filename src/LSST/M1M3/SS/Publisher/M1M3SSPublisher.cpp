@@ -113,8 +113,6 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
 
-double M1M3SSPublisher::getTimestamp() { return _m1m3SAL->getCurrentTime(); }
-
 void M1M3SSPublisher::putAccelerometerData() { _m1m3SAL->putSample_accelerometerData(&_accelerometerData); }
 void M1M3SSPublisher::putForceActuatorData() { _m1m3SAL->putSample_forceActuatorData(&_forceActuatorData); }
 void M1M3SSPublisher::putGyroData() { _m1m3SAL->putSample_gyroData(&_gyroData); }
