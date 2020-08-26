@@ -355,6 +355,13 @@ public:
     void logSummaryState();
     void tryLogSummaryState();
 
+    /**
+     * @brief Acknowledges start command.
+     *
+     * @param commandID
+     * @param ackCode acknowledgement code. Either ACK_INPROGRESS, ACK_FAILED or ACK_COMPLETE
+     * @param description description collected during command execution
+     */
     void ackCommandstart(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenable(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommanddisable(int32_t commandID, int32_t ackCode, std::string description);
