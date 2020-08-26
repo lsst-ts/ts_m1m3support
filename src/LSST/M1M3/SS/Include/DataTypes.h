@@ -26,10 +26,14 @@
 
 #include <stdint.h>
 
-#define ACK_INPROGRESS 301
-#define ACK_COMPLETE 303
-#define ACK_FAILED -302
+#define ACK_INPROGRESS 301  //* Acknowledges command reception, command is being executed.
+#define ACK_COMPLETE 303    //* Command is completed.
+#define ACK_FAILED -302     //* Command execution failed.
 
+/** @brief Number of ModBus subnets.
+ *
+ * Subnets are connected and commanded through cRIO DIOs.
+ */
 #define SUBNET_COUNT 5
 #define FA_COUNT 156
 #define FA_X_COUNT 12

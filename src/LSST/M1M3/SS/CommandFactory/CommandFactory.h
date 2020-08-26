@@ -33,7 +33,7 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * A command factory that creates dynamically allocated command objects.
+ * @brief Creates dynamically allocated Command objects.
  */
 class CommandFactory {
 public:
