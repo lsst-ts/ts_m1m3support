@@ -94,14 +94,17 @@ node {
         }
     }
 
-    stage('Publish documentation')
+    if (BRANCH == "master" || BRANCH == "develop")
     {
-        withCredentials([usernamePassword(credentialsId: 'lsst-io', usernameVariable: 'LTD_USERNAME', passwordVariable: 'LTD_PASSWORD')]) {
-            M1M3sim.inside("--entrypoint=''") {
-                sh """
-                    source /home/saluser/.setup.sh
-                    ltd upload --product ts-m1m3support --git-ref """ + BRANCH + """ --dir $WORKSPACE/ts_m1m3support/doc/html
-                """
+        stage('Publish documentation')
+        {
+            withCredentials([usernamePassword(credentialsId: 'lsst-io', usernameVariable: 'LTD_USERNAME', passwordVariable: 'LTD_PASSWORD')]) {
+                M1M3sim.inside("--entrypoint=''") {
+                    sh """
+                        source /home/saluser/.setup.sh
+                        ltd upload --product ts-m1m3support --git-ref """ + BRANCH + """ --dir $WORKSPACE/ts_m1m3support/doc/html
+                    """
+                }
             }
         }
     }
