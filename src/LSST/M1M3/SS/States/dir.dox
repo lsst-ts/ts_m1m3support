@@ -31,6 +31,8 @@
  * @details %States governs which tasks will be run on background, what
  * commands will be accepeted and how hardware faults will be handled.
  *
+ * See @ref LSST::M1M3::SS::State "State" children for list of possible states.
+ * See States for enumeration holding non-abstract states.
  *
  * @dot
  * digraph states
@@ -45,7 +47,7 @@
  *     Disabled [URL="@ref LSST::M1M3::SS::DisabledState"];
  *
  *     Offline -> Standby [label="startup"];
- *     Standby -> Offline [label="ExitControl",URL="@ref LSST::M1M3::SS::ExitControl"];
+ *     Standby -> Offline [label="ExitControl",URL="@ref LSST::M1M3::SS::ExitControlCommand"];
  *     Standby -> Disabled [label="Start",URL="@ref LSST::M1M3::SS::StartCommand"];
  *     Disabled -> Standby [label="Standby",URL="@ref LSST::M1M3::SS::StandbyCommand"];
  *     Disabled -> Parked [label="Enable",URL="@ref LSST::M1M3::SS::EnableCommand"];
