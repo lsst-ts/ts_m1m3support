@@ -22,19 +22,14 @@
  */
 
 // This header file contains States directory documentation. No code shall be included here.
-// Namespaces is needed to simplify links to LSST::M1M3::SS classes.
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
 
 /**
  * @dir States
  *
- * @brief M1M3 States.
+ * @brief M1M3 %States.
  *
- * @details States governs which tasks will be run on background, what commands will be accepeted and how
- * hardware faults will be handled.
+ * @details %States governs which tasks will be run on background, what
+ * commands will be accepeted and how hardware faults will be handled.
  *
  *
  * @dot
@@ -45,38 +40,47 @@ namespace SS {
  *   rankdir="LR";
  *
  *   subgraph steps {
+ *     Offline [URL="@ref LSST::M1M3::SS::OfflineState"];
+ *     Disabled [URL="@ref LSST::M1M3::SS::DisabledState"];
+ *
  *     Offline -> Disabled [label="startup"];
- *     Disabled -> Parked [label="Start"];
+ *     Disabled -> Parked [label="Start" URL="@ref LSST::M1M3::SS::StartCommand"];
  *   }
  *
  *   subgraph cluster1
  *   {
  *     rank="same";
- *     Parked -> Raising [label="Raise"];
+ *     Parked [URL="@ref LSST::M1M3::SS::ParkedState"];
+ *     Raising [URL="@ref LSST::M1M3::SS::RaisingState"];
+ *     Active [URL="@ref LSST::M1M3::SS::ActiveState"];
+ *     Lowering [URL="@ref LSST::M1M3::SS::LoweringState"];
+ *
+ *     Parked -> Raising [label="Raise",URL="@ref LSST::M1M3::SS::RaiseM1M3Command"];
  *     Raising -> Active [label="raised"];
- *     Active -> Lowering [label="Lower"];
+ *     Active -> Lowering [label="Lower",URL="@ref LSST::M1M3::SS::LowerM1M3Command"];
  *     Lowering -> Parked [label="lowered"];
  *   }
  *
  *   subgraph cluster2
  *   {
  *     rank="same";
- *     ParkedEngineering -> RaisingEngineering [label="Raise"];
+ *     ParkedEngineering [URL="@ref LSST::M1M3::SS::ParkedEngineeringState"];
+ *     RaisingEngineering [URL="@ref LSST::M1M3::SS::RaisingEngineeringState"];
+ *     ActiveEngineering [URL="@ref LSST::M1M3::SS::ActiveEngineeringState"];
+ *     LoweringEngineering [URL="@ref LSST::M1M3::SS::LoweringEngineeringState"];
+ *
+ *     ParkedEngineering -> RaisingEngineering [label="Raise",URL="@ref LSST::M1M3::SS::RaiseM1M3Command"];
  *     RaisingEngineering -> ActiveEngineering [label="raised"];
- *     ActiveEngineering -> LoweringEngineering [label="Lower"];
+ *     ActiveEngineering -> LoweringEngineering [label="Lower",URL="@ref LSST::M1M3::SS::LowerM1M3Command"];
  *     LoweringEngineering -> ParkedEngineering [label="lowered"];
  *   }
  *
- *   Parked -> ParkedEngineering [label="EnterEngineering"]
- *   ParkedEngineering -> Parked [label="ExitEngineering"]
+ *   Parked -> ParkedEngineering [label="EnterEngineering",URL="@ref LSST::M1M3::SS::EnterEngineeringCommand"]
+ *   ParkedEngineering -> Parked [label="ExitEngineering",URL="@ref LSST::M1M3::SS::ExitEngineeringCommand"]
  *
- *   Active -> ActiveEngineering [label="EnterEngineering"]
- *   ActiveEngineering -> Active [label="ExitEngineering"]
+ *   Active -> ActiveEngineering [label="EnterEngineering",URL="@ref LSST::M1M3::SS::EnterEngineeringCommand"]
+ *   ActiveEngineering -> Active [label="ExitEngineering",URL="@ref LSST::M1M3::SS::ExitEngineeringCommand"]
  * }
  * @enddot
  *
  */
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

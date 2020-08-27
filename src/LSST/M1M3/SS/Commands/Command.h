@@ -31,6 +31,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * @brief Parent class for all commands.
+ */
 class Command {
 protected:
     int32_t commandID;

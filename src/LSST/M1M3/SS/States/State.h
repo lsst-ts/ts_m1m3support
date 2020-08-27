@@ -90,12 +90,30 @@ public:
     State(std::string name);
     virtual ~State();
 
+    /**
+     * @brief Executes EnterControlCommand.
+     *
+     * @param command EnterControlCommand to execute
+     *
+     * @return next state if M1M3's state has changed or States::NoStateTransition for no M1M3's state change
+     */
     virtual States::Type enterControl(EnterControlCommand* command);
     virtual States::Type start(StartCommand* command);
     virtual States::Type enable(EnableCommand* command);
     virtual States::Type disable(DisableCommand* command);
     virtual States::Type standby(StandbyCommand* command);
     virtual States::Type exitControl(ExitControlCommand* command);
+
+    /**
+     * @brief Called to retrieve telemetry data.
+     *
+     * This method is called from OuterLoopClockThread. As every concrete child
+     * class must provide update routine, it is pure virtual.
+     *
+     * @param command UpdateCommand, ignored.
+     *
+     * @return new state, or States::NoStateTransition if state doesn't change
+     */
     virtual States::Type update(UpdateCommand* command) = 0;
     virtual States::Type turnAirOn(TurnAirOnCommand* command);
     virtual States::Type turnAirOff(TurnAirOffCommand* command);
