@@ -1,0 +1,39 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+// This header file contains Commands directory documentation. No code shall be included here.
+
+/**
+ * @dir Commands
+ *
+ * @brief M1M3 Commands.
+ *
+ * Commands are created in the code when a command needs to be executed.
+ * Commands are queued into @ref LSST::M1M3::SS::Controller "Controller". @ref
+ * LSST::M1M3::SS::ControllerThread "ControllerThread" pick up commands from
+ * the queue, and execute them. This provides a guarantee only onc command runs
+ * at the time.
+ *
+ * Please see @ref LSST::M1M3::SS::Command "Command" subclass list for the real
+ * (concrete) implemetation.
+ */
