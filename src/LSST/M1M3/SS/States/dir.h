@@ -41,10 +41,15 @@
  *
  *   subgraph steps {
  *     Offline [URL="@ref LSST::M1M3::SS::OfflineState"];
+ *     Standby [URL="@ref LSST::M1M3::SS::StandbyState"];
  *     Disabled [URL="@ref LSST::M1M3::SS::DisabledState"];
  *
- *     Offline -> Disabled [label="startup"];
- *     Disabled -> Parked [label="Start" URL="@ref LSST::M1M3::SS::StartCommand"];
+ *     Offline -> Standby [label="startup"];
+ *     Standby -> Offline [label="ExitControl",URL="@ref LSST::M1M3::SS::ExitControl"];
+ *     Standby -> Disabled [label="Start",URL="@ref LSST::M1M3::SS::StartCommand"];
+ *     Disabled -> Standby [label="Standby",URL="@ref LSST::M1M3::SS::StandbyCommand"];
+ *     Disabled -> Parked [label="Enable",URL="@ref LSST::M1M3::SS::EnableCommand"];
+ *     Parked -> Disabled [label="Disable",URL="@ref LSST::M1M3::SS::DisableCommand"];
  *   }
  *
  *   subgraph cluster1
