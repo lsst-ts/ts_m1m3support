@@ -43,7 +43,7 @@ namespace SS {
  *     + SubscriberThread
  *     + OuterLoopClockThread
  *     + PPSThread
- * - @ref src/LSST/M1M3/SS/Model "Model" holds pointers to cRIO boards.
+ * - Model holds pointers to cRIO boards.
  * - @ref src/LSST/M1M3/SS/States "States" State and its children, representing M1M3 states
  *   * State, abstract parent class
  *     + OfflineState
@@ -55,11 +55,10 @@ namespace SS {
  *       - ActiveState, ActiveEngineeringState
  *       - LoweringState, LoweringEngineeringState
  *     + FaultState
- * - @ref src/LSST/M1M3/SS/Context "Context" glue Model and State
- * - @ref src/LSST/M1M3/SS/Subscriber "Subscriber" and @ref
- *   src/LSST/M1M3/SS/Publisher "Publisher" for SAL communication classes.
- *     + M1M3SSSubscriber
- *     + M1M3SSPublisher
+ * - Context glue Model and State
+ * - @ref M1M3SSSubscriber "Subscriber" and @ref M1M3SSPublisher "Publisher"
+ *   for SAL communication classes.
+ * - @ref src/LSST/M1M3/SS/Commands "Commands" contains Command & children executed from the Controller
  */
 
 } /* namespace SS */

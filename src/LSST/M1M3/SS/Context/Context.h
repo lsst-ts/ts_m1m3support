@@ -79,7 +79,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
+/**
  * @brief The context used to execute commands against the current state.
  *
  * This singleton merges the model (has no concept of state) and the state (has
