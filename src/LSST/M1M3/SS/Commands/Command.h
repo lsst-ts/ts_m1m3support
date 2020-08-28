@@ -33,6 +33,10 @@ namespace SS {
 
 /**
  * @brief Parent class for all commands.
+ *
+ * Follows Command Pattern from Design Patterns. Encapsulates command executed
+ * in M1M3 SS. Commands are created from SAL messages by
+ * CommandFactory::create() and M1M3SSSubscriber in SubscriberThread::run().
  */
 class Command {
 protected:

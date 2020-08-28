@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// This header file contains DoxyGen mainpage for documenting the project. No code shall be included here.
-// Namespaces is needed to simplify links to LSST::M1M3::SS classes.
+// Namespaces are needed to simplify links to LSST::M1M3::SS classes.
+// Namespace trick doesn't work for @dir entries
 
 namespace LSST {
 namespace M1M3 {
