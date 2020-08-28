@@ -33,24 +33,19 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * A command factory that creates dynamically allocated command objects.
+ * @brief Creates dynamically allocated Command objects.
  */
 class CommandFactory {
 public:
     /**
-     * Instantiates the command factory.
-     *
-     * @param[in] context The context that will be provided to the commands created by this factory.
-     */
-    CommandFactory();
-
-    /**
      * Creates a command.
-     * This command is dynamically allocated and must be deleted.
      *
      * @param[in] commandType The type of command to create.
      * @param[in] data The data for the command.
      * @param[in] commandID The command ID (optional).
+     *
+     * @return Pointer to the created Command object. The returned command is
+     * dynamically allocated and must be deleted.
      */
     static Command* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
 };

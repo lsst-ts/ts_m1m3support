@@ -38,17 +38,30 @@ namespace SS {
 class CommandFactory;
 class Command;
 
-/*!
- * A subscriber that utilizes the SAL.
+/**
+ * @brief Subscriber to receive events, telemetry data and commands from SAL.
+ *
+ * Comntains method to try to read commands (<i>tryAcceptCommamnd*</i>) ,
+ * telemetry data (<i>tryGetSample*</i>).
  */
 class M1M3SSSubscriber {
 public:
     M1M3SSSubscriber();
 
+    /**
+     * @brief Retrieves singleton instance.
+     *
+     * @return singleton instance.
+     */
     static M1M3SSSubscriber& get();
 
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL);
 
+    /**
+     * @brief Check for a Start command.
+     *
+     * @return NULL if the Start command isn't available. Start command if one is available.
+     */
     Command* tryAcceptCommandStart();
     Command* tryAcceptCommandEnable();
     Command* tryAcceptCommandDisable();

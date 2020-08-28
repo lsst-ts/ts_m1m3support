@@ -75,8 +75,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-CommandFactory::CommandFactory() { spdlog::debug("CommandFactory: CommandFactory()"); }
-
 Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) {
     spdlog::trace("CommandFactory: create({}, data, {})", commandType, commandID);
     switch (commandType) {

@@ -60,6 +60,17 @@ node {
         junit 'ts_m1m3support/tests/*.xml'
     }
 
+    stage('Build documentation')
+    {
+         M1M3sim.inside("--entrypoint=''") {
+             sh '''
+                source /home/saluser/.setup.sh
+                cd $WORKSPACE/ts_m1m3support
+                make doc
+            '''
+         }
+    }
+
     stage('Running container')
     {
         withEnv(["SAL_REPOS=" + SAL_REPOS]){
@@ -79,6 +90,21 @@ node {
                     sleep 30
                     killall ts_M1M3Support
                 """
+            }
+        }
+    }
+
+    if (BRANCH == "master" || BRANCH == "develop")
+    {
+        stage('Publish documentation')
+        {
+            withCredentials([usernamePassword(credentialsId: 'lsst-io', usernameVariable: 'LTD_USERNAME', passwordVariable: 'LTD_PASSWORD')]) {
+                M1M3sim.inside("--entrypoint=''") {
+                    sh """
+                        source /home/saluser/.setup.sh
+                        ltd upload --product ts-m1m3support --git-ref """ + BRANCH + """ --dir $WORKSPACE/ts_m1m3support/doc/html
+                    """
+                }
             }
         }
     }

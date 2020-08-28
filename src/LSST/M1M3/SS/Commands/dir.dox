@@ -21,39 +21,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DATATYPES_H_
-#define DATATYPES_H_
-
-#include <stdint.h>
-
-#define ACK_INPROGRESS 301  //* Acknowledges command reception, command is being executed.
-#define ACK_COMPLETE 303    //* Command is completed.
-#define ACK_FAILED -302     //* Command execution failed.
-
-/** @brief Number of ModBus subnets.
+/**
+ * @dir Commands
  *
- * Subnets are connected and commanded through cRIO DIOs.
+ * @brief M1M3 Commands.
+ *
+ * Commands are created in the code when a command needs to be executed.
+ * Commands are queued into @ref LSST::M1M3::SS::Controller "Controller". @ref
+ * LSST::M1M3::SS::ControllerThread "ControllerThread" pick up commands from
+ * the queue, and execute them.
+ *
+ * Taking commands from a single queue, executing them in a single
+ * @ref LSST::M1M3::SS::ControllerThread "ControllerThread" and waiting for
+ * their return in @ref LSST::M1M3::SS::Controller::execute(Command*)
+ * "Controller::execute method" before provides a guarantee only one command
+ * runs at the time. Of course multiple commands can arrive
+ * from SAL/DDS in a given time, but only a single command will be run inside
+ * M1M3 SS CsC.
+ *
+ * Please see @ref LSST::M1M3::SS::Command "Command" subclass list for the real
+ * (concrete) implemetation.
  */
-#define SUBNET_COUNT 5
-#define FA_COUNT 156
-#define FA_X_COUNT 12
-#define FA_Y_COUNT 100
-#define FA_Z_COUNT 156
-#define HP_COUNT 6
-#define HM_COUNT 6
-#define BENDING_MODES 22
-
-#define MILLIMETERS_PER_METER 1000.0
-#define MICROMETERS_PER_MILLIMETER 1000.0
-
-// SAL__CMD_ACK        300
-// SAL__CMD_INPROGRESS 301
-// SAL__CMD_STALLED    302
-// SAL__CMD_COMPLETE   303
-// SAL__CMD_NOPERM    -300
-// SAL__CMD_NOACK     -301
-// SAL__CMD_FAILED    -302
-// SAL__CMD_ABORTED   -303
-// SAL__CMD_TIMEOUT   -304
-
-#endif /* DATATYPES_H_ */

@@ -53,11 +53,22 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * @brief Contains pointers to objects communicating with cRIO boards.
+ *
+ * Singleton. Provides methods to load setting. Populates pointers for cRIO
+ * boards.
+ */
 class Model {
 public:
     Model();
     virtual ~Model();
 
+    /**
+     * @brief Returns singleton instance.
+     *
+     * @return singleton instance
+     */
     static Model& get();
 
     inline DigitalInputOutput* getDigitalInputOutput() { return &_digitalInputOutput; }

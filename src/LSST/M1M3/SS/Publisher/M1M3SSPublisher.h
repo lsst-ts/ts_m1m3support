@@ -36,16 +36,33 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Singleton class for M1M3 DDS communication.
+ * @brief Singleton class for M1M3 SAL communication.
+ *
+ * Encapsulates methods to send events, telemetry data and commands
+ * acknowledgments over SAL.
+ *
+ * @see M1M3SSSubscriber
  */
 class M1M3SSPublisher {
 public:
     M1M3SSPublisher();
 
+    /**
+     * @brief Retrieve singleton instance.
+     *
+     * @return singleton instance
+     */
     static M1M3SSPublisher& get();
 
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL);
 
+    /**
+     * @brief Returns pointer to accelerometer data.
+     *
+     * @return pointer to the accelerometer data
+     *
+     * @see putAccelerometerData
+     */
     MTM1M3_accelerometerDataC* getAccelerometerData() { return &_accelerometerData; }
     MTM1M3_forceActuatorDataC* getForceActuatorData() { return &_forceActuatorData; }
     MTM1M3_gyroDataC* getGyroData() { return &_gyroData; }
@@ -186,8 +203,17 @@ public:
     MTM1M3_logevent_settingsAppliedC* getEventSettingsApplied() { return &_eventSettingsApplied; }
     MTM1M3_logevent_summaryStateC* getEventSummaryState() { return &_eventSummaryState; }
 
-    double getTimestamp();
+    /**
+     * Returns current timestamp.
+     *
+     * @return current timestamp (TAI as seconds since 1/1/1970)
+     */
+    double getTimestamp() { return _m1m3SAL->getCurrentTime(); }
 
+    /**
+     * Sends accelerometer data stored in pointer returned by
+     * getAccelerometerData().
+     */
     void putAccelerometerData();
     void putForceActuatorData();
     void putGyroData();
@@ -199,7 +225,19 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
+    /**
+     * @brief Sends AccelerometerWarning event.
+     *
+     * @see tryLogAccelerometerWarning
+     */
     void logAccelerometerWarning();
+
+    /**
+     * @brief Sends AccelerometerWarning event if event data changed from last
+     * successful (accepted in tryLogAccelerometerWarning) send.
+     *
+     * Calls logAccelerometerWarning().
+     */
     void tryLogAccelerometerWarning();
     void logAirSupplyStatus();
     void tryLogAirSupplyStatus();
@@ -317,6 +355,13 @@ public:
     void logSummaryState();
     void tryLogSummaryState();
 
+    /**
+     * @brief Acknowledges start command.
+     *
+     * @param commandID
+     * @param ackCode acknowledgement code. Either ACK_INPROGRESS, ACK_FAILED or ACK_COMPLETE
+     * @param description string collected during command execution
+     */
     void ackCommandstart(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenable(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommanddisable(int32_t commandID, int32_t ackCode, std::string description);
