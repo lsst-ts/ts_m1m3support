@@ -34,13 +34,22 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * The main controller for the application.
+ * @brief The main controller for the application.
+ *
+ * Holds commands queue. Commands are enqueued in ControllerThread and passed
+ * to the Controller::execute method. Singleton, as only a single instatnce
+ * should occur in an application.
  */
 class Controller {
 public:
     Controller();
     ~Controller();
 
+    /**
+     * @brief Return singleton instance.
+     *
+     * @return singleton instance
+     */
     static Controller& get();
 
     void lock();

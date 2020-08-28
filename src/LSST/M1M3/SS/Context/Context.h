@@ -79,18 +79,31 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * The context used to execute commands against the current state.
- * This class handles merging the model (has no concept of state) and
- * the state (has no knowledge of how to do things) to provide state
- * based functionality.
+/**
+ * @brief The context used to execute commands against the current state.
+ *
+ * This singleton merges the model (has no concept of state) and the state (has
+ * no knowledge of how to do things) to provide state based functionality.
+ *
+ * State objects, child of State, are responsible for verification the Command
+ * is allowed at given state.
  */
 class Context {
 public:
     Context();
 
+    /**
+     * Retrieve Context singleton.
+     *
+     * @return Context singleton
+     */
     static Context& get();
 
+    /**
+     * @brief Executes EnterControlCommand actions.
+     *
+     * @param command pointer to command to execute
+     */
     void enterControl(EnterControlCommand* command);
     void start(StartCommand* command);
     void enable(EnableCommand* command);

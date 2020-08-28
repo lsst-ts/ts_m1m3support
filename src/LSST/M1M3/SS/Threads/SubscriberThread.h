@@ -31,8 +31,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * The _subscriber thread is responsible for accepting commands.
+/**
+ * @brief The subscriber thread is responsible for accepting SAL commands.
  */
 class SubscriberThread : public IThread {
 public:
