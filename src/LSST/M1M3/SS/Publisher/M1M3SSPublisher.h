@@ -307,6 +307,7 @@ public:
     void tryLogHardpointMonitorState();
     void logHardpointMonitorWarning();
     void tryLogHardpointMonitorWarning();
+    void logHeartbeat();
     void logILCWarning();
     void tryLogILCWarning();
     void logInclinometerSensorWarning();
@@ -459,6 +460,7 @@ private:
     MTM1M3_logevent_hardpointMonitorInfoC _eventHardpointMonitorInfo;
     MTM1M3_logevent_hardpointMonitorStateC _eventHardpointMonitorState;
     MTM1M3_logevent_hardpointMonitorWarningC _eventHardpointMonitorWarning;
+    MTM1M3_logevent_heartbeatC _eventHeartbeat;
     MTM1M3_logevent_ilcWarningC _eventILCWarning;
     MTM1M3_logevent_inclinometerSensorWarningC _eventInclinometerSensorWarning;
     MTM1M3_logevent_interlockStatusC _eventInterlockStatus;
