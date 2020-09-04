@@ -56,7 +56,6 @@ void OuterLoopClockThread::run() {
         Controller::get().lock();
         if (_keepRunning) {
             Controller::get().enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
-            M1M3SSPublisher::get().logHeartbeat();
         }
         Controller::get().unlock();
         pthread_mutex_lock(&_updateMutex);

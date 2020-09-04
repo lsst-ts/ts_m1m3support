@@ -172,6 +172,9 @@ void DigitalInputOutput::tryToggleHeartbeat() {
         uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
                               (uint16_t)_interlockStatus->heartbeatCommandedState};
         IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+
+        // sends software heartbeat
+        M1M3SSPublisher::get().logHeartbeat();
     }
 }
 

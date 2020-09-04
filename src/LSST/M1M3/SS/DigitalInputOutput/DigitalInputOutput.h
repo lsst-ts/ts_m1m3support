@@ -60,10 +60,14 @@ public:
      */
     void processData();
 
-    /*!
-     * Toggles the heartbeat signal if a configured amount of time has passed.
+    /**
+     * @brief Toggles the heartbeat signal if a configured amount of time has passed.
+     *
+     * Both Global Interlock System and software (logevent) heartbeats are
+     * triggered.
      */
     void tryToggleHeartbeat();
+
     /*!
      * Turns the air on.
      */
