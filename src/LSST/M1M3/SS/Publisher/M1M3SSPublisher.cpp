@@ -87,6 +87,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_heartbeat");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_ilcWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
@@ -1677,6 +1678,8 @@ void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
         this->logHardpointMonitorWarning();
     }
 }
+
+void M1M3SSPublisher::logHeartbeat() { _m1m3SAL->logEvent_heartbeat(&_eventHeartbeat, 0); }
 
 void M1M3SSPublisher::logILCWarning() {
     _eventILCWarning.anyWarning = _eventILCWarning.responseTimeout || _eventILCWarning.invalidCRC ||
