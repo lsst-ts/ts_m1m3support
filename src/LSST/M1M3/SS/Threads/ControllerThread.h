@@ -25,23 +25,56 @@
 #define CONTROLLERTHREAD_H_
 
 #include <IThread.h>
+#include <Command.h>
+
+#include <condition_variable>
+#include <mutex>
+#include <queue>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * The controller thread is responsible for executing commands.
+/**
+ * @brief The controller thread is responsible for executing commands.
+ *
+ * Holds command queue. Command is enqueued in SubscriberThread after being
+ * received from SAL. Command is then dequeued in ControllerThread and passed
+ * to the Controller::execute method. Singleton, as only a single instatnce
+ * should occur in an application.
  */
 class ControllerThread : public IThread {
 public:
     ControllerThread();
+    ~ControllerThread();
+
+    /**
+     * @brief Return singleton instance.
+     *
+     * @return singleton instance
+     */
+    static ControllerThread& get();
 
     void run();
     void stop();
 
+    /**
+     * @brief Put command into queue.
+     */
+    void enqueue(Command* command);
+
 private:
+    ControllerThread& operator=(const ControllerThread&) = delete;
+    ControllerThread(const ControllerThread&) = delete;
+
+    void _clear();
+    Command* _dequeue();
+    void _execute(Command* command);
+
     bool _keepRunning;
+    std::mutex _mutex;
+    std::queue<Command*> _queue;
+    std::condition_variable _cv;
 };
 
 } /* namespace SS */

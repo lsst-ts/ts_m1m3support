@@ -23,7 +23,7 @@
 
 #include <OuterLoopClockThread.h>
 #include <CommandFactory.h>
-#include <Controller.h>
+#include <ControllerThread.h>
 #include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <Command.h>
@@ -54,7 +54,7 @@ void OuterLoopClockThread::run() {
         }
 
         if (_keepRunning) {
-            Controller::get().enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
+            ControllerThread::get().enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
         }
         pthread_mutex_lock(&_updateMutex);
         pthread_mutex_unlock(&_updateMutex);

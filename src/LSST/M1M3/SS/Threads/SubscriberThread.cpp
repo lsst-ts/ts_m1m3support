@@ -22,7 +22,7 @@
  */
 
 #include <CommandFactory.h>
-#include <Controller.h>
+#include <ControllerThread.h>
 #include <SubscriberThread.h>
 #include <M1M3SSSubscriber.h>
 #include <chrono>
@@ -94,7 +94,7 @@ void SubscriberThread::stop() { _keepRunning = false; }
 void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
     if (command) {
         if (command->validate()) {
-            Controller::get().enqueue(command);
+            ControllerThread::get().enqueue(command);
         } else {
             command->ackFailed("Validation");
             delete command;
