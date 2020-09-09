@@ -25,7 +25,7 @@
 #define OUTERLOOPCLOCKTHREAD_H_
 
 #include <DataTypes.h>
-#include <pthread.h>
+#include <mutex>
 
 namespace LSST {
 namespace M1M3 {
@@ -38,7 +38,6 @@ namespace SS {
 class OuterLoopClockThread {
 public:
     OuterLoopClockThread();
-    ~OuterLoopClockThread();
 
     void run();
     void stop();
@@ -46,7 +45,7 @@ public:
 private:
     uint16_t _timestampUpdateBuffer[5];
     bool _keepRunning;
-    pthread_mutex_t _updateMutex;
+    std::mutex _updateMutex;
 };
 
 } /* namespace SS */
