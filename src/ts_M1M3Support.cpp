@@ -117,12 +117,6 @@ void initializeFPGAs(IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
     expansionFPGA->open();
 }
 
-void* runThread(void* data) {
-    IThread* thread = (IThread*)data;
-    thread->run();
-    return 0;
-}
-
 void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL) {
     spdlog::info("Main: Creating subscriber");
     M1M3SSSubscriber::get().setSAL(m1m3SAL, mtMountSAL);
@@ -135,86 +129,44 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     spdlog::info("Main: Queuing EnterControl command");
     ControllerThread::get().enqueue(CommandFactory::create(Commands::EnterControlCommand));
 
-    pthread_t subscriberThreadId;
     pthread_t outerLoopClockThreadId;
-    pthread_t ppsThreadId;
-    pthread_attr_t threadAttribute;
-    pthread_attr_init(&threadAttribute);
-    pthread_attr_setdetachstate(&threadAttribute, PTHREAD_CREATE_JOINABLE);
 
-    void* status;
-    spdlog::info("Main: Starting pps thread");
-    int rc = pthread_create(&ppsThreadId, &threadAttribute, runThread, (void*)(&ppsThread));
-    std::this_thread::sleep_for(1500ms);
-    if (!rc) {
+    try {
+        spdlog::info("Main: Starting pps thread");
+        std::thread pps([&ppsThread] { ppsThread.run(); });
+        std::this_thread::sleep_for(1500ms);
         spdlog::info("Main: Starting subscriber thread");
-        int rc = pthread_create(&subscriberThreadId, &threadAttribute, runThread, (void*)(&subscriberThread));
-        if (!rc) {
-            spdlog::info("Main: Starting controller thread");
-            std::thread controllerThread([] { ControllerThread::get().run(); });
-            if (!rc) {
-                spdlog::info("Main: Starting outer loop clock thread");
-                rc = pthread_create(&outerLoopClockThreadId, &threadAttribute, runThread,
-                                    (void*)(&outerLoopClockThread));
-                if (!rc) {
-                    spdlog::info("Main: Waiting for ExitControl");
-                    Model::get().waitForExitControl();
-                    spdlog::info("Main: ExitControl received");
-                    spdlog::info("Main: Stopping pps thread");
-                    ppsThread.stop();
-                    spdlog::info("Main: Stopping subscriber thread");
-                    subscriberThread.stop();
-                    spdlog::info("Main: Stopping controller thread");
-                    ControllerThread::get().stop();
-                    spdlog::info("Main: Stopping outer loop clock thread");
-                    outerLoopClockThread.stop();
-                    std::this_thread::sleep_for(100ms);
-                    spdlog::info("Main: Joining pps thread");
-                    pthread_join(ppsThreadId, &status);
-                    spdlog::info("Main: Joining subscriber thread");
-                    pthread_join(subscriberThreadId, &status);
-                    spdlog::info("Main: Joining controller thread");
-                    controllerThread.join();
-                    spdlog::info("Main: Joining outer loop clock thread");
-                    pthread_join(outerLoopClockThreadId, &status);
-                } else {
-                    spdlog::critical("Main: Failed to start outer loop clock thread");
-                    spdlog::info("Main: Stopping pps thread");
-                    ppsThread.stop();
-                    spdlog::info("Main: Stopping subscriber thread");
-                    subscriberThread.stop();
-                    spdlog::info("Main: Stopping controller thread");
-                    ControllerThread::get().stop();
-                    spdlog::info("Main: Joining pps thread");
-                    pthread_join(ppsThreadId, &status);
-                    spdlog::info("Main: Joining subscriber thread");
-                    pthread_join(subscriberThreadId, &status);
-                    spdlog::info("Main: Joining controller thread");
-                    controllerThread.join();
-                }
-            } else {
-                spdlog::critical("Main: Failed to start controller thread");
-                spdlog::info("Main: Stopping pps thread");
-                ppsThread.stop();
-                spdlog::info("Main: Stopping subscriber thread");
-                subscriberThread.stop();
-                spdlog::info("Main: Joining pps thread");
-                pthread_join(ppsThreadId, &status);
-                spdlog::info("Main: Joining subscriber thread");
-                pthread_join(subscriberThreadId, &status);
-            }
-        } else {
-            spdlog::critical("Main: Failed to start subscriber thread");
-            spdlog::info("Main: Stopping pps thread");
-            ppsThread.stop();
-            spdlog::info("Main: Joining pps thread");
-            pthread_join(ppsThreadId, &status);
-        }
-    } else {
-        spdlog::critical("Main: Failed to start pps thread");
-    }
+        std::thread subscriber([&subscriberThread] { subscriberThread.run(); });
+        spdlog::info("Main: Starting controller thread");
+        std::thread controller([] { ControllerThread::get().run(); });
+        spdlog::info("Main: Starting outer loop clock thread");
+        std::thread outerLoopClock([&outerLoopClockThread] { outerLoopClockThread.run(); });
 
-    pthread_attr_destroy(&threadAttribute);
+        spdlog::info("Main: Waiting for ExitControl");
+        Model::get().waitForExitControl();
+        spdlog::info("Main: ExitControl received");
+
+        spdlog::info("Main: Stopping pps thread");
+        ppsThread.stop();
+        spdlog::info("Main: Stopping subscriber thread");
+        subscriberThread.stop();
+        spdlog::info("Main: Stopping controller thread");
+        ControllerThread::get().stop();
+        spdlog::info("Main: Stopping outer loop clock thread");
+        outerLoopClockThread.stop();
+        std::this_thread::sleep_for(100ms);
+        spdlog::info("Main: Joining pps thread");
+        pps.join();
+        spdlog::info("Main: Joining subscriber thread");
+        subscriber.join();
+        spdlog::info("Main: Joining controller thread");
+        controller.join();
+        spdlog::info("Main: Joining outer loop clock thread");
+        outerLoopClock.join();
+    } catch (std::exception& ex) {
+        spdlog::critical("Error starting threads: {)", ex.what());
+        exit(1);
+    }
 }
 
 int main(int argc, char* const argv[]) {

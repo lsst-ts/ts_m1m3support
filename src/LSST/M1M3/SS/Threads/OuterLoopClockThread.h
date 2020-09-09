@@ -24,7 +24,6 @@
 #ifndef OUTERLOOPCLOCKTHREAD_H_
 #define OUTERLOOPCLOCKTHREAD_H_
 
-#include <IThread.h>
 #include <DataTypes.h>
 #include <pthread.h>
 
@@ -36,7 +35,7 @@ namespace SS {
  * The outer loop clock thread is responsible for controlling
  * the outer loop execution timing.
  */
-class OuterLoopClockThread : public IThread {
+class OuterLoopClockThread {
 public:
     OuterLoopClockThread();
     ~OuterLoopClockThread();
