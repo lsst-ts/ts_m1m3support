@@ -12,7 +12,6 @@
 #include <SettingReader.h>
 #include <SubscriberThread.h>
 
-#include <pthread.h>
 #include <getopt.h>
 #include <cstring>
 #include <iostream>

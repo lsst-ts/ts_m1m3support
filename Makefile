@@ -26,7 +26,7 @@ clean:
 	@$(foreach dir,src tests,$(MAKE) -C ${dir} $@;)
 
 # file targets
-src/%.cpp.o:
+src/%.cpp.o: src/%.cpp
 	$(MAKE) -C src $(patsubst src/%,%,$@)
 
 CRIO_IP = 10.0.0.11
