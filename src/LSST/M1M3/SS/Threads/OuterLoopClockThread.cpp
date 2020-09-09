@@ -37,12 +37,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OuterLoopClockThread::OuterLoopClockThread() {
-    _keepRunning = true;
-    pthread_mutex_init(&_updateMutex, NULL);
-}
-
-OuterLoopClockThread::~OuterLoopClockThread() { pthread_mutex_destroy(&_updateMutex); }
+OuterLoopClockThread::OuterLoopClockThread() { _keepRunning = true; }
 
 void OuterLoopClockThread::run() {
     spdlog::info("OuterLoopClockThread: Start");
@@ -56,8 +51,8 @@ void OuterLoopClockThread::run() {
         if (_keepRunning) {
             ControllerThread::get().enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
         }
-        pthread_mutex_lock(&_updateMutex);
-        pthread_mutex_unlock(&_updateMutex);
+        _updateMutex.lock();
+        _updateMutex.unlock();
         IFPGA::get().ackOuterLoopClock();
     }
     spdlog::info("OuterLoopClockThread: Completed");
