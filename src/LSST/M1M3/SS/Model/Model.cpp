@@ -68,13 +68,11 @@ Model::Model() {
     _automaticOperationsController = NULL;
     _gyro = NULL;
     _cachedTimestamp = 0;
-    pthread_mutex_init(&_mutex, NULL);
-    pthread_mutex_lock(&_mutex);
+    _mutex.lock();
 }
 
 Model::~Model() {
-    pthread_mutex_unlock(&_mutex);
-    pthread_mutex_destroy(&_mutex);
+    _mutex.unlock();
 
     delete _safetyController;
     delete _displacement;
@@ -225,11 +223,11 @@ void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
     M1M3SSPublisher::get().putOuterLoopData();
 }
 
-void Model::exitControl() { pthread_mutex_unlock(&_mutex); }
+void Model::exitControl() { _mutex.unlock(); }
 
 void Model::waitForExitControl() {
-    pthread_mutex_lock(&_mutex);
-    pthread_mutex_unlock(&_mutex);
+    _mutex.lock();
+    _mutex.unlock();
 }
 
 void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,

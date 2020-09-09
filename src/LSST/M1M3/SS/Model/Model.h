@@ -46,7 +46,7 @@
 #include <SafetyController.h>
 #include <StateTypes.h>
 #include <chrono>
-#include <pthread.h>
+#include <mutex>
 #include <string>
 
 namespace LSST {
@@ -126,7 +126,7 @@ private:
     Gyro* _gyro;
     ProfileController _profileController;
 
-    pthread_mutex_t _mutex;
+    std::mutex _mutex;
 
     double _cachedTimestamp;
 };
