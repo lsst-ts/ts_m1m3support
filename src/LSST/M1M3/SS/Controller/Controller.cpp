@@ -31,54 +31,45 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Controller::Controller() {
-    spdlog::debug("Controller: Controller()");
-    pthread_mutex_init(&_mutex, NULL);
-}
+Controller::Controller() { spdlog::debug("Controller: Controller()"); }
 
-Controller::~Controller() {
-    this->clear();
-    pthread_mutex_destroy(&_mutex);
-}
+Controller::~Controller() { clear(); }
 
 Controller& Controller::get() {
     static Controller controller;
     return controller;
 }
 
-void Controller::lock() {
-    spdlog::trace("Controller: lock()");
-    pthread_mutex_lock(&_mutex);
-}
-
-void Controller::unlock() {
-    spdlog::trace("Controller: unlock()");
-    pthread_mutex_unlock(&_mutex);
-}
-
 void Controller::clear() {
     spdlog::trace("Controller: clear()");
-    this->lock();
-    while (!_queue.empty()) {
-        Command* command = this->dequeue();
-        delete command;
+    {
+        std::lock_guard<std::mutex> lg(_mutex);
+        while (!_queue.empty()) {
+            Command* command = dequeue();
+            delete command;
+        }
     }
-    this->unlock();
 }
 
 void Controller::enqueue(Command* command) {
     spdlog::trace("Controller: enqueue()");
-    _queue.push(command);
+    {
+        std::lock_guard<std::mutex> lg(_mutex);
+        _queue.push(command);
+        _cv.notify_one();
+    }
 }
 
 Command* Controller::dequeue() {
-    spdlog::trace("Controller: dequeue()");
+    std::unique_lock<std::mutex> lock(_mutex);
+    _cv.wait_for(lock, 1s);
     if (!_queue.empty()) {
+        spdlog::trace("Controller: dequeue()");
         Command* command = _queue.front();
         _queue.pop();
         return command;
     }
-    return 0;
+    return NULL;
 }
 
 void Controller::execute(Command* command) {

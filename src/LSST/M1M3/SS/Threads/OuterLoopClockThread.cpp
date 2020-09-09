@@ -53,11 +53,9 @@ void OuterLoopClockThread::run() {
             spdlog::warn("OuterLoopClockThread: Failed to receive outer loop clock");
         }
 
-        Controller::get().lock();
         if (_keepRunning) {
             Controller::get().enqueue(CommandFactory::create(Commands::UpdateCommand, &_updateMutex));
         }
-        Controller::get().unlock();
         pthread_mutex_lock(&_updateMutex);
         pthread_mutex_unlock(&_updateMutex);
         IFPGA::get().ackOuterLoopClock();

@@ -94,9 +94,7 @@ void SubscriberThread::stop() { _keepRunning = false; }
 void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
     if (command) {
         if (command->validate()) {
-            Controller::get().lock();
             Controller::get().enqueue(command);
-            Controller::get().unlock();
         } else {
             command->ackFailed("Validation");
             delete command;

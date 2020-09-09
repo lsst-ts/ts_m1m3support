@@ -38,9 +38,7 @@ ControllerThread::ControllerThread() { _keepRunning = true; }
 void ControllerThread::run() {
     spdlog::info("ControllerThread: Start");
     while (_keepRunning) {
-        Controller::get().lock();
         Command* command = Controller::get().dequeue();
-        Controller::get().unlock();
         if (command) {
             Controller::get().execute(command);
         } else {
