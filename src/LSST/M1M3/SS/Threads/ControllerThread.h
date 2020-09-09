@@ -24,7 +24,6 @@
 #ifndef CONTROLLERTHREAD_H_
 #define CONTROLLERTHREAD_H_
 
-#include <IThread.h>
 #include <Command.h>
 
 #include <condition_variable>
@@ -43,7 +42,7 @@ namespace SS {
  * to the Controller::execute method. Singleton, as only a single instatnce
  * should occur in an application.
  */
-class ControllerThread : public IThread {
+class ControllerThread {
 public:
     ControllerThread();
     ~ControllerThread();

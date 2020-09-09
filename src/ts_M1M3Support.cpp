@@ -136,7 +136,6 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     ControllerThread::get().enqueue(CommandFactory::create(Commands::EnterControlCommand));
 
     pthread_t subscriberThreadId;
-    pthread_t controllerThreadId;
     pthread_t outerLoopClockThreadId;
     pthread_t ppsThreadId;
     pthread_attr_t threadAttribute;
@@ -152,8 +151,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
         int rc = pthread_create(&subscriberThreadId, &threadAttribute, runThread, (void*)(&subscriberThread));
         if (!rc) {
             spdlog::info("Main: Starting controller thread");
-            rc = pthread_create(&controllerThreadId, &threadAttribute, runThread,
-                                (void*)(&ControllerThread::get()));
+            std::thread controllerThread([] { ControllerThread::get().run(); });
             if (!rc) {
                 spdlog::info("Main: Starting outer loop clock thread");
                 rc = pthread_create(&outerLoopClockThreadId, &threadAttribute, runThread,
@@ -176,7 +174,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
                     spdlog::info("Main: Joining subscriber thread");
                     pthread_join(subscriberThreadId, &status);
                     spdlog::info("Main: Joining controller thread");
-                    pthread_join(controllerThreadId, &status);
+                    controllerThread.join();
                     spdlog::info("Main: Joining outer loop clock thread");
                     pthread_join(outerLoopClockThreadId, &status);
                 } else {
@@ -192,7 +190,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
                     spdlog::info("Main: Joining subscriber thread");
                     pthread_join(subscriberThreadId, &status);
                     spdlog::info("Main: Joining controller thread");
-                    pthread_join(controllerThreadId, &status);
+                    controllerThread.join();
                 }
             } else {
                 spdlog::critical("Main: Failed to start controller thread");
