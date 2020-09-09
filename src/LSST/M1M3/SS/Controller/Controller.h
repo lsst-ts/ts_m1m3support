@@ -26,8 +26,9 @@
 
 #include <Command.h>
 
+#include <condition_variable>
+#include <mutex>
 #include <queue>
-#include <pthread.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -36,7 +37,8 @@ namespace SS {
 /**
  * @brief The main controller for the application.
  *
- * Holds commands queue. Commands are enqueued in ControllerThread and passed
+ * Holds command queue. Command is enqueued in SubscriberThread after being
+ * received from SAL. Command is then dequeued in ControllerThread and passed
  * to the Controller::execute method. Singleton, as only a single instatnce
  * should occur in an application.
  */
@@ -52,12 +54,21 @@ public:
      */
     static Controller& get();
 
-    void lock();
-    void unlock();
-
+    /**
+     * @brief Clear command queue.
+     */
     void clear();
 
+    /**
+     * @brief Put command into queue.
+     */
     void enqueue(Command* command);
+
+    /**
+     * @brief Remove command from top of the queue.
+     *
+     * @return command removed from top of the queue
+     */
     Command* dequeue();
 
     /**
@@ -71,8 +82,9 @@ private:
     Controller& operator=(const Controller&) = delete;
     Controller(const Controller&) = delete;
 
-    pthread_mutex_t _mutex;
+    std::mutex _mutex;
     std::queue<Command*> _queue;
+    std::condition_variable _cv;
 };
 
 } /* namespace SS */
