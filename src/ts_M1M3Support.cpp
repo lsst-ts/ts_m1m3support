@@ -1,6 +1,5 @@
 #include <CommandFactory.h>
 #include <Context.h>
-#include <Controller.h>
 #include <ControllerThread.h>
 #include <IExpansionFPGA.h>
 #include <M1M3SSPublisher.h>
@@ -129,14 +128,12 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     M1M3SSSubscriber::get().setSAL(m1m3SAL, mtMountSAL);
     spdlog::info("Main: Creating subscriber thread");
     SubscriberThread subscriberThread = SubscriberThread();
-    spdlog::info("Main: Creating controller thread");
-    ControllerThread controllerThread = ControllerThread();
     spdlog::info("Main: Creating outer loop clock thread");
     OuterLoopClockThread outerLoopClockThread = OuterLoopClockThread();
     spdlog::info("Main: Creating pps thread");
     PPSThread ppsThread = PPSThread();
     spdlog::info("Main: Queuing EnterControl command");
-    Controller::get().enqueue(CommandFactory::create(Commands::EnterControlCommand));
+    ControllerThread::get().enqueue(CommandFactory::create(Commands::EnterControlCommand));
 
     pthread_t subscriberThreadId;
     pthread_t controllerThreadId;
@@ -155,7 +152,8 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
         int rc = pthread_create(&subscriberThreadId, &threadAttribute, runThread, (void*)(&subscriberThread));
         if (!rc) {
             spdlog::info("Main: Starting controller thread");
-            rc = pthread_create(&controllerThreadId, &threadAttribute, runThread, (void*)(&controllerThread));
+            rc = pthread_create(&controllerThreadId, &threadAttribute, runThread,
+                                (void*)(&ControllerThread::get()));
             if (!rc) {
                 spdlog::info("Main: Starting outer loop clock thread");
                 rc = pthread_create(&outerLoopClockThreadId, &threadAttribute, runThread,
@@ -169,11 +167,10 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
                     spdlog::info("Main: Stopping subscriber thread");
                     subscriberThread.stop();
                     spdlog::info("Main: Stopping controller thread");
-                    controllerThread.stop();
+                    ControllerThread::get().stop();
                     spdlog::info("Main: Stopping outer loop clock thread");
                     outerLoopClockThread.stop();
                     std::this_thread::sleep_for(100ms);
-                    Controller::get().clear();
                     spdlog::info("Main: Joining pps thread");
                     pthread_join(ppsThreadId, &status);
                     spdlog::info("Main: Joining subscriber thread");
@@ -189,7 +186,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
                     spdlog::info("Main: Stopping subscriber thread");
                     subscriberThread.stop();
                     spdlog::info("Main: Stopping controller thread");
-                    controllerThread.stop();
+                    ControllerThread::get().stop();
                     spdlog::info("Main: Joining pps thread");
                     pthread_join(ppsThreadId, &status);
                     spdlog::info("Main: Joining subscriber thread");
