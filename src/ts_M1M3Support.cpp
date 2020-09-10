@@ -161,7 +161,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
         spdlog::info("Main: Joining outer loop clock thread");
         outerLoopClock.join();
     } catch (std::exception& ex) {
-        spdlog::critical("Error starting threads: {)", ex.what());
+        spdlog::critical("Error starting.stopping or joining threads: {)", ex.what());
         exit(1);
     }
 }
