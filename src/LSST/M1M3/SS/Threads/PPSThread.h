@@ -24,14 +24,13 @@
 #ifndef PPSTHREAD_H_
 #define PPSTHREAD_H_
 
-#include <IThread.h>
 #include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class PPSThread : public IThread {
+class PPSThread {
 public:
     PPSThread();
 

@@ -38,11 +38,10 @@ namespace SS {
  * Code is organized as follow:
  *
  * - @ref src/LSST/M1M3/SS/Threads "Threads" various threads run in M1M3. Thread runs a single task:
- *   * IThread parent abstract class for threads
- *     + ControllerThread
- *     + SubscriberThread
- *     + OuterLoopClockThread
- *     + PPSThread
+ *   * ControllerThread
+ *   * SubscriberThread
+ *   * OuterLoopClockThread
+ *   * PPSThread
  * - Model holds pointers to cRIO boards.
  * - @ref src/LSST/M1M3/SS/States "States" State and its children, representing M1M3 states
  *   * State, abstract parent class

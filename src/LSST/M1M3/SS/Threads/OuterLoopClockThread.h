@@ -24,9 +24,8 @@
 #ifndef OUTERLOOPCLOCKTHREAD_H_
 #define OUTERLOOPCLOCKTHREAD_H_
 
-#include <IThread.h>
 #include <DataTypes.h>
-#include <pthread.h>
+#include <mutex>
 
 namespace LSST {
 namespace M1M3 {
@@ -36,10 +35,9 @@ namespace SS {
  * The outer loop clock thread is responsible for controlling
  * the outer loop execution timing.
  */
-class OuterLoopClockThread : public IThread {
+class OuterLoopClockThread {
 public:
     OuterLoopClockThread();
-    ~OuterLoopClockThread();
 
     void run();
     void stop();
@@ -47,7 +45,7 @@ public:
 private:
     uint16_t _timestampUpdateBuffer[5];
     bool _keepRunning;
-    pthread_mutex_t _updateMutex;
+    std::mutex _updateMutex;
 };
 
 } /* namespace SS */

@@ -68,7 +68,7 @@
 #include <ResetPIDCommand.h>
 #include <ProgramILCCommand.h>
 #include <ModbusTransmitCommand.h>
-#include <pthread.h>
+#include <mutex>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -89,7 +89,7 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
         case Commands::StandbyCommand:
             return new StandbyCommand(commandID, (MTM1M3_command_standbyC*)data);
         case Commands::UpdateCommand:
-            return new UpdateCommand((pthread_mutex_t*)data);
+            return new UpdateCommand((std::mutex*)data);
         case Commands::ExitControlCommand:
             return new ExitControlCommand(commandID, (MTM1M3_command_exitControlC*)data);
         case Commands::TurnAirOnCommand:

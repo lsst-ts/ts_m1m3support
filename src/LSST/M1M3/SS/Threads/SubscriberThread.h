@@ -25,7 +25,6 @@
 #define SUBSCRIBERTHREAD_H_
 
 #include <Command.h>
-#include <IThread.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -34,7 +33,7 @@ namespace SS {
 /**
  * @brief The subscriber thread is responsible for accepting SAL commands.
  */
-class SubscriberThread : public IThread {
+class SubscriberThread {
 public:
     SubscriberThread();
 
