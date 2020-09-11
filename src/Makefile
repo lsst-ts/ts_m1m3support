@@ -7,7 +7,7 @@ all: libM1M3SS.a
 C_SRCS = $(shell find LSST NiFpga -name '*.c')
 CPP_SRCS = $(shell find LSST NiFpga pugixml -name '*.cpp')
 
-OBJS = $(patsubst %.c,%.o,$(C_SRCS)) $(patsubst %.cpp,%.o,$(CPP_SRCS))
+OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(CPP_SRCS))
 
 C_DEPS = $(patsubst %.c,%.c.d,$(C_SRCS))
 CPP_DEPS = $(patsubst %.cpp,%.cpp.d,$(CPP_SRCS))
@@ -29,7 +29,6 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/ForceController" \
 	-I"LSST/M1M3/SS/Commands" \
 	-I"LSST/M1M3/SS/Context" \
-	-I"LSST/M1M3/SS/Controller" \
 	-I"LSST/M1M3/SS/Domain" \
 	-I"LSST/M1M3/SS/FPGA" \
 	-I"LSST/M1M3/SS/Gyro" \
@@ -59,13 +58,13 @@ clean:
 	@$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
 
 # file targets
-%.o: %.cpp
-	@echo '[CPP] $<'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $<
+%.cpp.o: %.cpp.d
+	@echo '[CPP] $(patsubst %.d,%,$<)'
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
 
-%.o: %.c
-	@echo '[C  ] $<'
-	${co}$(C) -c -fmessage-length=0 -o $@ $<
+%.c.o: %.c.d
+	@echo '[C  ] $(patsubst %.d,%d,$<)'
+	${co}$(C) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
 
 %.cpp.d: %.cpp
 	@echo '[DPP] $<'

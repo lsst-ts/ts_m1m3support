@@ -12,23 +12,21 @@ src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
 
 # Tool invocations
-ts_M1M3Support: src/ts_M1M3Support.o src/libM1M3SS.a
+ts_M1M3Support: src/ts_M1M3Support.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
 	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS)
 
-M1M3_OBJS = src/cliapp/CliApp.o 
-
-m1m3cli: src/m1m3cli.o $(M1M3_OBJS) src/libM1M3SS.a
+m1m3cli: src/m1m3cli.cpp.o src/cliapp/CliApp.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
 	${co}$(CPP) -o $@ $^ -lpthread -lreadline -ldl
 
 # Other Targets
 clean:
-	@$(foreach file,ts_M1M3Support src/ts_M1M3Support.o src/m1m3cli.o doc, echo '[RM ] ${file}'; $(RM) -r $(file);)
+	@$(foreach file,ts_M1M3Support src/ts_M1M3Support.cpp.o src/m1m3cli.cpp.o doc, echo '[RM ] ${file}'; $(RM) -r $(file);)
 	@$(foreach dir,src tests,$(MAKE) -C ${dir} $@;)
 
 # file targets
-src/%.o: src/%.cpp
+src/%.cpp.o: src/%.cpp
 	$(MAKE) -C src $(patsubst src/%,%,$@)
 
 CRIO_IP = 10.0.0.11
