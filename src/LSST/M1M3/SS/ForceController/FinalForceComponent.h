@@ -54,7 +54,7 @@ public:
                         ForceActuatorSettings* forceActuatorSettings);
 
     /**
-     * @brief 
+     * @brief Sums applied forces to target x,y and z forces.
      */
     void applyForcesByComponents();
 

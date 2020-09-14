@@ -65,7 +65,20 @@ public:
     void reset();
 
 protected:
+    /**
+     * @brief Called after enable/disable changes.
+     *
+     * Publish a state change for the component Pure virtual, needs to be
+     * overriden in childrens.
+     */
     virtual void postEnableDisableActions() = 0;
+
+    /**
+     * @brief Called after update to forces.
+     *
+     * Check for forces that need to be clipped. Update SAL. Pure virtual,
+     * needs to be overriden in childrens.
+     */
     virtual void postUpdateActions() = 0;
 
     std::string name;

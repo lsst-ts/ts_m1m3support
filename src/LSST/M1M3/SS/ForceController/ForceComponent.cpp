@@ -67,10 +67,6 @@ void ForceComponent::disable() {
     memset(this->zTarget, 0, sizeof(this->zTarget));
 }
 
-void ForceComponent::postEnableDisableActions() {
-    // Publish a state change for the component
-}
-
 void ForceComponent::update() {
     if (this->disabling) {
         // If we are disabling we need to keep driving this force component to 0N
@@ -186,11 +182,6 @@ void ForceComponent::reset() {
     memset(this->yOffset, 0, sizeof(this->yOffset));
     memset(this->zOffset, 0, sizeof(this->zOffset));
     this->postUpdateActions();
-}
-
-void ForceComponent::postUpdateActions() {
-    // Check for forces that need to be clipped
-    // Update SAL
 }
 
 } /* namespace SS */
