@@ -87,17 +87,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _elevation_Timestamp = 0;
     _elevation_Angle_Actual = NAN;
 
-    _aberrationForceComponent.reset();
-    _accelerationForceComponent.reset();
-    _activeOpticForceComponent.reset();
-    _azimuthForceComponent.reset();
-    _balanceForceComponent.reset();
-    _elevationForceComponent.reset();
-    _offsetForceComponent.reset();
-    _staticForceComponent.reset();
-    _thermalForceComponent.reset();
-    _velocityForceComponent.reset();
-    _finalForceComponent.reset();
+    reset();
 
     double timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->timestamp = timestamp;
