@@ -31,74 +31,82 @@ namespace M1M3 {
 namespace SS {
 
 ForceComponent::ForceComponent() {
-    this->name = "UNDEFINED";
+    name = "UNDEFINED";
 
-    this->enabled = false;
-    this->disabling = false;
-    this->maxRateOfChange = 15000.0;
-    this->nearZeroValue = 10.0;
+    enabled = false;
+    disabling = false;
+    maxRateOfChange = 15000.0;
+    nearZeroValue = 10.0;
 
-    this->reset();
+    disabling = false;
+    enabled = false;
+
+    memset(xCurrent, 0, sizeof(xCurrent));
+    memset(yCurrent, 0, sizeof(yCurrent));
+    memset(zCurrent, 0, sizeof(zCurrent));
+    memset(xTarget, 0, sizeof(xTarget));
+    memset(yTarget, 0, sizeof(yTarget));
+    memset(zTarget, 0, sizeof(zTarget));
+    memset(xOffset, 0, sizeof(xOffset));
+    memset(yOffset, 0, sizeof(yOffset));
+    memset(zOffset, 0, sizeof(zOffset));
 }
 
 ForceComponent::~ForceComponent() {}
 
-bool ForceComponent::isEnabled() { return this->enabled; }
-bool ForceComponent::isDisabling() { return this->disabling; }
+bool ForceComponent::isEnabled() { return enabled; }
+bool ForceComponent::isDisabling() { return disabling; }
 
 void ForceComponent::enable() {
     // Enable and set the target to 0N
-    spdlog::debug("{}ForceComponent: enable()", this->name);
-    this->enabled = true;
-    this->disabling = false;
-    memset(this->xTarget, 0, sizeof(this->xTarget));
-    memset(this->yTarget, 0, sizeof(this->yTarget));
-    memset(this->zTarget, 0, sizeof(this->zTarget));
-    this->postEnableDisableActions();
+    spdlog::debug("{}ForceComponent: enable()", name);
+    enabled = true;
+    disabling = false;
+    memset(xTarget, 0, sizeof(xTarget));
+    memset(yTarget, 0, sizeof(yTarget));
+    memset(zTarget, 0, sizeof(zTarget));
+    postEnableDisableActions();
 }
 
 void ForceComponent::disable() {
     // Start disabling and driving to 0N
-    spdlog::debug("{}ForceComponent: disable()", this->name);
-    this->enabled = false;
-    this->disabling = true;
-    memset(this->xTarget, 0, sizeof(this->xTarget));
-    memset(this->yTarget, 0, sizeof(this->yTarget));
-    memset(this->zTarget, 0, sizeof(this->zTarget));
+    spdlog::debug("{}ForceComponent: disable()", name);
+    enabled = false;
+    disabling = true;
+    memset(xTarget, 0, sizeof(xTarget));
+    memset(yTarget, 0, sizeof(yTarget));
+    memset(zTarget, 0, sizeof(zTarget));
 }
 
 void ForceComponent::update() {
-    if (this->disabling) {
+    if (disabling) {
         // If we are disabling we need to keep driving this force component to 0N
         // Once we are near zero we consider our action complete and that the force
         // component is actually disabled
         bool nearZero = true;
         for (int i = 0; i < 156 && nearZero; ++i) {
             if (i < 12) {
-                nearZero = nearZero && this->xCurrent[i] < this->nearZeroValue &&
-                           this->xCurrent[i] > -this->nearZeroValue;
+                nearZero = nearZero && xCurrent[i] < nearZeroValue && xCurrent[i] > -nearZeroValue;
             }
 
             if (i < 100) {
-                nearZero = nearZero && this->yCurrent[i] < this->nearZeroValue &&
-                           this->yCurrent[i] > -this->nearZeroValue;
+                nearZero = nearZero && yCurrent[i] < nearZeroValue && yCurrent[i] > -nearZeroValue;
             }
 
-            nearZero = nearZero && this->zCurrent[i] < this->nearZeroValue &&
-                       this->zCurrent[i] > -this->nearZeroValue;
+            nearZero = nearZero && zCurrent[i] < nearZeroValue && zCurrent[i] > -nearZeroValue;
         }
         if (nearZero) {
-            spdlog::debug("{}ForceComponent: disabled()", this->name);
-            this->disabling = false;
-            this->enabled = false;
-            memset(this->xCurrent, 0, sizeof(this->xCurrent));
-            memset(this->yCurrent, 0, sizeof(this->yCurrent));
-            memset(this->zCurrent, 0, sizeof(this->zCurrent));
-            this->postEnableDisableActions();
-            this->postUpdateActions();
+            spdlog::debug("{}ForceComponent: disabled()", name);
+            disabling = false;
+            enabled = false;
+            memset(xCurrent, 0, sizeof(xCurrent));
+            memset(yCurrent, 0, sizeof(yCurrent));
+            memset(zCurrent, 0, sizeof(zCurrent));
+            postEnableDisableActions();
+            postUpdateActions();
         }
     }
-    if (this->enabled || this->disabling) {
+    if (enabled || disabling) {
         // If this force component is enabled then we need to keep trying
         // to drive this force component to it's target value.
         // To do this we need to find the vector with the largest delta
@@ -107,44 +115,44 @@ void ForceComponent::update() {
         float largestDelta = 0.0;
         for (int i = 0; i < 156; ++i) {
             if (i < 12) {
-                this->xOffset[i] = this->xTarget[i] - this->xCurrent[i];
-                if (std::abs(this->xOffset[i]) > largestDelta) {
-                    largestDelta = std::abs(this->xOffset[i]);
+                xOffset[i] = xTarget[i] - xCurrent[i];
+                if (std::abs(xOffset[i]) > largestDelta) {
+                    largestDelta = std::abs(xOffset[i]);
                 }
             }
 
             if (i < 100) {
-                this->yOffset[i] = this->yTarget[i] - this->yCurrent[i];
-                if (std::abs(this->yOffset[i]) > largestDelta) {
-                    largestDelta = std::abs(this->yOffset[i]);
+                yOffset[i] = yTarget[i] - yCurrent[i];
+                if (std::abs(yOffset[i]) > largestDelta) {
+                    largestDelta = std::abs(yOffset[i]);
                 }
             }
 
-            this->zOffset[i] = this->zTarget[i] - this->zCurrent[i];
-            if (std::abs(this->zOffset[i]) > largestDelta) {
-                largestDelta = std::abs(this->zOffset[i]);
+            zOffset[i] = zTarget[i] - zCurrent[i];
+            if (std::abs(zOffset[i]) > largestDelta) {
+                largestDelta = std::abs(zOffset[i]);
             }
         }
         // Determine how many outer loop cycles it will take to drive the
         // largest delta to 0N and use that as a scalar for all other
         // actuator deltas.
-        float scalar = largestDelta / this->maxRateOfChange;
+        float scalar = largestDelta / maxRateOfChange;
         if (scalar > 1) {
             // If it is more than 1 outer loop cycle keep working, we aren't
             // then we need to keep working!
             for (int i = 0; i < 156; ++i) {
                 if (i < 12) {
-                    this->xOffset[i] /= scalar;
-                    this->xCurrent[i] += this->xOffset[i];
+                    xOffset[i] /= scalar;
+                    xCurrent[i] += xOffset[i];
                 }
 
                 if (i < 100) {
-                    this->yOffset[i] /= scalar;
-                    this->yCurrent[i] += this->yOffset[i];
+                    yOffset[i] /= scalar;
+                    yCurrent[i] += yOffset[i];
                 }
 
-                this->zOffset[i] /= scalar;
-                this->zCurrent[i] += this->zOffset[i];
+                zOffset[i] /= scalar;
+                zCurrent[i] += zOffset[i];
             }
         } else {
             // If it is less than 1 outer loop cycle just set current as the target
@@ -153,35 +161,35 @@ void ForceComponent::update() {
             // to produce.
             for (int i = 0; i < 156; ++i) {
                 if (i < 12) {
-                    this->xCurrent[i] = this->xTarget[i];
+                    xCurrent[i] = xTarget[i];
                 }
 
                 if (i < 100) {
-                    this->yCurrent[i] = this->yTarget[i];
+                    yCurrent[i] = yTarget[i];
                 }
 
-                this->zCurrent[i] = this->zTarget[i];
+                zCurrent[i] = zTarget[i];
             }
         }
-        this->postUpdateActions();
+        postUpdateActions();
     }
 }
 
 void ForceComponent::reset() {
-    this->disabling = false;
-    this->enabled = false;
-    this->postEnableDisableActions();
+    disabling = false;
+    enabled = false;
+    postEnableDisableActions();
 
-    memset(this->xCurrent, 0, sizeof(this->xCurrent));
-    memset(this->yCurrent, 0, sizeof(this->yCurrent));
-    memset(this->zCurrent, 0, sizeof(this->zCurrent));
-    memset(this->xTarget, 0, sizeof(this->xTarget));
-    memset(this->yTarget, 0, sizeof(this->yTarget));
-    memset(this->zTarget, 0, sizeof(this->zTarget));
-    memset(this->xOffset, 0, sizeof(this->xOffset));
-    memset(this->yOffset, 0, sizeof(this->yOffset));
-    memset(this->zOffset, 0, sizeof(this->zOffset));
-    this->postUpdateActions();
+    memset(xCurrent, 0, sizeof(xCurrent));
+    memset(yCurrent, 0, sizeof(yCurrent));
+    memset(zCurrent, 0, sizeof(zCurrent));
+    memset(xTarget, 0, sizeof(xTarget));
+    memset(yTarget, 0, sizeof(yTarget));
+    memset(zTarget, 0, sizeof(zTarget));
+    memset(xOffset, 0, sizeof(xOffset));
+    memset(yOffset, 0, sizeof(yOffset));
+    memset(zOffset, 0, sizeof(zOffset));
+    postUpdateActions();
 }
 
 } /* namespace SS */
