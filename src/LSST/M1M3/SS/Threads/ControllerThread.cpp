@@ -55,8 +55,10 @@ void ControllerThread::run() {
 }
 
 void ControllerThread::stop() {
-    std::lock_guard<std::mutex> lg(_mutex);
-    _keepRunning = false;
+    {
+        std::lock_guard<std::mutex> lg(_mutex);
+        _keepRunning = false;
+    }
     _cv.notify_one();
 }
 
@@ -76,15 +78,15 @@ void ControllerThread::enqueue(Command* command) {
     {
         std::lock_guard<std::mutex> lg(_mutex);
         _queue.push(command);
-        _cv.notify_one();
     }
+    _cv.notify_one();
 }
 
 Command* ControllerThread::_dequeue() {
     spdlog::trace("ControllerThread: _dequeue()");
     {
         std::unique_lock<std::mutex> lock(_mutex);
-        _cv.wait(lock, [this] { return _keepRunning; });
+        _cv.wait(lock, [this] { return (_queue.empty() == false) || (_keepRunning == false); });
         if (!_queue.empty()) {
             Command* command = _queue.front();
             _queue.pop();
