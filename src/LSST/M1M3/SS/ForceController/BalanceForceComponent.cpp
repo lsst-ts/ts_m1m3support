@@ -41,14 +41,13 @@ BalanceForceComponent::BalanceForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
-        : _fx(0, pidSettings->Fx),
+        : ForceComponent("Balance"),
+          _fx(0, pidSettings->Fx),
           _fy(1, pidSettings->Fy),
           _fz(2, pidSettings->Fz),
           _mx(3, pidSettings->Mx),
           _my(4, pidSettings->My),
           _mz(5, pidSettings->Mz) {
-    name = "Balance";
-
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

@@ -39,9 +39,8 @@ namespace SS {
 AberrationForceComponent::AberrationForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Aberration";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Aberration") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

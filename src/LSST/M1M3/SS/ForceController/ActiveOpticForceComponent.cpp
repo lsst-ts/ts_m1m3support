@@ -39,9 +39,8 @@ namespace SS {
 ActiveOpticForceComponent::ActiveOpticForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "ActiveOptic";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("ActiveOptic") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

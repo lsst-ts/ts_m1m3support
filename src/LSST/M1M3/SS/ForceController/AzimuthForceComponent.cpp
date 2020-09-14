@@ -39,9 +39,8 @@ namespace SS {
 AzimuthForceComponent::AzimuthForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Azimuth";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Azimuth") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
