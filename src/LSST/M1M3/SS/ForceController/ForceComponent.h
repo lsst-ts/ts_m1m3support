@@ -30,8 +30,44 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * @brief Abstract parent class of all force compoments.
+ *
+ * Forces acting on mirror are calculated as sum of 6 scalar forces (lateral
+ * forces in x,y and z direction and rotational forces (moments) around x,y and
+ * z axis). Individual forces are summed in FinalForceComponent. Considered
+ * forces and demands are:
+ *
+ * * AberrationForceComponent (Z direction only)
+ * * AccelerationForceComponent
+ * * ActiveOpticForceComponent (Z direction only)
+ * * AzimuthForceComponent
+ * * BalanceForceComponent
+ * * ElevationForceComponent
+ * * OffsetForceComponent
+ * * StaticForceComponent
+ * * ThermalForceComponent
+ * * VelocityForceComponent
+ */
 class ForceComponent {
+public:
+    ForceComponent();
+    virtual ~ForceComponent();
+
+    bool isEnabled();
+    bool isDisabling();
+
+    void enable();
+    void disable();
+
+    void update();
+
+    void reset();
+
 protected:
+    virtual void postEnableDisableActions() = 0;
+    virtual void postUpdateActions() = 0;
+
     std::string name;
 
     bool enabled;
@@ -50,24 +86,6 @@ protected:
     float xOffset[12];
     float yOffset[100];
     float zOffset[156];
-
-public:
-    ForceComponent();
-    virtual ~ForceComponent();
-
-    bool isEnabled();
-    bool isDisabling();
-
-    void enable();
-    void disable();
-
-    void update();
-
-    void reset();
-
-protected:
-    virtual void postEnableDisableActions();
-    virtual void postUpdateActions();
 };
 
 } /* namespace SS */

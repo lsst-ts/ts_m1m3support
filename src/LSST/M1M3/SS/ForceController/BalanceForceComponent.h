@@ -51,8 +51,8 @@ public:
     void resetPIDs();
 
 protected:
-    void postEnableDisableActions();
-    void postUpdateActions();
+    void postEnableDisableActions() override;
+    void postUpdateActions() override;
 
 private:
     PID* _idToPID(int id);
