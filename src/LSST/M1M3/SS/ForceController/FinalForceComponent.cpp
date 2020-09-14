@@ -65,24 +65,6 @@ FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
     this->enable();
 }
 
-void FinalForceComponent::applyForces(float* x, float* y, float* z) {
-    spdlog::trace("FinalForceComponent: applyForces()");
-    if (!this->isEnabled()) {
-        this->enable();
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
-        }
-
-        if (i < 100) {
-            this->yTarget[i] = y[i];
-        }
-
-        this->zTarget[i] = z[i];
-    }
-}
-
 void FinalForceComponent::applyForcesByComponents() {
     spdlog::trace("FinalForceComponent: applyForcesByComponents()");
     if (!this->isEnabled()) {
