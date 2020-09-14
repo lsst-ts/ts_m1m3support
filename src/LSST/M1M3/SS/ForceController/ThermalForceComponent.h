@@ -44,8 +44,8 @@ public:
     void applyThermalForcesByMirrorTemperature(float temperature);
 
 protected:
-    void postEnableDisableActions();
-    void postUpdateActions();
+    void postEnableDisableActions() override;
+    void postUpdateActions() override;
 
 private:
     SafetyController* _safetyController;

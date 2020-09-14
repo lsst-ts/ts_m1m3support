@@ -45,10 +45,10 @@ ElevationForceComponent::ElevationForceComponent(
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    this->forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    this->forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    this->appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
-    this->rejectedElevationForces = M1M3SSPublisher::get().getEventRejectedElevationForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
+    _rejectedElevationForces = M1M3SSPublisher::get().getEventRejectedElevationForces();
     this->maxRateOfChange = _forceActuatorSettings->ElevationComponentSettings.MaxRateOfChange;
     this->nearZeroValue = _forceActuatorSettings->ElevationComponentSettings.NearZeroValue;
 }
@@ -67,14 +67,14 @@ void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z)
     }
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = x[i] * this->forceActuatorState->supportPercentage;
+            this->xTarget[i] = x[i] * _forceActuatorState->supportPercentage;
         }
 
         if (i < 100) {
-            this->yTarget[i] = y[i] * this->forceActuatorState->supportPercentage;
+            this->yTarget[i] = y[i] * _forceActuatorState->supportPercentage;
         }
 
-        this->zTarget[i] = z[i] * this->forceActuatorState->supportPercentage;
+        this->zTarget[i] = z[i] * _forceActuatorState->supportPercentage;
     }
 }
 
@@ -100,81 +100,82 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
     this->applyElevationForces(xForces, yForces, zForces);
 }
 
-void ElevationForceComponent::_postEnableDisableActions() {
+void ElevationForceComponent::postEnableDisableActions() {
     spdlog::debug("ElevationForceComponent: postEnableDisableActions()");
 
-    this->forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    this->forceActuatorState->elevationForcesApplied = this->enabled;
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->elevationForcesApplied = this->enabled;
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
-void ElevationForceComponent::_postUpdateActions() {
+void ElevationForceComponent::postUpdateActions() {
     spdlog::trace("ElevationForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool rejectionRequired = false;
-    this->appliedElevationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
-    this->rejectedElevationForces->timestamp = this->appliedElevationForces->timestamp;
+    _appliedElevationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _rejectedElevationForces->timestamp = _appliedElevationForces->timestamp;
     for (int zIndex = 0; zIndex < 156; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
-        this->forceSetpointWarning->elevationForceWarning[zIndex] = false;
+        _forceSetpointWarning->elevationForceWarning[zIndex] = false;
 
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].HighFault;
-            this->rejectedElevationForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  this->rejectedElevationForces->xForces[xIndex],
-                                                  this->appliedElevationForces->xForces + xIndex);
-            this->forceSetpointWarning->elevationForceWarning[zIndex] =
-                    this->forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
+            _rejectedElevationForces->xForces[xIndex] = this->xCurrent[xIndex];
+            notInRange =
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedElevationForces->xForces[xIndex],
+                                             _appliedElevationForces->xForces + xIndex);
+            _forceSetpointWarning->elevationForceWarning[zIndex] =
+                    _forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].HighFault;
-            this->rejectedElevationForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  this->rejectedElevationForces->yForces[yIndex],
-                                                  this->appliedElevationForces->yForces + yIndex);
-            this->forceSetpointWarning->elevationForceWarning[zIndex] =
-                    this->forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
+            _rejectedElevationForces->yForces[yIndex] = this->yCurrent[yIndex];
+            notInRange =
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedElevationForces->yForces[yIndex],
+                                             _appliedElevationForces->yForces + yIndex);
+            _forceSetpointWarning->elevationForceWarning[zIndex] =
+                    _forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].HighFault;
-        this->rejectedElevationForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
-                                              this->rejectedElevationForces->zForces[zIndex],
-                                              this->appliedElevationForces->zForces + zIndex);
-        this->forceSetpointWarning->elevationForceWarning[zIndex] =
-                this->forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || this->forceSetpointWarning->elevationForceWarning[zIndex];
+        _rejectedElevationForces->zForces[zIndex] = this->zCurrent[zIndex];
+
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedElevationForces->zForces[zIndex],
+                                         _appliedElevationForces->zForces + zIndex);
+        _forceSetpointWarning->elevationForceWarning[zIndex] =
+                _forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
+        rejectionRequired = rejectionRequired || _forceSetpointWarning->elevationForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, this->appliedElevationForces->xForces,
-            this->appliedElevationForces->yForces, this->appliedElevationForces->zForces);
-    this->appliedElevationForces->fx = fm.Fx;
-    this->appliedElevationForces->fy = fm.Fy;
-    this->appliedElevationForces->fz = fm.Fz;
-    this->appliedElevationForces->mx = fm.Mx;
-    this->appliedElevationForces->my = fm.My;
-    this->appliedElevationForces->mz = fm.Mz;
-    this->appliedElevationForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedElevationForces->xForces,
+            _appliedElevationForces->yForces, _appliedElevationForces->zForces);
+    _appliedElevationForces->fx = fm.Fx;
+    _appliedElevationForces->fy = fm.Fy;
+    _appliedElevationForces->fz = fm.Fz;
+    _appliedElevationForces->mx = fm.Mx;
+    _appliedElevationForces->my = fm.My;
+    _appliedElevationForces->mz = fm.Mz;
+    _appliedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, this->rejectedElevationForces->xForces,
-            this->rejectedElevationForces->yForces, this->rejectedElevationForces->zForces);
-    this->rejectedElevationForces->fx = fm.Fx;
-    this->rejectedElevationForces->fy = fm.Fy;
-    this->rejectedElevationForces->fz = fm.Fz;
-    this->rejectedElevationForces->mx = fm.Mx;
-    this->rejectedElevationForces->my = fm.My;
-    this->rejectedElevationForces->mz = fm.Mz;
-    this->rejectedElevationForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedElevationForces->xForces,
+            _rejectedElevationForces->yForces, _rejectedElevationForces->zForces);
+    _rejectedElevationForces->fx = fm.Fx;
+    _rejectedElevationForces->fy = fm.Fy;
+    _rejectedElevationForces->fz = fm.Fz;
+    _rejectedElevationForces->mx = fm.Mx;
+    _rejectedElevationForces->my = fm.My;
+    _rejectedElevationForces->mz = fm.Mz;
+    _rejectedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
     _safetyController->forceControllerNotifyElevationForceClipping(rejectionRequired);
 

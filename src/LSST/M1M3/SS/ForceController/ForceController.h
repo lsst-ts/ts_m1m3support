@@ -52,6 +52,30 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * @brief Coordinate force actuators force calculcation.
+ *
+ * The mirror weight and external forces acting on the mirror shall be
+ * counteracted by the force actuators. ForceController coordinates this -
+ * calculates contribution of the mirror weight and external forces
+ * (acceleration,..), distributes this between the force actuators. It also
+ * check for the mirror safety - runs various checks on the computed forces to
+ * confirm mirror stress stays within the mirror stress limits.
+ *
+ * ## Mirror safety
+ *
+ * Following checks are run:
+ *
+ * * Mirror moments - _checkMirrorMoments
+ * * Near neighbors - _checkNearNeighbors
+ * * Mirror weight - _checkMirrorWeight
+ * * Far neighbors - _checkFarNeighbors
+ *
+ * Please see LBTO UA 95-02 document for description of those checks (Chapter 9
+ * [Mirror Support Safety], Subchapter 9.2 [Methods of Protection]).
+ *
+ * The checks are run from ForceController::processAppliedForces() method.
+ */
 class ForceController {
 public:
     ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -71,6 +95,17 @@ public:
     bool followingErrorInTolerance();
 
     void updateAppliedForces();
+
+    /**
+     * @brief Sums components and run mirror safety checks.
+     *
+     * Uses FinalForceComponent to sum mirror forces obtained from
+     * AberrationForceComponent, AccelerationForceComponent,
+     * ActiveOpticForceComponent, AzimuthForceComponent, BalanceForceComponent,
+     * ElevationForceComponent, OffsetForceComponent, StaticForceComponent,
+     * ThermalForceComponent and VelocityForceComponent. Run mirror safety
+     * checks on summed forces, and log warning if forces are rejected.
+     */
     void processAppliedForces();
 
     void applyAberrationForcesByBendingModes(float* coefficients);
