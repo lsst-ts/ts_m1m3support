@@ -38,9 +38,8 @@ namespace SS {
 
 FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
                                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                         ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Final";
-
+                                         ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Final") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

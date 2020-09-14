@@ -38,9 +38,8 @@ namespace SS {
 
 OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                           ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Offset";
-
+                                           ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Offset") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

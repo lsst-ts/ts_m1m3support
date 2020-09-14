@@ -39,9 +39,8 @@ namespace SS {
 ThermalForceComponent::ThermalForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Thermal";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Thermal") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

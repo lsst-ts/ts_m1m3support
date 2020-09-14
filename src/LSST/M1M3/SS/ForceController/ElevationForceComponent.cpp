@@ -39,9 +39,8 @@ namespace SS {
 ElevationForceComponent::ElevationForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Elevation";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Elevation") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

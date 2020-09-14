@@ -38,9 +38,8 @@ namespace SS {
 
 StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                           ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Static";
-
+                                           ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Static") {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

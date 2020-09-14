@@ -30,9 +30,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ForceComponent::ForceComponent() {
-    name = "UNDEFINED";
-
+ForceComponent::ForceComponent(const char *name) : _name(name) {
     enabled = false;
     disabling = false;
     maxRateOfChange = 15000.0;
@@ -59,7 +57,7 @@ bool ForceComponent::isDisabling() { return disabling; }
 
 void ForceComponent::enable() {
     // Enable and set the target to 0N
-    spdlog::debug("{}ForceComponent: enable()", name);
+    spdlog::debug("{}ForceComponent: enable()", _name);
     enabled = true;
     disabling = false;
     memset(xTarget, 0, sizeof(xTarget));
@@ -70,7 +68,7 @@ void ForceComponent::enable() {
 
 void ForceComponent::disable() {
     // Start disabling and driving to 0N
-    spdlog::debug("{}ForceComponent: disable()", name);
+    spdlog::debug("{}ForceComponent: disable()", _name);
     enabled = false;
     disabling = true;
     memset(xTarget, 0, sizeof(xTarget));
@@ -96,7 +94,7 @@ void ForceComponent::update() {
             nearZero = nearZero && zCurrent[i] < nearZeroValue && zCurrent[i] > -nearZeroValue;
         }
         if (nearZero) {
-            spdlog::debug("{}ForceComponent: disabled()", name);
+            spdlog::debug("{}ForceComponent: disabled()", _name);
             disabling = false;
             enabled = false;
             memset(xCurrent, 0, sizeof(xCurrent));

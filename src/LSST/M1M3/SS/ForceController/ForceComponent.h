@@ -31,7 +31,7 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * @brief Abstract parent class of all force compoments.
+ * Abstract parent class of all force components.
  *
  * Forces acting on mirror are calculated as sum of 6 scalar forces (lateral
  * forces in x,y and z direction and rotational forces (moments) around x,y and
@@ -51,13 +51,30 @@ namespace SS {
  */
 class ForceComponent {
 public:
-    ForceComponent();
+    /**
+     * Construct ForceComponent.
+     *
+     * @param name force component name
+     */
+    ForceComponent(const char *name);
     virtual ~ForceComponent();
 
+    /**
+     * Returns true if force component is enabled.
+     *
+     * @return true if the force component is enabled
+     */
     bool isEnabled();
     bool isDisabling();
 
+    /**
+     * Enable force component.
+     */
     void enable();
+
+    /**
+     * Disable force component.
+     */
     void disable();
 
     void update();
@@ -66,22 +83,20 @@ public:
 
 protected:
     /**
-     * @brief Called after enable/disable changes.
+     * Called after enable/disable changes.
      *
      * Publish a state change for the component Pure virtual, needs to be
-     * overriden in childrens.
+     * overriden in children.
      */
     virtual void postEnableDisableActions() = 0;
 
     /**
-     * @brief Called after update to forces.
+     * Called after update to forces.
      *
      * Check for forces that need to be clipped. Update SAL. Pure virtual,
-     * needs to be overriden in childrens.
+     * needs to be overriden in children.
      */
     virtual void postUpdateActions() = 0;
-
-    std::string name;
 
     bool enabled;
     bool disabling;
@@ -99,6 +114,9 @@ protected:
     float xOffset[12];
     float yOffset[100];
     float zOffset[156];
+
+private:
+    const char *_name;
 };
 
 } /* namespace SS */
