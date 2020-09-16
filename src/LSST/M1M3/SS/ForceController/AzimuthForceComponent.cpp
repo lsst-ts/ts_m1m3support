@@ -40,7 +40,7 @@ AzimuthForceComponent::AzimuthForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Azimuth") {
+        : ForceComponent("Azimuth", forceActuatorSettings->AzimuthComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,20 +48,16 @@ AzimuthForceComponent::AzimuthForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
     _rejectedAzimuthForces = M1M3SSPublisher::get().getEventRejectedAzimuthForces();
-    maxRateOfChange = _forceActuatorSettings->AzimuthComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->AzimuthComponentSettings.NearZeroValue;
 }
 
 void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
     spdlog::trace("AzimuthForceComponent: applyAzimuthForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("AzimuthForceComponent: applyAzimuthForces() called when the component is disabling");
-        return;
-    }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = x[i];
@@ -73,7 +69,7 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
 
         this->zTarget[i] = z[i];
     }
-}
+}  // namespace SS
 
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
     spdlog::trace("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
@@ -101,7 +97,7 @@ void AzimuthForceComponent::postEnableDisableActions() {
     spdlog::debug("AzimuthForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->azimuthForcesApplied = this->enabled;
+    _forceActuatorState->azimuthForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -181,6 +177,6 @@ void AzimuthForceComponent::postUpdateActions() {
     M1M3SSPublisher::get().logAppliedAzimuthForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */

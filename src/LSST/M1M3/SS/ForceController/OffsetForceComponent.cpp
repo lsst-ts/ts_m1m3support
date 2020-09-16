@@ -39,7 +39,7 @@ namespace SS {
 OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                            ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Offset") {
+        : ForceComponent("Offset", forceActuatorSettings->OffsetComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -47,20 +47,16 @@ OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
     _rejectedOffsetForces = M1M3SSPublisher::get().getEventRejectedOffsetForces();
-    this->maxRateOfChange = _forceActuatorSettings->OffsetComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->OffsetComponentSettings.NearZeroValue;
 }
 
 void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
     spdlog::debug("OffsetForceComponent: applyOffsetForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("OffsetForceComponent: applyOffsetForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("ThermalOffsetComponent: applyOffsetForces() called when the component is disabling");
-        this->enable();
-    }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = x[i];
@@ -104,7 +100,7 @@ void OffsetForceComponent::postEnableDisableActions() {
     spdlog::debug("OffsetForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->offsetForcesApplied = this->enabled;
+    _forceActuatorState->offsetForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 

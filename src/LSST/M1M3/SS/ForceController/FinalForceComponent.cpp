@@ -39,7 +39,7 @@ namespace SS {
 FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
                                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                          ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Final") {
+        : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -47,8 +47,6 @@ FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
     _rejectedForces = M1M3SSPublisher::get().getEventRejectedForces();
-    this->maxRateOfChange = _forceActuatorSettings->FinalComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->FinalComponentSettings.NearZeroValue;
 
     _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
     _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
@@ -61,14 +59,16 @@ FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
     _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
     _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
 
-    this->enable();
+    enable();
 }
 
 void FinalForceComponent::applyForcesByComponents() {
     spdlog::trace("FinalForceComponent: applyForcesByComponents()");
-    if (!this->isEnabled()) {
-        this->enable();
+
+    if (!isEnabled()) {
+        enable();
     }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +

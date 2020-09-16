@@ -40,7 +40,7 @@ ElevationForceComponent::ElevationForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Elevation") {
+        : ForceComponent("Elevation", forceActuatorSettings->ElevationComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,22 +48,18 @@ ElevationForceComponent::ElevationForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
     _rejectedElevationForces = M1M3SSPublisher::get().getEventRejectedElevationForces();
-    this->maxRateOfChange = _forceActuatorSettings->ElevationComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->ElevationComponentSettings.NearZeroValue;
 }
 
 void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z) {
     spdlog::trace("ElevationForceComponent: applyElevationForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
-                "ElevationForceComponent: applyElevationForces() called when the component is not applied");
+                "ElevationForceComponent: applyElevationForces() called when the component is not "
+                "applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn(
-                "ElevationForceComponent: applyElevationForces() called when the component is disabling");
-        return;
-    }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = x[i] * _forceActuatorState->supportPercentage;
@@ -103,7 +99,7 @@ void ElevationForceComponent::postEnableDisableActions() {
     spdlog::debug("ElevationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->elevationForcesApplied = this->enabled;
+    _forceActuatorState->elevationForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 

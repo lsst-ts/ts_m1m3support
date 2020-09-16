@@ -40,7 +40,7 @@ ThermalForceComponent::ThermalForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Thermal") {
+        : ForceComponent("Thermal", forceActuatorSettings->ThermalComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,20 +48,16 @@ ThermalForceComponent::ThermalForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
     _rejectedThermalForces = M1M3SSPublisher::get().getEventRejectedThermalForces();
-    maxRateOfChange = _forceActuatorSettings->ThermalComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->ThermalComponentSettings.NearZeroValue;
 }
 
 void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
     spdlog::trace("ThermalForceComponent: applyThermalForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("ThermalForceComponent: applyThermalForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("ThermalForceComponent: applyThermalForces() called when the component is disabling");
-        return;
-    }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = x[i];
@@ -73,7 +69,7 @@ void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
 
         this->zTarget[i] = z[i];
     }
-}
+}  // namespace SS
 
 void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperature) {
     spdlog::trace("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
@@ -101,7 +97,7 @@ void ThermalForceComponent::postEnableDisableActions() {
     spdlog::debug("ThermalForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->thermalForcesApplied = this->enabled;
+    _forceActuatorState->thermalForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -181,6 +177,6 @@ void ThermalForceComponent::postUpdateActions() {
     M1M3SSPublisher::get().logAppliedThermalForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */

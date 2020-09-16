@@ -40,7 +40,7 @@ AberrationForceComponent::AberrationForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Aberration") {
+        : ForceComponent("Aberration", forceActuatorSettings->AberrationComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,22 +48,18 @@ AberrationForceComponent::AberrationForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
     _rejectedAberrationForces = M1M3SSPublisher::get().getEventRejectedAberrationForces();
-    maxRateOfChange = _forceActuatorSettings->AberrationComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->AberrationComponentSettings.NearZeroValue;
 }
 
 void AberrationForceComponent::applyAberrationForces(float* z) {
     spdlog::debug("AberrationForceComponent: applyAberrationForces()");
-    if (!enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
-                "AberrationForceComponent: applyAberrationForces() called when the component is not applied");
+                "AberrationForceComponent: applyAberrationForces() called when the component is not "
+                "applied");
         return;
     }
-    if (disabling) {
-        spdlog::warn(
-                "AberrationForceComponent: applyAberrationForces() called when the component is disabling");
-        enable();
-    }
+
     for (int i = 0; i < 156; ++i) {
         zTarget[i] = z[i];
     }
@@ -80,7 +76,7 @@ void AberrationForceComponent::postEnableDisableActions() {
     spdlog::debug("AberrationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->aberrationForcesApplied = enabled;
+    _forceActuatorState->aberrationForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 

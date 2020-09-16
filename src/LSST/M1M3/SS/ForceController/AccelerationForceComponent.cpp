@@ -40,7 +40,7 @@ AccelerationForceComponent::AccelerationForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Acceleration") {
+        : ForceComponent("Acceleration", forceActuatorSettings->AccelerationComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,24 +48,18 @@ AccelerationForceComponent::AccelerationForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
     _rejectedAccelerationForces = M1M3SSPublisher::get().getEventRejectedAccelerationForces();
-    this->maxRateOfChange = _forceActuatorSettings->AccelerationComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->AccelerationComponentSettings.NearZeroValue;
 }
 
 void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, float* z) {
     spdlog::trace("AccelerationForceComponent: applyAccelerationForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
                 "AccelerationForceComponent: applyAccelerationForces() called when the component is not "
                 "applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn(
-                "AccelerationForceComponent: applyAccelerationForces() called when the component is "
-                "disabling");
-        return;
-    }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = x[i];
@@ -109,7 +103,7 @@ void AccelerationForceComponent::postEnableDisableActions() {
     spdlog::debug("AccelerationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->accelerationForcesApplied = this->enabled;
+    _forceActuatorState->accelerationForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 

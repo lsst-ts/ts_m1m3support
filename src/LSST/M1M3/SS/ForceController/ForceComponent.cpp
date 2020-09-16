@@ -30,14 +30,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ForceComponent::ForceComponent(const char *name) : _name(name) {
-    enabled = false;
-    disabling = false;
-    maxRateOfChange = 15000.0;
-    nearZeroValue = 10.0;
-
-    disabling = false;
-    enabled = false;
+ForceComponent::ForceComponent(const char *name, const ForceComponentSettings &forceComponentSettings)
+        : _name(name),
+          _maxRateOfChange(forceComponentSettings.MaxRateOfChange),
+          _nearZeroValue(forceComponentSettings.NearZeroValue) {
+    _state = DISABLED;
 
     memset(xCurrent, 0, sizeof(xCurrent));
     memset(yCurrent, 0, sizeof(yCurrent));
@@ -52,14 +49,10 @@ ForceComponent::ForceComponent(const char *name) : _name(name) {
 
 ForceComponent::~ForceComponent() {}
 
-bool ForceComponent::isEnabled() { return enabled; }
-bool ForceComponent::isDisabling() { return disabling; }
-
 void ForceComponent::enable() {
     // Enable and set the target to 0N
     spdlog::debug("{}ForceComponent: enable()", _name);
-    enabled = true;
-    disabling = false;
+    _state = ENABLED;
     memset(xTarget, 0, sizeof(xTarget));
     memset(yTarget, 0, sizeof(yTarget));
     memset(zTarget, 0, sizeof(zTarget));
@@ -69,34 +62,32 @@ void ForceComponent::enable() {
 void ForceComponent::disable() {
     // Start disabling and driving to 0N
     spdlog::debug("{}ForceComponent: disable()", _name);
-    enabled = false;
-    disabling = true;
+    _state = DISABLING;
     memset(xTarget, 0, sizeof(xTarget));
     memset(yTarget, 0, sizeof(yTarget));
     memset(zTarget, 0, sizeof(zTarget));
 }
 
 void ForceComponent::update() {
-    if (disabling) {
+    if (isDisabling()) {
         // If we are disabling we need to keep driving this force component to 0N
         // Once we are near zero we consider our action complete and that the force
         // component is actually disabled
         bool nearZero = true;
         for (int i = 0; i < 156 && nearZero; ++i) {
             if (i < 12) {
-                nearZero = nearZero && xCurrent[i] < nearZeroValue && xCurrent[i] > -nearZeroValue;
+                nearZero = nearZero && fabs(xCurrent[i]) < _nearZeroValue;
             }
 
             if (i < 100) {
-                nearZero = nearZero && yCurrent[i] < nearZeroValue && yCurrent[i] > -nearZeroValue;
+                nearZero = nearZero && fabs(yCurrent[i]) < _nearZeroValue;
             }
 
-            nearZero = nearZero && zCurrent[i] < nearZeroValue && zCurrent[i] > -nearZeroValue;
+            nearZero = nearZero && fabs(zCurrent[i]) < _nearZeroValue;
         }
         if (nearZero) {
             spdlog::debug("{}ForceComponent: disabled()", _name);
-            disabling = false;
-            enabled = false;
+            _state = DISABLED;
             memset(xCurrent, 0, sizeof(xCurrent));
             memset(yCurrent, 0, sizeof(yCurrent));
             memset(zCurrent, 0, sizeof(zCurrent));
@@ -104,7 +95,7 @@ void ForceComponent::update() {
             postUpdateActions();
         }
     }
-    if (enabled || disabling) {
+    if (isEnabled() || isDisabling()) {
         // If this force component is enabled then we need to keep trying
         // to drive this force component to it's target value.
         // To do this we need to find the vector with the largest delta
@@ -134,7 +125,7 @@ void ForceComponent::update() {
         // Determine how many outer loop cycles it will take to drive the
         // largest delta to 0N and use that as a scalar for all other
         // actuator deltas.
-        float scalar = largestDelta / maxRateOfChange;
+        float scalar = largestDelta / _maxRateOfChange;
         if (scalar > 1) {
             // If it is more than 1 outer loop cycle keep working, we aren't
             // then we need to keep working!
@@ -174,8 +165,7 @@ void ForceComponent::update() {
 }
 
 void ForceComponent::reset() {
-    disabling = false;
-    enabled = false;
+    _state = DISABLED;
     postEnableDisableActions();
 
     memset(xCurrent, 0, sizeof(xCurrent));
