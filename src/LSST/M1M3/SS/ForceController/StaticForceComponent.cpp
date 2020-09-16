@@ -39,7 +39,7 @@ namespace SS {
 StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                            ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Static") {
+        : ForceComponent("Static", forceActuatorSettings->StaticComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -47,21 +47,17 @@ StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
     _rejectedStaticForces = M1M3SSPublisher::get().getEventRejectedStaticForces();
-    this->maxRateOfChange = _forceActuatorSettings->StaticComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->StaticComponentSettings.NearZeroValue;
 }
 
 void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y,
                                              std::vector<float>* z) {
     spdlog::debug("StaticForceComponent: applyStaticForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("StaticForceComponent: applyStaticForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("StaticForceComponent: applyStaticForces() called when the component is disabling");
-        return;
-    }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = (*x)[i];
@@ -73,13 +69,13 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
 
         this->zTarget[i] = (*z)[i];
     }
-}
+}  // namespace SS
 
 void StaticForceComponent::postEnableDisableActions() {
     spdlog::debug("StaticForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->staticForcesApplied = this->enabled;
+    _forceActuatorState->staticForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -159,6 +155,6 @@ void StaticForceComponent::postUpdateActions() {
     M1M3SSPublisher::get().logAppliedStaticForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */

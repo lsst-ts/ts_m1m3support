@@ -40,7 +40,7 @@ VelocityForceComponent::VelocityForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Velocity") {
+        : ForceComponent("Velocity", forceActuatorSettings->VelocityComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,21 +48,17 @@ VelocityForceComponent::VelocityForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
     _rejectedVelocityForces = M1M3SSPublisher::get().getEventRejectedVelocityForces();
-    this->maxRateOfChange = _forceActuatorSettings->VelocityComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->VelocityComponentSettings.NearZeroValue;
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
     spdlog::trace("VelocityForceComponent: applyVelocityForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
                 "VelocityForceComponent: applyVelocityForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("VelocityForceComponent: applyVelocityForces() called when the component is disabling");
-        return;
-    }
+
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
             this->xTarget[i] = x[i];
@@ -105,7 +101,7 @@ void VelocityForceComponent::postEnableDisableActions() {
     spdlog::debug("VelocityForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->velocityForcesApplied = this->enabled;
+    _forceActuatorState->velocityForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
