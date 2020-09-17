@@ -69,7 +69,7 @@ void FinalForceComponent::applyForcesByComponents() {
         enable();
     }
 
-    for (int i = 0; i < 156; ++i) {
+    for (int i = 0; i < FA_COUNT; ++i) {
         if (i < 12) {
             xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
                           _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
@@ -103,7 +103,7 @@ void FinalForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedForces->timestamp = _appliedForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 

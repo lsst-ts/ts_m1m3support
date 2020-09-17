@@ -196,7 +196,7 @@ private:
 
     std::vector<ForceActuatorNeighbors> _neighbors;
 
-    float _zero[156];
+    float _zero[FA_COUNT];
     float _mirrorWeight;
 
     static int32_t _toInt24(float force) { return (int32_t)(force * 1000.0); }

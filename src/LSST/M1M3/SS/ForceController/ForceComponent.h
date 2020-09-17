@@ -24,6 +24,7 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 
+#include <DataTypes.h>
 #include <ForceComponentSettings.h>
 #include <string>
 
@@ -118,25 +119,25 @@ protected:
     virtual void postUpdateActions() = 0;
 
     /// measured actuator current X force
-    float xCurrent[12];
+    float xCurrent[FA_X_COUNT];
     /// measured actuator current Y force
-    float yCurrent[100];
+    float yCurrent[FA_Y_COUNT];
     /// measured actuator current Z force
-    float zCurrent[156];
+    float zCurrent[FA_Z_COUNT];
 
     /// target actuator X force
-    float xTarget[12];
+    float xTarget[FA_X_COUNT];
     /// target actuator Y force
-    float yTarget[100];
+    float yTarget[FA_Y_COUNT];
     /// target actuator Z force
-    float zTarget[156];
+    float zTarget[FA_Z_COUNT];
 
     /// difference (error) between current and target X force
-    float xOffset[12];
+    float xOffset[FA_X_COUNT];
     /// difference (error) between current and target Y force
-    float yOffset[100];
+    float yOffset[FA_Y_COUNT];
     /// difference (error) between current and target Z force
-    float zOffset[156];
+    float zOffset[FA_Z_COUNT];
 
 private:
     const char *_name;

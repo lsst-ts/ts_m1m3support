@@ -58,12 +58,12 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
         return;
     }
 
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
             xTarget[i] = x[i];
         }
 
-        if (i < 100) {
+        if (i < FA_Y_COUNT) {
             yTarget[i] = y[i];
         }
 
@@ -75,9 +75,9 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
     spdlog::trace("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
     DistributedForces forces =
             ForceConverter::calculateForceFromAzimuthAngle(_forceActuatorSettings, azimuthAngle);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -108,7 +108,7 @@ void AzimuthForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedAzimuthForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
