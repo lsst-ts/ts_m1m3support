@@ -97,9 +97,9 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     M1M3SSPublisher::get().logForceSetpointWarning();
 
     _mirrorWeight = 0.0;
-    float* zForces = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0).ZForces;
+    DistributedForces df = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0);
     for (int i = 0; i < FA_COUNT; i++) {
-        _mirrorWeight += zForces[i];
+        _mirrorWeight += df.ZForces[i];
         _zero[i] = 0;
         ForceActuatorNeighbors neighbors;
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
