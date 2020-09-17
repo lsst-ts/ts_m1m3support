@@ -61,14 +61,14 @@ void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
 
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = x[i];
+            xTarget[i] = x[i];
         }
 
         if (i < 100) {
-            this->yTarget[i] = y[i];
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -94,7 +94,7 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyVelocityForces(xForces, yForces, zForces);
+    applyVelocityForces(xForces, yForces, zForces);
 }
 
 void VelocityForceComponent::postEnableDisableActions() {
@@ -121,7 +121,7 @@ void VelocityForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].HighFault;
-            _rejectedVelocityForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedVelocityForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedVelocityForces->xForces[xIndex],
                                              _appliedVelocityForces->xForces + xIndex);
@@ -132,7 +132,7 @@ void VelocityForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].HighFault;
-            _rejectedVelocityForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedVelocityForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedVelocityForces->yForces[yIndex],
                                              _appliedVelocityForces->yForces + yIndex);
@@ -142,7 +142,7 @@ void VelocityForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].HighFault;
-        _rejectedVelocityForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedVelocityForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedVelocityForces->zForces[zIndex],
                                               _appliedVelocityForces->zForces + zIndex);
         _forceSetpointWarning->velocityForceWarning[zIndex] =

@@ -61,7 +61,7 @@ void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
     }
 
     for (int i = 0; i < 156; ++i) {
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -69,7 +69,7 @@ void ActiveOpticForceComponent::applyActiveOpticForcesByBendingModes(float* coef
     spdlog::debug("ActiveOpticForceComponent: applyActiveOpticForcesByBendingModes()");
     DistributedForces forces =
             ForceConverter::calculateForceFromBendingModes(_forceActuatorSettings, coefficients);
-    this->applyActiveOpticForces(forces.ZForces);
+    applyActiveOpticForces(forces.ZForces);
 }
 
 void ActiveOpticForceComponent::postEnableDisableActions() {
@@ -93,7 +93,7 @@ void ActiveOpticForceComponent::postUpdateActions() {
 
         _forceSetpointWarning->activeOpticForceWarning[zIndex] = false;
 
-        _rejectedActiveOpticForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedActiveOpticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedActiveOpticForces->zForces[zIndex],
                                          _appliedActiveOpticForces->zForces + zIndex);

@@ -60,14 +60,14 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
 
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = (*x)[i];
+            xTarget[i] = (*x)[i];
         }
 
         if (i < 100) {
-            this->yTarget[i] = (*y)[i];
+            yTarget[i] = (*y)[i];
         }
 
-        this->zTarget[i] = (*z)[i];
+        zTarget[i] = (*z)[i];
     }
 }  // namespace SS
 
@@ -95,7 +95,7 @@ void StaticForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->StaticLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->StaticLimitXTable[xIndex].HighFault;
-            _rejectedStaticForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedStaticForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedStaticForces->xForces[xIndex],
                                              _appliedStaticForces->xForces + xIndex);
@@ -106,7 +106,7 @@ void StaticForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->StaticLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->StaticLimitYTable[yIndex].HighFault;
-            _rejectedStaticForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedStaticForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedStaticForces->yForces[yIndex],
                                              _appliedStaticForces->yForces + yIndex);
@@ -116,7 +116,7 @@ void StaticForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->StaticLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->StaticLimitZTable[zIndex].HighFault;
-        _rejectedStaticForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedStaticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedStaticForces->zForces[zIndex],
                                               _appliedStaticForces->zForces + zIndex);
         _forceSetpointWarning->staticForceWarning[zIndex] =

@@ -148,7 +148,7 @@ void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationDat
 void ForceController::incSupportPercentage() {
     spdlog::trace("ForceController: incSupportPercentage()");
     _forceActuatorState->supportPercentage += _forceActuatorSettings->RaiseIncrementPercentage;
-    if (this->supportPercentageFilled()) {
+    if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 1.0;
     }
 }
@@ -156,7 +156,7 @@ void ForceController::incSupportPercentage() {
 void ForceController::decSupportPercentage() {
     spdlog::trace("ForceController: decSupportPercentage()");
     _forceActuatorState->supportPercentage -= _forceActuatorSettings->LowerDecrementPercentage;
-    if (this->supportPercentageZeroed()) {
+    if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
     }
 }
