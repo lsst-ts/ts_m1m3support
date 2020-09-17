@@ -62,14 +62,14 @@ void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z)
 
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = x[i] * _forceActuatorState->supportPercentage;
+            xTarget[i] = x[i] * _forceActuatorState->supportPercentage;
         }
 
         if (i < 100) {
-            this->yTarget[i] = y[i] * _forceActuatorState->supportPercentage;
+            yTarget[i] = y[i] * _forceActuatorState->supportPercentage;
         }
 
-        this->zTarget[i] = z[i] * _forceActuatorState->supportPercentage;
+        zTarget[i] = z[i] * _forceActuatorState->supportPercentage;
     }
 }
 
@@ -92,7 +92,7 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyElevationForces(xForces, yForces, zForces);
+    applyElevationForces(xForces, yForces, zForces);
 }
 
 void ElevationForceComponent::postEnableDisableActions() {
@@ -119,7 +119,7 @@ void ElevationForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].HighFault;
-            _rejectedElevationForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedElevationForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedElevationForces->xForces[xIndex],
                                              _appliedElevationForces->xForces + xIndex);
@@ -130,7 +130,7 @@ void ElevationForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].HighFault;
-            _rejectedElevationForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedElevationForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedElevationForces->yForces[yIndex],
                                              _appliedElevationForces->yForces + yIndex);
@@ -140,7 +140,7 @@ void ElevationForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].HighFault;
-        _rejectedElevationForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedElevationForces->zForces[zIndex] = zCurrent[zIndex];
 
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedElevationForces->zForces[zIndex],

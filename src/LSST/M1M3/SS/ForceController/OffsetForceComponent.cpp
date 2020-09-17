@@ -59,14 +59,14 @@ void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
 
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = x[i];
+            xTarget[i] = x[i];
         }
 
         if (i < 100) {
-            this->yTarget[i] = y[i];
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -93,7 +93,7 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyOffsetForces(xForces, yForces, zForces);
+    applyOffsetForces(xForces, yForces, zForces);
 }
 
 void OffsetForceComponent::postEnableDisableActions() {
@@ -120,7 +120,7 @@ void OffsetForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
-            _rejectedOffsetForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedOffsetForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedOffsetForces->xForces[xIndex],
                                              _appliedOffsetForces->xForces + xIndex);
@@ -131,7 +131,7 @@ void OffsetForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
-            _rejectedOffsetForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedOffsetForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedOffsetForces->yForces[yIndex],
                                              _appliedOffsetForces->yForces + yIndex);
@@ -141,7 +141,7 @@ void OffsetForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
-        _rejectedOffsetForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedOffsetForces->zForces[zIndex],
                                               _appliedOffsetForces->zForces + zIndex);
         _forceSetpointWarning->offsetForceWarning[zIndex] =

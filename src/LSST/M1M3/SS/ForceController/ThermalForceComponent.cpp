@@ -60,14 +60,14 @@ void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
 
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = x[i];
+            xTarget[i] = x[i];
         }
 
         if (i < 100) {
-            this->yTarget[i] = y[i];
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }  // namespace SS
 
@@ -90,7 +90,7 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyThermalForces(xForces, yForces, zForces);
+    applyThermalForces(xForces, yForces, zForces);
 }
 
 void ThermalForceComponent::postEnableDisableActions() {
@@ -117,7 +117,7 @@ void ThermalForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].HighFault;
-            _rejectedThermalForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedThermalForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedThermalForces->xForces[xIndex],
                                              _appliedThermalForces->xForces + xIndex);
@@ -128,7 +128,7 @@ void ThermalForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].HighFault;
-            _rejectedThermalForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedThermalForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedThermalForces->yForces[yIndex],
                                              _appliedThermalForces->yForces + yIndex);
@@ -138,7 +138,7 @@ void ThermalForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].HighFault;
-        _rejectedThermalForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedThermalForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedThermalForces->zForces[zIndex],
                                               _appliedThermalForces->zForces + zIndex);
         _forceSetpointWarning->thermalForceWarning[zIndex] =

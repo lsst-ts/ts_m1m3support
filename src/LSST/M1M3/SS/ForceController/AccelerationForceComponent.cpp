@@ -62,14 +62,14 @@ void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, flo
 
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = x[i];
+            xTarget[i] = x[i];
         }
 
         if (i < 100) {
-            this->yTarget[i] = y[i];
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -96,7 +96,7 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyAccelerationForces(xForces, yForces, zForces);
+    applyAccelerationForces(xForces, yForces, zForces);
 }
 
 void AccelerationForceComponent::postEnableDisableActions() {
@@ -123,7 +123,7 @@ void AccelerationForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->AccelerationLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->AccelerationLimitXTable[xIndex].HighFault;
-            _rejectedAccelerationForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedAccelerationForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _rejectedAccelerationForces->xForces[xIndex],
                                                   _appliedAccelerationForces->xForces + xIndex);
@@ -134,7 +134,7 @@ void AccelerationForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->AccelerationLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->AccelerationLimitYTable[yIndex].HighFault;
-            _rejectedAccelerationForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedAccelerationForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _rejectedAccelerationForces->yForces[yIndex],
                                                   _appliedAccelerationForces->yForces + yIndex);
@@ -144,7 +144,7 @@ void AccelerationForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->AccelerationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AccelerationLimitZTable[zIndex].HighFault;
-        _rejectedAccelerationForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedAccelerationForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAccelerationForces->zForces[zIndex],
                                          _appliedAccelerationForces->zForces + zIndex);

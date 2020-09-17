@@ -60,14 +60,14 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
 
     for (int i = 0; i < 156; ++i) {
         if (i < 12) {
-            this->xTarget[i] = x[i];
+            xTarget[i] = x[i];
         }
 
         if (i < 100) {
-            this->yTarget[i] = y[i];
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }  // namespace SS
 
@@ -90,7 +90,7 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyAzimuthForces(xForces, yForces, zForces);
+    applyAzimuthForces(xForces, yForces, zForces);
 }
 
 void AzimuthForceComponent::postEnableDisableActions() {
@@ -117,7 +117,7 @@ void AzimuthForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].HighFault;
-            _rejectedAzimuthForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedAzimuthForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedAzimuthForces->xForces[xIndex],
                                              _appliedAzimuthForces->xForces + xIndex);
@@ -128,7 +128,7 @@ void AzimuthForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].HighFault;
-            _rejectedAzimuthForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedAzimuthForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedAzimuthForces->yForces[yIndex],
                                              _appliedAzimuthForces->yForces + yIndex);
@@ -138,7 +138,7 @@ void AzimuthForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].HighFault;
-        _rejectedAzimuthForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedAzimuthForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAzimuthForces->zForces[zIndex],
                                               _appliedAzimuthForces->zForces + zIndex);
         _forceSetpointWarning->azimuthForceWarning[zIndex] =
