@@ -60,12 +60,12 @@ void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, flo
         return;
     }
 
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
             xTarget[i] = x[i];
         }
 
-        if (i < 100) {
+        if (i < FA_Y_COUNT) {
             yTarget[i] = y[i];
         }
 
@@ -81,10 +81,10 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
     DistributedForces forces = ForceConverter::calculateForceFromAngularAcceleration(
             _forceActuatorSettings, angularAccelerationX, angularAccelerationY, angularAccelerationZ);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
-    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -114,7 +114,7 @@ void AccelerationForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedAccelerationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAccelerationForces->timestamp = _appliedAccelerationForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 

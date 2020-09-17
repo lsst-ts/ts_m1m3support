@@ -60,12 +60,12 @@ void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z)
         return;
     }
 
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
             xTarget[i] = x[i] * _forceActuatorState->supportPercentage;
         }
 
-        if (i < 100) {
+        if (i < FA_Y_COUNT) {
             yTarget[i] = y[i] * _forceActuatorState->supportPercentage;
         }
 
@@ -77,10 +77,10 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
     spdlog::trace("ElevationForceComponent: applyElevationForcesByMirrorForces({:.1f})", elevationAngle);
     DistributedForces forces =
             ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, elevationAngle);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
-    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -110,7 +110,7 @@ void ElevationForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedElevationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedElevationForces->timestamp = _appliedElevationForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 

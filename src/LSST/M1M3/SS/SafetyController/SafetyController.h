@@ -130,9 +130,9 @@ private:
     MTM1M3_logevent_errorCodeC* _errorCodeData;
 
     std::list<int> _ilcCommunicationTimeoutData;
-    std::list<int> _forceActuatorFollowingErrorData[156];
-    std::list<int> _hardpointActuatorMeasuredForceData[6];
-    std::list<int> _hardpointActuatorAirPressureData[6];
+    std::list<int> _forceActuatorFollowingErrorData[FA_COUNT];
+    std::list<int> _hardpointActuatorMeasuredForceData[HP_COUNT];
+    std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
 };
 
 } /* namespace SS */

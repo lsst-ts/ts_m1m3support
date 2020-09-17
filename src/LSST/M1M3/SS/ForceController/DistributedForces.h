@@ -24,14 +24,16 @@
 #ifndef DISTRIBUTEDFORCES_H_
 #define DISTRIBUTEDFORCES_H_
 
+#include <DataTypes.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 struct DistributedForces {
-    float XForces[156];
-    float YForces[156];
-    float ZForces[156];
+    float XForces[FA_COUNT];
+    float YForces[FA_COUNT];
+    float ZForces[FA_COUNT];
 };
 
 } /* namespace SS */

@@ -57,12 +57,12 @@ void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
         return;
     }
 
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
             xTarget[i] = x[i];
         }
 
-        if (i < 100) {
+        if (i < FA_Y_COUNT) {
             yTarget[i] = y[i];
         }
 
@@ -78,9 +78,9 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
     DistributedForces forces = ForceConverter::calculateForceDistribution(
             _forceActuatorSettings, xForce, yForce, zForce, xMoment, yMoment, zMoment);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -111,7 +111,7 @@ void OffsetForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedOffsetForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedOffsetForces->timestamp = _appliedOffsetForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 

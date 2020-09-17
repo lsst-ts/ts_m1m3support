@@ -276,7 +276,7 @@ void Model::_populateHardpointMonitorInfo(
     spdlog::debug("Model: populateHardpointMonitorInfo()");
     MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo =
             M1M3SSPublisher::get().getEventHardpointMonitorInfo();
-    for (int i = 0; i < HM_COUNT; i++) {
+    for (int i = 0; i < HP_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
         hardpointMonitorInfo->referenceId[row.Index] = row.ActuatorID;
         hardpointMonitorInfo->modbusSubnet[row.Index] = row.Subnet;

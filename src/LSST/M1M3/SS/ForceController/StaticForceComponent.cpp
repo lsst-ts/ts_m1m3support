@@ -58,12 +58,12 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
         return;
     }
 
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
             xTarget[i] = (*x)[i];
         }
 
-        if (i < 100) {
+        if (i < FA_Y_COUNT) {
             yTarget[i] = (*y)[i];
         }
 
@@ -86,7 +86,7 @@ void StaticForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedStaticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedStaticForces->timestamp = _appliedStaticForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 

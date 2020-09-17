@@ -60,7 +60,7 @@ void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
         return;
     }
 
-    for (int i = 0; i < 156; ++i) {
+    for (int i = 0; i < FA_Z_COUNT; ++i) {
         zTarget[i] = z[i];
     }
 }
@@ -87,7 +87,7 @@ void ActiveOpticForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedActiveOpticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedActiveOpticForces->timestamp = _appliedActiveOpticForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         float zLowFault = _forceActuatorSettings->ActiveOpticLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ActiveOpticLimitZTable[zIndex].HighFault;
 

@@ -43,7 +43,7 @@ protected:
     ModbusBuffer buffer;
     int32_t expectedHPResponses[HP_COUNT];
     int32_t expectedFAResponses[FA_COUNT];
-    int32_t expectedHMResponses[HM_COUNT];
+    int32_t expectedHMResponses[HP_COUNT];
     int32_t subnetStartIndex;
 
 public:

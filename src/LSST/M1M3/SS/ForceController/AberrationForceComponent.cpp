@@ -60,7 +60,7 @@ void AberrationForceComponent::applyAberrationForces(float* z) {
         return;
     }
 
-    for (int i = 0; i < 156; ++i) {
+    for (int i = 0; i < FA_Z_COUNT; ++i) {
         zTarget[i] = z[i];
     }
 }
@@ -87,7 +87,7 @@ void AberrationForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedAberrationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAberrationForces->timestamp = _appliedAberrationForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         float zLowFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].HighFault;
 

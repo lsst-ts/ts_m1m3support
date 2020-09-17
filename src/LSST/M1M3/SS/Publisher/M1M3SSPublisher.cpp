@@ -1437,7 +1437,7 @@ void M1M3SSPublisher::logHardpointMonitorInfo() {
 
 void M1M3SSPublisher::tryLogHardpointMonitorInfo() {
     bool changeDetected = false;
-    for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
+    for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointMonitorInfo.referenceId[i] !=
                                  _previousEventHardpointMonitorInfo.referenceId[i] ||
@@ -1476,7 +1476,7 @@ void M1M3SSPublisher::logHardpointMonitorState() {
 
 void M1M3SSPublisher::tryLogHardpointMonitorState() {
     bool changeDetected = false;
-    for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
+    for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventHardpointMonitorState.ilcState[i] !=
                                                    _previousEventHardpointMonitorState.ilcState[i];
     }
@@ -1513,7 +1513,7 @@ void M1M3SSPublisher::logHardpointMonitorWarning() {
     _eventHardpointMonitorWarning.anyMezzanineDCPRS422ChipFault = false;
     _eventHardpointMonitorWarning.anyMezzanineApplicationMissing = false;
     _eventHardpointMonitorWarning.anyMezzanineApplicationCRCMismatch = false;
-    for (int i = 0; i < HM_COUNT; ++i) {
+    for (int i = 0; i < HP_COUNT; ++i) {
         _eventHardpointMonitorWarning.anyMajorFault =
                 _eventHardpointMonitorWarning.anyMajorFault || _eventHardpointMonitorWarning.majorFault[i];
         _eventHardpointMonitorWarning.anyMinorFault =
@@ -1617,7 +1617,7 @@ void M1M3SSPublisher::logHardpointMonitorWarning() {
 
 void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
     bool changeDetected = false;
-    for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
+    for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointMonitorWarning.majorFault[i] !=
                                  _previousEventHardpointMonitorWarning.majorFault[i] ||

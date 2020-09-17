@@ -112,9 +112,9 @@ private:
     ILCSubnetData* _subnetData;
     SafetyController* _safetyController;
 
-    int32_t _faExpectedResponses[156];
-    int32_t _hpExpectedResponses[6];
-    int32_t _hmExpectedResponses[6];
+    int32_t _faExpectedResponses[FA_COUNT];
+    int32_t _hpExpectedResponses[HP_COUNT];
+    int32_t _hmExpectedResponses[HP_COUNT];
 
     MTM1M3_logevent_summaryStateC* _summaryState;
     MTM1M3_logevent_detailedStateC* _detailedState;
