@@ -47,7 +47,7 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Reads M1M3 support system configuration. Singleton, please use setBasePath
+ * Reads M1M3 support system configuration. Singleton, please use setRootPath
  * to configure configuration root directory.
  */
 class SettingReader {
