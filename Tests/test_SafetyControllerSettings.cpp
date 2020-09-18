@@ -1,5 +1,5 @@
 /*
- * This file is part of LSST M1M3 SS test suite. Tests M1M3 safety calculations.
+ * This file is part of LSST M1M3 SS test suite. Tests SafetyControllerSettings.
  *
  * Developed for the LSST Telescope and Site Systems.
  * This product includes software developed by the LSST Project
