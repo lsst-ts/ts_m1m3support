@@ -36,13 +36,17 @@
 
 using namespace LSST::M1M3::SS;
 
-void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float mz) {
-    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fx == fx);
-    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fy == fy);
-    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fz == fz);
-    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->mx == mx);
-    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->my == my);
-    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->mz == mz);
+void checkAppliedForces(ForceController &forceController, float fx, float fy, float fz, float mx, float my,
+                        float mz) {
+    forceController.updateAppliedForces();
+    forceController.processAppliedForces();
+
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fx == Approx(fx));
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fy == Approx(fy));
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fz == Approx(fz));
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->mx == Approx(mx));
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->my == Approx(my));
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->mz == Approx(mz));
 }
 
 TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
@@ -57,6 +61,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     ForceActuatorSettings forceActuatorSettings;
     REQUIRE_NOTHROW(forceActuatorSettings.load("../SettingFiles/Sets/Default/1/ForceActuatorSettings.xml"));
+    REQUIRE(forceActuatorSettings.UseInclinometer == true);
 
     PIDSettings pidSettings;
     REQUIRE_NOTHROW(pidSettings.load("../SettingFiles/Sets/Default/1/PIDSettings.xml"));
@@ -69,7 +74,11 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     ForceController forceController(&forceActuatorApplicationSettings, &forceActuatorSettings, &pidSettings,
                                     &safetyController);
-    forceController.updateAppliedForces();
-    forceController.processAppliedForces();
-    checkAppliedForces(0, 0, 0, 0, 0, 0);
+    checkAppliedForces(forceController, 0, 0, 0, 0, 0, 0);
+
+    forceController.applyElevationForces();
+    checkAppliedForces(forceController, 0, 0, 0, 0, 0, 0);
+
+    forceController.fillSupportPercentage();
+    checkAppliedForces(forceController, 0, 10500.0, -0.79729, 89.23988, 0.8879, 11.76017);
 }
