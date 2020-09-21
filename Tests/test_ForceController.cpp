@@ -36,6 +36,15 @@
 
 using namespace LSST::M1M3::SS;
 
+void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float mz) {
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fx == fx);
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fy == fy);
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->fz == fz);
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->mx == mx);
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->my == my);
+    REQUIRE(M1M3SSPublisher::get().getEventAppliedForces()->mz == mz);
+}
+
 TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     M1M3SSPublisher::get().setSAL(m1m3SAL);
@@ -60,4 +69,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     ForceController forceController(&forceActuatorApplicationSettings, &forceActuatorSettings, &pidSettings,
                                     &safetyController);
+    forceController.updateAppliedForces();
+    forceController.processAppliedForces();
+    checkAppliedForces(0, 0, 0, 0, 0, 0);
 }
