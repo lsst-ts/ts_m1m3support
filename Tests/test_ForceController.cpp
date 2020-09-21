@@ -76,19 +76,19 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
                                     &safetyController);
     checkAppliedForces(forceController, 0, 0, 0, 0, 0, 0);
 
-    SECTION("Elevation 0 deg wih 0 percentage") {
+    SECTION("Elevation 0 deg with 0% support") {
         forceController.applyElevationForces();
         checkAppliedForces(forceController, 0, 0, 0, 0, 0, 0);
     }
 
-    SECTION("Elevation 0 deg with 100 percentage") {
+    SECTION("Elevation 0 deg with 100% support") {
         forceController.applyElevationForces();
         forceController.fillSupportPercentage();
 
         checkAppliedForces(forceController, 0, 10500.0, -0.79729, 89.23988, 0.8879, 11.76017);
     }
 
-    SECTION("Elevation 45 deg with 100 percentage") {
+    SECTION("Elevation 45 deg with 100% support") {
         forceController.applyElevationForces();
         forceController.fillSupportPercentage();
 
@@ -97,7 +97,16 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         checkAppliedForces(forceController, 0, 8148.78857, 8148.49805, 62.31575, -0.04463, 9.12726);
     }
 
-    SECTION("Elevation 90 deg with 100 percentage") {
+    SECTION("Elevation 90 deg with 100% support") {
+        forceController.applyElevationForces();
+        forceController.fillSupportPercentage();
+
+        M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle = 90.0;
+
+        checkAppliedForces(forceController, 0, 0.06511, 11065.59961, -3.54472, -0.10448, 0.00007);
+    }
+
+    SECTION("Elevation 90 deg with 100% support") {
         forceController.applyElevationForces();
         forceController.fillSupportPercentage();
 
