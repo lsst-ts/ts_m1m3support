@@ -59,7 +59,7 @@ enum ForceComponentState { DISABLED, ENABLED, DISABLING };
  *
  * Force component can be enabled or disabled. When it is disabled, its
  * contribution is scaled linearly to zero to prevent overstressing the mirror.
- * Handling of the enabled/disabled states is performed in ForceController
+ * Commanding of the enabled/disabled states is performed in ForceController
  * class.
  */
 class ForceComponent {
