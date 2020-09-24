@@ -72,6 +72,30 @@ void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float 
     CHECK(M1M3SSPublisher::get().getEventAppliedForces()->mz == Approx(mz));
 }
 
+void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
+    REQUIRE(forceActuatorApplicationSettings.ZIndexToXIndex[zIndex] == -1);
+    REQUIRE(forceActuatorApplicationSettings.ZIndexToYIndex[zIndex] == -1);
+    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->zForces[zIndex] == zForce);
+}
+
+void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
+    REQUIRE(forceActuatorApplicationSettings.ZIndexToYIndex[zIndex] == -1);
+
+    int xIndex = forceActuatorApplicationSettings.ZIndexToXIndex[zIndex];
+    REQUIRE_FALSE(xIndex < 0);
+    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->xForces[xIndex] == xForce);
+    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->zForces[zIndex] == zForce);
+}
+
+void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
+    REQUIRE(forceActuatorApplicationSettings.ZIndexToXIndex[zIndex] == -1);
+
+    int yIndex = forceActuatorApplicationSettings.ZIndexToYIndex[zIndex];
+    REQUIRE_FALSE(yIndex < 0);
+    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->yForces[yIndex] == yForce);
+    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->zForces[zIndex] == zForce);
+}
+
 void checkRejectedForces(float fx, float fy, float fz, float mx, float my, float mz) {
     CHECK(M1M3SSPublisher::get().getEventRejectedForces()->fx == Approx(fx));
     CHECK(M1M3SSPublisher::get().getEventRejectedForces()->fy == Approx(fy));
@@ -144,6 +168,10 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         runAndCheck(forceController, 0, 119990.42188, 119985.95312, 917.60748, -0.64774, 134.39301);
 
         checkAppliedActuatorForcesYZ(1, 1199.90308, 595.77222);
+        checkRejectedActuatorForcesYZ(1, 1199.90308, 595.77222);
+
+        checkAppliedActuatorForcesYZ(1, 1199.90308, 595.77222);
+        checkRejectedActuatorForcesYZ(1, 1199.90308, 595.77222);
     }
 
     SECTION("Elevation 90 deg with 100% support") {
