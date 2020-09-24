@@ -88,6 +88,20 @@ namespace SS {
  * dedicated ForceComponent subclass. Those are enabled only if mirror is
  * active, fully supported against gravity (handled by ElevationForceComponent).
  *
+ * ## Distribution of mirror forces
+ *
+ * Calculated force demands are stored in rejected* events
+ * (rejectedElevationForces,..). Those are clip into allowed range, and the
+ * resulting force is stored in applied* (appliedElevationForces,..) events.
+ *
+ * The algorithm tries to prevent large changes in applied forces. If a large
+ * change is detected, the change is distributed to multiple steps. After their
+ * execution, mirror shall end in requested position and shape.
+ *
+ * The algorithm tries to do its best to prevent mirror panic due to violation
+ * of stress limits. Stress limits are then checked, and if violation is
+ * detected, mirror is send to State::LoweringFaultState (panic mode).
+ *
  * ## Mirror safety
  *
  * Following checks are run:
@@ -101,6 +115,11 @@ namespace SS {
  * [Mirror Support Safety], Subchapter 9.2 [Methods of Protection]).
  *
  * The checks are run from ForceController::processAppliedForces() method.
+ *
+ * Check results are reported to SafetyController. Any violation of the M1M3
+ * limits leads to SafetyController::checkSafety() returning
+ * States::LoweringFaultState as next M1M3. That forces M1M3 to panic and go to
+ * passive supports, as violations aren't allowed.
  */
 class ForceController {
 public:
