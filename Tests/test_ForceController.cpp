@@ -32,6 +32,7 @@
 #include <SafetyController.h>
 #include <SafetyControllerSettings.h>
 #include <SettingReader.h>
+#include <StateTypes.h>
 
 #include <SAL_MTM1M3.h>
 
@@ -183,7 +184,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         runAndCheck(forceController, 0, 0.06511, 11065.59961, -3.54472, -0.10448, 0.00007);
     }
 
-    SECTION("Offset rejection test, elevation 45 deg with 100% support") {
+    SECTION("Elevation 45 deg with 100% support, progressing load") {
         forceController.applyElevationForces();
         forceController.fillSupportPercentage();
 
@@ -196,5 +197,33 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         runAndCheck(forceController, 7.04272, 16290.53516, 17706.45117, 265.5639, 140.84802, -2095.92236);
         checkRejectedForces(7.04272, 16290.53516, 17706.45117, 265.5639, 140.84802, -2095.92236);
         runAndCheck(forceController, 14.08545, 24432.2793, 27264.40625, 468.81464, 281.73798, -4200.97021);
+    }
+
+    SECTION("Elevation 45 deg with 100% support, force sum doesn't support mirror") {
+        forceController.applyElevationForces();
+        forceController.fillSupportPercentage();
+
+        M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle = 45.0;
+
+        runAndCheck(forceController, 0, 8148.78857, 8148.49805, 62.31575, -0.04463, 9.12726);
+
+        MTM1M3_logevent_appliedElevationForcesC *appliedElevationForces =
+                M1M3SSPublisher::get().getEventAppliedElevationForces();
+        MTM1M3_logevent_appliedForcesC *appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+        MTM1M3_logevent_errorCodeC *errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
+
+        // only elevation force is being applied
+        REQUIRE(appliedElevationForces->zForces[1] == appliedForces->zForces[1]);
+        for (int i = 0; i < FA_Z_COUNT; i++) {
+            appliedElevationForces->zForces[i] = -50000;
+        }
+
+        for (int i = 0; i < 7; i++) {
+            forceController.processAppliedForces();
+            CHECK(safetyController.checkSafety(States::ActiveState) == States::ActiveState);
+        }
+
+        forceController.processAppliedForces();
+        CHECK(safetyController.checkSafety(States::ActiveState) == States::LoweringFaultState);
     }
 }
