@@ -40,6 +40,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Safety controller class.
+ */
 class SafetyControllerSettings {
 public:
     AirControllerSafetySettings AirController;
@@ -53,6 +56,13 @@ public:
     LowerOperationSafetySettings LowerOperation;
     ILCSafetySettings ILC;
 
+    /**
+     * Loads safety settings.
+     *
+     * @param filename filename to load
+     *
+     * @throws std::runtime_error on error
+     */
     void load(const std::string &filename);
 };
 

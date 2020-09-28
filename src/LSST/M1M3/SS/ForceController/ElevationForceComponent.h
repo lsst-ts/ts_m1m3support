@@ -44,17 +44,18 @@ public:
     void applyElevationForcesByElevationAngle(float elevationAngle);
 
 protected:
-    void _postEnableDisableActions();
-    void _postUpdateActions();
+    void postEnableDisableActions() override;
+    void postUpdateActions() override;
 
+private:
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;
 
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* forceSetpointWarning;
-    MTM1M3_logevent_appliedElevationForcesC* appliedElevationForces;
-    MTM1M3_logevent_rejectedElevationForcesC* rejectedElevationForces;
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedElevationForcesC* _appliedElevationForces;
+    MTM1M3_logevent_rejectedElevationForcesC* _rejectedElevationForces;
 };
 
 } /* namespace SS */

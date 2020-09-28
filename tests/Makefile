@@ -1,7 +1,5 @@
 include ../Makefile.inc
 
-SUFFIXES += .d
-
 all: compile
 
 .PHONY: FORCE compile run junit clean
@@ -64,10 +62,14 @@ clean:
 ../src/libM1M3SS.a: FORCE
 	@$(MAKE) -C ../src libM1M3SS.a SIMULATOR=1
 
-%.cpp.d: %.cpp
-	@echo '[DEP] $<'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $^ -MF $@ -MT '$*.o $*.cpp.d'
+%.cpp.o: %.cpp.d
+	@echo '[CPP] $(patsubst %.d,%,$<)'
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
 
-%: %.cpp ../src/libM1M3SS.a
+%.cpp.d: %.cpp
+	@echo '[DPP] $<'
+	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
+
+${BINARIES}: %: %.cpp.o ../src/libM1M3SS.a
 	@echo '[TPP] $<'
-	${co}$(CPP) -o $@ $(LIBS_FLAGS) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(LIBS) $(M1M3_CPPFLAGS) $< ../src/libM1M3SS.a
+	${co}$(CPP) -o $@ $(LIBS_FLAGS) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(LIBS) $(M1M3_CPPFLAGS) $^

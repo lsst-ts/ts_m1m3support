@@ -34,6 +34,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Handle user offsets.
+ */
 class OffsetForceComponent : public ForceComponent {
 public:
     OffsetForceComponent(SafetyController* safetyController,
@@ -45,8 +48,8 @@ public:
                                          float yMoment, float zMoment);
 
 protected:
-    void postEnableDisableActions();
-    void postUpdateActions();
+    void postEnableDisableActions() override;
+    void postUpdateActions() override;
 
 private:
     SafetyController* _safetyController;

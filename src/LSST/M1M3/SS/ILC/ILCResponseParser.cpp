@@ -350,7 +350,7 @@ void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* 
     for (int i = 0; i < HP_COUNT; i++) {
         _hpExpectedResponses[i] += hp[i];
     }
-    for (int i = 0; i < HM_COUNT; ++i) {
+    for (int i = 0; i < HP_COUNT; ++i) {
         _hmExpectedResponses[i] += hm[i];
     }
 }
@@ -362,7 +362,7 @@ void ILCResponseParser::clearResponses() {
     for (int i = 0; i < HP_COUNT; i++) {
         _hpExpectedResponses[i] = 0;
     }
-    for (int i = 0; i < HM_COUNT; ++i) {
+    for (int i = 0; i < HP_COUNT; ++i) {
         _hmExpectedResponses[i] = 0;
     }
 }
@@ -395,7 +395,7 @@ void ILCResponseParser::verifyResponses() {
         spdlog::warn("ILCResponseParser: Hardpoint actuator response timeout");
     }
     warn = false;
-    for (int i = 0; i < HM_COUNT; ++i) {
+    for (int i = 0; i < HP_COUNT; ++i) {
         if (_hmExpectedResponses[i] != 0) {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);

@@ -39,9 +39,8 @@ namespace SS {
 VelocityForceComponent::VelocityForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Velocity";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Velocity", forceActuatorSettings->VelocityComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -49,31 +48,27 @@ VelocityForceComponent::VelocityForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
     _rejectedVelocityForces = M1M3SSPublisher::get().getEventRejectedVelocityForces();
-    this->maxRateOfChange = _forceActuatorSettings->VelocityComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->VelocityComponentSettings.NearZeroValue;
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
     spdlog::trace("VelocityForceComponent: applyVelocityForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
                 "VelocityForceComponent: applyVelocityForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("VelocityForceComponent: applyVelocityForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = x[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = y[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -84,9 +79,9 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
                   angularVelocityX, angularVelocityY, angularVelocityZ);
     DistributedForces forces = ForceConverter::calculateForceFromAngularVelocity(
             _forceActuatorSettings, angularVelocityX, angularVelocityY, angularVelocityZ);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -99,14 +94,14 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyVelocityForces(xForces, yForces, zForces);
+    applyVelocityForces(xForces, yForces, zForces);
 }
 
 void VelocityForceComponent::postEnableDisableActions() {
     spdlog::debug("VelocityForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->velocityForcesApplied = this->enabled;
+    _forceActuatorState->velocityForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -117,7 +112,7 @@ void VelocityForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedVelocityForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -126,7 +121,7 @@ void VelocityForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].HighFault;
-            _rejectedVelocityForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedVelocityForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedVelocityForces->xForces[xIndex],
                                              _appliedVelocityForces->xForces + xIndex);
@@ -137,7 +132,7 @@ void VelocityForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].HighFault;
-            _rejectedVelocityForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedVelocityForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedVelocityForces->yForces[yIndex],
                                              _appliedVelocityForces->yForces + yIndex);
@@ -147,7 +142,7 @@ void VelocityForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].HighFault;
-        _rejectedVelocityForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedVelocityForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedVelocityForces->zForces[zIndex],
                                               _appliedVelocityForces->zForces + zIndex);
         _forceSetpointWarning->velocityForceWarning[zIndex] =

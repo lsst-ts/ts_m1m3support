@@ -39,9 +39,8 @@ namespace SS {
 ActiveOpticForceComponent::ActiveOpticForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "ActiveOptic";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("ActiveOptic", forceActuatorSettings->ActiveOpticComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -49,25 +48,20 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
     _rejectedActiveOpticForces = M1M3SSPublisher::get().getEventRejectedActiveOpticForces();
-    maxRateOfChange = _forceActuatorSettings->ActiveOpticComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->ActiveOpticComponentSettings.NearZeroValue;
 }
 
 void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
     spdlog::debug("ActiveOpticForceComponent: applyActiveOpticForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
                 "ActiveOpticForceComponent: applyActiveOpticForces() called when the component is not "
                 "applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn(
-                "ActiveOpticForceComponent: applyActiveOpticForces() called when the component is disabling");
-        this->enable();
-    }
-    for (int i = 0; i < 156; ++i) {
-        this->zTarget[i] = z[i];
+
+    for (int i = 0; i < FA_Z_COUNT; ++i) {
+        zTarget[i] = z[i];
     }
 }
 
@@ -75,14 +69,14 @@ void ActiveOpticForceComponent::applyActiveOpticForcesByBendingModes(float* coef
     spdlog::debug("ActiveOpticForceComponent: applyActiveOpticForcesByBendingModes()");
     DistributedForces forces =
             ForceConverter::calculateForceFromBendingModes(_forceActuatorSettings, coefficients);
-    this->applyActiveOpticForces(forces.ZForces);
+    applyActiveOpticForces(forces.ZForces);
 }
 
 void ActiveOpticForceComponent::postEnableDisableActions() {
     spdlog::debug("ActiveOpticForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->activeOpticForcesApplied = this->enabled;
+    _forceActuatorState->activeOpticForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -93,13 +87,13 @@ void ActiveOpticForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedActiveOpticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedActiveOpticForces->timestamp = _appliedActiveOpticForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         float zLowFault = _forceActuatorSettings->ActiveOpticLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ActiveOpticLimitZTable[zIndex].HighFault;
 
         _forceSetpointWarning->activeOpticForceWarning[zIndex] = false;
 
-        _rejectedActiveOpticForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedActiveOpticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedActiveOpticForces->zForces[zIndex],
                                          _appliedActiveOpticForces->zForces + zIndex);
