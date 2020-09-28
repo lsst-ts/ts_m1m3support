@@ -27,7 +27,7 @@
 #include <DataTypes.h>
 #include <ForceActuatorNeighbors.h>
 #include <ForceActuatorLimits.h>
-#include <ForceDomainModel.h>
+#include <ForceComponentSettings.h>
 #include <Limit.h>
 #include <string>
 #include <vector>

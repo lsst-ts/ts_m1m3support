@@ -39,9 +39,8 @@ namespace SS {
 ThermalForceComponent::ThermalForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Thermal";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Thermal", forceActuatorSettings->ThermalComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -49,40 +48,36 @@ ThermalForceComponent::ThermalForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
     _rejectedThermalForces = M1M3SSPublisher::get().getEventRejectedThermalForces();
-    maxRateOfChange = _forceActuatorSettings->ThermalComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->ThermalComponentSettings.NearZeroValue;
 }
 
 void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
     spdlog::trace("ThermalForceComponent: applyThermalForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("ThermalForceComponent: applyThermalForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("ThermalForceComponent: applyThermalForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = x[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = y[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
-}
+}  // namespace SS
 
 void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperature) {
     spdlog::trace("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
     DistributedForces forces =
             ForceConverter::calculateForceFromTemperature(_forceActuatorSettings, temperature);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -95,14 +90,14 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyThermalForces(xForces, yForces, zForces);
+    applyThermalForces(xForces, yForces, zForces);
 }
 
 void ThermalForceComponent::postEnableDisableActions() {
     spdlog::debug("ThermalForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->thermalForcesApplied = this->enabled;
+    _forceActuatorState->thermalForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -113,7 +108,7 @@ void ThermalForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedThermalForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedThermalForces->timestamp = _appliedThermalForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -122,7 +117,7 @@ void ThermalForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->ThermalLimitXTable[xIndex].HighFault;
-            _rejectedThermalForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedThermalForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedThermalForces->xForces[xIndex],
                                              _appliedThermalForces->xForces + xIndex);
@@ -133,7 +128,7 @@ void ThermalForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->ThermalLimitYTable[yIndex].HighFault;
-            _rejectedThermalForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedThermalForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedThermalForces->yForces[yIndex],
                                              _appliedThermalForces->yForces + yIndex);
@@ -143,7 +138,7 @@ void ThermalForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].HighFault;
-        _rejectedThermalForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedThermalForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedThermalForces->zForces[zIndex],
                                               _appliedThermalForces->zForces + zIndex);
         _forceSetpointWarning->thermalForceWarning[zIndex] =
@@ -182,6 +177,6 @@ void ThermalForceComponent::postUpdateActions() {
     M1M3SSPublisher::get().logAppliedThermalForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */

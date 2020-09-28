@@ -38,9 +38,8 @@ namespace SS {
 
 StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                           ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Static";
-
+                                           ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Static", forceActuatorSettings->StaticComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,39 +47,35 @@ StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
     _rejectedStaticForces = M1M3SSPublisher::get().getEventRejectedStaticForces();
-    this->maxRateOfChange = _forceActuatorSettings->StaticComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->StaticComponentSettings.NearZeroValue;
 }
 
 void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y,
                                              std::vector<float>* z) {
     spdlog::debug("StaticForceComponent: applyStaticForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("StaticForceComponent: applyStaticForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("StaticForceComponent: applyStaticForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = (*x)[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = (*x)[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = (*y)[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = (*y)[i];
         }
 
-        this->zTarget[i] = (*z)[i];
+        zTarget[i] = (*z)[i];
     }
-}
+}  // namespace SS
 
 void StaticForceComponent::postEnableDisableActions() {
     spdlog::debug("StaticForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->staticForcesApplied = this->enabled;
+    _forceActuatorState->staticForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -91,7 +86,7 @@ void StaticForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedStaticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedStaticForces->timestamp = _appliedStaticForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -100,7 +95,7 @@ void StaticForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->StaticLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->StaticLimitXTable[xIndex].HighFault;
-            _rejectedStaticForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedStaticForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedStaticForces->xForces[xIndex],
                                              _appliedStaticForces->xForces + xIndex);
@@ -111,7 +106,7 @@ void StaticForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->StaticLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->StaticLimitYTable[yIndex].HighFault;
-            _rejectedStaticForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedStaticForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedStaticForces->yForces[yIndex],
                                              _appliedStaticForces->yForces + yIndex);
@@ -121,7 +116,7 @@ void StaticForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->StaticLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->StaticLimitZTable[zIndex].HighFault;
-        _rejectedStaticForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedStaticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedStaticForces->zForces[zIndex],
                                               _appliedStaticForces->zForces + zIndex);
         _forceSetpointWarning->staticForceWarning[zIndex] =
@@ -160,6 +155,6 @@ void StaticForceComponent::postUpdateActions() {
     M1M3SSPublisher::get().logAppliedStaticForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */

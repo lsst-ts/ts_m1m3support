@@ -39,9 +39,8 @@ namespace SS {
 AberrationForceComponent::AberrationForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Aberration";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Aberration", forceActuatorSettings->AberrationComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -49,23 +48,19 @@ AberrationForceComponent::AberrationForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
     _rejectedAberrationForces = M1M3SSPublisher::get().getEventRejectedAberrationForces();
-    maxRateOfChange = _forceActuatorSettings->AberrationComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->AberrationComponentSettings.NearZeroValue;
 }
 
 void AberrationForceComponent::applyAberrationForces(float* z) {
     spdlog::debug("AberrationForceComponent: applyAberrationForces()");
-    if (!enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
-                "AberrationForceComponent: applyAberrationForces() called when the component is not applied");
+                "AberrationForceComponent: applyAberrationForces() called when the component is not "
+                "applied");
         return;
     }
-    if (disabling) {
-        spdlog::warn(
-                "AberrationForceComponent: applyAberrationForces() called when the component is disabling");
-        enable();
-    }
-    for (int i = 0; i < 156; ++i) {
+
+    for (int i = 0; i < FA_Z_COUNT; ++i) {
         zTarget[i] = z[i];
     }
 }
@@ -81,7 +76,7 @@ void AberrationForceComponent::postEnableDisableActions() {
     spdlog::debug("AberrationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->aberrationForcesApplied = enabled;
+    _forceActuatorState->aberrationForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -92,7 +87,7 @@ void AberrationForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedAberrationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAberrationForces->timestamp = _appliedAberrationForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         float zLowFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].HighFault;
 

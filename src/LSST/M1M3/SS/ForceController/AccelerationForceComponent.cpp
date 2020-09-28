@@ -39,9 +39,8 @@ namespace SS {
 AccelerationForceComponent::AccelerationForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Acceleration";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Acceleration", forceActuatorSettings->AccelerationComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -49,34 +48,28 @@ AccelerationForceComponent::AccelerationForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
     _rejectedAccelerationForces = M1M3SSPublisher::get().getEventRejectedAccelerationForces();
-    this->maxRateOfChange = _forceActuatorSettings->AccelerationComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->AccelerationComponentSettings.NearZeroValue;
 }
 
 void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, float* z) {
     spdlog::trace("AccelerationForceComponent: applyAccelerationForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
                 "AccelerationForceComponent: applyAccelerationForces() called when the component is not "
                 "applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn(
-                "AccelerationForceComponent: applyAccelerationForces() called when the component is "
-                "disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = x[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = y[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -88,10 +81,10 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
     DistributedForces forces = ForceConverter::calculateForceFromAngularAcceleration(
             _forceActuatorSettings, angularAccelerationX, angularAccelerationY, angularAccelerationZ);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
-    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -103,14 +96,14 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyAccelerationForces(xForces, yForces, zForces);
+    applyAccelerationForces(xForces, yForces, zForces);
 }
 
 void AccelerationForceComponent::postEnableDisableActions() {
     spdlog::debug("AccelerationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->accelerationForcesApplied = this->enabled;
+    _forceActuatorState->accelerationForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -121,7 +114,7 @@ void AccelerationForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedAccelerationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAccelerationForces->timestamp = _appliedAccelerationForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -130,7 +123,7 @@ void AccelerationForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->AccelerationLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->AccelerationLimitXTable[xIndex].HighFault;
-            _rejectedAccelerationForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedAccelerationForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _rejectedAccelerationForces->xForces[xIndex],
                                                   _appliedAccelerationForces->xForces + xIndex);
@@ -141,7 +134,7 @@ void AccelerationForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->AccelerationLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->AccelerationLimitYTable[yIndex].HighFault;
-            _rejectedAccelerationForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedAccelerationForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _rejectedAccelerationForces->yForces[yIndex],
                                                   _appliedAccelerationForces->yForces + yIndex);
@@ -151,7 +144,7 @@ void AccelerationForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->AccelerationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AccelerationLimitZTable[zIndex].HighFault;
-        _rejectedAccelerationForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedAccelerationForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAccelerationForces->zForces[zIndex],
                                          _appliedAccelerationForces->zForces + zIndex);

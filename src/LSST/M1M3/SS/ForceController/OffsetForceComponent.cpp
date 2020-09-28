@@ -38,9 +38,8 @@ namespace SS {
 
 OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                           ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Offset";
-
+                                           ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Offset", forceActuatorSettings->OffsetComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -48,30 +47,26 @@ OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
     _rejectedOffsetForces = M1M3SSPublisher::get().getEventRejectedOffsetForces();
-    this->maxRateOfChange = _forceActuatorSettings->OffsetComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->OffsetComponentSettings.NearZeroValue;
 }
 
 void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
     spdlog::debug("OffsetForceComponent: applyOffsetForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("OffsetForceComponent: applyOffsetForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("ThermalOffsetComponent: applyOffsetForces() called when the component is disabling");
-        this->enable();
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = x[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = y[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -83,9 +78,9 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
     DistributedForces forces = ForceConverter::calculateForceDistribution(
             _forceActuatorSettings, xForce, yForce, zForce, xMoment, yMoment, zMoment);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -98,14 +93,14 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyOffsetForces(xForces, yForces, zForces);
+    applyOffsetForces(xForces, yForces, zForces);
 }
 
 void OffsetForceComponent::postEnableDisableActions() {
     spdlog::debug("OffsetForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->offsetForcesApplied = this->enabled;
+    _forceActuatorState->offsetForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -116,7 +111,7 @@ void OffsetForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedOffsetForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedOffsetForces->timestamp = _appliedOffsetForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -125,7 +120,7 @@ void OffsetForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
-            _rejectedOffsetForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedOffsetForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedOffsetForces->xForces[xIndex],
                                              _appliedOffsetForces->xForces + xIndex);
@@ -136,7 +131,7 @@ void OffsetForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
-            _rejectedOffsetForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedOffsetForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedOffsetForces->yForces[yIndex],
                                              _appliedOffsetForces->yForces + yIndex);
@@ -146,7 +141,7 @@ void OffsetForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
-        _rejectedOffsetForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedOffsetForces->zForces[zIndex],
                                               _appliedOffsetForces->zForces + zIndex);
         _forceSetpointWarning->offsetForceWarning[zIndex] =

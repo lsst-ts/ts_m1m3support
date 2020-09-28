@@ -87,17 +87,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _elevation_Timestamp = 0;
     _elevation_Angle_Actual = NAN;
 
-    _aberrationForceComponent.reset();
-    _accelerationForceComponent.reset();
-    _activeOpticForceComponent.reset();
-    _azimuthForceComponent.reset();
-    _balanceForceComponent.reset();
-    _elevationForceComponent.reset();
-    _offsetForceComponent.reset();
-    _staticForceComponent.reset();
-    _thermalForceComponent.reset();
-    _velocityForceComponent.reset();
-    _finalForceComponent.reset();
+    reset();
 
     double timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->timestamp = timestamp;
@@ -107,9 +97,9 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     M1M3SSPublisher::get().logForceSetpointWarning();
 
     _mirrorWeight = 0.0;
-    float* zForces = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0).ZForces;
+    DistributedForces df = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0);
     for (int i = 0; i < FA_COUNT; i++) {
-        _mirrorWeight += zForces[i];
+        _mirrorWeight += df.ZForces[i];
         _zero[i] = 0;
         ForceActuatorNeighbors neighbors;
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
@@ -158,7 +148,7 @@ void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationDat
 void ForceController::incSupportPercentage() {
     spdlog::trace("ForceController: incSupportPercentage()");
     _forceActuatorState->supportPercentage += _forceActuatorSettings->RaiseIncrementPercentage;
-    if (this->supportPercentageFilled()) {
+    if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 1.0;
     }
 }
@@ -166,7 +156,7 @@ void ForceController::incSupportPercentage() {
 void ForceController::decSupportPercentage() {
     spdlog::trace("ForceController: decSupportPercentage()");
     _forceActuatorState->supportPercentage -= _forceActuatorSettings->LowerDecrementPercentage;
-    if (this->supportPercentageZeroed()) {
+    if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
     }
 }

@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 support system package.
+ * This file is part of LSST M1M3 SS test suite. Tests SafetyControllerSettings.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the LSST Telescope and Site Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,23 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISTRIBUTEDFORCES_H_
-#define DISTRIBUTEDFORCES_H_
+#define CATCH_CONFIG_MAIN
+#include <catch/catch.hpp>
 
-#include <DataTypes.h>
+#include <SafetyControllerSettings.h>
+#include <SafetyController.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-struct DistributedForces {
-    float XForces[FA_COUNT];
-    float YForces[FA_COUNT];
-    float ZForces[FA_COUNT];
-};
+TEST_CASE("SafetyControllerSettings load", "[SafetyControllerSettings]") {
+    SafetyControllerSettings safetyControllerSettings;
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+    REQUIRE_NOTHROW(
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xml"));
 
-#endif /* DISTRIBUTEDFORCES_H_ */
+    REQUIRE_THROWS(
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xm"));
+}

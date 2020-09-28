@@ -34,18 +34,33 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * @brief FInal force produced as sum of components.
+ *
+ * Sum component forces stored in SAL events. Apply mirror safety checks.  Log
+ * force rejection if mirror safety limits are violated.
+ */
 class FinalForceComponent : public ForceComponent {
 public:
+    /**
+     * @brief Sets internal variables.
+     *
+     * @param safetyController
+     * @param forceActuatorApplicationSettings
+     * @param forceActuatorSettings
+     */
     FinalForceComponent(SafetyController* safetyController,
                         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                         ForceActuatorSettings* forceActuatorSettings);
 
-    void applyForces(float* x, float* y, float* z);
+    /**
+     * @brief Sums applied forces to target x,y and z forces.
+     */
     void applyForcesByComponents();
 
 protected:
-    void postEnableDisableActions();
-    void postUpdateActions();
+    void postEnableDisableActions() override;
+    void postUpdateActions() override;
 
 private:
     SafetyController* _safetyController;

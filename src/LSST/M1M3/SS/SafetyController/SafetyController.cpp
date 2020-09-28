@@ -41,17 +41,17 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
         _ilcCommunicationTimeoutData.push_back(0);
     }
     for (int i = 0; i < _safetyControllerSettings->ILC.ForceActuatorFollowingErrorPeriod; ++i) {
-        for (int j = 0; j < 156; ++j) {
+        for (int j = 0; j < FA_COUNT; ++j) {
             _forceActuatorFollowingErrorData[j].push_back(0);
         }
     }
     for (int i = 0; i < _safetyControllerSettings->ILC.HardpointActuatorMeasuredForcePeriod; ++i) {
-        for (int j = 0; j < 6; ++j) {
+        for (int j = 0; j < HP_COUNT; ++j) {
             _hardpointActuatorMeasuredForceData[j].push_back(0);
         }
     }
     for (int i = 0; i < _safetyControllerSettings->ILC.AirPressurePeriod; ++i) {
-        for (int j = 0; j < 6; ++j) {
+        for (int j = 0; j < HP_COUNT; ++j) {
             _hardpointActuatorAirPressureData[j].push_back(0);
         }
     }

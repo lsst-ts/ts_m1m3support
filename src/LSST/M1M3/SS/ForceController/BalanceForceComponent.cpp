@@ -41,14 +41,13 @@ BalanceForceComponent::BalanceForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
-        : _fx(0, pidSettings->Fx),
+        : ForceComponent("Balance", forceActuatorSettings->BalanceComponentSettings),
+          _fx(0, pidSettings->Fx),
           _fy(1, pidSettings->Fy),
           _fz(2, pidSettings->Fz),
           _mx(3, pidSettings->Mx),
           _my(4, pidSettings->My),
           _mz(5, pidSettings->Mz) {
-    name = "Balance";
-
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -57,26 +56,22 @@ BalanceForceComponent::BalanceForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedBalanceForces = M1M3SSPublisher::get().getEventAppliedBalanceForces();
     _rejectedBalanceForces = M1M3SSPublisher::get().getEventRejectedBalanceForces();
-    maxRateOfChange = _forceActuatorSettings->BalanceComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->BalanceComponentSettings.NearZeroValue;
 }
 
 void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
     spdlog::trace("BalanceForceComponent: applyBalanceForces()");
-    if (!enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("BalanceForceComponent: applyBalanceForces() called when the component is not applied");
         return;
     }
-    if (disabling) {
-        spdlog::warn("BalanceForceComponent: applyBalanceForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
             xTarget[i] = x[i];
         }
 
-        if (i < 100) {
+        if (i < FA_Y_COUNT) {
             yTarget[i] = y[i];
         }
 
@@ -100,9 +95,9 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
     _fx.publishTelemetry();
     DistributedForces forces =
             ForceConverter::calculateForceDistribution(_forceActuatorSettings, fx, fy, fz, mx, my, mz);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -147,12 +142,12 @@ void BalanceForceComponent::resetPIDs() {
 void BalanceForceComponent::postEnableDisableActions() {
     spdlog::debug("BalanceForceComponent: postEnableDisableActions()");
 
-    if (enabled) {
+    if (isEnabled()) {
         resetPIDs();
     }
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->balanceForcesApplied = enabled;
+    _forceActuatorState->balanceForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -163,7 +158,7 @@ void BalanceForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedBalanceForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedBalanceForces->timestamp = _appliedBalanceForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 

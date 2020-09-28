@@ -39,9 +39,8 @@ namespace SS {
 AzimuthForceComponent::AzimuthForceComponent(
         SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Azimuth";
-
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Azimuth", forceActuatorSettings->AzimuthComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -49,40 +48,36 @@ AzimuthForceComponent::AzimuthForceComponent(
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
     _rejectedAzimuthForces = M1M3SSPublisher::get().getEventRejectedAzimuthForces();
-    maxRateOfChange = _forceActuatorSettings->AzimuthComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->AzimuthComponentSettings.NearZeroValue;
 }
 
 void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
     spdlog::trace("AzimuthForceComponent: applyAzimuthForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("AzimuthForceComponent: applyAzimuthForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = x[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = y[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
-}
+}  // namespace SS
 
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
     spdlog::trace("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
     DistributedForces forces =
             ForceConverter::calculateForceFromAzimuthAngle(_forceActuatorSettings, azimuthAngle);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -95,14 +90,14 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyAzimuthForces(xForces, yForces, zForces);
+    applyAzimuthForces(xForces, yForces, zForces);
 }
 
 void AzimuthForceComponent::postEnableDisableActions() {
     spdlog::debug("AzimuthForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceActuatorState->azimuthForcesApplied = this->enabled;
+    _forceActuatorState->azimuthForcesApplied = isEnabled();
     M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
@@ -113,7 +108,7 @@ void AzimuthForceComponent::postUpdateActions() {
     bool rejectionRequired = false;
     _appliedAzimuthForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _rejectedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -122,7 +117,7 @@ void AzimuthForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].HighFault;
-            _rejectedAzimuthForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _rejectedAzimuthForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedAzimuthForces->xForces[xIndex],
                                              _appliedAzimuthForces->xForces + xIndex);
@@ -133,7 +128,7 @@ void AzimuthForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].HighFault;
-            _rejectedAzimuthForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _rejectedAzimuthForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedAzimuthForces->yForces[yIndex],
                                              _appliedAzimuthForces->yForces + yIndex);
@@ -143,7 +138,7 @@ void AzimuthForceComponent::postUpdateActions() {
 
         float zLowFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].HighFault;
-        _rejectedAzimuthForces->zForces[zIndex] = this->zCurrent[zIndex];
+        _rejectedAzimuthForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAzimuthForces->zForces[zIndex],
                                               _appliedAzimuthForces->zForces + zIndex);
         _forceSetpointWarning->azimuthForceWarning[zIndex] =
@@ -182,6 +177,6 @@ void AzimuthForceComponent::postUpdateActions() {
     M1M3SSPublisher::get().logAppliedAzimuthForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */
