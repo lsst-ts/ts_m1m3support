@@ -46,7 +46,7 @@ OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
-    _rejectedOffsetForces = M1M3SSPublisher::get().getEventRejectedOffsetForces();
+    _preclippedOffsetForces = M1M3SSPublisher::get().getEventPreclippedOffsetForces();
 }
 
 void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
@@ -108,9 +108,9 @@ void OffsetForceComponent::postUpdateActions() {
     spdlog::trace("OffsetForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
+    bool clippingRequired = false;
     _appliedOffsetForces->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _rejectedOffsetForces->timestamp = _appliedOffsetForces->timestamp;
+    _preclippedOffsetForces->timestamp = _appliedOffsetForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -120,33 +120,30 @@ void OffsetForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
-            _rejectedOffsetForces->xForces[xIndex] = xCurrent[xIndex];
+            _preclippedOffsetForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedOffsetForces->xForces[xIndex],
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedOffsetForces->xForces[xIndex],
                                              _appliedOffsetForces->xForces + xIndex);
-            _forceSetpointWarning->offsetForceWarning[zIndex] =
-                    _forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
-            _rejectedOffsetForces->yForces[yIndex] = yCurrent[yIndex];
+            _preclippedOffsetForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedOffsetForces->yForces[yIndex],
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedOffsetForces->yForces[yIndex],
                                              _appliedOffsetForces->yForces + yIndex);
-            _forceSetpointWarning->offsetForceWarning[zIndex] =
-                    _forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
-        _rejectedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedOffsetForces->zForces[zIndex],
+        _preclippedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedOffsetForces->zForces[zIndex],
                                               _appliedOffsetForces->zForces + zIndex);
-        _forceSetpointWarning->offsetForceWarning[zIndex] =
-                _forceSetpointWarning->offsetForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->offsetForceWarning[zIndex];
+        _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->offsetForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -161,21 +158,21 @@ void OffsetForceComponent::postUpdateActions() {
     _appliedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedOffsetForces->xForces,
-            _rejectedOffsetForces->yForces, _rejectedOffsetForces->zForces);
-    _rejectedOffsetForces->fx = fm.Fx;
-    _rejectedOffsetForces->fy = fm.Fy;
-    _rejectedOffsetForces->fz = fm.Fz;
-    _rejectedOffsetForces->mx = fm.Mx;
-    _rejectedOffsetForces->my = fm.My;
-    _rejectedOffsetForces->mz = fm.Mz;
-    _rejectedOffsetForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedOffsetForces->xForces,
+            _preclippedOffsetForces->yForces, _preclippedOffsetForces->zForces);
+    _preclippedOffsetForces->fx = fm.Fx;
+    _preclippedOffsetForces->fy = fm.Fy;
+    _preclippedOffsetForces->fz = fm.Fz;
+    _preclippedOffsetForces->mx = fm.Mx;
+    _preclippedOffsetForces->my = fm.My;
+    _preclippedOffsetForces->mz = fm.Mz;
+    _preclippedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyOffsetForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyOffsetForceClipping(clippingRequired);
 
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        M1M3SSPublisher::get().logRejectedOffsetForces();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedOffsetForces();
     }
     M1M3SSPublisher::get().logAppliedOffsetForces();
 }

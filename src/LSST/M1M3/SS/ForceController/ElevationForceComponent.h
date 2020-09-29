@@ -55,7 +55,7 @@ private:
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedElevationForcesC* _appliedElevationForces;
-    MTM1M3_logevent_rejectedElevationForcesC* _rejectedElevationForces;
+    MTM1M3_logevent_preclippedElevationForcesC* _preclippedElevationForces;
 };
 
 } /* namespace SS */

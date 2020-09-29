@@ -38,7 +38,7 @@ namespace SS {
  * @brief FInal force produced as sum of components.
  *
  * Sum component forces stored in SAL events. Apply mirror safety checks.  Log
- * force rejection if mirror safety limits are violated.
+ * force emirror safety limits are violated.
  */
 class FinalForceComponent : public ForceComponent {
 public:
@@ -70,7 +70,7 @@ private:
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedForcesC* _appliedForces;
-    MTM1M3_logevent_rejectedForcesC* _rejectedForces;
+    MTM1M3_logevent_preclippedForcesC* _preclippedForces;
 
     MTM1M3_logevent_appliedAberrationForcesC* _appliedAberrationForces;
     MTM1M3_logevent_appliedAccelerationForcesC* _appliedAccelerationForces;

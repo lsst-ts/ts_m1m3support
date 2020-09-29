@@ -47,7 +47,7 @@ ElevationForceComponent::ElevationForceComponent(
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
-    _rejectedElevationForces = M1M3SSPublisher::get().getEventRejectedElevationForces();
+    _preclippedElevationForces = M1M3SSPublisher::get().getEventPreclippedElevationForces();
 }
 
 void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z) {
@@ -107,9 +107,9 @@ void ElevationForceComponent::postUpdateActions() {
     spdlog::trace("ElevationForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
+    bool clippingRequired = false;
     _appliedElevationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _rejectedElevationForces->timestamp = _appliedElevationForces->timestamp;
+    _preclippedElevationForces->timestamp = _appliedElevationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -119,35 +119,32 @@ void ElevationForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].HighFault;
-            _rejectedElevationForces->xForces[xIndex] = xCurrent[xIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedElevationForces->xForces[xIndex],
-                                             _appliedElevationForces->xForces + xIndex);
-            _forceSetpointWarning->elevationForceWarning[zIndex] =
-                    _forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
+            _preclippedElevationForces->xForces[xIndex] = xCurrent[xIndex];
+            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
+                                                  _preclippedElevationForces->xForces[xIndex],
+                                                  _appliedElevationForces->xForces + xIndex);
+            _forceSetpointWarning->elevationForceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].HighFault;
-            _rejectedElevationForces->yForces[yIndex] = yCurrent[yIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedElevationForces->yForces[yIndex],
-                                             _appliedElevationForces->yForces + yIndex);
-            _forceSetpointWarning->elevationForceWarning[zIndex] =
-                    _forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
+            _preclippedElevationForces->yForces[yIndex] = yCurrent[yIndex];
+            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
+                                                  _preclippedElevationForces->yForces[yIndex],
+                                                  _appliedElevationForces->yForces + yIndex);
+            _forceSetpointWarning->elevationForceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].HighFault;
-        _rejectedElevationForces->zForces[zIndex] = zCurrent[zIndex];
+        _preclippedElevationForces->zForces[zIndex] = zCurrent[zIndex];
 
         notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedElevationForces->zForces[zIndex],
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedElevationForces->zForces[zIndex],
                                          _appliedElevationForces->zForces + zIndex);
-        _forceSetpointWarning->elevationForceWarning[zIndex] =
-                _forceSetpointWarning->elevationForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->elevationForceWarning[zIndex];
+        _forceSetpointWarning->elevationForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->elevationForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -162,21 +159,21 @@ void ElevationForceComponent::postUpdateActions() {
     _appliedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedElevationForces->xForces,
-            _rejectedElevationForces->yForces, _rejectedElevationForces->zForces);
-    _rejectedElevationForces->fx = fm.Fx;
-    _rejectedElevationForces->fy = fm.Fy;
-    _rejectedElevationForces->fz = fm.Fz;
-    _rejectedElevationForces->mx = fm.Mx;
-    _rejectedElevationForces->my = fm.My;
-    _rejectedElevationForces->mz = fm.Mz;
-    _rejectedElevationForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedElevationForces->xForces,
+            _preclippedElevationForces->yForces, _preclippedElevationForces->zForces);
+    _preclippedElevationForces->fx = fm.Fx;
+    _preclippedElevationForces->fy = fm.Fy;
+    _preclippedElevationForces->fz = fm.Fz;
+    _preclippedElevationForces->mx = fm.Mx;
+    _preclippedElevationForces->my = fm.My;
+    _preclippedElevationForces->mz = fm.Mz;
+    _preclippedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyElevationForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyElevationForceClipping(clippingRequired);
 
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        M1M3SSPublisher::get().logRejectedElevationForces();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedElevationForces();
     }
     M1M3SSPublisher::get().logAppliedElevationForces();
 }
