@@ -56,7 +56,7 @@ private:
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedVelocityForcesC* _appliedVelocityForces;
-    MTM1M3_logevent_rejectedVelocityForcesC* _rejectedVelocityForces;
+    MTM1M3_logevent_preclippedVelocityForcesC* _preclippedVelocityForces;
 };
 
 } /* namespace SS */

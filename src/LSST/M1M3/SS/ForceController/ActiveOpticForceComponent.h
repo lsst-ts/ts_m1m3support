@@ -55,7 +55,7 @@ private:
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedActiveOpticForcesC* _appliedActiveOpticForces;
-    MTM1M3_logevent_rejectedActiveOpticForcesC* _rejectedActiveOpticForces;
+    MTM1M3_logevent_preclippedActiveOpticForcesC* _preclippedActiveOpticForces;
 };
 
 } /* namespace SS */
