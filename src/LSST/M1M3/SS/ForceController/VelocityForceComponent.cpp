@@ -47,7 +47,7 @@ VelocityForceComponent::VelocityForceComponent(
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
-    _rejectedVelocityForces = M1M3SSPublisher::get().getEventRejectedVelocityForces();
+    _preclippedVelocityForces = M1M3SSPublisher::get().getEventPreclippedVelocityForces();
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
@@ -109,9 +109,9 @@ void VelocityForceComponent::postUpdateActions() {
     spdlog::trace("VelocityForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
+    bool clippingRequired = false;
     _appliedVelocityForces->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _rejectedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
+    _preclippedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -121,33 +121,31 @@ void VelocityForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].HighFault;
-            _rejectedVelocityForces->xForces[xIndex] = xCurrent[xIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedVelocityForces->xForces[xIndex],
-                                             _appliedVelocityForces->xForces + xIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] =
-                    _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
+            _preclippedVelocityForces->xForces[xIndex] = xCurrent[xIndex];
+            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
+                                                  _preclippedVelocityForces->xForces[xIndex],
+                                                  _appliedVelocityForces->xForces + xIndex);
+            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].HighFault;
-            _rejectedVelocityForces->yForces[yIndex] = yCurrent[yIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedVelocityForces->yForces[yIndex],
-                                             _appliedVelocityForces->yForces + yIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] =
-                    _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
+            _preclippedVelocityForces->yForces[yIndex] = yCurrent[yIndex];
+            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
+                                                  _preclippedVelocityForces->yForces[yIndex],
+                                                  _appliedVelocityForces->yForces + yIndex);
+            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].HighFault;
-        _rejectedVelocityForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedVelocityForces->zForces[zIndex],
-                                              _appliedVelocityForces->zForces + zIndex);
-        _forceSetpointWarning->velocityForceWarning[zIndex] =
-                _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->velocityForceWarning[zIndex];
+        _preclippedVelocityForces->zForces[zIndex] = zCurrent[zIndex];
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedVelocityForces->zForces[zIndex],
+                                         _appliedVelocityForces->zForces + zIndex);
+        _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->velocityForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -162,21 +160,21 @@ void VelocityForceComponent::postUpdateActions() {
     _appliedVelocityForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedVelocityForces->xForces,
-            _rejectedVelocityForces->yForces, _rejectedVelocityForces->zForces);
-    _rejectedVelocityForces->fx = fm.Fx;
-    _rejectedVelocityForces->fy = fm.Fy;
-    _rejectedVelocityForces->fz = fm.Fz;
-    _rejectedVelocityForces->mx = fm.Mx;
-    _rejectedVelocityForces->my = fm.My;
-    _rejectedVelocityForces->mz = fm.Mz;
-    _rejectedVelocityForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedVelocityForces->xForces,
+            _preclippedVelocityForces->yForces, _preclippedVelocityForces->zForces);
+    _preclippedVelocityForces->fx = fm.Fx;
+    _preclippedVelocityForces->fy = fm.Fy;
+    _preclippedVelocityForces->fz = fm.Fz;
+    _preclippedVelocityForces->mx = fm.Mx;
+    _preclippedVelocityForces->my = fm.My;
+    _preclippedVelocityForces->mz = fm.Mz;
+    _preclippedVelocityForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyVelocityForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyVelocityForceClipping(clippingRequired);
 
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        M1M3SSPublisher::get().logRejectedVelocityForces();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedVelocityForces();
     }
     M1M3SSPublisher::get().logAppliedVelocityForces();
 }

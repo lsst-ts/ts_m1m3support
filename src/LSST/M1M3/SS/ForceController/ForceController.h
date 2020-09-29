@@ -90,8 +90,8 @@ namespace SS {
  *
  * ## Distribution of mirror forces
  *
- * Calculated force demands are stored in rejected* events
- * (rejectedElevationForces,..). Those are clip into allowed range, and the
+ * Calculated force demands are stored in preclipped* events
+ * (prelippedElevationForces,..). Those are clip into allowed range, and the
  * resulting force is stored in applied* (appliedElevationForces,..) events.
  *
  * The algorithm tries to prevent large changes in applied forces. If a large
@@ -185,7 +185,7 @@ public:
      * ActiveOpticForceComponent, AzimuthForceComponent, BalanceForceComponent,
      * ElevationForceComponent, OffsetForceComponent, StaticForceComponent,
      * ThermalForceComponent and VelocityForceComponent. Run mirror safety
-     * checks on summed forces, and log warning if forces are rejected.
+     * checks on summed forces, and log warning if forces are clipped.
      */
     void processAppliedForces();
 
@@ -260,7 +260,7 @@ private:
     MTM1M3_logevent_appliedForcesC* _appliedForces;
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_rejectedCylinderForcesC* _rejectedCylinderForces;
+    MTM1M3_logevent_preclippedCylinderForcesC* _preclippedCylinderForces;
 
     MTM1M3_logevent_forceActuatorInfoC* _forceActuatorInfo;
     MTM1M3_forceActuatorDataC* _forceActuatorData;

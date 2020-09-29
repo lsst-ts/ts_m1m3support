@@ -1,9 +1,3 @@
 <ForceActuatorApplicationSettings>
-    <XIndexToZIndexTablePath>Tables/ForceActuatorXIndexToZIndexTable.csv</XIndexToZIndexTablePath>
-<YIndexToZIndexTablePath>Tables/ForceActuatorYIndexToZIndexTable.csv</YIndexToZIndexTablePath>
-<SecondaryCylinderIndexToZIndexTablePath>Tables/ForceActuatorSecondaryCylinderIndexToZIndexTable.csv</SecondaryCylinderIndexToZIndexTablePath>
-<ZIndexToXIndexTablePath>Tables/ForceActuatorZIndexToXIndexTable.csv</ZIndexToXIndexTablePath>
-<ZIndexToYIndexTablePath>Tables/ForceActuatorZIndexToYIndexTable.csv</ZIndexToYIndexTablePath>
-<ZIndexToSecondaryCylinderIndexTablePath>Tables/ForceActuatorZIndexToSecondaryCylinderIndexTable.csv</ZIndexToSecondaryCylinderIndexTablePath>
 <ForceActuatorTablePath>Tables/ForceActuatorTable.csv</ForceActuatorTablePath>
 </ForceActuatorApplicationSettings>

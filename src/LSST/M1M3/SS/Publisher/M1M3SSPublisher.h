@@ -165,39 +165,39 @@ public:
     MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &_eventPowerStatus; }
     MTM1M3_logevent_powerSupplyStatusC* getEventPowerSupplyStatus() { return &_eventPowerSupplyStatus; }
     MTM1M3_logevent_powerWarningC* getEventPowerWarning() { return &_eventPowerWarning; }
-    MTM1M3_logevent_rejectedAberrationForcesC* getEventRejectedAberrationForces() {
-        return &_eventRejectedAberrationForces;
+    MTM1M3_logevent_preclippedAberrationForcesC* getEventPreclippedAberrationForces() {
+        return &_eventPreclippedAberrationForces;
     }
-    MTM1M3_logevent_rejectedAccelerationForcesC* getEventRejectedAccelerationForces() {
-        return &_eventRejectedAccelerationForces;
+    MTM1M3_logevent_preclippedAccelerationForcesC* getEventPreclippedAccelerationForces() {
+        return &_eventPreclippedAccelerationForces;
     }
-    MTM1M3_logevent_rejectedActiveOpticForcesC* getEventRejectedActiveOpticForces() {
-        return &_eventRejectedActiveOpticForces;
+    MTM1M3_logevent_preclippedActiveOpticForcesC* getEventPreclippedActiveOpticForces() {
+        return &_eventPreclippedActiveOpticForces;
     }
-    MTM1M3_logevent_rejectedAzimuthForcesC* getEventRejectedAzimuthForces() {
-        return &_eventRejectedAzimuthForces;
+    MTM1M3_logevent_preclippedAzimuthForcesC* getEventPreclippedAzimuthForces() {
+        return &_eventPreclippedAzimuthForces;
     }
-    MTM1M3_logevent_rejectedBalanceForcesC* getEventRejectedBalanceForces() {
-        return &_eventRejectedBalanceForces;
+    MTM1M3_logevent_preclippedBalanceForcesC* getEventPreclippedBalanceForces() {
+        return &_eventPreclippedBalanceForces;
     }
-    MTM1M3_logevent_rejectedCylinderForcesC* getEventRejectedCylinderForces() {
-        return &_eventRejectedCylinderForces;
+    MTM1M3_logevent_preclippedCylinderForcesC* getEventPreclippedCylinderForces() {
+        return &_eventPreclippedCylinderForces;
     }
-    MTM1M3_logevent_rejectedElevationForcesC* getEventRejectedElevationForces() {
-        return &_eventRejectedElevationForces;
+    MTM1M3_logevent_preclippedElevationForcesC* getEventPreclippedElevationForces() {
+        return &_eventPreclippedElevationForces;
     }
-    MTM1M3_logevent_rejectedForcesC* getEventRejectedForces() { return &_eventRejectedForces; }
-    MTM1M3_logevent_rejectedOffsetForcesC* getEventRejectedOffsetForces() {
-        return &_eventRejectedOffsetForces;
+    MTM1M3_logevent_preclippedForcesC* getEventPreclippedForces() { return &_eventPreclippedForces; }
+    MTM1M3_logevent_preclippedOffsetForcesC* getEventPreclippedOffsetForces() {
+        return &_eventPreclippedOffsetForces;
     }
-    MTM1M3_logevent_rejectedStaticForcesC* getEventRejectedStaticForces() {
-        return &_eventRejectedStaticForces;
+    MTM1M3_logevent_preclippedStaticForcesC* getEventPreclippedStaticForces() {
+        return &_eventPreclippedStaticForces;
     }
-    MTM1M3_logevent_rejectedThermalForcesC* getEventRejectedThermalForces() {
-        return &_eventRejectedThermalForces;
+    MTM1M3_logevent_preclippedThermalForcesC* getEventPreclippedThermalForces() {
+        return &_eventPreclippedThermalForces;
     }
-    MTM1M3_logevent_rejectedVelocityForcesC* getEventRejectedVelocityForces() {
-        return &_eventRejectedVelocityForces;
+    MTM1M3_logevent_preclippedVelocityForcesC* getEventPreclippedVelocityForces() {
+        return &_eventPreclippedVelocityForces;
     }
     MTM1M3_logevent_settingVersionsC* getEventSettingVersions() { return &_eventSettingVersions; }
     MTM1M3_logevent_settingsAppliedC* getEventSettingsApplied() { return &_eventSettingsApplied; }
@@ -326,30 +326,30 @@ public:
     void tryLogPowerSupplyStatus();
     void logPowerWarning();
     void tryLogPowerWarning();
-    void logRejectedAberrationForces();
-    void tryLogRejectedAberrationForces();
-    void logRejectedAccelerationForces();
-    void tryLogRejectedAccelerationForces();
-    void logRejectedActiveOpticForces();
-    void tryLogRejectedActiveOpticForces();
-    void logRejectedAzimuthForces();
-    void tryLogRejectedAzimuthForces();
-    void logRejectedBalanceForces();
-    void tryLogRejectedBalanceForces();
-    void logRejectedCylinderForces();
-    void tryLogRejectedCylinderForces();
-    void logRejectedElevationForces();
-    void tryLogRejectedElevationForces();
-    void logRejectedForces();
-    void tryLogRejectedForces();
-    void logRejectedOffsetForces();
-    void tryLogRejectedOffsetForces();
-    void logRejectedStaticForces();
-    void tryLogRejectedStaticForces();
-    void logRejectedThermalForces();
-    void tryLogRejectedThermalForces();
-    void logRejectedVelocityForces();
-    void tryLogRejectedVelocityForces();
+    void logPreclippedAberrationForces();
+    void tryLogPreclippedAberrationForces();
+    void logPreclippedAccelerationForces();
+    void tryLogPreclippedAccelerationForces();
+    void logPreclippedActiveOpticForces();
+    void tryLogPreclippedActiveOpticForces();
+    void logPreclippedAzimuthForces();
+    void tryLogPreclippedAzimuthForces();
+    void logPreclippedBalanceForces();
+    void tryLogPreclippedBalanceForces();
+    void logPreclippedCylinderForces();
+    void tryLogPreclippedCylinderForces();
+    void logPreclippedElevationForces();
+    void tryLogPreclippedElevationForces();
+    void logPreclippedForces();
+    void tryLogPreclippedForces();
+    void logPreclippedOffsetForces();
+    void tryLogPreclippedOffsetForces();
+    void logPreclippedStaticForces();
+    void tryLogPreclippedStaticForces();
+    void logPreclippedThermalForces();
+    void tryLogPreclippedThermalForces();
+    void logPreclippedVelocityForces();
+    void tryLogPreclippedVelocityForces();
     void logSettingVersions();
     void logSettingsApplied();
     void tryLogSettingsApplied();
@@ -470,18 +470,18 @@ private:
     MTM1M3_logevent_powerStatusC _eventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _eventPowerSupplyStatus;
     MTM1M3_logevent_powerWarningC _eventPowerWarning;
-    MTM1M3_logevent_rejectedAberrationForcesC _eventRejectedAberrationForces;
-    MTM1M3_logevent_rejectedAccelerationForcesC _eventRejectedAccelerationForces;
-    MTM1M3_logevent_rejectedActiveOpticForcesC _eventRejectedActiveOpticForces;
-    MTM1M3_logevent_rejectedAzimuthForcesC _eventRejectedAzimuthForces;
-    MTM1M3_logevent_rejectedBalanceForcesC _eventRejectedBalanceForces;
-    MTM1M3_logevent_rejectedCylinderForcesC _eventRejectedCylinderForces;
-    MTM1M3_logevent_rejectedElevationForcesC _eventRejectedElevationForces;
-    MTM1M3_logevent_rejectedForcesC _eventRejectedForces;
-    MTM1M3_logevent_rejectedOffsetForcesC _eventRejectedOffsetForces;
-    MTM1M3_logevent_rejectedStaticForcesC _eventRejectedStaticForces;
-    MTM1M3_logevent_rejectedThermalForcesC _eventRejectedThermalForces;
-    MTM1M3_logevent_rejectedVelocityForcesC _eventRejectedVelocityForces;
+    MTM1M3_logevent_preclippedAberrationForcesC _eventPreclippedAberrationForces;
+    MTM1M3_logevent_preclippedAccelerationForcesC _eventPreclippedAccelerationForces;
+    MTM1M3_logevent_preclippedActiveOpticForcesC _eventPreclippedActiveOpticForces;
+    MTM1M3_logevent_preclippedAzimuthForcesC _eventPreclippedAzimuthForces;
+    MTM1M3_logevent_preclippedBalanceForcesC _eventPreclippedBalanceForces;
+    MTM1M3_logevent_preclippedCylinderForcesC _eventPreclippedCylinderForces;
+    MTM1M3_logevent_preclippedElevationForcesC _eventPreclippedElevationForces;
+    MTM1M3_logevent_preclippedForcesC _eventPreclippedForces;
+    MTM1M3_logevent_preclippedOffsetForcesC _eventPreclippedOffsetForces;
+    MTM1M3_logevent_preclippedStaticForcesC _eventPreclippedStaticForces;
+    MTM1M3_logevent_preclippedThermalForcesC _eventPreclippedThermalForces;
+    MTM1M3_logevent_preclippedVelocityForcesC _eventPreclippedVelocityForces;
     MTM1M3_logevent_settingVersionsC _eventSettingVersions;
     MTM1M3_logevent_settingsAppliedC _eventSettingsApplied;
     MTM1M3_logevent_summaryStateC _eventSummaryState;
@@ -528,18 +528,18 @@ private:
     MTM1M3_logevent_powerStatusC _previousEventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _previousEventPowerSupplyStatus;
     MTM1M3_logevent_powerWarningC _previousEventPowerWarning;
-    MTM1M3_logevent_rejectedAberrationForcesC _previousEventRejectedAberrationForces;
-    MTM1M3_logevent_rejectedAccelerationForcesC _previousEventRejectedAccelerationForces;
-    MTM1M3_logevent_rejectedActiveOpticForcesC _previousEventRejectedActiveOpticForces;
-    MTM1M3_logevent_rejectedAzimuthForcesC _previousEventRejectedAzimuthForces;
-    MTM1M3_logevent_rejectedBalanceForcesC _previousEventRejectedBalanceForces;
-    MTM1M3_logevent_rejectedCylinderForcesC _previousEventRejectedCylinderForces;
-    MTM1M3_logevent_rejectedElevationForcesC _previousEventRejectedElevationForces;
-    MTM1M3_logevent_rejectedForcesC _previousEventRejectedForces;
-    MTM1M3_logevent_rejectedOffsetForcesC _previousEventRejectedOffsetForces;
-    MTM1M3_logevent_rejectedStaticForcesC _previousEventRejectedStaticForces;
-    MTM1M3_logevent_rejectedThermalForcesC _previousEventRejectedThermalForces;
-    MTM1M3_logevent_rejectedVelocityForcesC _previousEventRejectedVelocityForces;
+    MTM1M3_logevent_preclippedAberrationForcesC _previousEventPreclippedAberrationForces;
+    MTM1M3_logevent_preclippedAccelerationForcesC _previousEventPreclippedAccelerationForces;
+    MTM1M3_logevent_preclippedActiveOpticForcesC _previousEventPreclippedActiveOpticForces;
+    MTM1M3_logevent_preclippedAzimuthForcesC _previousEventPreclippedAzimuthForces;
+    MTM1M3_logevent_preclippedBalanceForcesC _previousEventPreclippedBalanceForces;
+    MTM1M3_logevent_preclippedCylinderForcesC _previousEventPreclippedCylinderForces;
+    MTM1M3_logevent_preclippedElevationForcesC _previousEventPreclippedElevationForces;
+    MTM1M3_logevent_preclippedForcesC _previousEventPreclippedForces;
+    MTM1M3_logevent_preclippedOffsetForcesC _previousEventPreclippedOffsetForces;
+    MTM1M3_logevent_preclippedStaticForcesC _previousEventPreclippedStaticForces;
+    MTM1M3_logevent_preclippedThermalForcesC _previousEventPreclippedThermalForces;
+    MTM1M3_logevent_preclippedVelocityForcesC _previousEventPreclippedVelocityForces;
     MTM1M3_logevent_settingsAppliedC _previousEventSettingsApplied;
     MTM1M3_logevent_summaryStateC _previousEventSummaryState;
 };

@@ -47,7 +47,7 @@ AberrationForceComponent::AberrationForceComponent(
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
-    _rejectedAberrationForces = M1M3SSPublisher::get().getEventRejectedAberrationForces();
+    _preclippedAberrationForces = M1M3SSPublisher::get().getEventPreclippedAberrationForces();
 }
 
 void AberrationForceComponent::applyAberrationForces(float* z) {
@@ -84,23 +84,21 @@ void AberrationForceComponent::postUpdateActions() {
     spdlog::trace("AberrationForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
+    bool clippingRequired = false;
     _appliedAberrationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _rejectedAberrationForces->timestamp = _appliedAberrationForces->timestamp;
+    _preclippedAberrationForces->timestamp = _appliedAberrationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         float zLowFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].HighFault;
 
         _forceSetpointWarning->aberrationForceWarning[zIndex] = false;
 
-        _rejectedAberrationForces->zForces[zIndex] = zCurrent[zIndex];
+        _preclippedAberrationForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAberrationForces->zForces[zIndex],
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedAberrationForces->zForces[zIndex],
                                          _appliedAberrationForces->zForces + zIndex);
-        _forceSetpointWarning->aberrationForceWarning[zIndex] =
-                _forceSetpointWarning->aberrationForceWarning[zIndex] || notInRange;
-
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->aberrationForceWarning[zIndex];
+        _forceSetpointWarning->aberrationForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->aberrationForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -110,10 +108,10 @@ void AberrationForceComponent::postUpdateActions() {
     _appliedAberrationForces->my = fm.My;
 
     fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
-                                                   _rejectedAberrationForces->zForces);
-    _rejectedAberrationForces->fz = fm.Fz;
-    _rejectedAberrationForces->mx = fm.Mx;
-    _rejectedAberrationForces->my = fm.My;
+                                                   _preclippedAberrationForces->zForces);
+    _preclippedAberrationForces->fz = fm.Fz;
+    _preclippedAberrationForces->mx = fm.Mx;
+    _preclippedAberrationForces->my = fm.My;
 
     _forceSetpointWarning->aberrationNetForceWarning =
             !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
@@ -126,13 +124,13 @@ void AberrationForceComponent::postUpdateActions() {
                             _forceActuatorSettings->NetAberrationForceTolerance,
                             _appliedAberrationForces->my);
 
-    _safetyController->forceControllerNotifyAberrationForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyAberrationForceClipping(clippingRequired);
     _safetyController->forceControllerNotifyAberrationNetForceCheck(
             _forceSetpointWarning->aberrationNetForceWarning);
 
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        M1M3SSPublisher::get().logRejectedAberrationForces();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedAberrationForces();
     }
     M1M3SSPublisher::get().logAppliedAberrationForces();
 }

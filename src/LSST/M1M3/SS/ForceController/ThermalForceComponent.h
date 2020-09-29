@@ -55,7 +55,7 @@ private:
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedThermalForcesC* _appliedThermalForces;
-    MTM1M3_logevent_rejectedThermalForcesC* _rejectedThermalForces;
+    MTM1M3_logevent_preclippedThermalForcesC* _preclippedThermalForces;
 };
 
 } /* namespace SS */
