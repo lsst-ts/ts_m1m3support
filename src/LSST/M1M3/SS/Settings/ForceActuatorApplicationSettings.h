@@ -24,28 +24,40 @@
 #ifndef FORCEACTUATORAPPLICATIONSETTINGS_H_
 #define FORCEACTUATORAPPLICATIONSETTINGS_H_
 
-#include <ForceActuatorTableRow.h>
-#include <string>
-#include <vector>
+#include <DataTypes.h>
+#include <ForceActuatorOrientations.h>
+#include <ForceActuatorTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Force actuator data.
+ */
+struct ForceActuatorTableRow {
+    int32_t Index;
+    int32_t ActuatorID;
+    double XPosition;
+    double YPosition;
+    double ZPosition;
+    ForceActuatorTypes Type;
+    uint8_t Subnet;
+    uint8_t Address;
+    ForceActuatorOrientations Orientation;
+};
+
 class ForceActuatorApplicationSettings {
 public:
-    std::vector<int32_t> XIndexToZIndex;
-    std::vector<int32_t> YIndexToZIndex;
-    std::vector<int32_t> SecondaryCylinderIndexToZIndex;
-    std::vector<int32_t> ZIndexToXIndex;
-    std::vector<int32_t> ZIndexToYIndex;
-    std::vector<int32_t> ZIndexToSecondaryCylinderIndex;
-    std::vector<ForceActuatorTableRow> Table;
+    ForceActuatorApplicationSettings();
 
-    void load(const std::string &filename);
-
-private:
-    void _loadForceActuatorTable(const std::string &filename);
+    int32_t XIndexToZIndex[FA_X_COUNT];
+    int32_t YIndexToZIndex[FA_Y_COUNT];
+    int32_t SecondaryCylinderIndexToZIndex[FA_X_COUNT + FA_Y_COUNT];
+    int32_t ZIndexToXIndex[FA_Z_COUNT];
+    int32_t ZIndexToYIndex[FA_Z_COUNT];
+    int32_t ZIndexToSecondaryCylinderIndex[FA_Z_COUNT];
+    static ForceActuatorTableRow Table[FA_COUNT];
 };
 
 } /* namespace SS */

@@ -104,7 +104,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         ForceActuatorNeighbors neighbors;
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
             int32_t id = _forceActuatorSettings->Neighbors[i].NearZIDs[j];
-            for (unsigned int k = 0; k < _forceActuatorApplicationSettings->Table.size(); ++k) {
+            for (unsigned int k = 0; k < FA_COUNT; ++k) {
                 if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
                     neighbors.NearZIDs.push_back(k);
                     break;
@@ -113,7 +113,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         }
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
             int32_t id = _forceActuatorSettings->Neighbors[i].FarIDs[j];
-            for (unsigned int k = 0; k < _forceActuatorApplicationSettings->Table.size(); ++k) {
+            for (unsigned int k = 0; k < FA_COUNT; ++k) {
                 if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
                     neighbors.FarIDs.push_back(k);
                     break;

@@ -77,7 +77,11 @@ public:
      */
     void configure(std::string settingsToApply);
     AliasApplicationSettings* loadAliasApplicationSettings();
-    ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
+
+    ForceActuatorApplicationSettings* getForceActuatorApplicationSettings() {
+        return &_forceActuatorApplicationSettings;
+    }
+
     ForceActuatorSettings* loadForceActuatorSettings();
     HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
     HardpointActuatorSettings* loadHardpointActuatorSettings();

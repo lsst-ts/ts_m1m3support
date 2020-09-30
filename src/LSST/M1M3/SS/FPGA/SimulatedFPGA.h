@@ -88,7 +88,6 @@ public:
     void readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) override;
 
 private:
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     std::thread _monitorMountElevationThread;
     std::mutex _elevationReadWriteLock;
     SAL_MTMount _mgrMTMount;

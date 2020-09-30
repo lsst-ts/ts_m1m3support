@@ -102,7 +102,7 @@ void Model::loadSettings(std::string settingsToApply) {
     ILCApplicationSettings* ilcApplicationSettings = SettingReader::get().loadILCApplicationSettings();
     spdlog::info("Model: Loading force actuator application settings");
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-            SettingReader::get().loadForceActuatorApplicationSettings();
+            SettingReader::get().getForceActuatorApplicationSettings();
     spdlog::info("Model: Loading force actuator settings");
     ForceActuatorSettings* forceActuatorSettings = SettingReader::get().loadForceActuatorSettings();
     spdlog::info("Model: Loading hardpoint actuator application settings");
