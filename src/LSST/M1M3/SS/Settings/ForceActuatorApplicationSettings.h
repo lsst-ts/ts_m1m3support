@@ -33,10 +33,13 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Force actuator data.
+ * Force actuator data. Contains static data, which shall not change and which
+ * don't contribute to force calculation. Particularly note that [XYZ]Position
+ * is used only to calculate combined forces and moments. Position shall not be
+ * used in calculating actuator force and distributing forces among actuator,
+ * that's done with configurable matrices.
  */
 struct ForceActuatorTableRow {
-    int32_t Index;
     int32_t ActuatorID;
     double XPosition;
     double YPosition;
@@ -47,6 +50,9 @@ struct ForceActuatorTableRow {
     ForceActuatorOrientations Orientation;
 };
 
+/**
+ *
+ */
 class ForceActuatorApplicationSettings {
 public:
     ForceActuatorApplicationSettings();
