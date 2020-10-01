@@ -35,35 +35,80 @@ namespace SS {
 /**
  * Force actuator data. Contains static data, which shall not change and which
  * don't contribute to force calculation. Particularly note that [XYZ]Position
- * is used only to calculate combined forces and moments. Position shall not be
- * used in calculating actuator force and distributing forces among actuator,
- * that's done with configurable matrices.
+ * is used only to calculate combined forces and moments (f[xyz], m[xyz], force
+ * magnitude). Position shall not be used in calculating actuator force and
+ * distributing forces among actuator, that's done with configurable matrices.
  */
 struct ForceActuatorTableRow {
+    //* Actuator ID. Three digit number, where the first digit is quadrant.
     int32_t ActuatorID;
+
+    /**
+     * Actuator X (horizontal when mirror is pointed at horizon) position in m. Cartesian system with origin
+     * in mirror center.
+     */
     double XPosition;
+
+    /**
+     * Actuator Y (vertical when mirror is pointed at horizon) position in m. Cartesian system with origin in
+     * mirror center.
+     */
     double YPosition;
+
+    //* Actuator Z (positive toward M2) position in m. Cartesian system with origin in mirror center.
     double ZPosition;
+
+    //* Single or double axis actuator.
     ForceActuatorTypes Type;
+
+    //* Actuator ILC Modbus subnet (bus) number. 1-4.
     uint8_t Subnet;
+
+    //* Actuator ILC address on bus. 10-46.
     uint8_t Address;
+
+    //* Second axis orientation. NA for single axis actuators.
     ForceActuatorOrientations Orientation;
 };
 
 /**
+ * (Almost) constant actuator values. Contains array of 156 actuator values,
+ * used to pre-compute other mappings.
  *
+ * @note *SSA* Single Axis Actuator
+ * @note *DAA* Dual Axis Actuator
  */
 class ForceActuatorApplicationSettings {
 public:
+    /**
+     * Constructor. Populates auxiliary mapping arrays from static Table data.
+     */
     ForceActuatorApplicationSettings();
 
-    int32_t XIndexToZIndex[FA_X_COUNT];
-    int32_t YIndexToZIndex[FA_Y_COUNT];
-    int32_t SecondaryCylinderIndexToZIndex[FA_X_COUNT + FA_Y_COUNT];
-    int32_t ZIndexToXIndex[FA_Z_COUNT];
-    int32_t ZIndexToYIndex[FA_Z_COUNT];
-    int32_t ZIndexToSecondaryCylinderIndex[FA_Z_COUNT];
+    /**
+     * Source data. Contains actuator position, type and orientation.
+     *
+     * @see ForceActuatorTableRow
+     */
     static ForceActuatorTableRow Table[FA_COUNT];
+
+    //* Maps X DAA (lateral support) actuator number (0-11) into Z index (0-155).
+    int32_t XIndexToZIndex[FA_X_COUNT];
+
+    //* Maps Y DAA (longitudinal support) actuator number (0-99) into Z index (0-155).
+    int32_t YIndexToZIndex[FA_Y_COUNT];
+
+    //* Maps secondary (DAA) index (0-111) into Z index (0-155).
+    int32_t SecondaryCylinderIndexToZIndex[FA_X_COUNT + FA_Y_COUNT];
+
+    //* Maps Z index (0-155) to X DAA (lateral support, 0-11).
+    int32_t ZIndexToXIndex[FA_Z_COUNT];
+
+    //* Maps Z index (0-155) to Y DAA (longitudinal support, 0-99).
+    int32_t ZIndexToYIndex[FA_Z_COUNT];
+
+    //* Maps Z index (0-155) to secondary (DAA) index (0-111).
+    int32_t ZIndexToSecondaryCylinderIndex[FA_Z_COUNT];
 };
 
 } /* namespace SS */
