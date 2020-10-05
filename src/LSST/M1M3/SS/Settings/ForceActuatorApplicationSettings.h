@@ -40,22 +40,25 @@ namespace SS {
  * distributing forces among actuator, that's done with configurable matrices.
  */
 struct ForceActuatorTableRow {
-    //* Actuator ID. Three digit number, where the first digit is quadrant.
+    /**
+     * Force actuator ID. Three digit number, where the first digit is
+     * quadrant.
+     */
     int32_t ActuatorID;
 
     /**
-     * Actuator X (horizontal when mirror is pointed at horizon) position in m. Cartesian system with origin
-     * in mirror center.
+     * Force actuator X (horizontal when mirror is pointed at horizon) position in m. Cartesian system with
+     * origin in mirror center.
      */
     double XPosition;
 
     /**
-     * Actuator Y (vertical when mirror is pointed at horizon) position in m. Cartesian system with origin in
-     * mirror center.
+     * Force actuator Y (vertical when mirror is pointed at horizon) position in m. Cartesian system with
+     * origin in mirror center.
      */
     double YPosition;
 
-    //* Actuator Z (positive toward M2) position in m. Cartesian system with origin in mirror center.
+    //* Force actuator Z (positive toward M2) position in m. Cartesian system with origin in mirror center.
     double ZPosition;
 
     //* Single or double axis actuator.
@@ -72,8 +75,8 @@ struct ForceActuatorTableRow {
 };
 
 /**
- * (Almost) constant actuator values. Contains array of 156 actuator values,
- * used to pre-compute other mappings.
+ * (Almost) constant force actuator values. Contains array of 156 force actuator
+ * values, used to pre-compute other mappings.
  *
  * @note *SSA* Single Axis Actuator
  * @note *DAA* Dual Axis Actuator
@@ -86,16 +89,19 @@ public:
     ForceActuatorApplicationSettings();
 
     /**
-     * Source data. Contains actuator position, type and orientation.
+     * Source data. Contains force actuator position, type and orientation. Populated in
+     * ForceActuatorApplicationSettings.cpp.
+     *
+     * @snippet Settings/ForceActuatorApplicationSettings.cpp Table initialization
      *
      * @see ForceActuatorTableRow
      */
     static ForceActuatorTableRow Table[FA_COUNT];
 
-    //* Maps X DAA (lateral support) actuator number (0-11) into Z index (0-155).
+    //* Maps X DAA (lateral support) number (0-11) into Z index (0-155).
     int32_t XIndexToZIndex[FA_X_COUNT];
 
-    //* Maps Y DAA (longitudinal support) actuator number (0-99) into Z index (0-155).
+    //* Maps Y DAA (longitudinal support) number (0-99) into Z index (0-155).
     int32_t YIndexToZIndex[FA_Y_COUNT];
 
     //* Maps secondary (DAA) index (0-111) into Z index (0-155).

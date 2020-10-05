@@ -30,6 +30,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+//! [Table initialization]
 ForceActuatorTableRow ForceActuatorApplicationSettings::Table[FA_COUNT] = {
         {101, 0.776782776, 0, -2.158743, ForceActuatorTypes::SAA, 3, 1, ForceActuatorOrientations::NA},
         {102, 1.442567993, 0, -2.158743, ForceActuatorTypes::DAA, 1, 17,
@@ -329,6 +330,7 @@ ForceActuatorTableRow ForceActuatorApplicationSettings::Table[FA_COUNT] = {
          ForceActuatorOrientations::NA},
         {443, 1.60401001, 3.692779053, -2.158743, ForceActuatorTypes::SAA, 3, 10,
          ForceActuatorOrientations::NA}};
+//! [Table initialization]
 
 ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
     // fill helpers tables
