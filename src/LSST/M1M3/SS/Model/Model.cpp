@@ -102,7 +102,7 @@ void Model::loadSettings(std::string settingsToApply) {
     ILCApplicationSettings* ilcApplicationSettings = SettingReader::get().loadILCApplicationSettings();
     spdlog::info("Model: Loading force actuator application settings");
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-            SettingReader::get().loadForceActuatorApplicationSettings();
+            SettingReader::get().getForceActuatorApplicationSettings();
     spdlog::info("Model: Loading force actuator settings");
     ForceActuatorSettings* forceActuatorSettings = SettingReader::get().loadForceActuatorSettings();
     spdlog::info("Model: Loading hardpoint actuator application settings");
@@ -236,14 +236,14 @@ void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceAc
     MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     for (int i = 0; i < FA_COUNT; i++) {
         ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
-        forceInfo->referenceId[row.Index] = row.ActuatorID;
-        forceInfo->modbusSubnet[row.Index] = row.Subnet;
-        forceInfo->modbusAddress[row.Index] = row.Address;
-        forceInfo->actuatorType[row.Index] = row.Type;
-        forceInfo->actuatorOrientation[row.Index] = row.Orientation;
-        forceInfo->xPosition[row.Index] = row.XPosition;
-        forceInfo->yPosition[row.Index] = row.YPosition;
-        forceInfo->zPosition[row.Index] = row.ZPosition;
+        forceInfo->referenceId[i] = row.ActuatorID;
+        forceInfo->modbusSubnet[i] = row.Subnet;
+        forceInfo->modbusAddress[i] = row.Address;
+        forceInfo->actuatorType[i] = row.Type;
+        forceInfo->actuatorOrientation[i] = row.Orientation;
+        forceInfo->xPosition[i] = row.XPosition;
+        forceInfo->yPosition[i] = row.YPosition;
+        forceInfo->zPosition[i] = row.ZPosition;
     }
 }
 

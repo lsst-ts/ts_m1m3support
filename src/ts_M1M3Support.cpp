@@ -97,9 +97,6 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
 
 void initializeFPGAs(IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
 #ifdef SIMULATOR
-    ((SimulatedFPGA*)fpga)
-            ->setForceActuatorApplicationSettings(
-                    SettingReader::get().loadForceActuatorApplicationSettings());
     spdlog::warn("Starting Simulator version!");
 #endif
 
