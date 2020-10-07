@@ -37,15 +37,14 @@ namespace M1M3 {
 namespace SS {
 
 Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, SupportFPGAData* fpgaData,
-                           M1M3SSPublisher* publisher, SafetyController* safetyController) {
+                           SafetyController* safetyController) {
     spdlog::debug("Displacement: Displacement()");
     _displacementSensorSettings = displacementSensorSettings;
     _fpgaData = fpgaData;
-    _publisher = publisher;
     _safetyController = safetyController;
 
-    _imsData = _publisher->getIMSData();
-    _displacementWarning = _publisher->getEventDisplacementSensorWarning();
+    _imsData = M1M3SSPublisher::get().getIMSData();
+    _displacementWarning = M1M3SSPublisher::get().getEventDisplacementSensorWarning();
 
     _lastSampleTimestamp = 0;
     _lastErrorTimestamp = 0;
@@ -97,7 +96,7 @@ void Displacement::processData() {
                 _displacementWarning->sensorReportsExpansionLineError);
         _safetyController->displacementNotifySensorReportsWriteControlError(
                 _displacementWarning->sensorReportsWriteControlError);
-        _publisher->tryLogDisplacementSensorWarning();
+        M1M3SSPublisher::get().tryLogDisplacementSensorWarning();
     }
     if (_fpgaData->DisplacementSampleTimestamp > _lastSampleTimestamp) {
         _lastSampleTimestamp = _fpgaData->DisplacementSampleTimestamp;
@@ -194,7 +193,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[47] * _imsData->rawSensorData[p8]) /
                         MILLIMETERS_PER_METER +
                 _displacementSensorSettings->ZRotationOffset;
-        _publisher->putIMSData();
+        M1M3SSPublisher::get().putIMSData();
         if (!_errorCleared &&
             _fpgaData->DisplacementSampleTimestamp > _fpgaData->DisplacementErrorTimestamp) {
             _errorCleared = true;
@@ -232,7 +231,7 @@ void Displacement::processData() {
                     _displacementWarning->sensorReportsExpansionLineError);
             _safetyController->displacementNotifySensorReportsWriteControlError(
                     _displacementWarning->sensorReportsWriteControlError);
-            _publisher->tryLogDisplacementSensorWarning();
+            M1M3SSPublisher::get().tryLogDisplacementSensorWarning();
         }
     }
 }

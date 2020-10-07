@@ -33,8 +33,7 @@ namespace SS {
 
 class FreezeSensorBusList : public BusList {
 public:
-    FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
-                        MTM1M3_outerLoopDataC* outerLoopData);
+    FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     void update();
 

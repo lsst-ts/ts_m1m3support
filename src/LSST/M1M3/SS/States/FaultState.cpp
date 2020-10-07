@@ -32,33 +32,36 @@
 #include <ForceController.h>
 #include <unistd.h>
 #include <M1M3SSPublisher.h>
+#include <ModelPublisher.h>
 #include <Accelerometer.h>
 #include <spdlog/spdlog.h>
 #include <Gyro.h>
 #include <FPGA.h>
+#include <chrono>
+#include <thread>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FaultState::FaultState(M1M3SSPublisher* publisher) : State(publisher, "FaultState") {}
-FaultState::FaultState(M1M3SSPublisher* publisher, std::string name) : State(publisher, name) {}
+FaultState::FaultState() : State("FaultState") {}
+FaultState::FaultState(std::string name) : State(name) {}
 
-States::Type FaultState::update(UpdateCommand* command, Model* model) {
+States::Type FaultState::update(UpdateCommand* command) {
+    ModelPublisher publishIt();
     spdlog::trace("FaultState: update()");
-    this->startTimer();
-    ILC* ilc = model->getILC();
+    ILC* ilc = Model::get().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
-    model->getDigitalInputOutput()->tryToggleHeartbeat();
-    usleep(1000);
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
-    model->getAccelerometer()->processData();
-    model->getDigitalInputOutput()->processData();
-    model->getDisplacement()->processData();
-    model->getGyro()->processData();
-    model->getInclinometer()->processData();
-    model->getPowerController()->processData();
+    Model::get().getAccelerometer()->processData();
+    Model::get().getDigitalInputOutput()->processData();
+    Model::get().getDisplacement()->processData();
+    Model::get().getGyro()->processData();
+    Model::get().getInclinometer()->processData();
+    Model::get().getPowerController()->processData();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     ilc->calculateHPPostion();
@@ -71,20 +74,18 @@ States::Type FaultState::update(UpdateCommand* command, Model* model) {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
     return States::NoStateTransition;
 }
 
-States::Type FaultState::standby(StandbyCommand* command, Model* model) {
+States::Type FaultState::standby(StandbyCommand* command) {
     spdlog::trace("FaultState: standby()");
-    model->getILC()->writeSetModeStandbyBuffer();
-    model->getILC()->triggerModbus();
-    model->getILC()->waitForAllSubnets(5000);
-    model->getILC()->readAll();
-    model->getILC()->verifyResponses();
-    model->getPowerController()->setAllPowerNetworks(false);
-    model->getSafetyController()->clearErrorCode();
+    Model::get().getILC()->writeSetModeStandbyBuffer();
+    Model::get().getILC()->triggerModbus();
+    Model::get().getILC()->waitForAllSubnets(5000);
+    Model::get().getILC()->readAll();
+    Model::get().getILC()->verifyResponses();
+    Model::get().getPowerController()->setAllPowerNetworks(false);
+    Model::get().getSafetyController()->clearErrorCode();
     return States::StandbyState;
 }
 

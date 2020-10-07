@@ -1,0 +1,65 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+// Namespaces are needed to simplify links to LSST::M1M3::SS classes.
+// Namespace trick doesn't work for @dir entries
+
+namespace LSST {
+namespace M1M3 {
+namespace SS {
+
+/**
+ * @mainpage M1M3 Static Support Documentation
+ *
+ * The M1M3 Static Support (SS) C++ code is a layer between TCS (SAL) and [NI
+ * cRIO](https://wikipedia.org/en/cRIO) FPGA. The code is designed to run cRIO CPU, on NI provided real-time
+ * Linux. LabView FPGA code is stored in [ts_m1m3supportfpga](https://github.com/lsst-ts/ts_m1m3supportfpga).
+ *
+ * Code is organized as follow:
+ *
+ * - @ref src/LSST/M1M3/SS/Threads "Threads" various threads run in M1M3. Thread runs a single task:
+ *   * ControllerThread
+ *   * SubscriberThread
+ *   * OuterLoopClockThread
+ *   * PPSThread
+ * - Model holds pointers to cRIO boards.
+ * - @ref src/LSST/M1M3/SS/States "States" State and its children, representing M1M3 states
+ *   * State, abstract parent class
+ *     + OfflineState
+ *     + DisabledState
+ *     + StandbyState
+ *     + EnabledState - parent abstract class for Enabled substates
+ *       - ParkedState, ParkedEngineeringState
+ *       - RaisingState, RaisingEngineeringState
+ *       - ActiveState, ActiveEngineeringState
+ *       - LoweringState, LoweringEngineeringState
+ *     + FaultState
+ * - Context glue Model and State
+ * - @ref M1M3SSSubscriber "Subscriber" and @ref M1M3SSPublisher "Publisher"
+ *   for SAL communication classes.
+ * - @ref src/LSST/M1M3/SS/Commands "Commands" contains Command & children executed from the Controller
+ */
+
+} /* namespace SS */
+} /* namespace M1M3 */
+} /* namespace LSST */

@@ -33,19 +33,19 @@
 
 #include <boost/lexical_cast.hpp>
 #include <cstring>
-#include <unistd.h>
+#include <thread>
+#include <chrono>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Gyro::Gyro(GyroSettings* gyroSettings, M1M3SSPublisher* publisher) {
+Gyro::Gyro(GyroSettings* gyroSettings) {
     spdlog::debug("Gyro: Gyro()");
     _gyroSettings = gyroSettings;
-    _publisher = publisher;
 
-    _gyroData = _publisher->getGyroData();
-    _gyroWarning = _publisher->getEventGyroWarning();
+    _gyroData = M1M3SSPublisher::get().getGyroData();
+    _gyroWarning = M1M3SSPublisher::get().getEventGyroWarning();
 
     _lastBITTimestamp = 0;
     _lastErrorTimestamp = 0;
@@ -60,37 +60,37 @@ Gyro::Gyro(GyroSettings* gyroSettings, M1M3SSPublisher* publisher) {
 void Gyro::bit() {
     spdlog::info("Gyro: bit()");
     this->writeCommand("?BIT,2\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::enterConfigurationMode() {
     spdlog::info("Gyro: enterConfigurationMode()");
     this->writeCommand("=CONFIG,1\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::exitConfigurationMode() {
     spdlog::info("Gyro: exitConfigurationMode()");
     this->writeCommand("=CONFIG,0\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::resetConfiguration() {
     spdlog::info("Gyro: resetConfiguration()");
     this->writeCommand("=RSTCFG\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::setRotationFormatRate() {
     spdlog::info("Gyro: setRotationFormatRate()");
     this->writeCommand("=ROTFMT,RATE\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::setRotationUnitsRadians() {
     spdlog::info("Gyro: setRotationUnitsRadians()");
     this->writeCommand("=ROTUNITS,RAD\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::setAxis() {
@@ -100,13 +100,13 @@ void Gyro::setAxis() {
         command = command + "," + boost::lexical_cast<std::string>(_gyroSettings->AxesMatrix[i]);
     }
     this->writeCommand(command + "\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::setDataRate() {
     spdlog::info("Gyro: setDataRate()");
     this->writeCommand("=DR," + boost::lexical_cast<std::string>(_gyroSettings->DataRate) + "\r\n");
-    usleep(10000);
+    std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::processData() {
@@ -188,7 +188,7 @@ void Gyro::processData() {
         _gyroWarning->gyroXStatusWarning = (status & 0x01) == 0;
         _gyroWarning->gyroYStatusWarning = (status & 0x02) == 0;
         _gyroWarning->gyroZStatusWarning = (status & 0x04) == 0;
-        _publisher->putGyroData();
+        M1M3SSPublisher::get().putGyroData();
         tryLogWarning = true;
         if (!_errorCleared && fpgaData->GyroSampleTimestamp > _lastErrorTimestamp) {
             _lastErrorTimestamp = fpgaData->GyroErrorTimestamp;
@@ -202,7 +202,7 @@ void Gyro::processData() {
         }
     }
     if (tryLogWarning) {
-        _publisher->tryLogGyroWarning();
+        M1M3SSPublisher::get().tryLogGyroWarning();
     }
 }
 

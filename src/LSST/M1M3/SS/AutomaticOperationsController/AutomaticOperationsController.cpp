@@ -36,13 +36,11 @@ namespace SS {
 AutomaticOperationsController::AutomaticOperationsController(PositionController* positionController,
                                                              ForceController* forceController,
                                                              SafetyController* safetyController,
-                                                             M1M3SSPublisher* publisher,
                                                              PowerController* powerController) {
     spdlog::debug("AutomaticOperationsController: AutomaticOperationsController()");
     _positionController = positionController;
     _forceController = forceController;
     _safetyController = safetyController;
-    _publisher = publisher;
     _powerController = powerController;
     _cachedTimestamp = 0;
     _bypassMoveToReference = false;
@@ -65,7 +63,7 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
     _forceController->zeroSupportPercentage();
-    _cachedTimestamp = _publisher->getTimestamp();
+    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
 }
 
 void AutomaticOperationsController::tryIncrementingSupportPercentage() {
@@ -114,7 +112,8 @@ void AutomaticOperationsController::completeRaiseOperation() {
 }
 
 bool AutomaticOperationsController::checkRaiseOperationTimeout() {
-    return _publisher->getTimestamp() >= (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
+    return M1M3SSPublisher::get().getTimestamp() >=
+           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
 }
 
 void AutomaticOperationsController::timeoutRaiseOperation() {
@@ -137,7 +136,7 @@ void AutomaticOperationsController::abortRaiseM1M3() {
     _forceController->zeroStaticForces();
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
-    _cachedTimestamp = _publisher->getTimestamp();
+    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
 }
 
 void AutomaticOperationsController::startLowerOperation() {
@@ -156,7 +155,7 @@ void AutomaticOperationsController::startLowerOperation() {
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
     _forceController->fillSupportPercentage();
-    _cachedTimestamp = _publisher->getTimestamp();
+    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
 }
 
 void AutomaticOperationsController::tryDecrementSupportPercentage() {
@@ -198,7 +197,8 @@ void AutomaticOperationsController::completeLowerOperation() {
 }
 
 bool AutomaticOperationsController::checkLowerOperationTimeout() {
-    return _publisher->getTimestamp() >= (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
+    return M1M3SSPublisher::get().getTimestamp() >=
+           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
 }
 
 void AutomaticOperationsController::timeoutLowerOperation() {

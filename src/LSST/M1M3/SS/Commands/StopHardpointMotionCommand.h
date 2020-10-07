@@ -34,17 +34,12 @@ namespace SS {
 
 class StopHardpointMotionCommand : public Command {
 public:
-    StopHardpointMotionCommand(Context* context, M1M3SSPublisher* _publisher, int32_t commandID,
-                               MTM1M3_command_stopHardpointMotionC*);
+    StopHardpointMotionCommand(int32_t commandID, MTM1M3_command_stopHardpointMotionC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
 };
 
 } /* namespace SS */

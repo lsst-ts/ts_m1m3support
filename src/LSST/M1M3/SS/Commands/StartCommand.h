@@ -39,8 +39,7 @@ namespace SS {
  */
 class StartCommand : public Command {
 public:
-    StartCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                 MTM1M3_command_startC* data);
+    StartCommand(int32_t commandID, MTM1M3_command_startC* data);
 
     MTM1M3_command_startC* getData() { return &_data; }
 
@@ -51,8 +50,6 @@ public:
     void ackFailed(std::string reason) override;
 
 private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_startC _data;
 };
 

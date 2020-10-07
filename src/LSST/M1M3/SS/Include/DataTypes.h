@@ -26,30 +26,38 @@
 
 #include <stdint.h>
 
-#define ACK_INPROGRESS 301
-#define ACK_COMPLETE 303
-#define ACK_FAILED -302
+#define ACK_INPROGRESS 301  //* Acknowledges command reception, command is being executed.
+#define ACK_COMPLETE 303    //* Command is completed.
+#define ACK_FAILED -302     //* Command execution failed.
 
+/**
+ * Number of ModBus subnets. Subnets are connected and commanded through cRIO
+ * DIOs.
+ */
 #define SUBNET_COUNT 5
+
+/// Total number of force actuators
 #define FA_COUNT 156
+
+/// Number of lateral force actuators.
 #define FA_X_COUNT 12
+
+/// Number of vertical force actuators.
 #define FA_Y_COUNT 100
+
+/// Number of actuators in Z axis - shall equal to total number of actuators.
 #define FA_Z_COUNT 156
+
+/// Number of hardpoints.
 #define HP_COUNT 6
-#define HM_COUNT 6
+
+/// Number of supported bending modes.
 #define BENDING_MODES 22
 
+/// Conversion - millimeters in meter.
 #define MILLIMETERS_PER_METER 1000.0
-#define MICROMETERS_PER_MILLIMETER 1000.0
 
-// SAL__CMD_ACK        300
-// SAL__CMD_INPROGRESS 301
-// SAL__CMD_STALLED    302
-// SAL__CMD_COMPLETE   303
-// SAL__CMD_NOPERM    -300
-// SAL__CMD_NOACK     -301
-// SAL__CMD_FAILED    -302
-// SAL__CMD_ABORTED   -303
-// SAL__CMD_TIMEOUT   -304
+/// Conversion - micrometers in millimeter.
+#define MICROMETERS_PER_MILLIMETER 1000.0
 
 #endif /* DATATYPES_H_ */

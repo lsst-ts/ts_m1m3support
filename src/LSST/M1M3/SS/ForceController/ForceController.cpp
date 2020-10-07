@@ -46,83 +46,65 @@ namespace SS {
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                  ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
-                                 M1M3SSPublisher* publisher, SafetyController* safetyController)
-        : _aberrationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+                                 SafetyController* safetyController)
+        : _aberrationForceComponent(safetyController, forceActuatorApplicationSettings,
                                     forceActuatorSettings),
-          _accelerationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+          _accelerationForceComponent(safetyController, forceActuatorApplicationSettings,
                                       forceActuatorSettings),
-          _activeOpticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
+          _activeOpticForceComponent(safetyController, forceActuatorApplicationSettings,
                                      forceActuatorSettings),
-          _azimuthForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                 forceActuatorSettings),
-          _balanceForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                 forceActuatorSettings, pidSettings),
-          _elevationForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                   forceActuatorSettings),
-          _offsetForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                forceActuatorSettings),
-          _staticForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                forceActuatorSettings),
-          _thermalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                 forceActuatorSettings),
-          _velocityForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                                  forceActuatorSettings),
-          _finalForceComponent(publisher, safetyController, forceActuatorApplicationSettings,
-                               forceActuatorSettings) {
+          _azimuthForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _balanceForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings,
+                                 pidSettings),
+          _elevationForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _offsetForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _staticForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _thermalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _velocityForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
+          _finalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings) {
     spdlog::debug("ForceController: ForceController()");
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _publisher = publisher;
     _safetyController = safetyController;
     _pidSettings = pidSettings;
 
-    _appliedCylinderForces = publisher->getEventAppliedCylinderForces();
-    _appliedForces = publisher->getEventAppliedForces();
-    _forceActuatorState = publisher->getEventForceActuatorState();
-    _forceSetpointWarning = publisher->getEventForceSetpointWarning();
-    _rejectedCylinderForces = publisher->getEventRejectedCylinderForces();
+    _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
+    _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _preclippedCylinderForces = M1M3SSPublisher::get().getEventPreclippedCylinderForces();
 
-    _forceActuatorInfo = publisher->getEventForceActuatorInfo();
-    _inclinometerData = publisher->getInclinometerData();
-    _forceActuatorData = publisher->getForceActuatorData();
+    _forceActuatorInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
+    _inclinometerData = M1M3SSPublisher::get().getInclinometerData();
+    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
 
-    _pidData = publisher->getPIDData();
-    _pidInfo = publisher->getEventPIDInfo();
-    _hardpointActuatorData = publisher->getHardpointActuatorData();
-    _accelerometerData = publisher->getAccelerometerData();
-    _gyroData = publisher->getGyroData();
+    _pidData = M1M3SSPublisher::get().getPIDData();
+    _pidInfo = M1M3SSPublisher::get().getEventPIDInfo();
+    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
+    _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
+    _gyroData = M1M3SSPublisher::get().getGyroData();
 
     _elevation_Timestamp = 0;
     _elevation_Angle_Actual = NAN;
 
-    _aberrationForceComponent.reset();
-    _accelerationForceComponent.reset();
-    _activeOpticForceComponent.reset();
-    _azimuthForceComponent.reset();
-    _balanceForceComponent.reset();
-    _elevationForceComponent.reset();
-    _offsetForceComponent.reset();
-    _staticForceComponent.reset();
-    _thermalForceComponent.reset();
-    _velocityForceComponent.reset();
-    _finalForceComponent.reset();
+    reset();
 
-    double timestamp = _publisher->getTimestamp();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->timestamp = timestamp;
     _forceSetpointWarning->timestamp = timestamp;
 
-    _publisher->logForceActuatorState();
-    _publisher->logForceSetpointWarning();
+    M1M3SSPublisher::get().logForceActuatorState();
+    M1M3SSPublisher::get().logForceSetpointWarning();
 
     _mirrorWeight = 0.0;
-    float* zForces = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0).ZForces;
+    DistributedForces df = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0);
     for (int i = 0; i < FA_COUNT; i++) {
-        _mirrorWeight += zForces[i];
+        _mirrorWeight += df.ZForces[i];
         _zero[i] = 0;
         ForceActuatorNeighbors neighbors;
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
             int32_t id = _forceActuatorSettings->Neighbors[i].NearZIDs[j];
-            for (unsigned int k = 0; k < _forceActuatorApplicationSettings->Table.size(); ++k) {
+            for (unsigned int k = 0; k < FA_COUNT; ++k) {
                 if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
                     neighbors.NearZIDs.push_back(k);
                     break;
@@ -131,7 +113,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         }
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
             int32_t id = _forceActuatorSettings->Neighbors[i].FarIDs[j];
-            for (unsigned int k = 0; k < _forceActuatorApplicationSettings->Table.size(); ++k) {
+            for (unsigned int k = 0; k < FA_COUNT; ++k) {
                 if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
                     neighbors.FarIDs.push_back(k);
                     break;
@@ -166,7 +148,7 @@ void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationDat
 void ForceController::incSupportPercentage() {
     spdlog::trace("ForceController: incSupportPercentage()");
     _forceActuatorState->supportPercentage += _forceActuatorSettings->RaiseIncrementPercentage;
-    if (this->supportPercentageFilled()) {
+    if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 1.0;
     }
 }
@@ -174,7 +156,7 @@ void ForceController::incSupportPercentage() {
 void ForceController::decSupportPercentage() {
     spdlog::trace("ForceController: decSupportPercentage()");
     _forceActuatorState->supportPercentage -= _forceActuatorSettings->LowerDecrementPercentage;
-    if (this->supportPercentageZeroed()) {
+    if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
     }
 }
@@ -273,7 +255,7 @@ void ForceController::processAppliedForces() {
     _checkNearNeighbors();
     _checkMirrorWeight();
     _checkFarNeighbors();
-    _publisher->tryLogForceSetpointWarning();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
 
 void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
@@ -483,7 +465,7 @@ void ForceController::_sumAllForces() {
 
 void ForceController::_convertForcesToSetpoints() {
     spdlog::trace("ForceController: convertForcesToSetpoints()");
-    bool rejectionRequired = false;
+    bool clippingRequired = false;
     for (int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
@@ -496,26 +478,26 @@ void ForceController::_convertForcesToSetpoints() {
             float secondaryHighFault = _forceActuatorSettings->CylinderLimitSecondaryTable[sIndex].HighFault;
             switch (_forceActuatorInfo->actuatorOrientation[pIndex]) {
                 case ForceActuatorOrientations::PositiveY:
-                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
                             _toInt24(_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::PositiveX:
-                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
                             _toInt24(_appliedForces->xForces[xIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::NegativeX:
-                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
                             _toInt24(-_appliedForces->xForces[xIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::NegativeY:
-                    _rejectedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
                             _toInt24(-_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
             }
             _forceSetpointWarning->safetyLimitWarning[pIndex] =
                     _forceSetpointWarning->safetyLimitWarning[pIndex] ||
                     !Range::InRangeAndCoerce((int)secondaryLowFault, (int)secondaryHighFault,
-                                             _rejectedCylinderForces->secondaryCylinderForces[sIndex],
+                                             _preclippedCylinderForces->secondaryCylinderForces[sIndex],
                                              _appliedCylinderForces->secondaryCylinderForces + sIndex);
         }
 
@@ -523,41 +505,42 @@ void ForceController::_convertForcesToSetpoints() {
         float primaryHighFault = _forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].HighFault;
         switch (_forceActuatorInfo->actuatorOrientation[pIndex]) {
             case ForceActuatorOrientations::PositiveY:
-                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex] - _appliedForces->yForces[yIndex]);
                 break;
             case ForceActuatorOrientations::NA:
-                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex]);
                 break;
             case ForceActuatorOrientations::PositiveX:
-                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex] - _appliedForces->xForces[xIndex]);
                 break;
             case ForceActuatorOrientations::NegativeX:
-                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
+
                         _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->xForces[xIndex]);
                 break;
             case ForceActuatorOrientations::NegativeY:
-                _rejectedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->yForces[yIndex]);
                 break;
         }
         _forceSetpointWarning->safetyLimitWarning[pIndex] =
                 _forceSetpointWarning->safetyLimitWarning[pIndex] ||
                 !Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault,
-                                         _rejectedCylinderForces->primaryCylinderForces[pIndex],
+                                         _preclippedCylinderForces->primaryCylinderForces[pIndex],
                                          _appliedCylinderForces->primaryCylinderForces + pIndex);
 
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->safetyLimitWarning[pIndex];
+        clippingRequired |= _forceSetpointWarning->safetyLimitWarning[pIndex];
     }
-    _appliedCylinderForces->timestamp = _publisher->getTimestamp();
-    _rejectedCylinderForces->timestamp = _appliedCylinderForces->timestamp;
-    _safetyController->forceControllerNotifySafetyLimit(rejectionRequired);
-    if (rejectionRequired) {
-        _publisher->logRejectedCylinderForces();
+    _appliedCylinderForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _preclippedCylinderForces->timestamp = _appliedCylinderForces->timestamp;
+    _safetyController->forceControllerNotifySafetyLimit(clippingRequired);
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedCylinderForces();
     }
-    _publisher->logAppliedCylinderForces();
+    M1M3SSPublisher::get().logAppliedCylinderForces();
 }
 
 bool ForceController::_checkMirrorMoments() {
@@ -610,8 +593,7 @@ bool ForceController::_checkNearNeighbors() {
                 deltaZ > (nominalZ * _forceActuatorSettings->SetpointNearNeighborLimitPercentage);
         _forceSetpointWarning->anyNearNeighborWarning = _forceSetpointWarning->anyNearNeighborWarning ||
                                                         _forceSetpointWarning->nearNeighborWarning[zIndex];
-        warningChanged =
-                warningChanged || (_forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning);
+        warningChanged |= (_forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning);
     }
     _safetyController->forceControllerNotifyNearNeighborCheck(_forceSetpointWarning->anyNearNeighborWarning);
     return warningChanged;
@@ -689,10 +671,8 @@ bool ForceController::_checkFarNeighbors() {
         bool previousWarning = _forceSetpointWarning->farNeighborWarning[zIndex];
         _forceSetpointWarning->farNeighborWarning[zIndex] =
                 !Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce);
-        _forceSetpointWarning->anyFarNeighborWarning = _forceSetpointWarning->anyFarNeighborWarning ||
-                                                       _forceSetpointWarning->farNeighborWarning[zIndex];
-        warningChanged =
-                warningChanged || (_forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning);
+        _forceSetpointWarning->anyFarNeighborWarning |= _forceSetpointWarning->farNeighborWarning[zIndex];
+        warningChanged |= (_forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning);
     }
     _safetyController->forceControllerNotifyFarNeighborCheck(_forceSetpointWarning->anyFarNeighborWarning);
     return warningChanged;

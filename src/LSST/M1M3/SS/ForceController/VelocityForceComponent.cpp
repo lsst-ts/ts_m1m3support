@@ -37,44 +37,38 @@ namespace M1M3 {
 namespace SS {
 
 VelocityForceComponent::VelocityForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Velocity";
-
-    _publisher = publisher;
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Velocity", forceActuatorSettings->VelocityComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedVelocityForces = _publisher->getEventAppliedVelocityForces();
-    _rejectedVelocityForces = _publisher->getEventRejectedVelocityForces();
-    this->maxRateOfChange = _forceActuatorSettings->VelocityComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->VelocityComponentSettings.NearZeroValue;
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
+    _preclippedVelocityForces = M1M3SSPublisher::get().getEventPreclippedVelocityForces();
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
     spdlog::trace("VelocityForceComponent: applyVelocityForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
                 "VelocityForceComponent: applyVelocityForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("VelocityForceComponent: applyVelocityForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = x[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = y[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
 }
 
@@ -85,9 +79,9 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
                   angularVelocityX, angularVelocityY, angularVelocityZ);
     DistributedForces forces = ForceConverter::calculateForceFromAngularVelocity(
             _forceActuatorSettings, angularVelocityX, angularVelocityY, angularVelocityZ);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -100,25 +94,25 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyVelocityForces(xForces, yForces, zForces);
+    applyVelocityForces(xForces, yForces, zForces);
 }
 
 void VelocityForceComponent::postEnableDisableActions() {
     spdlog::debug("VelocityForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
-    _forceActuatorState->velocityForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->velocityForcesApplied = isEnabled();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void VelocityForceComponent::postUpdateActions() {
     spdlog::trace("VelocityForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
-    _appliedVelocityForces->timestamp = _publisher->getTimestamp();
-    _rejectedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    bool clippingRequired = false;
+    _appliedVelocityForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _preclippedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -127,33 +121,31 @@ void VelocityForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].HighFault;
-            _rejectedVelocityForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedVelocityForces->xForces[xIndex],
-                                             _appliedVelocityForces->xForces + xIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] =
-                    _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
+            _preclippedVelocityForces->xForces[xIndex] = xCurrent[xIndex];
+            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
+                                                  _preclippedVelocityForces->xForces[xIndex],
+                                                  _appliedVelocityForces->xForces + xIndex);
+            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].HighFault;
-            _rejectedVelocityForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedVelocityForces->yForces[yIndex],
-                                             _appliedVelocityForces->yForces + yIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] =
-                    _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
+            _preclippedVelocityForces->yForces[yIndex] = yCurrent[yIndex];
+            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
+                                                  _preclippedVelocityForces->yForces[yIndex],
+                                                  _appliedVelocityForces->yForces + yIndex);
+            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].HighFault;
-        _rejectedVelocityForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedVelocityForces->zForces[zIndex],
-                                              _appliedVelocityForces->zForces + zIndex);
-        _forceSetpointWarning->velocityForceWarning[zIndex] =
-                _forceSetpointWarning->velocityForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->velocityForceWarning[zIndex];
+        _preclippedVelocityForces->zForces[zIndex] = zCurrent[zIndex];
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedVelocityForces->zForces[zIndex],
+                                         _appliedVelocityForces->zForces + zIndex);
+        _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->velocityForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -168,23 +160,23 @@ void VelocityForceComponent::postUpdateActions() {
     _appliedVelocityForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedVelocityForces->xForces,
-            _rejectedVelocityForces->yForces, _rejectedVelocityForces->zForces);
-    _rejectedVelocityForces->fx = fm.Fx;
-    _rejectedVelocityForces->fy = fm.Fy;
-    _rejectedVelocityForces->fz = fm.Fz;
-    _rejectedVelocityForces->mx = fm.Mx;
-    _rejectedVelocityForces->my = fm.My;
-    _rejectedVelocityForces->mz = fm.Mz;
-    _rejectedVelocityForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedVelocityForces->xForces,
+            _preclippedVelocityForces->yForces, _preclippedVelocityForces->zForces);
+    _preclippedVelocityForces->fx = fm.Fx;
+    _preclippedVelocityForces->fy = fm.Fy;
+    _preclippedVelocityForces->fz = fm.Fz;
+    _preclippedVelocityForces->mx = fm.Mx;
+    _preclippedVelocityForces->my = fm.My;
+    _preclippedVelocityForces->mz = fm.Mz;
+    _preclippedVelocityForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyVelocityForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyVelocityForceClipping(clippingRequired);
 
-    _publisher->tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        _publisher->logRejectedVelocityForces();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedVelocityForces();
     }
-    _publisher->logAppliedVelocityForces();
+    M1M3SSPublisher::get().logAppliedVelocityForces();
 }
 
 } /* namespace SS */

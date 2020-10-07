@@ -105,12 +105,6 @@ AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
     return &_aliasApplicationSettings;
 }
 
-ForceActuatorApplicationSettings* SettingReader::loadForceActuatorApplicationSettings() {
-    spdlog::debug("SettingReader: loadForceActuatorApplicationSettings()");
-    _forceActuatorApplicationSettings.load(_getBasePath("ForceActuatorApplicationSettings.xml").c_str());
-    return &_forceActuatorApplicationSettings;
-}
-
 ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
     spdlog::debug("SettingReader: loadForceActuatorSettings()");
     _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.xml").c_str());
@@ -171,12 +165,6 @@ HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicat
     _hardpointMonitorApplicationSettings.load(
             _getBasePath("HardpointMonitorApplicationSettings.xml").c_str());
     return &_hardpointMonitorApplicationSettings;
-}
-
-InterlockApplicationSettings* SettingReader::loadInterlockApplicationSettings() {
-    spdlog::debug("SettingReader: loadInterlockApplicationSettings()");
-    _interlockApplicationSettings.load(_getBasePath("InterlockApplicationSettings.xml").c_str());
-    return &_interlockApplicationSettings;
 }
 
 GyroSettings* SettingReader::loadGyroSettings() {

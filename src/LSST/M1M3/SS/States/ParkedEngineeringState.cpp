@@ -35,7 +35,6 @@
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
 #include <DigitalInputOutput.h>
-#include <M1M3SSPublisher.h>
 #include <PowerController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
@@ -47,52 +46,48 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ParkedEngineeringState::ParkedEngineeringState(M1M3SSPublisher* publisher)
-        : EngineeringState(publisher, "ParkedEngineeringState") {}
+ParkedEngineeringState::ParkedEngineeringState() : EngineeringState("ParkedEngineeringState") {}
 
-States::Type ParkedEngineeringState::update(UpdateCommand* command, Model* model) {
+States::Type ParkedEngineeringState::update(UpdateCommand* command) {
     spdlog::trace("ParkedEngineeringState: update()");
-    this->startTimer();
-    EnabledState::update(command, model);
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    sendTelemetry();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command, Model* model) {
+States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
     spdlog::info("ParkedEngineeringState: raiseM1M3()");
-    model->getAutomaticOperationsController()->startRaiseOperation(
+    Model::get().getAutomaticOperationsController()->startRaiseOperation(
             command->getData()->bypassReferencePosition);
-    return model->getSafetyController()->checkSafety(States::RaisingEngineeringState);
+    return Model::get().getSafetyController()->checkSafety(States::RaisingEngineeringState);
 }
 
-States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command, Model* model) {
+States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
     spdlog::info("ParkedEngineeringState: exitEngineering()");
-    model->getDigitalInputOutput()->turnAirOn();
-    model->getPositionController()->stopMotion();
-    model->getForceController()->zeroOffsetForces();
-    model->getForceController()->processAppliedForces();
-    model->getDigitalInputOutput()->turnCellLightsOff();
+    Model::get().getDigitalInputOutput()->turnAirOn();
+    Model::get().getPositionController()->stopMotion();
+    Model::get().getForceController()->zeroOffsetForces();
+    Model::get().getForceController()->processAppliedForces();
+    Model::get().getDigitalInputOutput()->turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
-    model->getPowerController()->setAllPowerNetworks(true);
-    return model->getSafetyController()->checkSafety(States::ParkedState);
+    Model::get().getPowerController()->setAllPowerNetworks(true);
+    return Model::get().getSafetyController()->checkSafety(States::ParkedState);
 }
 
-States::Type ParkedEngineeringState::disable(DisableCommand* command, Model* model) {
+States::Type ParkedEngineeringState::disable(DisableCommand* command) {
     spdlog::info("ParkedEngineeringState: disable()");
     // Stop any existing motion (chase and move commands)
-    model->getPositionController()->stopMotion();
-    model->getForceController()->reset();
+    Model::get().getPositionController()->stopMotion();
+    Model::get().getForceController()->reset();
     // Perform ILC state transition
-    model->getILC()->writeSetModeDisableBuffer();
-    model->getILC()->triggerModbus();
-    model->getILC()->waitForAllSubnets(5000);
-    model->getILC()->readAll();
-    model->getILC()->verifyResponses();
+    Model::get().getILC()->writeSetModeDisableBuffer();
+    Model::get().getILC()->triggerModbus();
+    Model::get().getILC()->waitForAllSubnets(5000);
+    Model::get().getILC()->readAll();
+    Model::get().getILC()->verifyResponses();
     // TODO: Uncomment this later when its not so hot outside
-    // model->getDigitalInputOutput()->turnAirOff();
-    model->getPowerController()->setAllAuxPowerNetworks(false);
-    return model->getSafetyController()->checkSafety(States::DisabledState);
+    // Model::get().getDigitalInputOutput()->turnAirOff();
+    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
+    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
 }
 
 } /* namespace SS */

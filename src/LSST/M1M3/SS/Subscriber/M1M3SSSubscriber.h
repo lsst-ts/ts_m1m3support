@@ -38,14 +38,30 @@ namespace SS {
 class CommandFactory;
 class Command;
 
-/*!
- * A subscriber that utilizes the SAL.
+/**
+ * @brief Subscriber to receive events, telemetry data and commands from SAL.
+ *
+ * Comntains method to try to read commands (<i>tryAcceptCommamnd*</i>) ,
+ * telemetry data (<i>tryGetSample*</i>).
  */
 class M1M3SSSubscriber {
 public:
-    M1M3SSSubscriber(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL,
-                     CommandFactory* commandFactory);
+    M1M3SSSubscriber();
 
+    /**
+     * @brief Retrieves singleton instance.
+     *
+     * @return singleton instance.
+     */
+    static M1M3SSSubscriber& get();
+
+    void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL);
+
+    /**
+     * @brief Check for a Start command.
+     *
+     * @return NULL if the Start command isn't available. Start command if one is available.
+     */
     Command* tryAcceptCommandStart();
     Command* tryAcceptCommandEnable();
     Command* tryAcceptCommandDisable();
@@ -92,9 +108,12 @@ public:
     Command* tryGetSampleTMAElevation();
 
 private:
+    M1M3SSSubscriber& operator=(const M1M3SSSubscriber&) = delete;
+    M1M3SSSubscriber(const M1M3SSSubscriber&) = delete;
+
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
     std::shared_ptr<SAL_MTMount> _mtMountSAL;
-    CommandFactory* _commandFactory;
+
     MTM1M3_command_startC _startData;
     MTM1M3_command_enableC _enableData;
     MTM1M3_command_disableC _disableData;

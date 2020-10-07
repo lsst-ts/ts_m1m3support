@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TMAElevationSampleCommand.h>
 #include <cstring>
 
@@ -28,13 +29,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAElevationSampleCommand::TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data) {
-    _context = context;
+TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_ElevationC* data) {
     this->commandID = -1;
     memcpy(&_data, data, sizeof(MTMount_ElevationC));
 }
 
-void TMAElevationSampleCommand::execute() { _context->storeTMAElevationSample(this); }
+void TMAElevationSampleCommand::execute() { Context::get().storeTMAElevationSample(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

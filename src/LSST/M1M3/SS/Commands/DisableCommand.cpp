@@ -22,30 +22,27 @@
  */
 
 #include <DisableCommand.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableCommand::DisableCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                               MTM1M3_command_disableC*) {
-    _context = context;
-    _publisher = publisher;
-    this->commandID = commandID;
-}
+DisableCommand::DisableCommand(int32_t commandID, MTM1M3_command_disableC*) { this->commandID = commandID; }
 
-void DisableCommand::execute() { _context->disable(this); }
+void DisableCommand::execute() { Context::get().disable(this); }
 
 void DisableCommand::ackInProgress() {
-    _publisher->ackCommanddisable(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommanddisable(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableCommand::ackComplete() {
-    _publisher->ackCommanddisable(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommanddisable(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void DisableCommand::ackFailed(std::string reason) {
-    _publisher->ackCommanddisable(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommanddisable(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

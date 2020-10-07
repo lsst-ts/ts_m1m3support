@@ -21,29 +21,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <UpdateCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-UpdateCommand::UpdateCommand(Context* context, pthread_mutex_t* updateMutex) {
-    _context = context;
+UpdateCommand::UpdateCommand(std::mutex* updateMutex) {
     _updateMutex = updateMutex;
     this->commandID = -1;
 
     // Lock the update mutex to prevent the outer loop clock
     // thread from executing.
-    pthread_mutex_lock(_updateMutex);
+    _updateMutex->lock();
 }
 
 UpdateCommand::~UpdateCommand() {
     // Release the update mutex to allow the outer loop clock
     // thread to continue executing.
-    pthread_mutex_unlock(_updateMutex);
+    _updateMutex->unlock();
 }
 
-void UpdateCommand::execute() { _context->update(this); }
+void UpdateCommand::execute() { Context::get().update(this); }
 
 } /* namespace SS */
 } /* namespace M1M3 */

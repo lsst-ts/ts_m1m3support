@@ -30,17 +30,20 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Active State. Mirror is raised, supported by force actuators. Mirror can be
+ * lowered with Lower M1M3 Command. The controller can be switched to
+ * engineering mode with Enter Engineering command.
+ */
 class ActiveState : public EnabledState {
 public:
-    ActiveState(M1M3SSPublisher* publisher);
+    ActiveState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type enterEngineering(EnterEngineeringCommand* command, Model* model) override;
-    virtual States::Type lowerM1M3(LowerM1M3Command* command, Model* model) override;
-    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command,
-                                                    Model* model) override;
-    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command,
-                                                     Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
+    virtual States::Type lowerM1M3(LowerM1M3Command* command) override;
+    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
+    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
 };
 
 } /* namespace SS */

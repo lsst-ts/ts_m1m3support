@@ -30,13 +30,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * State between Offline and Enabled sub-states. Transition to Offline State on
+ * exitControll command and to Parked State (Enabled Sub-state) on start
+ * command.
+ */
 class StandbyState : public State {
 public:
-    StandbyState(M1M3SSPublisher* publisher);
+    StandbyState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type start(StartCommand* command, Model* model) override;
-    virtual States::Type exitControl(ExitControlCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type start(StartCommand* command) override;
+    virtual States::Type exitControl(ExitControlCommand* command) override;
 };
 
 } /* namespace SS */

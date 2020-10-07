@@ -36,7 +36,6 @@
 #include <AccelerometerSettings.h>
 #include <DisplacementSensorSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
-#include <InterlockApplicationSettings.h>
 #include <GyroSettings.h>
 #include <ExpansionFPGAApplicationSettings.h>
 #include <PIDSettings.h>
@@ -48,7 +47,7 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Reads M1M3 support system configuration. Singleton, please use setBasePath
+ * Reads M1M3 support system configuration. Singleton, please use setRootPath
  * to configure configuration root directory.
  */
 class SettingReader {
@@ -78,7 +77,11 @@ public:
      */
     void configure(std::string settingsToApply);
     AliasApplicationSettings* loadAliasApplicationSettings();
-    ForceActuatorApplicationSettings* loadForceActuatorApplicationSettings();
+
+    ForceActuatorApplicationSettings* getForceActuatorApplicationSettings() {
+        return &_forceActuatorApplicationSettings;
+    }
+
     ForceActuatorSettings* loadForceActuatorSettings();
     HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
     HardpointActuatorSettings* loadHardpointActuatorSettings();
@@ -89,13 +92,15 @@ public:
     AccelerometerSettings* loadAccelerometerSettings();
     DisplacementSensorSettings* loadDisplacementSensorSettings();
     HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
-    InterlockApplicationSettings* loadInterlockApplicationSettings();
     GyroSettings* loadGyroSettings();
     ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
     PIDSettings* loadPIDSettings();
     InclinometerSettings* loadInclinometerSettings();
 
 private:
+    SettingReader& operator=(const SettingReader&) = delete;
+    SettingReader(const SettingReader&) = delete;
+
     std::string _getBasePath(std::string file);
     std::string _getSetPath(std::string file);
 
@@ -111,7 +116,6 @@ private:
     AccelerometerSettings _accelerometerSettings;
     DisplacementSensorSettings _displacementSensorSettings;
     HardpointMonitorApplicationSettings _hardpointMonitorApplicationSettings;
-    InterlockApplicationSettings _interlockApplicationSettings;
     GyroSettings _gyroSettings;
     ExpansionFPGAApplicationSettings _expansionFPGAApplicationSettings;
     PIDSettings _pidSettings;

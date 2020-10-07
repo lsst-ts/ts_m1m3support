@@ -26,6 +26,7 @@
 
 #include <DataTypes.h>
 #include <IFPGA.h>
+#include <SafetyController.h>
 
 struct MTM1M3_logevent_airSupplyStatusC;
 struct MTM1M3_logevent_airSupplyWarningC;
@@ -38,11 +39,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class InterlockApplicationSettings;
-struct SupportFPGAData;
-class M1M3SSPublisher;
-class SafetyController;
-
 /*!
  * The class used to process digital inputs and outputs.
  */
@@ -50,11 +46,8 @@ class DigitalInputOutput {
 public:
     /*!
      * Instantiates the accelerometer.
-     * @param[in] accelerometerSettings The accelerometer settings.
-     * @param[in] publisher The publisher.
      */
-    DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings,
-                       M1M3SSPublisher* publisher);
+    DigitalInputOutput();
 
     /*!
      * Sets the safety controller.
@@ -67,10 +60,14 @@ public:
      */
     void processData();
 
-    /*!
-     * Toggles the heartbeat signal if a configured amount of time has passed.
+    /**
+     * @brief Toggles the heartbeat signal if a configured amount of time has passed.
+     *
+     * Both Global Interlock System and software (logevent) heartbeats are
+     * triggered.
      */
     void tryToggleHeartbeat();
+
     /*!
      * Turns the air on.
      */
@@ -89,8 +86,6 @@ public:
     void turnCellLightsOff();
 
 private:
-    InterlockApplicationSettings* _interlockApplicationSettings;
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
 
     MTM1M3_logevent_airSupplyStatusC* _airSupplyStatus;

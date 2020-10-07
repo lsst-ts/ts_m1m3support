@@ -33,11 +33,7 @@ namespace SS {
 
 class ActiveBusList : public BusList {
 public:
-    ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
-                  MTM1M3_outerLoopDataC* outerLoopData, MTM1M3_forceActuatorDataC* forceActuatorData,
-                  MTM1M3_hardpointActuatorDataC* hardpointActuatorData,
-                  MTM1M3_logevent_forceActuatorInfoC* forceInfo,
-                  MTM1M3_logevent_appliedCylinderForcesC* appliedCylinderForces);
+    ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     void update();
 

@@ -30,12 +30,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * State during mirror raise. Transition to active state when raise finished,
+ * or to lowering state on abort.
+ */
 class RaisingState : public EnabledState {
 public:
-    RaisingState(M1M3SSPublisher* publisher);
+    RaisingState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command) override;
 };
 
 } /* namespace SS */

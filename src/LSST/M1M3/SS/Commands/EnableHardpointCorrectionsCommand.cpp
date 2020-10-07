@@ -21,32 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <EnableHardpointCorrectionsCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 EnableHardpointCorrectionsCommand::EnableHardpointCorrectionsCommand(
-        Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-        MTM1M3_command_enableHardpointCorrectionsC*) {
-    _context = context;
-    _publisher = publisher;
+        int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC*) {
     this->commandID = commandID;
 }
 
-void EnableHardpointCorrectionsCommand::execute() { _context->enableHardpointCorrections(this); }
+void EnableHardpointCorrectionsCommand::execute() { Context::get().enableHardpointCorrections(this); }
 
 void EnableHardpointCorrectionsCommand::ackInProgress() {
-    _publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandenableHardpointCorrections(this->commandID, ACK_INPROGRESS,
+                                                                "In-Progress");
 }
 
 void EnableHardpointCorrectionsCommand::ackComplete() {
-    _publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandenableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void EnableHardpointCorrectionsCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandenableHardpointCorrections(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandenableHardpointCorrections(this->commandID, ACK_FAILED,
+                                                                "Failed: " + reason);
 }
 
 } /* namespace SS */

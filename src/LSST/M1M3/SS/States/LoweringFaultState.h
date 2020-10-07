@@ -25,20 +25,21 @@
 #define LOWERINGFAULTSTATE_H_
 
 #include <FaultState.h>
+#include <UpdateCommand.h>
+#include <Model.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class UpdateCommand;
-class Model;
-
+/**
+ * Lowering mirror during fault.
+ */
 class LoweringFaultState : public FaultState {
 public:
-    LoweringFaultState(M1M3SSPublisher* publisher);
+    LoweringFaultState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
 };
 
 } /* namespace SS */

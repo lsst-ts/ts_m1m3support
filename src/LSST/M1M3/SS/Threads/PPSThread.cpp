@@ -33,10 +33,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PPSThread::PPSThread(M1M3SSPublisher* publisher) {
-    _publisher = publisher;
-    _keepRunning = true;
-}
+PPSThread::PPSThread() { _keepRunning = true; }
 
 void PPSThread::run() {
     spdlog::info("PPSThread: Start");
@@ -48,7 +45,7 @@ void PPSThread::run() {
             continue;
         }
         IFPGA::get().ackPPS();
-        uint64_t timestamp = Timestamp::toFPGA(_publisher->getTimestamp());
+        uint64_t timestamp = Timestamp::toFPGA(M1M3SSPublisher::get().getTimestamp());
         if (_keepRunning) {
             IFPGA::get().writeTimestampFIFO(timestamp);
         }

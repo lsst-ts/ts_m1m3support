@@ -16,7 +16,7 @@ properties(
 node {
 
     def M1M3sim
-    def SAL_REPOS = "/home/saluser/repos"
+    def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
 
     stage('Cloning Dockerfile')
@@ -42,31 +42,40 @@ node {
 
     stage("Running tests")
     {
-        withEnv(["SAL_REPOS=" + SAL_REPOS]) {
+        withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
              M1M3sim.inside("--entrypoint=''") {
-                 sh '''
-                    cd $SAL_REPOS
-                    source ts_sal/setup.env
+                 sh """
+                    source $SALUSER_HOME/.setup_salobj.sh
     
-                    export PATH=/opt/rh/devtoolset-8/root/usr/bin:$PATH
+                    export PATH=/opt/lsst/software/stack/python/miniconda3-4.7.12/envs/lsst-scipipe-448abc6/bin:$PATH
     
                     cd $WORKSPACE/ts_m1m3support
                     make SIMULATOR=1
                     make junit
-                '''
+                 """
              }
         }
 
         junit 'ts_m1m3support/tests/*.xml'
     }
 
+    stage('Build documentation')
+    {
+         M1M3sim.inside("--entrypoint=''") {
+             sh """
+                source $SALUSER_HOME/.setup_salobj.sh
+                cd $WORKSPACE/ts_m1m3support
+                make doc
+             """
+         }
+    }
+
     stage('Running container')
     {
-        withEnv(["SAL_REPOS=" + SAL_REPOS]){
+        withEnv(["SALUSER_HOME=" + SALUSER_HOME]){
             M1M3sim.inside("--entrypoint=''") {
                 sh """
-                    cd $SAL_REPOS
-                    source ts_sal/setup.env
+                    source $SALUSER_HOME/.setup_salobj.sh
     
                     cd $WORKSPACE/ts_m1m3support
                     ./ts_M1M3Support -c SettingFiles &
@@ -74,11 +83,26 @@ node {
                     echo "Waiting for 30 seconds"
                     sleep 30
     
-                    cd /home/saluser/repos
+                    cd $SALUSER_HOME/repos
                     ./ts_sal/test/MTM1M3/cpp/src/sacpp_MTM1M3_start_commander Default
                     sleep 30
                     killall ts_M1M3Support
                 """
+            }
+        }
+    }
+
+    if (BRANCH == "master" || BRANCH == "develop")
+    {
+        stage('Publish documentation')
+        {
+            withCredentials([usernamePassword(credentialsId: 'lsst-io', usernameVariable: 'LTD_USERNAME', passwordVariable: 'LTD_PASSWORD')]) {
+                M1M3sim.inside("--entrypoint=''") {
+                    sh """
+                        source $SALUSER_HOME/.setup_salobj.sh
+                        ltd upload --product ts-m1m3support --git-ref """ + BRANCH + """ --dir $WORKSPACE/ts_m1m3support/doc/html
+                    """
+                }
             }
         }
     }

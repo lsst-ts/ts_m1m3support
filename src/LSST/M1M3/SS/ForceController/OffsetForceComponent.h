@@ -25,20 +25,21 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_OFFSETFORCECOMPONENT_H_
 
 #include <ForceComponent.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class SafetyController;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-
+/**
+ * Handle user offsets.
+ */
 class OffsetForceComponent : public ForceComponent {
 public:
-    OffsetForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+    OffsetForceComponent(SafetyController* safetyController,
                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                          ForceActuatorSettings* forceActuatorSettings);
 
@@ -47,11 +48,10 @@ public:
                                          float yMoment, float zMoment);
 
 protected:
-    void postEnableDisableActions();
-    void postUpdateActions();
+    void postEnableDisableActions() override;
+    void postUpdateActions() override;
 
 private:
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;
@@ -59,7 +59,7 @@ private:
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedOffsetForcesC* _appliedOffsetForces;
-    MTM1M3_logevent_rejectedOffsetForcesC* _rejectedOffsetForces;
+    MTM1M3_logevent_preclippedOffsetForcesC* _preclippedOffsetForces;
 };
 
 } /* namespace SS */

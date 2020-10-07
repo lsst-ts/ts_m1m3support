@@ -30,11 +30,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Lowering mirror in engineering state. Doesn't allow any command except for
+ * one allowed in Engineering State.
+ */
 class LoweringEngineeringState : public EngineeringState {
 public:
-    LoweringEngineeringState(M1M3SSPublisher* publisher);
+    LoweringEngineeringState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
 };
 
 } /* namespace SS */

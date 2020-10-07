@@ -38,12 +38,9 @@ namespace SS {
  */
 class EnterControlCommand : public Command {
 public:
-    EnterControlCommand(Context* context);
+    EnterControlCommand();
 
     void execute();
-
-private:
-    Context* _context;
 };
 
 } /* namespace SS */

@@ -34,8 +34,7 @@ namespace SS {
 
 class ApplyOffsetForcesCommand : public Command {
 public:
-    ApplyOffsetForcesCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                             MTM1M3_command_applyOffsetForcesC* data);
+    ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_command_applyOffsetForcesC* data);
 
     MTM1M3_command_applyOffsetForcesC* getData() { return &_data; }
 
@@ -46,8 +45,6 @@ public:
     void ackFailed(std::string reason);
 
 private:
-    Context* _context;
-    M1M3SSPublisher* _publisher;
     MTM1M3_command_applyOffsetForcesC _data;
 };
 

@@ -24,41 +24,77 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 
+#include <DataTypes.h>
+#include <ForceComponentSettings.h>
 #include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Force component states. Only transition from ENABLED to DISABLED requires
+ * gradual removal of the component force.
+ */
+enum ForceComponentState { DISABLED, ENABLED, DISABLING };
+
+/**
+ * Abstract parent class of all force components.
+ *
+ * Forces acting on mirror are calculated as sum of 6 scalar forces (lateral
+ * forces in x,y and z direction and rotational forces (moments) around x,y and
+ * z axis). Individual actuators forces are summed in FinalForceComponent.
+ * Considered forces and demands are:
+ *
+ * * AberrationForceComponent (Z direction only)
+ * * AccelerationForceComponent
+ * * ActiveOpticForceComponent (Z direction only)
+ * * AzimuthForceComponent
+ * * BalanceForceComponent
+ * * ElevationForceComponent
+ * * OffsetForceComponent
+ * * StaticForceComponent
+ * * ThermalForceComponent
+ * * VelocityForceComponent
+ *
+ * Force component can be enabled or disabled. When it is disabled, its
+ * contribution is scaled linearly to zero to prevent overstressing the mirror.
+ * Commanding of the enabled/disabled states is performed in ForceController
+ * class.
+ */
 class ForceComponent {
-protected:
-    std::string name;
-
-    bool enabled;
-    bool disabling;
-    float maxRateOfChange;
-    float nearZeroValue;
-
-    float xCurrent[12];
-    float yCurrent[100];
-    float zCurrent[156];
-
-    float xTarget[12];
-    float yTarget[100];
-    float zTarget[156];
-
-    float xOffset[12];
-    float yOffset[100];
-    float zOffset[156];
-
 public:
-    ForceComponent();
+    /**
+     * Construct ForceComponent.
+     *
+     * @param name force component name
+     * @param forceComponentSettings
+     */
+    ForceComponent(const char *name, const ForceComponentSettings &forceComponentSettings);
     virtual ~ForceComponent();
 
-    bool isEnabled();
-    bool isDisabling();
+    /**
+     * Returns true if force component is enabled.
+     *
+     * @return true if the force component is enabled
+     */
+    bool isEnabled() { return _state == ENABLED; }
 
+    /**
+     * Force component is being disabled.
+     *
+     * @return true if force component is being disabled
+     */
+    bool isDisabling() { return _state == DISABLING; }
+
+    /**
+     * Enable force component.
+     */
     void enable();
+
+    /**
+     * Disable force component. Starts to gradually scales force contribution to
+     */
     void disable();
 
     void update();
@@ -66,8 +102,49 @@ public:
     void reset();
 
 protected:
-    virtual void postEnableDisableActions();
-    virtual void postUpdateActions();
+    /**
+     * Called after enable/disable changes.
+     *
+     * Publish a state change for the component Pure virtual, needs to be
+     * overriden in children.
+     */
+    virtual void postEnableDisableActions() = 0;
+
+    /**
+     * Called after update to forces.
+     *
+     * Check for forces that need to be clipped. Update SAL. Pure virtual,
+     * needs to be overriden in children.
+     */
+    virtual void postUpdateActions() = 0;
+
+    /// measured actuator current X force
+    float xCurrent[FA_X_COUNT];
+    /// measured actuator current Y force
+    float yCurrent[FA_Y_COUNT];
+    /// measured actuator current Z force
+    float zCurrent[FA_Z_COUNT];
+
+    /// target actuator X force
+    float xTarget[FA_X_COUNT];
+    /// target actuator Y force
+    float yTarget[FA_Y_COUNT];
+    /// target actuator Z force
+    float zTarget[FA_Z_COUNT];
+
+    /// difference (error) between current and target X force
+    float xOffset[FA_X_COUNT];
+    /// difference (error) between current and target Y force
+    float yOffset[FA_Y_COUNT];
+    /// difference (error) between current and target Z force
+    float zOffset[FA_Z_COUNT];
+
+private:
+    const char *_name;
+    float _maxRateOfChange;
+    float _nearZeroValue;
+
+    ForceComponentState _state;
 };
 
 } /* namespace SS */
