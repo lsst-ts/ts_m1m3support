@@ -30,6 +30,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+// Please see ForceActuatorTableRow documentation in
+// ForceActuatorApplicationSettings.h for row structure.
+// Each row contain ActuatorID, X, Y & Z Position, Type (Single/Dual), ILC
+// Subnet & Address, and second axis orientation.
+//
+// If a change is needed, fill data from the new text file, delete actuator ID
+// (as C++ memory structure forces row order to match order in the
+// initialization, this is redundant value), add leading/ending {} and change
+// Type and Orientation rows to include ForceActuatorTypes:: and
+// ForceActuatorOrientations:: namespaces (struct).
+
 //! [Table initialization]
 ForceActuatorTableRow ForceActuatorApplicationSettings::Table[FA_COUNT] = {
         {101, 0.776782776, 0, -2.158743, ForceActuatorTypes::SAA, 3, 1, ForceActuatorOrientations::NA},
