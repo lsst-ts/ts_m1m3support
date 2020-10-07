@@ -36,79 +36,59 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FinalForceComponent::FinalForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
                                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                         ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Final";
-
-    _publisher = publisher;
+                                         ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedForces = _publisher->getEventAppliedForces();
-    _rejectedForces = _publisher->getEventRejectedForces();
-    this->maxRateOfChange = _forceActuatorSettings->FinalComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->FinalComponentSettings.NearZeroValue;
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+    _preclippedForces = M1M3SSPublisher::get().getEventPreclippedForces();
 
-    _appliedAberrationForces = _publisher->getEventAppliedAberrationForces();
-    _appliedAccelerationForces = _publisher->getEventAppliedAccelerationForces();
-    _appliedActiveOpticForces = _publisher->getEventAppliedActiveOpticForces();
-    _appliedAzimuthForces = _publisher->getEventAppliedAzimuthForces();
-    _appliedBalanceForces = _publisher->getEventAppliedBalanceForces();
-    _appliedElevationForces = _publisher->getEventAppliedElevationForces();
-    _appliedOffsetForces = _publisher->getEventAppliedOffsetForces();
-    _appliedStaticForces = _publisher->getEventAppliedStaticForces();
-    _appliedThermalForces = _publisher->getEventAppliedThermalForces();
-    _appliedVelocityForces = _publisher->getEventAppliedVelocityForces();
+    _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
+    _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
+    _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
+    _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
+    _appliedBalanceForces = M1M3SSPublisher::get().getEventAppliedBalanceForces();
+    _appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
+    _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
+    _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
+    _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
+    _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
 
-    this->enable();
-}
-
-void FinalForceComponent::applyForces(float* x, float* y, float* z) {
-    spdlog::trace("FinalForceComponent: applyForces()");
-    if (!this->isEnabled()) {
-        this->enable();
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
-        }
-
-        if (i < 100) {
-            this->yTarget[i] = y[i];
-        }
-
-        this->zTarget[i] = z[i];
-    }
+    enable();
 }
 
 void FinalForceComponent::applyForcesByComponents() {
     spdlog::trace("FinalForceComponent: applyForcesByComponents()");
-    if (!this->isEnabled()) {
-        this->enable();
+
+    if (!isEnabled()) {
+        enable();
     }
-    for (int i = 0; i < 156; ++i) {
+
+    for (int i = 0; i < FA_COUNT; ++i) {
         if (i < 12) {
-            this->xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
-                                _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
-                                _appliedOffsetForces->xForces[i] + _appliedStaticForces->xForces[i] +
-                                _appliedThermalForces->xForces[i] + _appliedVelocityForces->xForces[i]);
+            xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
+                          _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
+                          _appliedOffsetForces->xForces[i] + _appliedStaticForces->xForces[i] +
+                          _appliedThermalForces->xForces[i] + _appliedVelocityForces->xForces[i]);
         }
 
         if (i < 100) {
-            this->yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +
-                                _appliedBalanceForces->yForces[i] + _appliedElevationForces->yForces[i] +
-                                _appliedOffsetForces->yForces[i] + _appliedStaticForces->yForces[i] +
-                                _appliedThermalForces->yForces[i] + _appliedVelocityForces->yForces[i]);
+            yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +
+                          _appliedBalanceForces->yForces[i] + _appliedElevationForces->yForces[i] +
+                          _appliedOffsetForces->yForces[i] + _appliedStaticForces->yForces[i] +
+                          _appliedThermalForces->yForces[i] + _appliedVelocityForces->yForces[i]);
         }
 
-        this->zTarget[i] = (_appliedAberrationForces->zForces[i] + _appliedAccelerationForces->zForces[i] +
-                            _appliedActiveOpticForces->zForces[i] + _appliedAzimuthForces->zForces[i] +
-                            _appliedBalanceForces->zForces[i] + _appliedElevationForces->zForces[i] +
-                            _appliedOffsetForces->zForces[i] + _appliedStaticForces->zForces[i] +
-                            _appliedThermalForces->zForces[i] + _appliedVelocityForces->zForces[i]);
+        zTarget[i] = (_appliedAberrationForces->zForces[i] + _appliedAccelerationForces->zForces[i] +
+                      _appliedActiveOpticForces->zForces[i] + _appliedAzimuthForces->zForces[i] +
+                      _appliedBalanceForces->zForces[i] + _appliedElevationForces->zForces[i] +
+                      _appliedOffsetForces->zForces[i] + _appliedStaticForces->zForces[i] +
+                      _appliedThermalForces->zForces[i] + _appliedVelocityForces->zForces[i]);
     }
 }
 
@@ -120,10 +100,10 @@ void FinalForceComponent::postUpdateActions() {
     spdlog::trace("FinalForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
-    _appliedForces->timestamp = _publisher->getTimestamp();
-    _rejectedForces->timestamp = _appliedForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    bool clippingRequired = false;
+    _appliedForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _preclippedForces->timestamp = _appliedForces->timestamp;
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -132,31 +112,28 @@ void FinalForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->ForceLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->ForceLimitXTable[xIndex].HighFault;
-            _rejectedForces->xForces[xIndex] = this->xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedForces->xForces[xIndex],
+            _preclippedForces->xForces[xIndex] = xCurrent[xIndex];
+            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedForces->xForces[xIndex],
                                                   _appliedForces->xForces + xIndex);
-            _forceSetpointWarning->forceWarning[zIndex] =
-                    _forceSetpointWarning->forceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->forceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->ForceLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->ForceLimitYTable[yIndex].HighFault;
-            _rejectedForces->yForces[yIndex] = this->yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedForces->yForces[yIndex],
+            _preclippedForces->yForces[yIndex] = yCurrent[yIndex];
+            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedForces->yForces[yIndex],
                                                   _appliedForces->yForces + yIndex);
-            _forceSetpointWarning->forceWarning[zIndex] =
-                    _forceSetpointWarning->forceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->forceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->ForceLimitZTable[zIndex].HighFault;
-        _rejectedForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedForces->zForces[zIndex],
+        _preclippedForces->zForces[zIndex] = zCurrent[zIndex];
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedForces->zForces[zIndex],
                                               _appliedForces->zForces + zIndex);
-        _forceSetpointWarning->forceWarning[zIndex] =
-                _forceSetpointWarning->forceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->forceWarning[zIndex];
+        _forceSetpointWarning->forceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->forceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -171,23 +148,23 @@ void FinalForceComponent::postUpdateActions() {
     _appliedForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
-                                                   _rejectedForces->xForces, _rejectedForces->yForces,
-                                                   _rejectedForces->zForces);
-    _rejectedForces->fx = fm.Fx;
-    _rejectedForces->fy = fm.Fy;
-    _rejectedForces->fz = fm.Fz;
-    _rejectedForces->mx = fm.Mx;
-    _rejectedForces->my = fm.My;
-    _rejectedForces->mz = fm.Mz;
-    _rejectedForces->forceMagnitude = fm.ForceMagnitude;
+                                                   _preclippedForces->xForces, _preclippedForces->yForces,
+                                                   _preclippedForces->zForces);
+    _preclippedForces->fx = fm.Fx;
+    _preclippedForces->fy = fm.Fy;
+    _preclippedForces->fz = fm.Fz;
+    _preclippedForces->mx = fm.Mx;
+    _preclippedForces->my = fm.My;
+    _preclippedForces->mz = fm.Mz;
+    _preclippedForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyForceClipping(clippingRequired);
 
-    _publisher->tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        _publisher->logRejectedForces();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedForces();
     }
-    _publisher->logAppliedForces();
+    M1M3SSPublisher::get().logAppliedForces();
 }
 
 } /* namespace SS */

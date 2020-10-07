@@ -21,31 +21,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <StandbyCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StandbyCommand::StandbyCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                               MTM1M3_command_standbyC*) {
-    _context = context;
-    _publisher = publisher;
-    this->commandID = commandID;
-}
+StandbyCommand::StandbyCommand(int32_t commandID, MTM1M3_command_standbyC*) { this->commandID = commandID; }
 
-void StandbyCommand::execute() { _context->standby(this); }
+void StandbyCommand::execute() { Context::get().standby(this); }
 
 void StandbyCommand::ackInProgress() {
-    _publisher->ackCommandstandby(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandstandby(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void StandbyCommand::ackComplete() {
-    _publisher->ackCommandstandby(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandstandby(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void StandbyCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandstandby(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandstandby(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

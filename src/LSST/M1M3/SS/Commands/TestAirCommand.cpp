@@ -21,31 +21,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TestAirCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestAirCommand::TestAirCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                               MTM1M3_command_testAirC*) {
-    _context = context;
-    _publisher = publisher;
-    this->commandID = commandID;
-}
+TestAirCommand::TestAirCommand(int32_t commandID, MTM1M3_command_testAirC*) { this->commandID = commandID; }
 
-void TestAirCommand::execute() { _context->testAir(this); }
+void TestAirCommand::execute() { Context::get().testAir(this); }
 
 void TestAirCommand::ackInProgress() {
-    _publisher->ackCommandtestAir(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TestAirCommand::ackComplete() {
-    _publisher->ackCommandtestAir(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void TestAirCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandtestAir(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

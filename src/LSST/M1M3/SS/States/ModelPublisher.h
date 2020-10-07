@@ -21,23 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef FORCEACTUATORTABLEROW_H_
-#define FORCEACTUATORTABLEROW_H_
+#ifndef MODELPUBLISHER_H_
+#define MODELPUBLISHER_H_
 
-#include <DataTypes.h>
-#include <ForceActuatorOrientations.h>
-#include <ForceActuatorTypes.h>
+#include <Model.h>
 
-struct ForceActuatorTableRow {
-    int32_t Index;
-    int32_t ActuatorID;
-    double XPosition;
-    double YPosition;
-    double ZPosition;
-    ForceActuatorTypes::Type Type;
-    uint8_t Subnet;
-    uint8_t Address;
-    ForceActuatorOrientations::Type Orientation;
+#include <chrono>
+
+namespace LSST {
+namespace M1M3 {
+namespace SS {
+
+/**
+ * Measure time to acquire data and publish model data. Uses RAII-like approach to measure time it takes to
+ * execute an action, and pass elapsed time to Model::publishOuterLoop call.
+ *
+ * @see Model
+ */
+class ModelPublisher {
+public:
+    ModelPublisher() { start = std::chrono::high_resolution_clock::now(); }
+    ~ModelPublisher() { Model::get().publishOuterLoop(std::chrono::high_resolution_clock::now() - start); }
+
+private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> start;
 };
+} /* namespace SS */
+} /* namespace M1M3 */
+} /* namespace LSST */
 
-#endif /* FORCEACTUATORTABLEROW_H_ */
+#endif  // MODELPUBLISHER_H_

@@ -26,69 +26,84 @@
 
 #include <StateTypes.h>
 
+#include <StaticStateFactory.h>
+#include <Model.h>
+#include <EnterControlCommand.h>
+#include <StartCommand.h>
+#include <EnableCommand.h>
+#include <DisableCommand.h>
+#include <StandbyCommand.h>
+#include <ExitControlCommand.h>
+#include <UpdateCommand.h>
+#include <TurnAirOnCommand.h>
+#include <TurnAirOffCommand.h>
+#include <ApplyOffsetForcesCommand.h>
+#include <ClearOffsetForcesCommand.h>
+#include <RaiseM1M3Command.h>
+#include <LowerM1M3Command.h>
+#include <ApplyAberrationForcesByBendingModesCommand.h>
+#include <ApplyAberrationForcesCommand.h>
+#include <ClearAberrationForcesCommand.h>
+#include <ApplyActiveOpticForcesByBendingModesCommand.h>
+#include <ApplyActiveOpticForcesCommand.h>
+#include <ClearActiveOpticForcesCommand.h>
+#include <EnterEngineeringCommand.h>
+#include <ExitEngineeringCommand.h>
+#include <TestAirCommand.h>
+#include <TestHardpointCommand.h>
+#include <TestForceActuatorCommand.h>
+#include <MoveHardpointActuatorsCommand.h>
+#include <EnableHardpointChaseCommand.h>
+#include <DisableHardpointChaseCommand.h>
+#include <AbortRaiseM1M3Command.h>
+#include <TranslateM1M3Command.h>
+#include <StopHardpointMotionCommand.h>
+#include <TMAAzimuthSampleCommand.h>
+#include <TMAElevationSampleCommand.h>
+#include <PositionM1M3Command.h>
+#include <TurnLightsOnCommand.h>
+#include <TurnLightsOffCommand.h>
+#include <TurnPowerOnCommand.h>
+#include <TurnPowerOffCommand.h>
+#include <EnableHardpointCorrectionsCommand.h>
+#include <DisableHardpointCorrectionsCommand.h>
+#include <RunMirrorForceProfileCommand.h>
+#include <AbortProfileCommand.h>
+#include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <UpdatePIDCommand.h>
+#include <ResetPIDCommand.h>
+#include <ProgramILCCommand.h>
+#include <ModbusTransmitCommand.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class StaticStateFactory;
-class Model;
-class EnterControlCommand;
-class StartCommand;
-class EnableCommand;
-class DisableCommand;
-class StandbyCommand;
-class ExitControlCommand;
-class UpdateCommand;
-class TurnAirOnCommand;
-class TurnAirOffCommand;
-class ApplyOffsetForcesCommand;
-class ClearOffsetForcesCommand;
-class RaiseM1M3Command;
-class LowerM1M3Command;
-class ApplyAberrationForcesByBendingModesCommand;
-class ApplyAberrationForcesCommand;
-class ClearAberrationForcesCommand;
-class ApplyActiveOpticForcesByBendingModesCommand;
-class ApplyActiveOpticForcesCommand;
-class ClearActiveOpticForcesCommand;
-class EnterEngineeringCommand;
-class ExitEngineeringCommand;
-class TestAirCommand;
-class TestHardpointCommand;
-class TestForceActuatorCommand;
-class MoveHardpointActuatorsCommand;
-class EnableHardpointChaseCommand;
-class DisableHardpointChaseCommand;
-class AbortRaiseM1M3Command;
-class TranslateM1M3Command;
-class StopHardpointMotionCommand;
-class TMAAzimuthSampleCommand;
-class TMAElevationSampleCommand;
-class PositionM1M3Command;
-class TurnLightsOnCommand;
-class TurnLightsOffCommand;
-class TurnPowerOnCommand;
-class TurnPowerOffCommand;
-class EnableHardpointCorrectionsCommand;
-class DisableHardpointCorrectionsCommand;
-class RunMirrorForceProfileCommand;
-class AbortProfileCommand;
-class ApplyOffsetForcesByMirrorForceCommand;
-class UpdatePIDCommand;
-class ResetPIDCommand;
-class ProgramILCCommand;
-class ModbusTransmitCommand;
-
-/*!
- * The context used to execute commands against the current state.
- * This class handles merging the model (has no concept of state) and
- * the state (has no knowledge of how to do things) to provide state
- * based functionality.
+/**
+ * @brief The context used to execute commands against the current state.
+ *
+ * This singleton merges the model (has no concept of state) and the state (has
+ * no knowledge of how to do things) to provide state based functionality.
+ *
+ * State objects, child of State, are responsible for verification the Command
+ * is allowed at given state.
  */
 class Context {
 public:
-    Context(StaticStateFactory* stateFactory, Model* model);
+    Context();
 
+    /**
+     * Retrieve Context singleton.
+     *
+     * @return Context singleton
+     */
+    static Context& get();
+
+    /**
+     * @brief Executes EnterControlCommand actions.
+     *
+     * @param command pointer to command to execute
+     */
     void enterControl(EnterControlCommand* command);
     void start(StartCommand* command);
     void enable(EnableCommand* command);
@@ -137,8 +152,9 @@ public:
     void modbusTransmit(ModbusTransmitCommand* command);
 
 private:
-    StaticStateFactory* _stateFactory;
-    Model* _model;
+    Context& operator=(const Context&) = delete;
+    Context(const Context&) = delete;
+
     States::Type _currentState;
 
     void _updateCurrentStateIfRequired(States::Type potentialNewState);

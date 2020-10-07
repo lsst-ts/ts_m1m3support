@@ -22,8 +22,6 @@
  */
 
 #include <M1M3SSPublisher.h>
-#include <SAL_MTM1M3.h>
-#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
 
 #include <spdlog/spdlog.h>
 
@@ -31,8 +29,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
-    spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()");
+M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) { spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()"); }
+
+M1M3SSPublisher& M1M3SSPublisher::get() {
+    static M1M3SSPublisher publisher;
+    return publisher;
+}
+
+void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL = m1m3SAL;
 
     spdlog::debug("M1M3SSPublisher: Initializing SAL Telemetry");
@@ -83,6 +87,7 @@ M1M3SSPublisher::M1M3SSPublisher(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_heartbeat");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_ilcWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
@@ -92,24 +97,22 @@ M1M3SSPublisher::M1M3SSPublisher(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerWarning");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedAberrationForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedAccelerationForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedActiveOpticForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedAzimuthForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedBalanceForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedCylinderForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedElevationForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedOffsetForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedStaticForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedThermalForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_rejectedVelocityForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAberrationForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAccelerationForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedActiveOpticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAzimuthForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedBalanceForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedCylinderForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedElevationForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedOffsetForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedStaticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedThermalForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingsApplied");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
-
-double M1M3SSPublisher::getTimestamp() { return _m1m3SAL->getCurrentTime(); }
 
 void M1M3SSPublisher::putAccelerometerData() { _m1m3SAL->putSample_accelerometerData(&_accelerometerData); }
 void M1M3SSPublisher::putForceActuatorData() { _m1m3SAL->putSample_forceActuatorData(&_forceActuatorData); }
@@ -1434,7 +1437,7 @@ void M1M3SSPublisher::logHardpointMonitorInfo() {
 
 void M1M3SSPublisher::tryLogHardpointMonitorInfo() {
     bool changeDetected = false;
-    for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
+    for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointMonitorInfo.referenceId[i] !=
                                  _previousEventHardpointMonitorInfo.referenceId[i] ||
@@ -1473,7 +1476,7 @@ void M1M3SSPublisher::logHardpointMonitorState() {
 
 void M1M3SSPublisher::tryLogHardpointMonitorState() {
     bool changeDetected = false;
-    for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
+    for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected || _eventHardpointMonitorState.ilcState[i] !=
                                                    _previousEventHardpointMonitorState.ilcState[i];
     }
@@ -1510,7 +1513,7 @@ void M1M3SSPublisher::logHardpointMonitorWarning() {
     _eventHardpointMonitorWarning.anyMezzanineDCPRS422ChipFault = false;
     _eventHardpointMonitorWarning.anyMezzanineApplicationMissing = false;
     _eventHardpointMonitorWarning.anyMezzanineApplicationCRCMismatch = false;
-    for (int i = 0; i < HM_COUNT; ++i) {
+    for (int i = 0; i < HP_COUNT; ++i) {
         _eventHardpointMonitorWarning.anyMajorFault =
                 _eventHardpointMonitorWarning.anyMajorFault || _eventHardpointMonitorWarning.majorFault[i];
         _eventHardpointMonitorWarning.anyMinorFault =
@@ -1614,7 +1617,7 @@ void M1M3SSPublisher::logHardpointMonitorWarning() {
 
 void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
     bool changeDetected = false;
-    for (int i = 0; i < HM_COUNT && !changeDetected; ++i) {
+    for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventHardpointMonitorWarning.majorFault[i] !=
                                  _previousEventHardpointMonitorWarning.majorFault[i] ||
@@ -1675,6 +1678,8 @@ void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
         this->logHardpointMonitorWarning();
     }
 }
+
+void M1M3SSPublisher::logHeartbeat() { _m1m3SAL->logEvent_heartbeat(&_eventHeartbeat, 0); }
 
 void M1M3SSPublisher::logILCWarning() {
     _eventILCWarning.anyWarning = _eventILCWarning.responseTimeout || _eventILCWarning.invalidCRC ||
@@ -1923,292 +1928,294 @@ void M1M3SSPublisher::tryLogPowerWarning() {
     }
 }
 
-void M1M3SSPublisher::logRejectedAberrationForces() {
-    _m1m3SAL->logEvent_rejectedAberrationForces(&_eventRejectedAberrationForces, 0);
-    _previousEventRejectedAberrationForces = _eventRejectedAberrationForces;
+void M1M3SSPublisher::logPreclippedAberrationForces() {
+    _m1m3SAL->logEvent_preclippedAberrationForces(&_eventPreclippedAberrationForces, 0);
+    _previousEventPreclippedAberrationForces = _eventPreclippedAberrationForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedAberrationForces() {
-    bool changeDetected = _eventRejectedAberrationForces.fz != _previousEventRejectedAberrationForces.fz ||
-                          _eventRejectedAberrationForces.mx != _previousEventRejectedAberrationForces.mx ||
-                          _eventRejectedAberrationForces.my != _previousEventRejectedAberrationForces.my;
+void M1M3SSPublisher::tryLogPreclippedAberrationForces() {
+    bool changeDetected =
+            _eventPreclippedAberrationForces.fz != _previousEventPreclippedAberrationForces.fz ||
+            _eventPreclippedAberrationForces.mx != _previousEventPreclippedAberrationForces.mx ||
+            _eventPreclippedAberrationForces.my != _previousEventPreclippedAberrationForces.my;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected = changeDetected || _eventRejectedAberrationForces.zForces[i] !=
-                                                   _previousEventRejectedAberrationForces.zForces[i];
+        changeDetected = changeDetected || _eventPreclippedAberrationForces.zForces[i] !=
+                                                   _previousEventPreclippedAberrationForces.zForces[i];
     }
     if (changeDetected) {
-        this->logRejectedAberrationForces();
+        this->logPreclippedAberrationForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedAccelerationForces() {
-    _m1m3SAL->logEvent_rejectedAccelerationForces(&_eventRejectedAccelerationForces, 0);
-    _previousEventRejectedAccelerationForces = _eventRejectedAccelerationForces;
+void M1M3SSPublisher::logPreclippedAccelerationForces() {
+    _m1m3SAL->logEvent_preclippedAccelerationForces(&_eventPreclippedAccelerationForces, 0);
+    _previousEventPreclippedAccelerationForces = _eventPreclippedAccelerationForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedAccelerationForces() {
+void M1M3SSPublisher::tryLogPreclippedAccelerationForces() {
     bool changeDetected =
-            _eventRejectedAccelerationForces.fx != _previousEventRejectedAccelerationForces.fx ||
-            _eventRejectedAccelerationForces.fy != _previousEventRejectedAccelerationForces.fy ||
-            _eventRejectedAccelerationForces.fz != _previousEventRejectedAccelerationForces.fz ||
-            _eventRejectedAccelerationForces.mx != _previousEventRejectedAccelerationForces.mx ||
-            _eventRejectedAccelerationForces.my != _previousEventRejectedAccelerationForces.my ||
-            _eventRejectedAccelerationForces.mz != _previousEventRejectedAccelerationForces.mz;
+            _eventPreclippedAccelerationForces.fx != _previousEventPreclippedAccelerationForces.fx ||
+            _eventPreclippedAccelerationForces.fy != _previousEventPreclippedAccelerationForces.fy ||
+            _eventPreclippedAccelerationForces.fz != _previousEventPreclippedAccelerationForces.fz ||
+            _eventPreclippedAccelerationForces.mx != _previousEventPreclippedAccelerationForces.mx ||
+            _eventPreclippedAccelerationForces.my != _previousEventPreclippedAccelerationForces.my ||
+            _eventPreclippedAccelerationForces.mz != _previousEventPreclippedAccelerationForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
-                         (i < 12 && _eventRejectedAccelerationForces.xForces[i] !=
-                                            _previousEventRejectedAccelerationForces.xForces[i]) ||
-                         (i < 100 && _eventRejectedAccelerationForces.yForces[i] !=
-                                             _previousEventRejectedAccelerationForces.yForces[i]) ||
-                         (_eventRejectedAccelerationForces.zForces[i] !=
-                          _previousEventRejectedAccelerationForces.zForces[i]);
+                         (i < 12 && _eventPreclippedAccelerationForces.xForces[i] !=
+                                            _previousEventPreclippedAccelerationForces.xForces[i]) ||
+                         (i < 100 && _eventPreclippedAccelerationForces.yForces[i] !=
+                                             _previousEventPreclippedAccelerationForces.yForces[i]) ||
+                         (_eventPreclippedAccelerationForces.zForces[i] !=
+                          _previousEventPreclippedAccelerationForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedAccelerationForces();
+        this->logPreclippedAccelerationForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedActiveOpticForces() {
-    _m1m3SAL->logEvent_rejectedActiveOpticForces(&_eventRejectedActiveOpticForces, 0);
-    _previousEventRejectedActiveOpticForces = _eventRejectedActiveOpticForces;
+void M1M3SSPublisher::logPreclippedActiveOpticForces() {
+    _m1m3SAL->logEvent_preclippedActiveOpticForces(&_eventPreclippedActiveOpticForces, 0);
+    _previousEventPreclippedActiveOpticForces = _eventPreclippedActiveOpticForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedActiveOpticForces() {
-    bool changeDetected = _eventRejectedActiveOpticForces.fz != _previousEventRejectedActiveOpticForces.fz ||
-                          _eventRejectedActiveOpticForces.mx != _previousEventRejectedActiveOpticForces.mx ||
-                          _eventRejectedActiveOpticForces.my != _previousEventRejectedActiveOpticForces.my;
+void M1M3SSPublisher::tryLogPreclippedActiveOpticForces() {
+    bool changeDetected =
+            _eventPreclippedActiveOpticForces.fz != _previousEventPreclippedActiveOpticForces.fz ||
+            _eventPreclippedActiveOpticForces.mx != _previousEventPreclippedActiveOpticForces.mx ||
+            _eventPreclippedActiveOpticForces.my != _previousEventPreclippedActiveOpticForces.my;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected = changeDetected || _eventRejectedActiveOpticForces.zForces[i] !=
-                                                   _previousEventRejectedActiveOpticForces.zForces[i];
+        changeDetected = changeDetected || _eventPreclippedActiveOpticForces.zForces[i] !=
+                                                   _previousEventPreclippedActiveOpticForces.zForces[i];
     }
     if (changeDetected) {
-        this->logRejectedActiveOpticForces();
+        this->logPreclippedActiveOpticForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedAzimuthForces() {
-    _m1m3SAL->logEvent_rejectedAzimuthForces(&_eventRejectedAzimuthForces, 0);
-    _previousEventRejectedAzimuthForces = _eventRejectedAzimuthForces;
+void M1M3SSPublisher::logPreclippedAzimuthForces() {
+    _m1m3SAL->logEvent_preclippedAzimuthForces(&_eventPreclippedAzimuthForces, 0);
+    _previousEventPreclippedAzimuthForces = _eventPreclippedAzimuthForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedAzimuthForces() {
-    bool changeDetected = _eventRejectedAzimuthForces.fx != _previousEventRejectedAzimuthForces.fx ||
-                          _eventRejectedAzimuthForces.fy != _previousEventRejectedAzimuthForces.fy ||
-                          _eventRejectedAzimuthForces.fz != _previousEventRejectedAzimuthForces.fz ||
-                          _eventRejectedAzimuthForces.mx != _previousEventRejectedAzimuthForces.mx ||
-                          _eventRejectedAzimuthForces.my != _previousEventRejectedAzimuthForces.my ||
-                          _eventRejectedAzimuthForces.mz != _previousEventRejectedAzimuthForces.mz;
+void M1M3SSPublisher::tryLogPreclippedAzimuthForces() {
+    bool changeDetected = _eventPreclippedAzimuthForces.fx != _previousEventPreclippedAzimuthForces.fx ||
+                          _eventPreclippedAzimuthForces.fy != _previousEventPreclippedAzimuthForces.fy ||
+                          _eventPreclippedAzimuthForces.fz != _previousEventPreclippedAzimuthForces.fz ||
+                          _eventPreclippedAzimuthForces.mx != _previousEventPreclippedAzimuthForces.mx ||
+                          _eventPreclippedAzimuthForces.my != _previousEventPreclippedAzimuthForces.my ||
+                          _eventPreclippedAzimuthForces.mz != _previousEventPreclippedAzimuthForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                (i < 12 &&
-                 _eventRejectedAzimuthForces.xForces[i] != _previousEventRejectedAzimuthForces.xForces[i]) ||
-                (i < 100 &&
-                 _eventRejectedAzimuthForces.yForces[i] != _previousEventRejectedAzimuthForces.yForces[i]) ||
-                (_eventRejectedAzimuthForces.zForces[i] != _previousEventRejectedAzimuthForces.zForces[i]);
+        changeDetected = changeDetected ||
+                         (i < 12 && _eventPreclippedAzimuthForces.xForces[i] !=
+                                            _previousEventPreclippedAzimuthForces.xForces[i]) ||
+                         (i < 100 && _eventPreclippedAzimuthForces.yForces[i] !=
+                                             _previousEventPreclippedAzimuthForces.yForces[i]) ||
+                         (_eventPreclippedAzimuthForces.zForces[i] !=
+                          _previousEventPreclippedAzimuthForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedAzimuthForces();
+        this->logPreclippedAzimuthForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedBalanceForces() {
-    _m1m3SAL->logEvent_rejectedBalanceForces(&_eventRejectedBalanceForces, 0);
-    _previousEventRejectedBalanceForces = _eventRejectedBalanceForces;
+void M1M3SSPublisher::logPreclippedBalanceForces() {
+    _m1m3SAL->logEvent_preclippedBalanceForces(&_eventPreclippedBalanceForces, 0);
+    _previousEventPreclippedBalanceForces = _eventPreclippedBalanceForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedBalanceForces() {
-    bool changeDetected = _eventRejectedBalanceForces.fx != _previousEventRejectedBalanceForces.fx ||
-                          _eventRejectedBalanceForces.fy != _previousEventRejectedBalanceForces.fy ||
-                          _eventRejectedBalanceForces.fz != _previousEventRejectedBalanceForces.fz ||
-                          _eventRejectedBalanceForces.mx != _previousEventRejectedBalanceForces.mx ||
-                          _eventRejectedBalanceForces.my != _previousEventRejectedBalanceForces.my ||
-                          _eventRejectedBalanceForces.mz != _previousEventRejectedBalanceForces.mz;
+void M1M3SSPublisher::tryLogPreclippedBalanceForces() {
+    bool changeDetected = _eventPreclippedBalanceForces.fx != _previousEventPreclippedBalanceForces.fx ||
+                          _eventPreclippedBalanceForces.fy != _previousEventPreclippedBalanceForces.fy ||
+                          _eventPreclippedBalanceForces.fz != _previousEventPreclippedBalanceForces.fz ||
+                          _eventPreclippedBalanceForces.mx != _previousEventPreclippedBalanceForces.mx ||
+                          _eventPreclippedBalanceForces.my != _previousEventPreclippedBalanceForces.my ||
+                          _eventPreclippedBalanceForces.mz != _previousEventPreclippedBalanceForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                (i < 12 &&
-                 _eventRejectedBalanceForces.xForces[i] != _previousEventRejectedBalanceForces.xForces[i]) ||
-                (i < 100 &&
-                 _eventRejectedBalanceForces.yForces[i] != _previousEventRejectedBalanceForces.yForces[i]) ||
-                (_eventRejectedBalanceForces.zForces[i] != _previousEventRejectedBalanceForces.zForces[i]);
+        changeDetected = changeDetected ||
+                         (i < 12 && _eventPreclippedBalanceForces.xForces[i] !=
+                                            _previousEventPreclippedBalanceForces.xForces[i]) ||
+                         (i < 100 && _eventPreclippedBalanceForces.yForces[i] !=
+                                             _previousEventPreclippedBalanceForces.yForces[i]) ||
+                         (_eventPreclippedBalanceForces.zForces[i] !=
+                          _previousEventPreclippedBalanceForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedBalanceForces();
+        this->logPreclippedBalanceForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedCylinderForces() {
-    _m1m3SAL->logEvent_rejectedCylinderForces(&_eventRejectedCylinderForces, 0);
-    _previousEventRejectedCylinderForces = _eventRejectedCylinderForces;
+void M1M3SSPublisher::logPreclippedCylinderForces() {
+    _m1m3SAL->logEvent_preclippedCylinderForces(&_eventPreclippedCylinderForces, 0);
+    _previousEventPreclippedCylinderForces = _eventPreclippedCylinderForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedCylinderForces() {
+void M1M3SSPublisher::tryLogPreclippedCylinderForces() {
     bool changeDetected = false;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected =
                 changeDetected ||
-                (i < 112 && _eventRejectedCylinderForces.secondaryCylinderForces[i] !=
-                                    _previousEventRejectedCylinderForces.secondaryCylinderForces[i]) ||
-                (_eventRejectedCylinderForces.primaryCylinderForces[i] !=
-                 _previousEventRejectedCylinderForces.primaryCylinderForces[i]);
+                (i < 112 && _eventPreclippedCylinderForces.secondaryCylinderForces[i] !=
+                                    _previousEventPreclippedCylinderForces.secondaryCylinderForces[i]) ||
+                (_eventPreclippedCylinderForces.primaryCylinderForces[i] !=
+                 _previousEventPreclippedCylinderForces.primaryCylinderForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedCylinderForces();
+        this->logPreclippedCylinderForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedElevationForces() {
-    _m1m3SAL->logEvent_rejectedElevationForces(&_eventRejectedElevationForces, 0);
-    _previousEventRejectedElevationForces = _eventRejectedElevationForces;
+void M1M3SSPublisher::logPreclippedElevationForces() {
+    _m1m3SAL->logEvent_preclippedElevationForces(&_eventPreclippedElevationForces, 0);
+    _previousEventPreclippedElevationForces = _eventPreclippedElevationForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedElevationForces() {
-    bool changeDetected = _eventRejectedElevationForces.fx != _previousEventRejectedElevationForces.fx ||
-                          _eventRejectedElevationForces.fy != _previousEventRejectedElevationForces.fy ||
-                          _eventRejectedElevationForces.fz != _previousEventRejectedElevationForces.fz ||
-                          _eventRejectedElevationForces.mx != _previousEventRejectedElevationForces.mx ||
-                          _eventRejectedElevationForces.my != _previousEventRejectedElevationForces.my ||
-                          _eventRejectedElevationForces.mz != _previousEventRejectedElevationForces.mz;
+void M1M3SSPublisher::tryLogPreclippedElevationForces() {
+    bool changeDetected = _eventPreclippedElevationForces.fx != _previousEventPreclippedElevationForces.fx ||
+                          _eventPreclippedElevationForces.fy != _previousEventPreclippedElevationForces.fy ||
+                          _eventPreclippedElevationForces.fz != _previousEventPreclippedElevationForces.fz ||
+                          _eventPreclippedElevationForces.mx != _previousEventPreclippedElevationForces.mx ||
+                          _eventPreclippedElevationForces.my != _previousEventPreclippedElevationForces.my ||
+                          _eventPreclippedElevationForces.mz != _previousEventPreclippedElevationForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
-                         (i < 12 && _eventRejectedElevationForces.xForces[i] !=
-                                            _previousEventRejectedElevationForces.xForces[i]) ||
-                         (i < 100 && _eventRejectedElevationForces.yForces[i] !=
-                                             _previousEventRejectedElevationForces.yForces[i]) ||
-                         (_eventRejectedElevationForces.zForces[i] !=
-                          _previousEventRejectedElevationForces.zForces[i]);
+                         (i < 12 && _eventPreclippedElevationForces.xForces[i] !=
+                                            _previousEventPreclippedElevationForces.xForces[i]) ||
+                         (i < 100 && _eventPreclippedElevationForces.yForces[i] !=
+                                             _previousEventPreclippedElevationForces.yForces[i]) ||
+                         (_eventPreclippedElevationForces.zForces[i] !=
+                          _previousEventPreclippedElevationForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedElevationForces();
+        this->logPreclippedElevationForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedForces() {
-    _m1m3SAL->logEvent_rejectedForces(&_eventRejectedForces, 0);
-    _previousEventRejectedForces = _eventRejectedForces;
+void M1M3SSPublisher::logPreclippedForces() {
+    _m1m3SAL->logEvent_preclippedForces(&_eventPreclippedForces, 0);
+    _previousEventPreclippedForces = _eventPreclippedForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedForces() {
-    bool changeDetected = _eventRejectedForces.fx != _previousEventRejectedForces.fx ||
-                          _eventRejectedForces.fy != _previousEventRejectedForces.fy ||
-                          _eventRejectedForces.fz != _previousEventRejectedForces.fz ||
-                          _eventRejectedForces.mx != _previousEventRejectedForces.mx ||
-                          _eventRejectedForces.my != _previousEventRejectedForces.my ||
-                          _eventRejectedForces.mz != _previousEventRejectedForces.mz;
+void M1M3SSPublisher::tryLogPreclippedForces() {
+    bool changeDetected = _eventPreclippedForces.fx != _previousEventPreclippedForces.fx ||
+                          _eventPreclippedForces.fy != _previousEventPreclippedForces.fy ||
+                          _eventPreclippedForces.fz != _previousEventPreclippedForces.fz ||
+                          _eventPreclippedForces.mx != _previousEventPreclippedForces.mx ||
+                          _eventPreclippedForces.my != _previousEventPreclippedForces.my ||
+                          _eventPreclippedForces.mz != _previousEventPreclippedForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected =
                 changeDetected ||
-                (i < 12 && _eventRejectedForces.xForces[i] != _previousEventRejectedForces.xForces[i]) ||
-                (i < 100 && _eventRejectedForces.yForces[i] != _previousEventRejectedForces.yForces[i]) ||
-                (_eventRejectedForces.zForces[i] != _previousEventRejectedForces.zForces[i]);
+                (i < 12 && _eventPreclippedForces.xForces[i] != _previousEventPreclippedForces.xForces[i]) ||
+                (i < 100 && _eventPreclippedForces.yForces[i] != _previousEventPreclippedForces.yForces[i]) ||
+                (_eventPreclippedForces.zForces[i] != _previousEventPreclippedForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedForces();
+        this->logPreclippedForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedOffsetForces() {
-    _m1m3SAL->logEvent_rejectedOffsetForces(&_eventRejectedOffsetForces, 0);
-    _previousEventRejectedOffsetForces = _eventRejectedOffsetForces;
+void M1M3SSPublisher::logPreclippedOffsetForces() {
+    _m1m3SAL->logEvent_preclippedOffsetForces(&_eventPreclippedOffsetForces, 0);
+    _previousEventPreclippedOffsetForces = _eventPreclippedOffsetForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedOffsetForces() {
-    bool changeDetected = _eventRejectedOffsetForces.fx != _previousEventRejectedOffsetForces.fx ||
-                          _eventRejectedOffsetForces.fy != _previousEventRejectedOffsetForces.fy ||
-                          _eventRejectedOffsetForces.fz != _previousEventRejectedOffsetForces.fz ||
-                          _eventRejectedOffsetForces.mx != _previousEventRejectedOffsetForces.mx ||
-                          _eventRejectedOffsetForces.my != _previousEventRejectedOffsetForces.my ||
-                          _eventRejectedOffsetForces.mz != _previousEventRejectedOffsetForces.mz;
+void M1M3SSPublisher::tryLogPreclippedOffsetForces() {
+    bool changeDetected = _eventPreclippedOffsetForces.fx != _previousEventPreclippedOffsetForces.fx ||
+                          _eventPreclippedOffsetForces.fy != _previousEventPreclippedOffsetForces.fy ||
+                          _eventPreclippedOffsetForces.fz != _previousEventPreclippedOffsetForces.fz ||
+                          _eventPreclippedOffsetForces.mx != _previousEventPreclippedOffsetForces.mx ||
+                          _eventPreclippedOffsetForces.my != _previousEventPreclippedOffsetForces.my ||
+                          _eventPreclippedOffsetForces.mz != _previousEventPreclippedOffsetForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected =
                 changeDetected ||
-                (i < 12 &&
-                 _eventRejectedOffsetForces.xForces[i] != _previousEventRejectedOffsetForces.xForces[i]) ||
-                (i < 100 &&
-                 _eventRejectedOffsetForces.yForces[i] != _previousEventRejectedOffsetForces.yForces[i]) ||
-                (_eventRejectedOffsetForces.zForces[i] != _previousEventRejectedOffsetForces.zForces[i]);
+                (i < 12 && _eventPreclippedOffsetForces.xForces[i] !=
+                                   _previousEventPreclippedOffsetForces.xForces[i]) ||
+                (i < 100 && _eventPreclippedOffsetForces.yForces[i] !=
+                                    _previousEventPreclippedOffsetForces.yForces[i]) ||
+                (_eventPreclippedOffsetForces.zForces[i] != _previousEventPreclippedOffsetForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedOffsetForces();
+        this->logPreclippedOffsetForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedStaticForces() {
-    _m1m3SAL->logEvent_rejectedStaticForces(&_eventRejectedStaticForces, 0);
-    _previousEventRejectedStaticForces = _eventRejectedStaticForces;
+void M1M3SSPublisher::logPreclippedStaticForces() {
+    _m1m3SAL->logEvent_preclippedStaticForces(&_eventPreclippedStaticForces, 0);
+    _previousEventPreclippedStaticForces = _eventPreclippedStaticForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedStaticForces() {
-    bool changeDetected = _eventRejectedStaticForces.fx != _previousEventRejectedStaticForces.fx ||
-                          _eventRejectedStaticForces.fy != _previousEventRejectedStaticForces.fy ||
-                          _eventRejectedStaticForces.fz != _previousEventRejectedStaticForces.fz ||
-                          _eventRejectedStaticForces.mx != _previousEventRejectedStaticForces.mx ||
-                          _eventRejectedStaticForces.my != _previousEventRejectedStaticForces.my ||
-                          _eventRejectedStaticForces.mz != _previousEventRejectedStaticForces.mz;
+void M1M3SSPublisher::tryLogPreclippedStaticForces() {
+    bool changeDetected = _eventPreclippedStaticForces.fx != _previousEventPreclippedStaticForces.fx ||
+                          _eventPreclippedStaticForces.fy != _previousEventPreclippedStaticForces.fy ||
+                          _eventPreclippedStaticForces.fz != _previousEventPreclippedStaticForces.fz ||
+                          _eventPreclippedStaticForces.mx != _previousEventPreclippedStaticForces.mx ||
+                          _eventPreclippedStaticForces.my != _previousEventPreclippedStaticForces.my ||
+                          _eventPreclippedStaticForces.mz != _previousEventPreclippedStaticForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected =
                 changeDetected ||
-                (i < 12 &&
-                 _eventRejectedStaticForces.xForces[i] != _previousEventRejectedStaticForces.xForces[i]) ||
-                (i < 100 &&
-                 _eventRejectedStaticForces.yForces[i] != _previousEventRejectedStaticForces.yForces[i]) ||
-                (_eventRejectedStaticForces.zForces[i] != _previousEventRejectedStaticForces.zForces[i]);
+                (i < 12 && _eventPreclippedStaticForces.xForces[i] !=
+                                   _previousEventPreclippedStaticForces.xForces[i]) ||
+                (i < 100 && _eventPreclippedStaticForces.yForces[i] !=
+                                    _previousEventPreclippedStaticForces.yForces[i]) ||
+                (_eventPreclippedStaticForces.zForces[i] != _previousEventPreclippedStaticForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedStaticForces();
+        this->logPreclippedStaticForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedThermalForces() {
-    _m1m3SAL->logEvent_rejectedThermalForces(&_eventRejectedThermalForces, 0);
-    _previousEventRejectedThermalForces = _eventRejectedThermalForces;
+void M1M3SSPublisher::logPreclippedThermalForces() {
+    _m1m3SAL->logEvent_preclippedThermalForces(&_eventPreclippedThermalForces, 0);
+    _previousEventPreclippedThermalForces = _eventPreclippedThermalForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedThermalForces() {
-    bool changeDetected = _eventRejectedThermalForces.fx != _previousEventRejectedThermalForces.fx ||
-                          _eventRejectedThermalForces.fy != _previousEventRejectedThermalForces.fy ||
-                          _eventRejectedThermalForces.fz != _previousEventRejectedThermalForces.fz ||
-                          _eventRejectedThermalForces.mx != _previousEventRejectedThermalForces.mx ||
-                          _eventRejectedThermalForces.my != _previousEventRejectedThermalForces.my ||
-                          _eventRejectedThermalForces.mz != _previousEventRejectedThermalForces.mz;
+void M1M3SSPublisher::tryLogPreclippedThermalForces() {
+    bool changeDetected = _eventPreclippedThermalForces.fx != _previousEventPreclippedThermalForces.fx ||
+                          _eventPreclippedThermalForces.fy != _previousEventPreclippedThermalForces.fy ||
+                          _eventPreclippedThermalForces.fz != _previousEventPreclippedThermalForces.fz ||
+                          _eventPreclippedThermalForces.mx != _previousEventPreclippedThermalForces.mx ||
+                          _eventPreclippedThermalForces.my != _previousEventPreclippedThermalForces.my ||
+                          _eventPreclippedThermalForces.mz != _previousEventPreclippedThermalForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                (i < 12 &&
-                 _eventRejectedThermalForces.xForces[i] != _previousEventRejectedThermalForces.xForces[i]) ||
-                (i < 100 &&
-                 _eventRejectedThermalForces.yForces[i] != _previousEventRejectedThermalForces.yForces[i]) ||
-                (_eventRejectedThermalForces.zForces[i] != _previousEventRejectedThermalForces.zForces[i]);
+        changeDetected = changeDetected ||
+                         (i < 12 && _eventPreclippedThermalForces.xForces[i] !=
+                                            _previousEventPreclippedThermalForces.xForces[i]) ||
+                         (i < 100 && _eventPreclippedThermalForces.yForces[i] !=
+                                             _previousEventPreclippedThermalForces.yForces[i]) ||
+                         (_eventPreclippedThermalForces.zForces[i] !=
+                          _previousEventPreclippedThermalForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedThermalForces();
+        this->logPreclippedThermalForces();
     }
 }
 
-void M1M3SSPublisher::logRejectedVelocityForces() {
-    _m1m3SAL->logEvent_rejectedVelocityForces(&_eventRejectedVelocityForces, 0);
-    _previousEventRejectedVelocityForces = _eventRejectedVelocityForces;
+void M1M3SSPublisher::logPreclippedVelocityForces() {
+    _m1m3SAL->logEvent_preclippedVelocityForces(&_eventPreclippedVelocityForces, 0);
+    _previousEventPreclippedVelocityForces = _eventPreclippedVelocityForces;
 }
 
-void M1M3SSPublisher::tryLogRejectedVelocityForces() {
-    bool changeDetected = _eventRejectedVelocityForces.fx != _previousEventRejectedVelocityForces.fx ||
-                          _eventRejectedVelocityForces.fy != _previousEventRejectedVelocityForces.fy ||
-                          _eventRejectedVelocityForces.fz != _previousEventRejectedVelocityForces.fz ||
-                          _eventRejectedVelocityForces.mx != _previousEventRejectedVelocityForces.mx ||
-                          _eventRejectedVelocityForces.my != _previousEventRejectedVelocityForces.my ||
-                          _eventRejectedVelocityForces.mz != _previousEventRejectedVelocityForces.mz;
+void M1M3SSPublisher::tryLogPreclippedVelocityForces() {
+    bool changeDetected = _eventPreclippedVelocityForces.fx != _previousEventPreclippedVelocityForces.fx ||
+                          _eventPreclippedVelocityForces.fy != _previousEventPreclippedVelocityForces.fy ||
+                          _eventPreclippedVelocityForces.fz != _previousEventPreclippedVelocityForces.fz ||
+                          _eventPreclippedVelocityForces.mx != _previousEventPreclippedVelocityForces.mx ||
+                          _eventPreclippedVelocityForces.my != _previousEventPreclippedVelocityForces.my ||
+                          _eventPreclippedVelocityForces.mz != _previousEventPreclippedVelocityForces.mz;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                (i < 12 && _eventRejectedVelocityForces.xForces[i] !=
-                                   _previousEventRejectedVelocityForces.xForces[i]) ||
-                (i < 100 && _eventRejectedVelocityForces.yForces[i] !=
-                                    _previousEventRejectedVelocityForces.yForces[i]) ||
-                (_eventRejectedVelocityForces.zForces[i] != _previousEventRejectedVelocityForces.zForces[i]);
+        changeDetected = changeDetected ||
+                         (i < 12 && _eventPreclippedVelocityForces.xForces[i] !=
+                                            _previousEventPreclippedVelocityForces.xForces[i]) ||
+                         (i < 100 && _eventPreclippedVelocityForces.yForces[i] !=
+                                             _previousEventPreclippedVelocityForces.yForces[i]) ||
+                         (_eventPreclippedVelocityForces.zForces[i] !=
+                          _previousEventPreclippedVelocityForces.zForces[i]);
     }
     if (changeDetected) {
-        this->logRejectedVelocityForces();
+        this->logPreclippedVelocityForces();
     }
 }
 

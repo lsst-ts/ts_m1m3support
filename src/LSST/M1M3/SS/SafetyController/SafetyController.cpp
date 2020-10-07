@@ -31,29 +31,27 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SafetyController::SafetyController(M1M3SSPublisher* publisher,
-                                   SafetyControllerSettings* safetyControllerSettings) {
+SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSettings) {
     spdlog::debug("SafetyController: SafetyController()");
-    _publisher = publisher;
     _safetyControllerSettings = safetyControllerSettings;
-    _errorCodeData = _publisher->getEventErrorCode();
+    _errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
     _errorCodeData->errorCode = FaultCodes::NoFault;
-    _publisher->logErrorCode();
+    M1M3SSPublisher::get().logErrorCode();
     for (int i = 0; i < _safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
         _ilcCommunicationTimeoutData.push_back(0);
     }
     for (int i = 0; i < _safetyControllerSettings->ILC.ForceActuatorFollowingErrorPeriod; ++i) {
-        for (int j = 0; j < 156; ++j) {
+        for (int j = 0; j < FA_COUNT; ++j) {
             _forceActuatorFollowingErrorData[j].push_back(0);
         }
     }
     for (int i = 0; i < _safetyControllerSettings->ILC.HardpointActuatorMeasuredForcePeriod; ++i) {
-        for (int j = 0; j < 6; ++j) {
+        for (int j = 0; j < HP_COUNT; ++j) {
             _hardpointActuatorMeasuredForceData[j].push_back(0);
         }
     }
     for (int i = 0; i < _safetyControllerSettings->ILC.AirPressurePeriod; ++i) {
-        for (int j = 0; j < 6; ++j) {
+        for (int j = 0; j < HP_COUNT; ++j) {
             _hardpointActuatorAirPressureData[j].push_back(0);
         }
     }
@@ -62,7 +60,7 @@ SafetyController::SafetyController(M1M3SSPublisher* publisher,
 void SafetyController::clearErrorCode() {
     spdlog::info("SafetyController: clearErrorCode()");
     _errorCodeData->errorCode = FaultCodes::NoFault;
-    _publisher->logErrorCode();
+    M1M3SSPublisher::get().logErrorCode();
 }
 
 void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) {
@@ -404,7 +402,7 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
-        _publisher->logErrorCode();
+        M1M3SSPublisher::get().logErrorCode();
         _errorCodeData->errorCode = FaultCodes::NoFault;
         return States::LoweringFaultState;
     }

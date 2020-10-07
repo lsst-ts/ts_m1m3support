@@ -1,0 +1,91 @@
+/*
+ * This file is part of LSST M1M3 support system package.
+ *
+ * Developed for the LSST Data Management System.
+ * This product includes software developed by the LSST Project
+ * (https://www.lsst.org).
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @dir States
+ *
+ * @brief M1M3 %States.
+ *
+ * @details %States governs which tasks will be run on background, what
+ * commands will be accepeted and how hardware faults will be handled.
+ *
+ * See @ref LSST::M1M3::SS::State "State" children for list of possible states.
+ * See States for enumeration holding non-abstract states.
+ *
+ * @dot
+ * digraph states
+ * {
+ *   compund=true;
+ *   node[shape=record];
+ *   rankdir="LR";
+ *
+ *   subgraph steps {
+ *     Offline [URL="@ref LSST::M1M3::SS::OfflineState"];
+ *     Standby [URL="@ref LSST::M1M3::SS::StandbyState"];
+ *     Disabled [URL="@ref LSST::M1M3::SS::DisabledState"];
+ *
+ *     Offline -> Standby [label="startup"];
+ *     Standby -> Offline [label="ExitControl",URL="@ref LSST::M1M3::SS::ExitControlCommand"];
+ *     Standby -> Disabled [label="Start",URL="@ref LSST::M1M3::SS::StartCommand"];
+ *     Disabled -> Standby [label="Standby",URL="@ref LSST::M1M3::SS::StandbyCommand"];
+ *     Disabled -> Parked [label="Enable",URL="@ref LSST::M1M3::SS::EnableCommand"];
+ *     Parked -> Disabled [label="Disable",URL="@ref LSST::M1M3::SS::DisableCommand"];
+ *   }
+ *
+ *   subgraph cluster1
+ *   {
+ *     rank="same";
+ *     Parked [URL="@ref LSST::M1M3::SS::ParkedState"];
+ *     Raising [URL="@ref LSST::M1M3::SS::RaisingState"];
+ *     Active [URL="@ref LSST::M1M3::SS::ActiveState"];
+ *     Lowering [URL="@ref LSST::M1M3::SS::LoweringState"];
+ *
+ *     Parked -> Raising [label="Raise",URL="@ref LSST::M1M3::SS::RaiseM1M3Command"];
+ *     Raising -> Active [label="raised"];
+ *     Active -> Lowering [label="Lower",URL="@ref LSST::M1M3::SS::LowerM1M3Command"];
+ *     Lowering -> Parked [label="lowered"];
+ *   }
+ *
+ *   subgraph cluster2
+ *   {
+ *     rank="same";
+ *     ParkedEngineering [URL="@ref LSST::M1M3::SS::ParkedEngineeringState"];
+ *     RaisingEngineering [URL="@ref LSST::M1M3::SS::RaisingEngineeringState"];
+ *     ActiveEngineering [URL="@ref LSST::M1M3::SS::ActiveEngineeringState"];
+ *     LoweringEngineering [URL="@ref LSST::M1M3::SS::LoweringEngineeringState"];
+ *
+ *     ParkedEngineering -> RaisingEngineering [label="Raise",URL="@ref LSST::M1M3::SS::RaiseM1M3Command"];
+ *     RaisingEngineering -> ActiveEngineering [label="raised"];
+ *     ActiveEngineering -> LoweringEngineering [label="Lower",URL="@ref LSST::M1M3::SS::LowerM1M3Command"];
+ *     LoweringEngineering -> ParkedEngineering [label="lowered"];
+ *   }
+ *
+ *   Parked -> ParkedEngineering [label="EnterEngineering",URL="@ref LSST::M1M3::SS::EnterEngineeringCommand"]
+ *   ParkedEngineering -> Parked [label="ExitEngineering",URL="@ref LSST::M1M3::SS::ExitEngineeringCommand"]
+ *
+ *   Active -> ActiveEngineering [label="EnterEngineering",URL="@ref LSST::M1M3::SS::EnterEngineeringCommand"]
+ *   ActiveEngineering -> Active [label="ExitEngineering",URL="@ref LSST::M1M3::SS::ExitEngineeringCommand"]
+ * }
+ * @enddot
+ *
+ */

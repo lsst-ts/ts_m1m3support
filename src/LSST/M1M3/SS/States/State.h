@@ -28,8 +28,6 @@
 #include <time.h>
 #include <string>
 
-#include <Model.h>
-#include <M1M3SSPublisher.h>
 #include <Command.h>
 #include <EnterControlCommand.h>
 #include <StartCommand.h>
@@ -82,73 +80,85 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Abstract class for M1M3 state. Any M1M3 state should inherit this class and
+ * implements command functions it executed. Calls to functions not implemented
+ * for the state shall be rejected.
+ */
 class State {
-protected:
-    M1M3SSPublisher* publisher;
-    std::string name;
-    timespec startTime;
-    timespec stopTime;
-
 public:
-    State(M1M3SSPublisher* publisher, std::string name);
+    State(std::string name);
     virtual ~State();
 
-    virtual States::Type enterControl(EnterControlCommand* command, Model* model);
-    virtual States::Type start(StartCommand* command, Model* model);
-    virtual States::Type enable(EnableCommand* command, Model* model);
-    virtual States::Type disable(DisableCommand* command, Model* model);
-    virtual States::Type standby(StandbyCommand* command, Model* model);
-    virtual States::Type exitControl(ExitControlCommand* command, Model* model);
-    virtual States::Type update(UpdateCommand* command, Model* model);
-    virtual States::Type turnAirOn(TurnAirOnCommand* command, Model* model);
-    virtual States::Type turnAirOff(TurnAirOffCommand* command, Model* model);
-    virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model);
-    virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command, Model* model);
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command, Model* model);
-    virtual States::Type lowerM1M3(LowerM1M3Command* command, Model* model);
+    /**
+     * @brief Executes EnterControlCommand.
+     *
+     * @param command EnterControlCommand to execute
+     *
+     * @return next state if M1M3's state has changed or States::NoStateTransition for no M1M3's state change
+     */
+    virtual States::Type enterControl(EnterControlCommand* command);
+    virtual States::Type start(StartCommand* command);
+    virtual States::Type enable(EnableCommand* command);
+    virtual States::Type disable(DisableCommand* command);
+    virtual States::Type standby(StandbyCommand* command);
+    virtual States::Type exitControl(ExitControlCommand* command);
+
+    /**
+     * @brief Called to retrieve telemetry data.
+     *
+     * This method is called from OuterLoopClockThread. As every concrete child
+     * class must provide update routine, it is pure virtual.
+     *
+     * @param command UpdateCommand, ignored.
+     *
+     * @return new state, or States::NoStateTransition if state doesn't change
+     */
+    virtual States::Type update(UpdateCommand* command) = 0;
+    virtual States::Type turnAirOn(TurnAirOnCommand* command);
+    virtual States::Type turnAirOff(TurnAirOffCommand* command);
+    virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command);
+    virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command);
+    virtual States::Type raiseM1M3(RaiseM1M3Command* command);
+    virtual States::Type lowerM1M3(LowerM1M3Command* command);
     virtual States::Type applyAberrationForcesByBendingModes(
-            ApplyAberrationForcesByBendingModesCommand* command, Model* model);
-    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command, Model* model);
-    virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command, Model* model);
+            ApplyAberrationForcesByBendingModesCommand* command);
+    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command);
+    virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command);
     virtual States::Type applyActiveOpticForcesByBendingModes(
-            ApplyActiveOpticForcesByBendingModesCommand* command, Model* model);
-    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command, Model* model);
-    virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command, Model* model);
-    virtual States::Type enterEngineering(EnterEngineeringCommand* command, Model* model);
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command, Model* model);
-    virtual States::Type testAir(TestAirCommand* command, Model* model);
-    virtual States::Type testHardpoint(TestHardpointCommand* command, Model* model);
-    virtual States::Type testForceActuator(TestForceActuatorCommand* command, Model* model);
-    virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command, Model* model);
-    virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command, Model* model);
-    virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command, Model* model);
-    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model);
-    virtual States::Type translateM1M3(TranslateM1M3Command* command, Model* model);
-    virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command, Model* model);
-    virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command, Model* model);
-    virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command, Model* model);
-    virtual States::Type positionM1M3(PositionM1M3Command* command, Model* model);
-    virtual States::Type turnLightsOn(TurnLightsOnCommand* command, Model* model);
-    virtual States::Type turnLightsOff(TurnLightsOffCommand* command, Model* model);
-    virtual States::Type turnPowerOn(TurnPowerOnCommand* command, Model* model);
-    virtual States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model);
-    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command, Model* model);
-    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command,
-                                                     Model* model);
-    virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command, Model* model);
-    virtual States::Type abortProfile(AbortProfileCommand* command, Model* model);
-    virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command,
-                                                        Model* model);
-    virtual States::Type updatePID(UpdatePIDCommand* command, Model* model);
-    virtual States::Type resetPID(ResetPIDCommand* command, Model* model);
-    virtual States::Type programILC(ProgramILCCommand* command, Model* model);
-    virtual States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model);
+            ApplyActiveOpticForcesByBendingModesCommand* command);
+    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
+    virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
+    virtual States::Type enterEngineering(EnterEngineeringCommand* command);
+    virtual States::Type exitEngineering(ExitEngineeringCommand* command);
+    virtual States::Type testAir(TestAirCommand* command);
+    virtual States::Type testHardpoint(TestHardpointCommand* command);
+    virtual States::Type testForceActuator(TestForceActuatorCommand* command);
+    virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command);
+    virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command);
+    virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command);
+    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command);
+    virtual States::Type translateM1M3(TranslateM1M3Command* command);
+    virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command);
+    virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command);
+    virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command);
+    virtual States::Type positionM1M3(PositionM1M3Command* command);
+    virtual States::Type turnLightsOn(TurnLightsOnCommand* command);
+    virtual States::Type turnLightsOff(TurnLightsOffCommand* command);
+    virtual States::Type turnPowerOn(TurnPowerOnCommand* command);
+    virtual States::Type turnPowerOff(TurnPowerOffCommand* command);
+    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
+    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
+    virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command);
+    virtual States::Type abortProfile(AbortProfileCommand* command);
+    virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
+    virtual States::Type updatePID(UpdatePIDCommand* command);
+    virtual States::Type resetPID(ResetPIDCommand* command);
+    virtual States::Type programILC(ProgramILCCommand* command);
+    virtual States::Type modbusTransmit(ModbusTransmitCommand* command);
 
 protected:
-    void startTimer();
-    void stopTimer();
-    double getCurrentTimer();
-    double getTimer();
+    std::string name;
 
     States::Type rejectCommandInvalidState(Command* command, std::string cmd_name);
 };

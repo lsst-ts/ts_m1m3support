@@ -33,40 +33,35 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveState::ActiveState(M1M3SSPublisher* publisher) : EnabledState(publisher, "ActiveState") {}
+ActiveState::ActiveState() : EnabledState("ActiveState") {}
 
-States::Type ActiveState::update(UpdateCommand* command, Model* model) {
+States::Type ActiveState::update(UpdateCommand* command) {
     spdlog::trace("ActiveState: update()");
-    this->startTimer();
-    EnabledState::update(command, model);
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    sendTelemetry();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command, Model* model) {
+States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
     spdlog::info("ActiveState: enterEngineering()");
-    return model->getSafetyController()->checkSafety(States::ActiveEngineeringState);
+    return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }
 
-States::Type ActiveState::lowerM1M3(LowerM1M3Command* command, Model* model) {
+States::Type ActiveState::lowerM1M3(LowerM1M3Command* command) {
     spdlog::info("ActiveState: lowerM1M3()");
-    model->getAutomaticOperationsController()->startLowerOperation();
-    return model->getSafetyController()->checkSafety(States::LoweringState);
+    Model::get().getAutomaticOperationsController()->startLowerOperation();
+    return Model::get().getSafetyController()->checkSafety(States::LoweringState);
 }
 
-States::Type ActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command,
-                                                     Model* model) {
+States::Type ActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
     spdlog::info("ActiveState: enableHardpointCorrections()");
-    model->getForceController()->applyBalanceForces();
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::get().getForceController()->applyBalanceForces();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command,
-                                                      Model* model) {
+States::Type ActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) {
     spdlog::info("ActiveState: disableHardpointCorrections()");
-    model->getForceController()->zeroBalanceForces();
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::get().getForceController()->zeroBalanceForces();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

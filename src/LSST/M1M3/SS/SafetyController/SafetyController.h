@@ -26,6 +26,7 @@
 
 #include <FaultCodes.h>
 #include <StateTypes.h>
+#include <SafetyControllerSettings.h>
 #include <SAL_MTM1M3C.h>
 #include <list>
 
@@ -33,12 +34,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class SafetyControllerSettings;
-
 class SafetyController {
 public:
-    SafetyController(M1M3SSPublisher* publisher, SafetyControllerSettings* safetyControllerSettings);
+    SafetyController(SafetyControllerSettings* safetyControllerSettings);
 
     void clearErrorCode();
 
@@ -127,15 +125,14 @@ public:
 private:
     void _updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag);
 
-    M1M3SSPublisher* _publisher;
     SafetyControllerSettings* _safetyControllerSettings;
 
     MTM1M3_logevent_errorCodeC* _errorCodeData;
 
     std::list<int> _ilcCommunicationTimeoutData;
-    std::list<int> _forceActuatorFollowingErrorData[156];
-    std::list<int> _hardpointActuatorMeasuredForceData[6];
-    std::list<int> _hardpointActuatorAirPressureData[6];
+    std::list<int> _forceActuatorFollowingErrorData[FA_COUNT];
+    std::list<int> _hardpointActuatorMeasuredForceData[HP_COUNT];
+    std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
 };
 
 } /* namespace SS */

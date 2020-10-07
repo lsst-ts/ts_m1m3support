@@ -22,7 +22,6 @@
  */
 
 #include <ProfileHardpointCorrectionState.h>
-#include <Model.h>
 #include <ForceController.h>
 #include <ProfileController.h>
 #include <MirrorForceProfile.h>
@@ -33,25 +32,25 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ProfileHardpointCorrectionState::ProfileHardpointCorrectionState(M1M3SSPublisher* publisher)
-        : EnabledState(publisher, "LoweringFaultState") {}
+ProfileHardpointCorrectionState::ProfileHardpointCorrectionState()
+        : EnabledState("ProfileHardpointCorrectionState") {}
 
-States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command, Model* model) {
+States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command) {
     spdlog::trace("ProfileHardpointCorrectionState: update()");
-    MirrorForceProfileRecord force = model->getProfileController()->getMirrorForceProfileData();
-    model->getForceController()->applyOffsetForcesByMirrorForces(force.XForce, force.YForce, force.ZForce,
-                                                                 force.XMoment, force.YMoment, force.ZMoment);
-    EnabledState::update(command, model);
-    if (model->getProfileController()->incMirrorForceProfile()) {
-        return model->getSafetyController()->checkSafety(States::ActiveEngineeringState);
+    MirrorForceProfileRecord force = Model::get().getProfileController()->getMirrorForceProfileData();
+    Model::get().getForceController()->applyOffsetForcesByMirrorForces(
+            force.XForce, force.YForce, force.ZForce, force.XMoment, force.YMoment, force.ZMoment);
+    sendTelemetry();
+    if (Model::get().getProfileController()->incMirrorForceProfile()) {
+        return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
     }
-    return model->getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ProfileHardpointCorrectionState::abortProfile(AbortProfileCommand* command, Model* model) {
+States::Type ProfileHardpointCorrectionState::abortProfile(AbortProfileCommand* command) {
     spdlog::info("ProfileHardpointCorrectionState: abortProfile()");
-    model->getForceController()->zeroOffsetForces();
-    return model->getSafetyController()->checkSafety(States::ActiveEngineeringState);
+    Model::get().getForceController()->zeroOffsetForces();
+    return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }
 
 } /* namespace SS */

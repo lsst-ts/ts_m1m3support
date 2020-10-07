@@ -25,35 +25,28 @@
 #include <Model.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisingState::RaisingState(M1M3SSPublisher* publisher) : EnabledState(publisher, "RaisingState") {}
+RaisingState::RaisingState() : EnabledState("RaisingState") {}
 
-States::Type RaisingState::update(UpdateCommand* command, Model* model) {
+States::Type RaisingState::update(UpdateCommand* command) {
+    ModelPublisher publishIt();
     spdlog::trace("RaisingState: update()");
-    this->startTimer();
-    States::Type newState = States::NoStateTransition;
-    model->getAutomaticOperationsController()->tryIncrementingSupportPercentage();
-    EnabledState::update(command, model);
-    if (model->getAutomaticOperationsController()->checkRaiseOperationComplete()) {
-        model->getAutomaticOperationsController()->completeRaiseOperation();
-        newState = States::ActiveState;
-    } else if (model->getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
-        model->getAutomaticOperationsController()->timeoutRaiseOperation();
-    }
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
-    return model->getSafetyController()->checkSafety(newState);
+    Model::get().getAutomaticOperationsController()->tryIncrementingSupportPercentage();
+    runLoop();
+    return Model::get().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveState
+                                                                            : States::NoStateTransition);
 }
 
-States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command, Model* model) {
+States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     spdlog::info("RaisingState: abortRaiseM1M3()");
-    model->getAutomaticOperationsController()->abortRaiseM1M3();
-    return model->getSafetyController()->checkSafety(States::LoweringState);
+    Model::get().getAutomaticOperationsController()->abortRaiseM1M3();
+    return Model::get().getSafetyController()->checkSafety(States::LoweringState);
 }
 
 } /* namespace SS */

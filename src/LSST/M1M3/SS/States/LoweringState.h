@@ -30,11 +30,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Lowering mirror. Mirror remains in this state until it is lowered (being
+ * supported by static support coils).
+ */
 class LoweringState : public EnabledState {
 public:
-    LoweringState(M1M3SSPublisher* publisher);
+    LoweringState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
 };
 
 } /* namespace SS */

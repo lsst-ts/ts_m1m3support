@@ -30,14 +30,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Parked state. Mirror is on static supports, air is on. Raise command is
+ * accepted to raise the mirror. Engineering command switch mirror to
+ * engineering state. Disable command transition mirror back to disable state.
+ */
 class ParkedState : public EnabledState {
 public:
-    ParkedState(M1M3SSPublisher* publisher);
+    ParkedState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command, Model* model) override;
-    virtual States::Type enterEngineering(EnterEngineeringCommand* command, Model* model) override;
-    virtual States::Type disable(DisableCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
+    virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
+    virtual States::Type disable(DisableCommand* command) override;
 };
 
 } /* namespace SS */

@@ -24,25 +24,20 @@
 #ifndef PPSTHREAD_H_
 #define PPSTHREAD_H_
 
-#include <IThread.h>
 #include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class FPGA;
-class M1M3SSPublisher;
-
-class PPSThread : public IThread {
+class PPSThread {
 public:
-    PPSThread(M1M3SSPublisher* publisher);
+    PPSThread();
 
     void run();
     void stop();
 
 private:
-    M1M3SSPublisher* _publisher;
     uint16_t _timestampUpdateBuffer[5];
     bool _keepRunning;
 };

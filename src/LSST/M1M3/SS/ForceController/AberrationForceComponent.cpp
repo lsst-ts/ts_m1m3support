@@ -37,36 +37,30 @@ namespace M1M3 {
 namespace SS {
 
 AberrationForceComponent::AberrationForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Aberration";
-
-    _publisher = publisher;
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Aberration", forceActuatorSettings->AberrationComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedAberrationForces = _publisher->getEventAppliedAberrationForces();
-    _rejectedAberrationForces = _publisher->getEventRejectedAberrationForces();
-    maxRateOfChange = _forceActuatorSettings->AberrationComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->AberrationComponentSettings.NearZeroValue;
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
+    _preclippedAberrationForces = M1M3SSPublisher::get().getEventPreclippedAberrationForces();
 }
 
 void AberrationForceComponent::applyAberrationForces(float* z) {
     spdlog::debug("AberrationForceComponent: applyAberrationForces()");
-    if (!enabled) {
+
+    if (!isEnabled()) {
         spdlog::error(
-                "AberrationForceComponent: applyAberrationForces() called when the component is not applied");
+                "AberrationForceComponent: applyAberrationForces() called when the component is not "
+                "applied");
         return;
     }
-    if (disabling) {
-        spdlog::warn(
-                "AberrationForceComponent: applyAberrationForces() called when the component is disabling");
-        enable();
-    }
-    for (int i = 0; i < 156; ++i) {
+
+    for (int i = 0; i < FA_Z_COUNT; ++i) {
         zTarget[i] = z[i];
     }
 }
@@ -81,32 +75,30 @@ void AberrationForceComponent::applyAberrationForcesByBendingModes(float* coeffi
 void AberrationForceComponent::postEnableDisableActions() {
     spdlog::debug("AberrationForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
-    _forceActuatorState->aberrationForcesApplied = enabled;
-    _publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->aberrationForcesApplied = isEnabled();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void AberrationForceComponent::postUpdateActions() {
     spdlog::trace("AberrationForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
-    _appliedAberrationForces->timestamp = _publisher->getTimestamp();
-    _rejectedAberrationForces->timestamp = _appliedAberrationForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    bool clippingRequired = false;
+    _appliedAberrationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _preclippedAberrationForces->timestamp = _appliedAberrationForces->timestamp;
+    for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         float zLowFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AberrationLimitZTable[zIndex].HighFault;
 
         _forceSetpointWarning->aberrationForceWarning[zIndex] = false;
 
-        _rejectedAberrationForces->zForces[zIndex] = zCurrent[zIndex];
+        _preclippedAberrationForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAberrationForces->zForces[zIndex],
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedAberrationForces->zForces[zIndex],
                                          _appliedAberrationForces->zForces + zIndex);
-        _forceSetpointWarning->aberrationForceWarning[zIndex] =
-                _forceSetpointWarning->aberrationForceWarning[zIndex] || notInRange;
-
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->aberrationForceWarning[zIndex];
+        _forceSetpointWarning->aberrationForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->aberrationForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -116,10 +108,10 @@ void AberrationForceComponent::postUpdateActions() {
     _appliedAberrationForces->my = fm.My;
 
     fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
-                                                   _rejectedAberrationForces->zForces);
-    _rejectedAberrationForces->fz = fm.Fz;
-    _rejectedAberrationForces->mx = fm.Mx;
-    _rejectedAberrationForces->my = fm.My;
+                                                   _preclippedAberrationForces->zForces);
+    _preclippedAberrationForces->fz = fm.Fz;
+    _preclippedAberrationForces->mx = fm.Mx;
+    _preclippedAberrationForces->my = fm.My;
 
     _forceSetpointWarning->aberrationNetForceWarning =
             !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
@@ -132,15 +124,15 @@ void AberrationForceComponent::postUpdateActions() {
                             _forceActuatorSettings->NetAberrationForceTolerance,
                             _appliedAberrationForces->my);
 
-    _safetyController->forceControllerNotifyAberrationForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyAberrationForceClipping(clippingRequired);
     _safetyController->forceControllerNotifyAberrationNetForceCheck(
             _forceSetpointWarning->aberrationNetForceWarning);
 
-    _publisher->tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        _publisher->logRejectedAberrationForces();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedAberrationForces();
     }
-    _publisher->logAppliedAberrationForces();
+    M1M3SSPublisher::get().logAppliedAberrationForces();
 }
 
 } /* namespace SS */

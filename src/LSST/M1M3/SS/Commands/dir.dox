@@ -21,22 +21,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <InterlockApplicationSettings.h>
-#include <XMLDocLoad.h>
-#include <boost/lexical_cast.hpp>
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
-
-void InterlockApplicationSettings::load(const std::string &filename) {
-    pugi::xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-
-    this->HeartbeatPeriodInSeconds = boost::lexical_cast<double>(
-            doc.select_node("//InterlockApplicationSettings/HeartbeatPeriodInSeconds").node().child_value());
-}
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+/**
+ * @dir Commands
+ *
+ * @brief M1M3 Commands.
+ *
+ * Commands are created in the code when a command needs to be executed.
+ * Commands are queued into @ref LSST::M1M3::SS::Controller "Controller". @ref
+ * LSST::M1M3::SS::ControllerThread "ControllerThread" pick up commands from
+ * the queue, and execute them.
+ *
+ * Taking commands from a single queue, executing them in a single
+ * @ref LSST::M1M3::SS::ControllerThread "ControllerThread" and waiting for
+ * their return in @ref LSST::M1M3::SS::Controller::execute(Command*)
+ * "Controller::execute method" before provides a guarantee only one command
+ * runs at the time. Of course multiple commands can arrive
+ * from SAL/DDS in a given time, but only a single command will be run inside
+ * M1M3 SS CsC.
+ *
+ * Please see @ref LSST::M1M3::SS::Command "Command" subclass list for the real
+ * (concrete) implemetation.
+ */

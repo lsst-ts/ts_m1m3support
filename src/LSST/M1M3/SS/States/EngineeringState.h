@@ -30,27 +30,29 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Engineering state. Parent class for all engineering classes. Allows manual
+ * control of air, force actuators and hard-points.
+ */
 class EngineeringState : public EnabledState {
 public:
-    EngineeringState(M1M3SSPublisher* publisher);
-    EngineeringState(M1M3SSPublisher* publisher, std::string name);
+    EngineeringState(std::string name);
 
-    virtual States::Type turnAirOn(TurnAirOnCommand* command, Model* model) override;
-    virtual States::Type turnAirOff(TurnAirOffCommand* command, Model* model) override;
-    virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command, Model* model) override;
-    virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command,
-                                                Model* model) override;
-    virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command, Model* model) override;
-    virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command, Model* model) override;
-    virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command, Model* model) override;
-    virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command,
-                                                        Model* model) override;
-    virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command, Model* model) override;
-    virtual States::Type turnLightsOn(TurnLightsOnCommand* command, Model* model) override;
-    virtual States::Type turnLightsOff(TurnLightsOffCommand* command, Model* model) override;
-    virtual States::Type turnPowerOn(TurnPowerOnCommand* command, Model* model) override;
-    virtual States::Type turnPowerOff(TurnPowerOffCommand* command, Model* model) override;
-    virtual States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model) override;
+    virtual States::Type turnAirOn(TurnAirOnCommand* command) override;
+    virtual States::Type turnAirOff(TurnAirOffCommand* command) override;
+    virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command) override;
+    virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command) override;
+    virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command) override;
+    virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command) override;
+    virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command) override;
+    virtual States::Type applyOffsetForcesByMirrorForce(
+            ApplyOffsetForcesByMirrorForceCommand* command) override;
+    virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command) override;
+    virtual States::Type turnLightsOn(TurnLightsOnCommand* command) override;
+    virtual States::Type turnLightsOff(TurnLightsOffCommand* command) override;
+    virtual States::Type turnPowerOn(TurnPowerOnCommand* command) override;
+    virtual States::Type turnPowerOff(TurnPowerOffCommand* command) override;
+    virtual States::Type modbusTransmit(ModbusTransmitCommand* command) override;
 };
 
 } /* namespace SS */

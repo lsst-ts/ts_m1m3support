@@ -36,8 +36,6 @@ struct States {
                        ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_StandbyState),
         DisabledState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_DisabledState) << 32) |
                         ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_DisabledState),
-        EnabledState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
-                       ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_EnabledState),
         FaultState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_FaultState) << 32) |
                      ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_FaultState),
         ParkedState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
@@ -48,8 +46,6 @@ struct States {
                       ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_ActiveState),
         LoweringState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
                         ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_LoweringState),
-        EngineeringState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
-                           ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_EngineeringState),
         ParkedEngineeringState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
                                  ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState),
         RaisingEngineeringState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |

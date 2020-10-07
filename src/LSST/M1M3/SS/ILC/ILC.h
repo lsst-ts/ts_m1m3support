@@ -46,29 +46,26 @@
 #include <ILCResponseParser.h>
 #include <SAL_MTM1M3C.h>
 #include <FirmwareUpdate.h>
+#include <IBusList.h>
+#include <ILCApplicationSettings.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <HardpointActuatorApplicationSettings.h>
+#include <HardpointActuatorSettings.h>
+#include <HardpointMonitorApplicationSettings.h>
+#include <PositionController.h>
+#include <SafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-
-class M1M3SSPublisher;
-class IBusList;
-class ILCApplicationSettings;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-class HardpointActuatorApplicationSettings;
-class HardpointActuatorSettings;
-class HardpointMonitorApplicationSettings;
-class PositionController;
-class SafetyController;
 
 /*!
  * The ILC class used to communicate with the M1M3's 5 subnets.
  */
 class ILC {
 public:
-    ILC(M1M3SSPublisher* publisher, PositionController* positionController,
-        ILCApplicationSettings* ilcApplicationSettings,
+    ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings,
         HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
@@ -127,7 +124,6 @@ public:
     void publishHardpointMonitorData();
 
 private:
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
     ILCSubnetData _subnetData;
     ILCMessageFactory _ilcMessageFactory;

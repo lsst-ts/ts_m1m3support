@@ -33,13 +33,7 @@ namespace SS {
 
 class SetADCScanRateBusList : public BusList {
 public:
-    SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
-                          MTM1M3_logevent_forceActuatorInfoC* forceInfo,
-                          MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo);
-
-private:
-    MTM1M3_logevent_forceActuatorInfoC* _forceInfo;
-    MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
+    SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 };
 
 } /* namespace SS */

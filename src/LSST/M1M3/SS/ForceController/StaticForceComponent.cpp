@@ -36,63 +36,57 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StaticForceComponent::StaticForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
                                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                           ForceActuatorSettings* forceActuatorSettings) {
-    this->name = "Static";
-
-    _publisher = publisher;
+                                           ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Static", forceActuatorSettings->StaticComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedStaticForces = _publisher->getEventAppliedStaticForces();
-    _rejectedStaticForces = _publisher->getEventRejectedStaticForces();
-    this->maxRateOfChange = _forceActuatorSettings->StaticComponentSettings.MaxRateOfChange;
-    this->nearZeroValue = _forceActuatorSettings->StaticComponentSettings.NearZeroValue;
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
+    _preclippedStaticForces = M1M3SSPublisher::get().getEventPreclippedStaticForces();
 }
 
 void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y,
                                              std::vector<float>* z) {
     spdlog::debug("StaticForceComponent: applyStaticForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("StaticForceComponent: applyStaticForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("StaticForceComponent: applyStaticForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = (*x)[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = (*x)[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = (*y)[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = (*y)[i];
         }
 
-        this->zTarget[i] = (*z)[i];
+        zTarget[i] = (*z)[i];
     }
-}
+}  // namespace SS
 
 void StaticForceComponent::postEnableDisableActions() {
     spdlog::debug("StaticForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
-    _forceActuatorState->staticForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->staticForcesApplied = isEnabled();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void StaticForceComponent::postUpdateActions() {
     spdlog::trace("StaticForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
-    _appliedStaticForces->timestamp = _publisher->getTimestamp();
-    _rejectedStaticForces->timestamp = _appliedStaticForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    bool clippingRequired = false;
+    _appliedStaticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _preclippedStaticForces->timestamp = _appliedStaticForces->timestamp;
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -101,33 +95,30 @@ void StaticForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->StaticLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->StaticLimitXTable[xIndex].HighFault;
-            _rejectedStaticForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _preclippedStaticForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedStaticForces->xForces[xIndex],
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedStaticForces->xForces[xIndex],
                                              _appliedStaticForces->xForces + xIndex);
-            _forceSetpointWarning->staticForceWarning[zIndex] =
-                    _forceSetpointWarning->staticForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->staticForceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->StaticLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->StaticLimitYTable[yIndex].HighFault;
-            _rejectedStaticForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _preclippedStaticForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedStaticForces->yForces[yIndex],
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedStaticForces->yForces[yIndex],
                                              _appliedStaticForces->yForces + yIndex);
-            _forceSetpointWarning->staticForceWarning[zIndex] =
-                    _forceSetpointWarning->staticForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->staticForceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->StaticLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->StaticLimitZTable[zIndex].HighFault;
-        _rejectedStaticForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedStaticForces->zForces[zIndex],
+        _preclippedStaticForces->zForces[zIndex] = zCurrent[zIndex];
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedStaticForces->zForces[zIndex],
                                               _appliedStaticForces->zForces + zIndex);
-        _forceSetpointWarning->staticForceWarning[zIndex] =
-                _forceSetpointWarning->staticForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->staticForceWarning[zIndex];
+        _forceSetpointWarning->staticForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->staticForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -142,25 +133,25 @@ void StaticForceComponent::postUpdateActions() {
     _appliedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedStaticForces->xForces,
-            _rejectedStaticForces->yForces, _rejectedStaticForces->zForces);
-    _rejectedStaticForces->fx = fm.Fx;
-    _rejectedStaticForces->fy = fm.Fy;
-    _rejectedStaticForces->fz = fm.Fz;
-    _rejectedStaticForces->mx = fm.Mx;
-    _rejectedStaticForces->my = fm.My;
-    _rejectedStaticForces->mz = fm.Mz;
-    _rejectedStaticForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedStaticForces->xForces,
+            _preclippedStaticForces->yForces, _preclippedStaticForces->zForces);
+    _preclippedStaticForces->fx = fm.Fx;
+    _preclippedStaticForces->fy = fm.Fy;
+    _preclippedStaticForces->fz = fm.Fz;
+    _preclippedStaticForces->mx = fm.Mx;
+    _preclippedStaticForces->my = fm.My;
+    _preclippedStaticForces->mz = fm.Mz;
+    _preclippedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyStaticForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyStaticForceClipping(clippingRequired);
 
-    _publisher->tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        _publisher->logRejectedStaticForces();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedStaticForces();
     }
-    _publisher->logAppliedStaticForces();
+    M1M3SSPublisher::get().logAppliedStaticForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */

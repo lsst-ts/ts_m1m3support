@@ -24,8 +24,6 @@
 #ifndef FORCEACTUATORTYPES_H_
 #define FORCEACTUATORTYPES_H_
 
-struct ForceActuatorTypes {
-    enum Type { SAA = 0, DAA = 1 };
-};
+enum ForceActuatorTypes { SAA = 0, DAA = 1 };
 
 #endif /* FORCEACTUATORTYPES_H_ */

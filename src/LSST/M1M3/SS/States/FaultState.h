@@ -30,13 +30,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Fault state. Mirror transition to this state on any error. Accept standby
+ * command to switch to standby state.
+ */
 class FaultState : public State {
 public:
-    FaultState(M1M3SSPublisher* publisher);
-    FaultState(M1M3SSPublisher* publisher, std::string name);
+    FaultState();
+    FaultState(std::string name);
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type standby(StandbyCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type standby(StandbyCommand* command) override;
 };
 
 } /* namespace SS */

@@ -23,33 +23,24 @@
 
 #include <LoweringEngineeringState.h>
 #include <Model.h>
-#include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringEngineeringState::LoweringEngineeringState(M1M3SSPublisher* publisher)
-        : EngineeringState(publisher, "LoweringEngineeringState") {}
+LoweringEngineeringState::LoweringEngineeringState() : EngineeringState("LoweringEngineeringState") {}
 
-States::Type LoweringEngineeringState::update(UpdateCommand* command, Model* model) {
+States::Type LoweringEngineeringState::update(UpdateCommand* command) {
+    ModelPublisher publishIt();
     spdlog::trace("LoweringEngineeringState: update()");
-    this->startTimer();
-    States::Type newState = States::NoStateTransition;
-    model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
-    EnabledState::update(command, model);
-    if (model->getAutomaticOperationsController()->checkLowerOperationComplete()) {
-        model->getAutomaticOperationsController()->completeLowerOperation();
-        newState = States::ParkedEngineeringState;
-    } else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
-        model->getAutomaticOperationsController()->timeoutLowerOperation();
-    }
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
-    return model->getSafetyController()->checkSafety(newState);
+    Model::get().getAutomaticOperationsController()->tryDecrementSupportPercentage();
+    runLoop();
+    return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedEngineeringState
+                                                                            : States::NoStateTransition);
 }
 
 } /* namespace SS */

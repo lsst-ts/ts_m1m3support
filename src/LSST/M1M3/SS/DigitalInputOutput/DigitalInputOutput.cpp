@@ -22,7 +22,6 @@
  */
 
 #include <DigitalInputOutput.h>
-#include <InterlockApplicationSettings.h>
 #include <FPGAAddresses.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
@@ -38,19 +37,18 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DigitalInputOutput::DigitalInputOutput(InterlockApplicationSettings* interlockApplicationSettings,
-                                       M1M3SSPublisher* publisher) {
+const float HEARTBEAT_PERIOD = 1.0;  //* Heartbeat period in seconds
+
+DigitalInputOutput::DigitalInputOutput() {
     spdlog::debug("DigitalInputOutput: DigitalInputOutput()");
-    _interlockApplicationSettings = interlockApplicationSettings;
-    _publisher = publisher;
     _safetyController = 0;
 
-    _airSupplyStatus = _publisher->getEventAirSupplyStatus();
-    _airSupplyWarning = _publisher->getEventAirSupplyWarning();
-    _cellLightStatus = _publisher->getEventCellLightStatus();
-    _cellLightWarning = _publisher->getEventCellLightWarning();
-    _interlockStatus = _publisher->getEventInterlockStatus();
-    _interlockWarning = _publisher->getEventInterlockWarning();
+    _airSupplyStatus = M1M3SSPublisher::get().getEventAirSupplyStatus();
+    _airSupplyWarning = M1M3SSPublisher::get().getEventAirSupplyWarning();
+    _cellLightStatus = M1M3SSPublisher::get().getEventCellLightStatus();
+    _cellLightWarning = M1M3SSPublisher::get().getEventCellLightWarning();
+    _interlockStatus = M1M3SSPublisher::get().getEventInterlockStatus();
+    _interlockWarning = M1M3SSPublisher::get().getEventInterlockWarning();
 
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
@@ -155,25 +153,28 @@ void DigitalInputOutput::processData() {
         }
     }
     if (tryPublish) {
-        _publisher->tryLogAirSupplyStatus();
-        _publisher->tryLogAirSupplyWarning();
-        _publisher->tryLogCellLightStatus();
-        _publisher->tryLogCellLightWarning();
-        _publisher->tryLogInterlockStatus();
-        _publisher->tryLogInterlockWarning();
+        M1M3SSPublisher::get().tryLogAirSupplyStatus();
+        M1M3SSPublisher::get().tryLogAirSupplyWarning();
+        M1M3SSPublisher::get().tryLogCellLightStatus();
+        M1M3SSPublisher::get().tryLogCellLightWarning();
+        M1M3SSPublisher::get().tryLogInterlockStatus();
+        M1M3SSPublisher::get().tryLogInterlockWarning();
     }
 }
 
 void DigitalInputOutput::tryToggleHeartbeat() {
     spdlog::trace("DigitalInputOutput: tryToggleHeartbeat()");
-    double timestamp = _publisher->getTimestamp();
-    if (timestamp >= (_lastToggleTimestamp + _interlockApplicationSettings->HeartbeatPeriodInSeconds)) {
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
         spdlog::debug("DigitalInputOutput: toggleHeartbeat()");
         _lastToggleTimestamp = timestamp;
         _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
         uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
                               (uint16_t)_interlockStatus->heartbeatCommandedState};
         IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+
+        // sends software heartbeat
+        M1M3SSPublisher::get().logHeartbeat();
     }
 }
 

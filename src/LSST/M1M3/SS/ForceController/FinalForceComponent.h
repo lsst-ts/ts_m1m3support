@@ -25,32 +25,44 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_FINALFORCECOMPONENT_H_
 
 #include <ForceComponent.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class SafetyController;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-
+/**
+ * @brief FInal force produced as sum of components.
+ *
+ * Sum component forces stored in SAL events. Apply mirror safety checks.  Log
+ * force emirror safety limits are violated.
+ */
 class FinalForceComponent : public ForceComponent {
 public:
-    FinalForceComponent(M1M3SSPublisher* publisher, SafetyController* safetyController,
+    /**
+     * @brief Sets internal variables.
+     *
+     * @param safetyController
+     * @param forceActuatorApplicationSettings
+     * @param forceActuatorSettings
+     */
+    FinalForceComponent(SafetyController* safetyController,
                         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                         ForceActuatorSettings* forceActuatorSettings);
 
-    void applyForces(float* x, float* y, float* z);
+    /**
+     * @brief Sums applied forces to target x,y and z forces.
+     */
     void applyForcesByComponents();
 
 protected:
-    void postEnableDisableActions();
-    void postUpdateActions();
+    void postEnableDisableActions() override;
+    void postUpdateActions() override;
 
 private:
-    M1M3SSPublisher* _publisher;
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;
@@ -58,7 +70,7 @@ private:
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedForcesC* _appliedForces;
-    MTM1M3_logevent_rejectedForcesC* _rejectedForces;
+    MTM1M3_logevent_preclippedForcesC* _preclippedForces;
 
     MTM1M3_logevent_appliedAberrationForcesC* _appliedAberrationForces;
     MTM1M3_logevent_appliedAccelerationForcesC* _appliedAccelerationForces;

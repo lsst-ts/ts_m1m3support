@@ -28,13 +28,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PID::PID(int id, PIDParameters parameters, M1M3SSPublisher* publisher) {
+PID::PID(int id, PIDParameters parameters) {
     _id = id;
     _initialParameters = parameters;
-    _publisher = publisher;
 
-    _pidInfo = _publisher->getEventPIDInfo();
-    _pidData = _publisher->getPIDData();
+    _pidInfo = M1M3SSPublisher::get().getEventPIDInfo();
+    _pidData = M1M3SSPublisher::get().getPIDData();
     _pidInfo->timestep[_id] = parameters.Timestep;
     _pidInfo->p[_id] = parameters.P;
     _pidInfo->i[_id] = parameters.I;
@@ -97,8 +96,8 @@ double PID::process(double setpoint, double measurement) {
 }
 
 void PID::publishTelemetry() {
-    _pidData->timestamp = _publisher->getTimestamp();
-    _publisher->putPIDData();
+    _pidData->timestamp = M1M3SSPublisher::get().getTimestamp();
+    M1M3SSPublisher::get().putPIDData();
 }
 
 void PID::_calculateIntermediateValues() {
@@ -116,8 +115,8 @@ void PID::_calculateIntermediateValues() {
 }
 
 void PID::_publishInfo() {
-    _pidInfo->timestamp = _publisher->getTimestamp();
-    _publisher->logPIDInfo();
+    _pidInfo->timestamp = M1M3SSPublisher::get().getTimestamp();
+    M1M3SSPublisher::get().logPIDInfo();
 }
 
 } /* namespace SS */

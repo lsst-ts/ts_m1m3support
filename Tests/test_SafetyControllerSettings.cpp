@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 support system package.
+ * This file is part of LSST M1M3 SS test suite. Tests SafetyControllerSettings.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the LSST Telescope and Site Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,24 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INTERLOCKAPPLICATIONSETTINGS_H_
-#define INTERLOCKAPPLICATIONSETTINGS_H_
+#define CATCH_CONFIG_MAIN
+#include <catch/catch.hpp>
 
-#include <string>
+#include <SafetyControllerSettings.h>
+#include <SafetyController.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-class InterlockApplicationSettings {
-public:
-    double HeartbeatPeriodInSeconds;
+TEST_CASE("SafetyControllerSettings load", "[SafetyControllerSettings]") {
+    SafetyControllerSettings safetyControllerSettings;
 
-    void load(const std::string &filename);
-};
+    REQUIRE_NOTHROW(
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xml"));
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif /* INTERLOCKAPPLICATIONSETTINGS_H_ */
+    REQUIRE_THROWS(
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xm"));
+}

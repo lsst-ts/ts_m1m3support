@@ -38,46 +38,40 @@ namespace M1M3 {
 namespace SS {
 
 BalanceForceComponent::BalanceForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
-        : _fx(0, pidSettings->Fx, publisher),
-          _fy(1, pidSettings->Fy, publisher),
-          _fz(2, pidSettings->Fz, publisher),
-          _mx(3, pidSettings->Mx, publisher),
-          _my(4, pidSettings->My, publisher),
-          _mz(5, pidSettings->Mz, publisher) {
-    name = "Balance";
-
-    _publisher = publisher;
+        : ForceComponent("Balance", forceActuatorSettings->BalanceComponentSettings),
+          _fx(0, pidSettings->Fx),
+          _fy(1, pidSettings->Fy),
+          _fz(2, pidSettings->Fz),
+          _mx(3, pidSettings->Mx),
+          _my(4, pidSettings->My),
+          _mz(5, pidSettings->Mz) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _pidSettings = pidSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedBalanceForces = _publisher->getEventAppliedBalanceForces();
-    _rejectedBalanceForces = _publisher->getEventRejectedBalanceForces();
-    maxRateOfChange = _forceActuatorSettings->BalanceComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->BalanceComponentSettings.NearZeroValue;
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedBalanceForces = M1M3SSPublisher::get().getEventAppliedBalanceForces();
+    _preclippedBalanceForces = M1M3SSPublisher::get().getEventPreclippedBalanceForces();
 }
 
 void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
     spdlog::trace("BalanceForceComponent: applyBalanceForces()");
-    if (!enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("BalanceForceComponent: applyBalanceForces() called when the component is not applied");
         return;
     }
-    if (disabling) {
-        spdlog::warn("BalanceForceComponent: applyBalanceForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
             xTarget[i] = x[i];
         }
 
-        if (i < 100) {
+        if (i < FA_Y_COUNT) {
             yTarget[i] = y[i];
         }
 
@@ -101,9 +95,9 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
     _fx.publishTelemetry();
     DistributedForces forces =
             ForceConverter::calculateForceDistribution(_forceActuatorSettings, fx, fy, fz, mx, my, mz);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -148,23 +142,23 @@ void BalanceForceComponent::resetPIDs() {
 void BalanceForceComponent::postEnableDisableActions() {
     spdlog::debug("BalanceForceComponent: postEnableDisableActions()");
 
-    if (enabled) {
+    if (isEnabled()) {
         resetPIDs();
     }
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
-    _forceActuatorState->balanceForcesApplied = enabled;
-    _publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->balanceForcesApplied = isEnabled();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void BalanceForceComponent::postUpdateActions() {
     spdlog::trace("BalanceForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
-    _appliedBalanceForces->timestamp = _publisher->getTimestamp();
-    _rejectedBalanceForces->timestamp = _appliedBalanceForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    bool clippingRequired = false;
+    _appliedBalanceForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _preclippedBalanceForces->timestamp = _appliedBalanceForces->timestamp;
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -173,33 +167,31 @@ void BalanceForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->BalanceLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->BalanceLimitXTable[xIndex].HighFault;
-            _rejectedBalanceForces->xForces[xIndex] = xCurrent[xIndex];
+            _preclippedBalanceForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedBalanceForces->xForces[xIndex],
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedBalanceForces->xForces[xIndex],
                                              _appliedBalanceForces->xForces + xIndex);
-            _forceSetpointWarning->balanceForceWarning[zIndex] =
-                    _forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->balanceForceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->BalanceLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->BalanceLimitYTable[yIndex].HighFault;
-            _rejectedBalanceForces->yForces[yIndex] = yCurrent[yIndex];
+            _preclippedBalanceForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedBalanceForces->yForces[yIndex],
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedBalanceForces->yForces[yIndex],
                                              _appliedBalanceForces->yForces + yIndex);
-            _forceSetpointWarning->balanceForceWarning[zIndex] =
-                    _forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->balanceForceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->BalanceLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->BalanceLimitZTable[zIndex].HighFault;
-        _rejectedBalanceForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedBalanceForces->zForces[zIndex],
-                                              _appliedBalanceForces->zForces + zIndex);
-        _forceSetpointWarning->balanceForceWarning[zIndex] =
-                _forceSetpointWarning->balanceForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->balanceForceWarning[zIndex];
+        _preclippedBalanceForces->zForces[zIndex] = zCurrent[zIndex];
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedBalanceForces->zForces[zIndex],
+                                         _appliedBalanceForces->zForces + zIndex);
+        _forceSetpointWarning->balanceForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->balanceForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -214,23 +206,23 @@ void BalanceForceComponent::postUpdateActions() {
     _appliedBalanceForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedBalanceForces->xForces,
-            _rejectedBalanceForces->yForces, _rejectedBalanceForces->zForces);
-    _rejectedBalanceForces->fx = fm.Fx;
-    _rejectedBalanceForces->fy = fm.Fy;
-    _rejectedBalanceForces->fz = fm.Fz;
-    _rejectedBalanceForces->mx = fm.Mx;
-    _rejectedBalanceForces->my = fm.My;
-    _rejectedBalanceForces->mz = fm.Mz;
-    _rejectedBalanceForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedBalanceForces->xForces,
+            _preclippedBalanceForces->yForces, _preclippedBalanceForces->zForces);
+    _preclippedBalanceForces->fx = fm.Fx;
+    _preclippedBalanceForces->fy = fm.Fy;
+    _preclippedBalanceForces->fz = fm.Fz;
+    _preclippedBalanceForces->mx = fm.Mx;
+    _preclippedBalanceForces->my = fm.My;
+    _preclippedBalanceForces->mz = fm.Mz;
+    _preclippedBalanceForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyBalanceForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyBalanceForceClipping(clippingRequired);
 
-    _publisher->tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        _publisher->logRejectedBalanceForces();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedBalanceForces();
     }
-    _publisher->logAppliedBalanceForces();
+    M1M3SSPublisher::get().logAppliedBalanceForces();
 }
 
 PID* BalanceForceComponent::_idToPID(int id) {

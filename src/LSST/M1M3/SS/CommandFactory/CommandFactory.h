@@ -26,47 +26,28 @@
 
 #include <DataTypes.h>
 #include <CommandTypes.h>
+#include <Command.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class Context;
-class Command;
-
-/*!
- * A command factory that creates dynamically allocated command objects.
- * The command objects created by this factory must be destroyed or a
- * memory leak will occur.
+/**
+ * @brief Creates dynamically allocated Command objects.
  */
 class CommandFactory {
 public:
-    /*!
-     * Instantiates the command factory.
-     * @param[in] publisher The publisher that will be provided to the commands created by this factory.
-     * @param[in] context The context that will be provided to the commands created by this factory.
-     */
-    CommandFactory(M1M3SSPublisher* publisher, Context* context);
-
-    /*!
+    /**
      * Creates a command.
-     * This command is dynamically allocated and must be destroyed.
+     *
      * @param[in] commandType The type of command to create.
      * @param[in] data The data for the command.
      * @param[in] commandID The command ID (optional).
+     *
+     * @return Pointer to the created Command object. The returned command is
+     * dynamically allocated and must be deleted.
      */
-    Command* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
-    /*!
-     * Destroys a command created by this factory.
-     * Commands created by this factory are dynamically allocated and therefore must be cleaned up.
-     * @param[in] command The command to destroy.
-     */
-    void destroy(Command* command);
-
-private:
-    M1M3SSPublisher* _publisher;
-    Context* _context;
+    static Command* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
 };
 
 } /* namespace SS */

@@ -30,15 +30,20 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Disabled state. Mirror is on static supports, everything is powered off.
+ * Sends telemetry. Enable Command commands transition to Parked State.
+ * Standby Command commands transition to Standby State.
+ */
 class DisabledState : public State {
 public:
-    DisabledState(M1M3SSPublisher* publisher);
+    DisabledState();
 
-    virtual States::Type update(UpdateCommand* command, Model* model) override;
-    virtual States::Type enable(EnableCommand* command, Model* model) override;
-    virtual States::Type standby(StandbyCommand* command, Model* model) override;
-    virtual States::Type programILC(ProgramILCCommand* command, Model* model) override;
-    virtual States::Type modbusTransmit(ModbusTransmitCommand* command, Model* model) override;
+    virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type enable(EnableCommand* command) override;
+    virtual States::Type standby(StandbyCommand* command) override;
+    virtual States::Type programILC(ProgramILCCommand* command) override;
+    virtual States::Type modbusTransmit(ModbusTransmitCommand* command) override;
 };
 
 } /* namespace SS */

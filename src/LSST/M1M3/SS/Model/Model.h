@@ -24,50 +24,60 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 
+#include <Accelerometer.h>
+#include <AutomaticOperationsController.h>
+#include <DigitalInputOutput.h>
+#include <Displacement.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <ForceController.h>
+#include <Gyro.h>
+#include <HardpointActuatorApplicationSettings.h>
+#include <HardpointActuatorSettings.h>
+#include <HardpointMonitorApplicationSettings.h>
+#include <Inclinometer.h>
+#include <InclinometerSettings.h>
+#include <ILC.h>
+#include <PIDSettings.h>
+#include <PositionController.h>
+#include <PositionControllerSettings.h>
+#include <PowerController.h>
 #include <ProfileController.h>
+#include <SafetyController.h>
 #include <StateTypes.h>
-#include <pthread.h>
+#include <chrono>
+#include <mutex>
 #include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class M1M3SSPublisher;
-class Displacement;
-class Inclinometer;
-class ILC;
-class ForceController;
-class SafetyController;
-class PositionController;
-class Accelerometer;
-class PowerController;
-class AutomaticOperationsController;
-class Gyro;
-class ForceCalculator;
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-class HardpointActuatorApplicationSettings;
-class HardpointActuatorSettings;
-class HardpointMonitorApplicationSettings;
-class PIDSettings;
-class DigitalInputOutput;
-class InclinometerSettings;
-class PositionControllerSettings;
-
+/**
+ * @brief Contains pointers to objects communicating with cRIO boards.
+ *
+ * Singleton. Provides methods to load setting. Populates pointers for cRIO
+ * boards.
+ */
 class Model {
 public:
-    Model(M1M3SSPublisher* publisher, DigitalInputOutput* digitalInputOutput);
+    Model();
     virtual ~Model();
 
-    inline M1M3SSPublisher* getPublisher() { return _publisher; }
+    /**
+     * @brief Returns singleton instance.
+     *
+     * @return singleton instance
+     */
+    static Model& get();
+
+    inline DigitalInputOutput* getDigitalInputOutput() { return &_digitalInputOutput; }
     inline Displacement* getDisplacement() { return _displacement; }
     inline Inclinometer* getInclinometer() { return _inclinometer; }
     inline ILC* getILC() { return _ilc; }
     inline ForceController* getForceController() { return _forceController; }
     inline SafetyController* getSafetyController() { return _safetyController; }
     inline PositionController* getPositionController() { return _positionController; }
-    inline DigitalInputOutput* getDigitalInputOutput() { return _digitalInputOutput; }
     inline Accelerometer* getAccelerometer() { return _accelerometer; }
     inline PowerController* getPowerController() { return _powerController; }
     inline AutomaticOperationsController* getAutomaticOperationsController() {
@@ -85,12 +95,15 @@ public:
 
     void publishStateChange(States::Type newState);
     void publishRecommendedSettings();
-    void publishOuterLoop(double executionTime);
+    void publishOuterLoop(std::chrono::nanoseconds executionTime);
 
     void exitControl();
     void waitForExitControl();
 
 private:
+    Model& operator=(const Model&) = delete;
+    Model(const Model&) = delete;
+
     void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                     ForceActuatorSettings* forceActuatorSettings);
     void _populateHardpointActuatorInfo(
@@ -100,7 +113,7 @@ private:
     void _populateHardpointMonitorInfo(
             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
-    M1M3SSPublisher* _publisher;
+    DigitalInputOutput _digitalInputOutput;
     Displacement* _displacement;
     Inclinometer* _inclinometer;
     ILC* _ilc;
@@ -112,9 +125,8 @@ private:
     AutomaticOperationsController* _automaticOperationsController;
     Gyro* _gyro;
     ProfileController _profileController;
-    DigitalInputOutput* _digitalInputOutput;
 
-    pthread_mutex_t _mutex;
+    std::mutex _mutex;
 
     double _cachedTimestamp;
 };

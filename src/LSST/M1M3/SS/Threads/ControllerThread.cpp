@@ -22,36 +22,94 @@
  */
 
 #include <ControllerThread.h>
-#include <Controller.h>
-#include <unistd.h>
+#include <chrono>
+#include <thread>
 #include <spdlog/spdlog.h>
+
+using namespace std::chrono_literals;
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ControllerThread::ControllerThread(Controller* controller) {
-    _controller = controller;
-    _keepRunning = true;
+ControllerThread::ControllerThread() : _keepRunning(true) {
+    spdlog::debug("ControllerThread: ControllerThread()");
+}
+
+ControllerThread::~ControllerThread() { _clear(); }
+
+ControllerThread& ControllerThread::get() {
+    static ControllerThread controllerThread;
+    return controllerThread;
 }
 
 void ControllerThread::run() {
     spdlog::info("ControllerThread: Start");
     while (_keepRunning) {
-        _controller->lock();
-        Command* command = _controller->dequeue();
-        _controller->unlock();
+        Command* command = _dequeue();
         if (command) {
-            _controller->execute(command);
-        } else {
-            usleep(100);
+            _execute(command);
         }
     }
     spdlog::info("ControllerThread: Completed");
 }
 
-void ControllerThread::stop() { _keepRunning = false; }
+void ControllerThread::stop() {
+    {
+        std::lock_guard<std::mutex> lg(_mutex);
+        _keepRunning = false;
+    }
+    _cv.notify_one();
+}
+
+void ControllerThread::_clear() {
+    spdlog::trace("ControllerThread: _clear()");
+    {
+        std::lock_guard<std::mutex> lg(_mutex);
+        while (!_queue.empty()) {
+            Command* command = _dequeue();
+            delete command;
+        }
+    }
+}
+
+void ControllerThread::enqueue(Command* command) {
+    spdlog::trace("ControllerThread: enqueue()");
+    {
+        std::lock_guard<std::mutex> lg(_mutex);
+        _queue.push(command);
+    }
+    _cv.notify_one();
+}
+
+Command* ControllerThread::_dequeue() {
+    spdlog::trace("ControllerThread: _dequeue()");
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _cv.wait(lock, [this] { return (_queue.empty() == false) || (_keepRunning == false); });
+        if (!_queue.empty()) {
+            Command* command = _queue.front();
+            _queue.pop();
+            return command;
+        }
+    }
+    return NULL;
+}
+
+void ControllerThread::_execute(Command* command) {
+    spdlog::trace("ControllerThread: _execute()");
+    try {
+        command->ackInProgress();
+        command->execute();
+        command->ackComplete();
+    } catch (std::exception& e) {
+        spdlog::error("Cannot execute command: {}", e.what());
+        command->ackFailed(e.what());
+    }
+
+    delete command;
+}
 
 } /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace M1M3
+}  // namespace LSST

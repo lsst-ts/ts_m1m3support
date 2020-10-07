@@ -25,7 +25,7 @@
 #define UPDATECOMMAND_H_
 
 #include <Command.h>
-#include <pthread.h>
+#include <mutex>
 
 namespace LSST {
 namespace M1M3 {
@@ -38,14 +38,13 @@ namespace SS {
  */
 class UpdateCommand : public Command {
 public:
-    UpdateCommand(Context* context, pthread_mutex_t* updateMutext);
+    UpdateCommand(std::mutex* updateMutext);
     ~UpdateCommand();
 
     void execute() override;
 
 private:
-    Context* _context;
-    pthread_mutex_t* _updateMutex;
+    std::mutex* _updateMutex;
 };
 
 } /* namespace SS */

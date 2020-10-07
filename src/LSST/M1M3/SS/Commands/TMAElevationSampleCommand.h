@@ -35,15 +35,13 @@ namespace SS {
 
 class TMAElevationSampleCommand : public Command {
 public:
-    TMAElevationSampleCommand(Context* context, MTMount_ElevationC* data);
+    TMAElevationSampleCommand(MTMount_ElevationC* data);
 
     MTMount_ElevationC* getData() { return &_data; }
 
     void execute();
 
 private:
-    Context* _context;
-
     MTMount_ElevationC _data;
 };
 

@@ -49,8 +49,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILC::ILC(M1M3SSPublisher* publisher, PositionController* positionController,
-         ILCApplicationSettings* ilcApplicationSettings,
+ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
          ForceActuatorSettings* forceActuatorSettings,
          HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
@@ -60,15 +59,10 @@ ILC::ILC(M1M3SSPublisher* publisher, PositionController* positionController,
         : _subnetData(forceActuatorApplicationSettings, forceActuatorSettings,
                       hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
           _ilcMessageFactory(ilcApplicationSettings),
-          _responseParser(forceActuatorSettings, hardpointActuatorSettings, publisher, &_subnetData,
-                          safetyController),
-          _busListSetADCChannelOffsetAndSensitivity(&_subnetData, &_ilcMessageFactory,
-                                                    publisher->getEventForceActuatorInfo(),
-                                                    publisher->getEventHardpointActuatorInfo()),
-          _busListSetADCScanRate(&_subnetData, &_ilcMessageFactory, publisher->getEventForceActuatorInfo(),
-                                 publisher->getEventHardpointActuatorInfo()),
-          _busListSetBoostValveDCAGains(&_subnetData, &_ilcMessageFactory,
-                                        publisher->getEventForceActuatorInfo()),
+          _responseParser(forceActuatorSettings, hardpointActuatorSettings, &_subnetData, safetyController),
+          _busListSetADCChannelOffsetAndSensitivity(&_subnetData, &_ilcMessageFactory),
+          _busListSetADCScanRate(&_subnetData, &_ilcMessageFactory),
+          _busListSetBoostValveDCAGains(&_subnetData, &_ilcMessageFactory),
           _busListReset(&_subnetData, &_ilcMessageFactory),
           _busListReportServerID(&_subnetData, &_ilcMessageFactory),
           _busListReportServerStatus(&_subnetData, &_ilcMessageFactory),
@@ -85,23 +79,18 @@ ILC::ILC(M1M3SSPublisher* publisher, PositionController* positionController,
                                        ILCModes::Standby),
           _busListChangeILCModeClearFaults(&_subnetData, &_ilcMessageFactory, ILCModes::ClearFaults,
                                            ILCModes::ClearFaults),
-          _busListFreezeSensor(&_subnetData, &_ilcMessageFactory, publisher->getOuterLoopData()),
-          _busListRaised(&_subnetData, &_ilcMessageFactory, publisher->getOuterLoopData(),
-                         publisher->getForceActuatorData(), publisher->getHardpointActuatorData(),
-                         publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
-          _busListActive(&_subnetData, &_ilcMessageFactory, publisher->getOuterLoopData(),
-                         publisher->getForceActuatorData(), publisher->getHardpointActuatorData(),
-                         publisher->getEventForceActuatorInfo(), publisher->getEventAppliedCylinderForces()),
+          _busListFreezeSensor(&_subnetData, &_ilcMessageFactory),
+          _busListRaised(&_subnetData, &_ilcMessageFactory),
+          _busListActive(&_subnetData, &_ilcMessageFactory),
           _firmwareUpdate(&_subnetData) {
     spdlog::debug("ILC: ILC()");
-    _publisher = publisher;
     _safetyController = safetyController;
     _hardpointActuatorSettings = hardpointActuatorSettings;
-    _hardpointActuatorData = _publisher->getHardpointActuatorData();
+    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorData = _publisher->getForceActuatorData();
-    _hardpointActuatorInfo = _publisher->getEventHardpointActuatorInfo();
+    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
+    _hardpointActuatorInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
     _controlListToggle = 0;
     _positionController = positionController;
 }
@@ -430,37 +419,37 @@ void ILC::verifyResponses() {
 }
 
 void ILC::publishForceActuatorInfo() {
-    _publisher->getEventForceActuatorInfo()->timestamp = _publisher->getTimestamp();
-    _publisher->logForceActuatorInfo();
+    M1M3SSPublisher::get().getEventForceActuatorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
+    M1M3SSPublisher::get().logForceActuatorInfo();
 }
 
 void ILC::publishForceActuatorStatus() {
-    // _publisher->putForceActuatorStatus();
+    // M1M3SSPublisher::get().putForceActuatorStatus();
 }
 
-void ILC::publishForceActuatorData() { _publisher->putForceActuatorData(); }
+void ILC::publishForceActuatorData() { M1M3SSPublisher::get().putForceActuatorData(); }
 
 void ILC::publishHardpointActuatorInfo() {
-    _publisher->getEventHardpointActuatorInfo()->timestamp = _publisher->getTimestamp();
-    _publisher->logHardpointActuatorInfo();
+    M1M3SSPublisher::get().getEventHardpointActuatorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
+    M1M3SSPublisher::get().logHardpointActuatorInfo();
 }
 
 void ILC::publishHardpointStatus() {
-    // _publisher->putHardpointStatus();
+    // M1M3SSPublisher::get().putHardpointStatus();
 }
 
-void ILC::publishHardpointData() { _publisher->putHardpointActuatorData(); }
+void ILC::publishHardpointData() { M1M3SSPublisher::get().putHardpointActuatorData(); }
 
 void ILC::publishHardpointMonitorInfo() {
-    _publisher->getEventHardpointMonitorInfo()->timestamp = _publisher->getTimestamp();
-    _publisher->logHardpointMonitorInfo();
+    M1M3SSPublisher::get().getEventHardpointMonitorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
+    M1M3SSPublisher::get().logHardpointMonitorInfo();
 }
 
 void ILC::publishHardpointMonitorStatus() {
-    // _publisher->putHardpointMonitorStatus();
+    // M1M3SSPublisher::get().putHardpointMonitorStatus();
 }
 
-void ILC::publishHardpointMonitorData() { _publisher->putHardpointMonitorData(); }
+void ILC::publishHardpointMonitorData() { M1M3SSPublisher::get().putHardpointMonitorData(); }
 
 uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
     switch (subnet) {

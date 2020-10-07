@@ -21,40 +21,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TestHardpointCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestHardpointCommand::TestHardpointCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                           MTM1M3_command_testHardpointC* data) {
-    _context = context;
-    _publisher = publisher;
+TestHardpointCommand::TestHardpointCommand(int32_t commandID, MTM1M3_command_testHardpointC* data) {
     this->commandID = commandID;
     _data.hardpointActuator = data->hardpointActuator;
 }
 
 bool TestHardpointCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
-        _publisher->logCommandRejectionWarning("TestHardpoint",
-                                               "The field HardpointActuator must be in range [1, 6].");
+        M1M3SSPublisher::get().logCommandRejectionWarning(
+                "TestHardpoint", "The field HardpointActuator must be in range [1, 6].");
     }
     return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }
 
-void TestHardpointCommand::execute() { _context->testHardpoint(this); }
+void TestHardpointCommand::execute() { Context::get().testHardpoint(this); }
 
 void TestHardpointCommand::ackInProgress() {
-    _publisher->ackCommandtestHardpoint(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandtestHardpoint(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TestHardpointCommand::ackComplete() {
-    _publisher->ackCommandtestHardpoint(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandtestHardpoint(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void TestHardpointCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandtestHardpoint(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandtestHardpoint(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

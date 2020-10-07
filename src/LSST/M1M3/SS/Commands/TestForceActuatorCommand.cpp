@@ -21,17 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TestForceActuatorCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestForceActuatorCommand::TestForceActuatorCommand(Context* context, M1M3SSPublisher* publisher,
-                                                   int32_t commandID,
+TestForceActuatorCommand::TestForceActuatorCommand(int32_t commandID,
                                                    MTM1M3_command_testForceActuatorC* data) {
-    _context = context;
-    _publisher = publisher;
     this->commandID = commandID;
     _data.forceActuator = data->forceActuator;
 }
@@ -41,9 +40,10 @@ bool TestForceActuatorCommand::validate() {
           (_data.forceActuator >= 207 && _data.forceActuator <= 243) ||
           (_data.forceActuator >= 301 && _data.forceActuator <= 343) ||
           (_data.forceActuator >= 407 && _data.forceActuator <= 443))) {
-        _publisher->logCommandRejectionWarning("TestForceActuator",
-                                               "The field ForceActuator must be in range [101, 143] or "
-                                               "[207, 243] or [301, 343] or [407, 443].");
+        M1M3SSPublisher::get().logCommandRejectionWarning(
+                "TestForceActuator",
+                "The field ForceActuator must be in range [101, 143] or "
+                "[207, 243] or [301, 343] or [407, 443].");
     }
     return (_data.forceActuator >= 101 && _data.forceActuator <= 143) ||
            (_data.forceActuator >= 207 && _data.forceActuator <= 243) ||
@@ -51,18 +51,18 @@ bool TestForceActuatorCommand::validate() {
            (_data.forceActuator >= 407 && _data.forceActuator <= 443);
 }
 
-void TestForceActuatorCommand::execute() { _context->testForceActuator(this); }
+void TestForceActuatorCommand::execute() { Context::get().testForceActuator(this); }
 
 void TestForceActuatorCommand::ackInProgress() {
-    _publisher->ackCommandtestForceActuator(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandtestForceActuator(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TestForceActuatorCommand::ackComplete() {
-    _publisher->ackCommandtestForceActuator(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandtestForceActuator(this->commandID, ACK_COMPLETE, "Completed");
 }
 
 void TestForceActuatorCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandtestForceActuator(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandtestForceActuator(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -22,16 +22,15 @@
  */
 
 #include <ApplyAberrationForcesByBendingModesCommand.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 ApplyAberrationForcesByBendingModesCommand::ApplyAberrationForcesByBendingModesCommand(
-        Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-        MTM1M3_command_applyAberrationForcesByBendingModesC* data) {
-    _context = context;
-    _publisher = publisher;
+        int32_t commandID, MTM1M3_command_applyAberrationForcesByBendingModesC* data) {
     this->commandID = commandID;
     for (int i = 0; i < BENDING_MODES; i++) {
         _data.coefficients[i] = data->coefficients[i];
@@ -39,20 +38,22 @@ ApplyAberrationForcesByBendingModesCommand::ApplyAberrationForcesByBendingModesC
 }
 
 void ApplyAberrationForcesByBendingModesCommand::execute() {
-    _context->applyAberrationForcesByBendingModes(this);
+    Context::get().applyAberrationForcesByBendingModes(this);
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackInProgress() {
-    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_INPROGRESS,
+                                                                         "In-Progress");
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackComplete() {
-    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_COMPLETE,
+                                                                         "Complete");
 }
 
 void ApplyAberrationForcesByBendingModesCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_FAILED,
-                                                              "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandapplyAberrationForcesByBendingModes(this->commandID, ACK_FAILED,
+                                                                         "Failed: " + reason);
 }
 
 } /* namespace SS */

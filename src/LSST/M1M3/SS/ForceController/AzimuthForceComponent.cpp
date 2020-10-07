@@ -37,53 +37,47 @@ namespace M1M3 {
 namespace SS {
 
 AzimuthForceComponent::AzimuthForceComponent(
-        M1M3SSPublisher* publisher, SafetyController* safetyController,
+        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings) {
-    name = "Azimuth";
-
-    _publisher = publisher;
+        ForceActuatorSettings* forceActuatorSettings)
+        : ForceComponent("Azimuth", forceActuatorSettings->AzimuthComponentSettings) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = _publisher->getEventForceActuatorState();
-    _forceSetpointWarning = _publisher->getEventForceSetpointWarning();
-    _appliedAzimuthForces = _publisher->getEventAppliedAzimuthForces();
-    _rejectedAzimuthForces = _publisher->getEventRejectedAzimuthForces();
-    maxRateOfChange = _forceActuatorSettings->AzimuthComponentSettings.MaxRateOfChange;
-    nearZeroValue = _forceActuatorSettings->AzimuthComponentSettings.NearZeroValue;
+    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
+    _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
+    _preclippedAzimuthForces = M1M3SSPublisher::get().getEventPreclippedAzimuthForces();
 }
 
 void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
     spdlog::trace("AzimuthForceComponent: applyAzimuthForces()");
-    if (!this->enabled) {
+
+    if (!isEnabled()) {
         spdlog::error("AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
         return;
     }
-    if (this->disabling) {
-        spdlog::warn("AzimuthForceComponent: applyAzimuthForces() called when the component is disabling");
-        return;
-    }
-    for (int i = 0; i < 156; ++i) {
-        if (i < 12) {
-            this->xTarget[i] = x[i];
+
+    for (int i = 0; i < FA_COUNT; ++i) {
+        if (i < FA_X_COUNT) {
+            xTarget[i] = x[i];
         }
 
-        if (i < 100) {
-            this->yTarget[i] = y[i];
+        if (i < FA_Y_COUNT) {
+            yTarget[i] = y[i];
         }
 
-        this->zTarget[i] = z[i];
+        zTarget[i] = z[i];
     }
-}
+}  // namespace SS
 
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
     spdlog::trace("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
     DistributedForces forces =
             ForceConverter::calculateForceFromAzimuthAngle(_forceActuatorSettings, azimuthAngle);
-    float xForces[12];
-    float yForces[100];
-    float zForces[156];
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -96,25 +90,25 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
         }
         zForces[zIndex] = forces.ZForces[zIndex];
     }
-    this->applyAzimuthForces(xForces, yForces, zForces);
+    applyAzimuthForces(xForces, yForces, zForces);
 }
 
 void AzimuthForceComponent::postEnableDisableActions() {
     spdlog::debug("AzimuthForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = _publisher->getTimestamp();
-    _forceActuatorState->azimuthForcesApplied = this->enabled;
-    _publisher->tryLogForceActuatorState();
+    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->azimuthForcesApplied = isEnabled();
+    M1M3SSPublisher::get().tryLogForceActuatorState();
 }
 
 void AzimuthForceComponent::postUpdateActions() {
     spdlog::trace("AzimuthForceController: postUpdateActions()");
 
     bool notInRange = false;
-    bool rejectionRequired = false;
-    _appliedAzimuthForces->timestamp = _publisher->getTimestamp();
-    _rejectedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
-    for (int zIndex = 0; zIndex < 156; ++zIndex) {
+    bool clippingRequired = false;
+    _appliedAzimuthForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _preclippedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
@@ -123,33 +117,31 @@ void AzimuthForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].LowFault;
             float xHighFault = _forceActuatorSettings->AzimuthLimitXTable[xIndex].HighFault;
-            _rejectedAzimuthForces->xForces[xIndex] = this->xCurrent[xIndex];
+            _preclippedAzimuthForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _rejectedAzimuthForces->xForces[xIndex],
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedAzimuthForces->xForces[xIndex],
                                              _appliedAzimuthForces->xForces + xIndex);
-            _forceSetpointWarning->azimuthForceWarning[zIndex] =
-                    _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->azimuthForceWarning[zIndex] |= notInRange;
         }
 
         if (yIndex != -1) {
             float yLowFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].LowFault;
             float yHighFault = _forceActuatorSettings->AzimuthLimitYTable[yIndex].HighFault;
-            _rejectedAzimuthForces->yForces[yIndex] = this->yCurrent[yIndex];
+            _preclippedAzimuthForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _rejectedAzimuthForces->yForces[yIndex],
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedAzimuthForces->yForces[yIndex],
                                              _appliedAzimuthForces->yForces + yIndex);
-            _forceSetpointWarning->azimuthForceWarning[zIndex] =
-                    _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
+            _forceSetpointWarning->azimuthForceWarning[zIndex] |= notInRange;
         }
 
         float zLowFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].LowFault;
         float zHighFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].HighFault;
-        _rejectedAzimuthForces->zForces[zIndex] = this->zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _rejectedAzimuthForces->zForces[zIndex],
-                                              _appliedAzimuthForces->zForces + zIndex);
-        _forceSetpointWarning->azimuthForceWarning[zIndex] =
-                _forceSetpointWarning->azimuthForceWarning[zIndex] || notInRange;
-        rejectionRequired = rejectionRequired || _forceSetpointWarning->azimuthForceWarning[zIndex];
+        _preclippedAzimuthForces->zForces[zIndex] = zCurrent[zIndex];
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedAzimuthForces->zForces[zIndex],
+                                         _appliedAzimuthForces->zForces + zIndex);
+        _forceSetpointWarning->azimuthForceWarning[zIndex] |= notInRange;
+        clippingRequired |= _forceSetpointWarning->azimuthForceWarning[zIndex];
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
@@ -164,25 +156,25 @@ void AzimuthForceComponent::postUpdateActions() {
     _appliedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _rejectedAzimuthForces->xForces,
-            _rejectedAzimuthForces->yForces, _rejectedAzimuthForces->zForces);
-    _rejectedAzimuthForces->fx = fm.Fx;
-    _rejectedAzimuthForces->fy = fm.Fy;
-    _rejectedAzimuthForces->fz = fm.Fz;
-    _rejectedAzimuthForces->mx = fm.Mx;
-    _rejectedAzimuthForces->my = fm.My;
-    _rejectedAzimuthForces->mz = fm.Mz;
-    _rejectedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
+            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedAzimuthForces->xForces,
+            _preclippedAzimuthForces->yForces, _preclippedAzimuthForces->zForces);
+    _preclippedAzimuthForces->fx = fm.Fx;
+    _preclippedAzimuthForces->fy = fm.Fy;
+    _preclippedAzimuthForces->fz = fm.Fz;
+    _preclippedAzimuthForces->mx = fm.Mx;
+    _preclippedAzimuthForces->my = fm.My;
+    _preclippedAzimuthForces->mz = fm.Mz;
+    _preclippedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
 
-    _safetyController->forceControllerNotifyAzimuthForceClipping(rejectionRequired);
+    _safetyController->forceControllerNotifyAzimuthForceClipping(clippingRequired);
 
-    _publisher->tryLogForceSetpointWarning();
-    if (rejectionRequired) {
-        _publisher->logRejectedAzimuthForces();
+    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    if (clippingRequired) {
+        M1M3SSPublisher::get().logPreclippedAzimuthForces();
     }
-    _publisher->logAppliedAzimuthForces();
+    M1M3SSPublisher::get().logAppliedAzimuthForces();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
+}  // namespace SS
+}  // namespace M1M3
 } /* namespace LSST */

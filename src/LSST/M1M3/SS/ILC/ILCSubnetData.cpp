@@ -49,13 +49,13 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Address = row.Address;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
-        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;
+        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = i;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].XDataIndex =
-                forceActuatorApplicationSettings->ZIndexToXIndex[row.Index];
+                forceActuatorApplicationSettings->ZIndexToXIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].YDataIndex =
-                forceActuatorApplicationSettings->ZIndexToYIndex[row.Index];
+                forceActuatorApplicationSettings->ZIndexToYIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].SecondaryDataIndex =
-                forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[row.Index];
+                forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled =
                 forceActuatorSettings->IsActuatorDisabled(row.ActuatorID);
         ILCMap map = this->subnetData[subnetIndex].ILCDataFromAddress[row.Address];
@@ -78,7 +78,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
         this->subnetData[subnetIndex].HPIndex.push_back(map);
         this->subnetData[subnetIndex].HPCount += 1;
     }
-    for (int i = 0; i < HM_COUNT; i++) {
+    for (int i = 0; i < HP_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
         int32_t subnetIndex = row.Subnet - 1;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::HM;

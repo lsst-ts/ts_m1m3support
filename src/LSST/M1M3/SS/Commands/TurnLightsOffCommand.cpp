@@ -21,31 +21,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <Context.h>
 #include <TurnLightsOffCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnLightsOffCommand::TurnLightsOffCommand(Context* context, M1M3SSPublisher* publisher, int32_t commandID,
-                                           MTM1M3_command_turnLightsOffC*) {
-    _context = context;
-    _publisher = publisher;
+TurnLightsOffCommand::TurnLightsOffCommand(int32_t commandID, MTM1M3_command_turnLightsOffC*) {
     this->commandID = commandID;
 }
 
-void TurnLightsOffCommand::execute() { _context->turnLightsOff(this); }
+void TurnLightsOffCommand::execute() { Context::get().turnLightsOff(this); }
 
 void TurnLightsOffCommand::ackInProgress() {
-    _publisher->ackCommandturnLightsOff(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandturnLightsOff(this->commandID, ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnLightsOffCommand::ackComplete() {
-    _publisher->ackCommandturnLightsOff(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandturnLightsOff(this->commandID, ACK_COMPLETE, "Complete");
 }
 
 void TurnLightsOffCommand::ackFailed(std::string reason) {
-    _publisher->ackCommandturnLightsOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandturnLightsOff(this->commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

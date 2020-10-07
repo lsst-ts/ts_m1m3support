@@ -32,16 +32,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringFaultState::LoweringFaultState(M1M3SSPublisher* publisher)
-        : FaultState(publisher, "LoweringFaultState") {}
+LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
 
-States::Type LoweringFaultState::update(UpdateCommand* command, Model* model) {
+States::Type LoweringFaultState::update(UpdateCommand* command) {
     spdlog::trace("LoweringFaultState: update()");
-    model->getPowerController()->setAllAuxPowerNetworks(false);
+    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
     // TODO: Uncomment when its not so hot out
-    // model->getDigitalInputOutput()->turnAirOff();
-    model->getForceController()->reset();
-    FaultState::update(command, model);
+    // Model::get().getDigitalInputOutput()->turnAirOff();
+    Model::get().getForceController()->reset();
+    FaultState::update(command);
     return States::FaultState;
 }
 

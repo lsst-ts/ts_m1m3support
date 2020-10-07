@@ -23,32 +23,24 @@
 
 #include <LoweringState.h>
 #include <Model.h>
-#include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <AutomaticOperationsController.h>
+#include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringState::LoweringState(M1M3SSPublisher* publisher) : EnabledState(publisher, "LoweringState") {}
+LoweringState::LoweringState() : EnabledState("LoweringState") {}
 
-States::Type LoweringState::update(UpdateCommand* command, Model* model) {
+States::Type LoweringState::update(UpdateCommand* command) {
+    ModelPublisher publishIt();
     spdlog::trace("LoweringState: update()");
-    this->startTimer();
-    States::Type newState = States::NoStateTransition;
-    model->getAutomaticOperationsController()->tryDecrementSupportPercentage();
-    EnabledState::update(command, model);
-    if (model->getAutomaticOperationsController()->checkLowerOperationComplete()) {
-        model->getAutomaticOperationsController()->completeLowerOperation();
-        newState = States::ParkedState;
-    } else if (model->getAutomaticOperationsController()->checkLowerOperationTimeout()) {
-        model->getAutomaticOperationsController()->timeoutLowerOperation();
-    }
-    this->stopTimer();
-    model->publishOuterLoop(this->getTimer());
-    return model->getSafetyController()->checkSafety(newState);
+    Model::get().getAutomaticOperationsController()->tryDecrementSupportPercentage();
+    runLoop();
+    return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedState
+                                                                            : States::NoStateTransition);
 }
 
 } /* namespace SS */
