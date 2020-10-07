@@ -51,7 +51,6 @@ node {
     
                     cd $WORKSPACE/ts_m1m3support
                     make SIMULATOR=1
-                    ln -s /usr/include/catch/ /opt/lsst/software/stack/python/miniconda3-4.7.12/envs/lsst-scipipe-448abc6/x86_64-conda_cos6-linux-gnu/include/
                     make junit
                  """
              }
