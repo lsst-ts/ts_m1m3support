@@ -14,7 +14,8 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 
-M1M3_CPPFLAGS := -I../src \
+M1M3_CPPFLAGS := -I"/usr/include" \
+	-I"../src" \
 	-I"../src/LSST/M1M3/SS/DigitalInputOutput" \
 	-I"../src/LSST/M1M3/SS/FirmwareUpdate" \
 	-I"../src/LSST/M1M3/SS/Accelerometer" \

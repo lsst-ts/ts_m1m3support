@@ -30,6 +30,7 @@
 #include <Timestamp.h>
 #include <CRC.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <SettingReader.h>
 
 #include <thread>
 #include <unistd.h>
@@ -44,7 +45,6 @@ namespace SS {
 
 SimulatedFPGA::SimulatedFPGA() {
     spdlog::info("SimulatedFPGA: SimulatedFPGA()");
-    _forceActuatorApplicationSettings = NULL;
     _lastRequest = -1;
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
     supportFPGAData.DigitalInputStates = 0x0001 | 0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
@@ -92,11 +92,6 @@ void SimulatedFPGA::_monitorElevation(void) {
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
-}
-
-void SimulatedFPGA::setForceActuatorApplicationSettings(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings) {
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
 }
 
 void SimulatedFPGA::initialize() { spdlog::debug("SimulatedFPGA: initialize()"); }
@@ -390,16 +385,18 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                     }
                     i -= 4;  // Shift to CRC for the rest of the parsing to work
                 } else if (subnet >= 1 && subnet <= 4) {
+                    ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
+                            SettingReader::get().getForceActuatorApplicationSettings();
                     int zIndex = -1;
                     for (int j = 0; j < FA_COUNT; ++j) {
-                        if (_forceActuatorApplicationSettings->Table[j].Subnet == subnet &&
-                            _forceActuatorApplicationSettings->Table[j].Address == address) {
+                        if (forceActuatorApplicationSettings->Table[j].Subnet == subnet &&
+                            forceActuatorApplicationSettings->Table[j].Address == address) {
                             zIndex = j;
                             break;
                         }
                     }
                     int pIndex = zIndex;
-                    int sIndex = _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
+                    int sIndex = forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
                     switch (function) {
                         case 17:                               // Report Server Id
                             _writeModbus(response, address);   // Write Address

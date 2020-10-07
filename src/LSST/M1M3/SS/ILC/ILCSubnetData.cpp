@@ -49,13 +49,13 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Address = row.Address;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
-        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = row.Index;
+        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = i;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].XDataIndex =
-                forceActuatorApplicationSettings->ZIndexToXIndex[row.Index];
+                forceActuatorApplicationSettings->ZIndexToXIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].YDataIndex =
-                forceActuatorApplicationSettings->ZIndexToYIndex[row.Index];
+                forceActuatorApplicationSettings->ZIndexToYIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].SecondaryDataIndex =
-                forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[row.Index];
+                forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled =
                 forceActuatorSettings->IsActuatorDisabled(row.ActuatorID);
         ILCMap map = this->subnetData[subnetIndex].ILCDataFromAddress[row.Address];
