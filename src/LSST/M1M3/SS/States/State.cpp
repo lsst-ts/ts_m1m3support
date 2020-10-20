@@ -167,6 +167,9 @@ States::Type State::programILC(ProgramILCCommand* command) {
 States::Type State::modbusTransmit(ModbusTransmitCommand* command) {
     return this->rejectCommandInvalidState(command, "ModbusTransmit");
 }
+States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
+    return this->rejectCommandInvalidState(command, "ForceActuatorBumpTest");
+}
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";

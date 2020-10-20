@@ -150,6 +150,7 @@ public:
     void resetPID(ResetPIDCommand* command);
     void programILC(ProgramILCCommand* command);
     void modbusTransmit(ModbusTransmitCommand* command);
+    void forceActuatorBumpTest(ForceActuatorBumpTestCommand* command);
 
 private:
     Context& operator=(const Context&) = delete;

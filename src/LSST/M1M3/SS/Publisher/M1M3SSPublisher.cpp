@@ -600,6 +600,18 @@ void M1M3SSPublisher::tryLogErrorCode() {
     }
 }
 
+void M1M3SSPublisher::logForceActuatorBumpTestStatus() {
+    _m1m3SAL->logEvent_forceActuatorBumpTestStatus(&_eventForceActuatorBumpTestStatus, 0);
+    _previousEventForceActuatorBumpTestStatus = _eventForceActuatorBumpTestStatus;
+}
+
+void M1M3SSPublisher::tryLogForceActuatorBumpTestStatus() {
+    if (memcmp(&_previousEventForceActuatorBumpTestStatus, &_eventForceActuatorBumpTestStatus,
+               sizeof(MTM1M3_logevent_forceActuatorBumpTestStatusC))) {
+        logForceActuatorBumpTestStatus();
+    }
+}
+
 void M1M3SSPublisher::logForceActuatorForceWarning() {
     _eventForceActuatorForceWarning.anyPrimaryAxisMeasuredForceWarning = false;
     _eventForceActuatorForceWarning.anySecondaryAxisMeasuredForceWarning = false;
@@ -2429,6 +2441,11 @@ void M1M3SSPublisher::ackCommandprogramILC(int32_t commandID, int32_t ackCode, s
 
 void M1M3SSPublisher::ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description) {
     _m1m3SAL->ackCommand_modbusTransmit(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode,
+                                                      std::string description) {
+    _m1m3SAL->ackCommand_forceActuatorBumpTest(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

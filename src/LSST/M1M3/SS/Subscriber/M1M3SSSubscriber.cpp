@@ -83,6 +83,7 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_resetPID");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_programILC");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_forceActuatorBumpTest");
     _mtMountSAL->salTelemetrySub((char*)"MTMount_Azimuth");
     _mtMountSAL->salTelemetrySub((char*)"MTMount_Elevation");
 }  // namespace M1M3
@@ -437,6 +438,15 @@ Command* M1M3SSSubscriber::tryAcceptCommandModbusTransmit() {
     int32_t commandID = _m1m3SAL->acceptCommand_modbusTransmit(&_modbusTransmitData);
     if (commandID > 0) {
         return CommandFactory::create(Commands::ModbusTransmitCommand, &_modbusTransmitData, commandID);
+    }
+    return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandForceActuatorBumpTest() {
+    int32_t commandID = _m1m3SAL->acceptCommand_forceActuatorBumpTest(&_forceActuatorBumpTestData);
+    if (commandID > 0) {
+        return CommandFactory::create(Commands::ForceActuatorBumpTestCommand, &_forceActuatorBumpTestData,
+                                      commandID);
     }
     return 0;
 }
