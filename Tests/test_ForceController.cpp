@@ -76,7 +76,7 @@ void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float 
 void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
     REQUIRE(forceActuatorApplicationSettings.ZIndexToXIndex[zIndex] == -1);
     REQUIRE(forceActuatorApplicationSettings.ZIndexToYIndex[zIndex] == -1);
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
@@ -84,8 +84,8 @@ void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
 
     int xIndex = forceActuatorApplicationSettings.ZIndexToXIndex[zIndex];
     REQUIRE_FALSE(xIndex < 0);
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->xForces[xIndex] == xForce);
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->xForces[xIndex] == xForce);
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
@@ -93,17 +93,17 @@ void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
 
     int yIndex = forceActuatorApplicationSettings.ZIndexToYIndex[zIndex];
     REQUIRE_FALSE(yIndex < 0);
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->yForces[yIndex] == yForce);
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->yForces[yIndex] == yForce);
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedForces(float fx, float fy, float fz, float mx, float my, float mz) {
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->fx == Approx(fx));
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->fy == Approx(fy));
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->fz == Approx(fz));
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->mx == Approx(mx));
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->my == Approx(my));
-    CHECK(M1M3SSPublisher::get().getEventRejectedForces()->mz == Approx(mz));
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->fx == Approx(fx));
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->fy == Approx(fy));
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->fz == Approx(fz));
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->mx == Approx(mx));
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->my == Approx(my));
+    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->mz == Approx(mz));
 }
 
 void runAndCheck(ForceController &forceController, float fx, float fy, float fz, float mx, float my, float mz,
@@ -121,9 +121,6 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
     M1M3SSPublisher::get().setSAL(m1m3SAL);
 
     SettingReader::get().setRootPath("../SettingFiles");
-
-    REQUIRE_NOTHROW(forceActuatorApplicationSettings.load(
-            "../SettingFiles/Base/ForceActuatorApplicationSettings.xml"));
 
     ForceActuatorSettings forceActuatorSettings;
     REQUIRE_NOTHROW(forceActuatorSettings.load("../SettingFiles/Sets/Default/1/ForceActuatorSettings.xml"));

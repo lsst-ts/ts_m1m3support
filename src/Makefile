@@ -21,12 +21,12 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/DigitalInputOutput" \
 	-I"LSST/M1M3/SS/FirmwareUpdate" \
 	-I"LSST/M1M3/SS/Accelerometer" \
-	-I"LSST/M1M3/SS/AutomaticOperationsController" \
 	-I"LSST/M1M3/SS/BusLists" \
 	-I"LSST/M1M3/SS/CommandFactory" \
+	-I"LSST/M1M3/SS/Controllers" \
 	-I"LSST/M1M3/SS/Displacement" \
 	-I"LSST/M1M3/SS/Inclinometer" \
-	-I"LSST/M1M3/SS/ForceController" \
+	-I"LSST/M1M3/SS/ForceComponents" \
 	-I"LSST/M1M3/SS/Commands" \
 	-I"LSST/M1M3/SS/Context" \
 	-I"LSST/M1M3/SS/Domain" \
@@ -38,11 +38,7 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/Modbus" \
 	-I"LSST/M1M3/SS/Model" \
 	-I"LSST/M1M3/SS/PID" \
-	-I"LSST/M1M3/SS/PositionController" \
-	-I"LSST/M1M3/SS/PowerController" \
-	-I"LSST/M1M3/SS/ProfileController" \
 	-I"LSST/M1M3/SS/Publisher" \
-	-I"LSST/M1M3/SS/SafetyController" \
 	-I"LSST/M1M3/SS/Settings" \
 	-I"LSST/M1M3/SS/StateFactory" \
 	-I"LSST/M1M3/SS/States" \

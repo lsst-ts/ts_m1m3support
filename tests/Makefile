@@ -19,15 +19,14 @@ M1M3_CPPFLAGS := -I"/usr/include" \
 	-I"../src/LSST/M1M3/SS/DigitalInputOutput" \
 	-I"../src/LSST/M1M3/SS/FirmwareUpdate" \
 	-I"../src/LSST/M1M3/SS/Accelerometer" \
-	-I"../src/LSST/M1M3/SS/AutomaticOperationsController" \
 	-I"../src/LSST/M1M3/SS/BusLists" \
 	-I"../src/LSST/M1M3/SS/CommandFactory" \
 	-I"../src/LSST/M1M3/SS/Displacement" \
 	-I"../src/LSST/M1M3/SS/Inclinometer" \
-	-I"../src/LSST/M1M3/SS/ForceController" \
+	-I"../src/LSST/M1M3/SS/ForceComponents" \
 	-I"../src/LSST/M1M3/SS/Commands" \
 	-I"../src/LSST/M1M3/SS/Context" \
-	-I"../src/LSST/M1M3/SS/Controller" \
+	-I"../src/LSST/M1M3/SS/Controllers" \
 	-I"../src/LSST/M1M3/SS/Domain" \
 	-I"../src/LSST/M1M3/SS/FPGA" \
 	-I"../src/LSST/M1M3/SS/Gyro" \
@@ -37,11 +36,7 @@ M1M3_CPPFLAGS := -I"/usr/include" \
 	-I"../src/LSST/M1M3/SS/Modbus" \
 	-I"../src/LSST/M1M3/SS/Model" \
 	-I"../src/LSST/M1M3/SS/PID" \
-	-I"../src/LSST/M1M3/SS/PositionController" \
-	-I"../src/LSST/M1M3/SS/PowerController" \
-	-I"../src/LSST/M1M3/SS/ProfileController" \
 	-I"../src/LSST/M1M3/SS/Publisher" \
-	-I"../src/LSST/M1M3/SS/SafetyController" \
 	-I"../src/LSST/M1M3/SS/Settings" \
 	-I"../src/LSST/M1M3/SS/StateFactory" \
 	-I"../src/LSST/M1M3/SS/States" \
