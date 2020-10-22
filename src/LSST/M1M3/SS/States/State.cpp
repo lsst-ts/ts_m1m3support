@@ -170,6 +170,9 @@ States::Type State::modbusTransmit(ModbusTransmitCommand* command) {
 States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     return this->rejectCommandInvalidState(command, "ForceActuatorBumpTest");
 }
+States::Type State::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
+    return this->rejectCommandInvalidState(command, "KillForceActuatorBumpTest");
+}
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";

@@ -38,6 +38,7 @@
 #include <FaultState.h>
 #include <LoweringFaultState.h>
 #include <ProfileHardpointCorrectionState.h>
+#include <BumpTestState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -69,6 +70,7 @@ private:
     FaultState _faultState;
     LoweringFaultState _loweringFaultState;
     ProfileHardpointCorrectionState _profileHardpointCorrectionState;
+    BumpTestState _bumpTestState;
 };
 
 } /* namespace SS */

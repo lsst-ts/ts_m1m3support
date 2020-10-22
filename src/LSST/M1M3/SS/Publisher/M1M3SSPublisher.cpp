@@ -2448,6 +2448,11 @@ void M1M3SSPublisher::ackCommandforceActuatorBumpTest(int32_t commandID, int32_t
     _m1m3SAL->ackCommand_forceActuatorBumpTest(commandID, ackCode, 0, (char*)description.c_str());
 }
 
+void M1M3SSPublisher::ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode,
+                                                          std::string description) {
+    _m1m3SAL->ackCommand_killForceActuatorBumpTest(commandID, ackCode, 0, (char*)description.c_str());
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

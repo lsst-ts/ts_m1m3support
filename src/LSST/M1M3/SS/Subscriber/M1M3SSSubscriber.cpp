@@ -25,6 +25,7 @@
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 #include <CommandFactory.h>
+#include <KillForceActuatorBumpTestCommand.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -84,6 +85,7 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_programILC");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_forceActuatorBumpTest");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_killForceActuatorBumpTest");
     _mtMountSAL->salTelemetrySub((char*)"MTMount_Azimuth");
     _mtMountSAL->salTelemetrySub((char*)"MTMount_Elevation");
 }  // namespace M1M3
@@ -447,6 +449,14 @@ Command* M1M3SSSubscriber::tryAcceptCommandForceActuatorBumpTest() {
     if (commandID > 0) {
         return CommandFactory::create(Commands::ForceActuatorBumpTestCommand, &_forceActuatorBumpTestData,
                                       commandID);
+    }
+    return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandKillForceActuatorBumpTest() {
+    int32_t commandID = _m1m3SAL->acceptCommand_killForceActuatorBumpTest(&_killForceActuatorBumpTestData);
+    if (commandID > 0) {
+        return new KillForceActuatorBumpTestCommand(commandID, &_killForceActuatorBumpTestData);
     }
     return 0;
 }

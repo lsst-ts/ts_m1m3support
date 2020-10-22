@@ -105,6 +105,8 @@ public:
     Command* tryAcceptCommandProgramILC();
     Command* tryAcceptCommandModbusTransmit();
     Command* tryAcceptCommandForceActuatorBumpTest();
+    Command* tryAcceptCommandKillForceActuatorBumpTest();
+
     Command* tryGetSampleTMAAzimuth();
     Command* tryGetSampleTMAElevation();
 
@@ -158,6 +160,8 @@ private:
     MTM1M3_command_programILCC _programILCData;
     MTM1M3_command_modbusTransmitC _modbusTransmitData;
     MTM1M3_command_forceActuatorBumpTestC _forceActuatorBumpTestData;
+    MTM1M3_command_killForceActuatorBumpTestC _killForceActuatorBumpTestData;
+
     MTMount_AzimuthC _tmaAzimuth;
     MTMount_ElevationC _tmaElevation;
 };

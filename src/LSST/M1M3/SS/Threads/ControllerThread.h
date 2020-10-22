@@ -39,8 +39,9 @@ namespace SS {
  *
  * Holds command queue. Command is enqueued in SubscriberThread after being
  * received from SAL. Command is then dequeued in ControllerThread and passed
- * to the Controller::execute method. Singleton, as only a single instatnce
- * should occur in an application.
+ * to the Controller::execute method. Singleton, as only a single instance
+ * should occur in an application. Runs in a single thread - provides guarantee
+ * that only single command is being executed in any moment.
  */
 class ControllerThread {
 public:

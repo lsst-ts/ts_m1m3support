@@ -90,6 +90,15 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command) {
     return Model::get().getSafetyController()->checkSafety(States::DisabledState);
 }
 
+States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
+    // BumpTestState bumpTestState = std::static_type<BumpTestState> StaticS
+    //_bumpedActuator = command->getData()->actuatorId;
+    //_bumpPrimary = command->getData()->testPrimary;
+    //_bumpSecondary = command->getData()->testSecondary;
+
+    return Model::get().getSafetyController()->checkSafety(States::BumpTestState);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

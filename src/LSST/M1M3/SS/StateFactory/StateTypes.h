@@ -59,6 +59,8 @@ struct States {
         ProfileHardpointCorrectionState =
                 (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
                 ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_ProfileHardpointCorrectionState),
+        BumpTestState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
+                        ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_BumpTestState),
         NoStateTransition = 0xFFFFFFFFFFFFFFFF
     };
 };

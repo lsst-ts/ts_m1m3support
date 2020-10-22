@@ -42,7 +42,8 @@ StaticStateFactory::StaticStateFactory()
           _loweringEngineeringState(),
           _faultState(),
           _loweringFaultState(),
-          _profileHardpointCorrectionState() {
+          _profileHardpointCorrectionState(),
+          _bumpTestState() {
     spdlog::debug("StaticStateFactory: StaticStateFactor()");
 }
 
@@ -82,6 +83,8 @@ State* StaticStateFactory::create(States::Type state) {
             return &_loweringFaultState;
         case States::ProfileHardpointCorrectionState:
             return &_profileHardpointCorrectionState;
+        case States::BumpTestState:
+            return &_bumpTestState;
         default:
             return 0;
     }

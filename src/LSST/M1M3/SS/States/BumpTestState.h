@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PARKEDENGINEERINGSTATE_H_
-#define PARKEDENGINEERINGSTATE_H_
+#ifndef BUMPTESTSTATE_H_
+#define BUMPTESTSTATE_H_
 
 #include <EngineeringState.h>
 
@@ -31,22 +31,18 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Parked Engineering State. Mirror can be raised, switched into Disabled State
- * or returned to Parked State with Exit Engineering command.
+ * Bum Test state. Used when a force actuator is being bump tested. Handles
  */
-class ParkedEngineeringState : public EngineeringState {
+class BumpTestState : public EngineeringState {
 public:
-    ParkedEngineeringState();
+    BumpTestState();
 
     virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type disable(DisableCommand* command) override;
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
+    virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* PARKEDENGINEERINGSTATE_H_ */
+#endif /* BUMPTESTSTATE_H_ */

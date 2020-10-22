@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Telescope & Site Software
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,32 +21,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PARKEDENGINEERINGSTATE_H_
-#define PARKEDENGINEERINGSTATE_H_
-
-#include <EngineeringState.h>
+#ifndef BUMPTESTCONTROLLER_H_
+#define BUMPTESTCONTROLLER_H_
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/**
- * Parked Engineering State. Mirror can be raised, switched into Disabled State
- * or returned to Parked State with Exit Engineering command.
- */
-class ParkedEngineeringState : public EngineeringState {
+class BumpTestController {
 public:
-    ParkedEngineeringState();
+    BumpTestController();
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type disable(DisableCommand* command) override;
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
+    void setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
+
+private:
+    int actuatorId;
+    bool testPrimary;
+    bool testSecondary;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* PARKEDENGINEERINGSTATE_H_ */
+#endif /* BUMPTESTCONTROLLER_H_ */

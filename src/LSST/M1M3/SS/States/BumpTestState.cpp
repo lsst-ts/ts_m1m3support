@@ -21,32 +21,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PARKEDENGINEERINGSTATE_H_
-#define PARKEDENGINEERINGSTATE_H_
-
-#include <EngineeringState.h>
+#include <BumpTestState.h>
+#include <Model.h>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/**
- * Parked Engineering State. Mirror can be raised, switched into Disabled State
- * or returned to Parked State with Exit Engineering command.
- */
-class ParkedEngineeringState : public EngineeringState {
-public:
-    ParkedEngineeringState();
+BumpTestState::BumpTestState() : EngineeringState("BumpTestState") {}
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type disable(DisableCommand* command) override;
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
-};
+States::Type BumpTestState::update(UpdateCommand* command) {
+    spdlog::trace("BumpTestState: update()");
+    sendTelemetry();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type BumpTestState::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
+    return Model::get().getSafetyController()->checkSafety(States::ParkedEngineeringState);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
-
-#endif /* PARKEDENGINEERINGSTATE_H_ */

@@ -21,32 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PARKEDENGINEERINGSTATE_H_
-#define PARKEDENGINEERINGSTATE_H_
+#ifndef FORCEACUATORBUMPTESTCOMMAND_H_
+#define FORCEACUATORBUMPTESTCOMMAND_H_
 
-#include <EngineeringState.h>
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/**
- * Parked Engineering State. Mirror can be raised, switched into Disabled State
- * or returned to Parked State with Exit Engineering command.
- */
-class ParkedEngineeringState : public EngineeringState {
+class ForceActuatorBumpTestCommand : public Command {
 public:
-    ParkedEngineeringState();
+    ForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_forceActuatorBumpTestC* data);
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type disable(DisableCommand* command) override;
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
+    MTM1M3_command_forceActuatorBumpTestC* getData() { return &_data; }
+
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+
+private:
+    MTM1M3_command_forceActuatorBumpTestC _data;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* PARKEDENGINEERINGSTATE_H_ */
+#endif /* FORCEACUATORBUMPTESTCOMMAND_H_ */

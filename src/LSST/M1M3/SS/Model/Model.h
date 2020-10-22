@@ -26,6 +26,7 @@
 
 #include <Accelerometer.h>
 #include <AutomaticOperationsController.h>
+#include <BumpTestController.h>
 #include <DigitalInputOutput.h>
 #include <Displacement.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -85,6 +86,7 @@ public:
     }
     inline Gyro* getGyro() { return _gyro; }
     inline ProfileController* getProfileController() { return &_profileController; }
+    inline BumpTestController* getBumpTestController() { return &_bumpTestController; }
 
     void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
     double getCachedTimestamp() { return _cachedTimestamp; }
@@ -125,6 +127,7 @@ private:
     AutomaticOperationsController* _automaticOperationsController;
     Gyro* _gyro;
     ProfileController _profileController;
+    BumpTestController _bumpTestController;
 
     std::mutex _mutex;
 

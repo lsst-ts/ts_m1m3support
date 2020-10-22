@@ -323,6 +323,12 @@ void Context::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     _updateCurrentStateIfRequired(state->forceActuatorBumpTest(command));
 }
 
+void Context::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
+    spdlog::debug("Context: killForceActuatorBumpTest()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->killForceActuatorBumpTest(command));
+}
+
 void Context::_updateCurrentStateIfRequired(States::Type potentialNewState) {
     if (potentialNewState != States::NoStateTransition) {
         _currentState = potentialNewState;
