@@ -30,20 +30,48 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Performs bump test on single actuator. Bump tests actuator performance by
+ * applying small positive and negative force offsets on stationary (parked)
+ * mirror, and compare measured forces from force cell.
+ *
+ * Bump test is performed in the following stages (per actuator, so if both
+ * primary and secondary shall be tested, repeat:
+ *
+ * 1. test if measured force is roughly equal to 0
+ * 2. apply a small positive force
+ * 3. wait for measured force to roughly equal to the applied force
+ * 4. null applied offset
+ * 5. wait for measured force to roughly reach 0
+ * 6. apply a small negative force
+ * 7. wait for measured force to roughly equal to the applied force
+ * 8. null applied offset
+ * 9. wait for measured force to roughly reach 0
+ *
+ * If any of the steps fails, transition to failed stage and exit.
+ */
 class BumpTestController {
 public:
     BumpTestController();
 
+    /**
+     * Set current bump tests parameters.
+     *
+     * @param actuatorId actuator ID (101-443)
+     * @param testPrimary true if test primary (Z) actuator
+     * @param testSecondary true if test secondary (X or Y) actuator
+     */
     void setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
 
     States::Type runLoop();
 
 private:
     int _zIndex;
+    int _secondaryIndex;
     bool _testPrimary;
     bool _testSecondary;
 
-    enum { IDLE, PLUS, WAITING_PLUS, ZERO_1, WAITING_ZERO, FINISHED } _stage;
+    float _tolerance;
 };
 
 }  // namespace SS

@@ -91,6 +91,8 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command) {
 }
 
 States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
+    spdlog::info("ParkedEngineeringState: forceActuatorBumpTest({}, {}, {})", command->getData()->actuatorId,
+                 command->getData()->testPrimary, command->getData()->testSecondary);
     Model::get().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
                                                               command->getData()->testPrimary,
                                                               command->getData()->testSecondary);

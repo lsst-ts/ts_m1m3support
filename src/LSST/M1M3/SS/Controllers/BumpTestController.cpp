@@ -24,8 +24,13 @@
 #include <BumpTestController.h>
 #include <ForceController.h>
 #include <Model.h>
+#include <Publisher.h>
 #include <SettingReader.h>
+
+#include <sal_MTM1M3.h>
 #include <spdlog/spdlog.h>
+
+using namespace MTM1M3;
 
 namespace LSST {
 namespace M1M3 {
@@ -38,24 +43,60 @@ BumpTestController::BumpTestController() {
 
 void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
     _zIndex = SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+    _secondaryIndex = SettingReader::get()
+                              .getForceActuatorApplicationSettings()
+                              ->ZIndexToSecondaryCylinderIndex[_zIndex];
     _testPrimary = testPrimary;
     _testSecondary = testSecondary;
-    _stage = IDLE;
+
+    _tolerance = 1;
+
+    MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
+            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+
+    if (testPrimary) {
+        forceActuatorBumpTestStatus->primaryTest[_zIndex] = MTM1M3_shared_BumpTest_NotTested;
+    }
+
+    if (testSecondary) {
+        forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex] = MTM1M3_shared_BumpTest_NotTested;
+    }
+
+    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 
 States::Type BumpTestController::runLoop() {
-    ForceController *forceController = Model::get().getForceController();
-    switch (_stage) {
-        case IDLE:
+    ForceController* forceController = Model::get().getForceController();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    // force actuator data are updated only in UpdateCommand; as only a single
+    // command can be executed, there isn't a race condition
+    MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
+            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+    MTM1M3_forceActuatorDataC* forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
+
+    short int* stage = &(forceActuatorBumpTestStatus->primaryTest[_zIndex]);
+
+    switch (*stage) {
+        case MTM1M3_shared_BumpTest_NotTested:
+            if (abs(forceActuatorData->zForce[_zIndex]) >= _tolerance) {
+                *stage = MTM1M3_shared_BumpTest_Failed;
+                spdlog::error("Cannot test {}, as measured parked force is too off 0 ({}, {})", _zIndex,
+                              forceActuatorData->zForce[_zIndex], _tolerance);
+                M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+                return States::BumpTestState;
+            }
             forceController->applyActuatorOffset(_zIndex, 50);
             forceController->processAppliedForces();
-            _stage = PLUS;
+            *stage = MTM1M3_shared_BumpTest_TestingPlus;
+            break;
+        case MTM1M3_shared_BumpTest_TestingPlus:
             break;
 
-        case FINISHED:
+        case MTM1M3_shared_BumpTest_Passed:
             _zIndex = -1;
             return States::ParkedEngineeringState;
     }
+    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
     return States::NoStateTransition;
 }
 
