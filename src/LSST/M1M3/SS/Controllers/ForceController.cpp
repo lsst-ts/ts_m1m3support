@@ -405,6 +405,7 @@ void ForceController::zeroOffsetForces() {
     if (_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.disable();
     }
+    _offsetForceComponent.zeroOffsetForces();
 }
 
 void ForceController::applyActuatorOffset(int zIndex, float offset) {

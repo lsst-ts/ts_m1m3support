@@ -38,15 +38,21 @@ namespace SS {
  * Bump test is performed in the following stages (per actuator, so if both
  * primary and secondary shall be tested, repeat:
  *
- * 1. test if measured force is roughly equal to 0
+ * 1. check that average of _testMeasurements measured forces roughly equal to 0 (in _tolerance)
  * 2. apply a small positive force
- * 3. wait for measured force to roughly equal to the applied force
- * 4. null applied offset
- * 5. wait for measured force to roughly reach 0
- * 6. apply a small negative force
- * 7. wait for measured force to roughly equal to the applied force
- * 8. null applied offset
- * 9. wait for measured force to roughly reach 0
+ * 3. sleep for _testSettleTime
+ * 4. check that average of _testMeasurements measured forces roughly equal to the applied force (in
+ * _tolerance)
+ * 5. null applied offset
+ * 6. sleep for _testSettleTime
+ * 7. check that average of _testMeasurements measured forces roughly equal to 0 (in _tolerance)
+ * 8. apply a small negative force
+ * 9. sleep for _testSettleTime
+ * 10. check that average of _testMeasurements measured forces roughly equal to the applied force (in
+ * _tolerance)
+ * 11. null applied offset
+ * 12. sleep for _testSettleTime
+ * 13. check that average of _testMeasurements measured forces roughly equal to 0 (in _tolerance)
  *
  * If any of the steps fails, transition to failed stage and exit.
  */
@@ -71,7 +77,27 @@ private:
     bool _testPrimary;
     bool _testSecondary;
 
+    float _testForce;
     float _tolerance;
+    float _testSettleTime;
+    int _testMeasurements;
+    int _testProgress;
+    // if NAN, don't sleep
+    double _sleepUntil;
+
+    void _resetProgress();
+    void _resetAverages();
+
+    double _xAverages[FA_X_COUNT];
+    double _yAverages[FA_Y_COUNT];
+    double _zAverages[FA_Z_COUNT];
+
+    /**
+     * Collect averages
+     */
+    bool _collectAverages();
+
+    bool _checkAverages(char axis = ' ', int index = -1, double value = 0);
 };
 
 }  // namespace SS

@@ -48,6 +48,7 @@ public:
                                          float yMoment, float zMoment);
 
     void applyActuatorOffset(int zIndex, float offset);
+    void zeroOffsetForces();
 
 protected:
     void postEnableDisableActions() override;
