@@ -96,6 +96,11 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
     applyOffsetForces(xForces, yForces, zForces);
 }
 
+void OffsetForceComponent::applyActuatorOffset(int zIndex, float offset) {
+    spdlog::debug("OffsetForceComponent: applyActuatorOffset({}.{:1.f}", zIndex, offset);
+    zTarget[zIndex] = offset;
+}
+
 void OffsetForceComponent::postEnableDisableActions() {
     spdlog::debug("OffsetForceComponent: postEnableDisableActions()");
 

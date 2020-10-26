@@ -34,7 +34,7 @@ BumpTestState::BumpTestState() : EngineeringState("BumpTestState") {}
 States::Type BumpTestState::update(UpdateCommand* command) {
     spdlog::trace("BumpTestState: update()");
     sendTelemetry();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::get().getSafetyController()->checkSafety(Model::get().getBumpTestController()->runLoop());
 }
 
 States::Type BumpTestState::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {

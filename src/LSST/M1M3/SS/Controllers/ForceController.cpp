@@ -407,6 +407,14 @@ void ForceController::zeroOffsetForces() {
     }
 }
 
+void ForceController::applyActuatorOffset(int zIndex, float offset) {
+    spdlog::info("ForceController: applyActuatorOffset({}, {:.1f})", zIndex, offset);
+    if (!_offsetForceComponent.isEnabled()) {
+        _offsetForceComponent.enable();
+    }
+    _offsetForceComponent.applyActuatorOffset(zIndex, offset);
+}
+
 void ForceController::applyStaticForces() {
     spdlog::info("ForceController: applyStaticForces()");
     if (!_staticForceComponent.isEnabled()) {

@@ -22,8 +22,8 @@
  */
 
 #include <Context.h>
-#include <ForceActuatorBumpTestCommand.h>
 #include <M1M3SSPublisher.h>
+#include <SettingReader.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -36,7 +36,8 @@ ForceActuatorBumpTestCommand::ForceActuatorBumpTestCommand(int32_t commandID,
 }
 
 bool ForceActuatorBumpTestCommand::validate() {
-    if (_data.actuatorId < 100 || _data.actuatorId > 443) {
+    if (SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(_data.actuatorId) ==
+        -1) {
         M1M3SSPublisher::get().logCommandRejectionWarning("ForceActuatorBumpTest", "Invalid actuatorId.");
         return false;
     }

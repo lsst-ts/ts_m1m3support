@@ -218,6 +218,8 @@ public:
                                          float yMoment, float zMoment);
     void zeroOffsetForces();
 
+    void applyActuatorOffset(int zIndex, float offset);
+
     void applyStaticForces();
     void zeroStaticForces();
 

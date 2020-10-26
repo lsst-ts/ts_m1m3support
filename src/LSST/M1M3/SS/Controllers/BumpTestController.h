@@ -24,6 +24,8 @@
 #ifndef BUMPTESTCONTROLLER_H_
 #define BUMPTESTCONTROLLER_H_
 
+#include <StateTypes.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -34,10 +36,14 @@ public:
 
     void setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
 
+    States::Type runLoop();
+
 private:
-    int actuatorId;
-    bool testPrimary;
-    bool testSecondary;
+    int _zIndex;
+    bool _testPrimary;
+    bool _testSecondary;
+
+    enum { IDLE, PLUS, WAITING_PLUS, ZERO_1, WAITING_ZERO, FINISHED } _stage;
 };
 
 }  // namespace SS

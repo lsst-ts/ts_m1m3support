@@ -22,15 +22,42 @@
  */
 
 #include <BumpTestController.h>
+#include <ForceController.h>
+#include <Model.h>
+#include <SettingReader.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-BumpTestController::BumpTestController() { spdlog::debug("BumpTestController: BumpTestController()"); }
+BumpTestController::BumpTestController() {
+    spdlog::debug("BumpTestController: BumpTestController()");
+    _zIndex = -1;
+}
 
-void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {}
+void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
+    _zIndex = SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+    _testPrimary = testPrimary;
+    _testSecondary = testSecondary;
+    _stage = IDLE;
+}
+
+States::Type BumpTestController::runLoop() {
+    ForceController *forceController = Model::get().getForceController();
+    switch (_stage) {
+        case IDLE:
+            forceController->applyActuatorOffset(_zIndex, 50);
+            forceController->processAppliedForces();
+            _stage = PLUS;
+            break;
+
+        case FINISHED:
+            _zIndex = -1;
+            return States::ParkedEngineeringState;
+    }
+    return States::NoStateTransition;
+}
 
 }  // namespace SS
 }  // namespace M1M3

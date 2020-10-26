@@ -91,11 +91,9 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command) {
 }
 
 States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
-    // BumpTestState bumpTestState = std::static_type<BumpTestState> StaticS
-    //_bumpedActuator = command->getData()->actuatorId;
-    //_bumpPrimary = command->getData()->testPrimary;
-    //_bumpSecondary = command->getData()->testSecondary;
-
+    Model::get().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
+                                                              command->getData()->testPrimary,
+                                                              command->getData()->testSecondary);
     return Model::get().getSafetyController()->checkSafety(States::BumpTestState);
 }
 
