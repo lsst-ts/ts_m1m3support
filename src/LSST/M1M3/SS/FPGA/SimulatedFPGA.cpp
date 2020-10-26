@@ -43,6 +43,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Return data writen to modbus. The data are right shifted by 1 to allow for
+ * signaling data end. See FPGA code for details.
+ */
+uint16_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
+
 SimulatedFPGA::SimulatedFPGA() {
     spdlog::info("SimulatedFPGA: SimulatedFPGA()");
     _lastRequest = -1;
@@ -881,8 +887,6 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     }
     response->push(0xA000);  // Write End of Frame
 }
-
-uint16_t SimulatedFPGA::_readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
 void SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {}
 
