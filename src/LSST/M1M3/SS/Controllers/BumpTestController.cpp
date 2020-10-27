@@ -59,7 +59,7 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
     _testSettleTime = 3.0;
     _testMeasurements = 10;
 
-    stopAll();
+    _resetProgress();
 
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
             M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
@@ -118,13 +118,11 @@ void BumpTestController::runLoop() {
 }
 
 void BumpTestController::stopAll() {
-    _testProgress = 0;
-    _sleepUntil = 0;
+    M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
 
-    _resetAverages();
+    _resetProgress();
 
-    Model::get().getForceController()->zeroOffsetForces();
-    Model::get().getForceController()->processAppliedForces();
+    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 
 bool BumpTestController::_runCylinder(char axis, int index, double averages[], short int* stage) {
@@ -158,7 +156,7 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
                     *stage = MTM1M3_shared_BumpTest_Passed;
-                    stopAll();
+                    _resetProgress();
                     return false;
             }
             forceController->processAppliedForces();
@@ -192,6 +190,16 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
     }
 
     return true;
+}
+
+void BumpTestController::_resetProgress() {
+    _testProgress = 0;
+    _sleepUntil = 0;
+
+    _resetAverages();
+
+    Model::get().getForceController()->zeroOffsetForces();
+    Model::get().getForceController()->processAppliedForces();
 }
 
 void BumpTestController::_resetAverages() {

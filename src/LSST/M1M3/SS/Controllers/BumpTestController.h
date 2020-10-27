@@ -91,6 +91,7 @@ private:
 
     bool _runCylinder(char axis, int index, double averages[], short int* stage);
 
+    void _resetProgress();
     void _resetAverages();
 
     double _xAverages[FA_X_COUNT];

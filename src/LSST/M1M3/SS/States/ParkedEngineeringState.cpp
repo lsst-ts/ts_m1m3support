@@ -112,6 +112,12 @@ States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTest
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
+States::Type ParkedEngineeringState::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
+    spdlog::info("ParkedEngineeringState: killForceActuatorBumpTest()");
+    Model::get().getBumpTestController()->stopAll();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
