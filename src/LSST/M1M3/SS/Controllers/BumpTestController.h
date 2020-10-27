@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the Telescope & Site Software
+ * Developed for the Telescope & Site Software Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -69,8 +69,15 @@ public:
      */
     void setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
 
+    /**
+     * Run single loop. Shall be called from update command after telemetry
+     * data are queried and send.
+     */
     void runLoop();
 
+    /**
+     * Stops all running bump tests.
+     */
     void stopAll();
 
 private:

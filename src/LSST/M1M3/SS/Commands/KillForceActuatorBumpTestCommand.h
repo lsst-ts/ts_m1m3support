@@ -32,19 +32,19 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Stops any running force actuator bump test.
+ *
+ * @see BumpTestController::stopAll()
+ */
 class KillForceActuatorBumpTestCommand : public Command {
 public:
     KillForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC* data);
-
-    MTM1M3_command_killForceActuatorBumpTestC* getData() { return &_data; }
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    MTM1M3_command_killForceActuatorBumpTestC _data;
 };
 
 } /* namespace SS */

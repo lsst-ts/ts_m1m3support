@@ -32,7 +32,6 @@ namespace SS {
 KillForceActuatorBumpTestCommand::KillForceActuatorBumpTestCommand(
         int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC* data) {
     this->commandID = commandID;
-    memcpy(&_data, data, sizeof(MTM1M3_command_killForceActuatorBumpTestC));
 }
 
 void KillForceActuatorBumpTestCommand::execute() { Context::get().killForceActuatorBumpTest(this); }
