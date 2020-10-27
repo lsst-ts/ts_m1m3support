@@ -408,12 +408,12 @@ void ForceController::zeroOffsetForces() {
     _offsetForceComponent.zeroOffsetForces();
 }
 
-void ForceController::applyActuatorOffset(int zIndex, float offset) {
-    spdlog::info("ForceController: applyActuatorOffset({}, {:.1f})", zIndex, offset);
+void ForceController::applyActuatorOffset(char axis, int index, float offset) {
+    spdlog::info("ForceController: applyActuatorOffset({}, {}, {:.1f})", axis, index, offset);
     if (!_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.enable();
     }
-    _offsetForceComponent.applyActuatorOffset(zIndex, offset);
+    _offsetForceComponent.applyActuatorOffset(axis, index, offset);
 }
 
 void ForceController::applyStaticForces() {

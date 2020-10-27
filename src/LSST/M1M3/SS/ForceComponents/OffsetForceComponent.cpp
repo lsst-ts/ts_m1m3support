@@ -97,9 +97,19 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
     applyOffsetForces(xForces, yForces, zForces);
 }
 
-void OffsetForceComponent::applyActuatorOffset(int zIndex, float offset) {
-    spdlog::debug("OffsetForceComponent: applyActuatorOffset({}.{:1.f}", zIndex, offset);
-    zTarget[zIndex] = offset;
+void OffsetForceComponent::applyActuatorOffset(char axis, int index, float offset) {
+    spdlog::debug("OffsetForceComponent: applyActuatorOffset({}, {}, {:1.f}", axis, index, offset);
+    switch (axis) {
+        case 'X':
+            xTarget[index] = offset;
+            break;
+        case 'Y':
+            yTarget[index] = offset;
+            break;
+        case 'Z':
+            zTarget[index] = offset;
+            break;
+    }
 }
 
 void OffsetForceComponent::zeroOffsetForces() {

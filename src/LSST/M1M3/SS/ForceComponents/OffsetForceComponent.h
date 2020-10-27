@@ -47,7 +47,7 @@ public:
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
 
-    void applyActuatorOffset(int zIndex, float offset);
+    void applyActuatorOffset(char axis, int index, float offset);
     void zeroOffsetForces();
 
 protected:

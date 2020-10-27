@@ -38,16 +38,21 @@ namespace SS {
 
 BumpTestController::BumpTestController() {
     spdlog::debug("BumpTestController: BumpTestController()");
+    _xIndex = -1;
+    _yIndex = -1;
     _zIndex = -1;
 }
 
 void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
     _zIndex = SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+    _xIndex = SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToXIndex[_zIndex];
+    _yIndex = SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToYIndex[_zIndex];
     _secondaryIndex = SettingReader::get()
                               .getForceActuatorApplicationSettings()
                               ->ZIndexToSecondaryCylinderIndex[_zIndex];
+
     _testPrimary = testPrimary;
-    _testSecondary = testSecondary;
+    _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
 
     _testForce = 222;
     _tolerance = 1;
@@ -59,11 +64,11 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
             M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
 
-    if (testPrimary) {
+    if (_testPrimary) {
         forceActuatorBumpTestStatus->primaryTest[_zIndex] = MTM1M3_shared_BumpTest_NotTested;
     }
 
-    if (testSecondary) {
+    if (_testSecondary) {
         forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex] = MTM1M3_shared_BumpTest_NotTested;
     }
 
@@ -71,14 +76,40 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
 }
 
 States::Type BumpTestController::runLoop() {
-    ForceController* forceController = Model::get().getForceController();
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
     // force actuator data are updated only in UpdateCommand; as only a single
     // command can be executed, there isn't a race condition
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
             M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
 
-    short int* stage = &(forceActuatorBumpTestStatus->primaryTest[_zIndex]);
+    if (_testPrimary) {
+        States::Type pRet =
+                _runCylinder('Z', _zIndex, _zAverages, &(forceActuatorBumpTestStatus->primaryTest[_zIndex]));
+        if (pRet != States::ParkedEngineeringState) {
+            return pRet;
+        }
+        _testPrimary = false;
+    }
+
+    if (_testSecondary) {
+        States::Type sRet = States::ParkedEngineeringState;
+        short int* secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
+        if (_xIndex >= 0)
+            sRet = _runCylinder('X', _xIndex, _xAverages, secondaryStage);
+        else if (_yIndex >= 0)
+            sRet = _runCylinder('Y', _yIndex, _yAverages, secondaryStage);
+        if (sRet != States::ParkedEngineeringState) {
+            return sRet;
+        }
+        _testSecondary = false;
+    }
+
+    return States::ParkedEngineeringState;
+}
+
+States::Type BumpTestController::_runCylinder(char axis, int index, double averages[], short int* stage) {
+    ForceController* forceController = Model::get().getForceController();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->timestamp = timestamp;
 
     bool positive = false;
 
@@ -90,19 +121,19 @@ States::Type BumpTestController::runLoop() {
 
             if (_checkAverages() == false) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
-                spdlog::error("Cannot test {}, as measured parked force is too off 0 ({}, {})", _zIndex,
-                              _zAverages[_zIndex], _tolerance);
+                spdlog::error("Cannot test {}, as measured parked force is too off 0 ({}, {})", index,
+                              averages[index], _tolerance);
                 M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
                 _resetProgress();
-                return States::BumpTestState;
+                return States::ParkedEngineeringState;
             }
             switch (*stage) {
                 case MTM1M3_shared_BumpTest_NotTested:
-                    forceController->applyActuatorOffset(_zIndex, _testForce);
+                    forceController->applyActuatorOffset(axis, index, _testForce);
                     *stage = MTM1M3_shared_BumpTest_TestingPlus;
                     break;
                 case MTM1M3_shared_BumpTest_TestingPositiveWait:
-                    forceController->applyActuatorOffset(_zIndex, -_testForce);
+                    forceController->applyActuatorOffset(axis, index, -_testForce);
                     *stage = MTM1M3_shared_BumpTest_TestingNegative;
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
@@ -121,11 +152,10 @@ States::Type BumpTestController::runLoop() {
         case MTM1M3_shared_BumpTest_TestingNegative:
             if (timestamp < _sleepUntil || _collectAverages() == false) break;
 
-            if (_checkAverages('Z', _zIndex, positive ? _testForce : -_testForce) == false) {
+            if (_checkAverages(axis, index, positive ? _testForce : -_testForce) == false) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
                 spdlog::error("Cannot test {}, as measured {} force is too off {} ({}, {})",
-                              positive ? "plus" : "negative", _zIndex, _testForce, _zAverages[_zIndex],
-                              _tolerance);
+                              positive ? "plus" : "negative", index, _testForce, averages[index], _tolerance);
                 M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
                 _resetProgress();
                 return States::ParkedEngineeringState;
@@ -140,12 +170,11 @@ States::Type BumpTestController::runLoop() {
             break;
 
         case MTM1M3_shared_BumpTest_Passed:
-            _zIndex = -1;
             return States::ParkedEngineeringState;
     }
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
     return States::NoStateTransition;
-}  // namespace SS
+}
 
 void BumpTestController::_resetProgress() {
     _testProgress = 0;
@@ -190,7 +219,8 @@ bool BumpTestController::_checkAverages(char axis, int index, double value) {
     auto _inTolerance = [](char axis, int index, double value, double expected, double tolerance) {
         if (abs(value - expected) >= tolerance) {
             spdlog::warn(
-                    "Value for {} actuator {} outside of tolerance - measured {}, expected {}, tolerance {}",
+                    "Value for {} actuator {} outside of tolerance - measured {}, expected {}, tolerance "
+                    "{}",
                     axis, index, value, expected, tolerance);
             return false;
         }

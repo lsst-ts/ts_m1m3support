@@ -72,6 +72,8 @@ public:
     States::Type runLoop();
 
 private:
+    int _xIndex;
+    int _yIndex;
     int _zIndex;
     int _secondaryIndex;
     bool _testPrimary;
@@ -84,6 +86,8 @@ private:
     int _testProgress;
     // if NAN, don't sleep
     double _sleepUntil;
+
+    States::Type _runCylinder(char axis, int index, double averages[], short int* stage);
 
     void _resetProgress();
     void _resetAverages();
