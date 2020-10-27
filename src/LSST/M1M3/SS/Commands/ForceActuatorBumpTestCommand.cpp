@@ -41,6 +41,11 @@ bool ForceActuatorBumpTestCommand::validate() {
         M1M3SSPublisher::get().logCommandRejectionWarning("ForceActuatorBumpTest", "Invalid actuatorId.");
         return false;
     }
+    if (M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+        M1M3SSPublisher::get().logCommandRejectionWarning("ForceActuatorBumpTest",
+                                                          "Test already in progress.");
+        return false;
+    }
     return true;
 }
 

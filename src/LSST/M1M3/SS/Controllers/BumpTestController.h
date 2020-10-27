@@ -24,7 +24,7 @@
 #ifndef BUMPTESTCONTROLLER_H_
 #define BUMPTESTCONTROLLER_H_
 
-#include <StateTypes.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -69,7 +69,9 @@ public:
      */
     void setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
 
-    States::Type runLoop();
+    void runLoop();
+
+    void stopAll();
 
 private:
     int _xIndex;
@@ -87,9 +89,8 @@ private:
     // if NAN, don't sleep
     double _sleepUntil;
 
-    States::Type _runCylinder(char axis, int index, double averages[], short int* stage);
+    bool _runCylinder(char axis, int index, double averages[], short int* stage);
 
-    void _resetProgress();
     void _resetAverages();
 
     double _xAverages[FA_X_COUNT];
