@@ -156,7 +156,7 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
                     *stage = MTM1M3_shared_BumpTest_Passed;
-                    _resetProgress();
+                    _resetProgress(false);
                     return false;
             }
             forceController->processAppliedForces();
@@ -192,14 +192,16 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
     return true;
 }
 
-void BumpTestController::_resetProgress() {
+void BumpTestController::_resetProgress(bool zeroOffsets) {
     _testProgress = 0;
     _sleepUntil = 0;
 
     _resetAverages();
 
-    Model::get().getForceController()->zeroOffsetForces();
-    Model::get().getForceController()->processAppliedForces();
+    if (zeroOffsets) {
+        Model::get().getForceController()->zeroOffsetForces();
+        Model::get().getForceController()->processAppliedForces();
+    }
 }
 
 void BumpTestController::_resetAverages() {
