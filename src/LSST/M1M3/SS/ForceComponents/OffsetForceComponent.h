@@ -47,6 +47,9 @@ public:
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
 
+    void applyActuatorOffset(char axis, int index, float offset);
+    void zeroOffsetForces();
+
 protected:
     void postEnableDisableActions() override;
     void postUpdateActions() override;

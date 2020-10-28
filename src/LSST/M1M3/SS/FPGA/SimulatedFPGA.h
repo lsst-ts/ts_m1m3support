@@ -104,7 +104,6 @@ private:
     std::queue<uint16_t> _crcVector;
     void _writeModbus(std::queue<uint16_t>* response, uint16_t data);
     void _writeModbusCRC(std::queue<uint16_t>* response);
-    uint16_t _readModbus(uint16_t data);
 
     void _monitorElevation(void);
 

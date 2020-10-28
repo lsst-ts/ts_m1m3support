@@ -47,6 +47,7 @@ OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
     _preclippedOffsetForces = M1M3SSPublisher::get().getEventPreclippedOffsetForces();
+    zeroOffsetForces();
 }
 
 void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
@@ -94,6 +95,27 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
         zForces[zIndex] = forces.ZForces[zIndex];
     }
     applyOffsetForces(xForces, yForces, zForces);
+}
+
+void OffsetForceComponent::applyActuatorOffset(char axis, int index, float offset) {
+    spdlog::debug("OffsetForceComponent: applyActuatorOffset({}, {}, {:1.f}", axis, index, offset);
+    switch (axis) {
+        case 'X':
+            xTarget[index] = offset;
+            break;
+        case 'Y':
+            yTarget[index] = offset;
+            break;
+        case 'Z':
+            zTarget[index] = offset;
+            break;
+    }
+}
+
+void OffsetForceComponent::zeroOffsetForces() {
+    memset(xTarget, 0, sizeof(xTarget));
+    memset(yTarget, 0, sizeof(yTarget));
+    memset(zTarget, 0, sizeof(zTarget));
 }
 
 void OffsetForceComponent::postEnableDisableActions() {
