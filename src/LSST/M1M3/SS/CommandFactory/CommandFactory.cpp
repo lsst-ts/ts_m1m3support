@@ -68,6 +68,7 @@
 #include <ResetPIDCommand.h>
 #include <ProgramILCCommand.h>
 #include <ModbusTransmitCommand.h>
+#include <ForceActuatorBumpTestCommand.h>
 #include <mutex>
 #include <spdlog/spdlog.h>
 
@@ -178,6 +179,8 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new ProgramILCCommand(commandID, (MTM1M3_command_programILCC*)data);
         case Commands::ModbusTransmitCommand:
             return new ModbusTransmitCommand(commandID, (MTM1M3_command_modbusTransmitC*)data);
+        case Commands::ForceActuatorBumpTestCommand:
+            return new ForceActuatorBumpTestCommand(commandID, (MTM1M3_command_forceActuatorBumpTestC*)data);
     }
     return 0;
 }

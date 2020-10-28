@@ -75,6 +75,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_detailedState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_errorCode");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorForceWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
@@ -597,6 +598,18 @@ void M1M3SSPublisher::logErrorCode() {
 void M1M3SSPublisher::tryLogErrorCode() {
     if (_eventErrorCode.errorCode != _previousEventErrorCode.errorCode) {
         this->logErrorCode();
+    }
+}
+
+void M1M3SSPublisher::logForceActuatorBumpTestStatus() {
+    _m1m3SAL->logEvent_forceActuatorBumpTestStatus(&_eventForceActuatorBumpTestStatus, 0);
+    _previousEventForceActuatorBumpTestStatus = _eventForceActuatorBumpTestStatus;
+}
+
+void M1M3SSPublisher::tryLogForceActuatorBumpTestStatus() {
+    if (memcmp(&_previousEventForceActuatorBumpTestStatus, &_eventForceActuatorBumpTestStatus,
+               sizeof(MTM1M3_logevent_forceActuatorBumpTestStatusC))) {
+        logForceActuatorBumpTestStatus();
     }
 }
 
@@ -2429,6 +2442,16 @@ void M1M3SSPublisher::ackCommandprogramILC(int32_t commandID, int32_t ackCode, s
 
 void M1M3SSPublisher::ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description) {
     _m1m3SAL->ackCommand_modbusTransmit(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode,
+                                                      std::string description) {
+    _m1m3SAL->ackCommand_forceActuatorBumpTest(commandID, ackCode, 0, (char*)description.c_str());
+}
+
+void M1M3SSPublisher::ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode,
+                                                          std::string description) {
+    _m1m3SAL->ackCommand_killForceActuatorBumpTest(commandID, ackCode, 0, (char*)description.c_str());
 }
 
 } /* namespace SS */

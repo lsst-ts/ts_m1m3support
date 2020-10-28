@@ -394,6 +394,13 @@ ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
     }
 }
 
+const int ForceActuatorApplicationSettings::ActuatorIdToZIndex(int actuatorId) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+        if (Table[zIndex].ActuatorID == actuatorId) return zIndex;
+    }
+    return -1;
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

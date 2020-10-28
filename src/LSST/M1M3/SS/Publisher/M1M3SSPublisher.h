@@ -124,6 +124,9 @@ public:
         return &_eventDisplacementSensorWarning;
     }
     MTM1M3_logevent_errorCodeC* getEventErrorCode() { return &_eventErrorCode; }
+    MTM1M3_logevent_forceActuatorBumpTestStatusC* getEventForceActuatorBumpTestStatus() {
+        return &_eventForceActuatorBumpTestStatus;
+    }
     MTM1M3_logevent_forceActuatorForceWarningC* getEventForceActuatorForceWarning() {
         return &_eventForceActuatorForceWarning;
     }
@@ -283,6 +286,8 @@ public:
     void tryLogDisplacementSensorWarning();
     void logErrorCode();
     void tryLogErrorCode();
+    void logForceActuatorBumpTestStatus();
+    void tryLogForceActuatorBumpTestStatus();
     void logForceActuatorForceWarning();
     void tryLogForceActuatorForceWarning();
     void logForceActuatorInfo();
@@ -408,6 +413,8 @@ public:
     void ackCommandresetPID(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandprogramILC(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
 
 private:
     M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;
@@ -448,6 +455,7 @@ private:
     MTM1M3_logevent_detailedStateC _eventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _eventDisplacementSensorWarning;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
+    MTM1M3_logevent_forceActuatorBumpTestStatusC _eventForceActuatorBumpTestStatus;
     MTM1M3_logevent_forceActuatorForceWarningC _eventForceActuatorForceWarning;
     MTM1M3_logevent_forceActuatorInfoC _eventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _eventForceActuatorState;
@@ -507,6 +515,7 @@ private:
     MTM1M3_logevent_detailedStateC _previousEventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _previousEventDisplacementSensorWarning;
     MTM1M3_logevent_errorCodeC _previousEventErrorCode;
+    MTM1M3_logevent_forceActuatorBumpTestStatusC _previousEventForceActuatorBumpTestStatus;
     MTM1M3_logevent_forceActuatorForceWarningC _previousEventForceActuatorForceWarning;
     MTM1M3_logevent_forceActuatorInfoC _previousEventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _previousEventForceActuatorState;

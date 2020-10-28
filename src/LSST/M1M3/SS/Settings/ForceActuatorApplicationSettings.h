@@ -115,6 +115,15 @@ public:
 
     //* Maps Z index (0-155) to secondary (DAA) index (0-111).
     int32_t ZIndexToSecondaryCylinderIndex[FA_Z_COUNT];
+
+    /**
+     * Returns zIndex of the actuator with give ID.
+     *
+     * @param actuatorId search for actuator with this ID
+     *
+     * @return zIndex of the actuator with Id equal to actuatorId
+     */
+    const int ActuatorIdToZIndex(int actuatorId);
 };
 
 } /* namespace SS */

@@ -21,33 +21,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PARKEDENGINEERINGSTATE_H_
-#define PARKEDENGINEERINGSTATE_H_
+#ifndef KILLFORCEACTUATORBUMPTESTCOMMAND_H_
+#define KILLFORCEACTUATORBUMPTESTCOMMAND_H_
 
-#include <EngineeringState.h>
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Parked Engineering State. Mirror can be raised, switched into Disabled State
- * or returned to Parked State with Exit Engineering command.
+ * Stops any running force actuator bump test.
+ *
+ * @see BumpTestController::stopAll()
  */
-class ParkedEngineeringState : public EngineeringState {
+class KillForceActuatorBumpTestCommand : public Command {
 public:
-    ParkedEngineeringState();
+    KillForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC* data);
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type disable(DisableCommand* command) override;
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
-    virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* PARKEDENGINEERINGSTATE_H_ */
+#endif /* KILLFORCEACTUATORBUMPTESTCOMMAND_H_ */

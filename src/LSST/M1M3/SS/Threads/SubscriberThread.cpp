@@ -82,6 +82,8 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandResetPID());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandProgramILC());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandModbusTransmit());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandForceActuatorBumpTest());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandKillForceActuatorBumpTest());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAAzimuth());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAElevation());
         std::this_thread::sleep_for(100us);

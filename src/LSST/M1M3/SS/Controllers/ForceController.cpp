@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the LSST Telescope & Site Software Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -405,6 +405,15 @@ void ForceController::zeroOffsetForces() {
     if (_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.disable();
     }
+    _offsetForceComponent.zeroOffsetForces();
+}
+
+void ForceController::applyActuatorOffset(char axis, int index, float offset) {
+    spdlog::info("ForceController: applyActuatorOffset({}, {}, {:.1f})", axis, index, offset);
+    if (!_offsetForceComponent.isEnabled()) {
+        _offsetForceComponent.enable();
+    }
+    _offsetForceComponent.applyActuatorOffset(axis, index, offset);
 }
 
 void ForceController::applyStaticForces() {

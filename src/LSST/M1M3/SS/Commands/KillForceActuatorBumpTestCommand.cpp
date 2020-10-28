@@ -21,33 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PARKEDENGINEERINGSTATE_H_
-#define PARKEDENGINEERINGSTATE_H_
-
-#include <EngineeringState.h>
+#include <Context.h>
+#include <KillForceActuatorBumpTestCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/**
- * Parked Engineering State. Mirror can be raised, switched into Disabled State
- * or returned to Parked State with Exit Engineering command.
- */
-class ParkedEngineeringState : public EngineeringState {
-public:
-    ParkedEngineeringState();
+KillForceActuatorBumpTestCommand::KillForceActuatorBumpTestCommand(
+        int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC* data) {
+    this->commandID = commandID;
+}
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type disable(DisableCommand* command) override;
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
-    virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
-};
+void KillForceActuatorBumpTestCommand::execute() { Context::get().killForceActuatorBumpTest(this); }
+
+void KillForceActuatorBumpTestCommand::ackInProgress() {
+    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(this->commandID, ACK_INPROGRESS,
+                                                               "In-Progress");
+}
+
+void KillForceActuatorBumpTestCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(this->commandID, ACK_COMPLETE, "Completed");
+}
+
+void KillForceActuatorBumpTestCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(this->commandID, ACK_FAILED,
+                                                               "Failed: " + reason);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
-
-#endif /* PARKEDENGINEERINGSTATE_H_ */
