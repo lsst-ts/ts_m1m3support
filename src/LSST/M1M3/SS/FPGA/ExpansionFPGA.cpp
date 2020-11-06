@@ -41,6 +41,8 @@ ExpansionFPGA::ExpansionFPGA() {
     _remaining = 0;
 }
 
+ExpansionFPGA::~ExpansionFPGA() { finalize(); }
+
 void ExpansionFPGA::initialize() {
     spdlog::debug("ExpansionFPGA: initialize()");
     if (!expansionFPGAApplicationSettings->Enabled) {

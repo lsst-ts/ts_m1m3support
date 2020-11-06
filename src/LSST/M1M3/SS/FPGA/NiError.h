@@ -89,10 +89,10 @@ void NiThrowError(const char *func, const char *ni_func, int32_t status);
  * @param attribute NI FPGA attribute
  * @param session NI FPGA session
  */
-#define NiOpen(dir, prefix, resource, attribute, session)                                          \
-    NiThrowError(std::string("NiFpga_Open: bitfile " dir "/") + prefix##_Bitfile +                 \
-                         " with expected signature " + prefix##_Signature +                        \
-                         " on resource " resource " (check if file exists and signature matches)", \
+#define NiOpen(dir, prefix, resource, attribute, session)                                                \
+    NiThrowError(std::string("NiFpga_Open: bitfile " dir "/") + prefix##_Bitfile +                       \
+                         " with expected signature " + prefix##_Signature + " on resource " + resource + \
+                         " (check if file exists and signature matches)",                                \
                  NiFpga_Open(dir "/" prefix##_Bitfile, prefix##_Signature, resource, attribute, session))
 
 #endif  // !LSST_M1M3_SS_FPGA_NiError_H_
