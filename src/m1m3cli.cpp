@@ -86,6 +86,7 @@ void M1M3cli::printUsage() {
     std::cout << "M1M3 command line tool. Access M1M3 FPGA." << std::endl
               << std::endl
               << "Options: " << std::endl
+              << "  -d   turn on debugging" << std::endl
               << "  -h   help" << std::endl
               << "  -O   don't auto open (and run) FPGA" << std::endl
               << "  -v   increase verbosity" << std::endl;
@@ -183,8 +184,9 @@ void M1M3cli::_printInBuffer(ModbusBuffer* buf) {
 int serials(command_vec cmds) {
     IFPGA::get().pullHealthAndStatus();
     ModbusPort* p = IFPGA::get().getHealthAndStatusFPGAData()->ports;
+    std::cout << "Bus Error TxBytes TxFrames  RxBytes RxFrames InsCount" << std::endl;
     for (int i = 0; i < 5; i++, p++) {
-        std::cout << "Bus " << (char)('A' + i) << ": 0x" << std::hex << std::setfill('0') << std::setw(2)
+        std::cout << "  " << (char)('A' + i) << " 0x" << std::hex << std::setfill('0') << std::setw(2)
                   << p->errorFlag << " " << std::dec << std::setfill(' ') << std::setw(8) << p->txBytes << " "
                   << std::setw(8) << p->txFrames << " " << std::setw(8) << p->rxBytes << " " << std::setw(8)
                   << p->rxFrames << " " << std::setw(8) << p->instructionCount << std::endl;
@@ -221,7 +223,7 @@ command_t commands[] = {{"close",
                         {NULL, NULL, NULL, 0, NULL, NULL}};
 
 int main(int argc, char* const argv[]) {
-    command_vec cmds = cli.init(commands, "hOv", argc, argv);
+    command_vec cmds = cli.init(commands, "dhOv", argc, argv);
 
     spdlog::init_thread_pool(8192, 1);
     std::vector<spdlog::sink_ptr> sinks;
