@@ -68,7 +68,6 @@ private:
     ControllerThread(const ControllerThread&) = delete;
 
     void _clear();
-    Command* _dequeue();
     void _execute(Command* command);
 
     bool _keepRunning;
