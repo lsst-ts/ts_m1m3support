@@ -86,7 +86,6 @@ void M1M3cli::printUsage() {
     std::cout << "M1M3 command line tool. Access M1M3 FPGA." << std::endl
               << std::endl
               << "Options: " << std::endl
-              << "  -d   turn on debugging" << std::endl
               << "  -h   help" << std::endl
               << "  -O   don't auto open (and run) FPGA" << std::endl
               << "  -v   increase verbosity" << std::endl;
@@ -96,6 +95,20 @@ void M1M3cli::printUsage() {
 
 bool _autoOpen = true;
 int _verbose = 0;
+
+void _updateVerbosity(int newVerbose) {
+    _verbose = newVerbose;
+    spdlog::level::level_enum logLevel = spdlog::level::trace;
+
+    switch (_verbose) {
+        case 0:
+            logLevel = spdlog::level::info;
+        case 1:
+            logLevel = spdlog::level::debug;
+            break;
+    }
+    spdlog::set_level(logLevel);
+}
 
 void M1M3cli::processArg(int opt, const char* optarg) {
     switch (opt) {
@@ -194,6 +207,17 @@ int serials(command_vec cmds) {
     return 0;
 }
 
+int verbose(command_vec cmds) {
+    switch (cmds.size()) {
+        case 1:
+            _updateVerbosity(std::stoi(cmds[0]));
+        case 0:
+            std::cout << "Verbosity level: " << _verbose << std::endl;
+            break;
+    }
+    return 0;
+}
+
 void closeFPGA() { IFPGA::get().close(); }
 
 void openFPGA() {
@@ -220,10 +244,11 @@ command_t commands[] = {{"close",
                          },
                          "", 0, NULL, "Open FPGA"},
                         {"serials", &serials, "s", 0, NULL, "Report serial port status"},
+                        {"verbose", &verbose, "?", 0, "<new level>", "Rebort/set verbosity level"},
                         {NULL, NULL, NULL, 0, NULL, NULL}};
 
 int main(int argc, char* const argv[]) {
-    command_vec cmds = cli.init(commands, "dhOv", argc, argv);
+    command_vec cmds = cli.init(commands, "hOv", argc, argv);
 
     spdlog::init_thread_pool(8192, 1);
     std::vector<spdlog::sink_ptr> sinks;
@@ -233,7 +258,7 @@ int main(int argc, char* const argv[]) {
                                                          spdlog::thread_pool(),
                                                          spdlog::async_overflow_policy::block);
     spdlog::set_default_logger(logger);
-    spdlog::set_level(_verbose ? spdlog::level::trace : spdlog::level::err);
+    _updateVerbosity(_verbose);
 
     if (_autoOpen) openFPGA();
 
