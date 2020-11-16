@@ -18,7 +18,7 @@ ts_M1M3Support: src/ts_M1M3Support.cpp.o src/libM1M3SS.a
 
 m1m3cli: src/m1m3cli.cpp.o src/cliapp/CliApp.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
-	${co}$(CPP) -o $@ $^ -lpthread -lreadline -ldl
+	${co}$(CPP) -o $@ $^ -L/usr/lib64 -lpthread -lreadline -ldl
 
 # Other Targets
 clean:

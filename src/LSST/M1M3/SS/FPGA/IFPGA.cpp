@@ -40,3 +40,19 @@ IFPGA& IFPGA::get() {
     return fpga;
 #endif
 }
+
+void IFPGA::setPower(bool aux, bool network) {
+   bool a[4], n[4];
+   memset(a, aux, 4);
+   memset(n, network, 4);
+   setPower(a, n);
+}
+
+void IFPGA::setPower(const bool aux[4], const bool network[4]) {
+    uint16_t buffer[16] = {
+            FPGAAddresses::DCPowerNetworkAOn,    network[0], FPGAAddresses::DCPowerNetworkBOn,    network[1],
+            FPGAAddresses::DCPowerNetworkCOn,    network[2], FPGAAddresses::DCPowerNetworkDOn,    network[3],
+            FPGAAddresses::DCAuxPowerNetworkAOn, aux[0],     FPGAAddresses::DCAuxPowerNetworkBOn, aux[1],
+            FPGAAddresses::DCAuxPowerNetworkCOn, aux[2],     FPGAAddresses::DCAuxPowerNetworkDOn, aux[3]};
+    IFPGA::get().writeCommandFIFO(buffer, 16, 0);
+}

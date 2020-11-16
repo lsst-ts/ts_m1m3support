@@ -290,14 +290,14 @@ void ModbusBuffer::writeWaitForRx(uint32_t timeoutMicros) {
 
 void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint64_t& endTs,
                                       std::vector<uint8_t>& data) {
-    IFPGA::get().writeRequestFIFO(&request, 1, 0);
+    IFPGA::get().writeRequestFIFO(request, 0);
 
     reset();
 
     uint16_t reportedLength;
     IFPGA::get().readU16ResponseFIFO(&reportedLength, 1, 20);
     if (reportedLength <= 4) {
-        throw std::runtime_error("ModbusBuffer::pullModbusResponse: Timeout on response");
+        throw std::runtime_error("ModbusBuffer::pullModbusResponse: Timeout on response: " + std::to_string(reportedLength));
     }
 
     IFPGA::get().readU16ResponseFIFO(getBuffer(), reportedLength, 10);
