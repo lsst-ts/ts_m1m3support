@@ -342,7 +342,7 @@ void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint6
     // remove CRC16
     uint16_t crc = data.back();
     data.pop_back();
-    crc |= ((uint16_t)data.back()) << 8;
+    crc = (crc << 8) | (uint16_t)data.back();
     data.pop_back();
 
     beginTs = *((uint64_t*)getBuffer());
