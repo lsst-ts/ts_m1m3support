@@ -58,7 +58,7 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
     _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
 
     _testForce = 222;
-    _tolerance = 1;
+    _tolerance = 5;
     _testSettleTime = 3.0;
     _testMeasurements = 10;
 
