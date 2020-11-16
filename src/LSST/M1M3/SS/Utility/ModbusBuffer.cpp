@@ -297,7 +297,8 @@ void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint6
     uint16_t reportedLength;
     IFPGA::get().readU16ResponseFIFO(&reportedLength, 1, 20);
     if (reportedLength <= 4) {
-        throw std::runtime_error("ModbusBuffer::pullModbusResponse: Timeout on response: " + std::to_string(reportedLength));
+        throw std::runtime_error("ModbusBuffer::pullModbusResponse: Timeout on response: " +
+                                 std::to_string(reportedLength));
     }
 
     IFPGA::get().readU16ResponseFIFO(getBuffer(), reportedLength, 10);
