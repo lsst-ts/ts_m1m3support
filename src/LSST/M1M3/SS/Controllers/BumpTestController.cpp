@@ -41,6 +41,9 @@ BumpTestController::BumpTestController() {
     _xIndex = -1;
     _yIndex = -1;
     _zIndex = -1;
+
+    M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
+    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 
 void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
@@ -55,7 +58,7 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
     _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
 
     _testForce = 222;
-    _tolerance = 1;
+    _tolerance = 5;
     _testSettleTime = 3.0;
     _testMeasurements = 10;
 

@@ -41,6 +41,8 @@ ExpansionFPGA::ExpansionFPGA() {
     _remaining = 0;
 }
 
+ExpansionFPGA::~ExpansionFPGA() { finalize(); }
+
 void ExpansionFPGA::initialize() {
     spdlog::debug("ExpansionFPGA: initialize()");
     if (!expansionFPGAApplicationSettings->Enabled) {
@@ -54,10 +56,8 @@ void ExpansionFPGA::open() {
     if (!expansionFPGAApplicationSettings->Enabled) {
         return;
     }
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Open",
-                 NiFpga_Open("/home/admin/Bitfiles/" NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile,
-                             NiFpga_ts_M1M3SupportExpansionFPGA_Signature,
-                             expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session)));
+    NiOpen("/home/admin/ts_m1m3support/Bitfiles", NiFpga_ts_M1M3SupportExpansionFPGA,
+           expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session));
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
