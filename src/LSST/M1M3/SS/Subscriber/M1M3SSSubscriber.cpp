@@ -42,6 +42,7 @@ M1M3SSSubscriber& M1M3SSSubscriber::get() {
 void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL) {
     _m1m3SAL = m1m3SAL;
     _mtMountSAL = mtMountSAL;
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setLogLevel");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_start");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enable");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disable");

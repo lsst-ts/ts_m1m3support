@@ -361,6 +361,8 @@ public:
     void logSummaryState();
     void tryLogSummaryState();
 
+    void ackCommandsetLogLevel(int32_t commandID, int32_t ackCode, std::string description);
+
     /**
      * @brief Acknowledges start command.
      *
