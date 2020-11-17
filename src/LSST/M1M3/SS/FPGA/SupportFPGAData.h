@@ -30,7 +30,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct SupportFPGAData {
+/**
+ * FPGA support data.
+ */
+class SupportFPGAData {
+public:
     uint64_t Reserved;
     uint64_t InclinometerTxBytes;
     uint64_t InclinometerRxBytes;
@@ -96,6 +100,14 @@ struct SupportFPGAData {
     uint64_t PowerSupplySampleCount;
     uint64_t PowerSupplyTimestamp;
     uint8_t PowerSupplyStates;
+
+    /**
+     * Returns power states.
+     *
+     * @param aux[4] auxiliar A-D bus power states
+     * @param network[4] network bus A-D power states
+     */
+    void getPower(bool aux[4], bool network[4]);
 };
 
 } /* namespace SS */

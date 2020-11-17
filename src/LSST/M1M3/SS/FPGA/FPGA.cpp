@@ -47,7 +47,7 @@ FPGA::FPGA() {
     _ppsIRQContext = 0;
 }
 
-FPGA::~FPGA() {}
+FPGA::~FPGA() { finalize(); }
 
 void FPGA::initialize() {
     spdlog::debug("FPGA: initialize()");
@@ -56,9 +56,7 @@ void FPGA::initialize() {
 
 void FPGA::open() {
     spdlog::debug("FPGA: open()");
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Open",
-                 NiFpga_Open("/home/admin/Bitfiles/" NiFpga_M1M3SupportFPGA_Bitfile,
-                             NiFpga_M1M3SupportFPGA_Signature, "RIO0", 0, &(_session)));
+    NiOpen("/home/admin/ts_m1m3support/Bitfiles", NiFpga_M1M3SupportFPGA, "RIO0", 0, &(_session));
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));

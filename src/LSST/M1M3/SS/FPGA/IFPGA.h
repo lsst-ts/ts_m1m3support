@@ -281,6 +281,22 @@ public:
      */
     virtual void readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) = 0;
 
+    /**
+     * Sets all auxiliary and network buses power (A-D).
+     *
+     * @param aux auxiliary buses power (true = on)
+     * @param network network buses power (true = on)
+     */
+    void setPower(bool aux, bool network);
+
+    /**
+     * Sets aux and network power.
+     *
+     * @param aux[4] new auxiliar power, buses A-D
+     * @param network[4] new network power, buses A-D
+     */
+    void setPower(const bool aux[4], const bool network[4]);
+
 protected:
     SupportFPGAData supportFPGAData;
     HealthAndStatusFPGAData healthAndStatusFPGAData;

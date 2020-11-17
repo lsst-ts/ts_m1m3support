@@ -44,15 +44,18 @@ void printHelp() {
               << std::endl
               << "  -d increases debugging (can be specified multiple times, default is info)" << std::endl
               << "  -f runs on foreground, don't log to file" << std::endl
-              << "  -h prints this help" << std::endl;
+              << "  -h prints this help" << std::endl
+              << "  -s increases SAL debugging (can be specified multiple times, default is 0)" << std::endl;
 }
+
+int debugLevel = 0;
+int debugLevelSAL = 0;
 
 void processArgs(int argc, char* const argv[], const char*& configRoot) {
     int enabledSinks = 0x3;
-    int debugLevel = 0;
 
     int opt;
-    while ((opt = getopt(argc, argv, "bc:dfh")) != -1) {
+    while ((opt = getopt(argc, argv, "bc:dfhs")) != -1) {
         switch (opt) {
             case 'b':
                 enabledSinks &= ~0x01;
@@ -62,6 +65,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 break;
             case 'd':
                 debugLevel++;
+                debugLevelSAL++;
                 break;
             case 'f':
                 enabledSinks &= ~0x02;
@@ -69,6 +73,9 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
             case 'h':
                 printHelp();
                 exit(EXIT_SUCCESS);
+            case 's':
+                debugLevelSAL++;
+                break;
             default:
                 std::cerr << "Unknow option " << opt << std::endl;
                 printHelp();
@@ -172,9 +179,10 @@ int main(int argc, char* const argv[]) {
     SettingReader::get().setRootPath(configRoot);
     spdlog::info("Main: Initializing M1M3 SAL");
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
-    m1m3SAL->setDebugLevel(0);
+    m1m3SAL->setDebugLevel(debugLevelSAL);
     spdlog::info("Main: Initializing MTMount SAL");
     std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
+    mtMountSAL->setDebugLevel(debugLevelSAL);
     spdlog::info("Main: Creating publisher");
     M1M3SSPublisher::get().setSAL(m1m3SAL);
 

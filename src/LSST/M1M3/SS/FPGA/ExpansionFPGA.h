@@ -33,6 +33,7 @@ namespace SS {
 class ExpansionFPGA : public IExpansionFPGA {
 public:
     ExpansionFPGA();
+    virtual ~ExpansionFPGA();
 
     void initialize() override;
     void open() override;
