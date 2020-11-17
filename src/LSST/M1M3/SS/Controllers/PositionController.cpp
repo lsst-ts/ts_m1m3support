@@ -109,10 +109,9 @@ bool PositionController::forcesInTolerance() {
     SPDLOG_TRACE("PositionController: forcesInTolerance()");
     bool inTolerance = true;
     for (int i = 0; i < HP_COUNT; i++) {
-        inTolerance =
-                inTolerance && Range::InRange((float)_positionControllerSettings->RaiseLowerForceLimitLow,
-                                              (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
-                                              _hardpointActuatorData->measuredForce[i]);
+        inTolerance &= Range::InRange((float)_positionControllerSettings->RaiseLowerForceLimitLow,
+                                      (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
+                                      _hardpointActuatorData->measuredForce[i]);
     }
     return inTolerance;
 }
