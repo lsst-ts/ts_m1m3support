@@ -175,8 +175,6 @@ int main(int argc, char* const argv[]) {
 
     processArgs(argc, argv, configRoot);
 
-    SPDLOG_TRACE("Trace");
-    SPDLOG_DEBUG("Debug");
     SPDLOG_INFO("Main: Creating setting reader, root {}", configRoot);
     SettingReader::get().setRootPath(configRoot);
     SPDLOG_INFO("Main: Initializing M1M3 SAL");
