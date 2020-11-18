@@ -51,10 +51,10 @@ ThermalForceComponent::ThermalForceComponent(
 }
 
 void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
-    spdlog::trace("ThermalForceComponent: applyThermalForces()");
+    SPDLOG_TRACE("ThermalForceComponent: applyThermalForces()");
 
     if (!isEnabled()) {
-        spdlog::error("ThermalForceComponent: applyThermalForces() called when the component is not applied");
+        SPDLOG_ERROR("ThermalForceComponent: applyThermalForces() called when the component is not applied");
         return;
     }
 
@@ -72,7 +72,7 @@ void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
 }  // namespace SS
 
 void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperature) {
-    spdlog::trace("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
+    SPDLOG_TRACE("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
     DistributedForces forces =
             ForceConverter::calculateForceFromTemperature(_forceActuatorSettings, temperature);
     float xForces[FA_X_COUNT];
@@ -94,7 +94,7 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
 }
 
 void ThermalForceComponent::postEnableDisableActions() {
-    spdlog::debug("ThermalForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("ThermalForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->thermalForcesApplied = isEnabled();
@@ -102,7 +102,7 @@ void ThermalForceComponent::postEnableDisableActions() {
 }
 
 void ThermalForceComponent::postUpdateActions() {
-    spdlog::trace("ThermalForceController: postUpdateActions()");
+    SPDLOG_TRACE("ThermalForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

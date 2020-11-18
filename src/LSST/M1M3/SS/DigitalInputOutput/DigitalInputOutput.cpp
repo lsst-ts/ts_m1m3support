@@ -40,7 +40,7 @@ namespace SS {
 const float HEARTBEAT_PERIOD = 1.0;  //* Heartbeat period in seconds
 
 DigitalInputOutput::DigitalInputOutput() {
-    spdlog::debug("DigitalInputOutput: DigitalInputOutput()");
+    SPDLOG_DEBUG("DigitalInputOutput: DigitalInputOutput()");
     _safetyController = 0;
 
     _airSupplyStatus = M1M3SSPublisher::get().getEventAirSupplyStatus();
@@ -63,13 +63,13 @@ DigitalInputOutput::DigitalInputOutput() {
 }
 
 void DigitalInputOutput::setSafetyController(SafetyController* safetyController) {
-    spdlog::debug("DigitalInputOutput: setSafetyController()");
+    SPDLOG_DEBUG("DigitalInputOutput: setSafetyController()");
     _safetyController = safetyController;
 }
 
 void DigitalInputOutput::processData() {
     // TODO: Handle no data available
-    spdlog::trace("DigitalInputOutput: processData()");
+    SPDLOG_TRACE("DigitalInputOutput: processData()");
     bool tryPublish = false;
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     double timestamp = Timestamp::fromFPGA(
@@ -163,10 +163,10 @@ void DigitalInputOutput::processData() {
 }
 
 void DigitalInputOutput::tryToggleHeartbeat() {
-    spdlog::trace("DigitalInputOutput: tryToggleHeartbeat()");
+    SPDLOG_TRACE("DigitalInputOutput: tryToggleHeartbeat()");
     double timestamp = M1M3SSPublisher::get().getTimestamp();
     if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
-        spdlog::debug("DigitalInputOutput: toggleHeartbeat()");
+        SPDLOG_DEBUG("DigitalInputOutput: toggleHeartbeat()");
         _lastToggleTimestamp = timestamp;
         _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
         uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
@@ -179,21 +179,21 @@ void DigitalInputOutput::tryToggleHeartbeat() {
 }
 
 void DigitalInputOutput::turnAirOn() {
-    spdlog::info("DigitalInputOutput: turnAirOn()");
+    SPDLOG_INFO("DigitalInputOutput: turnAirOn()");
     _airSupplyStatus->airCommandedOn = true;
     uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnAirOff() {
-    spdlog::info("DigitalInputOutput: turnAirOff()");
+    SPDLOG_INFO("DigitalInputOutput: turnAirOff()");
     _airSupplyStatus->airCommandedOn = false;
     uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnCellLightsOn() {
-    spdlog::info("DigitalInputOutput: turnCellLightsOn()");
+    SPDLOG_INFO("DigitalInputOutput: turnCellLightsOn()");
     _cellLightStatus->cellLightsCommandedOn = true;
     // Polarity is swapped
     uint16_t buffer[2] = {FPGAAddresses::MirrorCellLightControl,
@@ -202,7 +202,7 @@ void DigitalInputOutput::turnCellLightsOn() {
 }
 
 void DigitalInputOutput::turnCellLightsOff() {
-    spdlog::info("DigitalInputOutput: turnCellLightsOff()");
+    SPDLOG_INFO("DigitalInputOutput: turnCellLightsOff()");
     _cellLightStatus->cellLightsCommandedOn = false;
     // Polarity is swapped
     uint16_t buffer[2] = {FPGAAddresses::MirrorCellLightControl,

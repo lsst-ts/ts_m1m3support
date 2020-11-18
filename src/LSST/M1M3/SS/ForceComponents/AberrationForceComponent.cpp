@@ -51,10 +51,10 @@ AberrationForceComponent::AberrationForceComponent(
 }
 
 void AberrationForceComponent::applyAberrationForces(float* z) {
-    spdlog::debug("AberrationForceComponent: applyAberrationForces()");
+    SPDLOG_DEBUG("AberrationForceComponent: applyAberrationForces()");
 
     if (!isEnabled()) {
-        spdlog::error(
+        SPDLOG_ERROR(
                 "AberrationForceComponent: applyAberrationForces() called when the component is not "
                 "applied");
         return;
@@ -66,14 +66,14 @@ void AberrationForceComponent::applyAberrationForces(float* z) {
 }
 
 void AberrationForceComponent::applyAberrationForcesByBendingModes(float* coefficients) {
-    spdlog::debug("AberrationForceComponent: applyAberrationForcesByBendingModes()");
+    SPDLOG_DEBUG("AberrationForceComponent: applyAberrationForcesByBendingModes()");
     DistributedForces forces =
             ForceConverter::calculateForceFromBendingModes(_forceActuatorSettings, coefficients);
     applyAberrationForces(forces.ZForces);
 }
 
 void AberrationForceComponent::postEnableDisableActions() {
-    spdlog::debug("AberrationForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("AberrationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->aberrationForcesApplied = isEnabled();
@@ -81,7 +81,7 @@ void AberrationForceComponent::postEnableDisableActions() {
 }
 
 void AberrationForceComponent::postUpdateActions() {
-    spdlog::trace("AberrationForceController: postUpdateActions()");
+    SPDLOG_TRACE("AberrationForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

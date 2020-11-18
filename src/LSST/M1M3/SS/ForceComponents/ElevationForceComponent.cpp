@@ -51,10 +51,10 @@ ElevationForceComponent::ElevationForceComponent(
 }
 
 void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z) {
-    spdlog::trace("ElevationForceComponent: applyElevationForces()");
+    SPDLOG_TRACE("ElevationForceComponent: applyElevationForces()");
 
     if (!isEnabled()) {
-        spdlog::error(
+        SPDLOG_ERROR(
                 "ElevationForceComponent: applyElevationForces() called when the component is not "
                 "applied");
         return;
@@ -74,7 +74,7 @@ void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z)
 }
 
 void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevationAngle) {
-    spdlog::trace("ElevationForceComponent: applyElevationForcesByMirrorForces({:.1f})", elevationAngle);
+    SPDLOG_TRACE("ElevationForceComponent: applyElevationForcesByMirrorForces({:.1f})", elevationAngle);
     DistributedForces forces =
             ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, elevationAngle);
     float xForces[FA_X_COUNT];
@@ -96,7 +96,7 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
 }
 
 void ElevationForceComponent::postEnableDisableActions() {
-    spdlog::debug("ElevationForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("ElevationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->elevationForcesApplied = isEnabled();
@@ -104,7 +104,7 @@ void ElevationForceComponent::postEnableDisableActions() {
 }
 
 void ElevationForceComponent::postUpdateActions() {
-    spdlog::trace("ElevationForceController: postUpdateActions()");
+    SPDLOG_TRACE("ElevationForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

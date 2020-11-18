@@ -32,7 +32,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSSubscriber::M1M3SSSubscriber() { spdlog::debug("M1M3SSSubscriber: M1M3SSSubscriber()"); }
+M1M3SSSubscriber::M1M3SSSubscriber() { SPDLOG_DEBUG("M1M3SSSubscriber: M1M3SSSubscriber()"); }
 
 M1M3SSSubscriber& M1M3SSSubscriber::get() {
     static M1M3SSSubscriber subscriber;

@@ -28,11 +28,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ProfileController::ProfileController() { spdlog::debug("ProfileController: ProfileController()"); }
+ProfileController::ProfileController() { SPDLOG_DEBUG("ProfileController: ProfileController()"); }
 
 void ProfileController::setupMirrorForceProfile(float* xForce, float* yForce, float* zForce, float* xMoment,
                                                 float* yMoment, float* zMoment) {
-    spdlog::info("ProfileController: setupMirrorForceProfile()");
+    SPDLOG_INFO("ProfileController: setupMirrorForceProfile()");
     _mirrorForceProfile.Index = 0;
     for (int i = 0; i < 1000; ++i) {
         _mirrorForceProfile.Records[i].XForce = xForce[i];
@@ -45,7 +45,7 @@ void ProfileController::setupMirrorForceProfile(float* xForce, float* yForce, fl
 }
 
 bool ProfileController::incMirrorForceProfile() {
-    spdlog::trace("ProfileController: incMirrorForceProfile()");
+    SPDLOG_TRACE("ProfileController: incMirrorForceProfile()");
     ++_mirrorForceProfile.Index;
     return _mirrorForceProfile.Index >= 1000;
 }

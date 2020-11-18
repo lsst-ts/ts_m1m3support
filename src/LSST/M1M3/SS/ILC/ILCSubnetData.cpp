@@ -36,7 +36,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
                              ForceActuatorSettings* forceActuatorSettings,
                              HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
                              HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
-    spdlog::debug("ILCSubnetData::ILCSubnetData()");
+    SPDLOG_DEBUG("ILCSubnetData::ILCSubnetData()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->subnetData[subnetIndex].FACount = 0;
         this->subnetData[subnetIndex].HPCount = 0;

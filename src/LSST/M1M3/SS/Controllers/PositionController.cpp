@@ -38,7 +38,7 @@ namespace SS {
 
 PositionController::PositionController(PositionControllerSettings* positionControllerSettings,
                                        HardpointActuatorSettings* hardpointActuatorSettings) {
-    spdlog::debug("PositionController: PositionController()");
+    SPDLOG_DEBUG("PositionController: PositionController()");
     _positionControllerSettings = positionControllerSettings;
     _hardpointActuatorSettings = hardpointActuatorSettings;
     _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
@@ -61,7 +61,7 @@ double PositionController::getRaiseLowerTimeout() {
 }
 
 bool PositionController::enableChase(int32_t actuatorID) {
-    spdlog::info("PositionController: enableChase({:d})", actuatorID);
+    SPDLOG_INFO("PositionController: enableChase({:d})", actuatorID);
     if (_hardpointActuatorState->motionState[actuatorID - 1] != HardpointActuatorMotionStates::Standby) {
         return false;
     }
@@ -72,14 +72,14 @@ bool PositionController::enableChase(int32_t actuatorID) {
 }
 
 void PositionController::disableChase(int32_t actuatorID) {
-    spdlog::info("PositionController: disableChase({:d})", actuatorID);
+    SPDLOG_INFO("PositionController: disableChase({:d})", actuatorID);
     _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _hardpointActuatorState->motionState[actuatorID - 1] = HardpointActuatorMotionStates::Standby;
     M1M3SSPublisher::get().tryLogHardpointActuatorState();
 }
 
 bool PositionController::enableChaseAll() {
-    spdlog::info("PositionController: enableChaseAll()");
+    SPDLOG_INFO("PositionController: enableChaseAll()");
     if (_hardpointActuatorState->motionState[0] != HardpointActuatorMotionStates::Standby ||
         _hardpointActuatorState->motionState[1] != HardpointActuatorMotionStates::Standby ||
         _hardpointActuatorState->motionState[2] != HardpointActuatorMotionStates::Standby ||
@@ -97,7 +97,7 @@ bool PositionController::enableChaseAll() {
 }
 
 void PositionController::disableChaseAll() {
-    spdlog::info("PositionController: disableChaseAll()");
+    SPDLOG_INFO("PositionController: disableChaseAll()");
     _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
@@ -106,7 +106,7 @@ void PositionController::disableChaseAll() {
 }
 
 bool PositionController::forcesInTolerance() {
-    spdlog::trace("PositionController: forcesInTolerance()");
+    SPDLOG_TRACE("PositionController: forcesInTolerance()");
     bool inTolerance = true;
     for (int i = 0; i < HP_COUNT; i++) {
         inTolerance =
@@ -118,7 +118,7 @@ bool PositionController::forcesInTolerance() {
 }
 
 bool PositionController::motionComplete() {
-    spdlog::debug("PositionController: motionComplete()");
+    SPDLOG_DEBUG("PositionController: motionComplete()");
     return _hardpointActuatorState->motionState[0] == HardpointActuatorMotionStates::Standby &&
            _hardpointActuatorState->motionState[1] == HardpointActuatorMotionStates::Standby &&
            _hardpointActuatorState->motionState[2] == HardpointActuatorMotionStates::Standby &&
@@ -128,8 +128,8 @@ bool PositionController::motionComplete() {
 }
 
 bool PositionController::move(int32_t* steps) {
-    spdlog::info("PositionController: move({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", steps[0], steps[1], steps[2],
-                 steps[3], steps[4], steps[5]);
+    SPDLOG_INFO("PositionController: move({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", steps[0], steps[1], steps[2],
+                steps[3], steps[4], steps[5]);
     if ((_hardpointActuatorState->motionState[0] != HardpointActuatorMotionStates::Standby &&
          steps[0] != 0) ||
         (_hardpointActuatorState->motionState[1] != HardpointActuatorMotionStates::Standby &&
@@ -168,8 +168,8 @@ bool PositionController::move(int32_t* steps) {
 }
 
 bool PositionController::moveToEncoder(int32_t* encoderValues) {
-    spdlog::info("PositionController: moveToEncoder({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", encoderValues[0],
-                 encoderValues[1], encoderValues[2], encoderValues[3], encoderValues[4], encoderValues[5]);
+    SPDLOG_INFO("PositionController: moveToEncoder({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", encoderValues[0],
+                encoderValues[1], encoderValues[2], encoderValues[3], encoderValues[4], encoderValues[5]);
     if ((_hardpointActuatorState->motionState[0] != HardpointActuatorMotionStates::Standby &&
          encoderValues[0] != _hardpointActuatorData->encoder[0]) ||
         (_hardpointActuatorState->motionState[1] != HardpointActuatorMotionStates::Standby &&
@@ -229,8 +229,8 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
 }
 
 bool PositionController::moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ) {
-    spdlog::info("PositionController: moveToAbsolute({:f}, {:f}, {:f}, {:f}, {:f}, {:f})", x, y, z, rX, rY,
-                 rZ);
+    SPDLOG_INFO("PositionController: moveToAbsolute({:f}, {:f}, {:f}, {:f}, {:f}, {:f})", x, y, z, rX, rY,
+                rZ);
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
     int32_t encoderValues[6];
@@ -243,12 +243,12 @@ bool PositionController::moveToAbsolute(double x, double y, double z, double rX,
 }
 
 bool PositionController::moveToReferencePosition() {
-    spdlog::info("PositionController: moveToReferencePosition()");
+    SPDLOG_INFO("PositionController: moveToReferencePosition()");
     return this->moveToEncoder(_hardpointInfo->referencePosition);
 }
 
 bool PositionController::translate(double x, double y, double z, double rX, double rY, double rZ) {
-    spdlog::info("PositionController: translate({:f}, {:f}, {:f}, {:f}, {:f}, {:f})", x, y, z, rX, rY, rZ);
+    SPDLOG_INFO("PositionController: translate({:f}, {:f}, {:f}, {:f}, {:f}, {:f})", x, y, z, rX, rY, rZ);
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
     int32_t encoderValues[6];
@@ -261,7 +261,7 @@ bool PositionController::translate(double x, double y, double z, double rX, doub
 }
 
 void PositionController::stopMotion() {
-    spdlog::info("PositionController: stopMotion()");
+    SPDLOG_INFO("PositionController: stopMotion()");
     _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointActuatorData->stepsQueued[i] = 0;
@@ -271,7 +271,7 @@ void PositionController::stopMotion() {
 }
 
 void PositionController::updateSteps() {
-    spdlog::trace("PositionController: updateSteps()");
+    SPDLOG_TRACE("PositionController: updateSteps()");
     _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     bool publishState = false;
     for (int i = 0; i < HP_COUNT; i++) {

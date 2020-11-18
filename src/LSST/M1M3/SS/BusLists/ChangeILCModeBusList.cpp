@@ -33,7 +33,7 @@ namespace SS {
 ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
                                            ILCModes::Type mode, ILCModes::Type hmMode)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("ChangeILCModeBusList: ChangeILCModeBusList()");
+    SPDLOG_DEBUG("ChangeILCModeBusList: ChangeILCModeBusList()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {

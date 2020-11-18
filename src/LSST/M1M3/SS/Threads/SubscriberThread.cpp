@@ -36,7 +36,7 @@ namespace SS {
 SubscriberThread::SubscriberThread() { _keepRunning = true; }
 
 void SubscriberThread::run() {
-    spdlog::info("SubscriberThread: Start");
+    SPDLOG_INFO("SubscriberThread: Start");
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     while (_keepRunning) {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandStart());
@@ -90,12 +90,12 @@ void SubscriberThread::run() {
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         long executionTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
         if (executionTime > 100) {
-            spdlog::warn("SubscriberThread executing for too long: {} ms", executionTime);
+            SPDLOG_WARN("SubscriberThread executing for too long: {} ms", executionTime);
         }
         begin = end;
         std::this_thread::sleep_for(100us);
     }
-    spdlog::info("SubscriberThread: Completed");
+    SPDLOG_INFO("SubscriberThread: Completed");
 }
 
 void SubscriberThread::stop() { _keepRunning = false; }

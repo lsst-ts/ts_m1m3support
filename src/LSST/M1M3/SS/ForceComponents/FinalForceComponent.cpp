@@ -63,7 +63,7 @@ FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
 }
 
 void FinalForceComponent::applyForcesByComponents() {
-    spdlog::trace("FinalForceComponent: applyForcesByComponents()");
+    SPDLOG_TRACE("FinalForceComponent: applyForcesByComponents()");
 
     if (!isEnabled()) {
         enable();
@@ -93,11 +93,11 @@ void FinalForceComponent::applyForcesByComponents() {
 }
 
 void FinalForceComponent::postEnableDisableActions() {
-    spdlog::trace("FinalForceComponent: postEnableDisableActions()");
+    SPDLOG_TRACE("FinalForceComponent: postEnableDisableActions()");
 }
 
 void FinalForceComponent::postUpdateActions() {
-    spdlog::trace("FinalForceController: postUpdateActions()");
+    SPDLOG_TRACE("FinalForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

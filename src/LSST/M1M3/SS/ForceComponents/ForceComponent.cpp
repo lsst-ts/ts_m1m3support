@@ -51,7 +51,7 @@ ForceComponent::~ForceComponent() {}
 
 void ForceComponent::enable() {
     // Enable and set the target to 0N
-    spdlog::debug("{}ForceComponent: enable()", _name);
+    SPDLOG_DEBUG("{}ForceComponent: enable()", _name);
     _state = ENABLED;
     memset(xTarget, 0, sizeof(xTarget));
     memset(yTarget, 0, sizeof(yTarget));
@@ -61,7 +61,7 @@ void ForceComponent::enable() {
 
 void ForceComponent::disable() {
     // Start disabling and driving to 0N
-    spdlog::debug("{}ForceComponent: disable()", _name);
+    SPDLOG_DEBUG("{}ForceComponent: disable()", _name);
     _state = DISABLING;
     memset(xTarget, 0, sizeof(xTarget));
     memset(yTarget, 0, sizeof(yTarget));
@@ -86,7 +86,7 @@ void ForceComponent::update() {
             nearZero = nearZero && fabs(zCurrent[i]) < _nearZeroValue;
         }
         if (nearZero) {
-            spdlog::debug("{}ForceComponent: disabled()", _name);
+            SPDLOG_DEBUG("{}ForceComponent: disabled()", _name);
             _state = DISABLED;
             memset(xCurrent, 0, sizeof(xCurrent));
             memset(yCurrent, 0, sizeof(yCurrent));

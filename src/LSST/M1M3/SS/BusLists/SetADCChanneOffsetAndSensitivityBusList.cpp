@@ -34,7 +34,7 @@ namespace SS {
 SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(
         ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("SetADCChanneOffsetAndSensitivityBusList: SetADCChanneOffsetAndSensitivityBusList()");
+    SPDLOG_DEBUG("SetADCChanneOffsetAndSensitivityBusList: SetADCChanneOffsetAndSensitivityBusList()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; ++subnetIndex) {
         startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < subnetData->getFACount(subnetIndex); ++faIndex) {

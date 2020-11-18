@@ -37,7 +37,7 @@ namespace M1M3 {
 namespace SS {
 
 Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings) {
-    spdlog::debug("Accelerometer: Accelerometer()");
+    SPDLOG_DEBUG("Accelerometer: Accelerometer()");
     _accelerometerSettings = accelerometerSettings;
 
     _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
@@ -50,7 +50,7 @@ Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings) {
 void Accelerometer::processData() {
     // TODO: Handle no data available
     // TODO: Handle acceleration limits, push to safety controller
-    spdlog::trace("Accelerometer: processData()");
+    SPDLOG_TRACE("Accelerometer: processData()");
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     _accelerometerData->timestamp = Timestamp::fromFPGA(fpgaData->AccelerometerSampleTimestamp);
     _accelerometerData->rawAccelerometer[0] = fpgaData->AccelerometerRaw1;

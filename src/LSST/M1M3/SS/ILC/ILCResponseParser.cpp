@@ -72,7 +72,7 @@ ILCResponseParser::ILCResponseParser() {
 ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings,
                                      HardpointActuatorSettings* hardpointActuatorSettings,
                                      ILCSubnetData* subnetData, SafetyController* safetyController) {
-    spdlog::debug("ILCResponseParser: ILCResponseParser()");
+    SPDLOG_DEBUG("ILCResponseParser: ILCResponseParser()");
     _forceActuatorSettings = forceActuatorSettings;
     _hardpointActuatorSettings = hardpointActuatorSettings;
     _subnetData = subnetData;
@@ -219,7 +219,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                     _parseErrorResponse(buffer, timestamp, map.ActuatorId);
                                     break;
                                 default:
-                                    spdlog::warn(
+                                    SPDLOG_WARN(
                                             "ILCResponseParser: Unknown FA function on subnet {:d} function "
                                             "{:d}",
                                             (int)function, subnet);
@@ -269,8 +269,8 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                     _parseErrorResponse(buffer, timestamp, map.ActuatorId);
                                     break;
                                 default:
-                                    spdlog::warn("ILCResponseParser: Unknown HP function {:d} on subnet {:d}",
-                                                 (int)function, subnet);
+                                    SPDLOG_WARN("ILCResponseParser: Unknown HP function {:d} on subnet {:d}",
+                                                (int)function, subnet);
                                     _warnUnknownFunction(timestamp, map.ActuatorId);
                                     break;
                             }
@@ -313,14 +313,14 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                     _parseErrorResponse(buffer, timestamp, map.ActuatorId);
                                     break;
                                 default:
-                                    spdlog::warn("ILCResponseParser: Unknown HM function {:d} on subnet {:d}",
-                                                 (int)function, subnet);
+                                    SPDLOG_WARN("ILCResponseParser: Unknown HM function {:d} on subnet {:d}",
+                                                (int)function, subnet);
                                     _warnUnknownFunction(timestamp, map.ActuatorId);
                                     break;
                             }
                             break;
                         default:
-                            spdlog::warn(
+                            SPDLOG_WARN(
                                     "ILCResponseParser: Unknown address {:d} on subnet {:d} for function "
                                     "code {:d}",
                                     (int)address, (int)subnet, (int)function);
@@ -328,12 +328,12 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                             break;
                     }
                 } else {
-                    spdlog::warn("ILCResponseParser: Unknown subnet {:d}", subnet);
+                    SPDLOG_WARN("ILCResponseParser: Unknown subnet {:d}", subnet);
                     _warnUnknownSubnet(timestamp);
                 }
             }
         } else {
-            spdlog::warn("ILCResponseParser: Invalid CRC on subnet {:d}", subnet);
+            SPDLOG_WARN("ILCResponseParser: Invalid CRC on subnet {:d}", subnet);
             if (_grabResponse) {
                 _parseOneOffCommand(buffer, length, timestamp, false);
             } else {
@@ -380,7 +380,7 @@ void ILCResponseParser::verifyResponses() {
     }
     if (warn) {
         anyTimeout = true;
-        spdlog::warn("ILCResponseParser: Force actuator response timeout {} {} {} {} {} {} {} {}");
+        SPDLOG_WARN("ILCResponseParser: Force actuator response timeout {} {} {} {} {} {} {} {}");
     }
     warn = false;
     for (int i = 0; i < HP_COUNT; i++) {
@@ -392,7 +392,7 @@ void ILCResponseParser::verifyResponses() {
     }
     if (warn) {
         anyTimeout = true;
-        spdlog::warn("ILCResponseParser: Hardpoint actuator response timeout");
+        SPDLOG_WARN("ILCResponseParser: Hardpoint actuator response timeout");
     }
     warn = false;
     for (int i = 0; i < HP_COUNT; ++i) {
@@ -404,7 +404,7 @@ void ILCResponseParser::verifyResponses() {
     }
     if (warn) {
         anyTimeout = true;
-        spdlog::warn("ILCResponseParser: Hardpoint monitor response timeout");
+        SPDLOG_WARN("ILCResponseParser: Hardpoint monitor response timeout");
     }
 
     _safetyController->ilcCommunicationTimeout(anyTimeout);
@@ -466,8 +466,8 @@ void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timesta
         // case 10: break; // Gateway Path Unavailable
         // case 11: break; // Gateway Target Device Failed to Respond
         default:
-            spdlog::warn("ILCResponseParser: Actuator {:d} received exception code {:d}", actuatorId,
-                         (int32_t)exceptionCode);
+            SPDLOG_WARN("ILCResponseParser: Actuator {:d} received exception code {:d}", actuatorId,
+                        (int32_t)exceptionCode);
             _warnUnknownProblem(timestamp, actuatorId);
             break;
     }

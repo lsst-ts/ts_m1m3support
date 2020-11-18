@@ -37,7 +37,7 @@ AutomaticOperationsController::AutomaticOperationsController(PositionController*
                                                              ForceController* forceController,
                                                              SafetyController* safetyController,
                                                              PowerController* powerController) {
-    spdlog::debug("AutomaticOperationsController: AutomaticOperationsController()");
+    SPDLOG_DEBUG("AutomaticOperationsController: AutomaticOperationsController()");
     _positionController = positionController;
     _forceController = forceController;
     _safetyController = safetyController;
@@ -47,7 +47,7 @@ AutomaticOperationsController::AutomaticOperationsController(PositionController*
 }
 
 void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReference) {
-    spdlog::info("AutomaticOperationsController: startRaiseOperation({})", bypassMoveToReference);
+    SPDLOG_INFO("AutomaticOperationsController: startRaiseOperation({})", bypassMoveToReference);
     _bypassMoveToReference = bypassMoveToReference;
     _safetyController->raiseOperationTimeout(false);
     _positionController->stopMotion();
@@ -67,7 +67,7 @@ void AutomaticOperationsController::startRaiseOperation(bool bypassMoveToReferen
 }
 
 void AutomaticOperationsController::tryIncrementingSupportPercentage() {
-    spdlog::trace("AutomaticOperationsController: tryIncrementingSupportPercentage()");
+    SPDLOG_TRACE("AutomaticOperationsController: tryIncrementingSupportPercentage()");
     if (!_forceController->supportPercentageFilled()) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
@@ -94,7 +94,7 @@ bool AutomaticOperationsController::checkRaiseOperationComplete() {
 }
 
 void AutomaticOperationsController::completeRaiseOperation() {
-    spdlog::info("AutomaticOperationsController: completeRaiseOperation()");
+    SPDLOG_INFO("AutomaticOperationsController: completeRaiseOperation()");
     // Transition to the end state (active or active engineering) if all of the support force has been
     // transfered from the static supports to the force actuators and all hardpoints have completed their
     // commanded motions
@@ -117,12 +117,12 @@ bool AutomaticOperationsController::checkRaiseOperationTimeout() {
 }
 
 void AutomaticOperationsController::timeoutRaiseOperation() {
-    spdlog::error("AutomaticOperationsController: timeoutRaiseOperation()");
+    SPDLOG_ERROR("AutomaticOperationsController: timeoutRaiseOperation()");
     _safetyController->raiseOperationTimeout(true);
 }
 
 void AutomaticOperationsController::abortRaiseM1M3() {
-    spdlog::info("AutomaticOperationsController:: abortRaiseM1M3()");
+    SPDLOG_INFO("AutomaticOperationsController:: abortRaiseM1M3()");
     _safetyController->lowerOperationTimeout(false);
     _positionController->stopMotion();
     _positionController->enableChaseAll();
@@ -140,7 +140,7 @@ void AutomaticOperationsController::abortRaiseM1M3() {
 }
 
 void AutomaticOperationsController::startLowerOperation() {
-    spdlog::info("AutomaticOperationsController: startLowerOperation()");
+    SPDLOG_INFO("AutomaticOperationsController: startLowerOperation()");
     _safetyController->lowerOperationTimeout(false);
     _positionController->stopMotion();
     _positionController->enableChaseAll();
@@ -159,7 +159,7 @@ void AutomaticOperationsController::startLowerOperation() {
 }
 
 void AutomaticOperationsController::tryDecrementSupportPercentage() {
-    spdlog::trace("AutomaticOperationsController: tryDecrementSupportPercentage()");
+    SPDLOG_TRACE("AutomaticOperationsController: tryDecrementSupportPercentage()");
     if (!_forceController->supportPercentageZeroed()) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
@@ -177,7 +177,7 @@ bool AutomaticOperationsController::checkLowerOperationComplete() {
 }
 
 void AutomaticOperationsController::completeLowerOperation() {
-    spdlog::info("AutomaticOperationsController: completeLowerOperation()");
+    SPDLOG_INFO("AutomaticOperationsController: completeLowerOperation()");
     // All of the support force has been transfered from the static supports to the
     // force actuators, stop the hardpoints from chasing
     // Transition to the end state (parked or parked engineering) if all of the support
@@ -202,7 +202,7 @@ bool AutomaticOperationsController::checkLowerOperationTimeout() {
 }
 
 void AutomaticOperationsController::timeoutLowerOperation() {
-    spdlog::error("AutomaticOperationsController: timeoutLowerOperation()");
+    SPDLOG_ERROR("AutomaticOperationsController: timeoutLowerOperation()");
     // TODO: How should the system react if the operation times out?
     //       For now we will assume the worst and fault the system
     _safetyController->lowerOperationTimeout(true);

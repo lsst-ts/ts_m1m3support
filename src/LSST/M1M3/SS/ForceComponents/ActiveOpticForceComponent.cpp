@@ -51,10 +51,10 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(
 }
 
 void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
-    spdlog::debug("ActiveOpticForceComponent: applyActiveOpticForces()");
+    SPDLOG_DEBUG("ActiveOpticForceComponent: applyActiveOpticForces()");
 
     if (!isEnabled()) {
-        spdlog::error(
+        SPDLOG_ERROR(
                 "ActiveOpticForceComponent: applyActiveOpticForces() called when the component is not "
                 "applied");
         return;
@@ -66,14 +66,14 @@ void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
 }
 
 void ActiveOpticForceComponent::applyActiveOpticForcesByBendingModes(float* coefficients) {
-    spdlog::debug("ActiveOpticForceComponent: applyActiveOpticForcesByBendingModes()");
+    SPDLOG_DEBUG("ActiveOpticForceComponent: applyActiveOpticForcesByBendingModes()");
     DistributedForces forces =
             ForceConverter::calculateForceFromBendingModes(_forceActuatorSettings, coefficients);
     applyActiveOpticForces(forces.ZForces);
 }
 
 void ActiveOpticForceComponent::postEnableDisableActions() {
-    spdlog::debug("ActiveOpticForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("ActiveOpticForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->activeOpticForcesApplied = isEnabled();
@@ -81,7 +81,7 @@ void ActiveOpticForceComponent::postEnableDisableActions() {
 }
 
 void ActiveOpticForceComponent::postUpdateActions() {
-    spdlog::trace("ActiveOpticForceController: postUpdateActions()");
+    SPDLOG_TRACE("ActiveOpticForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

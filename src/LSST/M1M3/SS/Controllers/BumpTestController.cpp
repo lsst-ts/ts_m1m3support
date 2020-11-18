@@ -37,7 +37,7 @@ namespace M1M3 {
 namespace SS {
 
 BumpTestController::BumpTestController() {
-    spdlog::debug("BumpTestController: BumpTestController()");
+    SPDLOG_DEBUG("BumpTestController: BumpTestController()");
     _xIndex = -1;
     _yIndex = -1;
     _zIndex = -1;
@@ -143,8 +143,8 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
 
             if (_checkAverages() == false) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
-                spdlog::error("Cannot test {}, as measured parked force is too far from 0 ({}, {})", index,
-                              averages[index], _tolerance);
+                SPDLOG_ERROR("Cannot test {}, as measured parked force is too far from 0 ({}, {})", index,
+                             averages[index], _tolerance);
                 stopAll();
                 return false;
             }
@@ -173,8 +173,8 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
 
             if (_checkAverages(axis, index, positive ? _testForce : -_testForce) == false) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
-                spdlog::error("Cannot test {}, as measured {} force is too far {} ({}, {})",
-                              positive ? "plus" : "negative", index, _testForce, averages[index], _tolerance);
+                SPDLOG_ERROR("Cannot test {}, as measured {} force is too far {} ({}, {})",
+                             positive ? "plus" : "negative", index, _testForce, averages[index], _tolerance);
                 stopAll();
                 return false;
             }
@@ -239,7 +239,7 @@ bool BumpTestController::_collectAverages() {
 bool BumpTestController::_checkAverages(char axis, int index, double value) {
     auto _inTolerance = [](char axis, int index, double value, double expected, double tolerance) {
         if (abs(value - expected) >= tolerance) {
-            spdlog::warn(
+            SPDLOG_WARN(
                     "Value for {} actuator {} outside of tolerance - measured {}, expected {}, tolerance "
                     "{}",
                     axis, index, value, expected, tolerance);
