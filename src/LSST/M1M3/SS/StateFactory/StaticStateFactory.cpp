@@ -52,7 +52,6 @@ StaticStateFactory& StaticStateFactory::get() {
 }
 
 State* StaticStateFactory::create(States::Type state) {
-    SPDLOG_TRACE("StaticStateFactory: create({:d})", state);
     switch (state) {
         case States::OfflineState:
             return &_offlineState;

@@ -321,6 +321,7 @@ public:
     void tryLogInterlockStatus();
     void logInterlockWarning();
     void tryLogInterlockWarning();
+    void newLogLevel(int newLevel);
     void logModbusResponse();
     void tryLogModbusResponse();
     void logPIDInfo();

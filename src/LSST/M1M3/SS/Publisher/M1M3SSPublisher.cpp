@@ -93,6 +93,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_logLevel");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_modbusResponse");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
@@ -1784,6 +1785,12 @@ void M1M3SSPublisher::tryLogInterlockWarning() {
         _eventInterlockWarning.gisHeartbeatLost != _previousEventInterlockWarning.gisHeartbeatLost) {
         this->logInterlockWarning();
     }
+}
+
+void M1M3SSPublisher::newLogLevel(int newLevel) {
+    MTM1M3_logevent_logLevelC logLevel;
+    logLevel.level = newLevel;
+    _m1m3SAL->logEvent_logLevel(&logLevel, 0);
 }
 
 void M1M3SSPublisher::logModbusResponse() {

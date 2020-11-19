@@ -39,6 +39,7 @@ void SubscriberThread::run() {
     SPDLOG_INFO("SubscriberThread: Start");
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     while (_keepRunning) {
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandSetLogLevel());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandStart());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnable());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisable());

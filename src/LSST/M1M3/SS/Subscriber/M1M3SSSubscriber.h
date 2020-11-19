@@ -57,6 +57,8 @@ public:
 
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL);
 
+    Command* tryAcceptCommandSetLogLevel();
+
     /**
      * @brief Check for a Start command.
      *

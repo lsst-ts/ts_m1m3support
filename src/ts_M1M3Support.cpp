@@ -68,7 +68,6 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 break;
             case 'd':
                 debugLevel++;
-                debugLevelSAL++;
                 break;
             case 'f':
                 enabledSinks &= ~0x02;
@@ -176,6 +175,8 @@ int main(int argc, char* const argv[]) {
 
     processArgs(argc, argv, configRoot);
 
+    SPDLOG_TRACE("Trace");
+    SPDLOG_DEBUG("Debug");
     SPDLOG_INFO("Main: Creating setting reader, root {}", configRoot);
     SettingReader::get().setRootPath(configRoot);
     SPDLOG_INFO("Main: Initializing M1M3 SAL");
@@ -187,12 +188,15 @@ int main(int argc, char* const argv[]) {
                                                          spdlog::thread_pool(),
                                                          spdlog::async_overflow_policy::block);
     spdlog::set_default_logger(logger);
+    spdlog::set_level((debugLevel == 0 ? spdlog::level::info
+                                       : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace)));
 
     SPDLOG_INFO("Main: Initializing MTMount SAL");
     std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
     mtMountSAL->setDebugLevel(debugLevelSAL);
     SPDLOG_INFO("Main: Creating publisher");
     M1M3SSPublisher::get().setSAL(m1m3SAL);
+    M1M3SSPublisher::get().newLogLevel(debugLevel * 10);
 
     IFPGA* fpga = &IFPGA::get();
     IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
