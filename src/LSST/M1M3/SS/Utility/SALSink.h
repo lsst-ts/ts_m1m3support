@@ -35,7 +35,9 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Sink to send all M1M3 log messages to SAL using logMessage event.
+ * Sink to send all M1M3 spdlog messages to SAL using logMessage event.
+ *
+ * @see https://github.com/gabime/spdlog/wiki/4.-Sinks
  */
 template <typename Mutex>
 class SALSink : public spdlog::sinks::base_sink<Mutex> {
