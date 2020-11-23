@@ -151,6 +151,7 @@ void ForceController::incSupportPercentage() {
     if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 1.0;
     }
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 void ForceController::decSupportPercentage() {
@@ -159,16 +160,19 @@ void ForceController::decSupportPercentage() {
     if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
     }
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 void ForceController::zeroSupportPercentage() {
     SPDLOG_INFO("ForceController: zeroSupportPercentage()");
     _forceActuatorState->supportPercentage = 0.0;
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 void ForceController::fillSupportPercentage() {
     SPDLOG_INFO("ForceController: fillSupportPercentage()");
     _forceActuatorState->supportPercentage = 1.0;
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 bool ForceController::supportPercentageFilled() { return _forceActuatorState->supportPercentage >= 1.0; }
