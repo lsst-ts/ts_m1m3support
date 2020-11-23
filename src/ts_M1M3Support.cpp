@@ -188,15 +188,17 @@ int main(int argc, char* const argv[]) {
                                                          spdlog::thread_pool(),
                                                          spdlog::async_overflow_policy::block);
     spdlog::set_default_logger(logger);
-    spdlog::set_level((debugLevel == 0 ? spdlog::level::info
-                                       : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace)));
+    spdlog::level::level_enum logLevel =
+            (debugLevel == 0 ? spdlog::level::info
+                             : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace));
+    spdlog::set_level(logLevel);
 
     SPDLOG_INFO("Main: Initializing MTMount SAL");
     std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
     mtMountSAL->setDebugLevel(debugLevelSAL);
     SPDLOG_INFO("Main: Creating publisher");
     M1M3SSPublisher::get().setSAL(m1m3SAL);
-    M1M3SSPublisher::get().newLogLevel(debugLevel * 10);
+    M1M3SSPublisher::get().newLogLevel(logLevel * 10);
 
     IFPGA* fpga = &IFPGA::get();
     IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
