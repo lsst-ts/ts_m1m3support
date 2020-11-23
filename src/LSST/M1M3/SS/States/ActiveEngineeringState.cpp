@@ -46,7 +46,6 @@
 #include <PowerController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
-#include <MirrorController.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <RunMirrorForceProfileCommand.h>
 #include <PIDParameters.h>
@@ -70,7 +69,7 @@ States::Type ActiveEngineeringState::update(UpdateCommand* command) {
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command) {
     SPDLOG_INFO("ActiveEngineeringState: lowerM1M3()");
     Model::get().getForceController()->resetPIDs();
-    Model::get().getMirrorController()->startLowerOperation();
+    Model::get().getMirrorLowerController()->start();
     return Model::get().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 

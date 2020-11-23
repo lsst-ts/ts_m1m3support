@@ -25,7 +25,6 @@
 #include <Model.h>
 #include <Publisher.h>
 #include <SafetyController.h>
-#include <MirrorController.h>
 #include <ForceController.h>
 #include <spdlog/spdlog.h>
 
@@ -48,7 +47,7 @@ States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
 
 States::Type ActiveState::lowerM1M3(LowerM1M3Command* command) {
     SPDLOG_INFO("ActiveState: lowerM1M3()");
-    Model::get().getMirrorController()->startLowerOperation();
+    Model::get().getMirrorLowerController()->start();
     return Model::get().getSafetyController()->checkSafety(States::LoweringState);
 }
 

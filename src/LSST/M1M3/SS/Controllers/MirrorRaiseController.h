@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIRRORCONTROLLER_H_
-#define MIRRORCONTROLLER_H_
+#ifndef MIRRORRAISECONTROLLER_H_
+#define MIRRORRAISECONTROLLER_H_
 
 #include <PositionController.h>
 #include <ForceController.h>
@@ -34,33 +34,38 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Controls mirror raising and lowering operations. The operations are executed
- * as command. Command transition system to some "in-progress" state. The newly
- * set system state calls in a loop method the MirrorController to perform
- * operations requested.
+ * Controls mirror raising peration. The operations are executed as command.
+ * Command transition system to some "in-progress" state. The newly set system
+ * state calls in a loop method the MirrorRaiseController to perform operations
+ * requested.
+ *
+ * @see MirrorLowerController
  */
-class MirrorController {
+class MirrorRaiseController {
 public:
-    MirrorController(PositionController* positionController, ForceController* forceController,
-                     SafetyController* safetyController, PowerController* powerController);
+    /**
+     * Construct mirror controller.
+     *
+     * @param positionController
+     * @param forceController
+     * @param safetyController
+     * @param powerController
+     */
+    MirrorRaiseController(PositionController* positionController, ForceController* forceController,
+                          SafetyController* safetyController, PowerController* powerController);
 
-    void startRaiseOperation(bool bypassMoveToReference);
-    void tryIncrementingSupportPercentage();
-    bool checkRaiseOperationComplete();
-    void completeRaiseOperation();
-    bool checkRaiseOperationTimeout();
-    void timeoutRaiseOperation();
+    /**
+     * Starts mirror raising. Should be called once
+     * @param bypassMoveToReference
+     */
+    void start(bool bypassMoveToReference);
+    void runLoop();
+    bool checkComplete();
+    void complete();
+    bool checkTimeout();
+    void timeout();
 
     void abortRaiseM1M3();
-
-    void startLowerOperation();
-    void tryDecrementSupportPercentage();
-    bool checkLowerOperationComplete();
-    void completeLowerOperation();
-    bool checkLowerOperationTimeout();
-    void timeoutLowerOperation();
-
-    void uncontrolledLowerOperation();
 
 private:
     PositionController* _positionController;
@@ -75,4 +80,4 @@ private:
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* MIRRORCONTROLLER_H_ */
+#endif /* MIRRORRAISECONTROLLER_H_ */

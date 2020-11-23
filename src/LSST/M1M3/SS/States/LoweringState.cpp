@@ -24,7 +24,6 @@
 #include <LoweringState.h>
 #include <Model.h>
 #include <SafetyController.h>
-#include <MirrorController.h>
 #include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
 
@@ -37,7 +36,7 @@ LoweringState::LoweringState() : EnabledState("LoweringState") {}
 States::Type LoweringState::update(UpdateCommand* command) {
     ModelPublisher publishIt();
     SPDLOG_TRACE("LoweringState: update()");
-    Model::get().getMirrorController()->tryDecrementSupportPercentage();
+    Model::get().getMirrorLowerController()->runLoop();
     runLoop();
     return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedState
                                                                             : States::NoStateTransition);

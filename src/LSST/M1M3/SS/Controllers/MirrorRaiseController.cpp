@@ -21,7 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <MirrorController.h>
+#include <MirrorRaiseController.h>
 #include <PositionController.h>
 #include <ForceController.h>
 #include <SafetyController.h>
@@ -33,9 +33,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-MirrorController::MirrorController(PositionController* positionController, ForceController* forceController,
-                                   SafetyController* safetyController, PowerController* powerController) {
-    SPDLOG_DEBUG("MirrorController: MirrorController()");
+MirrorRaiseController::MirrorRaiseController(PositionController* positionController,
+                                             ForceController* forceController,
+                                             SafetyController* safetyController,
+                                             PowerController* powerController) {
+    SPDLOG_DEBUG("MirrorRaiseController: MirrorRaiseController()");
     _positionController = positionController;
     _forceController = forceController;
     _safetyController = safetyController;
@@ -44,8 +46,8 @@ MirrorController::MirrorController(PositionController* positionController, Force
     _bypassMoveToReference = false;
 }
 
-void MirrorController::startRaiseOperation(bool bypassMoveToReference) {
-    SPDLOG_INFO("MirrorController: startRaiseOperation({})", bypassMoveToReference);
+void MirrorRaiseController::start(bool bypassMoveToReference) {
+    SPDLOG_INFO("MirrorRaiseController: start({})", bypassMoveToReference);
     _bypassMoveToReference = bypassMoveToReference;
     _safetyController->raiseOperationTimeout(false);
     _positionController->stopMotion();
@@ -64,8 +66,8 @@ void MirrorController::startRaiseOperation(bool bypassMoveToReference) {
     _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
 }
 
-void MirrorController::tryIncrementingSupportPercentage() {
-    SPDLOG_TRACE("MirrorController: tryIncrementingSupportPercentage()");
+void MirrorRaiseController::runLoop() {
+    SPDLOG_TRACE("MirrorRaiseController: runLoop()");
     if (!_forceController->supportPercentageFilled()) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
@@ -87,12 +89,12 @@ void MirrorController::tryIncrementingSupportPercentage() {
     }
 }
 
-bool MirrorController::checkRaiseOperationComplete() {
+bool MirrorRaiseController::checkComplete() {
     return _forceController->supportPercentageFilled() && _positionController->motionComplete();
 }
 
-void MirrorController::completeRaiseOperation() {
-    SPDLOG_INFO("MirrorController: completeRaiseOperation()");
+void MirrorRaiseController::complete() {
+    SPDLOG_INFO("MirrorRaiseController: complete()");
     // Transition to the end state (active or active engineering) if all of the support force has been
     // transfered from the static supports to the force actuators and all hardpoints have completed their
     // commanded motions
@@ -109,18 +111,18 @@ void MirrorController::completeRaiseOperation() {
     _forceController->fillSupportPercentage();
 }
 
-bool MirrorController::checkRaiseOperationTimeout() {
+bool MirrorRaiseController::checkTimeout() {
     return M1M3SSPublisher::get().getTimestamp() >=
            (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
 }
 
-void MirrorController::timeoutRaiseOperation() {
-    SPDLOG_ERROR("MirrorController: timeoutRaiseOperation()");
+void MirrorRaiseController::timeout() {
+    SPDLOG_ERROR("MirrorRaiseController: timeout()");
     _safetyController->raiseOperationTimeout(true);
 }
 
-void MirrorController::abortRaiseM1M3() {
-    SPDLOG_INFO("MirrorController:: abortRaiseM1M3()");
+void MirrorRaiseController::abortRaiseM1M3() {
+    SPDLOG_INFO("MirrorRaiseController:: abortRaiseM1M3()");
     _safetyController->lowerOperationTimeout(false);
     _positionController->stopMotion();
     _positionController->enableChaseAll();
@@ -136,75 +138,6 @@ void MirrorController::abortRaiseM1M3() {
     _forceController->zeroVelocityForces();
     _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
 }
-
-void MirrorController::startLowerOperation() {
-    SPDLOG_INFO("MirrorController: startLowerOperation()");
-    _safetyController->lowerOperationTimeout(false);
-    _positionController->stopMotion();
-    _positionController->enableChaseAll();
-    _forceController->zeroAberrationForces();
-    _forceController->zeroAccelerationForces();
-    _forceController->zeroActiveOpticForces();
-    _forceController->zeroAzimuthForces();
-    _forceController->zeroBalanceForces();
-    _forceController->applyElevationForces();
-    _forceController->zeroOffsetForces();
-    _forceController->zeroStaticForces();
-    _forceController->zeroThermalForces();
-    _forceController->zeroVelocityForces();
-    _forceController->fillSupportPercentage();
-    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
-}
-
-void MirrorController::tryDecrementSupportPercentage() {
-    SPDLOG_TRACE("MirrorController: tryDecrementSupportPercentage()");
-    if (!_forceController->supportPercentageZeroed()) {
-        // We are still in the process of transfering the support force from the static supports
-        // to the force actuators
-        // TODO: Does it matter if the following error is bad when we are trying to lower the mirror?
-        if (_positionController->forcesInTolerance()) {
-            // The forces on the hardpoints are within tolerance, we can continue to transfer the
-            // support force from the static supports to the force actuators
-            _forceController->decSupportPercentage();
-        }
-    }
-}
-
-bool MirrorController::checkLowerOperationComplete() { return _forceController->supportPercentageZeroed(); }
-
-void MirrorController::completeLowerOperation() {
-    SPDLOG_INFO("MirrorController: completeLowerOperation()");
-    // All of the support force has been transfered from the static supports to the
-    // force actuators, stop the hardpoints from chasing
-    // Transition to the end state (parked or parked engineering) if all of the support
-    // force has been transfered from the force actuators to the static supports
-    _positionController->disableChaseAll();
-    _forceController->zeroAberrationForces();
-    _forceController->zeroAccelerationForces();
-    _forceController->zeroActiveOpticForces();
-    _forceController->zeroAzimuthForces();
-    _forceController->zeroBalanceForces();
-    _forceController->zeroElevationForces();
-    _forceController->zeroOffsetForces();
-    _forceController->zeroStaticForces();
-    _forceController->zeroThermalForces();
-    _forceController->zeroVelocityForces();
-    _forceController->zeroSupportPercentage();
-}
-
-bool MirrorController::checkLowerOperationTimeout() {
-    return M1M3SSPublisher::get().getTimestamp() >=
-           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
-}
-
-void MirrorController::timeoutLowerOperation() {
-    SPDLOG_ERROR("MirrorController: timeoutLowerOperation()");
-    // TODO: How should the system react if the operation times out?
-    //       For now we will assume the worst and fault the system
-    _safetyController->lowerOperationTimeout(true);
-}
-
-void MirrorController::uncontrolledLowerOperation() { _powerController->setAllAuxPowerNetworks(false); }
 
 } /* namespace SS */
 } /* namespace M1M3 */
