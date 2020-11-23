@@ -111,21 +111,21 @@ void EnabledState::sendTelemetry() {
 }
 
 bool EnabledState::raiseCompleted() {
-    if (Model::get().getAutomaticOperationsController()->checkRaiseOperationComplete()) {
-        Model::get().getAutomaticOperationsController()->completeRaiseOperation();
+    if (Model::get().getMirrorController()->checkRaiseOperationComplete()) {
+        Model::get().getMirrorController()->completeRaiseOperation();
         return true;
-    } else if (Model::get().getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
-        Model::get().getAutomaticOperationsController()->timeoutRaiseOperation();
+    } else if (Model::get().getMirrorController()->checkRaiseOperationTimeout()) {
+        Model::get().getMirrorController()->timeoutRaiseOperation();
     }
     return false;
 }
 
 bool EnabledState::lowerCompleted() {
-    if (Model::get().getAutomaticOperationsController()->checkLowerOperationComplete()) {
-        Model::get().getAutomaticOperationsController()->completeLowerOperation();
+    if (Model::get().getMirrorController()->checkLowerOperationComplete()) {
+        Model::get().getMirrorController()->completeLowerOperation();
         return true;
-    } else if (Model::get().getAutomaticOperationsController()->checkLowerOperationTimeout()) {
-        Model::get().getAutomaticOperationsController()->timeoutLowerOperation();
+    } else if (Model::get().getMirrorController()->checkLowerOperationTimeout()) {
+        Model::get().getMirrorController()->timeoutLowerOperation();
     }
     return false;
 }

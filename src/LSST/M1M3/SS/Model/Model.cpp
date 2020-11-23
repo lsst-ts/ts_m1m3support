@@ -44,7 +44,7 @@
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <PowerController.h>
-#include <AutomaticOperationsController.h>
+#include <MirrorController.h>
 #include <Gyro.h>
 #include <spdlog/spdlog.h>
 #include <DigitalInputOutput.h>
@@ -178,8 +178,8 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _automaticOperationsController;
     SPDLOG_INFO("Model: Creating automatic operations controller");
-    _automaticOperationsController = new AutomaticOperationsController(_positionController, _forceController,
-                                                                       _safetyController, _powerController);
+    _automaticOperationsController =
+            new MirrorController(_positionController, _forceController, _safetyController, _powerController);
 
     delete _gyro;
     SPDLOG_INFO("Model: Creating gyro");

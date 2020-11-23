@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef AUTOMATICOPERATIONSCONTROLLER_H_
-#define AUTOMATICOPERATIONSCONTROLLER_H_
+#ifndef MIRRORCONTROLLER_H_
+#define MIRRORCONTROLLER_H_
 
 #include <PositionController.h>
 #include <ForceController.h>
@@ -33,10 +33,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class AutomaticOperationsController {
+/**
+ * Controls mirror raising and lowering operations. The operations are executed
+ * as command. Command transition system to some "in-progress" state. The newly
+ * set system state calls in a loop method the MirrorController to perform
+ * operations requested.
+ */
+class MirrorController {
 public:
-    AutomaticOperationsController(PositionController* positionController, ForceController* forceController,
-                                  SafetyController* safetyController, PowerController* powerController);
+    MirrorController(PositionController* positionController, ForceController* forceController,
+                     SafetyController* safetyController, PowerController* powerController);
 
     void startRaiseOperation(bool bypassMoveToReference);
     void tryIncrementingSupportPercentage();
@@ -69,4 +75,4 @@ private:
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* AUTOMATICOPERATIONSCONTROLLER_H_ */
+#endif /* MIRRORCONTROLLER_H_ */

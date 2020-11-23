@@ -24,7 +24,7 @@
 #include <RaisingState.h>
 #include <Model.h>
 #include <SafetyController.h>
-#include <AutomaticOperationsController.h>
+#include <MirrorController.h>
 #include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
 
@@ -37,7 +37,7 @@ RaisingState::RaisingState() : EnabledState("RaisingState") {}
 States::Type RaisingState::update(UpdateCommand* command) {
     ModelPublisher publishIt();
     SPDLOG_TRACE("RaisingState: update()");
-    Model::get().getAutomaticOperationsController()->tryIncrementingSupportPercentage();
+    Model::get().getMirrorController()->tryIncrementingSupportPercentage();
     runLoop();
     return Model::get().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveState
                                                                             : States::NoStateTransition);
@@ -45,7 +45,7 @@ States::Type RaisingState::update(UpdateCommand* command) {
 
 States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     SPDLOG_INFO("RaisingState: abortRaiseM1M3()");
-    Model::get().getAutomaticOperationsController()->abortRaiseM1M3();
+    Model::get().getMirrorController()->abortRaiseM1M3();
     return Model::get().getSafetyController()->checkSafety(States::LoweringState);
 }
 
