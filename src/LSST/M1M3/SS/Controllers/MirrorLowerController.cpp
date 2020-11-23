@@ -61,7 +61,7 @@ void MirrorLowerController::start() {
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
     _forceController->fillSupportPercentage();
-    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
+    setStartTimestamp();
 }
 
 void MirrorLowerController::runLoop() {
@@ -110,6 +110,24 @@ void MirrorLowerController::timeout() {
     // TODO: How should the system react if the operation times out?
     //       For now we will assume the worst and fault the systeme
     _safetyController->lowerOperationTimeout(true);
+}
+
+void MirrorLowerController::abortRaiseM1M3() {
+    SPDLOG_INFO("MirrorLowerController:: abortRaiseM1M3()");
+    _safetyController->lowerOperationTimeout(false);
+    _positionController->stopMotion();
+    _positionController->enableChaseAll();
+    _forceController->zeroAberrationForces();
+    _forceController->zeroAccelerationForces();
+    _forceController->zeroActiveOpticForces();
+    _forceController->zeroAzimuthForces();
+    _forceController->zeroBalanceForces();
+    _forceController->applyElevationForces();
+    _forceController->zeroOffsetForces();
+    _forceController->zeroStaticForces();
+    _forceController->zeroThermalForces();
+    _forceController->zeroVelocityForces();
+    setStartTimestamp();
 }
 
 } /* namespace SS */

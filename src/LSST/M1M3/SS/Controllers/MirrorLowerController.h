@@ -61,6 +61,14 @@ public:
     bool checkTimeout();
     void timeout();
 
+    void abortRaiseM1M3();
+
+protected:
+    /**
+     * Sets operation start timestamp to current time.
+     */
+    void setStartTimestamp() { _cachedTimestamp = M1M3SSPublisher::get().getTimestamp(); }
+
 private:
     PositionController* _positionController;
     ForceController* _forceController;

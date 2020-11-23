@@ -121,24 +121,6 @@ void MirrorRaiseController::timeout() {
     _safetyController->raiseOperationTimeout(true);
 }
 
-void MirrorRaiseController::abortRaiseM1M3() {
-    SPDLOG_INFO("MirrorRaiseController:: abortRaiseM1M3()");
-    _safetyController->lowerOperationTimeout(false);
-    _positionController->stopMotion();
-    _positionController->enableChaseAll();
-    _forceController->zeroAberrationForces();
-    _forceController->zeroAccelerationForces();
-    _forceController->zeroActiveOpticForces();
-    _forceController->zeroAzimuthForces();
-    _forceController->zeroBalanceForces();
-    _forceController->applyElevationForces();
-    _forceController->zeroOffsetForces();
-    _forceController->zeroStaticForces();
-    _forceController->zeroThermalForces();
-    _forceController->zeroVelocityForces();
-    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
-}
-
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

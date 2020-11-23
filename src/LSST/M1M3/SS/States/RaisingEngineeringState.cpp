@@ -44,7 +44,7 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command) {
 
 States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     SPDLOG_INFO("RaisingEngineeringState: abortRaiseM1M3()");
-    Model::get().getMirrorRaiseController()->abortRaiseM1M3();
+    Model::get().getMirrorLowerController()->abortRaiseM1M3();
     return Model::get().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 
