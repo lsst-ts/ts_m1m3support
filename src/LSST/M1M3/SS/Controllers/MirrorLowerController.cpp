@@ -37,7 +37,7 @@ MirrorLowerController::MirrorLowerController(PositionController* positionControl
                                              ForceController* forceController,
                                              SafetyController* safetyController,
                                              PowerController* powerController) {
-    spdlog::debug("MirrorLowerController: MirrorLowerController()");
+    SPDLOG_DEBUG("MirrorLowerController: MirrorLowerController()");
     _positionController = positionController;
     _forceController = forceController;
     _safetyController = safetyController;
@@ -46,7 +46,7 @@ MirrorLowerController::MirrorLowerController(PositionController* positionControl
 }
 
 void MirrorLowerController::start() {
-    spdlog::info("MirrorLowerController: startLowerOperation()");
+    SPDLOG_INFO("MirrorLowerController: startLowerOperation()");
     _safetyController->lowerOperationTimeout(false);
     _positionController->stopMotion();
     _positionController->enableChaseAll();
@@ -65,7 +65,7 @@ void MirrorLowerController::start() {
 }
 
 void MirrorLowerController::runLoop() {
-    spdlog::trace("MirrorLowerController: runLoop()");
+    SPDLOG_TRACE("MirrorLowerController: runLoop()");
     if (!_forceController->supportPercentageZeroed()) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
@@ -81,7 +81,7 @@ void MirrorLowerController::runLoop() {
 bool MirrorLowerController::checkComplete() { return _forceController->supportPercentageZeroed(); }
 
 void MirrorLowerController::complete() {
-    spdlog::info("MirrorLowerController: complete()");
+    SPDLOG_INFO("MirrorLowerController: complete()");
     // All of the support force has been transfered from the static supports to the
     // force actuators, stop the hardpoints from chasing
     // Transition to the end state (parked or parked engineering) if all of the support
@@ -106,7 +106,7 @@ bool MirrorLowerController::checkTimeout() {
 }
 
 void MirrorLowerController::timeout() {
-    spdlog::error("MirrorLowerController: timeout()");
+    SPDLOG_ERROR("MirrorLowerController: timeout()");
     // TODO: How should the system react if the operation times out?
     //       For now we will assume the worst and fault the systeme
     _safetyController->lowerOperationTimeout(true);
