@@ -24,14 +24,29 @@
 #ifndef RANGE_H_
 #define RANGE_H_
 
+#include <spdlog/spdlog.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Utility range checking functions.
+ */
 class Range {
 public:
     static uint64_t Max(uint64_t a, uint64_t b) { return a >= b ? a : b; }
 
+    /**
+     * Template function to check if a value is inside a given range.
+     *
+     * @tparam T value type. All parameters shall have the same type.
+     * @param min range minimal value
+     * @param max range maximal value
+     * @param value value to test
+     *
+     * @return true if value >= min and value <= max
+     */
     template <typename T>
     static bool InRange(T min, T max, T value) {
         return value >= min && value <= max;
@@ -52,10 +67,38 @@ public:
             return false;
         }
     }
+
+    /**
+     * Tests if value is in given range. Produces warning when the value is not
+     * in range.
+     *
+     * @tparam T test value type
+     * @tparam TArgs variadic arguments for SPDLOG_WARN macro
+     * @param min range minimal value
+     * @param max range maximal value
+     * @param value test value
+     * @param counter counter of failed tests. Reset to 0 if value is in range
+     * @param reportAfter report warning only after this numbers of failed tests
+     * @param format format for log message
+     * @param FArgs parameters passed to SPDLOG_WARN
+     *
+     * @return true if value >= min and value <= max. Prints warning if conter >= reportAfter
+     */
+    template <typename T, typename... TArgs>
+    static bool InRangeWithWarning(T min, T max, T value, int& counter, int reportAfter, const char* format,
+                                   TArgs... FArgs) {
+        bool inRange = InRange(min, max, value);
+        if (inRange == false) {
+            counter++;
+            if (counter >= reportAfter) {
+                SPDLOG_WARN(format, FArgs...);
+            }
+        }
+        return inRange;
+    }
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 #endif /* RANGE_H_ */
