@@ -54,6 +54,7 @@ PositionController::PositionController(PositionControllerSettings* positionContr
         _stableEncoderCount[i] = 0;
     }
     M1M3SSPublisher::get().logHardpointActuatorState();
+    memset(_violatedHP, 0, sizeof(_violatedHP));
 }
 
 double PositionController::getRaiseLowerTimeout() {
@@ -109,9 +110,13 @@ bool PositionController::forcesInTolerance() {
     SPDLOG_TRACE("PositionController: forcesInTolerance()");
     bool inTolerance = true;
     for (int i = 0; i < HP_COUNT; i++) {
-        inTolerance &= Range::InRange((float)_positionControllerSettings->RaiseLowerForceLimitLow,
-                                      (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
-                                      _hardpointActuatorData->measuredForce[i]);
+        inTolerance &= Range::InRangeWithWarning((float)_positionControllerSettings->RaiseLowerForceLimitLow,
+                                                 (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
+                                                 _hardpointActuatorData->measuredForce[i], _violatedHP[i], 1,
+                                                 "Violated hardpoint {} measured force {}, limit {} to {}", i,
+                                                 _hardpointActuatorData->measuredForce[i],
+                                                 _positionControllerSettings->RaiseLowerForceLimitLow,
+                                                 _positionControllerSettings->RaiseLowerForceLimitHigh);
     }
     return inTolerance;
 }

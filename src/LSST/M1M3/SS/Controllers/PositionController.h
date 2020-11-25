@@ -70,6 +70,7 @@ private:
     int32_t _scaledMaxStepsPerLoop[6];
     int32_t _targetEncoderValues[6];
     int32_t _stableEncoderCount[6];
+    int _violatedHP[6];
 };
 
 } /* namespace SS */

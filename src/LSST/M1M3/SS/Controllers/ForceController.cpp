@@ -137,6 +137,10 @@ void ForceController::reset() {
     _thermalForceComponent.reset();
     _velocityForceComponent.reset();
     _finalForceComponent.reset();
+
+    memset(_violatedX, 0, sizeof(_violatedX));
+    memset(_violatedY, 0, sizeof(_violatedY));
+    memset(_violatedZ, 0, sizeof(_violatedZ));
 }
 
 void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationData) {
@@ -182,16 +186,30 @@ bool ForceController::supportPercentageZeroed() { return _forceActuatorState->su
 bool ForceController::followingErrorInTolerance() {
     SPDLOG_TRACE("ForceController: followingErrorInTolerance()");
     float limit = _forceActuatorSettings->RaiseLowerFollowingErrorLimit;
+    bool inTolerance = true;
+
     for (int i = 0; i < FA_COUNT; ++i) {
-        if ((i < FA_X_COUNT &&
-             !Range::InRange(-limit, limit, _forceActuatorData->xForce[i] - _appliedForces->xForces[i])) ||
-            (i < FA_Y_COUNT &&
-             !Range::InRange(-limit, limit, _forceActuatorData->yForce[i] - _appliedForces->yForces[i])) ||
-            (!Range::InRange(-limit, limit, _forceActuatorData->zForce[i] - _appliedForces->zForces[i]))) {
-            return false;
+        int actuatorId = _forceActuatorApplicationSettings->ZIndexToActuatorId(i);
+        if (i < FA_X_COUNT) {
+            float fe = _forceActuatorData->xForce[i] - _appliedForces->xForces[i];
+            inTolerance &= Range::InRangeWithWarning(-limit, limit, fe, _violatedX[i], 1,
+                                                     "Violated X follow-up error FA ID {} : {}, limit is {}",
+                                                     actuatorId, fe, limit);
         }
+
+        if (i < FA_Y_COUNT) {
+            float fe = _forceActuatorData->yForce[i] - _appliedForces->yForces[i];
+            inTolerance &= Range::InRangeWithWarning(-limit, limit, fe, _violatedY[i], 1,
+                                                     "Violated Y follow-up error FA ID {} : {}, limit is {}",
+                                                     actuatorId, fe, limit);
+        }
+
+        float fe = _forceActuatorData->zForce[i] - _appliedForces->zForces[i];
+        inTolerance &= Range::InRangeWithWarning(-limit, limit, fe, _violatedZ[i], 1,
+                                                 "Violated Z follow-up error FA ID {} : {}, limit is {}",
+                                                 actuatorId, fe, limit);
     }
-    return true;
+    return inTolerance;
 }
 
 void ForceController::updateAppliedForces() {

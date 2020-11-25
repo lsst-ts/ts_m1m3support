@@ -93,6 +93,8 @@ public:
             if (counter >= reportAfter) {
                 SPDLOG_WARN(format, FArgs...);
             }
+        } else {
+            counter = 0;
         }
         return inRange;
     }

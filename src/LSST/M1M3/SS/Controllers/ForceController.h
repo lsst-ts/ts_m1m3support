@@ -173,6 +173,11 @@ public:
      * actuator values.
      */
     bool supportPercentageZeroed();
+
+    /**
+     * Tests following error on all actuaturs. Reports any violation into
+     * spdlog.
+     */
     bool followingErrorInTolerance();
 
     void updateAppliedForces();
@@ -281,6 +286,10 @@ private:
 
     float _zero[FA_COUNT];
     float _mirrorWeight;
+
+    int _violatedX[FA_X_COUNT];
+    int _violatedY[FA_Y_COUNT];
+    int _violatedZ[FA_Z_COUNT];
 
     static int32_t _toInt24(float force) { return (int32_t)(force * 1000.0); }
 };
