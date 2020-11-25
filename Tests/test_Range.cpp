@@ -27,12 +27,33 @@
 
 using namespace LSST::M1M3::SS;
 
-TEST_CASE("InRangeWithWarning", "[Range]") {
-    int counter = 0;
-    REQUIRE(Range::InRangeWithWarning(1.23, 1.25, 1.24, counter, 1, "Test case {} {}", "test", 10) == true);
-    REQUIRE(counter == 0);
-    REQUIRE(Range::InRangeWithWarning(1.23, 1.25, 1.26, counter, 1, "Test case {} {}", "test", 10) == false);
-    REQUIRE(counter == 1);
-    REQUIRE(Range::InRangeWithWarning(1.23, 1.25, 1.22, counter, 1, "Test case {} {}", "test", 10) == false);
-    REQUIRE(counter == 2);
+class SimpleLimitTrigger : public LimitTrigger<int> {
+public:
+    SimpleLimitTrigger(int occurences) : executedVal(0) {
+        reset();
+        _occurences = occurences;
+    }
+
+    int executedVal;
+
+protected:
+    bool trigger() override { return ((++_count) % _occurences) == 0; }
+    void execute(int val) override { executedVal = val; }
+    void reset() override { _count = 0; }
+
+private:
+    int _count;
+    int _occurences;
+};
+
+TEST_CASE("InRangeTrigger", "[Range]") {
+    SimpleLimitTrigger trigger(2);
+    REQUIRE(Range::InRangeTrigger(1.23, 1.25, 1.24, trigger, 1) == true);
+    REQUIRE(trigger.executedVal == 0);
+
+    REQUIRE(Range::InRangeTrigger(1.23, 1.25, 1.26, trigger, 2) == false);
+    REQUIRE(trigger.executedVal == 0);
+
+    REQUIRE(Range::InRangeTrigger(1.23, 1.25, 1.22, trigger, 3) == false);
+    REQUIRE(trigger.executedVal == 3);
 }

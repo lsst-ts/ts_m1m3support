@@ -34,6 +34,10 @@ public:
         _minOccurence = minOccurence;
     }
 
+    int executedCount;
+    const char *message;
+
+protected:
     bool trigger() override { return ++_counter >= _minOccurence; }
     void execute(const char *msg) override {
         executedCount++;
@@ -43,9 +47,6 @@ public:
         _counter = 0;
         message = NULL;
     }
-
-    int executedCount;
-    const char *message;
 
 private:
     int _counter;

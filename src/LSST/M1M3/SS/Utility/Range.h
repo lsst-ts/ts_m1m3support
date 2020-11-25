@@ -24,6 +24,8 @@
 #ifndef RANGE_H_
 #define RANGE_H_
 
+#include <LimitTrigger.h>
+
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -67,32 +69,26 @@ public:
     }
 
     /**
-     * Tests if value is in given range. Produces warning when the value is not
-     * in range.
+     * Tests if value is in given range. Fires LimitTrigger if conditions
+     * aren't met. Reset LimitTrigger if conditions returned back to normal.
      *
      * @tparam T test value type
-     * @tparam TArgs variadic arguments for SPDLOG_WARN macro
+     * @tparam TArgs variadic arguments for LimitTrigger
      * @param min range minimal value
      * @param max range maximal value
      * @param value test value
-     * @param counter counter of failed tests. Reset to 0 if value is in range
-     * @param reportAfter report warning only after this numbers of failed tests
-     * @param format format for log message
-     * @param FArgs parameters passed to SPDLOG_WARN
+     * @param limitTrigger LimitTrigger subclass to report problems with range
+     * @param lArgs LimitTrigger arguments
      *
-     * @return true if value >= min and value <= max. Prints warning if conter >= reportAfter
+     * @return true if value >= min and value <= max
      */
     template <typename T, typename... TArgs>
-    static bool InRangeWithWarning(T min, T max, T value, int& counter, int reportAfter, const char* format,
-                                   TArgs... FArgs) {
+    static bool InRangeTrigger(T min, T max, T value, LimitTrigger<TArgs...>& limitTrigger, TArgs... lArgs) {
         bool inRange = InRange(min, max, value);
         if (inRange == false) {
-            counter++;
-            if (counter >= reportAfter) {
-                SPDLOG_WARN(format, FArgs...);
-            }
+            limitTrigger.check(lArgs...);
         } else {
-            counter = 0;
+            limitTrigger.reset();
         }
         return inRange;
     }
