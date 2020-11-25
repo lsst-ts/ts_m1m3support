@@ -31,6 +31,7 @@
 #include <SAL_MTM1M3C.h>
 #include <spdlog/spdlog.h>
 
+#include <algorithm>
 #include <cstring>
 
 namespace LSST {
@@ -72,8 +73,8 @@ void DigitalInputOutput::processData() {
     SPDLOG_TRACE("DigitalInputOutput: processData()");
     bool tryPublish = false;
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
-    double timestamp = Timestamp::fromFPGA(
-            Range::Max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));
+    double timestamp =
+            Timestamp::fromFPGA(std::max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));
     if (fpgaData->DigitalOutputTimestamp != _lastDOTimestamp) {
         tryPublish = true;
         _lastDOTimestamp = fpgaData->DigitalOutputTimestamp;

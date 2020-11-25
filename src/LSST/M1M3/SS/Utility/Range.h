@@ -35,8 +35,6 @@ namespace SS {
  */
 class Range {
 public:
-    static uint64_t Max(uint64_t a, uint64_t b) { return a >= b ? a : b; }
-
     /**
      * Template function to check if a value is inside a given range.
      *
