@@ -33,11 +33,20 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Controls M1M3 position. This controller is used in active state to command
+ * M1M3 hardpoints, which in turn moves M1M3 platform position and tip/tilt.
+ */
 class PositionController {
 public:
     PositionController(PositionControllerSettings* positionControllerSettings,
                        HardpointActuatorSettings* hardpointActuatorSettings);
 
+    /**
+     * Returns raise and lower timeout.
+     *
+     * @return timeout for raise/lower in seconds
+     */
     double getRaiseLowerTimeout();
 
     bool enableChase(int32_t actuatorID);
@@ -48,6 +57,14 @@ public:
     bool forcesInTolerance();
     bool motionComplete();
 
+    /**
+     * Move HPs by given steps. Switch HP that needs to move into Stepping
+     * state. updateSteps then moves HP as needed.
+     *
+     * @param steps array of 6 HP steps offsets
+     *
+     * @return false if move cannot be perfomed, as not all actuators are in Standby state
+     */
     bool move(int32_t* steps);
     bool moveToEncoder(int32_t* encoderValues);
     bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
@@ -70,7 +87,6 @@ private:
     int32_t _scaledMaxStepsPerLoop[6];
     int32_t _targetEncoderValues[6];
     int32_t _stableEncoderCount[6];
-    int _violatedHP[6];
 };
 
 } /* namespace SS */

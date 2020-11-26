@@ -33,7 +33,6 @@
 #include <cmath>
 #include <cstring>
 #include <vector>
-#include <spdlog/spdlog.h>
 #include <unistd.h>
 #include <ForceConverter.h>
 
@@ -122,6 +121,18 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         }
         _neighbors.push_back(neighbors);
     }
+
+    for (int i = 0; i < FA_X_COUNT; i++) {
+        limitTriggerX[i] = ForceLimitTrigger('X', _forceActuatorApplicationSettings->XIndexToActuatorId(i));
+    }
+
+    for (int i = 0; i < FA_Y_COUNT; i++) {
+        limitTriggerY[i] = ForceLimitTrigger('Y', _forceActuatorApplicationSettings->YIndexToActuatorId(i));
+    }
+
+    for (int i = 0; i < FA_Z_COUNT; i++) {
+        limitTriggerZ[i] = ForceLimitTrigger('Y', _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+    }
 }
 
 void ForceController::reset() {
@@ -137,10 +148,6 @@ void ForceController::reset() {
     _thermalForceComponent.reset();
     _velocityForceComponent.reset();
     _finalForceComponent.reset();
-
-    memset(_violatedX, 0, sizeof(_violatedX));
-    memset(_violatedY, 0, sizeof(_violatedY));
-    memset(_violatedZ, 0, sizeof(_violatedZ));
 }
 
 void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationData) {
@@ -189,25 +196,18 @@ bool ForceController::followingErrorInTolerance() {
     bool inTolerance = true;
 
     for (int i = 0; i < FA_COUNT; ++i) {
-        int actuatorId = _forceActuatorApplicationSettings->ZIndexToActuatorId(i);
         if (i < FA_X_COUNT) {
             float fe = _forceActuatorData->xForce[i] - _appliedForces->xForces[i];
-            inTolerance &= Range::InRangeWithWarning(-limit, limit, fe, _violatedX[i], 1,
-                                                     "Violated X follow-up error FA ID {} : {}, limit is {}",
-                                                     actuatorId, fe, limit);
+            inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerX[i], limit, fe);
         }
 
         if (i < FA_Y_COUNT) {
             float fe = _forceActuatorData->yForce[i] - _appliedForces->yForces[i];
-            inTolerance &= Range::InRangeWithWarning(-limit, limit, fe, _violatedY[i], 1,
-                                                     "Violated Y follow-up error FA ID {} : {}, limit is {}",
-                                                     actuatorId, fe, limit);
+            inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerY[i], limit, fe);
         }
 
         float fe = _forceActuatorData->zForce[i] - _appliedForces->zForces[i];
-        inTolerance &= Range::InRangeWithWarning(-limit, limit, fe, _violatedZ[i], 1,
-                                                 "Violated Z follow-up error FA ID {} : {}, limit is {}",
-                                                 actuatorId, fe, limit);
+        inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerZ[i], limit, fe);
     }
     return inTolerance;
 }
