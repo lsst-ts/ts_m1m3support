@@ -131,7 +131,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     }
 
     for (int i = 0; i < FA_Z_COUNT; i++) {
-        limitTriggerZ[i] = ForceLimitTrigger('Y', _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+        limitTriggerZ[i] = ForceLimitTrigger('Z', _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
     }
 }
 

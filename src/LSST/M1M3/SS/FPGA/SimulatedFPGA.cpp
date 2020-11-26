@@ -515,7 +515,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                            1000.0) +
                                           (_getRnd() * 0.5);  // Update to Primary Cylinder Force
                             // uncomment to simulate follow up error
-                            // if (subnet == 1 && address == 17 && force > 500) force = 200;
+                            if (subnet == 1 && address == 17 && force > 500) force = 200;
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
                             _writeModbus(response, buffer[2]);
