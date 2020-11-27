@@ -58,6 +58,7 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
     _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
 
     _testForce = 222;
+    _warning = 2.5;
     _tolerance = 5;
     _testSettleTime = 3.0;
     _testMeasurements = 10;
@@ -128,10 +129,29 @@ void BumpTestController::stopAll() {
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 
+void BumpTestController::stopCylinder(char axis) {
+    if ((axis == 'Z' && _testSecondary == false) || _testPrimary == false) {
+        stopAll();
+        return;
+    }
+
+    if (axis == 'Z') {
+        _testPrimary = false;
+    } else {
+        _testSecondary = false;
+    }
+
+    _resetProgress();
+
+    _sleepUntil = M1M3SSPublisher::get().getTimestamp() + _testSettleTime;
+}
+
 bool BumpTestController::_runCylinder(char axis, int index, double averages[], short int* stage) {
     ForceController* forceController = Model::get().getForceController();
     double timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->timestamp = timestamp;
+    MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
+            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+    forceActuatorBumpTestStatus->timestamp = timestamp;
 
     bool positive = false;
 
@@ -141,11 +161,12 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
         case MTM1M3_shared_BumpTest_TestingNegativeWait:
             if (timestamp < _sleepUntil || _collectAverages() == false) break;
 
-            if (_checkAverages() == false) {
+            if (_checkAverages() & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
-                SPDLOG_ERROR("Cannot test {}, as measured parked force is too far from 0 ({}, {})", index,
-                             averages[index], _tolerance);
-                stopAll();
+                SPDLOG_ERROR(
+                        "Failed FA ID {} ({}{}) bump test - measured parked force is too far from 0 ({}, {})",
+                        forceActuatorBumpTestStatus->actuatorId, axis, index, averages[index], _tolerance);
+                stopCylinder(axis);
                 return false;
             }
             switch (*stage) {
@@ -159,6 +180,8 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
                     *stage = MTM1M3_shared_BumpTest_Passed;
+                    SPDLOG_INFO("Passed FA ID {} ({}{}) bump test", forceActuatorBumpTestStatus->actuatorId,
+                                axis, index);
                     _resetProgress(false);
                     return false;
             }
@@ -171,11 +194,12 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
         case MTM1M3_shared_BumpTest_TestingNegative:
             if (timestamp < _sleepUntil || _collectAverages() == false) break;
 
-            if (_checkAverages(axis, index, positive ? _testForce : -_testForce) == false) {
+            if (_checkAverages(axis, index, positive ? _testForce : -_testForce) & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
-                SPDLOG_ERROR("Cannot test {}, as measured {} force is too far {} ({}, {})",
-                             positive ? "plus" : "negative", index, _testForce, averages[index], _tolerance);
-                stopAll();
+                SPDLOG_ERROR("Failed FA ID {} ({}{}) bump test - measured {} force is too far {} ({}, {})",
+                             forceActuatorBumpTestStatus->actuatorId, axis, index,
+                             positive ? "plus" : "negative", _testForce, averages[index], _tolerance);
+                stopCylinder(axis);
                 return false;
             }
 
@@ -236,42 +260,52 @@ bool BumpTestController::_collectAverages() {
     return false;
 }
 
-bool BumpTestController::_checkAverages(char axis, int index, double value) {
-    auto _inTolerance = [](char axis, int index, double value, double expected, double tolerance) {
-        if (abs(value - expected) >= tolerance) {
-            SPDLOG_WARN(
+int BumpTestController::_checkAverages(char axis, int index, double value) {
+    auto _inTolerance = [](char axis, int index, double value, double expected, double tolerance,
+                           double warning) {
+        double err = abs(value - expected);
+        if (err >= tolerance) {
+            SPDLOG_ERROR(
                     "Value for {} actuator {} outside of tolerance - measured {}, expected {}, tolerance "
                     "{}",
                     axis, index, value, expected, tolerance);
-            return false;
+            return 0x01;
         }
-        return true;
+        if (err >= warning) {
+            SPDLOG_WARN(
+                    "Value for {} actuator {} following error warning - measured {}, expected {}, tolerance "
+                    "{}",
+                    axis, index, value, expected, warning);
+            return 0x02;
+        }
+
+        return 0;
     };
 
-    bool ret = true;
+    int ret = 0;
 
     for (int i = 0; i < FA_X_COUNT; ++i) {
         if (axis == 'X' && index == i) {
-            ret &= _inTolerance('X', i, _xAverages[i], value, _tolerance);
+            ret |= _inTolerance('X', i, _xAverages[i], value, _tolerance, _warning);
 
         } else {
-            ret &= _inTolerance('X', i, _xAverages[i], 0, _tolerance);
+            ret |= _inTolerance('X', i, _xAverages[i], 0, _tolerance, _warning);
         }
     }
     for (int i = 0; i < FA_Y_COUNT; ++i) {
         if (axis == 'Y' && index == i) {
-            ret &= _inTolerance('Y', i, _yAverages[i], value, _tolerance);
+            ret |= _inTolerance('Y', i, _yAverages[i], value, _tolerance, _warning);
 
         } else {
-            ret &= _inTolerance('Y', i, _yAverages[i], 0, _tolerance);
+            ret |= _inTolerance('Y', i, _yAverages[i], 0, _tolerance, _warning);
         }
     }
     for (int i = 0; i < FA_Z_COUNT; ++i) {
         if (axis == 'Z' && index == i) {
-            ret &= _inTolerance('Z', i, _zAverages[i], value, _tolerance);
+            ret |= _inTolerance('Z', i, _zAverages[i], value, _tolerance, _warning);
 
         } else {
-            ret &= _inTolerance('Z', i, _zAverages[i], 0, _tolerance);
+            ret |= _inTolerance('Z', i, _zAverages[i], 0, _tolerance, _warning);
         }
     }
 

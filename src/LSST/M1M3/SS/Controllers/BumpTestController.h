@@ -80,6 +80,13 @@ public:
      */
     void stopAll();
 
+    /**
+     * Stops bump test on given cylinder.
+     *
+     * @param axis cylinder axis (X,Y or Z)
+     */
+    void stopCylinder(char axis);
+
 private:
     int _xIndex;
     int _yIndex;
@@ -89,6 +96,7 @@ private:
     bool _testSecondary;
 
     float _testForce;
+    float _warning;
     float _tolerance;
     float _testSettleTime;
     int _testMeasurements;
@@ -110,7 +118,10 @@ private:
      */
     bool _collectAverages();
 
-    bool _checkAverages(char axis = ' ', int index = -1, double value = 0);
+    /**
+     * @return 0x01 on error, 0x02 on warning.
+     */
+    int _checkAverages(char axis = ' ', int index = -1, double value = 0);
 };
 
 }  // namespace SS
