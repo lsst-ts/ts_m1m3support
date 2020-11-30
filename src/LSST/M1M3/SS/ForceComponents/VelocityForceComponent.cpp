@@ -51,10 +51,10 @@ VelocityForceComponent::VelocityForceComponent(
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
-    spdlog::trace("VelocityForceComponent: applyVelocityForces()");
+    SPDLOG_TRACE("VelocityForceComponent: applyVelocityForces()");
 
     if (!isEnabled()) {
-        spdlog::error(
+        SPDLOG_ERROR(
                 "VelocityForceComponent: applyVelocityForces() called when the component is not applied");
         return;
     }
@@ -75,8 +75,8 @@ void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
 void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularVelocityX,
                                                                   float angularVelocityY,
                                                                   float angularVelocityZ) {
-    spdlog::trace("VelocityForceComponent: applyVelocityForcesByMirrorForces({:.1f}, {:.1f}, {:.1f})",
-                  angularVelocityX, angularVelocityY, angularVelocityZ);
+    SPDLOG_TRACE("VelocityForceComponent: applyVelocityForcesByMirrorForces({:.1f}, {:.1f}, {:.1f})",
+                 angularVelocityX, angularVelocityY, angularVelocityZ);
     DistributedForces forces = ForceConverter::calculateForceFromAngularVelocity(
             _forceActuatorSettings, angularVelocityX, angularVelocityY, angularVelocityZ);
     float xForces[FA_X_COUNT];
@@ -98,7 +98,7 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
 }
 
 void VelocityForceComponent::postEnableDisableActions() {
-    spdlog::debug("VelocityForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("VelocityForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->velocityForcesApplied = isEnabled();
@@ -106,7 +106,7 @@ void VelocityForceComponent::postEnableDisableActions() {
 }
 
 void VelocityForceComponent::postUpdateActions() {
-    spdlog::trace("VelocityForceController: postUpdateActions()");
+    SPDLOG_TRACE("VelocityForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

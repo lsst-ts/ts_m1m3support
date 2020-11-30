@@ -51,10 +51,10 @@ StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
 
 void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y,
                                              std::vector<float>* z) {
-    spdlog::debug("StaticForceComponent: applyStaticForces()");
+    SPDLOG_DEBUG("StaticForceComponent: applyStaticForces()");
 
     if (!isEnabled()) {
-        spdlog::error("StaticForceComponent: applyStaticForces() called when the component is not applied");
+        SPDLOG_ERROR("StaticForceComponent: applyStaticForces() called when the component is not applied");
         return;
     }
 
@@ -72,7 +72,7 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
 }  // namespace SS
 
 void StaticForceComponent::postEnableDisableActions() {
-    spdlog::debug("StaticForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("StaticForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->staticForcesApplied = isEnabled();
@@ -80,7 +80,7 @@ void StaticForceComponent::postEnableDisableActions() {
 }
 
 void StaticForceComponent::postUpdateActions() {
-    spdlog::trace("StaticForceController: postUpdateActions()");
+    SPDLOG_TRACE("StaticForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

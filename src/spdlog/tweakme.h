@@ -26,7 +26,7 @@
 // WARNING: If the log pattern contains thread id (i.e, %t) while this flag is
 // on, zero will be logged as thread id.
 //
-// #define SPDLOG_NO_THREAD_ID
+#define SPDLOG_NO_THREAD_ID
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@
 // Uncomment and set to compile time level with zero cost (default is INFO).
 // Macros like SPDLOG_DEBUG(..), SPDLOG_INFO(..)  will expand to empty statements if not enabled
 //
-// #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////

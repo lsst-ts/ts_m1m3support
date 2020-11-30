@@ -32,7 +32,7 @@ namespace M1M3 {
 namespace SS {
 
 SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSettings) {
-    spdlog::debug("SafetyController: SafetyController()");
+    SPDLOG_DEBUG("SafetyController: SafetyController()");
     _safetyControllerSettings = safetyControllerSettings;
     _errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
     _errorCodeData->errorCode = FaultCodes::NoFault;
@@ -58,7 +58,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
 }
 
 void SafetyController::clearErrorCode() {
-    spdlog::info("SafetyController: clearErrorCode()");
+    SPDLOG_INFO("SafetyController: clearErrorCode()");
     _errorCodeData->errorCode = FaultCodes::NoFault;
     M1M3SSPublisher::get().logErrorCode();
 }

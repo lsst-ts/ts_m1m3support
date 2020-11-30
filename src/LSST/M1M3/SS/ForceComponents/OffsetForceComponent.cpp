@@ -51,10 +51,10 @@ OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
 }
 
 void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
-    spdlog::debug("OffsetForceComponent: applyOffsetForces()");
+    SPDLOG_DEBUG("OffsetForceComponent: applyOffsetForces()");
 
     if (!isEnabled()) {
-        spdlog::error("OffsetForceComponent: applyOffsetForces() called when the component is not applied");
+        SPDLOG_ERROR("OffsetForceComponent: applyOffsetForces() called when the component is not applied");
         return;
     }
 
@@ -73,7 +73,7 @@ void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
 
 void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce,
                                                            float xMoment, float yMoment, float zMoment) {
-    spdlog::debug(
+    SPDLOG_DEBUG(
             "OffsetForceComponent: applyOffsetForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
@@ -98,7 +98,7 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
 }
 
 void OffsetForceComponent::applyActuatorOffset(char axis, int index, float offset) {
-    spdlog::debug("OffsetForceComponent: applyActuatorOffset({}, {}, {:1.f}", axis, index, offset);
+    SPDLOG_DEBUG("OffsetForceComponent: applyActuatorOffset({}, {}, {:1.f}", axis, index, offset);
     switch (axis) {
         case 'X':
             xTarget[index] = offset;
@@ -119,7 +119,7 @@ void OffsetForceComponent::zeroOffsetForces() {
 }
 
 void OffsetForceComponent::postEnableDisableActions() {
-    spdlog::debug("OffsetForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("OffsetForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->offsetForcesApplied = isEnabled();
@@ -127,7 +127,7 @@ void OffsetForceComponent::postEnableDisableActions() {
 }
 
 void OffsetForceComponent::postUpdateActions() {
-    spdlog::trace("OffsetForceController: postUpdateActions()");
+    SPDLOG_TRACE("OffsetForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

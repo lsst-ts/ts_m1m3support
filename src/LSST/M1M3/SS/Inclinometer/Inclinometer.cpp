@@ -38,7 +38,7 @@ namespace SS {
 
 Inclinometer::Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController,
                            InclinometerSettings* inclinometerSettings) {
-    spdlog::debug("Inclinometer: Inclinometer()");
+    SPDLOG_DEBUG("Inclinometer: Inclinometer()");
     _fpgaData = fpgaData;
     _safetyController = safetyController;
     _inclinometerSettings = inclinometerSettings;
@@ -57,7 +57,7 @@ Inclinometer::Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyCo
 void Inclinometer::processData() {
     // TODO: Handle no data available
     // TODO: Handle limits, push to safety controller
-    spdlog::trace("Inclinometer: processData()");
+    SPDLOG_TRACE("Inclinometer: processData()");
     if (_fpgaData->InclinometerErrorTimestamp > _lastErrorTimestamp) {
         _lastErrorTimestamp = _fpgaData->InclinometerErrorTimestamp;
         _errorCleared = false;

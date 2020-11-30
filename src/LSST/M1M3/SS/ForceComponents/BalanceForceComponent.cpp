@@ -59,10 +59,10 @@ BalanceForceComponent::BalanceForceComponent(
 }
 
 void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
-    spdlog::trace("BalanceForceComponent: applyBalanceForces()");
+    SPDLOG_TRACE("BalanceForceComponent: applyBalanceForces()");
 
     if (!isEnabled()) {
-        spdlog::error("BalanceForceComponent: applyBalanceForces() called when the component is not applied");
+        SPDLOG_ERROR("BalanceForceComponent: applyBalanceForces() called when the component is not applied");
         return;
     }
 
@@ -81,7 +81,7 @@ void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
 
 void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float yForce, float zForce,
                                                              float xMoment, float yMoment, float zMoment) {
-    spdlog::trace(
+    SPDLOG_TRACE(
             "BalanceForceComponent: applyBalanceForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
@@ -114,7 +114,7 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
 }
 
 void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
-    spdlog::debug("BalanceForceComponent: updatePID()");
+    SPDLOG_DEBUG("BalanceForceComponent: updatePID()");
     PID* pid = _idToPID(id);
     if (pid != 0) {
         pid->updateParameters(parameters);
@@ -122,7 +122,7 @@ void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
 }
 
 void BalanceForceComponent::resetPID(int id) {
-    spdlog::debug("BalanceForceComponent: resetPID()");
+    SPDLOG_DEBUG("BalanceForceComponent: resetPID()");
     PID* pid = _idToPID(id);
     if (pid != 0) {
         pid->restoreInitialParameters();
@@ -130,7 +130,7 @@ void BalanceForceComponent::resetPID(int id) {
 }
 
 void BalanceForceComponent::resetPIDs() {
-    spdlog::debug("BalanceForceComponent: resetPIDs()");
+    SPDLOG_DEBUG("BalanceForceComponent: resetPIDs()");
     _fx.restoreInitialParameters();
     _fy.restoreInitialParameters();
     _fz.restoreInitialParameters();
@@ -140,7 +140,7 @@ void BalanceForceComponent::resetPIDs() {
 }
 
 void BalanceForceComponent::postEnableDisableActions() {
-    spdlog::debug("BalanceForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("BalanceForceComponent: postEnableDisableActions()");
 
     if (isEnabled()) {
         resetPIDs();
@@ -152,7 +152,7 @@ void BalanceForceComponent::postEnableDisableActions() {
 }
 
 void BalanceForceComponent::postUpdateActions() {
-    spdlog::trace("BalanceForceController: postUpdateActions()");
+    SPDLOG_TRACE("BalanceForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

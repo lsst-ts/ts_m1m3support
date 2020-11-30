@@ -49,72 +49,72 @@ bool FirmwareUpdate::Program(int actuatorId, std::string filePath) {
     int subnet = map.Subnet;
     int address = map.Address;
     if (subnet == 255 || address == 255) {
-        spdlog::error("FirmwareUpdate: Unknown actuator {}", actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Unknown actuator {}", actuatorId);
         return false;
     }
     if (!this->CreateAppData()) {
-        spdlog::error("FirmwareUpdate: Failed to create application data for actuator {}", actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to create application data for actuator {}", actuatorId);
         return false;
     }
     if (!this->ProcessFile(filePath)) {
-        spdlog::error("FirmwareUpdate: Failed to process intel hex file for actuator {}", actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to process intel hex file for actuator {}", actuatorId);
         return false;
     }
     if (!this->UpdateAppData()) {
-        spdlog::error("FirmwareUpdate: Failed to load intel hex file into application data for actuator {:d}",
-                      actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to load intel hex file into application data for actuator {:d}",
+                     actuatorId);
         return false;
     }
     if (!this->UpdateAppDataCRC()) {
-        spdlog::error("FirmwareUpdate: Failed to calculate application data CRC for actuator {}", actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to calculate application data CRC for actuator {}", actuatorId);
         return false;
     }
     if (!this->UpdateAppStatCRC()) {
-        spdlog::error("FirmwareUpdate: Failed to calculate application statistics CRC for actuator {}",
-                      actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to calculate application statistics CRC for actuator {}",
+                     actuatorId);
         return false;
     }
     if (!this->RestartApplication(subnet, address)) {
-        spdlog::error(
+        SPDLOG_ERROR(
                 "FirmwareUpdate: Failed to restart ILC application for actuator {} before loading firmware",
                 actuatorId);
         return false;
     }
     if (!this->EnterFirmwareUpdate(subnet, address)) {
-        spdlog::error("FirmwareUpdate: Failed to start transition to firmware update state for actuator {}",
-                      actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to start transition to firmware update state for actuator {}",
+                     actuatorId);
         return false;
     }
     if (!this->ClearFaults(subnet, address)) {
-        spdlog::error("FirmwareUpdate: Failed to clear faults to enter firmware update state for actuator {}",
-                      actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to clear faults to enter firmware update state for actuator {}",
+                     actuatorId);
         return false;
     }
     if (!this->EraseILCApplication(subnet, address)) {
-        spdlog::error("FirmwareUpdate: Failed to erase ILC application for actuator {}", actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to erase ILC application for actuator {}", actuatorId);
         return false;
     }
     if (!this->WriteApplication(subnet, address)) {
-        spdlog::error("FirmwareUpdate: Failed to write ILC application for actuator {}", actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to write ILC application for actuator {}", actuatorId);
         return false;
     }
     if (!this->WriteApplicationStats(subnet, address, _appStats)) {
-        spdlog::error("FirmwareUpdate: Failed to write ILC application stats for actuator {}", actuatorId);
+        SPDLOG_ERROR("FirmwareUpdate: Failed to write ILC application stats for actuator {}", actuatorId);
         return false;
     }
     if (!this->WriteVerifyApplication(subnet, address)) {
         // ILC seems to produce a CRC error
-        spdlog::warn("FirmwareUpdate: Failed to verify ILC application for actuator {}", actuatorId);
+        SPDLOG_WARN("FirmwareUpdate: Failed to verify ILC application for actuator {}", actuatorId);
     }
     if (!this->RestartApplication(subnet, address)) {
         // ILC doesn't seem to restart the application as intended
-        spdlog::warn(
+        SPDLOG_WARN(
                 "FirmwareUpdate: Failed to restart ILC application for actuator {} after loading firmware",
                 actuatorId);
     }
     if (!this->EnterDisable(subnet, address)) {
         // ILC doesn't seem to restart the application as intended
-        spdlog::warn("FirmwareUpdate: Failed to enter disabled state for actuator {}", actuatorId);
+        SPDLOG_WARN("FirmwareUpdate: Failed to enter disabled state for actuator {}", actuatorId);
     }
     return true;
 }
@@ -190,8 +190,8 @@ bool FirmwareUpdate::ProcessLine(const char* line, IntelHexLine* hexLine) {
                 if (returnCode >= 0) {
                     hexLine->Data.push_back((char)value);
                 } else {
-                    spdlog::error("FirmwareUpdate: Unable to parse DataByte {} for Address {}", i,
-                                  (int)hexLine->Address);
+                    SPDLOG_ERROR("FirmwareUpdate: Unable to parse DataByte {} for Address {}", i,
+                                 (int)hexLine->Address);
                     ok = false;
                     break;
                 }
@@ -212,25 +212,25 @@ bool FirmwareUpdate::ProcessLine(const char* line, IntelHexLine* hexLine) {
                     checksum = ~checksum;
                     checksum += 1;
                     if (checksum != hexLine->Checksum) {
-                        spdlog::error(
+                        SPDLOG_ERROR(
                                 "FirmwareUpdate: Checksum mismatch for Address 0x{:04X}, expecting 0x{:02X} "
                                 "got 0x{:02X}",
                                 (int)hexLine->Address, (int)hexLine->Checksum, checksum);
                         ok = false;
                     }
                 } else {
-                    spdlog::error("FirmwareUpdate: Unable to parse Checksum for Address 0x{:04X}",
-                                  (int)hexLine->Address);
+                    SPDLOG_ERROR("FirmwareUpdate: Unable to parse Checksum for Address 0x{:04X}",
+                                 (int)hexLine->Address);
                     ok = false;
                 }
             }
         } else {
-            spdlog::error("FirmwareUpdate: Unable to Parse ByteCount, Address, and RecordType for line.");
+            SPDLOG_ERROR("FirmwareUpdate: Unable to Parse ByteCount, Address, and RecordType for line.");
             ok = false;
         }
     } else {
-        spdlog::error("FirmwareUpdate: Invalid IntelHexLine StartCode '{}' expecting '{}'",
-                      (int)hexLine->StartCode, (int)':');
+        SPDLOG_ERROR("FirmwareUpdate: Invalid IntelHexLine StartCode '{}' expecting '{}'",
+                     (int)hexLine->StartCode, (int)':');
         ok = false;
     }
     return ok;
@@ -353,7 +353,7 @@ bool FirmwareUpdate::WriteApplication(int subnet, int address) {
             i += 4;
         }
         if (!this->WriteApplicationPage(subnet, address, startAddress, 192, buffer)) {
-            spdlog::error("FirmwareUpdate: Failed to write application page address {}", startAddress);
+            SPDLOG_ERROR("FirmwareUpdate: Failed to write application page address {}", startAddress);
             return false;
         }
     }
@@ -491,24 +491,24 @@ bool FirmwareUpdate::ProcessResponse(ModbusBuffer* buffer, int subnet) {
                             ok = this->ProcessExceptionCode(buffer, function);
                             break;
                         default:
-                            spdlog::error("FirmwareUpdate: Unknown function {} on subnet {}", function,
-                                          subnet);
+                            SPDLOG_ERROR("FirmwareUpdate: Unknown function {} on subnet {}", function,
+                                         subnet);
                             return false;
                     }
                     if (!ok) {
                         return false;
                     }
                 } else {
-                    spdlog::warn("FirmwareUpdate: Unknown subnet {}", subnet);
+                    SPDLOG_WARN("FirmwareUpdate: Unknown subnet {}", subnet);
                     return false;
                 }
             } else {
-                spdlog::warn("FirmwareUpdate: Invalid CRC {}", subnet);
+                SPDLOG_WARN("FirmwareUpdate: Invalid CRC {}", subnet);
                 return false;
             }
         }
     } else {
-        spdlog::error("FirmwareUpdate: No response");
+        SPDLOG_ERROR("FirmwareUpdate: No response");
         return false;
     }
     return true;
@@ -560,16 +560,16 @@ bool FirmwareUpdate::ProcessVerifyUserApplication(ModbusBuffer* buffer) {
         case 0x0000:
             return true;
         case 0x00FF:
-            spdlog::error("FirmwareUpdate: Application Stats Error");
+            SPDLOG_ERROR("FirmwareUpdate: Application Stats Error");
             return false;
         case 0xFF00:
-            spdlog::error("FirmwareUpdate: Application Error");
+            SPDLOG_ERROR("FirmwareUpdate: Application Error");
             return false;
         case 0xFFFF:
-            spdlog::error("FirmwareUpdate: Application Stats and Application Error");
+            SPDLOG_ERROR("FirmwareUpdate: Application Stats and Application Error");
             return false;
         default:
-            spdlog::error("FirmwareUpdate: Unknown Status");
+            SPDLOG_ERROR("FirmwareUpdate: Unknown Status");
             return false;
     }
 }
@@ -577,7 +577,7 @@ bool FirmwareUpdate::ProcessVerifyUserApplication(ModbusBuffer* buffer) {
 bool FirmwareUpdate::ProcessExceptionCode(ModbusBuffer* buffer, int functionCode) {
     uint8_t exceptionCode = buffer->readU8();
     buffer->skipToNextFrame();
-    spdlog::error("FirmwareUpdate: Function code {} got exception code {}", functionCode, exceptionCode);
+    SPDLOG_ERROR("FirmwareUpdate: Function code {} got exception code {}", functionCode, exceptionCode);
     return false;
 }
 
@@ -634,7 +634,7 @@ bool FirmwareUpdate::PrintBuffer(ModbusBuffer* buffer, std::string text) {
     for (int i = 3; i < buffer->getLength() - 3; ++i) {
         text = text + " " + boost::lexical_cast<std::string>((int)buffer->readU8());
     }
-    spdlog::info("{}", text.c_str());
+    SPDLOG_INFO("{}", text.c_str());
     return true;
 }
 

@@ -49,7 +49,7 @@ namespace SS {
 ParkedEngineeringState::ParkedEngineeringState() : EngineeringState("ParkedEngineeringState") {}
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command) {
-    spdlog::trace("ParkedEngineeringState: update()");
+    SPDLOG_TRACE("ParkedEngineeringState: update()");
     sendTelemetry();
 
     // check & run tests
@@ -59,7 +59,7 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command) {
 }
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
-    spdlog::info("ParkedEngineeringState: raiseM1M3()");
+    SPDLOG_INFO("ParkedEngineeringState: raiseM1M3()");
 
     Model::get().getBumpTestController()->stopAll();
 
@@ -69,7 +69,7 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
 }
 
 States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
-    spdlog::info("ParkedEngineeringState: exitEngineering()");
+    SPDLOG_INFO("ParkedEngineeringState: exitEngineering()");
 
     Model::get().getBumpTestController()->stopAll();
 
@@ -84,7 +84,7 @@ States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* com
 }
 
 States::Type ParkedEngineeringState::disable(DisableCommand* command) {
-    spdlog::info("ParkedEngineeringState: disable()");
+    SPDLOG_INFO("ParkedEngineeringState: disable()");
 
     Model::get().getBumpTestController()->stopAll();
 
@@ -104,8 +104,8 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command) {
 }
 
 States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
-    spdlog::info("ParkedEngineeringState: forceActuatorBumpTest({}, {}, {})", command->getData()->actuatorId,
-                 command->getData()->testPrimary, command->getData()->testSecondary);
+    SPDLOG_INFO("ParkedEngineeringState: forceActuatorBumpTest({}, {}, {})", command->getData()->actuatorId,
+                command->getData()->testPrimary, command->getData()->testSecondary);
     Model::get().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
                                                               command->getData()->testPrimary,
                                                               command->getData()->testSecondary);
@@ -113,7 +113,7 @@ States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTest
 }
 
 States::Type ParkedEngineeringState::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
-    spdlog::info("ParkedEngineeringState: killForceActuatorBumpTest()");
+    SPDLOG_INFO("ParkedEngineeringState: killForceActuatorBumpTest()");
     Model::get().getBumpTestController()->stopAll();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }

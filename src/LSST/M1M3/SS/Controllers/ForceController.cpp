@@ -62,7 +62,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
           _thermalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
           _velocityForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
           _finalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings) {
-    spdlog::debug("ForceController: ForceController()");
+    SPDLOG_DEBUG("ForceController: ForceController()");
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _safetyController = safetyController;
@@ -125,7 +125,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 }
 
 void ForceController::reset() {
-    spdlog::info("ForceController: reset()");
+    SPDLOG_INFO("ForceController: reset()");
     _aberrationForceComponent.reset();
     _accelerationForceComponent.reset();
     _activeOpticForceComponent.reset();
@@ -140,13 +140,13 @@ void ForceController::reset() {
 }
 
 void ForceController::updateTMAElevationData(MTMount_ElevationC* tmaElevationData) {
-    spdlog::trace("ForceController: updateTMAElevationData()");
+    SPDLOG_TRACE("ForceController: updateTMAElevationData()");
     _elevation_Angle_Actual = tmaElevationData->Elevation_Angle_Actual;
     _elevation_Timestamp = tmaElevationData->timestamp;
 }
 
 void ForceController::incSupportPercentage() {
-    spdlog::trace("ForceController: incSupportPercentage()");
+    SPDLOG_TRACE("ForceController: incSupportPercentage()");
     _forceActuatorState->supportPercentage += _forceActuatorSettings->RaiseIncrementPercentage;
     if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 1.0;
@@ -154,7 +154,7 @@ void ForceController::incSupportPercentage() {
 }
 
 void ForceController::decSupportPercentage() {
-    spdlog::trace("ForceController: decSupportPercentage()");
+    SPDLOG_TRACE("ForceController: decSupportPercentage()");
     _forceActuatorState->supportPercentage -= _forceActuatorSettings->LowerDecrementPercentage;
     if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
@@ -162,12 +162,12 @@ void ForceController::decSupportPercentage() {
 }
 
 void ForceController::zeroSupportPercentage() {
-    spdlog::info("ForceController: zeroSupportPercentage()");
+    SPDLOG_INFO("ForceController: zeroSupportPercentage()");
     _forceActuatorState->supportPercentage = 0.0;
 }
 
 void ForceController::fillSupportPercentage() {
-    spdlog::info("ForceController: fillSupportPercentage()");
+    SPDLOG_INFO("ForceController: fillSupportPercentage()");
     _forceActuatorState->supportPercentage = 1.0;
 }
 
@@ -176,7 +176,7 @@ bool ForceController::supportPercentageFilled() { return _forceActuatorState->su
 bool ForceController::supportPercentageZeroed() { return _forceActuatorState->supportPercentage <= 0.0; }
 
 bool ForceController::followingErrorInTolerance() {
-    spdlog::trace("ForceController: followingErrorInTolerance()");
+    SPDLOG_TRACE("ForceController: followingErrorInTolerance()");
     float limit = _forceActuatorSettings->RaiseLowerFollowingErrorLimit;
     for (int i = 0; i < FA_COUNT; ++i) {
         if ((i < FA_X_COUNT &&
@@ -191,7 +191,7 @@ bool ForceController::followingErrorInTolerance() {
 }
 
 void ForceController::updateAppliedForces() {
-    spdlog::trace("ForceController: updateAppliedForces()");
+    SPDLOG_TRACE("ForceController: updateAppliedForces()");
 
     if (_aberrationForceComponent.isEnabled() || _aberrationForceComponent.isDisabling()) {
         _aberrationForceComponent.update();
@@ -248,7 +248,7 @@ void ForceController::updateAppliedForces() {
 }
 
 void ForceController::processAppliedForces() {
-    spdlog::trace("ForceController: processAppliedForces()");
+    SPDLOG_TRACE("ForceController: processAppliedForces()");
     _sumAllForces();
     _convertForcesToSetpoints();
     _checkMirrorMoments();
@@ -259,7 +259,7 @@ void ForceController::processAppliedForces() {
 }
 
 void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
-    spdlog::info("ForceController: applyAberrationForcesByBendingModes()");
+    SPDLOG_INFO("ForceController: applyAberrationForcesByBendingModes()");
     if (!_aberrationForceComponent.isEnabled()) {
         _aberrationForceComponent.enable();
     }
@@ -267,7 +267,7 @@ void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
 }
 
 void ForceController::applyAberrationForces(float* z) {
-    spdlog::info("ForceController: applyAberrationForces()");
+    SPDLOG_INFO("ForceController: applyAberrationForces()");
     if (!_aberrationForceComponent.isEnabled()) {
         _aberrationForceComponent.enable();
     }
@@ -275,28 +275,28 @@ void ForceController::applyAberrationForces(float* z) {
 }
 
 void ForceController::zeroAberrationForces() {
-    spdlog::info("ForceController: zeroAberrationForces()");
+    SPDLOG_INFO("ForceController: zeroAberrationForces()");
     if (_aberrationForceComponent.isEnabled()) {
         _aberrationForceComponent.disable();
     }
 }
 
 void ForceController::applyAccelerationForces() {
-    spdlog::info("ForceController: applyAccelerationForces()");
+    SPDLOG_INFO("ForceController: applyAccelerationForces()");
     if (!_accelerationForceComponent.isEnabled()) {
         _accelerationForceComponent.enable();
     }
 }
 
 void ForceController::zeroAccelerationForces() {
-    spdlog::info("ForceController: zeroAccelerationForces()");
+    SPDLOG_INFO("ForceController: zeroAccelerationForces()");
     if (_accelerationForceComponent.isEnabled()) {
         _accelerationForceComponent.disable();
     }
 }
 
 void ForceController::applyActiveOpticForcesByBendingModes(float* coefficients) {
-    spdlog::info("ForceController: applyActiveOpticForcesByBendingModes()");
+    SPDLOG_INFO("ForceController: applyActiveOpticForcesByBendingModes()");
     if (!_activeOpticForceComponent.isEnabled()) {
         _activeOpticForceComponent.enable();
     }
@@ -304,7 +304,7 @@ void ForceController::applyActiveOpticForcesByBendingModes(float* coefficients) 
 }
 
 void ForceController::applyActiveOpticForces(float* z) {
-    spdlog::info("ForceController: applyActiveOpticForces()");
+    SPDLOG_INFO("ForceController: applyActiveOpticForces()");
     if (!_activeOpticForceComponent.isEnabled()) {
         _activeOpticForceComponent.enable();
     }
@@ -312,76 +312,76 @@ void ForceController::applyActiveOpticForces(float* z) {
 }
 
 void ForceController::zeroActiveOpticForces() {
-    spdlog::info("ForceController: zeroActiveOpticForces()");
+    SPDLOG_INFO("ForceController: zeroActiveOpticForces()");
     if (_activeOpticForceComponent.isEnabled()) {
         _activeOpticForceComponent.disable();
     }
 }
 
 void ForceController::applyAzimuthForces() {
-    spdlog::info("ForceController: applyAzimuthForces()");
+    SPDLOG_INFO("ForceController: applyAzimuthForces()");
     if (!_azimuthForceComponent.isEnabled()) {
         _azimuthForceComponent.enable();
     }
 }
 
 void ForceController::updateAzimuthForces(float azimuthAngle) {
-    spdlog::trace("ForceController: updateAzimuthForces()");
+    SPDLOG_TRACE("ForceController: updateAzimuthForces()");
     _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(azimuthAngle);
 }
 
 void ForceController::zeroAzimuthForces() {
-    spdlog::info("ForceController: zeroAzimuthForces()");
+    SPDLOG_INFO("ForceController: zeroAzimuthForces()");
     if (_azimuthForceComponent.isEnabled()) {
         _azimuthForceComponent.disable();
     }
 }
 
 void ForceController::applyBalanceForces() {
-    spdlog::info("ForceController: applyBalanceForces()");
+    SPDLOG_INFO("ForceController: applyBalanceForces()");
     if (!_balanceForceComponent.isEnabled()) {
         _balanceForceComponent.enable();
     }
 }
 
 void ForceController::zeroBalanceForces() {
-    spdlog::info("ForceController: zeroBalanceForces()");
+    SPDLOG_INFO("ForceController: zeroBalanceForces()");
     if (_balanceForceComponent.isEnabled()) {
         _balanceForceComponent.disable();
     }
 }
 
 void ForceController::updatePID(int id, PIDParameters parameters) {
-    spdlog::info("ForceController: updatePID()");
+    SPDLOG_INFO("ForceController: updatePID()");
     _balanceForceComponent.updatePID(id, parameters);
 }
 
 void ForceController::resetPID(int id) {
-    spdlog::info("ForceController: resetPID()");
+    SPDLOG_INFO("ForceController: resetPID()");
     _balanceForceComponent.resetPID(id);
 }
 
 void ForceController::resetPIDs() {
-    spdlog::info("ForceController: resetPIDs()");
+    SPDLOG_INFO("ForceController: resetPIDs()");
     _balanceForceComponent.resetPIDs();
 }
 
 void ForceController::applyElevationForces() {
-    spdlog::info("ForceController: applyElevationForces()");
+    SPDLOG_INFO("ForceController: applyElevationForces()");
     if (!_elevationForceComponent.isEnabled()) {
         _elevationForceComponent.enable();
     }
 }
 
 void ForceController::zeroElevationForces() {
-    spdlog::info("ForceController: zeroElevationForces()");
+    SPDLOG_INFO("ForceController: zeroElevationForces()");
     if (_elevationForceComponent.isEnabled()) {
         _elevationForceComponent.disable();
     }
 }
 
 void ForceController::applyOffsetForces(float* x, float* y, float* z) {
-    spdlog::info("ForceController: applyOffsetForces()");
+    SPDLOG_INFO("ForceController: applyOffsetForces()");
     if (!_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.enable();
     }
@@ -390,7 +390,7 @@ void ForceController::applyOffsetForces(float* x, float* y, float* z) {
 
 void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                                       float yMoment, float zMoment) {
-    spdlog::info(
+    SPDLOG_INFO(
             "ForceController: applyOffsetForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
@@ -401,7 +401,7 @@ void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce
 }
 
 void ForceController::zeroOffsetForces() {
-    spdlog::info("ForceController: zeroOffsetForces()");
+    SPDLOG_INFO("ForceController: zeroOffsetForces()");
     if (_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.disable();
     }
@@ -409,7 +409,7 @@ void ForceController::zeroOffsetForces() {
 }
 
 void ForceController::applyActuatorOffset(char axis, int index, float offset) {
-    spdlog::info("ForceController: applyActuatorOffset({}, {}, {:.1f})", axis, index, offset);
+    SPDLOG_INFO("ForceController: applyActuatorOffset({}, {}, {:.1f})", axis, index, offset);
     if (!_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.enable();
     }
@@ -417,7 +417,7 @@ void ForceController::applyActuatorOffset(char axis, int index, float offset) {
 }
 
 void ForceController::applyStaticForces() {
-    spdlog::info("ForceController: applyStaticForces()");
+    SPDLOG_INFO("ForceController: applyStaticForces()");
     if (!_staticForceComponent.isEnabled()) {
         _staticForceComponent.enable();
     }
@@ -427,53 +427,53 @@ void ForceController::applyStaticForces() {
 }
 
 void ForceController::zeroStaticForces() {
-    spdlog::info("ForceController: zeroStaticForces()");
+    SPDLOG_INFO("ForceController: zeroStaticForces()");
     if (_staticForceComponent.isEnabled()) {
         _staticForceComponent.disable();
     }
 }
 
 void ForceController::applyThermalForces() {
-    spdlog::info("ForceController: applyThermalForces()");
+    SPDLOG_INFO("ForceController: applyThermalForces()");
     if (!_thermalForceComponent.isEnabled()) {
         _thermalForceComponent.enable();
     }
 }
 
 void ForceController::updateThermalForces(float temperature) {
-    spdlog::trace("ForceController: updateThermalForces()");
+    SPDLOG_TRACE("ForceController: updateThermalForces()");
     _thermalForceComponent.applyThermalForcesByMirrorTemperature(temperature);
 }
 
 void ForceController::zeroThermalForces() {
-    spdlog::info("ForceController: zeroThermalForces()");
+    SPDLOG_INFO("ForceController: zeroThermalForces()");
     if (_thermalForceComponent.isEnabled()) {
         _thermalForceComponent.disable();
     }
 }
 
 void ForceController::applyVelocityForces() {
-    spdlog::info("ForceController: applyVelocityForces()");
+    SPDLOG_INFO("ForceController: applyVelocityForces()");
     if (!_velocityForceComponent.isEnabled()) {
         _velocityForceComponent.enable();
     }
 }
 
 void ForceController::zeroVelocityForces() {
-    spdlog::info("ForceController: zeroVelocityForces()");
+    SPDLOG_INFO("ForceController: zeroVelocityForces()");
     if (_velocityForceComponent.isEnabled()) {
         _velocityForceComponent.disable();
     }
 }
 
 void ForceController::_sumAllForces() {
-    spdlog::trace("ForceController: sumAllForces()");
+    SPDLOG_TRACE("ForceController: sumAllForces()");
     _finalForceComponent.applyForcesByComponents();
     _finalForceComponent.update();
 }
 
 void ForceController::_convertForcesToSetpoints() {
-    spdlog::trace("ForceController: convertForcesToSetpoints()");
+    SPDLOG_TRACE("ForceController: convertForcesToSetpoints()");
     bool clippingRequired = false;
     for (int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
@@ -553,7 +553,7 @@ void ForceController::_convertForcesToSetpoints() {
 }
 
 bool ForceController::_checkMirrorMoments() {
-    spdlog::trace("ForceController: checkMirrorMoments()");
+    SPDLOG_TRACE("ForceController: checkMirrorMoments()");
     float xMoment = _appliedForces->mx;
     float yMoment = _appliedForces->my;
     float zMoment = _appliedForces->mz;
@@ -580,7 +580,7 @@ bool ForceController::_checkMirrorMoments() {
 }
 
 bool ForceController::_checkNearNeighbors() {
-    spdlog::trace("ForceController: checkNearNeighbors()");
+    SPDLOG_TRACE("ForceController: checkNearNeighbors()");
     float nominalZ = _mirrorWeight / (float)FA_COUNT;
     bool warningChanged = false;
     _forceSetpointWarning->anyNearNeighborWarning = false;
@@ -609,7 +609,7 @@ bool ForceController::_checkNearNeighbors() {
 }
 
 bool ForceController::_checkMirrorWeight() {
-    spdlog::trace("ForceController: checkMirrorWeight()");
+    SPDLOG_TRACE("ForceController: checkMirrorWeight()");
     float x = 0;
     float y = 0;
     float z = 0;
@@ -631,7 +631,7 @@ bool ForceController::_checkMirrorWeight() {
 }
 
 bool ForceController::_checkFarNeighbors() {
-    spdlog::trace("ForceController: checkFarNeighbors()");
+    SPDLOG_TRACE("ForceController: checkFarNeighbors()");
     float globalX = _appliedForces->fx;
     float globalY = _appliedForces->fy;
     float globalZ = _appliedForces->fz;

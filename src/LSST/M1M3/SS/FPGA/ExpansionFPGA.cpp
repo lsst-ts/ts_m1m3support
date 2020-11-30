@@ -36,7 +36,7 @@ namespace M1M3 {
 namespace SS {
 
 ExpansionFPGA::ExpansionFPGA() {
-    spdlog::debug("ExpansionFPGA: ExpansionFPGA()");
+    SPDLOG_DEBUG("ExpansionFPGA: ExpansionFPGA()");
     _session = 0;
     _remaining = 0;
 }
@@ -44,7 +44,7 @@ ExpansionFPGA::ExpansionFPGA() {
 ExpansionFPGA::~ExpansionFPGA() { finalize(); }
 
 void ExpansionFPGA::initialize() {
-    spdlog::debug("ExpansionFPGA: initialize()");
+    SPDLOG_DEBUG("ExpansionFPGA: initialize()");
     if (!expansionFPGAApplicationSettings->Enabled) {
         return;
     }
@@ -52,7 +52,7 @@ void ExpansionFPGA::initialize() {
 }
 
 void ExpansionFPGA::open() {
-    spdlog::debug("ExpansionFPGA: open({})", expansionFPGAApplicationSettings->Resource);
+    SPDLOG_DEBUG("ExpansionFPGA: open({})", expansionFPGAApplicationSettings->Resource);
     if (!expansionFPGAApplicationSettings->Enabled) {
         return;
     }
@@ -67,7 +67,7 @@ void ExpansionFPGA::open() {
 }
 
 void ExpansionFPGA::close() {
-    spdlog::debug("ExpansionFPGA: close()");
+    SPDLOG_DEBUG("ExpansionFPGA: close()");
     if (!expansionFPGAApplicationSettings->Enabled) {
         return;
     }
@@ -75,7 +75,7 @@ void ExpansionFPGA::close() {
 }
 
 void ExpansionFPGA::finalize() {
-    spdlog::debug("ExpansionFPGA: finalize()");
+    SPDLOG_DEBUG("ExpansionFPGA: finalize()");
     if (!expansionFPGAApplicationSettings->Enabled) {
         return;
     }

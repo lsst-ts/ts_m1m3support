@@ -43,7 +43,7 @@ StaticStateFactory::StaticStateFactory()
           _faultState(),
           _loweringFaultState(),
           _profileHardpointCorrectionState() {
-    spdlog::debug("StaticStateFactory: StaticStateFactor()");
+    SPDLOG_DEBUG("StaticStateFactory: StaticStateFactor()");
 }
 
 StaticStateFactory& StaticStateFactory::get() {
@@ -52,7 +52,6 @@ StaticStateFactory& StaticStateFactory::get() {
 }
 
 State* StaticStateFactory::create(States::Type state) {
-    spdlog::trace("StaticStateFactory: create({:d})", state);
     switch (state) {
         case States::OfflineState:
             return &_offlineState;

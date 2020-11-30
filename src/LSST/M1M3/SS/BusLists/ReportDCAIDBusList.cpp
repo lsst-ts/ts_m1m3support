@@ -32,7 +32,7 @@ namespace SS {
 
 ReportDCAIDBusList::ReportDCAIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("ReportDCAIDBusList: ReportDCAIDBusList()");
+    SPDLOG_DEBUG("ReportDCAIDBusList: ReportDCAIDBusList()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {

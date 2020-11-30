@@ -47,25 +47,25 @@ namespace SS {
 EngineeringState::EngineeringState(std::string name) : EnabledState(name) {}
 
 States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command) {
-    spdlog::info("{}: turnAirOn()", this->name);
+    SPDLOG_INFO("{}: turnAirOn()", this->name);
     Model::get().getDigitalInputOutput()->turnAirOn();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnAirOff(TurnAirOffCommand* command) {
-    spdlog::info("{}: turnAirOff()", this->name);
+    SPDLOG_INFO("{}: turnAirOff()", this->name);
     Model::get().getDigitalInputOutput()->turnAirOff();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command) {
-    spdlog::info("{}: stopHardpointMotion()", this->name);
+    SPDLOG_INFO("{}: stopHardpointMotion()", this->name);
     Model::get().getPositionController()->stopMotion();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
-    spdlog::info("{}: moveHardpointActuators()", this->name);
+    SPDLOG_INFO("{}: moveHardpointActuators()", this->name);
     if (!Model::get().getPositionController()->move(command->getData()->steps)) {
         M1M3SSPublisher::get().logCommandRejectionWarning(
                 "MoveHardpointActuators",
@@ -75,7 +75,7 @@ States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsComm
 }
 
 States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command) {
-    spdlog::info("{}: enableHardpointChase()", this->name);
+    SPDLOG_INFO("{}: enableHardpointChase()", this->name);
     if (!Model::get().getPositionController()->enableChase(command->getData()->hardpointActuator)) {
         M1M3SSPublisher::get().logCommandRejectionWarning(
                 "EnableHardpointChase",
@@ -85,13 +85,13 @@ States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand*
 }
 
 States::Type EngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command) {
-    spdlog::info("{}: disableHardpointChase()", this->name);
+    SPDLOG_INFO("{}: disableHardpointChase()", this->name);
     Model::get().getPositionController()->disableChase(command->getData()->hardpointActuator);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command) {
-    spdlog::info("{}: applyOffsetForces()", this->name);
+    SPDLOG_INFO("{}: applyOffsetForces()", this->name);
     Model::get().getForceController()->applyOffsetForces(
             command->getData()->xForces, command->getData()->yForces, command->getData()->zForces);
     Model::get().getForceController()->processAppliedForces();
@@ -100,7 +100,7 @@ States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* comma
 
 States::Type EngineeringState::applyOffsetForcesByMirrorForce(
         ApplyOffsetForcesByMirrorForceCommand* command) {
-    spdlog::info("{}: applyOffsetForcesByMirrorForce()", this->name);
+    SPDLOG_INFO("{}: applyOffsetForcesByMirrorForce()", this->name);
     Model::get().getForceController()->applyOffsetForcesByMirrorForces(
             command->getData()->xForce, command->getData()->yForce, command->getData()->zForce,
             command->getData()->xMoment, command->getData()->yMoment, command->getData()->zMoment);
@@ -109,26 +109,26 @@ States::Type EngineeringState::applyOffsetForcesByMirrorForce(
 }
 
 States::Type EngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command) {
-    spdlog::info("{}: clearOffsetForces()", this->name);
+    SPDLOG_INFO("{}: clearOffsetForces()", this->name);
     Model::get().getForceController()->zeroOffsetForces();
     Model::get().getForceController()->processAppliedForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnLightsOn(TurnLightsOnCommand* command) {
-    spdlog::info("{}: turnLightsOn()", this->name);
+    SPDLOG_INFO("{}: turnLightsOn()", this->name);
     Model::get().getDigitalInputOutput()->turnCellLightsOn();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnLightsOff(TurnLightsOffCommand* command) {
-    spdlog::info("{}: turnLightsOff()", this->name);
+    SPDLOG_INFO("{}: turnLightsOff()", this->name);
     Model::get().getDigitalInputOutput()->turnCellLightsOff();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command) {
-    spdlog::info("{}: turnPowerOn()", this->name);
+    SPDLOG_INFO("{}: turnPowerOn()", this->name);
     if (command->getData()->turnPowerNetworkAOn) {
         Model::get().getPowerController()->setPowerNetworkA(true);
     }
@@ -157,7 +157,7 @@ States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command) {
 }
 
 States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command) {
-    spdlog::info("{}: turnPowerOff()", this->name);
+    SPDLOG_INFO("{}: turnPowerOff()", this->name);
     if (command->getData()->turnPowerNetworkAOff) {
         Model::get().getPowerController()->setPowerNetworkA(false);
     }
@@ -186,7 +186,7 @@ States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command) {
 }
 
 States::Type EngineeringState::modbusTransmit(ModbusTransmitCommand* command) {
-    spdlog::info("{}: modbusTransmit()", this->name);
+    SPDLOG_INFO("{}: modbusTransmit()", this->name);
     Model::get().getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode,
                                           command->getData()->dataLength, command->getData()->data);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);

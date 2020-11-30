@@ -33,7 +33,7 @@ namespace M1M3 {
 namespace SS {
 
 ControllerThread::ControllerThread() : _keepRunning(true) {
-    spdlog::debug("ControllerThread: ControllerThread()");
+    SPDLOG_DEBUG("ControllerThread: ControllerThread()");
 }
 
 ControllerThread::~ControllerThread() { _clear(); }
@@ -44,7 +44,7 @@ ControllerThread& ControllerThread::get() {
 }
 
 void ControllerThread::run() {
-    spdlog::info("ControllerThread: Start");
+    SPDLOG_INFO("ControllerThread: Start");
     while (_keepRunning) {
         std::unique_lock<std::mutex> lock(_mutex);
         _cv.wait(lock, [this] { return (_queue.empty() == false) || (_keepRunning == false); });
@@ -54,7 +54,7 @@ void ControllerThread::run() {
             _execute(command);
         }
     }
-    spdlog::info("ControllerThread: Completed");
+    SPDLOG_INFO("ControllerThread: Completed");
 }
 
 void ControllerThread::stop() {
@@ -66,7 +66,7 @@ void ControllerThread::stop() {
 }
 
 void ControllerThread::_clear() {
-    spdlog::trace("ControllerThread: _clear()");
+    SPDLOG_TRACE("ControllerThread: _clear()");
     {
         std::lock_guard<std::mutex> lg(_mutex);
         while (!_queue.empty()) {
@@ -78,7 +78,7 @@ void ControllerThread::_clear() {
 }
 
 void ControllerThread::enqueue(Command* command) {
-    spdlog::trace("ControllerThread: enqueue()");
+    SPDLOG_TRACE("ControllerThread: enqueue()");
     {
         std::lock_guard<std::mutex> lg(_mutex);
         _queue.push(command);
@@ -87,13 +87,13 @@ void ControllerThread::enqueue(Command* command) {
 }
 
 void ControllerThread::_execute(Command* command) {
-    spdlog::trace("ControllerThread: _execute()");
+    SPDLOG_TRACE("ControllerThread: _execute()");
     try {
         command->ackInProgress();
         command->execute();
         command->ackComplete();
     } catch (std::exception& e) {
-        spdlog::error("Cannot execute command: {}", e.what());
+        SPDLOG_ERROR("Cannot execute command: {}", e.what());
         command->ackFailed(e.what());
     }
 

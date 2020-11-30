@@ -200,7 +200,7 @@ const char *NiStatus(int32_t status) {
 
 int32_t NiReportError(const char *msg, int32_t status) {
     if (status != 0) {
-        spdlog::error("FPGA error {0} in {1}: {2}", status, msg, NiStatus(status));
+        SPDLOG_ERROR("FPGA error {0} in {1}: {2}", status, msg, NiStatus(status));
     }
     return status;
 }

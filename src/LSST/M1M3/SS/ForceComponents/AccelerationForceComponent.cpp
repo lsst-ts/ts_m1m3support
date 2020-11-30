@@ -51,10 +51,10 @@ AccelerationForceComponent::AccelerationForceComponent(
 }
 
 void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, float* z) {
-    spdlog::trace("AccelerationForceComponent: applyAccelerationForces()");
+    SPDLOG_TRACE("AccelerationForceComponent: applyAccelerationForces()");
 
     if (!isEnabled()) {
-        spdlog::error(
+        SPDLOG_ERROR(
                 "AccelerationForceComponent: applyAccelerationForces() called when the component is not "
                 "applied");
         return;
@@ -76,7 +76,7 @@ void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, flo
 void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(float angularAccelerationX,
                                                                                float angularAccelerationY,
                                                                                float angularAccelerationZ) {
-    spdlog::trace(
+    SPDLOG_TRACE(
             "AccelerationForceComponent: applyAccelerationForcesByAngularAccelerations(P:.1f}, {.1f}, {.1f})",
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
     DistributedForces forces = ForceConverter::calculateForceFromAngularAcceleration(
@@ -100,7 +100,7 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
 }
 
 void AccelerationForceComponent::postEnableDisableActions() {
-    spdlog::debug("AccelerationForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("AccelerationForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->accelerationForcesApplied = isEnabled();
@@ -108,7 +108,7 @@ void AccelerationForceComponent::postEnableDisableActions() {
 }
 
 void AccelerationForceComponent::postUpdateActions() {
-    spdlog::trace("AccelerationForceController: postUpdateActions()");
+    SPDLOG_TRACE("AccelerationForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;
