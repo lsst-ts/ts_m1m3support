@@ -49,7 +49,7 @@ FaultState::FaultState(std::string name) : State(name) {}
 
 States::Type FaultState::update(UpdateCommand* command) {
     ModelPublisher publishIt();
-    spdlog::trace("FaultState: update()");
+    SPDLOG_TRACE("FaultState: update()");
     ILC* ilc = Model::get().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
@@ -78,7 +78,7 @@ States::Type FaultState::update(UpdateCommand* command) {
 }
 
 States::Type FaultState::standby(StandbyCommand* command) {
-    spdlog::trace("FaultState: standby()");
+    SPDLOG_TRACE("FaultState: standby()");
     Model::get().getILC()->writeSetModeStandbyBuffer();
     Model::get().getILC()->triggerModbus();
     Model::get().getILC()->waitForAllSubnets(5000);

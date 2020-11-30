@@ -420,8 +420,8 @@ void ForceActuatorSettings::_loadDisabledActuators(const std::string line) {
     this->DisabledActuators.clear();
     while (i != tok.end()) {
         this->DisabledActuators.push_back(boost::lexical_cast<int32_t>(*i));
-        spdlog::warn("ForceActuatorSettings: Disabled Actuator {:d}",
-                     this->DisabledActuators[this->DisabledActuators.size() - 1]);
+        SPDLOG_WARN("ForceActuatorSettings: Disabled Actuator {:d}",
+                    this->DisabledActuators[this->DisabledActuators.size() - 1]);
         ++i;
     }
 }

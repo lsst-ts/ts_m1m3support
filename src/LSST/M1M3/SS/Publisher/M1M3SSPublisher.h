@@ -321,6 +321,7 @@ public:
     void tryLogInterlockStatus();
     void logInterlockWarning();
     void tryLogInterlockWarning();
+    void newLogLevel(int newLevel);
     void logModbusResponse();
     void tryLogModbusResponse();
     void logPIDInfo();
@@ -360,6 +361,8 @@ public:
     void tryLogSettingsApplied();
     void logSummaryState();
     void tryLogSummaryState();
+
+    void ackCommandsetLogLevel(int32_t commandID, int32_t ackCode, std::string description);
 
     /**
      * @brief Acknowledges start command.

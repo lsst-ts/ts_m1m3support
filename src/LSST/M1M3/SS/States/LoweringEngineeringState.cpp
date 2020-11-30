@@ -36,7 +36,7 @@ LoweringEngineeringState::LoweringEngineeringState() : EngineeringState("Lowerin
 
 States::Type LoweringEngineeringState::update(UpdateCommand* command) {
     ModelPublisher publishIt();
-    spdlog::trace("LoweringEngineeringState: update()");
+    SPDLOG_TRACE("LoweringEngineeringState: update()");
     Model::get().getAutomaticOperationsController()->tryDecrementSupportPercentage();
     runLoop();
     return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedEngineeringState

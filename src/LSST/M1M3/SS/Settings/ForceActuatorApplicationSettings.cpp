@@ -386,7 +386,7 @@ ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
         }
     }
     if ((xIndex != FA_X_COUNT) || (yIndex != FA_Y_COUNT) || (sIndex != (FA_X_COUNT + FA_Y_COUNT))) {
-        spdlog::critical(
+        SPDLOG_CRITICAL(
                 "ForceActuatorApplicationSettings::ForceActuatorApplicationSettings invalid number of X or Y "
                 "actuators: x {} y {} s {}",
                 xIndex, yIndex, sIndex);

@@ -50,7 +50,7 @@ namespace SS {
 uint16_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
 SimulatedFPGA::SimulatedFPGA() {
-    spdlog::info("SimulatedFPGA: SimulatedFPGA()");
+    SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
     _lastRequest = -1;
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
     supportFPGAData.DigitalInputStates = 0x0001 | 0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
@@ -83,13 +83,13 @@ SimulatedFPGA::~SimulatedFPGA() {
 void SimulatedFPGA::_monitorElevation(void) {
     MTMount_ElevationC mountElevationInstance;
 
-    spdlog::debug("Start monitoring mount elevation...");
+    SPDLOG_DEBUG("Start monitoring mount elevation...");
 
     while (!_exitThread) {
         ReturnCode_t status = _mgrMTMount.getSample_Elevation(&mountElevationInstance);
 
         if (status == 0) {
-            spdlog::debug("Got valid elevation sample...");
+            SPDLOG_DEBUG("Got valid elevation sample...");
 
             {
                 std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
@@ -100,13 +100,13 @@ void SimulatedFPGA::_monitorElevation(void) {
     }
 }
 
-void SimulatedFPGA::initialize() { spdlog::debug("SimulatedFPGA: initialize()"); }
+void SimulatedFPGA::initialize() { SPDLOG_DEBUG("SimulatedFPGA: initialize()"); }
 
-void SimulatedFPGA::open() { spdlog::debug("SimulatedFPGA: open()"); }
+void SimulatedFPGA::open() { SPDLOG_DEBUG("SimulatedFPGA: open()"); }
 
-void SimulatedFPGA::close() { spdlog::debug("SimulatedFPGA: close()"); }
+void SimulatedFPGA::close() { SPDLOG_DEBUG("SimulatedFPGA: close()"); }
 
-void SimulatedFPGA::finalize() { spdlog::debug("SimulatedFPGA: finalize()"); }
+void SimulatedFPGA::finalize() { SPDLOG_DEBUG("SimulatedFPGA: finalize()"); }
 
 void SimulatedFPGA::waitForOuterLoopClock(int32_t timeout) {
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -123,7 +123,7 @@ void SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {}
 void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
 
 void SimulatedFPGA::pullTelemetry() {
-    spdlog::trace("SimulatedFPGA: pullTelemetry()");
+    SPDLOG_TRACE("SimulatedFPGA: pullTelemetry()");
     uint64_t timestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
     this->supportFPGAData.Reserved = 0;
     this->supportFPGAData.InclinometerTxBytes = 0;

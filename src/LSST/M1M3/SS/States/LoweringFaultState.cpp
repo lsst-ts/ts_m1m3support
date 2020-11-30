@@ -35,7 +35,7 @@ namespace SS {
 LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
 
 States::Type LoweringFaultState::update(UpdateCommand* command) {
-    spdlog::trace("LoweringFaultState: update()");
+    SPDLOG_TRACE("LoweringFaultState: update()");
     Model::get().getPowerController()->setAllAuxPowerNetworks(false);
     // TODO: Uncomment when its not so hot out
     // Model::get().getDigitalInputOutput()->turnAirOff();

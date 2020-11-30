@@ -39,7 +39,7 @@ namespace M1M3 {
 namespace SS {
 
 FPGA::FPGA() {
-    spdlog::debug("FPGA: FPGA()");
+    SPDLOG_DEBUG("FPGA: FPGA()");
     _session = 0;
     _remaining = 0;
     _outerLoopIRQContext = 0;
@@ -50,12 +50,12 @@ FPGA::FPGA() {
 FPGA::~FPGA() { finalize(); }
 
 void FPGA::initialize() {
-    spdlog::debug("FPGA: initialize()");
+    SPDLOG_DEBUG("FPGA: initialize()");
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
 }
 
 void FPGA::open() {
-    spdlog::debug("FPGA: open()");
+    SPDLOG_DEBUG("FPGA: open()");
     NiOpen("/home/admin/ts_m1m3support/Bitfiles", NiFpga_M1M3SupportFPGA, "RIO0", 0, &(_session));
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
@@ -71,7 +71,7 @@ void FPGA::open() {
 }
 
 void FPGA::close() {
-    spdlog::debug("FPGA: close()");
+    SPDLOG_DEBUG("FPGA: close()");
     NiFpga_UnreserveIrqContext(_session, _outerLoopIRQContext);
     NiFpga_UnreserveIrqContext(_session, _modbusIRQContext);
     NiFpga_UnreserveIrqContext(_session, _ppsIRQContext);
@@ -79,7 +79,7 @@ void FPGA::close() {
 }
 
 void FPGA::finalize() {
-    spdlog::debug("FPGA: finalize()");
+    SPDLOG_DEBUG("FPGA: finalize()");
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Finalize());
 }
 
@@ -159,7 +159,7 @@ void FPGA::ackModbusIRQ(int32_t subnet) {
 }
 
 void FPGA::pullTelemetry() {
-    spdlog::trace("FPGA: pullTelemetry()");
+    SPDLOG_TRACE("FPGA: pullTelemetry()");
     writeRequestFIFO(FPGAAddresses::Telemetry, 0);
     uint16_t length[1];
     readU16ResponseFIFO(length, 1, 20);

@@ -36,7 +36,7 @@ LoweringState::LoweringState() : EnabledState("LoweringState") {}
 
 States::Type LoweringState::update(UpdateCommand* command) {
     ModelPublisher publishIt();
-    spdlog::trace("LoweringState: update()");
+    SPDLOG_TRACE("LoweringState: update()");
     Model::get().getAutomaticOperationsController()->tryDecrementSupportPercentage();
     runLoop();
     return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedState

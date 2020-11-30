@@ -34,7 +34,7 @@ namespace SS {
 
 FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("FreezeSensorBusList: FreezeSensorBusList()");
+    SPDLOG_DEBUG("FreezeSensorBusList: FreezeSensorBusList()");
     _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
     _lvdtSampleClock = 0;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {

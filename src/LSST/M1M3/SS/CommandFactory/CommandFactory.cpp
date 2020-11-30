@@ -77,7 +77,7 @@ namespace M1M3 {
 namespace SS {
 
 Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) {
-    spdlog::trace("CommandFactory: create({}, data, {})", commandType, commandID);
+    SPDLOG_TRACE("CommandFactory: create({}, data, {})", commandType, commandID);
     switch (commandType) {
         case Commands::EnterControlCommand:
             return new EnterControlCommand();

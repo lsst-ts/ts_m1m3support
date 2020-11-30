@@ -36,7 +36,7 @@ RaisingEngineeringState::RaisingEngineeringState() : EngineeringState("RaisingEn
 
 States::Type RaisingEngineeringState::update(UpdateCommand* command) {
     ModelPublisher publishModel();
-    spdlog::trace("RaisingEngineeringState: update()");
+    SPDLOG_TRACE("RaisingEngineeringState: update()");
     Model::get().getAutomaticOperationsController()->tryIncrementingSupportPercentage();
     runLoop();
     return Model::get().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveEngineeringState
@@ -44,7 +44,7 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command) {
 }
 
 States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
-    spdlog::info("RaisingEngineeringState: abortRaiseM1M3()");
+    SPDLOG_INFO("RaisingEngineeringState: abortRaiseM1M3()");
     Model::get().getAutomaticOperationsController()->abortRaiseM1M3();
     return Model::get().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }

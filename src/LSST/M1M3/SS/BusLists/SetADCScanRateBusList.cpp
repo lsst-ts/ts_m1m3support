@@ -34,7 +34,7 @@ namespace SS {
 
 SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("SetADCScanRateBusList: SetADCScanRateBusList()");
+    SPDLOG_DEBUG("SetADCScanRateBusList: SetADCScanRateBusList()");
     MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
             M1M3SSPublisher::get().getEventHardpointActuatorInfo();

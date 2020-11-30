@@ -166,7 +166,7 @@ void M1M3cli::processArg(int opt, const char* optarg) {
 }
 
 void M1M3cli::_triggerModbus() {
-    spdlog::debug("M1M3 triggerModbus()");
+    SPDLOG_DEBUG("M1M3 triggerModbus()");
     IFPGA::get().writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
 }
 

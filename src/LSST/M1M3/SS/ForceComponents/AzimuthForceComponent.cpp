@@ -51,10 +51,10 @@ AzimuthForceComponent::AzimuthForceComponent(
 }
 
 void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
-    spdlog::trace("AzimuthForceComponent: applyAzimuthForces()");
+    SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForces()");
 
     if (!isEnabled()) {
-        spdlog::error("AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
+        SPDLOG_ERROR("AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
         return;
     }
 
@@ -72,7 +72,7 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
 }  // namespace SS
 
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
-    spdlog::trace("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
+    SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
     DistributedForces forces =
             ForceConverter::calculateForceFromAzimuthAngle(_forceActuatorSettings, azimuthAngle);
     float xForces[FA_X_COUNT];
@@ -94,7 +94,7 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
 }
 
 void AzimuthForceComponent::postEnableDisableActions() {
-    spdlog::debug("AzimuthForceComponent: postEnableDisableActions()");
+    SPDLOG_DEBUG("AzimuthForceComponent: postEnableDisableActions()");
 
     _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     _forceActuatorState->azimuthForcesApplied = isEnabled();
@@ -102,7 +102,7 @@ void AzimuthForceComponent::postEnableDisableActions() {
 }
 
 void AzimuthForceComponent::postUpdateActions() {
-    spdlog::trace("AzimuthForceController: postUpdateActions()");
+    SPDLOG_TRACE("AzimuthForceController: postUpdateActions()");
 
     bool notInRange = false;
     bool clippingRequired = false;

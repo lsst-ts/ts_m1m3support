@@ -176,7 +176,7 @@ States::Type State::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* 
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";
-    spdlog::warn(reason);
+    SPDLOG_WARN(reason);
     M1M3SSPublisher::get().logCommandRejectionWarning(cmd_name, reason);
     command->ackFailed(reason);
     return States::NoStateTransition;

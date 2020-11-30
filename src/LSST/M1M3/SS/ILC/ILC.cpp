@@ -83,7 +83,7 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
           _busListRaised(&_subnetData, &_ilcMessageFactory),
           _busListActive(&_subnetData, &_ilcMessageFactory),
           _firmwareUpdate(&_subnetData) {
-    spdlog::debug("ILC: ILC()");
+    SPDLOG_DEBUG("ILC: ILC()");
     _safetyController = safetyController;
     _hardpointActuatorSettings = hardpointActuatorSettings;
     _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
@@ -98,7 +98,7 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
 ILC::~ILC() {}
 
 void ILC::programILC(int32_t actuatorId, std::string filePath) {
-    spdlog::debug("ILC: programILC({},{})", actuatorId, filePath);
+    SPDLOG_DEBUG("ILC: programILC({},{})", actuatorId, filePath);
     _firmwareUpdate.Program(actuatorId, filePath);
 }
 
@@ -107,7 +107,7 @@ void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataL
     int subnet = map.Subnet;
     int address = map.Address;
     if (subnet == 255 || address == 255) {
-        spdlog::error("ILC: Modbus Transmit unknown actuator {}", actuatorId);
+        SPDLOG_ERROR("ILC: Modbus Transmit unknown actuator {}", actuatorId);
         return;
     }
     ModbusBuffer buffer;
@@ -137,101 +137,101 @@ void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataL
 }
 
 void ILC::writeCalibrationDataBuffer() {
-    spdlog::debug("ILC: writeCalibrationDataBuffer()");
+    SPDLOG_DEBUG("ILC: writeCalibrationDataBuffer()");
     _writeBusList(&_busListSetADCChannelOffsetAndSensitivity);
 }
 
 void ILC::writeSetADCScanRateBuffer() {
-    spdlog::debug("ILC: writeSetADCScanRateBuffer()");
+    SPDLOG_DEBUG("ILC: writeSetADCScanRateBuffer()");
     _writeBusList(&_busListSetADCScanRate);
 }
 
 void ILC::writeSetBoostValveDCAGainBuffer() {
-    spdlog::debug("ILC: writeSetBoostValveDCAGainBuffer()");
+    SPDLOG_DEBUG("ILC: writeSetBoostValveDCAGainBuffer()");
     _writeBusList(&_busListSetBoostValveDCAGains);
 }
 
 void ILC::writeResetBuffer() {
-    spdlog::debug("ILC: writeResetBuffer()");
+    SPDLOG_DEBUG("ILC: writeResetBuffer()");
     _writeBusList(&_busListReset);
 }
 
 void ILC::writeReportServerIDBuffer() {
-    spdlog::debug("ILC: writeReportServerIDBuffer()");
+    SPDLOG_DEBUG("ILC: writeReportServerIDBuffer()");
     _writeBusList(&_busListReportServerID);
 }
 
 void ILC::writeReportServerStatusBuffer() {
-    spdlog::debug("ILC: writeReportServerStatusBuffer()");
+    SPDLOG_DEBUG("ILC: writeReportServerStatusBuffer()");
     _writeBusList(&_busListReportServerStatus);
 }
 
 void ILC::writeReportADCScanRateBuffer() {
-    spdlog::debug("ILC: writeReportADCScanRateBuffer()");
+    SPDLOG_DEBUG("ILC: writeReportADCScanRateBuffer()");
     _writeBusList(&_busListReportADCScanRate);
 }
 
 void ILC::writeReadCalibrationDataBuffer() {
-    spdlog::debug("ILC: writeReadCalibrationDataBuffer()");
+    SPDLOG_DEBUG("ILC: writeReadCalibrationDataBuffer()");
     _writeBusList(&_busListReadCalibration);
 }
 
 void ILC::writeReadBoostValveDCAGainBuffer() {
-    spdlog::debug("ILC: writeReadBoostValveDCAGainBuffer()");
+    SPDLOG_DEBUG("ILC: writeReadBoostValveDCAGainBuffer()");
     _writeBusList(&_busListReadBoostValveDCAGains);
 }
 
 void ILC::writeReportDCAIDBuffer() {
-    spdlog::debug("ILC: writeReportDCAIDBuffer()");
+    SPDLOG_DEBUG("ILC: writeReportDCAIDBuffer()");
     _writeBusList(&_busListReportDCAID);
 }
 
 void ILC::writeReportDCAStatusBuffer() {
-    spdlog::debug("ILC: writeReportDCAStatusBuffer()");
+    SPDLOG_DEBUG("ILC: writeReportDCAStatusBuffer()");
     _writeBusList(&_busListReportDCAStatus);
 }
 
 void ILC::writeSetModeDisableBuffer() {
-    spdlog::debug("ILC: writeSetModeDisableBuffer()");
+    SPDLOG_DEBUG("ILC: writeSetModeDisableBuffer()");
     _writeBusList(&_busListChangeILCModeDisabled);
 }
 
 void ILC::writeSetModeEnableBuffer() {
-    spdlog::debug("ILC: writeSetModeEnableBuffer()");
+    SPDLOG_DEBUG("ILC: writeSetModeEnableBuffer()");
     _writeBusList(&_busListChangeILCModeEnabled);
 }
 
 void ILC::writeSetModeStandbyBuffer() {
-    spdlog::debug("ILC: writeSetModeStandbyBuffer()");
+    SPDLOG_DEBUG("ILC: writeSetModeStandbyBuffer()");
     _writeBusList(&_busListChangeILCModeStandby);
 }
 
 void ILC::writeSetModeClearFaultsBuffer() {
-    spdlog::debug("ILC: writeSetModeClearFaultsBuffer()");
+    SPDLOG_DEBUG("ILC: writeSetModeClearFaultsBuffer()");
     _writeBusList(&_busListChangeILCModeClearFaults);
 }
 
 void ILC::writeFreezeSensorListBuffer() {
-    spdlog::debug("ILC: writeFreezeSensorListBuffer()");
+    SPDLOG_DEBUG("ILC: writeFreezeSensorListBuffer()");
     _busListFreezeSensor.update();
     _writeBusList(&_busListFreezeSensor);
 }
 
 void ILC::writeRaisedListBuffer() {
-    spdlog::debug("ILC: writeRaisedListBuffer()");
+    SPDLOG_DEBUG("ILC: writeRaisedListBuffer()");
     _positionController->updateSteps();
     _busListRaised.update();
     _writeBusList(&_busListRaised);
 }
 
 void ILC::writeActiveListBuffer() {
-    spdlog::debug("ILC: writeActiveListBuffer()");
+    SPDLOG_DEBUG("ILC: writeActiveListBuffer()");
     _busListActive.update();
     _writeBusList(&_busListActive);
 }
 
 void ILC::writeControlListBuffer() {
-    spdlog::debug("ILC: writeControlListBuffer()");
+    SPDLOG_DEBUG("ILC: writeControlListBuffer()");
     if (_controlListToggle == 0) {
         writeRaisedListBuffer();
     } else {
@@ -241,18 +241,18 @@ void ILC::writeControlListBuffer() {
 }
 
 void ILC::triggerModbus() {
-    spdlog::debug("ILC: triggerModbus()");
+    SPDLOG_DEBUG("ILC: triggerModbus()");
     IFPGA::get().writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
 }
 
 void ILC::waitForSubnet(int32_t subnet, int32_t timeout) {
-    spdlog::debug("ILC: waitForSubnet({:d}, {:d})", subnet, timeout);
+    SPDLOG_DEBUG("ILC: waitForSubnet({:d}, {:d})", subnet, timeout);
     IFPGA::get().waitForModbusIRQ(subnet, timeout);
     IFPGA::get().ackModbusIRQ(subnet);
 }
 
 void ILC::waitForAllSubnets(int32_t timeout) {
-    spdlog::debug("ILC: waitForAllSubnets({:d})", timeout);
+    SPDLOG_DEBUG("ILC: waitForAllSubnets({:d})", timeout);
     waitForSubnet(1, timeout);
     waitForSubnet(2, timeout);
     waitForSubnet(3, timeout);
@@ -261,14 +261,14 @@ void ILC::waitForAllSubnets(int32_t timeout) {
 }
 
 void ILC::read(uint8_t subnet) {
-    spdlog::debug("ILC: read({:d})", subnet);
+    SPDLOG_DEBUG("ILC: read({:d})", subnet);
     _u16Buffer[0] = _subnetToRxAddress(subnet);
     IFPGA::get().writeRequestFIFO(_u16Buffer, 1, 0);
     _rxBuffer.setIndex(0);
     IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
     uint16_t reportedLength = _rxBuffer.readLength();
     if (reportedLength == 0) {
-        spdlog::error("ILC: Timeout on response");
+        SPDLOG_ERROR("ILC: Timeout on response");
         return;
     }
 
@@ -279,7 +279,7 @@ void ILC::read(uint8_t subnet) {
 }
 
 void ILC::readAll() {
-    spdlog::debug("ILC: readAll()");
+    SPDLOG_DEBUG("ILC: readAll()");
     read(1);
     read(2);
     read(3);
@@ -288,7 +288,7 @@ void ILC::readAll() {
 }
 
 void ILC::flush(uint8_t subnet) {
-    spdlog::debug("ILC: flush({:d})", (int32_t)subnet);
+    SPDLOG_DEBUG("ILC: flush({:d})", (int32_t)subnet);
     _u16Buffer[0] = _subnetToRxAddress(subnet);
     IFPGA::get().writeRequestFIFO(_u16Buffer, 1, 0);
     _rxBuffer.setIndex(0);
@@ -302,7 +302,7 @@ void ILC::flush(uint8_t subnet) {
 }
 
 void ILC::flushAll() {
-    spdlog::debug("ILC: flushAll()");
+    SPDLOG_DEBUG("ILC: flushAll()");
     flush(1);
     flush(2);
     flush(3);
@@ -409,12 +409,12 @@ void ILC::calculateFAMirrorForces() {
 }
 
 void ILC::clearResponses() {
-    spdlog::debug("ILC: clearResponses()");
+    SPDLOG_DEBUG("ILC: clearResponses()");
     _responseParser.clearResponses();
 }
 
 void ILC::verifyResponses() {
-    spdlog::debug("ILC: verifyResponses()");
+    SPDLOG_DEBUG("ILC: verifyResponses()");
     _responseParser.verifyResponses();
 }
 
