@@ -260,22 +260,30 @@ bool BumpTestController::_collectAverages() {
     return false;
 }
 
+int axisIndexToActuatorId(char axis, int index) {
+    if (axis == 'X')
+        return ForceActuatorApplicationSettings::get()
+                .Table[ForceActuatorApplicationSettings::get().XIndexToZIndex[index]]
+                .ActuatorID;
+    if (axis == 'Y')
+        return ForceActuatorApplicationSettings::get()
+                .Table[ForceActuatorApplicationSettings::get().YIndexToZIndex[index]]
+                .ActuatorID;
+    return ForceActuatorApplicationSettings::get().Table[index].ActuatorID;
+}
+
 int BumpTestController::_checkAverages(char axis, int index, double value) {
     auto _inTolerance = [](char axis, int index, double value, double expected, double tolerance,
                            double warning) {
         double err = abs(value - expected);
         if (err >= tolerance) {
-            SPDLOG_ERROR(
-                    "Value for {} actuator {} outside of tolerance - measured {}, expected {}, tolerance "
-                    "{}",
-                    axis, index, value, expected, tolerance);
+            SPDLOG_ERROR("FA {} ({}{}) following error violation - measured {}, expected {}, tolerance {}",
+                         axisIndexToActuatorId(axis, index), axis, index, value, expected, tolerance);
             return 0x01;
         }
         if (err >= warning) {
-            SPDLOG_WARN(
-                    "Value for {} actuator {} following error warning - measured {}, expected {}, tolerance "
-                    "{}",
-                    axis, index, value, expected, warning);
+            SPDLOG_WARN("FA {} ({}{}) following error warning - measured {}, expected {}, tolerance {}",
+                        axisIndexToActuatorId(axis, index), axis, index, value, expected, warning);
             return 0x02;
         }
 
