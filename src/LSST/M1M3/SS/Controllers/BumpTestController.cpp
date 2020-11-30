@@ -261,15 +261,12 @@ bool BumpTestController::_collectAverages() {
 }
 
 int axisIndexToActuatorId(char axis, int index) {
-    if (axis == 'X')
-        return ForceActuatorApplicationSettings::get()
-                .Table[ForceActuatorApplicationSettings::get().XIndexToZIndex[index]]
-                .ActuatorID;
-    if (axis == 'Y')
-        return ForceActuatorApplicationSettings::get()
-                .Table[ForceActuatorApplicationSettings::get().YIndexToZIndex[index]]
-                .ActuatorID;
-    return ForceActuatorApplicationSettings::get().Table[index].ActuatorID;
+    const ForceActuatorApplicationSettings* forceSettings =
+            SettingReader::get().getForceActuatorApplicationSettings();
+
+    if (axis == 'X') return forceSettings->Table[forceSettings->XIndexToZIndex[index]].ActuatorID;
+    if (axis == 'Y') return forceSettings->Table[forceSettings->YIndexToZIndex[index]].ActuatorID;
+    return forceSettings->Table[index].ActuatorID;
 }
 
 int BumpTestController::_checkAverages(char axis, int index, double value) {
@@ -277,12 +274,12 @@ int BumpTestController::_checkAverages(char axis, int index, double value) {
                            double warning) {
         double err = abs(value - expected);
         if (err >= tolerance) {
-            SPDLOG_ERROR("FA {} ({}{}) following error violation - measured {}, expected {}, tolerance {}",
+            SPDLOG_ERROR("FA ID {} ({}{}) following error violation - measured {}, expected {}, tolerance {}",
                          axisIndexToActuatorId(axis, index), axis, index, value, expected, tolerance);
             return 0x01;
         }
         if (err >= warning) {
-            SPDLOG_WARN("FA {} ({}{}) following error warning - measured {}, expected {}, tolerance {}",
+            SPDLOG_WARN("FA ID {} ({}{}) following error warning - measured {}, expected {}, tolerance {}",
                         axisIndexToActuatorId(axis, index), axis, index, value, expected, warning);
             return 0x02;
         }
