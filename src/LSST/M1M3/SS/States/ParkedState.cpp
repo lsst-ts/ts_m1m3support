@@ -28,7 +28,6 @@
 #include <SafetyController.h>
 #include <ForceController.h>
 #include <PositionController.h>
-#include <AutomaticOperationsController.h>
 #include <RaiseM1M3Command.h>
 #include <DigitalInputOutput.h>
 #include <PowerController.h>
@@ -54,7 +53,7 @@ States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command) {
                 "The BypassReferencePosition parameter of the RaiseM1M3 cannot be true in the ParkedState.");
         return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
     }
-    Model::get().getAutomaticOperationsController()->startRaiseOperation(false);
+    Model::get().getMirrorRaiseController()->start(false);
     return Model::get().getSafetyController()->checkSafety(States::RaisingState);
 }
 

@@ -401,6 +401,11 @@ const int ForceActuatorApplicationSettings::ActuatorIdToZIndex(int actuatorId) {
     return -1;
 }
 
+const int ForceActuatorApplicationSettings::ZIndexToActuatorId(int zIndex) {
+    if (zIndex >= FA_Z_COUNT || zIndex < 0) return -1;
+    return Table[zIndex].ActuatorID;
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

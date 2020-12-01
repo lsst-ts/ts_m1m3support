@@ -12,7 +12,8 @@ properties(
     disableConcurrentBuilds(),
     parameters
         ( [
-            booleanParam(defaultValue: false, description: 'Adds --no-cache to Docker build command', name: 'noCache')
+            booleanParam(defaultValue: false, description: 'Adds --no-cache to Docker build command', name: 'noCache'),
+            booleanParam(defaultValue: false, description: 'Calls make clean before building the code', name: 'clean')
         ] )
     ]
 )
@@ -48,6 +49,12 @@ node {
     {
         withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
              M1M3sim.inside("--entrypoint=''") {
+                 if (params.clean) {
+                 sh """
+                    cd $WORKSPACE/ts_m1m3support
+                    make clean
+                 """
+                 }
                  sh """
                     source $SALUSER_HOME/.setup_salobj.sh
     

@@ -26,12 +26,25 @@
 
 #include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
 
+/**
+ * Actuator states. PositionController::updateSteps uses those to control HP movement.
+ *
+ * @see PositionController::updateSteps
+ */
 struct HardpointActuatorMotionStates {
     enum Type {
+        /// HP is not moving
         Standby = 0,
+        /// HP is chasing target to reach active state
         Chasing = 1,
+        /// HP is stepping to reach user request
         Stepping = 2,
+        /// HP moved with moveToEncoder command. Uses for translating, reference position etc.
         QuickPositioning = 3,
+        /**
+         * HP fine positiong. If following error is large enough, commands HP
+         * to move.
+         */
         FinePositioning = 4,
     };
 };
