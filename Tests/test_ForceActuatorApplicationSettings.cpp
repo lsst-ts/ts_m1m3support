@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 support system package.
+ * This file is part of LSST M1M3 SS test suite. Tests ForceController.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the LSST Telescope and Site Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,27 +21,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringState.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <ModelPublisher.h>
-#include <spdlog/spdlog.h>
+#define CATCH_CONFIG_MAIN
+#include <catch/catch.hpp>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <ForceActuatorApplicationSettings.h>
 
-LoweringState::LoweringState() : EnabledState("LoweringState") {}
+using namespace LSST::M1M3::SS;
 
-States::Type LoweringState::update(UpdateCommand* command) {
-    ModelPublisher publishIt();
-    SPDLOG_TRACE("LoweringState: update()");
-    Model::get().getMirrorLowerController()->runLoop();
-    runLoop();
-    return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedState
-                                                                            : States::NoStateTransition);
+TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
+    ForceActuatorApplicationSettings settings;
+
+    REQUIRE(settings.ActuatorIdToZIndex(100) < 0);
+    REQUIRE(settings.ActuatorIdToZIndex(101) == 0);
+    REQUIRE(settings.ActuatorIdToZIndex(150) < 0);
+    REQUIRE(settings.ActuatorIdToZIndex(443) == 155);
+    REQUIRE(settings.ActuatorIdToZIndex(444) < 0);
+
+    REQUIRE(settings.ZIndexToActuatorId(0) == 101);
+    REQUIRE(settings.ZIndexToActuatorId(155) == 443);
+    REQUIRE(settings.ZIndexToActuatorId(156) < 0);
+    REQUIRE(settings.ZIndexToActuatorId(-2) < 0);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

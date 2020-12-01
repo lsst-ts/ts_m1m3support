@@ -108,11 +108,51 @@ void PositionController::disableChaseAll() {
 bool PositionController::forcesInTolerance() {
     SPDLOG_TRACE("PositionController: forcesInTolerance()");
     bool inTolerance = true;
+
+    class PositionLimitTrigger : public LimitTrigger<float, float, float> {
+    public:
+        PositionLimitTrigger(int hp) {
+            _hp = hp;
+            _counter = 0;
+        }
+
+    protected:
+        bool trigger() override {
+            _counter++;
+            // problems are reported  when accumulated counter reaches those levels
+            static int levels[4] = {1, 200, 500, 10000};
+            for (int i = 0; i < 4; i++)
+                if (levels[i] == _counter) return true;
+            return ((_counter % levels[3]) == 0);
+        }
+
+        void execute(float lowLimit, float highLimit, float measured) override {
+            SPDLOG_WARN("Violated hardpoint {} measured force {} ({}th occurence), limit {} to {}", _hp,
+                        measured, _counter, lowLimit, highLimit);
+        }
+
+        void reset() override {
+            if (_counter > 0) {
+                SPDLOG_INFO("Hardpoint {} back nominal after {} failures", _hp, _counter);
+                _counter = 0;
+            }
+        }
+
+    private:
+        int _hp;
+        int _counter;
+    };
+
+    static PositionLimitTrigger triggers[6] = {PositionLimitTrigger(1), PositionLimitTrigger(2),
+                                               PositionLimitTrigger(3), PositionLimitTrigger(4),
+                                               PositionLimitTrigger(5), PositionLimitTrigger(6)};
     for (int i = 0; i < HP_COUNT; i++) {
-        inTolerance =
-                inTolerance && Range::InRange((float)_positionControllerSettings->RaiseLowerForceLimitLow,
-                                              (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
-                                              _hardpointActuatorData->measuredForce[i]);
+        inTolerance &= Range::InRangeTrigger((float)_positionControllerSettings->RaiseLowerForceLimitLow,
+                                             (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
+                                             _hardpointActuatorData->measuredForce[i], triggers[i],
+                                             (float)_positionControllerSettings->RaiseLowerForceLimitLow,
+                                             (float)_positionControllerSettings->RaiseLowerForceLimitHigh,
+                                             _hardpointActuatorData->measuredForce[i]);
     }
     return inTolerance;
 }

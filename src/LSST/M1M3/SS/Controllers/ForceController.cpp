@@ -33,7 +33,6 @@
 #include <cmath>
 #include <cstring>
 #include <vector>
-#include <spdlog/spdlog.h>
 #include <unistd.h>
 #include <ForceConverter.h>
 
@@ -122,6 +121,18 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         }
         _neighbors.push_back(neighbors);
     }
+
+    for (int i = 0; i < FA_X_COUNT; i++) {
+        limitTriggerX[i] = ForceLimitTrigger('X', _forceActuatorApplicationSettings->XIndexToActuatorId(i));
+    }
+
+    for (int i = 0; i < FA_Y_COUNT; i++) {
+        limitTriggerY[i] = ForceLimitTrigger('Y', _forceActuatorApplicationSettings->YIndexToActuatorId(i));
+    }
+
+    for (int i = 0; i < FA_Z_COUNT; i++) {
+        limitTriggerZ[i] = ForceLimitTrigger('Z', _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+    }
 }
 
 void ForceController::reset() {
@@ -151,6 +162,7 @@ void ForceController::incSupportPercentage() {
     if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 1.0;
     }
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 void ForceController::decSupportPercentage() {
@@ -159,16 +171,19 @@ void ForceController::decSupportPercentage() {
     if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
     }
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 void ForceController::zeroSupportPercentage() {
     SPDLOG_INFO("ForceController: zeroSupportPercentage()");
     _forceActuatorState->supportPercentage = 0.0;
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 void ForceController::fillSupportPercentage() {
     SPDLOG_INFO("ForceController: fillSupportPercentage()");
     _forceActuatorState->supportPercentage = 1.0;
+    M1M3SSPublisher::get().logForceActuatorState();
 }
 
 bool ForceController::supportPercentageFilled() { return _forceActuatorState->supportPercentage >= 1.0; }
@@ -178,16 +193,23 @@ bool ForceController::supportPercentageZeroed() { return _forceActuatorState->su
 bool ForceController::followingErrorInTolerance() {
     SPDLOG_TRACE("ForceController: followingErrorInTolerance()");
     float limit = _forceActuatorSettings->RaiseLowerFollowingErrorLimit;
+    bool inTolerance = true;
+
     for (int i = 0; i < FA_COUNT; ++i) {
-        if ((i < FA_X_COUNT &&
-             !Range::InRange(-limit, limit, _forceActuatorData->xForce[i] - _appliedForces->xForces[i])) ||
-            (i < FA_Y_COUNT &&
-             !Range::InRange(-limit, limit, _forceActuatorData->yForce[i] - _appliedForces->yForces[i])) ||
-            (!Range::InRange(-limit, limit, _forceActuatorData->zForce[i] - _appliedForces->zForces[i]))) {
-            return false;
+        if (i < FA_X_COUNT) {
+            float fe = _forceActuatorData->xForce[i] - _appliedForces->xForces[i];
+            inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerX[i], limit, fe);
         }
+
+        if (i < FA_Y_COUNT) {
+            float fe = _forceActuatorData->yForce[i] - _appliedForces->yForces[i];
+            inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerY[i], limit, fe);
+        }
+
+        float fe = _forceActuatorData->zForce[i] - _appliedForces->zForces[i];
+        inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerZ[i], limit, fe);
     }
-    return true;
+    return inTolerance;
 }
 
 void ForceController::updateAppliedForces() {

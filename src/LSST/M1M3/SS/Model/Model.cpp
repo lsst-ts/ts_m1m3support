@@ -44,7 +44,8 @@
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <PowerController.h>
-#include <AutomaticOperationsController.h>
+#include <MirrorRaiseController.h>
+#include <MirrorLowerController.h>
 #include <Gyro.h>
 #include <spdlog/spdlog.h>
 #include <DigitalInputOutput.h>
@@ -65,7 +66,8 @@ Model::Model() {
     _positionController = NULL;
     _accelerometer = NULL;
     _powerController = NULL;
-    _automaticOperationsController = NULL;
+    _mirrorRaiseController = NULL;
+    _mirrorLowerController = NULL;
     _gyro = NULL;
     _cachedTimestamp = 0;
     _mutex.lock();
@@ -82,7 +84,8 @@ Model::~Model() {
     delete _positionController;
     delete _accelerometer;
     delete _powerController;
-    delete _automaticOperationsController;
+    delete _mirrorRaiseController;
+    delete _mirrorLowerController;
     delete _gyro;
 }
 
@@ -176,10 +179,15 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Creating power controller");
     _powerController = new PowerController(_safetyController);
 
-    delete _automaticOperationsController;
-    SPDLOG_INFO("Model: Creating automatic operations controller");
-    _automaticOperationsController = new AutomaticOperationsController(_positionController, _forceController,
-                                                                       _safetyController, _powerController);
+    delete _mirrorLowerController;
+    SPDLOG_INFO("Model: Creating mirror lower controller");
+    _mirrorLowerController = new MirrorLowerController(_positionController, _forceController,
+                                                       _safetyController, _powerController);
+
+    delete _mirrorRaiseController;
+    SPDLOG_INFO("Model: Creating mirror raise controller");
+    _mirrorRaiseController = new MirrorRaiseController(_positionController, _forceController,
+                                                       _safetyController, _powerController);
 
     delete _gyro;
     SPDLOG_INFO("Model: Creating gyro");

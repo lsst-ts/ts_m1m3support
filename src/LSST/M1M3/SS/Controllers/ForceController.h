@@ -27,6 +27,7 @@
 #include <DataTypes.h>
 #include <ForceActuatorNeighbors.h>
 #include <ForcesAndMoments.h>
+#include <LimitTrigger.h>
 #include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
 #include <DistributedForces.h>
@@ -47,6 +48,8 @@
 #include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <PIDSettings.h>
+
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -173,6 +176,11 @@ public:
      * actuator values.
      */
     bool supportPercentageZeroed();
+
+    /**
+     * Tests following error on all actuaturs. Reports any violation into
+     * spdlog.
+     */
     bool followingErrorInTolerance();
 
     void updateAppliedForces();
@@ -281,6 +289,52 @@ private:
 
     float _zero[FA_COUNT];
     float _mirrorWeight;
+
+    class ForceLimitTrigger : public LimitTrigger<float, float> {
+    public:
+        ForceLimitTrigger() {
+            _axis = 'U';
+            _faId = -1;
+            _counter = 0;
+        }
+
+        ForceLimitTrigger(char axis, int faId) {
+            _axis = axis;
+            _faId = faId;
+            _counter = 0;
+        }
+
+    protected:
+        bool trigger() override {
+            _counter++;
+            // problems are reported  when accumulated counter reaches those levels
+            static int levels[4] = {1, 200, 500, 100000};
+            for (int i = 0; i < 4; i++)
+                if (levels[i] == _counter) return true;
+            return ((_counter % levels[3]) == 0);
+        }
+
+        void execute(float limit, float fe) override {
+            SPDLOG_WARN("Violated {} follow-up error FA ID {} measured error {} ({}th occurence), limit +-{}",
+                        _axis, _faId, fe, _counter, limit);
+        }
+
+        void reset() override {
+            if (_counter > 0) {
+                SPDLOG_INFO("FA ID {} following error is back into limits after {} failures", _counter);
+                _counter = 0;
+            }
+        }
+
+    private:
+        char _axis;
+        int _faId;
+        int _counter;
+    };
+
+    ForceLimitTrigger limitTriggerX[FA_X_COUNT];
+    ForceLimitTrigger limitTriggerY[FA_Y_COUNT];
+    ForceLimitTrigger limitTriggerZ[FA_Z_COUNT];
 
     static int32_t _toInt24(float force) { return (int32_t)(force * 1000.0); }
 };

@@ -38,7 +38,6 @@
 #include <PowerController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
-#include <AutomaticOperationsController.h>
 #include <RaiseM1M3Command.h>
 #include <spdlog/spdlog.h>
 
@@ -63,8 +62,7 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
 
     Model::get().getBumpTestController()->stopAll();
 
-    Model::get().getAutomaticOperationsController()->startRaiseOperation(
-            command->getData()->bypassReferencePosition);
+    Model::get().getMirrorRaiseController()->start(command->getData()->bypassReferencePosition);
     return Model::get().getSafetyController()->checkSafety(States::RaisingEngineeringState);
 }
 
