@@ -90,28 +90,42 @@ void BumpTestController::runLoop() {
     if (forceActuatorBumpTestStatus->actuatorId < 0) return;
 
     if (_testPrimary) {
-        bool pRet =
+        runCylinderReturn_t pRet =
                 _runCylinder('Z', _zIndex, _zAverages, &(forceActuatorBumpTestStatus->primaryTest[_zIndex]));
-        if (pRet == true) {
-            M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
-            return;
+        switch (pRet) {
+            case STATE_CHANGED:
+                M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+                return;
+            case NO_CHANGE:
+                return;
+            case FAILED:
+            case FINISHED:
+                break;
         }
+
         forceActuatorBumpTestStatus->primaryTestTimestamps[_zIndex] = M1M3SSPublisher::get().getTimestamp();
         _testPrimary = false;
     }
 
     if (_testSecondary) {
-        bool sRet = true;
+        runCylinderReturn_t sRet = FAILED;
         short int* secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
         if (_xIndex >= 0)
             sRet = _runCylinder('X', _xIndex, _xAverages, secondaryStage);
         else if (_yIndex >= 0)
             sRet = _runCylinder('Y', _yIndex, _yAverages, secondaryStage);
 
-        if (sRet == true) {
-            M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
-            return;
+        switch (sRet) {
+            case STATE_CHANGED:
+                M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+                return;
+            case NO_CHANGE:
+                return;
+            case FAILED:
+            case FINISHED:
+                break;
         }
+
         forceActuatorBumpTestStatus->secondaryTestTimestamps[_secondaryIndex] =
                 M1M3SSPublisher::get().getTimestamp();
         _testSecondary = false;
@@ -146,7 +160,9 @@ void BumpTestController::stopCylinder(char axis) {
     _sleepUntil = M1M3SSPublisher::get().getTimestamp() + _testSettleTime;
 }
 
-bool BumpTestController::_runCylinder(char axis, int index, double averages[], short int* stage) {
+BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
+                                                                         double averages[],
+                                                                         short int* stage) {
     ForceController* forceController = Model::get().getForceController();
     double timestamp = M1M3SSPublisher::get().getTimestamp();
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
@@ -159,7 +175,7 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
         case MTM1M3_shared_BumpTest_NotTested:
         case MTM1M3_shared_BumpTest_TestingPositiveWait:
         case MTM1M3_shared_BumpTest_TestingNegativeWait:
-            if (timestamp < _sleepUntil || _collectAverages() == false) break;
+            if (timestamp < _sleepUntil || _collectAverages() == false) return NO_CHANGE;
 
             if (_checkAverages() & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
@@ -167,7 +183,7 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
                         "Failed FA ID {} ({}{}) bump test - measured parked force is too far from 0 ({}, {})",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, averages[index], _tolerance);
                 stopCylinder(axis);
-                return false;
+                return FAILED;
             }
             switch (*stage) {
                 case MTM1M3_shared_BumpTest_NotTested:
@@ -183,7 +199,7 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
                     SPDLOG_INFO("Passed FA ID {} ({}{}) bump test", forceActuatorBumpTestStatus->actuatorId,
                                 axis, index);
                     _resetProgress(false);
-                    return false;
+                    return FINISHED;
             }
             forceController->processAppliedForces();
             _sleepUntil = timestamp + _testSettleTime;
@@ -192,7 +208,7 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
         case MTM1M3_shared_BumpTest_TestingPositive:
             positive = true;
         case MTM1M3_shared_BumpTest_TestingNegative:
-            if (timestamp < _sleepUntil || _collectAverages() == false) break;
+            if (timestamp < _sleepUntil || _collectAverages() == false) return NO_CHANGE;
 
             if (_checkAverages(axis, index, positive ? _testForce : -_testForce) & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
@@ -200,7 +216,7 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
                              forceActuatorBumpTestStatus->actuatorId, axis, index,
                              positive ? "plus" : "negative", _testForce, averages[index], _tolerance);
                 stopCylinder(axis);
-                return false;
+                return FAILED;
             }
 
             forceController->zeroOffsetForces();
@@ -208,15 +224,15 @@ bool BumpTestController::_runCylinder(char axis, int index, double averages[], s
             *stage = positive ? MTM1M3_shared_BumpTest_TestingPositiveWait
                               : MTM1M3_shared_BumpTest_TestingNegativeWait;
             _sleepUntil = timestamp + _testSettleTime;
-
             break;
 
         case MTM1M3_shared_BumpTest_Passed:
+            return FINISHED;
         case MTM1M3_shared_BumpTest_Failed:
-            return false;
+            return FAILED;
     }
 
-    return true;
+    return STATE_CHANGED;
 }
 
 void BumpTestController::_resetProgress(bool zeroOffsets) {
