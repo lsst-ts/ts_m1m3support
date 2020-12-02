@@ -287,7 +287,6 @@ public:
     void logErrorCode();
     void tryLogErrorCode();
     void logForceActuatorBumpTestStatus();
-    void tryLogForceActuatorBumpTestStatus();
     void logForceActuatorForceWarning();
     void tryLogForceActuatorForceWarning();
     void logForceActuatorInfo();
