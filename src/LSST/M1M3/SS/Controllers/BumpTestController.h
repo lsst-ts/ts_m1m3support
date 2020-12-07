@@ -80,6 +80,13 @@ public:
      */
     void stopAll();
 
+    /**
+     * Stops bump test on given cylinder.
+     *
+     * @param axis cylinder axis (X,Y or Z)
+     */
+    void stopCylinder(char axis);
+
 private:
     int _xIndex;
     int _yIndex;
@@ -89,6 +96,7 @@ private:
     bool _testSecondary;
 
     float _testForce;
+    float _warning;
     float _tolerance;
     float _testSettleTime;
     int _testMeasurements;
@@ -96,7 +104,8 @@ private:
     // if NAN, don't sleep
     double _sleepUntil;
 
-    bool _runCylinder(char axis, int index, double averages[], short int* stage);
+    typedef enum { FINISHED, FAILED, NO_CHANGE, STATE_CHANGED } runCylinderReturn_t;
+    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], short int* stage);
 
     void _resetProgress(bool zeroOffsets = true);
     void _resetAverages();
@@ -110,7 +119,10 @@ private:
      */
     bool _collectAverages();
 
-    bool _checkAverages(char axis = ' ', int index = -1, double value = 0);
+    /**
+     * @return 0x01 on error, 0x02 on warning.
+     */
+    int _checkAverages(char axis = ' ', int index = -1, double value = 0);
 };
 
 }  // namespace SS
