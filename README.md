@@ -131,6 +131,14 @@ contains expansion cRIO IP address:
 
 rio://139.229.178.185/M1M3-SupportExpansion-RIO
 
+## Compiling for debugging
+
+Please supply "DEBUG=1" to make call to compile with debug data (-g flag).
+
+**Please be avare that cRIO memory usually isn't sufficient to compile code
+with debug data. Compiling code without debug data, e.g. no DEBUG=1 option,
+works on cRIO.**
+
 ## Compiling for deployment
 
 Ni RT stack isn't needed.

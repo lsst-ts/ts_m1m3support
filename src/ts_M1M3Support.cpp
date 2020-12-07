@@ -94,7 +94,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
         auto daily_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>("MTM1M3", 0, 0);
         sinks.push_back(daily_sink);
     }
-    auto logger = std::make_shared<spdlog::async_logger>("loggername", sinks.begin(), sinks.end(),
+    auto logger = std::make_shared<spdlog::async_logger>("MTM1M3", sinks.begin(), sinks.end(),
                                                          spdlog::thread_pool(),
                                                          spdlog::async_overflow_policy::block);
     spdlog::set_default_logger(logger);
@@ -184,7 +184,7 @@ int main(int argc, char* const argv[]) {
     m1m3SAL->setDebugLevel(debugLevelSAL);
 
     sinks.push_back(std::make_shared<SALSink_mt>(m1m3SAL));
-    auto logger = std::make_shared<spdlog::async_logger>("loggername", sinks.begin(), sinks.end(),
+    auto logger = std::make_shared<spdlog::async_logger>("MTM1M3", sinks.begin(), sinks.end(),
                                                          spdlog::thread_pool(),
                                                          spdlog::async_overflow_policy::block);
     spdlog::set_default_logger(logger);
