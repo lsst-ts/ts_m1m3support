@@ -607,13 +607,6 @@ void M1M3SSPublisher::logForceActuatorBumpTestStatus() {
     _previousEventForceActuatorBumpTestStatus = _eventForceActuatorBumpTestStatus;
 }
 
-void M1M3SSPublisher::tryLogForceActuatorBumpTestStatus() {
-    if (memcmp(&_previousEventForceActuatorBumpTestStatus, &_eventForceActuatorBumpTestStatus,
-               sizeof(MTM1M3_logevent_forceActuatorBumpTestStatusC))) {
-        logForceActuatorBumpTestStatus();
-    }
-}
-
 void M1M3SSPublisher::logForceActuatorForceWarning() {
     _eventForceActuatorForceWarning.anyPrimaryAxisMeasuredForceWarning = false;
     _eventForceActuatorForceWarning.anySecondaryAxisMeasuredForceWarning = false;
