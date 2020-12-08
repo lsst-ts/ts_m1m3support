@@ -180,7 +180,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
             if (_checkAverages() & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
                 SPDLOG_ERROR(
-                        "Failed FA ID {} ({}{}) bump test - measured parked force is too far from 0 ({}, {})",
+                        "Failed FA ID {} ({}{}) bump test - measured parked force ({:.3f}) is too far from "
+                        "0\xb1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, averages[index], _tolerance);
                 stopCylinder(axis);
                 return FAILED;
@@ -212,9 +213,10 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
 
             if (_checkAverages(axis, index, positive ? _testForce : -_testForce) & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
-                SPDLOG_ERROR("Failed FA ID {} ({}{}) bump test - measured {} force is too far {} ({}, {})",
-                             forceActuatorBumpTestStatus->actuatorId, axis, index,
-                             positive ? "plus" : "negative", _testForce, averages[index], _tolerance);
+                SPDLOG_ERROR(
+                        "Failed FA ID {} ({}{}) bump test - measured force {} ({:.3f}) is too far {}\xb1{}",
+                        forceActuatorBumpTestStatus->actuatorId, axis, index, positive ? "plus" : "negative",
+                        averages[index], _testForce, _tolerance);
                 stopCylinder(axis);
                 return FAILED;
             }
@@ -290,12 +292,12 @@ int BumpTestController::_checkAverages(char axis, int index, double value) {
                            double warning) {
         double err = abs(value - expected);
         if (err >= tolerance) {
-            SPDLOG_ERROR("FA ID {} ({}{}) following error violation - measured {}, expected {}, tolerance {}",
+            SPDLOG_ERROR("FA ID {} ({}{}) following error violation - measured {:.3f}, expected {}\xb1{}",
                          axisIndexToActuatorId(axis, index), axis, index, value, expected, tolerance);
             return 0x01;
         }
         if (err >= warning) {
-            SPDLOG_WARN("FA ID {} ({}{}) following error warning - measured {}, expected {}, tolerance {}",
+            SPDLOG_WARN("FA ID {} ({}{}) following error warning - measured {:.3f}, expected {}\xb1{}",
                         axisIndexToActuatorId(axis, index), axis, index, value, expected, warning);
             return 0x02;
         }
