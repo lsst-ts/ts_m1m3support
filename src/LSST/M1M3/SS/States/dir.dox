@@ -44,7 +44,7 @@
  *     Standby [URL="@ref LSST::M1M3::SS::StandbyState"];
  *     Disabled [URL="@ref LSST::M1M3::SS::DisabledState"];
  *
- *     Offline -> Standby [label="startup"];
+ *     Offline -> Standby [label="EnterControl"];
  *     Standby -> Offline [label="ExitControl",URL="@ref LSST::M1M3::SS::ExitControlCommand"];
  *     Standby -> Disabled [label="Start",URL="@ref LSST::M1M3::SS::StartCommand"];
  *     Disabled -> Standby [label="Standby",URL="@ref LSST::M1M3::SS::StandbyCommand"];
