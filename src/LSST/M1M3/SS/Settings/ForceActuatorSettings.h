@@ -152,8 +152,8 @@ private:
     void _loadNeighborsTable(const std::string &filename);
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
 #endif /* FORCEACTUATORSETTINGS_H_ */

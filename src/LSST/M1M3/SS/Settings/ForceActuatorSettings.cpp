@@ -490,6 +490,6 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
     inputStream.close();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST

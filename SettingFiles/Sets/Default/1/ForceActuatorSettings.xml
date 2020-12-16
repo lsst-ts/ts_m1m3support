@@ -138,4 +138,14 @@
         <MaxRateOfChange>315.0</MaxRateOfChange>
         <NearZeroValue>1.0</NearZeroValue>
     </FinalForceComponent>
+    <BumpTest>
+        <TestedTolerances>
+            <Warning>2.5</Warning>
+            <Error>5</Error>
+        </TestedTolerances>
+        <NonTestedTolerances>
+            <Warning>20</Warning>
+            <Error>100</Error>
+        </NonTestedTolerances>
+    </BumpTest>
 </ForceActuatorSettings>
