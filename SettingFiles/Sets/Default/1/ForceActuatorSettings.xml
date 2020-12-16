@@ -147,5 +147,7 @@
             <Warning>20</Warning>
             <Error>100</Error>
         </NonTestedTolerances>
+        <SettleTime>3.0</SettleTime>
+        <Measurements>10</Measurements>
     </BumpTest>
 </ForceActuatorSettings>

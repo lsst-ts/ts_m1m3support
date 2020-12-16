@@ -28,6 +28,7 @@
 #include <ForceActuatorNeighbors.h>
 #include <ForceActuatorLimits.h>
 #include <ForceComponentSettings.h>
+#include <ForceActuatorBumpTestSettings.h>
 #include <Limit.h>
 #include <string>
 #include <vector>
@@ -141,6 +142,19 @@ public:
     ForceComponentSettings ThermalComponentSettings;
     ForceComponentSettings VelocityComponentSettings;
     ForceComponentSettings FinalComponentSettings;
+
+    /**
+     * Tolerances for actuators being tested.
+     */
+    ForceActuatorBumpTestSettings TestedTolerances;
+
+    /**
+     * Tolerances for actuators not tested.
+     */
+    ForceActuatorBumpTestSettings NonTestedTolerances;
+
+    float BumpTestSettleTime;
+    float BumpTestMeasurements;
 
     void load(const std::string &filename);
 

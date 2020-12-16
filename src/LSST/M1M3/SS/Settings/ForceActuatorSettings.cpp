@@ -402,6 +402,14 @@ void ForceActuatorSettings::load(const std::string &filename) {
             doc.select_node("//ForceActuatorSettings/FinalForceComponent/NearZeroValue")
                     .node()
                     .child_value());
+
+    TestedTolerances.set(doc.select_node("//ForceActuatorSettings/BumpTest/TestedTolerances").node());
+    NonTestedTolerances.set(doc.select_node("//ForceActuatorSettings/BumpTest/NonTestedTolerances").node());
+
+    BumpTestSettleTime =
+            doc.select_node("//ForceActuatorSettings/BumpTest/SettleTime").node().text().as_float(3.0);
+    BumpTestMeasurements =
+            doc.select_node("//ForceActuatorSettings/BumpTest/Measurements").node().text().as_int(10);
 }
 
 bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
