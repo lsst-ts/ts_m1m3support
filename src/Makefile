@@ -49,6 +49,8 @@ M1M3_CPPFLAGS := -I. \
 libM1M3SS.a: $(OBJS)
 	@echo '[AR ] $@'
 	${co}$(AR) r $@ $^
+	@echo '[RLB] $@'
+	${co}ranlib $@
 
 clean:
 	@$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
