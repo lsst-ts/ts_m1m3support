@@ -117,7 +117,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
     TableLoader::loadLimitTable(
             1, 1, &AberrationLimitZTable,
             doc.select_node("//ForceActuatorSettings/AberrationLimitZTablePath").node().child_value());
-    this->NetAberrationForceTolerance = boost::lexical_cast<float>(
+    NetAberrationForceTolerance = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/NetAberrationForceTolerance").node().child_value());
     TableLoader::loadLimitTable(
             1, 1, &AccelerationLimitXTable,
@@ -131,7 +131,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
     TableLoader::loadLimitTable(
             1, 1, &ActiveOpticLimitZTable,
             doc.select_node("//ForceActuatorSettings/ActiveOpticLimitZTablePath").node().child_value());
-    this->NetActiveOpticForceTolerance = boost::lexical_cast<float>(
+    NetActiveOpticForceTolerance = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/NetActiveOpticForceTolerance").node().child_value());
     TableLoader::loadLimitTable(
             1, 1, &AzimuthLimitXTable,
@@ -233,10 +233,10 @@ void ForceActuatorSettings::load(const std::string &filename) {
                     .node()
                     .child_value());
 
-    this->Neighbors.clear();
+    Neighbors.clear();
     for (int i = 0; i < FA_COUNT; ++i) {
         ForceActuatorNeighbors neighbors;
-        this->Neighbors.push_back(neighbors);
+        Neighbors.push_back(neighbors);
     }
     _loadNearNeighborZTable(doc.select_node("//ForceActuatorSettings/ForceActuatorNearZNeighborsTablePath")
                                     .node()
@@ -244,169 +244,177 @@ void ForceActuatorSettings::load(const std::string &filename) {
     _loadNeighborsTable(
             doc.select_node("//ForceActuatorSettings/ForceActuatorNeighborsTablePath").node().child_value());
 
-    this->UseInclinometer =
+    UseInclinometer =
             boost::lexical_cast<int32_t>(
                     doc.select_node("//ForceActuatorSettings/UseInclinometer").node().child_value()) != 0;
-    this->MirrorXMoment = boost::lexical_cast<float>(
+    MirrorXMoment = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/MirrorXMoment").node().child_value());
-    this->MirrorYMoment = boost::lexical_cast<float>(
+    MirrorYMoment = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/MirrorYMoment").node().child_value());
-    this->MirrorZMoment = boost::lexical_cast<float>(
+    MirrorZMoment = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/MirrorZMoment").node().child_value());
-    this->SetpointXMomentLowLimitPercentage = boost::lexical_cast<float>(
+    SetpointXMomentLowLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointXMomentLowLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointXMomentHighLimitPercentage = boost::lexical_cast<float>(
+    SetpointXMomentHighLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointXMomentHighLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointYMomentLowLimitPercentage = boost::lexical_cast<float>(
+    SetpointYMomentLowLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointYMomentLowLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointYMomentHighLimitPercentage = boost::lexical_cast<float>(
+    SetpointYMomentHighLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointYMomentHighLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointZMomentLowLimitPercentage = boost::lexical_cast<float>(
+    SetpointZMomentLowLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointZMomentLowLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointZMomentHighLimitPercentage = boost::lexical_cast<float>(
+    SetpointZMomentHighLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointZMomentHighLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointNearNeighborLimitPercentage = boost::lexical_cast<float>(
+    SetpointNearNeighborLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointNearNeighborLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointMirrorWeightLimitPercentage = boost::lexical_cast<float>(
+    SetpointMirrorWeightLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointMirrorWeightLimitPercentage")
                     .node()
                     .child_value());
-    this->SetpointFarNeighborLimitPercentage = boost::lexical_cast<float>(
+    SetpointFarNeighborLimitPercentage = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/SetpointFarNeighborLimitPercentage")
                     .node()
                     .child_value());
 
-    this->MirrorCenterOfGravityX = boost::lexical_cast<float>(
+    MirrorCenterOfGravityX = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityX").node().child_value());
-    this->MirrorCenterOfGravityY = boost::lexical_cast<float>(
+    MirrorCenterOfGravityY = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityY").node().child_value());
-    this->MirrorCenterOfGravityZ = boost::lexical_cast<float>(
+    MirrorCenterOfGravityZ = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityZ").node().child_value());
 
-    this->RaiseIncrementPercentage = boost::lexical_cast<double>(
+    RaiseIncrementPercentage = boost::lexical_cast<double>(
             doc.select_node("//ForceActuatorSettings/RaiseIncrementPercentage").node().child_value());
-    this->LowerDecrementPercentage = boost::lexical_cast<double>(
+    LowerDecrementPercentage = boost::lexical_cast<double>(
             doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());
-    this->RaiseLowerFollowingErrorLimit = boost::lexical_cast<float>(
+    RaiseLowerFollowingErrorLimit = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/RaiseLowerFollowingErrorLimit").node().child_value());
 
-    this->AberrationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    AberrationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/AberrationForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->AberrationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    AberrationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/AberrationForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->AccelerationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    AccelerationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/AccelerationForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->AccelerationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    AccelerationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/AccelerationForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->ActiveOpticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    ActiveOpticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/ActiveOpticForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->ActiveOpticComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    ActiveOpticComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/ActiveOpticForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->AzimuthComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    AzimuthComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/AzimuthForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->AzimuthComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    AzimuthComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/AzimuthForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->BalanceComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    BalanceComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/BalanceForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->BalanceComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    BalanceComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/BalanceForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->ElevationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    ElevationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/ElevationForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->ElevationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    ElevationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/ElevationForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->OffsetComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    OffsetComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/OffsetForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->OffsetComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    OffsetComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/OffsetForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->StaticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    StaticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/StaticForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->StaticComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    StaticComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/StaticForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->ThermalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    ThermalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/ThermalForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->ThermalComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    ThermalComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/ThermalForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->VelocityComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    VelocityComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/VelocityForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->VelocityComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    VelocityComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/VelocityForceComponent/NearZeroValue")
                     .node()
                     .child_value());
 
-    this->FinalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
+    FinalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/FinalForceComponent/MaxRateOfChange")
                     .node()
                     .child_value());
-    this->FinalComponentSettings.NearZeroValue = boost::lexical_cast<float>(
+    FinalComponentSettings.NearZeroValue = boost::lexical_cast<float>(
             doc.select_node("//ForceActuatorSettings/FinalForceComponent/NearZeroValue")
                     .node()
                     .child_value());
+
+    TestedTolerances.set(doc.select_node("//ForceActuatorSettings/BumpTest/TestedTolerances").node());
+    NonTestedTolerances.set(doc.select_node("//ForceActuatorSettings/BumpTest/NonTestedTolerances").node());
+
+    BumpTestSettleTime =
+            doc.select_node("//ForceActuatorSettings/BumpTest/SettleTime").node().text().as_float(3.0);
+    BumpTestMeasurements =
+            doc.select_node("//ForceActuatorSettings/BumpTest/Measurements").node().text().as_int(10);
 }
 
 bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
-    for (unsigned int i = 0; i < this->DisabledActuators.size(); ++i) {
-        if (this->DisabledActuators[i] == actId) {
+    for (unsigned int i = 0; i < DisabledActuators.size(); ++i) {
+        if (DisabledActuators[i] == actId) {
             return true;
         }
     }
@@ -417,11 +425,11 @@ void ForceActuatorSettings::_loadDisabledActuators(const std::string line) {
     typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
     tokenizer tok(line);
     tokenizer::iterator i = tok.begin();
-    this->DisabledActuators.clear();
+    DisabledActuators.clear();
     while (i != tok.end()) {
-        this->DisabledActuators.push_back(boost::lexical_cast<int32_t>(*i));
+        DisabledActuators.push_back(boost::lexical_cast<int32_t>(*i));
         SPDLOG_WARN("ForceActuatorSettings: Disabled Actuator {:d}",
-                    this->DisabledActuators[this->DisabledActuators.size() - 1]);
+                    DisabledActuators[DisabledActuators.size() - 1]);
         ++i;
     }
 }
@@ -450,7 +458,7 @@ void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename)
             for (; i != tok.end(); ++i) {
                 int32_t id = boost::lexical_cast<int32_t>(*i);
                 if (id != 0) {
-                    this->Neighbors[lineNumber - 1].NearZIDs.push_back(id);
+                    Neighbors[lineNumber - 1].NearZIDs.push_back(id);
                 }
             }
         }
@@ -481,7 +489,7 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
                 ++i;
                 int32_t id = boost::lexical_cast<int32_t>(*i);
                 if (id != 0) {
-                    this->Neighbors[lineNumber - 1].FarIDs.push_back(id);
+                    Neighbors[lineNumber - 1].FarIDs.push_back(id);
                 }
             }
         }
@@ -490,6 +498,6 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
     inputStream.close();
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
