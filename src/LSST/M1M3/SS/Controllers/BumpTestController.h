@@ -96,8 +96,12 @@ private:
     bool _testSecondary;
 
     float _testForce;
-    float _warning;
-    float _tolerance;
+
+    float _testedWarning;
+    float _testedError;
+    float _nonTestedWarning;
+    float _nonTestedError;
+
     float _testSettleTime;
     int _testMeasurements;
     int _testProgress;

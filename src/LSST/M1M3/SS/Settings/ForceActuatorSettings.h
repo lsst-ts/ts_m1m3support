@@ -28,6 +28,7 @@
 #include <ForceActuatorNeighbors.h>
 #include <ForceActuatorLimits.h>
 #include <ForceComponentSettings.h>
+#include <ForceActuatorBumpTestSettings.h>
 #include <Limit.h>
 #include <string>
 #include <vector>
@@ -142,6 +143,19 @@ public:
     ForceComponentSettings VelocityComponentSettings;
     ForceComponentSettings FinalComponentSettings;
 
+    /**
+     * Tolerances for actuators being tested.
+     */
+    ForceActuatorBumpTestSettings TestedTolerances;
+
+    /**
+     * Tolerances for actuators not tested.
+     */
+    ForceActuatorBumpTestSettings NonTestedTolerances;
+
+    float BumpTestSettleTime;
+    float BumpTestMeasurements;
+
     void load(const std::string &filename);
 
     bool IsActuatorDisabled(int32_t actId);
@@ -152,8 +166,8 @@ private:
     void _loadNeighborsTable(const std::string &filename);
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
 #endif /* FORCEACTUATORSETTINGS_H_ */
