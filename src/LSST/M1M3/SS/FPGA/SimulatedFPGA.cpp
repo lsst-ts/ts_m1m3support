@@ -59,7 +59,7 @@ SimulatedFPGA::SimulatedFPGA() {
     }
     _rndIndex = 0;
     _mgrMTMount = SAL_MTMount();
-    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_Elevation"));
+    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
 
     _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
 
