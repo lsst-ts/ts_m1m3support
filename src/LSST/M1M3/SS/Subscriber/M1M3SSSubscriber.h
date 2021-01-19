@@ -164,8 +164,8 @@ private:
     MTM1M3_command_forceActuatorBumpTestC _forceActuatorBumpTestData;
     MTM1M3_command_killForceActuatorBumpTestC _killForceActuatorBumpTestData;
 
-    MTMount_AzimuthC _tmaAzimuth;
-    MTMount_ElevationC _tmaElevation;
+    MTMount_azimuthC _tmaAzimuth;
+    MTMount_elevationC _tmaElevation;
 };
 
 } /* namespace SS */
