@@ -137,7 +137,7 @@ public:
      *
      * @param tmaElevationData
      */
-    void updateTMAElevationData(MTMount_ElevationC* tmaElevationData);
+    void updateTMAElevationData(MTMount_elevationC* tmaElevationData);
 
     /**
      * Increases mirrror support percentage by RaiseIncrementPercentage setting

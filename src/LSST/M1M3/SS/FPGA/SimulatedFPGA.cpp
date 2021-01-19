@@ -81,19 +81,19 @@ SimulatedFPGA::~SimulatedFPGA() {
 }
 
 void SimulatedFPGA::_monitorElevation(void) {
-    MTMount_ElevationC mountElevationInstance;
+    MTMount_elevationC mountElevationInstance;
 
     SPDLOG_DEBUG("Start monitoring mount elevation...");
 
     while (!_exitThread) {
-        ReturnCode_t status = _mgrMTMount.getSample_Elevation(&mountElevationInstance);
+        ReturnCode_t status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
 
         if (status == 0) {
             SPDLOG_DEBUG("Got valid elevation sample...");
 
             {
                 std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
-                _mountElevation = mountElevationInstance.Elevation_Angle_Actual;
+                _mountElevation = mountElevationInstance.angleActual;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));

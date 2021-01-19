@@ -52,7 +52,7 @@ EnabledState::EnabledState(std::string name) : State(name) {}
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAAzimuthSample()");
-    Model::get().getForceController()->updateAzimuthForces((float)command->getData()->Azimuth_Angle_Actual);
+    Model::get().getForceController()->updateAzimuthForces((float)command->getData()->angleActual);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

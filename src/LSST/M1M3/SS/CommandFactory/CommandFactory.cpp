@@ -145,9 +145,9 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
         case Commands::StopHardpointMotionCommand:
             return new StopHardpointMotionCommand(commandID, (MTM1M3_command_stopHardpointMotionC*)data);
         case Commands::TMAAzimuthSampleCommand:
-            return new TMAAzimuthSampleCommand((MTMount_AzimuthC*)data);
+            return new TMAAzimuthSampleCommand((MTMount_azimuthC*)data);
         case Commands::TMAElevationSampleCommand:
-            return new TMAElevationSampleCommand((MTMount_ElevationC*)data);
+            return new TMAElevationSampleCommand((MTMount_elevationC*)data);
         case Commands::PositionM1M3Command:
             return new PositionM1M3Command(commandID, (MTM1M3_command_positionM1M3C*)data);
         case Commands::TurnLightsOnCommand:

@@ -29,9 +29,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_ElevationC* data) {
+TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC* data) {
     this->commandID = -1;
-    memcpy(&_data, data, sizeof(MTMount_ElevationC));
+    memcpy(&_data, data, sizeof(MTMount_elevationC));
 }
 
 void TMAElevationSampleCommand::execute() { Context::get().storeTMAElevationSample(this); }
