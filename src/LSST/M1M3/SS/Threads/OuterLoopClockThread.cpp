@@ -40,12 +40,12 @@ namespace SS {
 OuterLoopClockThread::OuterLoopClockThread() { _keepRunning = true; }
 
 void OuterLoopClockThread::run() {
-    spdlog::info("OuterLoopClockThread: Start");
+    SPDLOG_INFO("OuterLoopClockThread: Start");
     while (_keepRunning) {
         try {
             IFPGA::get().waitForOuterLoopClock(1000);
         } catch (NiError& er) {
-            spdlog::warn("OuterLoopClockThread: Failed to receive outer loop clock");
+            SPDLOG_WARN("OuterLoopClockThread: Failed to receive outer loop clock");
         }
 
         if (_keepRunning) {
@@ -55,7 +55,7 @@ void OuterLoopClockThread::run() {
         _updateMutex.unlock();
         IFPGA::get().ackOuterLoopClock();
     }
-    spdlog::info("OuterLoopClockThread: Completed");
+    SPDLOG_INFO("OuterLoopClockThread: Completed");
 }
 
 void OuterLoopClockThread::stop() { _keepRunning = false; }

@@ -33,7 +33,7 @@ namespace M1M3 {
 namespace SS {
 
 ControllerThread::ControllerThread() : _keepRunning(true) {
-    spdlog::debug("ControllerThread: ControllerThread()");
+    SPDLOG_DEBUG("ControllerThread: ControllerThread()");
 }
 
 ControllerThread::~ControllerThread() { _clear(); }
@@ -44,14 +44,17 @@ ControllerThread& ControllerThread::get() {
 }
 
 void ControllerThread::run() {
-    spdlog::info("ControllerThread: Start");
+    SPDLOG_INFO("ControllerThread: Start");
     while (_keepRunning) {
-        Command* command = _dequeue();
-        if (command) {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _cv.wait(lock, [this] { return (_queue.empty() == false) || (_keepRunning == false); });
+        while (!_queue.empty()) {
+            Command* command = _queue.front();
+            _queue.pop();
             _execute(command);
         }
     }
-    spdlog::info("ControllerThread: Completed");
+    SPDLOG_INFO("ControllerThread: Completed");
 }
 
 void ControllerThread::stop() {
@@ -63,18 +66,19 @@ void ControllerThread::stop() {
 }
 
 void ControllerThread::_clear() {
-    spdlog::trace("ControllerThread: _clear()");
+    SPDLOG_TRACE("ControllerThread: _clear()");
     {
         std::lock_guard<std::mutex> lg(_mutex);
         while (!_queue.empty()) {
-            Command* command = _dequeue();
+            Command* command = _queue.front();
             delete command;
         }
+        std::queue<Command*>().swap(_queue);
     }
 }
 
 void ControllerThread::enqueue(Command* command) {
-    spdlog::trace("ControllerThread: enqueue()");
+    SPDLOG_TRACE("ControllerThread: enqueue()");
     {
         std::lock_guard<std::mutex> lg(_mutex);
         _queue.push(command);
@@ -82,28 +86,14 @@ void ControllerThread::enqueue(Command* command) {
     _cv.notify_one();
 }
 
-Command* ControllerThread::_dequeue() {
-    spdlog::trace("ControllerThread: _dequeue()");
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        _cv.wait(lock, [this] { return (_queue.empty() == false) || (_keepRunning == false); });
-        if (!_queue.empty()) {
-            Command* command = _queue.front();
-            _queue.pop();
-            return command;
-        }
-    }
-    return NULL;
-}
-
 void ControllerThread::_execute(Command* command) {
-    spdlog::trace("ControllerThread: _execute()");
+    SPDLOG_TRACE("ControllerThread: _execute()");
     try {
         command->ackInProgress();
         command->execute();
         command->ackComplete();
     } catch (std::exception& e) {
-        spdlog::error("Cannot execute command: {}", e.what());
+        SPDLOG_ERROR("Cannot execute command: {}", e.what());
         command->ackFailed(e.what());
     }
 

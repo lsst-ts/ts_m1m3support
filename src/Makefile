@@ -21,12 +21,12 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/DigitalInputOutput" \
 	-I"LSST/M1M3/SS/FirmwareUpdate" \
 	-I"LSST/M1M3/SS/Accelerometer" \
-	-I"LSST/M1M3/SS/AutomaticOperationsController" \
 	-I"LSST/M1M3/SS/BusLists" \
 	-I"LSST/M1M3/SS/CommandFactory" \
+	-I"LSST/M1M3/SS/Controllers" \
 	-I"LSST/M1M3/SS/Displacement" \
 	-I"LSST/M1M3/SS/Inclinometer" \
-	-I"LSST/M1M3/SS/ForceController" \
+	-I"LSST/M1M3/SS/ForceComponents" \
 	-I"LSST/M1M3/SS/Commands" \
 	-I"LSST/M1M3/SS/Context" \
 	-I"LSST/M1M3/SS/Domain" \
@@ -38,11 +38,7 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/Modbus" \
 	-I"LSST/M1M3/SS/Model" \
 	-I"LSST/M1M3/SS/PID" \
-	-I"LSST/M1M3/SS/PositionController" \
-	-I"LSST/M1M3/SS/PowerController" \
-	-I"LSST/M1M3/SS/ProfileController" \
 	-I"LSST/M1M3/SS/Publisher" \
-	-I"LSST/M1M3/SS/SafetyController" \
 	-I"LSST/M1M3/SS/Settings" \
 	-I"LSST/M1M3/SS/StateFactory" \
 	-I"LSST/M1M3/SS/States" \
@@ -53,6 +49,8 @@ M1M3_CPPFLAGS := -I. \
 libM1M3SS.a: $(OBJS)
 	@echo '[AR ] $@'
 	${co}$(AR) r $@ $^
+	@echo '[RLB] $@'
+	${co}ranlib $@
 
 clean:
 	@$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
@@ -71,5 +69,5 @@ clean:
 	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
 
 %.c.d: %.c
-	@echo '[DEP] $^'
+	@echo '[DEP] $<'
 	${co}$(C) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.c,%.o,$<) $@'

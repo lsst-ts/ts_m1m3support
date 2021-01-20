@@ -25,7 +25,6 @@
 #include <Model.h>
 #include <ModelPublisher.h>
 #include <SafetyController.h>
-#include <AutomaticOperationsController.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -36,16 +35,16 @@ RaisingEngineeringState::RaisingEngineeringState() : EngineeringState("RaisingEn
 
 States::Type RaisingEngineeringState::update(UpdateCommand* command) {
     ModelPublisher publishModel();
-    spdlog::trace("RaisingEngineeringState: update()");
-    Model::get().getAutomaticOperationsController()->tryIncrementingSupportPercentage();
+    SPDLOG_TRACE("RaisingEngineeringState: update()");
+    Model::get().getMirrorRaiseController()->runLoop();
     runLoop();
     return Model::get().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveEngineeringState
                                                                             : States::NoStateTransition);
 }
 
 States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
-    spdlog::info("RaisingEngineeringState: abortRaiseM1M3()");
-    Model::get().getAutomaticOperationsController()->abortRaiseM1M3();
+    SPDLOG_INFO("RaisingEngineeringState: abortRaiseM1M3()");
+    Model::get().getMirrorLowerController()->abortRaiseM1M3();
     return Model::get().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 

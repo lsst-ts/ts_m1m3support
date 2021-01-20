@@ -36,12 +36,12 @@ namespace SS {
 PPSThread::PPSThread() { _keepRunning = true; }
 
 void PPSThread::run() {
-    spdlog::info("PPSThread: Start");
+    SPDLOG_INFO("PPSThread: Start");
     while (_keepRunning) {
         try {
             IFPGA::get().waitForPPS(2500);
         } catch (NiError& er) {
-            spdlog::warn("PPSThread: Failed to receive pps");
+            SPDLOG_WARN("PPSThread: Failed to receive pps");
             continue;
         }
         IFPGA::get().ackPPS();
@@ -50,7 +50,7 @@ void PPSThread::run() {
             IFPGA::get().writeTimestampFIFO(timestamp);
         }
     }
-    spdlog::info("PPSThread: Completed");
+    SPDLOG_INFO("PPSThread: Completed");
 }
 
 void PPSThread::stop() { _keepRunning = false; }

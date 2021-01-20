@@ -78,7 +78,8 @@ struct Commands {
         UpdatePIDCommand = 42,
         ResetPIDCommand = 43,
         ProgramILCCommand = 44,
-        ModbusTransmitCommand = 45
+        ModbusTransmitCommand = 45,
+        ForceActuatorBumpTestCommand = 46
     };
 };
 

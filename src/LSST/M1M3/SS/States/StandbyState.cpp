@@ -41,13 +41,13 @@ namespace SS {
 StandbyState::StandbyState() : State("StandbyState") {}
 
 States::Type StandbyState::update(UpdateCommand* command) {
-    spdlog::trace("StandbyState: update()");
+    SPDLOG_TRACE("StandbyState: update()");
     Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
     return States::NoStateTransition;
 }
 
 States::Type StandbyState::start(StartCommand* command) {
-    spdlog::info("StandbyState: start()");
+    SPDLOG_INFO("StandbyState: start()");
     Model::get().loadSettings(command->getData()->settingsToApply);
     PowerController* powerController = Model::get().getPowerController();
     ILC* ilc = Model::get().getILC();
@@ -126,7 +126,7 @@ States::Type StandbyState::start(StartCommand* command) {
 }
 
 States::Type StandbyState::exitControl(ExitControlCommand* command) {
-    spdlog::info("StandbyState: ExitControl()");
+    SPDLOG_INFO("StandbyState: ExitControl()");
     Model::get().exitControl();
     return States::OfflineState;
 }

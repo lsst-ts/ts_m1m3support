@@ -38,7 +38,7 @@ namespace SS {
 
 Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, SupportFPGAData* fpgaData,
                            SafetyController* safetyController) {
-    spdlog::debug("Displacement: Displacement()");
+    SPDLOG_DEBUG("Displacement: Displacement()");
     _displacementSensorSettings = displacementSensorSettings;
     _fpgaData = fpgaData;
     _safetyController = safetyController;
@@ -57,7 +57,7 @@ Displacement::Displacement(DisplacementSensorSettings* displacementSensorSetting
 void Displacement::processData() {
     // TODO: Handle no data available
     // TODO: Handle displacement limits, push to safety controller
-    spdlog::trace("Displacement: processData()");
+    SPDLOG_TRACE("Displacement: processData()");
     if (_fpgaData->DisplacementErrorTimestamp > _lastErrorTimestamp) {
         _lastErrorTimestamp = _fpgaData->DisplacementErrorTimestamp;
         _errorCleared = false;

@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LSST_M1M3_SS_INCLUDE_FORCEDOMAINMODEL_H_
-#define LSST_M1M3_SS_INCLUDE_FORCEDOMAINMODEL_H_
+#ifndef LSST_M1M3_SS_INCLUDE_FORCECOMPONENTSETTINGS_H_
+#define LSST_M1M3_SS_INCLUDE_FORCECOMPONENTSETTINGS_H_
 
 namespace LSST {
 namespace M1M3 {
@@ -33,8 +33,8 @@ struct ForceComponentSettings {
     float NearZeroValue;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* LSST_M1M3_SS_INCLUDE_FORCEDOMAINMODEL_H_ */
+#endif /* LSST_M1M3_SS_INCLUDE_FORCECOMPONENTSETTINGS_H_ */

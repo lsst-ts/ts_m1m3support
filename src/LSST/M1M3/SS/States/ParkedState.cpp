@@ -28,7 +28,6 @@
 #include <SafetyController.h>
 #include <ForceController.h>
 #include <PositionController.h>
-#include <AutomaticOperationsController.h>
 #include <RaiseM1M3Command.h>
 #include <DigitalInputOutput.h>
 #include <PowerController.h>
@@ -41,30 +40,30 @@ namespace SS {
 ParkedState::ParkedState() : EnabledState("ParkedState") {}
 
 States::Type ParkedState::update(UpdateCommand* command) {
-    spdlog::trace("ParkedState: update()");
+    SPDLOG_TRACE("ParkedState: update()");
     sendTelemetry();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command) {
-    spdlog::info("ParkedState: raiseM1M3()");
+    SPDLOG_INFO("ParkedState: raiseM1M3()");
     if (command->getData()->bypassReferencePosition) {
         M1M3SSPublisher::get().logCommandRejectionWarning(
                 "RaiseM1M3",
                 "The BypassReferencePosition parameter of the RaiseM1M3 cannot be true in the ParkedState.");
         return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
     }
-    Model::get().getAutomaticOperationsController()->startRaiseOperation(false);
+    Model::get().getMirrorRaiseController()->start(false);
     return Model::get().getSafetyController()->checkSafety(States::RaisingState);
 }
 
 States::Type ParkedState::enterEngineering(EnterEngineeringCommand* command) {
-    spdlog::info("ParkedState: enterEngineering()");
+    SPDLOG_INFO("ParkedState: enterEngineering()");
     return Model::get().getSafetyController()->checkSafety(States::ParkedEngineeringState);
 }
 
 States::Type ParkedState::disable(DisableCommand* command) {
-    spdlog::info("ParkedState: disable()");
+    SPDLOG_INFO("ParkedState: disable()");
     Model::get().getILC()->writeSetModeDisableBuffer();
     Model::get().getILC()->triggerModbus();
     Model::get().getILC()->waitForAllSubnets(5000);

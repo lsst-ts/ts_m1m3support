@@ -29,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) { spdlog::debug("M1M3SSPublisher: M1M3SSPublisher()"); }
+M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) { SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()"); }
 
 M1M3SSPublisher& M1M3SSPublisher::get() {
     static M1M3SSPublisher publisher;
@@ -39,7 +39,7 @@ M1M3SSPublisher& M1M3SSPublisher::get() {
 void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL = m1m3SAL;
 
-    spdlog::debug("M1M3SSPublisher: Initializing SAL Telemetry");
+    SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Telemetry");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_accelerometerData");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_forceActuatorData");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_gyroData");
@@ -51,7 +51,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_pidData");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_powerSupplyData");
 
-    spdlog::debug("M1M3SSPublisher: Initializing SAL Events");
+    SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Events");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyStatus");
@@ -75,6 +75,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_detailedState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_errorCode");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorForceWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
@@ -92,6 +93,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_logLevel");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_modbusResponse");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
@@ -598,6 +600,11 @@ void M1M3SSPublisher::tryLogErrorCode() {
     if (_eventErrorCode.errorCode != _previousEventErrorCode.errorCode) {
         this->logErrorCode();
     }
+}
+
+void M1M3SSPublisher::logForceActuatorBumpTestStatus() {
+    _m1m3SAL->logEvent_forceActuatorBumpTestStatus(&_eventForceActuatorBumpTestStatus, 0);
+    _previousEventForceActuatorBumpTestStatus = _eventForceActuatorBumpTestStatus;
 }
 
 void M1M3SSPublisher::logForceActuatorForceWarning() {
@@ -1773,6 +1780,12 @@ void M1M3SSPublisher::tryLogInterlockWarning() {
     }
 }
 
+void M1M3SSPublisher::newLogLevel(int newLevel) {
+    MTM1M3_logevent_logLevelC logLevel;
+    logLevel.level = newLevel;
+    _m1m3SAL->logEvent_logLevel(&logLevel, 0);
+}
+
 void M1M3SSPublisher::logModbusResponse() {
     _m1m3SAL->logEvent_modbusResponse(&_eventModbusResponse, 0);
     _previousEventModbusResponse = _eventModbusResponse;
@@ -2243,193 +2256,57 @@ void M1M3SSPublisher::tryLogSummaryState() {
     }
 }
 
-void M1M3SSPublisher::ackCommandstart(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_start(commandID, ackCode, 0, (char*)description.c_str());
-}
+// macro generating ackCommand method
+#define ACK_COMMAND(command)                                                                                 \
+    void M1M3SSPublisher::ackCommand##command(int32_t commandID, int32_t ackCode, std::string description) { \
+        _m1m3SAL->ackCommand_##command(commandID, ackCode, 0, (char*)description.c_str());                   \
+    }
 
-void M1M3SSPublisher::ackCommandenable(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_enable(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommanddisable(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_disable(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandstandby(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_standby(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandexitControl(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_exitControl(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandturnAirOn(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_turnAirOn(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandturnAirOff(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_turnAirOff(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandapplyOffsetForces(int32_t commandID, int32_t ackCode,
-                                                  std::string description) {
-    _m1m3SAL->ackCommand_applyOffsetForces(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandclearOffsetForces(int32_t commandID, int32_t ackCode,
-                                                  std::string description) {
-    _m1m3SAL->ackCommand_clearOffsetForces(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandraiseM1M3(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_raiseM1M3(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandlowerM1M3(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_lowerM1M3(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandapplyActiveOpticForcesByBendingModes(int32_t commandID, int32_t ackCode,
-                                                                     std::string description) {
-    _m1m3SAL->ackCommand_applyActiveOpticForcesByBendingModes(commandID, ackCode, 0,
-                                                              (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandapplyActiveOpticForces(int32_t commandID, int32_t ackCode,
-                                                       std::string description) {
-    _m1m3SAL->ackCommand_applyActiveOpticForces(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandclearActiveOpticForces(int32_t commandID, int32_t ackCode,
-                                                       std::string description) {
-    _m1m3SAL->ackCommand_clearActiveOpticForces(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandapplyAberrationForcesByBendingModes(int32_t commandID, int32_t ackCode,
-                                                                    std::string description) {
-    _m1m3SAL->ackCommand_applyAberrationForcesByBendingModes(commandID, ackCode, 0,
-                                                             (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandapplyAberrationForces(int32_t commandID, int32_t ackCode,
-                                                      std::string description) {
-    _m1m3SAL->ackCommand_applyAberrationForces(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandclearAberrationForces(int32_t commandID, int32_t ackCode,
-                                                      std::string description) {
-    _m1m3SAL->ackCommand_clearAberrationForces(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandenterEngineering(int32_t commandID, int32_t ackCode,
-                                                 std::string description) {
-    _m1m3SAL->ackCommand_enterEngineering(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_exitEngineering(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandtestAir(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_testAir(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandtestHardpoint(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_testHardpoint(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandtestForceActuator(int32_t commandID, int32_t ackCode,
-                                                  std::string description) {
-    _m1m3SAL->ackCommand_testForceActuator(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandmoveHardpointActuators(int32_t commandID, int32_t ackCode,
-                                                       std::string description) {
-    _m1m3SAL->ackCommand_moveHardpointActuators(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandenableHardpointChase(int32_t commandID, int32_t ackCode,
-                                                     std::string description) {
-    _m1m3SAL->ackCommand_enableHardpointChase(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommanddisableHardpointChase(int32_t commandID, int32_t ackCode,
-                                                      std::string description) {
-    _m1m3SAL->ackCommand_disableHardpointChase(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandabortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_abortRaiseM1M3(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandtranslateM1M3(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_translateM1M3(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandstopHardpointMotion(int32_t commandID, int32_t ackCode,
-                                                    std::string description) {
-    _m1m3SAL->ackCommand_stopHardpointMotion(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandpositionM1M3(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_positionM1M3(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandturnLightsOn(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_turnLightsOn(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandturnLightsOff(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_turnLightsOff(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandturnPowerOn(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_turnPowerOn(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandturnPowerOff(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_turnPowerOff(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandenableHardpointCorrections(int32_t commandID, int32_t ackCode,
-                                                           std::string description) {
-    _m1m3SAL->ackCommand_enableHardpointCorrections(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommanddisableHardpointCorrections(int32_t commandID, int32_t ackCode,
-                                                            std::string description) {
-    _m1m3SAL->ackCommand_disableHardpointCorrections(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandrunMirrorForceProfile(int32_t commandID, int32_t ackCode,
-                                                      std::string description) {
-    _m1m3SAL->ackCommand_runMirrorForceProfile(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandabortProfile(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_abortProfile(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandapplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode,
-                                                               std::string description) {
-    _m1m3SAL->ackCommand_applyOffsetForcesByMirrorForce(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandupdatePID(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_updatePID(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandresetPID(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_resetPID(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandprogramILC(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_programILC(commandID, ackCode, 0, (char*)description.c_str());
-}
-
-void M1M3SSPublisher::ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description) {
-    _m1m3SAL->ackCommand_modbusTransmit(commandID, ackCode, 0, (char*)description.c_str());
-}
+ACK_COMMAND(setLogLevel)
+ACK_COMMAND(start)
+ACK_COMMAND(enable)
+ACK_COMMAND(disable)
+ACK_COMMAND(standby)
+ACK_COMMAND(exitControl)
+ACK_COMMAND(turnAirOn)
+ACK_COMMAND(turnAirOff)
+ACK_COMMAND(applyOffsetForces)
+ACK_COMMAND(clearOffsetForces)
+ACK_COMMAND(raiseM1M3)
+ACK_COMMAND(lowerM1M3)
+ACK_COMMAND(applyActiveOpticForcesByBendingModes)
+ACK_COMMAND(applyActiveOpticForces)
+ACK_COMMAND(clearActiveOpticForces)
+ACK_COMMAND(applyAberrationForcesByBendingModes)
+ACK_COMMAND(applyAberrationForces)
+ACK_COMMAND(clearAberrationForces)
+ACK_COMMAND(enterEngineering)
+ACK_COMMAND(exitEngineering)
+ACK_COMMAND(testAir)
+ACK_COMMAND(testHardpoint)
+ACK_COMMAND(testForceActuator)
+ACK_COMMAND(moveHardpointActuators)
+ACK_COMMAND(enableHardpointChase)
+ACK_COMMAND(disableHardpointChase)
+ACK_COMMAND(abortRaiseM1M3)
+ACK_COMMAND(translateM1M3)
+ACK_COMMAND(stopHardpointMotion)
+ACK_COMMAND(positionM1M3)
+ACK_COMMAND(turnLightsOn)
+ACK_COMMAND(turnLightsOff)
+ACK_COMMAND(turnPowerOn)
+ACK_COMMAND(turnPowerOff)
+ACK_COMMAND(enableHardpointCorrections)
+ACK_COMMAND(disableHardpointCorrections)
+ACK_COMMAND(runMirrorForceProfile)
+ACK_COMMAND(abortProfile)
+ACK_COMMAND(applyOffsetForcesByMirrorForce)
+ACK_COMMAND(updatePID)
+ACK_COMMAND(resetPID)
+ACK_COMMAND(programILC)
+ACK_COMMAND(modbusTransmit)
+ACK_COMMAND(forceActuatorBumpTest)
+ACK_COMMAND(killForceActuatorBumpTest)
 
 } /* namespace SS */
 } /* namespace M1M3 */

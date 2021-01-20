@@ -30,7 +30,7 @@ namespace M1M3 {
 namespace SS {
 
 SimulatedExpansionFPGA::SimulatedExpansionFPGA() {
-    spdlog::debug("SimulatedExpansionFPGA: SimulatedExpansionFPGA()");
+    SPDLOG_DEBUG("SimulatedExpansionFPGA: SimulatedExpansionFPGA()");
 
     for (int i = 0; i < RND_CNT; ++i) {
         _rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
@@ -46,13 +46,13 @@ float SimulatedExpansionFPGA::_getRnd() {
     return _rnd[_rndIndex];
 }
 
-void SimulatedExpansionFPGA::initialize() { spdlog::debug("SimulatedExpansionFPGA: initialize()"); }
+void SimulatedExpansionFPGA::initialize() { SPDLOG_DEBUG("SimulatedExpansionFPGA: initialize()"); }
 
-void SimulatedExpansionFPGA::open() { spdlog::debug("SimulatedExpansionFPGA: open()"); }
+void SimulatedExpansionFPGA::open() { SPDLOG_DEBUG("SimulatedExpansionFPGA: open()"); }
 
-void SimulatedExpansionFPGA::close() { spdlog::debug("SimulatedExpansionFPGA: close()"); }
+void SimulatedExpansionFPGA::close() { SPDLOG_DEBUG("SimulatedExpansionFPGA: close()"); }
 
-void SimulatedExpansionFPGA::finalize() { spdlog::debug("SimulatedExpansionFPGA: finalize()"); }
+void SimulatedExpansionFPGA::finalize() { SPDLOG_DEBUG("SimulatedExpansionFPGA: finalize()"); }
 
 void SimulatedExpansionFPGA::sample() {}
 

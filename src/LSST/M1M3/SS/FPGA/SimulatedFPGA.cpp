@@ -43,8 +43,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Return data writen to modbus. The data are right shifted by 1 to allow for
+ * signaling data end. See FPGA code for details.
+ */
+uint16_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
+
 SimulatedFPGA::SimulatedFPGA() {
-    spdlog::info("SimulatedFPGA: SimulatedFPGA()");
+    SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
     _lastRequest = -1;
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
     supportFPGAData.DigitalInputStates = 0x0001 | 0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
@@ -53,7 +59,7 @@ SimulatedFPGA::SimulatedFPGA() {
     }
     _rndIndex = 0;
     _mgrMTMount = SAL_MTMount();
-    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_Elevation"));
+    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
 
     _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
 
@@ -75,32 +81,32 @@ SimulatedFPGA::~SimulatedFPGA() {
 }
 
 void SimulatedFPGA::_monitorElevation(void) {
-    MTMount_ElevationC mountElevationInstance;
+    MTMount_elevationC mountElevationInstance;
 
-    spdlog::debug("Start monitoring mount elevation...");
+    SPDLOG_DEBUG("Start monitoring mount elevation...");
 
     while (!_exitThread) {
-        ReturnCode_t status = _mgrMTMount.getSample_Elevation(&mountElevationInstance);
+        ReturnCode_t status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
 
         if (status == 0) {
-            spdlog::debug("Got valid elevation sample...");
+            SPDLOG_DEBUG("Got valid elevation sample...");
 
             {
                 std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
-                _mountElevation = mountElevationInstance.Elevation_Angle_Actual;
+                _mountElevation = mountElevationInstance.angleActual;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }
 
-void SimulatedFPGA::initialize() { spdlog::debug("SimulatedFPGA: initialize()"); }
+void SimulatedFPGA::initialize() { SPDLOG_DEBUG("SimulatedFPGA: initialize()"); }
 
-void SimulatedFPGA::open() { spdlog::debug("SimulatedFPGA: open()"); }
+void SimulatedFPGA::open() { SPDLOG_DEBUG("SimulatedFPGA: open()"); }
 
-void SimulatedFPGA::close() { spdlog::debug("SimulatedFPGA: close()"); }
+void SimulatedFPGA::close() { SPDLOG_DEBUG("SimulatedFPGA: close()"); }
 
-void SimulatedFPGA::finalize() { spdlog::debug("SimulatedFPGA: finalize()"); }
+void SimulatedFPGA::finalize() { SPDLOG_DEBUG("SimulatedFPGA: finalize()"); }
 
 void SimulatedFPGA::waitForOuterLoopClock(int32_t timeout) {
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -117,7 +123,7 @@ void SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {}
 void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
 
 void SimulatedFPGA::pullTelemetry() {
-    spdlog::trace("SimulatedFPGA: pullTelemetry()");
+    SPDLOG_TRACE("SimulatedFPGA: pullTelemetry()");
     uint64_t timestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
     this->supportFPGAData.Reserved = 0;
     this->supportFPGAData.InclinometerTxBytes = 0;
@@ -508,6 +514,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
                                           (_getRnd() * 0.5);  // Update to Primary Cylinder Force
+                            // uncomment to simulate follow up error
+                            // if (subnet == 1 && address == 17 && force > 500) force = 200;
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
                             _writeModbus(response, buffer[2]);
@@ -881,8 +889,6 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     }
     response->push(0xA000);  // Write End of Frame
 }
-
-uint16_t SimulatedFPGA::_readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
 void SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {}
 

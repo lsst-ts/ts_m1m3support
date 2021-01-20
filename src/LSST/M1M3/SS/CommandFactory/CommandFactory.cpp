@@ -68,6 +68,7 @@
 #include <ResetPIDCommand.h>
 #include <ProgramILCCommand.h>
 #include <ModbusTransmitCommand.h>
+#include <ForceActuatorBumpTestCommand.h>
 #include <mutex>
 #include <spdlog/spdlog.h>
 
@@ -76,7 +77,7 @@ namespace M1M3 {
 namespace SS {
 
 Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t commandID) {
-    spdlog::trace("CommandFactory: create({}, data, {})", commandType, commandID);
+    SPDLOG_TRACE("CommandFactory: create({}, data, {})", commandType, commandID);
     switch (commandType) {
         case Commands::EnterControlCommand:
             return new EnterControlCommand();
@@ -144,9 +145,9 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
         case Commands::StopHardpointMotionCommand:
             return new StopHardpointMotionCommand(commandID, (MTM1M3_command_stopHardpointMotionC*)data);
         case Commands::TMAAzimuthSampleCommand:
-            return new TMAAzimuthSampleCommand((MTMount_AzimuthC*)data);
+            return new TMAAzimuthSampleCommand((MTMount_azimuthC*)data);
         case Commands::TMAElevationSampleCommand:
-            return new TMAElevationSampleCommand((MTMount_ElevationC*)data);
+            return new TMAElevationSampleCommand((MTMount_elevationC*)data);
         case Commands::PositionM1M3Command:
             return new PositionM1M3Command(commandID, (MTM1M3_command_positionM1M3C*)data);
         case Commands::TurnLightsOnCommand:
@@ -178,6 +179,8 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new ProgramILCCommand(commandID, (MTM1M3_command_programILCC*)data);
         case Commands::ModbusTransmitCommand:
             return new ModbusTransmitCommand(commandID, (MTM1M3_command_modbusTransmitC*)data);
+        case Commands::ForceActuatorBumpTestCommand:
+            return new ForceActuatorBumpTestCommand(commandID, (MTM1M3_command_forceActuatorBumpTestC*)data);
     }
     return 0;
 }

@@ -37,7 +37,7 @@ namespace SS {
 
 RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("RaisedBusList: RaisedBusList()");
+    SPDLOG_DEBUG("RaisedBusList: RaisedBusList()");
     _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
     _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
     _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();

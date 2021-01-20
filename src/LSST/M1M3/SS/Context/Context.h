@@ -74,6 +74,8 @@
 #include <ResetPIDCommand.h>
 #include <ProgramILCCommand.h>
 #include <ModbusTransmitCommand.h>
+#include <ForceActuatorBumpTestCommand.h>
+#include <KillForceActuatorBumpTestCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -150,6 +152,8 @@ public:
     void resetPID(ResetPIDCommand* command);
     void programILC(ProgramILCCommand* command);
     void modbusTransmit(ModbusTransmitCommand* command);
+    void forceActuatorBumpTest(ForceActuatorBumpTestCommand* command);
+    void killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command);
 
 private:
     Context& operator=(const Context&) = delete;

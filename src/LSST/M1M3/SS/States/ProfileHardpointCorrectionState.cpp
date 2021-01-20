@@ -36,7 +36,7 @@ ProfileHardpointCorrectionState::ProfileHardpointCorrectionState()
         : EnabledState("ProfileHardpointCorrectionState") {}
 
 States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command) {
-    spdlog::trace("ProfileHardpointCorrectionState: update()");
+    SPDLOG_TRACE("ProfileHardpointCorrectionState: update()");
     MirrorForceProfileRecord force = Model::get().getProfileController()->getMirrorForceProfileData();
     Model::get().getForceController()->applyOffsetForcesByMirrorForces(
             force.XForce, force.YForce, force.ZForce, force.XMoment, force.YMoment, force.ZMoment);
@@ -48,7 +48,7 @@ States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command) {
 }
 
 States::Type ProfileHardpointCorrectionState::abortProfile(AbortProfileCommand* command) {
-    spdlog::info("ProfileHardpointCorrectionState: abortProfile()");
+    SPDLOG_INFO("ProfileHardpointCorrectionState: abortProfile()");
     Model::get().getForceController()->zeroOffsetForces();
     return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }
