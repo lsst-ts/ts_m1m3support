@@ -118,6 +118,27 @@ salgenerator MTMount generate cpp
 salgenerator MTMount generate python
 ```
 
+# Configuring NI cRIOs for deployment
+
+The base cRIO must be configured and up and running. ts_sal needs to be setup,
+so SAL genetrated libraries (libsacpp_MTM1M3_types.so
+libsacpp_MTMount_types.so  libSAL_MTM1M3.so  libSAL_MTMount.so) are in
+LD_LIBRARY_PATH.
+
+ExpansionFPGA resource name (set in NI MAX, under resource name) must match the
+name specified in ExpansionFPGApplicationSettings under resource. This URI also
+contains expansion cRIO IP address:
+
+rio://139.229.178.185/M1M3-SupportExpansion-RIO
+
+## Compiling for debugging
+
+Please supply "DEBUG=1" to make call to compile with debug data (-g flag).
+
+**Please be avare that cRIO memory usually isn't sufficient to compile code
+with debug data. Compiling code without debug data, e.g. no DEBUG=1 option,
+works on cRIO.**
+
 ## Compiling for deployment
 
 Ni RT stack isn't needed.

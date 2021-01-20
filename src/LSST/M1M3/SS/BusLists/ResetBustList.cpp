@@ -32,7 +32,7 @@ namespace SS {
 
 ResetBustList::ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("ResetBustList: ResetBustList()");
+    SPDLOG_DEBUG("ResetBustList: ResetBustList()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {

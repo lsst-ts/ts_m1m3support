@@ -29,9 +29,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_AzimuthC* data) {
+TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) {
     this->commandID = -1;
-    memcpy(&_data, data, sizeof(MTMount_AzimuthC));
+    memcpy(&_data, data, sizeof(MTMount_azimuthC));
 }
 
 void TMAAzimuthSampleCommand::execute() { Context::get().storeTMAAzimuthSample(this); }

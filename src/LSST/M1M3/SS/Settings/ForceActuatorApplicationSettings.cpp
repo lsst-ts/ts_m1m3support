@@ -386,12 +386,24 @@ ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
         }
     }
     if ((xIndex != FA_X_COUNT) || (yIndex != FA_Y_COUNT) || (sIndex != (FA_X_COUNT + FA_Y_COUNT))) {
-        spdlog::critical(
+        SPDLOG_CRITICAL(
                 "ForceActuatorApplicationSettings::ForceActuatorApplicationSettings invalid number of X or Y "
                 "actuators: x {} y {} s {}",
                 xIndex, yIndex, sIndex);
         exit(EXIT_FAILURE);
     }
+}
+
+const int ForceActuatorApplicationSettings::ActuatorIdToZIndex(int actuatorId) {
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+        if (Table[zIndex].ActuatorID == actuatorId) return zIndex;
+    }
+    return -1;
+}
+
+const int ForceActuatorApplicationSettings::ZIndexToActuatorId(int zIndex) {
+    if (zIndex >= FA_Z_COUNT || zIndex < 0) return -1;
+    return Table[zIndex].ActuatorID;
 }
 
 } /* namespace SS */

@@ -25,7 +25,6 @@
 #include <Model.h>
 #include <Publisher.h>
 #include <SafetyController.h>
-#include <AutomaticOperationsController.h>
 #include <ForceController.h>
 #include <spdlog/spdlog.h>
 
@@ -36,30 +35,30 @@ namespace SS {
 ActiveState::ActiveState() : EnabledState("ActiveState") {}
 
 States::Type ActiveState::update(UpdateCommand* command) {
-    spdlog::trace("ActiveState: update()");
+    SPDLOG_TRACE("ActiveState: update()");
     sendTelemetry();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
-    spdlog::info("ActiveState: enterEngineering()");
+    SPDLOG_INFO("ActiveState: enterEngineering()");
     return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }
 
 States::Type ActiveState::lowerM1M3(LowerM1M3Command* command) {
-    spdlog::info("ActiveState: lowerM1M3()");
-    Model::get().getAutomaticOperationsController()->startLowerOperation();
+    SPDLOG_INFO("ActiveState: lowerM1M3()");
+    Model::get().getMirrorLowerController()->start();
     return Model::get().getSafetyController()->checkSafety(States::LoweringState);
 }
 
 States::Type ActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
-    spdlog::info("ActiveState: enableHardpointCorrections()");
+    SPDLOG_INFO("ActiveState: enableHardpointCorrections()");
     Model::get().getForceController()->applyBalanceForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) {
-    spdlog::info("ActiveState: disableHardpointCorrections()");
+    SPDLOG_INFO("ActiveState: disableHardpointCorrections()");
     Model::get().getForceController()->zeroBalanceForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }

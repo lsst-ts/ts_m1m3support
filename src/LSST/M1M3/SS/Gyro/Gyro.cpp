@@ -41,7 +41,7 @@ namespace M1M3 {
 namespace SS {
 
 Gyro::Gyro(GyroSettings* gyroSettings) {
-    spdlog::debug("Gyro: Gyro()");
+    SPDLOG_DEBUG("Gyro: Gyro()");
     _gyroSettings = gyroSettings;
 
     _gyroData = M1M3SSPublisher::get().getGyroData();
@@ -58,43 +58,43 @@ Gyro::Gyro(GyroSettings* gyroSettings) {
 }
 
 void Gyro::bit() {
-    spdlog::info("Gyro: bit()");
+    SPDLOG_INFO("Gyro: bit()");
     this->writeCommand("?BIT,2\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::enterConfigurationMode() {
-    spdlog::info("Gyro: enterConfigurationMode()");
+    SPDLOG_INFO("Gyro: enterConfigurationMode()");
     this->writeCommand("=CONFIG,1\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::exitConfigurationMode() {
-    spdlog::info("Gyro: exitConfigurationMode()");
+    SPDLOG_INFO("Gyro: exitConfigurationMode()");
     this->writeCommand("=CONFIG,0\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::resetConfiguration() {
-    spdlog::info("Gyro: resetConfiguration()");
+    SPDLOG_INFO("Gyro: resetConfiguration()");
     this->writeCommand("=RSTCFG\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::setRotationFormatRate() {
-    spdlog::info("Gyro: setRotationFormatRate()");
+    SPDLOG_INFO("Gyro: setRotationFormatRate()");
     this->writeCommand("=ROTFMT,RATE\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::setRotationUnitsRadians() {
-    spdlog::info("Gyro: setRotationUnitsRadians()");
+    SPDLOG_INFO("Gyro: setRotationUnitsRadians()");
     this->writeCommand("=ROTUNITS,RAD\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
 void Gyro::setAxis() {
-    spdlog::info("Gyro: setAxis()");
+    SPDLOG_INFO("Gyro: setAxis()");
     std::string command = "=AXES";
     for (unsigned int i = 0; i < _gyroSettings->AxesMatrix.size(); ++i) {
         command = command + "," + boost::lexical_cast<std::string>(_gyroSettings->AxesMatrix[i]);
@@ -104,7 +104,7 @@ void Gyro::setAxis() {
 }
 
 void Gyro::setDataRate() {
-    spdlog::info("Gyro: setDataRate()");
+    SPDLOG_INFO("Gyro: setDataRate()");
     this->writeCommand("=DR," + boost::lexical_cast<std::string>(_gyroSettings->DataRate) + "\r\n");
     std::this_thread::sleep_for(10ms);
 }
@@ -112,7 +112,7 @@ void Gyro::setDataRate() {
 void Gyro::processData() {
     // TODO: Handle no data available
     // TODO: Handle limits, push to safety controller
-    spdlog::trace("Gyro: processData()");
+    SPDLOG_TRACE("Gyro: processData()");
     bool tryLogWarning = false;
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     if (fpgaData->GyroErrorTimestamp > _lastErrorTimestamp) {

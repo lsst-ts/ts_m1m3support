@@ -35,7 +35,7 @@ namespace SS {
 SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetData,
                                                          ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    spdlog::debug("SetBoostValveDCAGainBusList: SetBoostValveDCAGainBusList()");
+    SPDLOG_DEBUG("SetBoostValveDCAGainBusList: SetBoostValveDCAGainBusList()");
     MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);

@@ -21,17 +21,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <M1M3SSPublisher.h>
 #include <M1M3SSSubscriber.h>
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 #include <CommandFactory.h>
+#include <KillForceActuatorBumpTestCommand.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSSubscriber::M1M3SSSubscriber() { spdlog::debug("M1M3SSSubscriber: M1M3SSSubscriber()"); }
+M1M3SSSubscriber::M1M3SSSubscriber() { SPDLOG_DEBUG("M1M3SSSubscriber: M1M3SSSubscriber()"); }
 
 M1M3SSSubscriber& M1M3SSSubscriber::get() {
     static M1M3SSSubscriber subscriber;
@@ -41,6 +43,7 @@ M1M3SSSubscriber& M1M3SSSubscriber::get() {
 void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL) {
     _m1m3SAL = m1m3SAL;
     _mtMountSAL = mtMountSAL;
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setLogLevel");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_start");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enable");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disable");
@@ -83,9 +86,33 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_resetPID");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_programILC");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
-    _mtMountSAL->salTelemetrySub((char*)"MTMount_Azimuth");
-    _mtMountSAL->salTelemetrySub((char*)"MTMount_Elevation");
-}  // namespace M1M3
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_forceActuatorBumpTest");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_killForceActuatorBumpTest");
+
+    _mtMountSAL->salTelemetrySub((char*)"MTMount_azimuth");
+    _mtMountSAL->salTelemetrySub((char*)"MTMount_elevation");
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
+    MTM1M3_command_setLogLevelC setLogLevelData;
+    int32_t commandID = _m1m3SAL->acceptCommand_setLogLevel(&setLogLevelData);
+    if (commandID > 0) {
+        int logLevel = setLogLevelData.level;
+        if (logLevel >= 40)
+            spdlog::set_level(spdlog::level::err);
+        else if (logLevel >= 30)
+            spdlog::set_level(spdlog::level::warn);
+        else if (logLevel >= 20)
+            spdlog::set_level(spdlog::level::info);
+        else if (logLevel >= 10)
+            spdlog::set_level(spdlog::level::debug);
+        else
+            spdlog::set_level(spdlog::level::trace);
+        M1M3SSPublisher::get().ackCommandsetLogLevel(commandID, ACK_COMPLETE, "Complete");
+        M1M3SSPublisher::get().newLogLevel(logLevel);
+    }
+    return 0;
+}
 
 Command* M1M3SSSubscriber::tryAcceptCommandStart() {
     int32_t commandID = _m1m3SAL->acceptCommand_start(&_startData);
@@ -441,6 +468,23 @@ Command* M1M3SSSubscriber::tryAcceptCommandModbusTransmit() {
     return 0;
 }
 
+Command* M1M3SSSubscriber::tryAcceptCommandForceActuatorBumpTest() {
+    int32_t commandID = _m1m3SAL->acceptCommand_forceActuatorBumpTest(&_forceActuatorBumpTestData);
+    if (commandID > 0) {
+        return CommandFactory::create(Commands::ForceActuatorBumpTestCommand, &_forceActuatorBumpTestData,
+                                      commandID);
+    }
+    return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandKillForceActuatorBumpTest() {
+    int32_t commandID = _m1m3SAL->acceptCommand_killForceActuatorBumpTest(&_killForceActuatorBumpTestData);
+    if (commandID > 0) {
+        return new KillForceActuatorBumpTestCommand(commandID, &_killForceActuatorBumpTestData);
+    }
+    return 0;
+}
+
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
     /*	int32_t result = _mtMountSAL->getSample_Az(&_tmaAzimuth);
             if (result == 0) {
@@ -461,4 +505,4 @@ Command* M1M3SSSubscriber::tryGetSampleTMAElevation() {
 
 }  // namespace SS
 }  // namespace M1M3
-} /* namespace LSST */
+}  // namespace LSST

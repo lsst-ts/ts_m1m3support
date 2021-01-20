@@ -35,14 +35,14 @@ namespace SS {
 
 class TMAAzimuthSampleCommand : public Command {
 public:
-    TMAAzimuthSampleCommand(MTMount_AzimuthC* data);
+    TMAAzimuthSampleCommand(MTMount_azimuthC* data);
 
-    MTMount_AzimuthC* getData() { return &_data; }
+    MTMount_azimuthC* getData() { return &_data; }
 
     void execute();
 
 private:
-    MTMount_AzimuthC _data;
+    MTMount_azimuthC _data;
 };
 
 } /* namespace SS */

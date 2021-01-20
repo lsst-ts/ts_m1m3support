@@ -51,13 +51,13 @@ namespace SS {
 EnabledState::EnabledState(std::string name) : State(name) {}
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
-    spdlog::trace("EnabledState: storeTMAAzimuthSample()");
-    Model::get().getForceController()->updateAzimuthForces((float)command->getData()->Azimuth_Angle_Actual);
+    SPDLOG_TRACE("EnabledState: storeTMAAzimuthSample()");
+    Model::get().getForceController()->updateAzimuthForces((float)command->getData()->angleActual);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command) {
-    spdlog::trace("EnabledState: storeTMAElevationSample()");
+    SPDLOG_TRACE("EnabledState: storeTMAElevationSample()");
     Model::get().getForceController()->updateTMAElevationData(command->getData());
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -67,7 +67,7 @@ States::Type EnabledState::testAir(TestAirCommand* command) {
     MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
             M1M3SSPublisher::get().getEventForceActuatorState();
     MTM1M3_outerLoopDataC* outerLoop = M1M3SSPublisher::get().getOuterLoopData();
-    spdlog::info("EnabledState: toggleBoostValve to {}", !forceActuatorState->slewFlag);
+    SPDLOG_INFO("EnabledState: toggleBoostValve to {}", !forceActuatorState->slewFlag);
     forceActuatorState->slewFlag = !forceActuatorState->slewFlag;
     outerLoop->slewFlag = forceActuatorState->slewFlag;
 
@@ -75,7 +75,7 @@ States::Type EnabledState::testAir(TestAirCommand* command) {
 }
 
 void EnabledState::runLoop() {
-    spdlog::trace("EnabledState: runLoop()");
+    SPDLOG_TRACE("EnabledState: runLoop()");
     ILC* ilc = Model::get().getILC();
     Model::get().getForceController()->updateAppliedForces();
     Model::get().getForceController()->processAppliedForces();
@@ -111,21 +111,21 @@ void EnabledState::sendTelemetry() {
 }
 
 bool EnabledState::raiseCompleted() {
-    if (Model::get().getAutomaticOperationsController()->checkRaiseOperationComplete()) {
-        Model::get().getAutomaticOperationsController()->completeRaiseOperation();
+    if (Model::get().getMirrorRaiseController()->checkComplete()) {
+        Model::get().getMirrorRaiseController()->complete();
         return true;
-    } else if (Model::get().getAutomaticOperationsController()->checkRaiseOperationTimeout()) {
-        Model::get().getAutomaticOperationsController()->timeoutRaiseOperation();
+    } else if (Model::get().getMirrorRaiseController()->checkTimeout()) {
+        Model::get().getMirrorRaiseController()->timeout();
     }
     return false;
 }
 
 bool EnabledState::lowerCompleted() {
-    if (Model::get().getAutomaticOperationsController()->checkLowerOperationComplete()) {
-        Model::get().getAutomaticOperationsController()->completeLowerOperation();
+    if (Model::get().getMirrorLowerController()->checkComplete()) {
+        Model::get().getMirrorLowerController()->complete();
         return true;
-    } else if (Model::get().getAutomaticOperationsController()->checkLowerOperationTimeout()) {
-        Model::get().getAutomaticOperationsController()->timeoutLowerOperation();
+    } else if (Model::get().getMirrorLowerController()->checkTimeout()) {
+        Model::get().getMirrorLowerController()->timeout();
     }
     return false;
 }

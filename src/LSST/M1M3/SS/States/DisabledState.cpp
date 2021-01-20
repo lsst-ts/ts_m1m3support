@@ -49,7 +49,7 @@ DisabledState::DisabledState() : State("DisabledState") {}
 
 States::Type DisabledState::update(UpdateCommand* command) {
     ModelPublisher publishIt();
-    spdlog::trace("DisabledState::update()");
+    SPDLOG_TRACE("DisabledState::update()");
     ILC* ilc = Model::get().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
@@ -79,7 +79,7 @@ States::Type DisabledState::update(UpdateCommand* command) {
 }
 
 States::Type DisabledState::enable(EnableCommand* command) {
-    spdlog::info("DisabledState: enable()");
+    SPDLOG_INFO("DisabledState: enable()");
     Model::get().getILC()->writeSetModeEnableBuffer();
     Model::get().getILC()->triggerModbus();
     Model::get().getILC()->waitForAllSubnets(5000);
@@ -91,7 +91,7 @@ States::Type DisabledState::enable(EnableCommand* command) {
 }
 
 States::Type DisabledState::standby(StandbyCommand* command) {
-    spdlog::info("DisabledState: standby()");
+    SPDLOG_INFO("DisabledState: standby()");
     Model::get().getILC()->writeSetModeStandbyBuffer();
     Model::get().getILC()->triggerModbus();
     Model::get().getILC()->waitForAllSubnets(5000);
@@ -103,13 +103,13 @@ States::Type DisabledState::standby(StandbyCommand* command) {
 }
 
 States::Type DisabledState::programILC(ProgramILCCommand* command) {
-    spdlog::info("DisabledState: programILC()");
+    SPDLOG_INFO("DisabledState: programILC()");
     Model::get().getILC()->programILC(command->getData()->actuatorId, command->getData()->filePath);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type DisabledState::modbusTransmit(ModbusTransmitCommand* command) {
-    spdlog::info("DisabledState: modbusTransmit()");
+    SPDLOG_INFO("DisabledState: modbusTransmit()");
     Model::get().getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode,
                                           command->getData()->dataLength, command->getData()->data);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);

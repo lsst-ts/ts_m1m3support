@@ -38,7 +38,6 @@
 #include <PowerController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
-#include <AutomaticOperationsController.h>
 #include <RaiseM1M3Command.h>
 #include <spdlog/spdlog.h>
 
@@ -49,20 +48,29 @@ namespace SS {
 ParkedEngineeringState::ParkedEngineeringState() : EngineeringState("ParkedEngineeringState") {}
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command) {
-    spdlog::trace("ParkedEngineeringState: update()");
+    SPDLOG_TRACE("ParkedEngineeringState: update()");
     sendTelemetry();
+
+    // check & run tests
+    Model::get().getBumpTestController()->runLoop();
+
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
-    spdlog::info("ParkedEngineeringState: raiseM1M3()");
-    Model::get().getAutomaticOperationsController()->startRaiseOperation(
-            command->getData()->bypassReferencePosition);
+    SPDLOG_INFO("ParkedEngineeringState: raiseM1M3()");
+
+    Model::get().getBumpTestController()->stopAll();
+
+    Model::get().getMirrorRaiseController()->start(command->getData()->bypassReferencePosition);
     return Model::get().getSafetyController()->checkSafety(States::RaisingEngineeringState);
 }
 
 States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
-    spdlog::info("ParkedEngineeringState: exitEngineering()");
+    SPDLOG_INFO("ParkedEngineeringState: exitEngineering()");
+
+    Model::get().getBumpTestController()->stopAll();
+
     Model::get().getDigitalInputOutput()->turnAirOn();
     Model::get().getPositionController()->stopMotion();
     Model::get().getForceController()->zeroOffsetForces();
@@ -74,7 +82,10 @@ States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* com
 }
 
 States::Type ParkedEngineeringState::disable(DisableCommand* command) {
-    spdlog::info("ParkedEngineeringState: disable()");
+    SPDLOG_INFO("ParkedEngineeringState: disable()");
+
+    Model::get().getBumpTestController()->stopAll();
+
     // Stop any existing motion (chase and move commands)
     Model::get().getPositionController()->stopMotion();
     Model::get().getForceController()->reset();
@@ -88,6 +99,21 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command) {
     // Model::get().getDigitalInputOutput()->turnAirOff();
     Model::get().getPowerController()->setAllAuxPowerNetworks(false);
     return Model::get().getSafetyController()->checkSafety(States::DisabledState);
+}
+
+States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
+    SPDLOG_INFO("ParkedEngineeringState: forceActuatorBumpTest({}, {}, {})", command->getData()->actuatorId,
+                command->getData()->testPrimary, command->getData()->testSecondary);
+    Model::get().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
+                                                              command->getData()->testPrimary,
+                                                              command->getData()->testSecondary);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ParkedEngineeringState::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
+    SPDLOG_INFO("ParkedEngineeringState: killForceActuatorBumpTest()");
+    Model::get().getBumpTestController()->stopAll();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

@@ -42,6 +42,8 @@ public:
     virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
     virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
     virtual States::Type disable(DisableCommand* command) override;
+    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
+    virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
 };
 
 } /* namespace SS */

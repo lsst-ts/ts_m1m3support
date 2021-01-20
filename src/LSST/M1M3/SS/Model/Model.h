@@ -25,7 +25,9 @@
 #define MODEL_H_
 
 #include <Accelerometer.h>
-#include <AutomaticOperationsController.h>
+#include <MirrorRaiseController.h>
+#include <MirrorLowerController.h>
+#include <BumpTestController.h>
 #include <DigitalInputOutput.h>
 #include <Displacement.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -80,11 +82,11 @@ public:
     inline PositionController* getPositionController() { return _positionController; }
     inline Accelerometer* getAccelerometer() { return _accelerometer; }
     inline PowerController* getPowerController() { return _powerController; }
-    inline AutomaticOperationsController* getAutomaticOperationsController() {
-        return _automaticOperationsController;
-    }
+    inline MirrorRaiseController* getMirrorRaiseController() { return _mirrorRaiseController; }
+    inline MirrorLowerController* getMirrorLowerController() { return _mirrorLowerController; }
     inline Gyro* getGyro() { return _gyro; }
     inline ProfileController* getProfileController() { return &_profileController; }
+    inline BumpTestController* getBumpTestController() { return &_bumpTestController; }
 
     void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
     double getCachedTimestamp() { return _cachedTimestamp; }
@@ -122,9 +124,11 @@ private:
     PositionController* _positionController;
     Accelerometer* _accelerometer;
     PowerController* _powerController;
-    AutomaticOperationsController* _automaticOperationsController;
+    MirrorRaiseController* _mirrorRaiseController;
+    MirrorLowerController* _mirrorLowerController;
     Gyro* _gyro;
     ProfileController _profileController;
+    BumpTestController _bumpTestController;
 
     std::mutex _mutex;
 

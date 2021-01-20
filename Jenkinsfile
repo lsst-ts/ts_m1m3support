@@ -9,7 +9,12 @@ properties(
             daysToKeepStr: '14',
             numToKeepStr: ''
         ) ),
-    disableConcurrentBuilds()
+    disableConcurrentBuilds(),
+    parameters
+        ( [
+            booleanParam(defaultValue: false, description: 'Adds --no-cache to Docker build command', name: 'noCache'),
+            booleanParam(defaultValue: false, description: 'Calls make clean before building the code', name: 'clean')
+        ] )
     ]
 )
 
@@ -30,7 +35,7 @@ node {
 
     stage('Building dev container')
     {
-        M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
+        M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), (params.noCache ? "--no-cache " : " ") + "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
     }
 
     stage('Cloning source')
@@ -44,6 +49,12 @@ node {
     {
         withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
              M1M3sim.inside("--entrypoint=''") {
+                 if (params.clean) {
+                 sh """
+                    cd $WORKSPACE/ts_m1m3support
+                    make clean
+                 """
+                 }
                  sh """
                     source $SALUSER_HOME/.setup_salobj.sh
     

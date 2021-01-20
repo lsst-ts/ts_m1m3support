@@ -167,10 +167,16 @@ States::Type State::programILC(ProgramILCCommand* command) {
 States::Type State::modbusTransmit(ModbusTransmitCommand* command) {
     return this->rejectCommandInvalidState(command, "ModbusTransmit");
 }
+States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
+    return this->rejectCommandInvalidState(command, "ForceActuatorBumpTest");
+}
+States::Type State::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
+    return this->rejectCommandInvalidState(command, "KillForceActuatorBumpTest");
+}
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";
-    spdlog::warn(reason);
+    SPDLOG_WARN(reason);
     M1M3SSPublisher::get().logCommandRejectionWarning(cmd_name, reason);
     command->ackFailed(reason);
     return States::NoStateTransition;

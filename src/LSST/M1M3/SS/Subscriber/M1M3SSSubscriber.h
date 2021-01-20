@@ -57,6 +57,8 @@ public:
 
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL);
 
+    Command* tryAcceptCommandSetLogLevel();
+
     /**
      * @brief Check for a Start command.
      *
@@ -104,6 +106,9 @@ public:
     Command* tryAcceptCommandResetPID();
     Command* tryAcceptCommandProgramILC();
     Command* tryAcceptCommandModbusTransmit();
+    Command* tryAcceptCommandForceActuatorBumpTest();
+    Command* tryAcceptCommandKillForceActuatorBumpTest();
+
     Command* tryGetSampleTMAAzimuth();
     Command* tryGetSampleTMAElevation();
 
@@ -156,8 +161,11 @@ private:
     MTM1M3_command_resetPIDC _resetPIDData;
     MTM1M3_command_programILCC _programILCData;
     MTM1M3_command_modbusTransmitC _modbusTransmitData;
-    MTMount_AzimuthC _tmaAzimuth;
-    MTMount_ElevationC _tmaElevation;
+    MTM1M3_command_forceActuatorBumpTestC _forceActuatorBumpTestData;
+    MTM1M3_command_killForceActuatorBumpTestC _killForceActuatorBumpTestData;
+
+    MTMount_azimuthC _tmaAzimuth;
+    MTMount_elevationC _tmaElevation;
 };
 
 } /* namespace SS */

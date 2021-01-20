@@ -24,29 +24,41 @@
 #ifndef RANGE_H_
 #define RANGE_H_
 
+#include <LimitTrigger.h>
+
+#include <spdlog/spdlog.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Utility range checking functions.
+ */
 class Range {
 public:
-    static uint64_t Max(uint64_t a, uint64_t b) { return a >= b ? a : b; }
+    /**
+     * Template function to check if a value is inside a given range.
+     *
+     * @tparam T value type. All parameters shall have the same type.
+     * @param min range minimal value
+     * @param max range maximal value
+     * @param value value to test
+     *
+     * @return true if value >= min and value <= max
+     */
+    template <typename T>
+    static bool InRange(T min, T max, T value) {
+        return value >= min && value <= max;
+    }
 
-    static bool InRange(float min, float max, float value) { return value >= min && value <= max; }
-    static bool InRange(double min, double max, double value) { return value >= min && value <= max; }
-    static bool InRange(int32_t min, int32_t max, int32_t value) { return value >= min && value <= max; }
-
-    static int32_t CoerceIntoRange(int32_t min, int32_t max, int32_t value) {
+    template <typename T>
+    static T CoerceIntoRange(T min, T max, T value) {
         return (value < min) ? min : (value > max) ? max : value;
     }
-    static double CoerceIntoRange(double min, double max, double value) {
-        return (value < min) ? min : (value > max) ? max : value;
-    }
-    static float CoerceIntoRange(float min, float max, float value) {
-        return (value < min) ? min : (value > max) ? max : value;
-    }
 
-    static bool InRangeAndCoerce(float min, float max, float value, float* output) {
+    template <typename T>
+    static bool InRangeAndCoerce(T min, T max, T value, T* output) {
         if (Range::InRange(min, max, value)) {
             (*output) = value;
             return true;
@@ -56,19 +68,33 @@ public:
         }
     }
 
-    static bool InRangeAndCoerce(int32_t min, int32_t max, int32_t value, int32_t* output) {
-        if (Range::InRange(min, max, value)) {
-            (*output) = value;
-            return true;
+    /**
+     * Tests if value is in given range. Fires LimitTrigger if conditions
+     * aren't met. Reset LimitTrigger if conditions returned back to normal.
+     *
+     * @tparam T test value type
+     * @tparam TArgs variadic arguments for LimitTrigger
+     * @param min range minimal value
+     * @param max range maximal value
+     * @param value test value
+     * @param limitTrigger LimitTrigger subclass to report problems with range
+     * @param lArgs LimitTrigger arguments
+     *
+     * @return true if value >= min and value <= max
+     */
+    template <typename T, typename... TArgs>
+    static bool InRangeTrigger(T min, T max, T value, LimitTrigger<TArgs...>& limitTrigger, TArgs... lArgs) {
+        bool inRange = InRange(min, max, value);
+        if (inRange == false) {
+            limitTrigger.check(lArgs...);
         } else {
-            (*output) = Range::CoerceIntoRange(min, max, value);
-            return false;
+            limitTrigger.reset();
         }
+        return inRange;
     }
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 #endif /* RANGE_H_ */
