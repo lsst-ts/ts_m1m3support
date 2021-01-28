@@ -668,7 +668,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             } else if (steps > -4 && steps < 0) {
                                 steps = -4;
                             }
-                            int32_t encoder = -hardpointActuatorData->encoder[address - 1] - (steps / 4);
+                            int32_t encoder = hardpointActuatorData->encoder[address - 1] - (steps / 4);
                             _writeModbus(response, (encoder >> 24) & 0xFF);
                             _writeModbus(response, (encoder >> 16) & 0xFF);
                             _writeModbus(response, (encoder >> 8) & 0xFF);
@@ -684,10 +684,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             break;
                         }
                         case 67: {  // Force And Status
-                                    //						int steps =
-                                    // M1M3SSPublisher::get().getEventAppliedHardpointSteps()->commandedSteps[address
-                                    // -  1];
-                            int steps = 0;
+                            int steps = M1M3SSPublisher::get()
+                                                .getHardpointActuatorData()
+                                                ->stepsCommanded[address - 1];
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response,
@@ -702,10 +701,12 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             } else if (steps > -4 && steps < 0) {
                                 steps = -4;
                             }
-                            int32_t encoder = -hardpointActuatorData->encoder[address - 1];
+                            int32_t encoder = hardpointActuatorData->encoder[address - 1];
                             if (stepMotorBroadcast) {
-                                encoder = encoder - (steps / 4);
+                                encoder = encoder + (steps / 4);
                             }
+                            int32_t offset[6] = {29897, 30786, 53315, 61621, -21824, 35572};
+                            encoder = -encoder + offset[address - 1];
                             _writeModbus(response, (encoder >> 24) & 0xFF);
                             _writeModbus(response, (encoder >> 16) & 0xFF);
                             _writeModbus(response, (encoder >> 8) & 0xFF);
