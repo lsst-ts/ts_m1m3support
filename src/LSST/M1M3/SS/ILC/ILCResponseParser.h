@@ -63,8 +63,7 @@ private:
     void _parseChangeHPILCModeResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseChangeFAILCModeResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseChangeHMILCModeResponse(ModbusBuffer* buffer, ILCMap map);
-    void _parseStepMotorResponse(ModbusBuffer* buffer, ILCMap map, double timestamp);
-    void _parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map);
+    void _parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map, double timestamp);
     void _parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReadBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseForceDemandResponse(ModbusBuffer* buffer, uint8_t address, ILCMap map);

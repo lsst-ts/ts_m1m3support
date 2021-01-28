@@ -24,11 +24,14 @@
 #include <HardpointActuatorSettings.h>
 #include <TableLoader.h>
 #include <XMLDocLoad.h>
+#include <cstring>
 #include <boost/lexical_cast.hpp>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+
+HardpointActuatorSettings::HardpointActuatorSettings() { memset(_encoderOffset, 0, sizeof(_encoderOffset)); }
 
 void HardpointActuatorSettings::load(const std::string &filename) {
     pugi::xml_document doc;
@@ -47,18 +50,12 @@ void HardpointActuatorSettings::load(const std::string &filename) {
             doc.select_node("//HardpointActuatorSettings/MicrometersPerStep").node().child_value());
     this->MicrometersPerEncoder = boost::lexical_cast<double>(
             doc.select_node("//HardpointActuatorSettings/MicrometersPerEncoder").node().child_value());
-    this->HP1EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP1EncoderOffset").node().child_value());
-    this->HP2EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP2EncoderOffset").node().child_value());
-    this->HP3EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP3EncoderOffset").node().child_value());
-    this->HP4EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP4EncoderOffset").node().child_value());
-    this->HP5EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP5EncoderOffset").node().child_value());
-    this->HP6EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP6EncoderOffset").node().child_value());
+    for (int hp = 0; hp < 6; hp++) {
+        _encoderOffset[hp] = boost::lexical_cast<int32_t>(
+                doc.select_node(("//HardpointActuatorSettings/HP" + std::to_string(hp + 1) + "EncoderOffset").c_str())
+                        .node()
+                        .child_value());
+    }
     this->HardpointMeasuredForceFaultHigh = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFaultHigh")
                     .node()
