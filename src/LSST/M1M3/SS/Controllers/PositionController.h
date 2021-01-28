@@ -36,6 +36,17 @@ namespace SS {
 /**
  * Controls M1M3 position. This controller is used in active state to command
  * M1M3 hardpoints, which in turn moves M1M3 platform position and tip/tilt.
+ *
+ * Hardpoints are (for this application) linear actuators forming hexapod. They
+ * are driven by a stepper motor. The position of the actuator is sensed by SSI
+ * encoder. Force (=weight) applied on actuator is sensed by a load cell,
+ * similar to the force actuator load cells. Loop between encoder and stepper
+ * motor is closed by M1M3 CsC (=this application).
+ *
+ * Steppers are commanded via ILC code 66 in small increments. Encoders are
+ * read back, and according to difference between commanded and target
+ * position, HP is either in Standby (not moving), Chasing (moving with the
+ * mirror), Quick and Fine positioning (moving to target position).
  */
 class PositionController {
 public:
