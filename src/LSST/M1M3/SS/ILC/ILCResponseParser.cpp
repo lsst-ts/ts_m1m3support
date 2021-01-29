@@ -669,7 +669,8 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
             _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
     // Encoder value needs to be swapped to keep with the theme of extension is positive
     // retaction is negative
-    _hardpointActuatorData->encoder[dataIndex] = -buffer->readI32() + _hardpointActuatorSettings->getEncoderOffset(dataIndex);
+    _hardpointActuatorData->encoder[dataIndex] =
+            -buffer->readI32() + _hardpointActuatorSettings->getEncoderOffset(dataIndex);
     // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
