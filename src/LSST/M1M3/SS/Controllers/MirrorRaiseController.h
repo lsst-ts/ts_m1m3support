@@ -74,6 +74,9 @@ private:
     PowerController* _powerController;
     double _cachedTimestamp;
     bool _bypassMoveToReference;
+
+    bool _lastForceFilled;
+    bool _lastPositionCompleted;
 };
 
 } /* namespace SS */
