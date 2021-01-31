@@ -29,7 +29,6 @@
 #include <cstring>
 #include <Timestamp.h>
 #include <CRC.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <SettingReader.h>
 
 #include <thread>
@@ -47,7 +46,7 @@ namespace SS {
  * Return data writen to modbus. The data are right shifted by 1 to allow for
  * signaling data end. See FPGA code for details.
  */
-uint16_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
+uint8_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
 SimulatedFPGA::SimulatedFPGA() {
     SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
@@ -366,13 +365,11 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
             response->push((uint16_t)(rawTimestamp >> 16));
             response->push((uint16_t)rawTimestamp);  // Write Global Timestamp
             int endIndex = i - 1 + dataLength - 1;
-            MTM1M3_hardpointActuatorDataC* hardpointActuatorData =
-                    M1M3SSPublisher::get().getHardpointActuatorData();
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
             while (i < endIndex) {
-                uint16_t address = _readModbus(data[i++]);   // Read Address
-                uint16_t function = _readModbus(data[i++]);  // Read Function Code
+                uint8_t address = _readModbus(data[i++]);   // Read Address
+                uint8_t function = _readModbus(data[i++]);  // Read Function Code
                 if (address == 248 && function == 66) {
                     stepMotorBroadcast = true;
                 }
@@ -433,13 +430,13 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             _writeModbus(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
-                        case 65: {                                      // Change ILC Mode
-                            ++i;                                        // Read Reserved Byte
-                            uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
-                            _writeModbus(response, address);            // Write Address
-                            _writeModbus(response, function);           // Write Function
-                            _writeModbus(response, 0);                  // Write Reserved Byte
-                            _writeModbus(response, newMode);            // Write ILC State
+                        case 65: {                                     // Change ILC Mode
+                            ++i;                                       // Read Reserved Byte
+                            uint8_t newMode = _readModbus(data[i++]);  // Read New Mode
+                            _writeModbus(response, address);           // Write Address
+                            _writeModbus(response, function);          // Write Function
+                            _writeModbus(response, 0);                 // Write Reserved Byte
+                            _writeModbus(response, newMode);           // Write ILC State
                             _writeModbusCRC(response);
                             break;
                         }
@@ -469,9 +466,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                         }
                         case 75: {  // Force Demand
                             ++i;    // Read Slew Flag
-                            uint16_t word1 = _readModbus(data[i++]);
-                            uint16_t word2 = _readModbus(data[i++]);
-                            uint16_t word3 = _readModbus(data[i++]);
+                            uint8_t word1 = _readModbus(data[i++]);
+                            uint8_t word2 = _readModbus(data[i++]);
+                            uint8_t word3 = _readModbus(data[i++]);
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response,
@@ -479,7 +476,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                                  .getOuterLoopData()
                                                  ->broadcastCounter);  // Write ILC Status
                             uint8_t buffer[4];
-                            float force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) +
+                            float force = (((float)((static_cast<uint32_t>(word1) << 16) |
+                                                    (static_cast<uint32_t>(word2) << 8) | word3)) /
+                                           1000.0) +
                                           (_getRnd() * 0.5);
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
@@ -490,7 +489,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                 word1 = _readModbus(data[i++]);
                                 word2 = _readModbus(data[i++]);
                                 word3 = _readModbus(data[i++]);
-                                force = (((float)((word1 << 16) | (word2 << 8) | word3)) / 1000.0) +
+                                force = (((float)((static_cast<uint32_t>(word1) << 16) |
+                                                  (static_cast<uint32_t>(word2) << 8) | word3)) /
+                                         1000.0) +
                                         (_getRnd() * 0.5);
                                 memcpy(buffer, &force, 4);
                                 _writeModbus(response, buffer[3]);
@@ -537,7 +538,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             break;
                         }
                         case 80: {  // ADC Scan Rate
-                            uint16_t scanRate = _readModbus(data[i++]);
+                            uint8_t scanRate = _readModbus(data[i++]);
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, scanRate);  // Write ADC Scan Rate
@@ -612,6 +613,40 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             break;
                     }
                 } else if (subnet == 5 && address >= 1 && address <= 6) {
+                    auto fillHPStatus = [address, function, &response, this](int steps) {
+                        _writeModbus(response, address);   // Write Address
+                        _writeModbus(response, function);  // Write Function
+                        _writeModbus(response,
+                                     (uint8_t)M1M3SSPublisher::get()
+                                             .getOuterLoopData()
+                                             ->broadcastCounter);  // Write ILC Status
+                        // Number of steps issued / 4 + current encoder
+                        // The encoder is also inverted after being received to match axis direction
+                        // So we have to also invert the encoder here to counteract that
+                        if (steps < 4 && steps > 0) {
+                            steps = 4;
+                        } else if (steps > -4 && steps < 0) {
+                            steps = -4;
+                        }
+                        int32_t encoder =
+                                -(M1M3SSPublisher::get().getHardpointActuatorData()->encoder[address - 1]) +
+                                SettingReader::get().getHardpointActuatorSettings()->getEncoderOffset(
+                                        address - 1) -
+                                steps / 4;
+                        _writeModbus(response, (encoder >> 24) & 0xFF);
+                        _writeModbus(response, (encoder >> 16) & 0xFF);
+                        _writeModbus(response, (encoder >> 8) & 0xFF);
+                        _writeModbus(response, encoder & 0xFF);  // Write Encoder
+                        uint8_t buffer[4];
+                        float force = _getRnd() * 8.0;
+                        memcpy(buffer, &force, 4);
+                        _writeModbus(response, buffer[3]);
+                        _writeModbus(response, buffer[2]);
+                        _writeModbus(response, buffer[1]);
+                        _writeModbus(response, buffer[0]);  // Write Measured Force
+                        _writeModbusCRC(response);
+                    };
+
                     switch (function) {
                         case 17:                               // Report Server Id
                             _writeModbus(response, address);   // Write Address
@@ -642,87 +677,32 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             _writeModbus(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
-                        case 65: {                                      // Change ILC Mode
-                            ++i;                                        // Read Reserved Byte
-                            uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
-                            _writeModbus(response, address);            // Write Address
-                            _writeModbus(response, function);           // Write Function
-                            _writeModbus(response, 0);                  // Write Reserved Byte
-                            _writeModbus(response, newMode);            // Write ILC State
+                        case 65: {                                     // Change ILC Mode
+                            ++i;                                       // Read Reserved Byte
+                            uint8_t newMode = _readModbus(data[i++]);  // Read New Mode
+                            _writeModbus(response, address);           // Write Address
+                            _writeModbus(response, function);          // Write Function
+                            _writeModbus(response, 0);                 // Write Reserved Byte
+                            _writeModbus(response, newMode);           // Write ILC State
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 66: {                             // Step Motor
-                            int steps = data[i++];             // Read Steps
-                            _writeModbus(response, address);   // Write Address
-                            _writeModbus(response, function);  // Write Function
-                            _writeModbus(response,
-                                         (uint8_t)M1M3SSPublisher::get()
-                                                 .getOuterLoopData()
-                                                 ->broadcastCounter);  // Write ILC Status
-                            // Number of steps issued / 4 + current encoder
-                            // The encoder is also inverted after being received to match axis direction
-                            // So we have to also invert the encoder here to counteract that
-                            if (steps < 4 && steps > 0) {
-                                steps = 4;
-                            } else if (steps > -4 && steps < 0) {
-                                steps = -4;
-                            }
-                            int32_t encoder = hardpointActuatorData->encoder[address - 1] - (steps / 4);
-                            _writeModbus(response, (encoder >> 24) & 0xFF);
-                            _writeModbus(response, (encoder >> 16) & 0xFF);
-                            _writeModbus(response, (encoder >> 8) & 0xFF);
-                            _writeModbus(response, encoder & 0xFF);  // Write Encoder
-                            uint8_t buffer[4];
-                            float force = _getRnd() * 8.0;
-                            memcpy(buffer, &force, 4);
-                            _writeModbus(response, buffer[3]);
-                            _writeModbus(response, buffer[2]);
-                            _writeModbus(response, buffer[1]);
-                            _writeModbus(response, buffer[0]);  // Write Measured Force
-                            _writeModbusCRC(response);
+                        case 66: {  // Step Motor
+                            fillHPStatus(data[i++]);
                             break;
                         }
                         case 67: {  // Force And Status
-                            int steps = M1M3SSPublisher::get()
+                            int steps = 0;
+                            if (stepMotorBroadcast) {
+                                steps = M1M3SSPublisher::get()
                                                 .getHardpointActuatorData()
                                                 ->stepsCommanded[address - 1];
-                            _writeModbus(response, address);   // Write Address
-                            _writeModbus(response, function);  // Write Function
-                            _writeModbus(response,
-                                         (uint8_t)M1M3SSPublisher::get()
-                                                 .getOuterLoopData()
-                                                 ->broadcastCounter);  // Write ILC Status
-                            // Number of steps issued / 4 + current encoder
-                            // The encoder is also inverted after being received to match axis direction
-                            // So we have to also invert the encoder here to counteract that
-                            if (steps < 4 && steps > 0) {
-                                steps = 4;
-                            } else if (steps > -4 && steps < 0) {
-                                steps = -4;
                             }
-                            int32_t encoder = hardpointActuatorData->encoder[address - 1];
-                            if (stepMotorBroadcast) {
-                                encoder = encoder + (steps / 4);
-                            }
-                            int32_t offset[6] = {29897, 30786, 53315, 61621, -21824, 35572};
-                            encoder = -encoder + offset[address - 1];
-                            _writeModbus(response, (encoder >> 24) & 0xFF);
-                            _writeModbus(response, (encoder >> 16) & 0xFF);
-                            _writeModbus(response, (encoder >> 8) & 0xFF);
-                            _writeModbus(response, encoder & 0xFF);  // Write Encoder
-                            uint8_t buffer[4];
-                            float force = _getRnd() * 8.0;
-                            memcpy(buffer, &force, 4);
-                            _writeModbus(response, buffer[3]);
-                            _writeModbus(response, buffer[2]);
-                            _writeModbus(response, buffer[1]);
-                            _writeModbus(response, buffer[0]);  // Write Measured Force
-                            _writeModbusCRC(response);
+                            fillHPStatus(steps);
                             break;
                         }
                         case 80: {  // ADC Scan Rate
-                            uint16_t scanRate = _readModbus(data[i++]);
+                            uint8_t scanRate = _readModbus(data[i++]);
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, scanRate);  // Write ADC Scan Rate
@@ -791,13 +771,13 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             _writeModbus(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
-                        case 65: {                                      // Change ILC Mode
-                            ++i;                                        // Read Reserved Byte
-                            uint16_t newMode = _readModbus(data[i++]);  // Read New Mode
-                            _writeModbus(response, address);            // Write Address
-                            _writeModbus(response, function);           // Write Function
-                            _writeModbus(response, 0);                  // Write Reserved Byte
-                            _writeModbus(response, newMode);            // Write ILC State
+                        case 65: {                                     // Change ILC Mode
+                            ++i;                                       // Read Reserved Byte
+                            uint8_t newMode = _readModbus(data[i++]);  // Read New Mode
+                            _writeModbus(response, address);           // Write Address
+                            _writeModbus(response, function);          // Write Function
+                            _writeModbus(response, 0);                 // Write Reserved Byte
+                            _writeModbus(response, newMode);           // Write ILC State
                             _writeModbusCRC(response);
                             break;
                         }

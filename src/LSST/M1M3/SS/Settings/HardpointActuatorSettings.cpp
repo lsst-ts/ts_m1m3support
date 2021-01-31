@@ -24,68 +24,66 @@
 #include <HardpointActuatorSettings.h>
 #include <TableLoader.h>
 #include <XMLDocLoad.h>
+#include <cstring>
 #include <boost/lexical_cast.hpp>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+HardpointActuatorSettings::HardpointActuatorSettings() { memset(_encoderOffset, 0, sizeof(_encoderOffset)); }
+
 void HardpointActuatorSettings::load(const std::string &filename) {
     pugi::xml_document doc;
     XMLDocLoad(filename.c_str(), doc);
     TableLoader::loadTable(
-            1, 1, 6, &this->HardpointDisplacementToMirrorPosition,
+            1, 1, 6, &HardpointDisplacementToMirrorPosition,
             doc.select_node("//HardpointActuatorSettings/HardpointDisplacementToMirrorPositionTablePath")
                     .node()
                     .child_value());
     TableLoader::loadTable(
-            1, 1, 6, &this->MirrorPositionToHardpointDisplacement,
+            1, 1, 6, &MirrorPositionToHardpointDisplacement,
             doc.select_node("//HardpointActuatorSettings/MirrorPositionToHardpointDisplacementTablePath")
                     .node()
                     .child_value());
-    this->MicrometersPerStep = boost::lexical_cast<double>(
+    MicrometersPerStep = boost::lexical_cast<double>(
             doc.select_node("//HardpointActuatorSettings/MicrometersPerStep").node().child_value());
-    this->MicrometersPerEncoder = boost::lexical_cast<double>(
+    MicrometersPerEncoder = boost::lexical_cast<double>(
             doc.select_node("//HardpointActuatorSettings/MicrometersPerEncoder").node().child_value());
-    this->HP1EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP1EncoderOffset").node().child_value());
-    this->HP2EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP2EncoderOffset").node().child_value());
-    this->HP3EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP3EncoderOffset").node().child_value());
-    this->HP4EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP4EncoderOffset").node().child_value());
-    this->HP5EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP5EncoderOffset").node().child_value());
-    this->HP6EncoderOffset = boost::lexical_cast<int32_t>(
-            doc.select_node("//HardpointActuatorSettings/HP6EncoderOffset").node().child_value());
-    this->HardpointMeasuredForceFaultHigh = boost::lexical_cast<float>(
+    for (int hp = 0; hp < 6; hp++) {
+        _encoderOffset[hp] = boost::lexical_cast<int32_t>(
+                doc.select_node(("//HardpointActuatorSettings/HP" + std::to_string(hp + 1) + "EncoderOffset")
+                                        .c_str())
+                        .node()
+                        .child_value());
+    }
+    HardpointMeasuredForceFaultHigh = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFaultHigh")
                     .node()
                     .child_value());
-    this->HardpointMeasuredForceFaultLow = boost::lexical_cast<float>(
+    HardpointMeasuredForceFaultLow = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFaultLow")
                     .node()
                     .child_value());
-    this->HardpointMeasuredForceFSBWarningHigh = boost::lexical_cast<float>(
+    HardpointMeasuredForceFSBWarningHigh = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFSBWarningHigh")
                     .node()
                     .child_value());
-    this->HardpointMeasuredForceFSBWarningLow = boost::lexical_cast<float>(
+    HardpointMeasuredForceFSBWarningLow = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFSBWarningLow")
                     .node()
                     .child_value());
-    this->HardpointMeasuredForceWarningHigh = boost::lexical_cast<float>(
+    HardpointMeasuredForceWarningHigh = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceWarningHigh")
                     .node()
                     .child_value());
-    this->HardpointMeasuredForceWarningLow = boost::lexical_cast<float>(
+    HardpointMeasuredForceWarningLow = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceWarningLow")
                     .node()
                     .child_value());
-    this->AirPressureWarningHigh = boost::lexical_cast<float>(
+    AirPressureWarningHigh = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/AirPressureWarningHigh").node().child_value());
-    this->AirPressureWarningLow = boost::lexical_cast<float>(
+    AirPressureWarningLow = boost::lexical_cast<float>(
             doc.select_node("//HardpointActuatorSettings/AirPressureWarningLow").node().child_value());
 }
 
