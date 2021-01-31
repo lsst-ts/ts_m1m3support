@@ -85,6 +85,9 @@ public:
     ForceActuatorSettings* loadForceActuatorSettings();
     ForceActuatorSettings* getForceActuatorSettings() { return &_forceActuatorSettings; }
     HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
+
+    HardpointActuatorSettings* getHardpointActuatorSettings() { return &_hardpointActuatorSettings; }
+
     HardpointActuatorSettings* loadHardpointActuatorSettings();
     ILCApplicationSettings* loadILCApplicationSettings();
     RecommendedApplicationSettings* loadRecommendedApplicationSettings();

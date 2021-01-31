@@ -29,7 +29,7 @@
 #include <mutex>
 #include <queue>
 #include <ILCSubnetData.h>
-#include <ForceActuatorApplicationSettings.h>
+#include <HardpointActuatorSettings.h>
 
 #include <SAL_MTMountC.h>
 #include "SAL_MTMount.h"
@@ -55,9 +55,6 @@ public:
     SimulatedFPGA();
 
     ~SimulatedFPGA();
-
-    void setForceActuatorApplicationSettings(
-            ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     void initialize() override;
     void open() override;
