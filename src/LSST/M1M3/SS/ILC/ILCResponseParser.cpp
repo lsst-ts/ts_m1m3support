@@ -240,10 +240,8 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                     _parseChangeHPILCModeResponse(buffer, map);
                                     break;
                                 case 66:
-                                    _parseStepMotorResponse(buffer, map, timestamp);
-                                    break;
                                 case 67:
-                                    _parseElectromechanicalForceAndStatusResponse(buffer, map);
+                                    _parseElectromechanicalForceAndStatusResponse(buffer, map, timestamp);
                                     break;
                                 case 80:
                                     _parseSetHPADCScanRateResponse(buffer, map);
@@ -657,7 +655,8 @@ void ILCResponseParser::_parseChangeHMILCModeResponse(ModbusBuffer* buffer, ILCM
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseStepMotorResponse(ModbusBuffer* buffer, ILCMap map, double timestamp) {
+void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map,
+                                                                      double timestamp) {
     int32_t dataIndex = map.DataIndex;
     uint8_t status = buffer->readU8();
     _hardpointActuatorData->timestamp = timestamp;
@@ -667,49 +666,11 @@ void ILCResponseParser::_parseStepMotorResponse(ModbusBuffer* buffer, ILCMap map
     _hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
     _hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
     _hardpointActuatorWarning->broadcastCounterWarning[dataIndex] =
-            _outerLoopData->broadcastCounter == ((status & 0xF0) >> 4);
-    _hardpointActuatorData->encoder[dataIndex] = buffer->readI32();
-    _hardpointActuatorData->measuredForce[dataIndex] = buffer->readSGL();
-    _hardpointActuatorData->displacement[dataIndex] =
-            (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->MicrometersPerEncoder) /
-            (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
-    buffer->skipToNextFrame();
-    _checkHardpointActuatorMeasuredForce(dataIndex);
-}
-
-void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map) {
-    int32_t dataIndex = map.DataIndex;
-    uint8_t status = buffer->readU8();
-    _hardpointActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
-    // 0x02 is reserved
-    _hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
-    _hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
-    _hardpointActuatorWarning->broadcastCounterWarning[dataIndex] =
             _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
-    int32_t offset = 0;
-    switch (map.ActuatorId) {
-        case 1:
-            offset = _hardpointActuatorSettings->HP1EncoderOffset;
-            break;
-        case 2:
-            offset = _hardpointActuatorSettings->HP2EncoderOffset;
-            break;
-        case 3:
-            offset = _hardpointActuatorSettings->HP3EncoderOffset;
-            break;
-        case 4:
-            offset = _hardpointActuatorSettings->HP4EncoderOffset;
-            break;
-        case 5:
-            offset = _hardpointActuatorSettings->HP5EncoderOffset;
-            break;
-        case 6:
-            offset = _hardpointActuatorSettings->HP6EncoderOffset;
-            break;
-    }
     // Encoder value needs to be swapped to keep with the theme of extension is positive
     // retaction is negative
-    _hardpointActuatorData->encoder[dataIndex] = -buffer->readI32() + offset;
+    _hardpointActuatorData->encoder[dataIndex] =
+            -buffer->readI32() + _hardpointActuatorSettings->getEncoderOffset(dataIndex);
     // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =

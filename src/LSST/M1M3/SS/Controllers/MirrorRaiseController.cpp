@@ -44,11 +44,16 @@ MirrorRaiseController::MirrorRaiseController(PositionController* positionControl
     _powerController = powerController;
     _cachedTimestamp = 0;
     _bypassMoveToReference = false;
+    _lastForceFilled = false;
+    _lastPositionCompleted = false;
 }
 
 void MirrorRaiseController::start(bool bypassMoveToReference) {
     SPDLOG_INFO("MirrorRaiseController: start({})", bypassMoveToReference);
     _bypassMoveToReference = bypassMoveToReference;
+    _lastForceFilled = false;
+    _lastPositionCompleted = false;
+
     _safetyController->raiseOperationTimeout(false);
     _positionController->stopMotion();
     _positionController->enableChaseAll();
@@ -90,7 +95,21 @@ void MirrorRaiseController::runLoop() {
 }
 
 bool MirrorRaiseController::checkComplete() {
-    return _forceController->supportPercentageFilled() && _positionController->motionComplete();
+    bool forceFilled = _forceController->supportPercentageFilled();
+    bool positionCompleted = _positionController->motionComplete();
+    if (_lastForceFilled != forceFilled) {
+        SPDLOG_INFO("MirrorRaiseController::checkComplete force controller support percentage {}",
+                    forceFilled ? "filled" : "not filled");
+    }
+    if (_lastPositionCompleted != positionCompleted) {
+        SPDLOG_INFO("MirrorRaiseController::checkComplete position controller moves {}",
+                    positionCompleted ? "completed" : "not completed");
+    }
+
+    _lastForceFilled = forceFilled;
+    _lastPositionCompleted = positionCompleted;
+
+    return forceFilled && positionCompleted;
 }
 
 void MirrorRaiseController::complete() {

@@ -38,12 +38,6 @@ public:
     std::vector<double> MirrorPositionToHardpointDisplacement;
     double MicrometersPerStep;
     double MicrometersPerEncoder;
-    int32_t HP1EncoderOffset;
-    int32_t HP2EncoderOffset;
-    int32_t HP3EncoderOffset;
-    int32_t HP4EncoderOffset;
-    int32_t HP5EncoderOffset;
-    int32_t HP6EncoderOffset;
     float HardpointMeasuredForceFaultHigh;
     float HardpointMeasuredForceFaultLow;
     float HardpointMeasuredForceFSBWarningHigh;
@@ -53,7 +47,21 @@ public:
     float AirPressureWarningHigh;
     float AirPressureWarningLow;
 
+    HardpointActuatorSettings();
+
     void load(const std::string &filename);
+
+    /**
+     * Returns zero offset for given hardpoint.
+     *
+     * @param hp Hardpoint index (0-5)
+     *
+     * @return hardpoint zero offset (HP<HP>EncoderOffset value)
+     */
+    int32_t getEncoderOffset(int hp) { return _encoderOffset[hp]; }
+
+private:
+    int32_t _encoderOffset[HP_COUNT];
 };
 
 } /* namespace SS */

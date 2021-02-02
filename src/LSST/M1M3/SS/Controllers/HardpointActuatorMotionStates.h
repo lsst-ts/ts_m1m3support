@@ -42,7 +42,7 @@ struct HardpointActuatorMotionStates {
         /// HP moved with moveToEncoder command. Uses for translating, reference position etc.
         QuickPositioning = 3,
         /**
-         * HP fine positiong. If following error is large enough, commands HP
+         * HP fine positioning. If following error is large enough, commands HP
          * to move.
          */
         FinePositioning = 4,
