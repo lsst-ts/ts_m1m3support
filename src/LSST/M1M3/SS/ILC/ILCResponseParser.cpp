@@ -133,7 +133,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     uint64_t b = buffer->readLength();
     uint64_t c = buffer->readLength();
     uint64_t d = buffer->readLength();
-    double globalTimestamp = Timestamp::fromRaw((a << 48) | (b << 32) | (c << 16) | d);
+    double globalTimestamp = Timestamp::fromRaw((d << 48) | (c << 32) | (b << 16) | a);
     _forceActuatorState->timestamp = globalTimestamp;
     _forceActuatorWarning->timestamp = globalTimestamp;
     _forceWarning->timestamp = globalTimestamp;
