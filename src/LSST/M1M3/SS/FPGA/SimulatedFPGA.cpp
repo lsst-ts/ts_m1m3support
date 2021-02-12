@@ -92,7 +92,7 @@ void SimulatedFPGA::_monitorElevation(void) {
 
             {
                 std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
-                _mountElevation = mountElevationInstance.angleActual;
+                _mountElevation = mountElevationInstance.actualPosition;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
