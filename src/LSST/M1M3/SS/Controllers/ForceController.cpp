@@ -152,7 +152,7 @@ void ForceController::reset() {
 
 void ForceController::updateTMAElevationData(MTMount_elevationC* tmaElevationData) {
     SPDLOG_TRACE("ForceController: updateTMAElevationData()");
-    _elevation_Angle_Actual = tmaElevationData->angleActual;
+    _elevation_Angle_Actual = tmaElevationData->actualPosition;
     _elevation_Timestamp = tmaElevationData->timestamp;
 }
 

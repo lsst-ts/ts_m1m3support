@@ -92,7 +92,7 @@ void SimulatedFPGA::_monitorElevation(void) {
 
             {
                 std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
-                _mountElevation = mountElevationInstance.angleActual;
+                _mountElevation = mountElevationInstance.actualPosition;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -360,10 +360,10 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
             ++i;  // Read Software Trigger
             // Response length is prepended at request
             uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
-            response->push((uint16_t)(rawTimestamp >> 48));
-            response->push((uint16_t)(rawTimestamp >> 32));
+            response->push((uint16_t)(rawTimestamp));
             response->push((uint16_t)(rawTimestamp >> 16));
-            response->push((uint16_t)rawTimestamp);  // Write Global Timestamp
+            response->push((uint16_t)(rawTimestamp >> 32));
+            response->push((uint16_t)(rawTimestamp >> 48));  // Write Global Timestamp
             int endIndex = i - 1 + dataLength - 1;
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
