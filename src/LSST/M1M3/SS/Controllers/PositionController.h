@@ -78,6 +78,19 @@ public:
      */
     bool move(int32_t* steps);
     bool moveToEncoder(int32_t* encoderValues);
+
+    /**
+     * Commands mirror to move to new position.
+     *
+     * @param x target x position (m)
+     * @param y target y position (m)
+     * @param z target z position (m)
+     * @param rX target x rotation (deg)
+     * @param rY target y rotation (deg)
+     * @param rZ target z rotation (deg)
+     *
+     * @return 
+     */
     bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
     bool moveToReferencePosition();
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
