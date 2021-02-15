@@ -89,7 +89,7 @@ public:
      * @param rY target y rotation (deg)
      * @param rZ target z rotation (deg)
      *
-     * @return 
+     * @return false when move cannot be performed
      */
     bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
     bool moveToReferencePosition();
