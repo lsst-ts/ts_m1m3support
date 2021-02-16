@@ -60,16 +60,18 @@ void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z)
         return;
     }
 
+    float supportRatio = _forceActuatorState->supportPercentage / 100.0;
+
     for (int i = 0; i < FA_COUNT; ++i) {
         if (i < FA_X_COUNT) {
-            xTarget[i] = x[i] * _forceActuatorState->supportPercentage;
+            xTarget[i] = x[i] * supportRatio;
         }
 
         if (i < FA_Y_COUNT) {
-            yTarget[i] = y[i] * _forceActuatorState->supportPercentage;
+            yTarget[i] = y[i] * supportRatio;
         }
 
-        zTarget[i] = z[i] * _forceActuatorState->supportPercentage;
+        zTarget[i] = z[i] * supportRatio;
     }
 }
 
