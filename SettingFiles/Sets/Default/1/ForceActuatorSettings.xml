@@ -90,8 +90,8 @@
     <MirrorCenterOfGravityY>0.000218726</MirrorCenterOfGravityY>
     <MirrorCenterOfGravityZ>-1.7657086</MirrorCenterOfGravityZ>
 
-    <RaiseIncrementPercentage>0.0005</RaiseIncrementPercentage>
-    <LowerDecrementPercentage>0.0005</LowerDecrementPercentage>
+    <RaiseIncrementPercentage>0.05</RaiseIncrementPercentage>
+    <LowerDecrementPercentage>0.05</LowerDecrementPercentage>
     <RaiseLowerFollowingErrorLimit>50</RaiseLowerFollowingErrorLimit>
 
     <AberrationForceComponent>
