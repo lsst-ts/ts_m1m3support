@@ -865,8 +865,12 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     uint16_t crc = CRC::modbus(buffer, 0, i);
     response->push((((crc >> 0) & 0xFF) << 1) | 0x9000);
     response->push((((crc >> 8) & 0xFF) << 1) | 0x9000);  // Write CRC
+
+    uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
+
     for (int i = 0; i < 8; ++i) {
-        response->push(0xB000);  // Write Timestamp
+        response->push(0xB000 | (rawTimestamp & 0xFF));  // Write Timestamp
+        rawTimestamp >>= 8;
     }
     response->push(0xA000);  // Write End of Frame
 }
