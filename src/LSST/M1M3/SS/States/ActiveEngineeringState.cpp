@@ -135,7 +135,7 @@ States::Type ActiveEngineeringState::clearActiveOpticForces(ClearActiveOpticForc
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command) {
     SPDLOG_INFO("ActiveEngineeringState: translateM1M3()");
     if (!Model::get().getPositionController()->translate(
-                command->getData()->xTranslation, command->getData()->xTranslation,
+                command->getData()->xTranslation, command->getData()->yTranslation,
                 command->getData()->zTranslation, command->getData()->xRotation,
                 command->getData()->yRotation, command->getData()->zRotation)) {
         M1M3SSPublisher::get().logCommandRejectionWarning(
