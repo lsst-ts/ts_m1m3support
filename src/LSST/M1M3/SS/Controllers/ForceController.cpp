@@ -614,10 +614,9 @@ bool ForceController::_checkNearNeighbors() {
 
             nearZ += _appliedForces->zForces[neighborZIndex];
         }
-        nearZ /= nearNeighbors;
-        float deltaZ = 0;
 
-        deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
+        nearZ /= nearNeighbors;
+        float deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
 
         bool previousWarning = _forceSetpointWarning->nearNeighborWarning[zIndex];
         _forceSetpointWarning->nearNeighborWarning[zIndex] =
