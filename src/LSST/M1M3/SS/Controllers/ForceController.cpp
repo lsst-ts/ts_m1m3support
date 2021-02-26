@@ -122,6 +122,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         _neighbors.push_back(neighbors);
     }
 
+    SPDLOG_INFO("ForceController mirror weight/all Z forces {}N", _mirrorWeight);
+
     for (int i = 0; i < FA_X_COUNT; i++) {
         limitTriggerX[i] = ForceLimitTrigger('X', _forceActuatorApplicationSettings->XIndexToActuatorId(i));
     }
