@@ -372,13 +372,13 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < FA_COUNT; i++) {
         if (_faExpectedResponses[i] != 0) {
             warn = true;
+            SPDLOG_WARN("ILCResponseParser: Force actuator #{} response timeout", i);
             _warnResponseTimeout(timestamp, _forceActuatorInfo->referenceId[i]);
             _faExpectedResponses[i] = 0;
         }
     }
     if (warn) {
         anyTimeout = true;
-        SPDLOG_WARN("ILCResponseParser: Force actuator response timeout {} {} {} {} {} {} {} {}");
     }
     warn = false;
     for (int i = 0; i < HP_COUNT; i++) {
