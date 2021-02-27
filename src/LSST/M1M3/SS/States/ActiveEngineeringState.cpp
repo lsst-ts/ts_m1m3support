@@ -58,19 +58,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveEngineeringState::ActiveEngineeringState() : EngineeringState("ActiveEngineeringState") {}
+ActiveEngineeringState::ActiveEngineeringState() : EnabledState("ActiveEngineeringState") {}
 
 States::Type ActiveEngineeringState::update(UpdateCommand* command) {
     SPDLOG_TRACE("ActiveEngineeringState: update()");
-    sendTelemetry();
+    EngineeringState::sendTelemetry();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command) {
-    SPDLOG_INFO("ActiveEngineeringState: lowerM1M3()");
-    Model::get().getForceController()->resetPIDs();
-    Model::get().getMirrorLowerController()->start();
-    return Model::get().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 
 States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
@@ -88,14 +81,6 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     return Model::get().getSafetyController()->checkSafety(States::ActiveState);
 }
 
-States::Type ActiveEngineeringState::applyAberrationForcesByBendingModes(
-        ApplyAberrationForcesByBendingModesCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: applyAberrationForcesByBendingModes()");
-    Model::get().getForceController()->applyAberrationForcesByBendingModes(command->getData()->coefficients);
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 States::Type ActiveEngineeringState::applyAberrationForces(ApplyAberrationForcesCommand* command) {
     SPDLOG_INFO("ActiveEngineeringState: applyAberrationForces()");
     Model::get().getForceController()->applyAberrationForces(command->getData()->zForces);
@@ -103,31 +88,9 @@ States::Type ActiveEngineeringState::applyAberrationForces(ApplyAberrationForces
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::clearAberrationForces(ClearAberrationForcesCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: clearAberrationForces()");
-    Model::get().getForceController()->zeroAberrationForces();
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::applyActiveOpticForcesByBendingModes(
-        ApplyActiveOpticForcesByBendingModesCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: applyActiveOpticForcesByBendingModes()");
-    Model::get().getForceController()->applyActiveOpticForcesByBendingModes(command->getData()->coefficients);
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 States::Type ActiveEngineeringState::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
     SPDLOG_INFO("ActiveEngineeringState: applyActiveOpticForces()");
     Model::get().getForceController()->applyActiveOpticForces(command->getData()->zForces);
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::clearActiveOpticForces(ClearActiveOpticForcesCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: clearActiveOpticForces()");
-    Model::get().getForceController()->zeroActiveOpticForces();
     Model::get().getForceController()->processAppliedForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -155,19 +118,6 @@ States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command) 
                 "PositionM1M3",
                 "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
     }
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: enableHardpointCorrections()");
-    Model::get().getForceController()->applyBalanceForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::disableHardpointCorrections(
-        DisableHardpointCorrectionsCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: disableHardpointCorrections()");
-    Model::get().getForceController()->zeroBalanceForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

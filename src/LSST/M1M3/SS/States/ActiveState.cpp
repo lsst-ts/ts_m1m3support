@@ -45,24 +45,6 @@ States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
     return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }
 
-States::Type ActiveState::lowerM1M3(LowerM1M3Command* command) {
-    SPDLOG_INFO("ActiveState: lowerM1M3()");
-    Model::get().getMirrorLowerController()->start();
-    return Model::get().getSafetyController()->checkSafety(States::LoweringState);
-}
-
-States::Type ActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
-    SPDLOG_INFO("ActiveState: enableHardpointCorrections()");
-    Model::get().getForceController()->applyBalanceForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) {
-    SPDLOG_INFO("ActiveState: disableHardpointCorrections()");
-    Model::get().getForceController()->zeroBalanceForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
