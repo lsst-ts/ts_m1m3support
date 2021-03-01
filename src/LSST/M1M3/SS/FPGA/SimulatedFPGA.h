@@ -110,6 +110,8 @@ private:
     float _rnd[RND_CNT];
     int _rndIndex;
     float _getRnd();
+
+    bool _sendResponse;
 };
 
 } /* namespace SS */

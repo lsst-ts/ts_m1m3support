@@ -69,6 +69,8 @@ SimulatedFPGA::SimulatedFPGA() {
     hardpointActuatorData->encoder[3] = 27424;
     hardpointActuatorData->encoder[4] = 17560;
     hardpointActuatorData->encoder[5] = 23546;
+
+    _sendResponse = true;
 }
 
 SimulatedFPGA::~SimulatedFPGA() {
@@ -292,57 +294,57 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
             }
             case FPGAAddresses::DCAuxPowerNetworkAOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xFE) | (state ? 0x01 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x01) | (state ? 0x01 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkBOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xFD) | (state ? 0x02 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x02) | (state ? 0x02 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkCOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xFB) | (state ? 0x04 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x04) | (state ? 0x04 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkDOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xF7) | (state ? 0x08 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x08) | (state ? 0x08 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkAOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xEF) | (state ? 0x10 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x10) | (state ? 0x10 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkBOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xDF) | (state ? 0x20 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x20) | (state ? 0x20 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkCOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xBF) | (state ? 0x40 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x40) | (state ? 0x40 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkDOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0x7F) | (state ? 0x80 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x80) | (state ? 0x80 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
@@ -368,6 +370,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
             while (i < endIndex) {
+                _sendResponse = true;
                 uint8_t address = _readModbus(data[i++]);   // Read Address
                 uint8_t function = _readModbus(data[i++]);  // Read Function Code
                 if (address == 248 && function == 66) {
@@ -388,6 +391,11 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                     }
                     i -= 4;  // Shift to CRC for the rest of the parsing to work
                 } else if (subnet >= 1 && subnet <= 4) {
+                    // if bus is turned off, don't send any response
+                    if ((supportFPGAData.PowerSupplyStates & 0x10) == 0x00) {
+                        _sendResponse = false;
+                    }
+
                     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
                             SettingReader::get().getForceActuatorApplicationSettings();
                     int zIndex = -1;
@@ -613,6 +621,11 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             break;
                     }
                 } else if (subnet == 5 && address >= 1 && address <= 6) {
+                    // if bus is turned off, don't send any response
+                    if ((supportFPGAData.PowerSupplyStates & 0x10) == 0x00) {
+                        _sendResponse = false;
+                    }
+
                     auto fillHPStatus = [address, function, &response, this](int steps) {
                         _writeModbus(response, address);   // Write Address
                         _writeModbus(response, function);  // Write Function
@@ -850,6 +863,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
 }
 
 void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
+    if (_sendResponse == false) {
+        return;
+    }
     _crcVector.push(data);
     response->push((data << 1) | 0x9000);
 }
