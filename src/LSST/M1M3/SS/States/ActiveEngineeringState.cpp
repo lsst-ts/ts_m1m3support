@@ -81,16 +81,18 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     return Model::get().getSafetyController()->checkSafety(States::ActiveState);
 }
 
-States::Type ActiveEngineeringState::applyAberrationForces(ApplyAberrationForcesCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: applyAberrationForces()");
-    Model::get().getForceController()->applyAberrationForces(command->getData()->zForces);
+States::Type ActiveEngineeringState::applyAberrationForcesByBendingModes(
+        ApplyAberrationForcesByBendingModesCommand* command) {
+    SPDLOG_INFO("EnabledActiveState: applyAberrationForcesByBendingModes()");
+    Model::get().getForceController()->applyAberrationForcesByBendingModes(command->getData()->coefficients);
     Model::get().getForceController()->processAppliedForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: applyActiveOpticForces()");
-    Model::get().getForceController()->applyActiveOpticForces(command->getData()->zForces);
+States::Type ActiveEngineeringState::applyActiveOpticForcesByBendingModes(
+        ApplyActiveOpticForcesByBendingModesCommand* command) {
+    SPDLOG_INFO("EnabledActiveState: applyActiveOpticForcesByBendingModes()");
+    Model::get().getForceController()->applyActiveOpticForcesByBendingModes(command->getData()->coefficients);
     Model::get().getForceController()->processAppliedForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }

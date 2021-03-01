@@ -42,8 +42,10 @@ public:
 
     virtual States::Type update(UpdateCommand* command) override;
     virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command) override;
-    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
+    virtual States::Type applyAberrationForcesByBendingModes(
+            ApplyAberrationForcesByBendingModesCommand* command) override;
+    virtual States::Type applyActiveOpticForcesByBendingModes(
+            ApplyActiveOpticForcesByBendingModesCommand* command) override;
     virtual States::Type translateM1M3(TranslateM1M3Command* command) override;
     virtual States::Type positionM1M3(PositionM1M3Command* command) override;
     virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command) override;
