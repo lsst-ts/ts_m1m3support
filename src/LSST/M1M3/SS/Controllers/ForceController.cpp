@@ -122,6 +122,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         _neighbors.push_back(neighbors);
     }
 
+    SPDLOG_INFO("ForceController mirror weight/all Z forces {}N", _mirrorWeight);
+
     for (int i = 0; i < FA_X_COUNT; i++) {
         limitTriggerX[i] = ForceLimitTrigger('X', _forceActuatorApplicationSettings->XIndexToActuatorId(i));
     }
@@ -614,10 +616,9 @@ bool ForceController::_checkNearNeighbors() {
 
             nearZ += _appliedForces->zForces[neighborZIndex];
         }
-        nearZ /= nearNeighbors;
-        float deltaZ = 0;
 
-        deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
+        nearZ /= nearNeighbors;
+        float deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
 
         bool previousWarning = _forceSetpointWarning->nearNeighborWarning[zIndex];
         _forceSetpointWarning->nearNeighborWarning[zIndex] =
