@@ -34,8 +34,6 @@
 #include <SAL_MTMountC.h>
 #include "SAL_MTMount.h"
 
-#define RND_CNT 50
-
 struct MTMount_AltC;
 struct MTMount_AzC;
 struct MTM1M3_logevent_appliedCylinderForcesC;
@@ -107,12 +105,19 @@ private:
     float _mountElevation = 90.;
 
     bool _exitThread = false;
-    float _rnd[RND_CNT];
-    int _rndIndex;
-    float _getRnd();
 
     bool _sendResponse;
 };
+
+/**
+ * Returns random double normalized to -1..1.
+ *
+ * @return double within -1..1, derived with rand() function with sound
+ * statistics.
+ *
+ * @see rand()
+ */
+double getRndPM1();
 
 } /* namespace SS */
 } /* namespace M1M3 */
