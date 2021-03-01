@@ -65,7 +65,8 @@ void MirrorLowerController::start() {
 }
 
 void MirrorLowerController::runLoop() {
-    SPDLOG_TRACE("MirrorLowerController: runLoop()");
+    SPDLOG_TRACE("MirrorLowerController: runLoop() {}",
+                 M1M3SSPublisher::get().getEventForceActuatorState()->supportPercentage);
     if (!_forceController->supportPercentageZeroed()) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
