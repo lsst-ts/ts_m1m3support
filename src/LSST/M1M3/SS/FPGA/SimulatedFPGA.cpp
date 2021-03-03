@@ -48,15 +48,13 @@ namespace SS {
  */
 uint8_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
+double getRndPM1() { return static_cast<double>(rand()) / (RAND_MAX / 2.0) - 1.0; }
+
 SimulatedFPGA::SimulatedFPGA() {
     SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
     _lastRequest = -1;
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
     supportFPGAData.DigitalInputStates = 0x0001 | 0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
-    for (int i = 0; i < RND_CNT; ++i) {
-        _rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
-    }
-    _rndIndex = 0;
     _mgrMTMount = SAL_MTMount();
     _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
 
@@ -69,6 +67,8 @@ SimulatedFPGA::SimulatedFPGA() {
     hardpointActuatorData->encoder[3] = 27424;
     hardpointActuatorData->encoder[4] = 17560;
     hardpointActuatorData->encoder[5] = 23546;
+
+    _sendResponse = true;
 }
 
 SimulatedFPGA::~SimulatedFPGA() {
@@ -139,7 +139,7 @@ void SimulatedFPGA::pullTelemetry() {
     {
         std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
         this->supportFPGAData.InclinometerAngleRaw =
-                (int32_t)((_mountElevation - 90.0) * 1000.0) + (_getRnd() * 5.0);
+                (int32_t)((_mountElevation - 90.0) * 1000.0) + (getRndPM1() * 5.0);
     }
 
     this->supportFPGAData.DisplacementTxBytes = 0;
@@ -149,24 +149,24 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.DisplacementErrorTimestamp = 0;
     this->supportFPGAData.DisplacementErrorCode = 0;
     this->supportFPGAData.DisplacementSampleTimestamp = timestamp;
-    this->supportFPGAData.DisplacementRaw1 = (int32_t)(_getRnd() + 10) * 1000.0;
-    this->supportFPGAData.DisplacementRaw2 = (int32_t)(_getRnd() + 20) * 1000.0;
-    this->supportFPGAData.DisplacementRaw3 = (int32_t)(_getRnd() + 30) * 1000.0;
-    this->supportFPGAData.DisplacementRaw4 = (int32_t)(_getRnd() + 40) * 1000.0;
-    this->supportFPGAData.DisplacementRaw5 = (int32_t)(_getRnd() + 50) * 1000.0;
-    this->supportFPGAData.DisplacementRaw6 = (int32_t)(_getRnd() + 60) * 1000.0;
-    this->supportFPGAData.DisplacementRaw7 = (int32_t)(_getRnd() + 70) * 1000.0;
-    this->supportFPGAData.DisplacementRaw8 = (int32_t)(_getRnd() + 80) * 1000.0;
+    this->supportFPGAData.DisplacementRaw1 = (int32_t)(getRndPM1() + 10) * 1000.0;
+    this->supportFPGAData.DisplacementRaw2 = (int32_t)(getRndPM1() + 20) * 1000.0;
+    this->supportFPGAData.DisplacementRaw3 = (int32_t)(getRndPM1() + 30) * 1000.0;
+    this->supportFPGAData.DisplacementRaw4 = (int32_t)(getRndPM1() + 40) * 1000.0;
+    this->supportFPGAData.DisplacementRaw5 = (int32_t)(getRndPM1() + 50) * 1000.0;
+    this->supportFPGAData.DisplacementRaw6 = (int32_t)(getRndPM1() + 60) * 1000.0;
+    this->supportFPGAData.DisplacementRaw7 = (int32_t)(getRndPM1() + 70) * 1000.0;
+    this->supportFPGAData.DisplacementRaw8 = (int32_t)(getRndPM1() + 80) * 1000.0;
     this->supportFPGAData.AccelerometerSampleCount++;
     this->supportFPGAData.AccelerometerSampleTimestamp = timestamp;
-    this->supportFPGAData.AccelerometerRaw1 = _getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw2 = _getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw3 = _getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw4 = _getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw5 = _getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw6 = _getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw7 = _getRnd() * 0.01;
-    this->supportFPGAData.AccelerometerRaw8 = _getRnd() * 0.01;
+    this->supportFPGAData.AccelerometerRaw1 = getRndPM1() * 0.01;
+    this->supportFPGAData.AccelerometerRaw2 = getRndPM1() * 0.01;
+    this->supportFPGAData.AccelerometerRaw3 = getRndPM1() * 0.01;
+    this->supportFPGAData.AccelerometerRaw4 = getRndPM1() * 0.01;
+    this->supportFPGAData.AccelerometerRaw5 = getRndPM1() * 0.01;
+    this->supportFPGAData.AccelerometerRaw6 = getRndPM1() * 0.01;
+    this->supportFPGAData.AccelerometerRaw7 = getRndPM1() * 0.01;
+    this->supportFPGAData.AccelerometerRaw8 = getRndPM1() * 0.01;
     this->supportFPGAData.GyroTxBytes = 0;
     this->supportFPGAData.GyroRxBytes = 0;
     this->supportFPGAData.GyroTxFrames = 0;
@@ -174,15 +174,15 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.GyroErrorTimestamp = 0;
     this->supportFPGAData.GyroErrorCode = 0;
     this->supportFPGAData.GyroSampleTimestamp = timestamp;
-    this->supportFPGAData.GyroRawX = _getRnd() * 0.01;
-    this->supportFPGAData.GyroRawY = _getRnd() * 0.01;
-    this->supportFPGAData.GyroRawZ = _getRnd() * 0.01;
+    this->supportFPGAData.GyroRawX = getRndPM1() * 0.01;
+    this->supportFPGAData.GyroRawY = getRndPM1() * 0.01;
+    this->supportFPGAData.GyroRawZ = getRndPM1() * 0.01;
     this->supportFPGAData.GyroStatus = 0x7F;
     this->supportFPGAData.GyroSequenceNumber++;
     if (this->supportFPGAData.GyroSequenceNumber > 127) {
         this->supportFPGAData.GyroSequenceNumber = 0;
     }
-    this->supportFPGAData.GyroTemperature = 24 + int(_getRnd() * 2);
+    this->supportFPGAData.GyroTemperature = 24 + int(getRndPM1() * 2);
     this->supportFPGAData.GyroBITTimestamp = timestamp;
     this->supportFPGAData.GyroBIT0 = 0x7F;
     this->supportFPGAData.GyroBIT1 = 0x7F;
@@ -292,57 +292,57 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
             }
             case FPGAAddresses::DCAuxPowerNetworkAOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xFE) | (state ? 0x01 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x01) | (state ? 0x01 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkBOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xFD) | (state ? 0x02 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x02) | (state ? 0x02 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkCOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xFB) | (state ? 0x04 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x04) | (state ? 0x04 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkDOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xF7) | (state ? 0x08 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x08) | (state ? 0x08 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkAOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xEF) | (state ? 0x10 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x10) | (state ? 0x10 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkBOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xDF) | (state ? 0x20 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x20) | (state ? 0x20 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkCOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0xBF) | (state ? 0x40 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x40) | (state ? 0x40 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkDOn: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.PowerSupplyStates & 0x7F) | (state ? 0x80 : 0x00);
+                this->supportFPGAData.PowerSupplyStates =
+                        (this->supportFPGAData.PowerSupplyStates & ~0x80) | (state ? 0x80 : 0x00);
                 // TODO: Set Power Supply Currents
                 break;
             }
@@ -368,6 +368,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
             while (i < endIndex) {
+                _sendResponse = true;
                 uint8_t address = _readModbus(data[i++]);   // Read Address
                 uint8_t function = _readModbus(data[i++]);  // Read Function Code
                 if (address == 248 && function == 66) {
@@ -388,6 +389,11 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                     }
                     i -= 4;  // Shift to CRC for the rest of the parsing to work
                 } else if (subnet >= 1 && subnet <= 4) {
+                    // if bus is turned off, don't send any response
+                    if ((supportFPGAData.PowerSupplyStates & 0x10) == 0x00) {
+                        _sendResponse = false;
+                    }
+
                     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
                             SettingReader::get().getForceActuatorApplicationSettings();
                     int zIndex = -1;
@@ -479,7 +485,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             float force = (((float)((static_cast<uint32_t>(word1) << 16) |
                                                     (static_cast<uint32_t>(word2) << 8) | word3)) /
                                            1000.0) +
-                                          (_getRnd() * 0.5);
+                                          (getRndPM1() * 0.5);
                             memcpy(buffer, &force, 4);
                             _writeModbus(response, buffer[3]);
                             _writeModbus(response, buffer[2]);
@@ -492,7 +498,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                 force = (((float)((static_cast<uint32_t>(word1) << 16) |
                                                   (static_cast<uint32_t>(word2) << 8) | word3)) /
                                          1000.0) +
-                                        (_getRnd() * 0.5);
+                                        (getRndPM1() * 0.5);
                                 memcpy(buffer, &force, 4);
                                 _writeModbus(response, buffer[3]);
                                 _writeModbus(response, buffer[2]);
@@ -514,7 +520,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                                     .getEventAppliedCylinderForces()
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
-                                          (_getRnd() * 0.5);  // Update to Primary Cylinder Force
+                                          (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
                             // uncomment to simulate follow up error
                             // if (subnet == 1 && address == 17 && force > 500) force = 200;
                             memcpy(buffer, &force, 4);
@@ -527,7 +533,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                                   .getEventAppliedCylinderForces()
                                                   ->secondaryCylinderForces[sIndex]) /
                                          1000.0) +
-                                        (_getRnd() * 0.5);  // Update to Secondary Cylinder Force
+                                        (getRndPM1() * 0.5);  // Update to Secondary Cylinder Force
                                 memcpy(buffer, &force, 4);
                                 _writeModbus(response, buffer[3]);
                                 _writeModbus(response, buffer[2]);
@@ -613,6 +619,11 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             break;
                     }
                 } else if (subnet == 5 && address >= 1 && address <= 6) {
+                    // if bus is turned off, don't send any response
+                    if ((supportFPGAData.PowerSupplyStates & 0x10) == 0x00) {
+                        _sendResponse = false;
+                    }
+
                     auto fillHPStatus = [address, function, &response, this](int steps) {
                         _writeModbus(response, address);   // Write Address
                         _writeModbus(response, function);  // Write Function
@@ -638,7 +649,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                         _writeModbus(response, (encoder >> 8) & 0xFF);
                         _writeModbus(response, encoder & 0xFF);  // Write Encoder
                         uint8_t buffer[4];
-                        float force = _getRnd() * 8.0;
+                        float force = getRndPM1() * 8.0;
                         memcpy(buffer, &force, 4);
                         _writeModbus(response, buffer[3]);
                         _writeModbus(response, buffer[2]);
@@ -850,6 +861,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
 }
 
 void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
+    if (_sendResponse == false) {
+        return;
+    }
     _crcVector.push(data);
     response->push((data << 1) | 0x9000);
 }
@@ -972,14 +986,6 @@ void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int3
     for (int i = 0; i < length; i++) {
         data[i] = i;
     }
-}
-
-float SimulatedFPGA::_getRnd() {
-    ++_rndIndex;
-    if (_rndIndex > RND_CNT) {
-        _rndIndex = 0;
-    }
-    return _rnd[_rndIndex];
 }
 
 } /* namespace SS */

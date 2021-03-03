@@ -36,6 +36,9 @@ namespace SS {
  * This command is responsible for transitioning the state
  * machine from the standby state to the disabled state.
  * This is an external command and can be issued via SAL.
+ *
+ * The command should be executed with settingsToApply, describing which
+ * settings should be applied.
  */
 class StartCommand : public Command {
 public:

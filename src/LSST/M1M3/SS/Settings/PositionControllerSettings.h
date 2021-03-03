@@ -31,10 +31,25 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Hardpoints/position controller settings. Settings are loaded from
+ * PositionControllerSettings in actually used setting set.
+ *
+ * @see StartCommand
+ */
 class PositionControllerSettings {
 public:
+    /**
+     * Linear coefficient between force sensed on HP and steps change. It's
+     * assumed that 4N force =~ 1 step, so 0.25 is expected value.
+     */
     double ForceToStepsCoefficient;
     double EncoderToStepsCoefficient;
+
+    /**
+     * Maximal steps per controller loop (~53Hz). Should be set to 60. Applies
+     * to all six HP actuators.
+     */
     int32_t MaxStepsPerLoop;
     double RaiseLowerForceLimitLow;
     double RaiseLowerForceLimitHigh;

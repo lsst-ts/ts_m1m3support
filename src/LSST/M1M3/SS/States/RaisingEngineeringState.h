@@ -33,6 +33,10 @@ namespace SS {
 /**
  * Raises mirror in engineering state. Transition to ActiveEngineering on raise
  * completed, or Lowering Engineering state on abort.
+ *
+ * Just passes calls. Raising is controlled through MirrorRaiseController.
+ *
+ * @see MirrorRaiseController
  */
 class RaisingEngineeringState : public EngineeringState {
 public:
