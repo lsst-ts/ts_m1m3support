@@ -41,6 +41,9 @@ public:
 
     virtual States::Type update(UpdateCommand* command) override;
     virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
+
+protected:
+    States::Type getLoweringState() override { return States::LoweringState; }
 };
 
 }  // namespace SS

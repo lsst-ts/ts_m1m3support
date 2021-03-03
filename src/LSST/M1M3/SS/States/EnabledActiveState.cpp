@@ -33,7 +33,7 @@ States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command* command) {
     SPDLOG_INFO("EnabledActiveState: lowerM1M3()");
     Model::get().getForceController()->resetPIDs();
     Model::get().getMirrorLowerController()->start();
-    return Model::get().getSafetyController()->checkSafety(States::LoweringEngineeringState);
+    return Model::get().getSafetyController()->checkSafety(getLoweringState());
 }
 
 States::Type EnabledActiveState::applyAberrationForces(ApplyAberrationForcesCommand* command) {
