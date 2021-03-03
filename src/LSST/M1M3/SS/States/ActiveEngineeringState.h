@@ -51,6 +51,9 @@ public:
     virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command) override;
     virtual States::Type updatePID(UpdatePIDCommand* command) override;
     virtual States::Type resetPID(ResetPIDCommand* command) override;
+
+protected:
+    States::Type getLoweringState() override { return States::LoweringEngineeringState; }
 };
 
 } /* namespace SS */

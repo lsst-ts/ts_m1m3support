@@ -43,6 +43,9 @@ public:
     virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
     virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
     virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
+
+protected:
+    virtual States::Type getLoweringState() = 0;
 };
 
 }  // namespace SS
