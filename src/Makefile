@@ -17,6 +17,7 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 M1M3_CPPFLAGS := -I. \
+	-I"../$(CRIOCPP)/include" \
 	-I"NiFpga" \
 	-I"LSST/M1M3/SS/DigitalInputOutput" \
 	-I"LSST/M1M3/SS/FirmwareUpdate" \
