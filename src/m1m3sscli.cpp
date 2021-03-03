@@ -36,6 +36,10 @@ using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
 
 class PrintILC : public ElectromechanicalPneumaticILC {
+public:
+    PrintILC(uint8_t bus) : _bus(bus) {}
+    uint8_t getBus() { return _bus; }
+
 protected:
     void processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAppType, uint8_t networkNodeType,
                          uint8_t ilcSelectedOptions, uint8_t networkNodeOptions, uint8_t majorRev,
@@ -52,12 +56,15 @@ protected:
     virtual void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                         float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
                                         float backupSensitivity[4]) override;
+
+private:
+    uint8_t _bus;
 };
 
 void PrintILC::processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAppType,
-                                                    uint8_t networkNodeType, uint8_t ilcSelectedOptions,
-                                                    uint8_t networkNodeOptions, uint8_t majorRev,
-                                                    uint8_t minorRev, std::string firmwareName) {
+                               uint8_t networkNodeType, uint8_t ilcSelectedOptions,
+                               uint8_t networkNodeOptions, uint8_t majorRev, uint8_t minorRev,
+                               std::string firmwareName) {
     std::cout << "Address: " << std::to_string(address) << std::endl
               << "UniqueID: " << std::hex << std::setw(8) << std::setfill('0') << (uniqueID) << std::endl
               << "ILC application type: " << std::to_string(ilcAppType) << std::endl
@@ -68,6 +75,36 @@ void PrintILC::processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAp
               << std::endl
               << "Firmware name: " << firmwareName << std::endl
               << std::endl;
+}
+
+void PrintILC::processResetServer(uint8_t address) {
+    std::cout << "Reseted " << _bus << "/" << address << std::endl;
+}
+
+template <typename t>
+void print4(const char* name, t a[4]) {
+    std::cout << std::setfill(' ') << std::setw(10) << name;
+    for (int i = 0; i < 4; i++) {
+        std::cout << " " << std::setw(10) << a[i];
+    }
+    std::cout << std::endl;
+};
+
+void PrintILC::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
+                                      float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
+                                      float backupSensitivity[4]) {
+    std::cout << "Calibration data " << static_cast<int>(_bus) << "/" << static_cast<int>(address) << std::endl;
+
+    int vi[4] = {1, 2, 3, 4};
+    print4("Values", vi);
+
+    print4("Main ADC Kn", mainADCK);
+    print4("Main Offset", mainOffset);
+    print4("Main Sensitivity", mainSensitivity);
+
+    print4("Backup ADC Kn", backupADCK);
+    print4("Backup Offset", backupOffset);
+    print4("Backup Sensitivity", backupSensitivity);
 }
 
 constexpr int NEED_FPGA = 0x01;
@@ -128,7 +165,7 @@ void _printBuffer(std::string prefix, uint16_t* buf, size_t len) {
     std::cout << std::endl;
 }
 
-class PrintSSFPGA : public FPGA {
+class PrintSSFPGA : public LSST::M1M3::SS::FPGA {
 public:
     PrintSSFPGA() : FPGA() {}
 
@@ -137,19 +174,19 @@ public:
         FPGA::writeCommandFIFO(data, length, timeout);
     }
 
-    void writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeout) {
+    void writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeout) {
         _printBuffer("R> ", data, length);
         FPGA::writeRequestFIFO(data, length, timeout);
     }
 
-    void readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeout) override {
+    void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeout) override {
         FPGA::readU16ResponseFIFO(data, length, timeout);
         _printBuffer("R< ", data, length);
     }
 };
 
 PrintSSFPGA* fpga = NULL;
-PrintILC ilc;
+PrintILC ilc(1);
 
 int M1M3TScli::processCommand(const command_t* cmd, const command_vec& args) {
     if ((cmd->flags & NEED_FPGA) && fpga == NULL) {
@@ -167,18 +204,18 @@ int closeFPGA() {
     return 0;
 }
 
-int info(command_vec cmds) {
+int callFunction(command_vec cmds, std::function<void(uint8_t)> call) {
     int ret = -2;
     ilc.clear();
     for (auto c : cmds) {
         try {
             int address = std::stoi(c);
-            if (address <= 0 || address > 96) {
+            if (address <= 0 || address > 100) {
                 std::cerr << "Invalid address " << c << std::endl;
                 ret = -1;
                 continue;
             }
-            ilc.reportServerID(address);
+            call(address);
             ret = 0;
         } catch (std::logic_error& e) {
             std::cerr << "Non-numeric address: " << c << std::endl;
@@ -189,16 +226,24 @@ int info(command_vec cmds) {
     if (ret == -2) {
         std::cout << "Info for all ILC" << std::endl;
         for (int i = 1; i <= 96; i++) {
-            ilc.reportServerID(i);
+            call(i);
         }
         ret = 0;
     }
 
     if (ilc.getLength() > 0) {
-        fpga->ilcCommands(9, ilc);
+        fpga->ilcCommands(ilc.getBus() + 8, ilc);
     }
 
     return ret;
+}
+
+int calData(command_vec cmds) {
+    return callFunction(cmds, [](uint8_t a) { return ilc.reportCalibrationData(a); });
+}
+
+int info(command_vec cmds) {
+    return callFunction(cmds, [](uint8_t a) { return ilc.reportServerID(a); });
 }
 
 int openFPGA(command_vec cmds) {
@@ -212,7 +257,7 @@ int openFPGA(command_vec cmds) {
     } else {
         memcpy(dir, cmds[0].c_str(), cmds[0].length() + 1);
     }
-    fpga = new PrintTSFPGA(dir);
+    fpga = new PrintSSFPGA();
     fpga->initialize();
     fpga->open();
     return 0;
@@ -268,6 +313,7 @@ int verbose(command_vec cmds) {
 }
 
 command_t commands[] = {
+        {"caldata", &calData, "s?", NEED_FPGA, "<address>..", "Print ILC calibration data"},
         {"close", [=](command_vec) { return closeFPGA(); }, "", NEED_FPGA, NULL, "Close FPGA connection"},
         {"help", [=](command_vec cmds) { return cli.helpCommands(cmds); }, "", 0, NULL,
          "Print commands help"},

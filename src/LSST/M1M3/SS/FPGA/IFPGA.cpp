@@ -39,7 +39,7 @@ IFPGA& IFPGA::get() {
     static SimulatedFPGA simulatedfpga;
     return simulatedfpga;
 #else
-    static FPGA fpga;
+    static LSST::M1M3::SS::FPGA fpga;
     return fpga;
 #endif
 }

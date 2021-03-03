@@ -206,7 +206,7 @@ void SimulatedFPGA::pullTelemetry() {
 void SimulatedFPGA::pullHealthAndStatus() {}
 
 void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
-    for (int i = 0; i < length;) {
+    for (size_t i = 0; i < length;) {
         uint16_t signal = data[i++];
         uint16_t dataLength = 0;
         uint16_t subnet = 0;
@@ -364,7 +364,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             response->push((uint16_t)(rawTimestamp >> 16));
             response->push((uint16_t)(rawTimestamp >> 32));
             response->push((uint16_t)(rawTimestamp >> 48));  // Write Global Timestamp
-            int endIndex = i - 1 + dataLength - 1;
+            size_t endIndex = i - 1 + dataLength - 1;
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
             while (i < endIndex) {
@@ -966,7 +966,7 @@ void SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) {}
 void SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) {}
 
 void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
-    for (int i = 0; i < length; ++i) {
+    for (size_t i = 0; i < length; ++i) {
         data[i] = _u16Response.front();
         _u16Response.pop();
     }
@@ -975,7 +975,7 @@ void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t 
 void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}
 
 void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs) {
-    for (int i = 0; i < length; i++) {
+    for (size_t i = 0; i < length; i++) {
         data[i] = i;
     }
 }
