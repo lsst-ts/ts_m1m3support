@@ -46,7 +46,12 @@ namespace SS {
  * Steppers are commanded via ILC code 66 in small increments. Encoders are
  * read back, and according to difference between commanded and target
  * position, HP is either in Standby (not moving), Chasing (moving with the
- * mirror), Quick and Fine positioning (moving to target position).
+ * mirror so measured actuator force is close to 0), Quick and Fine positioning
+ * (moving to target position).
+ *
+ * Small increments send to the ILC are stored in SAL/DDS
+ * MTM1M3_hardpointActuatorDataC stepsCommanded. Target steps are stored in
+ * stepsQueued.
  */
 class PositionController {
 public:
@@ -96,6 +101,28 @@ public:
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
     void stopMotion();
 
+    /**
+     * Should be run in a loop to command steps updates. Sets stepsCommanded
+     * and stepsQueued. What is happening with the actuators is governed by
+     *
+     * * **Standby**: both stepsCommanded and stepsQueued are set to 0.
+     * * **Chasing**: MTM1M3_hardpointActuatorDataC measuredForce is multiplied
+     * by PositionControllerSettings::ForceToStepsCoefficient and coerced into
+     * ±PositionControllerSettings::MaxStepsPerLoop.
+     * * **Stepping**: executes steps so stepsQueued are decreased, ultimately
+     * equal to 0. MTM1M3_hardpointActuatorDataC stepsQueued are coerced into
+     * ±_scaledMaxStepsPerLoop[HP] and send to HP. stepsQueued are decreased by
+     * stepsCommanded. If coerced value == 0, HP is transitioned into Standby
+     * state.
+     * * **QuickPositioning**: same as **Stepping**, but transition into
+     * FinePositioning state when finished.
+     * * **FinePositioning**: finish movement by removing any residual between
+     * HP encoder (measured) value and _targetEncoderValues. Difference between
+     * _targetEncoderValues and encoder values > 2 are commanded. Transition to
+     * Standby state if the difference remains <= ±2 for two loop runs.
+     *
+     * @see PositionControllerSettings
+     */
     void updateSteps();
 
 private:

@@ -27,8 +27,6 @@
 #include <NiFpga.h>
 #include <IExpansionFPGA.h>
 
-#define RND_CNT 50
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -46,15 +44,10 @@ public:
 
     void readSlot1(float* data) override;
     void readSlot2(uint32_t* data) override;
-
-private:
-    float _rnd[RND_CNT];
-    int _rndIndex;
-    float _getRnd();
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
 #endif /* LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_ */

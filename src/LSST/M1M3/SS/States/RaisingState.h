@@ -33,6 +33,10 @@ namespace SS {
 /**
  * State during mirror raise. Transition to active state when raise finished,
  * or to lowering state on abort.
+ *
+ * Just passes calls. Raising is controlled through MirrorRaiseController.
+ *
+ * @see MirrorRaiseController
  */
 class RaisingState : public EnabledState {
 public:
