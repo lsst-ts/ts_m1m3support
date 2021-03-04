@@ -93,7 +93,8 @@ void print4(const char* name, t a[4]) {
 void PrintILC::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                       float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
                                       float backupSensitivity[4]) {
-    std::cout << "Calibration data " << static_cast<int>(_bus) << "/" << static_cast<int>(address) << std::endl << std::endl;
+    std::cout << "Calibration data " << std::to_string(_bus) << "/" << std::to_string(address) << std::endl
+              << std::endl;
 
     int vi[4] = {1, 2, 3, 4};
     print4("Values", vi);
