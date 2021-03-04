@@ -21,6 +21,7 @@
  */
 
 #include <FPGA.h>
+#include <ForceActuatorApplicationSettings.h>
 
 #include <cRIO/ElectromechanicalPneumaticILC.h>
 
@@ -205,46 +206,97 @@ int closeFPGA() {
     return 0;
 }
 
-int callFunction(command_vec cmds, std::function<void(uint8_t)> call) {
-    int ret = -2;
+ForceActuatorApplicationSettings forceActuators;
+
+/**
+ * Process command arguments, call given function. Function accepts three
+ * arguments - bus number (1-5), FA address, command arguments begin and
+ * command arguments. It returns <0 on error.
+ *
+ * Address is either <bus>/<address>, where bus is bus number (1-5) and address
+ * is the address (1-46). Or a number >= 101 and <= 443, denoting force
+ * actuator ID. Single number 1-6 is for hardpoints.
+ *
+ * @param cmds commands array
+ * @param call function to call
+ *
+ * @return
+ */
+int callFunction(command_vec cmds,
+                 std::function<void(uint8_t, uint8_t, command_vec::iterator&, command_vec)> call) {
     ilc.clear();
-    for (auto c : cmds) {
-        try {
-            int address = std::stoi(c);
-            if (address <= 0 || address > 100) {
-                std::cerr << "Invalid address " << c << std::endl;
-                ret = -1;
-                continue;
-            }
-            call(address);
-            ret = 0;
-        } catch (std::logic_error& e) {
-            std::cerr << "Non-numeric address: " << c << std::endl;
-            ret = -1;
+
+    if (cmds.empty()) {
+        std::cout << "Info for all ILC" << std::endl;
+        command_vec::iterator beg = cmds.begin();
+        for (int i = 0; i < 156; i++) {
+            ForceActuatorTableRow row = forceActuators.Table[i];
+            call(row.Subnet, row.Address, beg, cmds);
         }
+        return 0;
     }
 
-    if (ret == -2) {
-        std::cout << "Info for all ILC" << std::endl;
-        for (int i = 1; i <= 96; i++) {
-            call(i);
+    for (command_vec::iterator c = cmds.begin(); c != cmds.end(); c++) {
+        std::size_t division = c->find('/');
+        int bus = -1;
+        int address = -1;
+        try {
+            if (division != std::string::npos) {
+                bus = std::stoi(c->substr(0, division));
+                address = std::stoi(c->substr(division + 1));
+                if (address <= 0 || address > 46) {
+                    std::cerr << "Invalid address " << *c << std::endl;
+                    return -1;
+                }
+            }
+            // try to find bus & address by FA/HP ID
+            else {
+                int id = std::stoi(*c);
+                if (id >= 101 && id <= 443) {
+                    id = forceActuators.ActuatorIdToZIndex(id);
+                    if (id < 0) {
+                        std::cerr << "Unknown actuator ID " << id << std::endl;
+                        return -1;
+                    }
+                    ForceActuatorTableRow row = forceActuators.Table[id];
+                    bus = row.Subnet;
+                    address = row.Address;
+                }
+            }
+        } catch (std::logic_error& e) {
+            std::cerr << "Non-numeric address: " << *c << std::endl;
+            return -1;
         }
-        ret = 0;
+
+        call(bus, address, c, cmds);
     }
 
     if (ilc.getLength() > 0) {
         fpga->ilcCommands(ilc.getBus() + 8, ilc);
     }
 
-    return ret;
+    return 0;
 }
 
 int calData(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t a) { return ilc.reportCalibrationData(a); });
+    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
+        return ilc.reportCalibrationData(address);
+    });
+}
+
+int calSet(command_vec cmds) {
+    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
+        uint8_t channel = std::stoi(*(++c));
+        float offset = std::stof(*(++c));
+        float sensitivity = std::stof(*(++c));
+        return ilc.setOffsetAndSensitivity(address, channel, offset, sensitivity);
+    });
 }
 
 int info(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t a) { return ilc.reportServerID(a); });
+    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
+        return ilc.reportServerID(address);
+    });
 }
 
 int openFPGA(command_vec cmds) {
@@ -315,6 +367,8 @@ int verbose(command_vec cmds) {
 
 command_t commands[] = {
         {"caldata", &calData, "s?", NEED_FPGA, "<address>..", "Print ILC calibration data"},
+        {"calset", &calSet, "siff", NEED_FPGA, "<address> <channel> <ADC Kn> <offset> <setpoint>",
+         "Set calibration data for given channel"},
         {"close", [=](command_vec) { return closeFPGA(); }, "", NEED_FPGA, NULL, "Close FPGA connection"},
         {"help", [=](command_vec cmds) { return cli.helpCommands(cmds); }, "", 0, NULL,
          "Print commands help"},
