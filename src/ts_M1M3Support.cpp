@@ -40,6 +40,7 @@ void printHelp() {
     std::cout << "M1M3 Static Support controller. Runs either as simulator or as simulator or as "
                  "the real think on cRIO."
               << std::endl
+              << "Version: " << VERSION << std::endl
               << "Options:" << std::endl
               << "  -b runs on background, don't log to stdout" << std::endl
               << "  -c <configuration path> use given configuration directory (should be SettingFiles)"
@@ -47,7 +48,8 @@ void printHelp() {
               << "  -d increases debugging (can be specified multiple times, default is info)" << std::endl
               << "  -f runs on foreground, don't log to file" << std::endl
               << "  -h prints this help" << std::endl
-              << "  -s increases SAL debugging (can be specified multiple times, default is 0)" << std::endl;
+              << "  -s increases SAL debugging (can be specified multiple times, default is 0)" << std::endl
+              << "  -v prints version and exits" << std::endl;
 }
 
 int debugLevel = 0;
@@ -64,7 +66,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
     int enabledSinks = 0x3;
 
     int opt;
-    while ((opt = getopt(argc, argv, "bc:dfhs")) != -1) {
+    while ((opt = getopt(argc, argv, "bc:dfhsv")) != -1) {
         switch (opt) {
             case 'b':
                 enabledSinks &= ~0x01;
@@ -84,6 +86,9 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
             case 's':
                 debugLevelSAL++;
                 break;
+            case 'v':
+                std::cout << VERSION << std::endl;
+                exit(EXIT_SUCCESS);
             default:
                 std::cerr << "Unknow option " << opt << std::endl;
                 printHelp();
@@ -110,7 +115,9 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
 
 void initializeFPGAs(IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
 #ifdef SIMULATOR
-    SPDLOG_WARN("Starting Simulator version!");
+    SPDLOG_WARN("Starting Simulator version! Version {}", VERSION);
+#else
+    SPDLOG_INFO("Starting cRIO/real HW version. Version {}", VERSION);
 #endif
 
     SPDLOG_INFO("Main: Creating fpga");
