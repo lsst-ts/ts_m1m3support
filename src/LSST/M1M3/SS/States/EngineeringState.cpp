@@ -44,8 +44,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EngineeringState::EngineeringState(std::string name) : EnabledState(name) {}
-
 States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command) {
     SPDLOG_INFO("{}: turnAirOn()", this->name);
     Model::get().getDigitalInputOutput()->turnAirOn();

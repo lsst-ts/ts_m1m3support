@@ -22,6 +22,7 @@
  */
 
 #include <SimulatedExpansionFPGA.h>
+#include <SimulatedFPGA.h>
 #include <cstdlib>
 #include <spdlog/spdlog.h>
 
@@ -31,19 +32,6 @@ namespace SS {
 
 SimulatedExpansionFPGA::SimulatedExpansionFPGA() {
     SPDLOG_DEBUG("SimulatedExpansionFPGA: SimulatedExpansionFPGA()");
-
-    for (int i = 0; i < RND_CNT; ++i) {
-        _rnd[i] = float((rand() % 2000) - 1000) / 1000.0;
-    }
-    _rndIndex = 0;
-}
-
-float SimulatedExpansionFPGA::_getRnd() {
-    ++_rndIndex;
-    if (_rndIndex > RND_CNT) {
-        _rndIndex = 0;
-    }
-    return _rnd[_rndIndex];
 }
 
 void SimulatedExpansionFPGA::initialize() { SPDLOG_DEBUG("SimulatedExpansionFPGA: initialize()"); }
@@ -57,12 +45,12 @@ void SimulatedExpansionFPGA::finalize() { SPDLOG_DEBUG("SimulatedExpansionFPGA: 
 void SimulatedExpansionFPGA::sample() {}
 
 void SimulatedExpansionFPGA::readSlot1(float* data) {
-    data[0] = 1.0 + _getRnd() * 0.5;
-    data[1] = 1.0 + _getRnd() * 0.5;
-    data[2] = 1.0 + _getRnd() * 0.5;
-    data[3] = 1.0 + _getRnd() * 0.5;
-    data[4] = 1.0 + _getRnd() * 0.5;
-    data[5] = 1.0 + _getRnd() * 0.5;
+    data[0] = 1.0 + getRndPM1() * 0.5;
+    data[1] = 1.0 + getRndPM1() * 0.5;
+    data[2] = 1.0 + getRndPM1() * 0.5;
+    data[3] = 1.0 + getRndPM1() * 0.5;
+    data[4] = 1.0 + getRndPM1() * 0.5;
+    data[5] = 1.0 + getRndPM1() * 0.5;
 }
 
 void SimulatedExpansionFPGA::readSlot2(uint32_t* data) {}

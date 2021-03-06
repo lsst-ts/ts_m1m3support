@@ -122,6 +122,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         _neighbors.push_back(neighbors);
     }
 
+    SPDLOG_INFO("ForceController mirror weight/all Z forces {}N", _mirrorWeight);
+
     for (int i = 0; i < FA_X_COUNT; i++) {
         limitTriggerX[i] = ForceLimitTrigger('X', _forceActuatorApplicationSettings->XIndexToActuatorId(i));
     }
@@ -152,7 +154,7 @@ void ForceController::reset() {
 
 void ForceController::updateTMAElevationData(MTMount_elevationC* tmaElevationData) {
     SPDLOG_TRACE("ForceController: updateTMAElevationData()");
-    _elevation_Angle_Actual = tmaElevationData->angleActual;
+    _elevation_Angle_Actual = tmaElevationData->actualPosition;
     _elevation_Timestamp = tmaElevationData->timestamp;
 }
 
@@ -160,7 +162,7 @@ void ForceController::incSupportPercentage() {
     SPDLOG_TRACE("ForceController: incSupportPercentage()");
     _forceActuatorState->supportPercentage += _forceActuatorSettings->RaiseIncrementPercentage;
     if (supportPercentageFilled()) {
-        _forceActuatorState->supportPercentage = 1.0;
+        _forceActuatorState->supportPercentage = 100.0;
     }
     M1M3SSPublisher::get().logForceActuatorState();
 }
@@ -182,11 +184,11 @@ void ForceController::zeroSupportPercentage() {
 
 void ForceController::fillSupportPercentage() {
     SPDLOG_INFO("ForceController: fillSupportPercentage()");
-    _forceActuatorState->supportPercentage = 1.0;
+    _forceActuatorState->supportPercentage = 100.0;
     M1M3SSPublisher::get().logForceActuatorState();
 }
 
-bool ForceController::supportPercentageFilled() { return _forceActuatorState->supportPercentage >= 1.0; }
+bool ForceController::supportPercentageFilled() { return _forceActuatorState->supportPercentage >= 100.0; }
 
 bool ForceController::supportPercentageZeroed() { return _forceActuatorState->supportPercentage <= 0.0; }
 
@@ -614,10 +616,9 @@ bool ForceController::_checkNearNeighbors() {
 
             nearZ += _appliedForces->zForces[neighborZIndex];
         }
-        nearZ /= nearNeighbors;
-        float deltaZ = 0;
 
-        deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
+        nearZ /= nearNeighbors;
+        float deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
 
         bool previousWarning = _forceSetpointWarning->nearNeighborWarning[zIndex];
         _forceSetpointWarning->nearNeighborWarning[zIndex] =

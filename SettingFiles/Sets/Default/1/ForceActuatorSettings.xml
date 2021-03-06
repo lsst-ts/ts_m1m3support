@@ -17,9 +17,9 @@
     <ElevationXTablePath>Tables/ElevationXTable.csv</ElevationXTablePath>
     <ElevationYTablePath>Tables/ElevationYTable.csv</ElevationYTablePath>
     <ElevationZTablePath>Tables/ElevationZTable.csv</ElevationZTablePath>
-    <StaticXTablePath>Tables/StaticXTableNone.csv</StaticXTablePath>
-    <StaticYTablePath>Tables/StaticYTableNone.csv</StaticYTablePath>
-    <StaticZTablePath>Tables/StaticZTableNone.csv</StaticZTablePath>
+    <StaticXTablePath>Tables/StaticXTable.csv</StaticXTablePath>
+    <StaticYTablePath>Tables/StaticYTable.csv</StaticYTablePath>
+    <StaticZTablePath>Tables/StaticZTable.csv</StaticZTablePath>
     <ThermalXTablePath>Tables/ThermalXTable.csv</ThermalXTablePath>
     <ThermalYTablePath>Tables/ThermalYTable.csv</ThermalYTablePath>
     <ThermalZTablePath>Tables/ThermalZTable.csv</ThermalZTablePath>
@@ -90,8 +90,8 @@
     <MirrorCenterOfGravityY>0.000218726</MirrorCenterOfGravityY>
     <MirrorCenterOfGravityZ>-1.7657086</MirrorCenterOfGravityZ>
 
-    <RaiseIncrementPercentage>0.0005</RaiseIncrementPercentage>
-    <LowerDecrementPercentage>0.0005</LowerDecrementPercentage>
+    <RaiseIncrementPercentage>0.05</RaiseIncrementPercentage>
+    <LowerDecrementPercentage>0.05</LowerDecrementPercentage>
     <RaiseLowerFollowingErrorLimit>50</RaiseLowerFollowingErrorLimit>
 
     <AberrationForceComponent>

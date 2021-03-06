@@ -24,7 +24,7 @@
 #ifndef ACTIVESTATE_H_
 #define ACTIVESTATE_H_
 
-#include <EnabledState.h>
+#include <EnabledActiveState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -35,19 +35,19 @@ namespace SS {
  * lowered with Lower M1M3 Command. The controller can be switched to
  * engineering mode with Enter Engineering command.
  */
-class ActiveState : public EnabledState {
+class ActiveState : public EnabledActiveState {
 public:
     ActiveState();
 
     virtual States::Type update(UpdateCommand* command) override;
     virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
-    virtual States::Type lowerM1M3(LowerM1M3Command* command) override;
-    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
-    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
+
+protected:
+    States::Type getLoweringState() override { return States::LoweringState; }
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
 #endif /* ACTIVESTATE_H_ */

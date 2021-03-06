@@ -133,7 +133,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     uint64_t b = buffer->readLength();
     uint64_t c = buffer->readLength();
     uint64_t d = buffer->readLength();
-    double globalTimestamp = Timestamp::fromRaw((a << 48) | (b << 32) | (c << 16) | d);
+    double globalTimestamp = Timestamp::fromRaw((d << 48) | (c << 32) | (b << 16) | a);
     _forceActuatorState->timestamp = globalTimestamp;
     _forceActuatorWarning->timestamp = globalTimestamp;
     _forceWarning->timestamp = globalTimestamp;
@@ -372,13 +372,13 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < FA_COUNT; i++) {
         if (_faExpectedResponses[i] != 0) {
             warn = true;
+            SPDLOG_WARN("ILCResponseParser: Force actuator #{} response timeout", i);
             _warnResponseTimeout(timestamp, _forceActuatorInfo->referenceId[i]);
             _faExpectedResponses[i] = 0;
         }
     }
     if (warn) {
         anyTimeout = true;
-        SPDLOG_WARN("ILCResponseParser: Force actuator response timeout {} {} {} {} {} {} {} {}");
     }
     warn = false;
     for (int i = 0; i < HP_COUNT; i++) {

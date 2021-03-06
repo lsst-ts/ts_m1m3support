@@ -72,9 +72,10 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
 }
 
 void MirrorRaiseController::runLoop() {
-    SPDLOG_TRACE("MirrorRaiseController: runLoop()");
+    SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
+                 M1M3SSPublisher::get().getEventForceActuatorState()->supportPercentage);
     if (!_forceController->supportPercentageFilled()) {
-        // We are still in the process of transfering the support force from the static supports
+        // We are still in the process of transferring the support force from the static supports
         // to the force actuators
         if (_positionController->forcesInTolerance() && _forceController->followingErrorInTolerance()) {
             // The forces on the hardpoints are within tolerance and

@@ -45,7 +45,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ParkedEngineeringState::ParkedEngineeringState() : EngineeringState("ParkedEngineeringState") {}
+ParkedEngineeringState::ParkedEngineeringState() : EnabledState("ParkedEngineeringState") {}
 
 States::Type ParkedEngineeringState::update(UpdateCommand* command) {
     SPDLOG_TRACE("ParkedEngineeringState: update()");
