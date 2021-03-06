@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Telescope & Site Software Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,33 +21,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
-#define LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
+#ifndef __LSST_UNITS_H__
+#define __LSST_UNITS_H__
 
-#include <NiFpga.h>
-#include <IExpansionFPGA.h>
+#include <cmath>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SimulatedExpansionFPGA : public IExpansionFPGA {
-public:
-    SimulatedExpansionFPGA();
-
-    void initialize() override;
-    void open() override;
-    void close() override;
-    void finalize() override;
-
-    void sample() override;
-
-    void readSlot1(float* data) override;
-    void readSlot2(uint32_t* data) override;
-};
+const static double D2RAD = M_PI / 180.0;
+const static double RAD2D = 180.0 / M_PI;
+const static double M2MM = 1000.0;
+const static double MM2M = 1.0 / 1000.0;
 
 }  // namespace SS
 }  // namespace M1M3
 }  // namespace LSST
-
-#endif /* LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_ */
+#endif  //!__LSST_UNITS_H__

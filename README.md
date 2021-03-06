@@ -173,6 +173,20 @@ cd ts_m1m3support
 make SIMULATOR=1
 ```
 
+## Simulator limitations
+
+Simulator does reasonable job computing various feedback signals. Those signals
+(values) and commended values are know to not be computed correctly:
+
+* **HP measured forces** those are hard to calculate. Direct consequences is
+that HP chasing doesn't work.
+
+* * **HP chasing steps** and **mirror position** as force computation doesn't
+work, HP and mirror position is not to be trusted in simulator as mirror is
+raised or lowered. HP are send to target position after raise is completed
+(mirror weight is 100% completed), so mirror position is reported correctly
+when mirror is in active state.
+
 ## Running in deployment
 
 ts_sal must be installed/available on target host. FPGA bitfiles with matching

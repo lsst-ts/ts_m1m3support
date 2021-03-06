@@ -35,10 +35,16 @@ namespace SS {
 
 /**
  * Controls mirror raising peration. The operations are executed as command.
- * Command transition system to some "in-progress" state. The newly set system
- * state calls in a loop method the MirrorRaiseController to perform operations
+ * Command transition system to RaisingState or RaisingEngineeringState. The
+ * newly set system state calls in a loop method the MirrorRaiseController to
+ * perform operations
  * requested.
  *
+ * Hardpoints (HPs) are put into Chasing mode as raises starts. In Chasing
+ * state (controlled through PositionController), HP is following force seen on
+ * its top end to remain close to 0 force.
+ *
+ * @see PositionController
  * @see MirrorLowerController
  */
 class MirrorRaiseController {

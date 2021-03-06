@@ -21,33 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
-#define LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
+#ifndef ENABLEDACTIVESTATE_H_
+#define ENABLEDACTIVESTATE_H_
 
-#include <NiFpga.h>
-#include <IExpansionFPGA.h>
+#include <EnabledState.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class SimulatedExpansionFPGA : public IExpansionFPGA {
+/**
+ * Enabled active state. Abstract class implementing commands valid both in
+ * ActiveState and ActiveEngineeringState.
+ */
+class EnabledActiveState : public virtual EnabledState {
 public:
-    SimulatedExpansionFPGA();
+    virtual States::Type lowerM1M3(LowerM1M3Command* command) override;
+    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command) override;
+    virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command) override;
+    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
+    virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
+    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
+    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
 
-    void initialize() override;
-    void open() override;
-    void close() override;
-    void finalize() override;
-
-    void sample() override;
-
-    void readSlot1(float* data) override;
-    void readSlot2(uint32_t* data) override;
+protected:
+    virtual States::Type getLoweringState() = 0;
 };
 
 }  // namespace SS
 }  // namespace M1M3
 }  // namespace LSST
 
-#endif /* LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_ */
+#endif /* ENABLEDACTIVESTATE_H_ */

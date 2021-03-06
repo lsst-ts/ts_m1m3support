@@ -34,10 +34,8 @@ namespace SS {
  * Engineering state. Parent class for all engineering classes. Allows manual
  * control of air, force actuators and hard-points.
  */
-class EngineeringState : public EnabledState {
+class EngineeringState : public virtual EnabledState {
 public:
-    EngineeringState(std::string name);
-
     virtual States::Type turnAirOn(TurnAirOnCommand* command) override;
     virtual States::Type turnAirOff(TurnAirOffCommand* command) override;
     virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command) override;

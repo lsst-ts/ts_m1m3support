@@ -358,7 +358,7 @@ void PositionController::updateSteps() {
                 int32_t deltaEncoder = _targetEncoderValues[i] - _hardpointActuatorData->encoder[i];
                 int32_t encoderSteps =
                         (int32_t)(deltaEncoder * _positionControllerSettings->EncoderToStepsCoefficient);
-                if (deltaEncoder <= 2 && deltaEncoder >= -2) {
+                if (fabs(deltaEncoder) <= 2) {
                     if (deltaEncoder < 0) {
                         encoderSteps = -1;
                         _stableEncoderCount[i] = 0;

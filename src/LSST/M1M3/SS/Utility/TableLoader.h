@@ -69,7 +69,12 @@ void TableLoader::loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep
                 ++i;
             }
             for (int j = 0; j < columnsToKeep; j++) {
-                data->push_back(boost::lexical_cast<t>(*i));
+                try {
+                    data->push_back(boost::lexical_cast<t>(*i));
+                } catch (boost::bad_lexical_cast& bc) {
+                    throw std::runtime_error("Cannot cast " + filename + ":" + std::to_string(lineNumber) +
+                                             ":" + std::to_string(j + columnsToSkip) + " " + (*i));
+                }
                 ++i;
             }
         }
