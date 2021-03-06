@@ -38,8 +38,7 @@ using namespace LSST::M1M3::SS;
 
 class PrintILC : public ElectromechanicalPneumaticILC {
 public:
-    PrintILC(uint8_t bus) : _bus(bus) {}
-    uint8_t getBus() { return _bus; }
+    PrintILC(uint8_t bus) : ElectromechanicalPneumaticILC(bus) { setAlwaysTrigger(true); }
 
 protected:
     void processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAppType, uint8_t networkNodeType,
@@ -57,9 +56,6 @@ protected:
     virtual void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                         float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
                                         float backupSensitivity[4]) override;
-
-private:
-    uint8_t _bus;
 };
 
 void PrintILC::processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAppType,
@@ -79,7 +75,7 @@ void PrintILC::processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAp
 }
 
 void PrintILC::processResetServer(uint8_t address) {
-    std::cout << "Reseted " << _bus << "/" << address << std::endl;
+    std::cout << "Reseted " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
 }
 
 template <typename t>
@@ -94,7 +90,8 @@ void print4(const char* name, t a[4]) {
 void PrintILC::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                       float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
                                       float backupSensitivity[4]) {
-    std::cout << "Calibration data " << std::to_string(_bus) << "/" << std::to_string(address) << std::endl
+    std::cout << "Calibration data " << std::to_string(getBus()) << "/" << std::to_string(address)
+              << std::endl
               << std::endl;
 
     int vi[4] = {1, 2, 3, 4};
@@ -188,7 +185,8 @@ public:
 };
 
 PrintSSFPGA* fpga = NULL;
-PrintILC ilc(1);
+constexpr int ILC_BUS = 5;
+PrintILC ilcs[ILC_BUS] = {PrintILC(1), PrintILC(2), PrintILC(3), PrintILC(4), PrintILC(5)};
 
 int M1M3TScli::processCommand(const command_t* cmd, const command_vec& args) {
     if ((cmd->flags & NEED_FPGA) && fpga == NULL) {
@@ -224,7 +222,9 @@ ForceActuatorApplicationSettings forceActuators;
  */
 int callFunction(command_vec cmds,
                  std::function<void(uint8_t, uint8_t, command_vec::iterator&, command_vec)> call) {
-    ilc.clear();
+    for (int i = 0; i < ILC_BUS; i++) {
+        ilcs[i].clear();
+    }
 
     if (cmds.empty()) {
         std::cout << "Info for all ILC" << std::endl;
@@ -259,6 +259,10 @@ int callFunction(command_vec cmds,
                         return -1;
                     }
                     ForceActuatorTableRow row = forceActuators.Table[id];
+                    if (_verbose) {
+                        std::cout << "Id: " << id << " address: " << std::to_string(bus) << "/"
+                                  << std::to_string(address) << std::endl;
+                    }
                     bus = row.Subnet;
                     address = row.Address;
                 }
@@ -271,8 +275,10 @@ int callFunction(command_vec cmds,
         call(bus, address, c, cmds);
     }
 
-    if (ilc.getLength() > 0) {
-        fpga->ilcCommands(ilc.getBus() + 8, ilc);
+    for (int i = 0; i < ILC_BUS; i++) {
+        if (ilcs[i].getLength() > 0) {
+            fpga->ilcCommands(ilcs[i]);
+        }
     }
 
     return 0;
@@ -280,7 +286,7 @@ int callFunction(command_vec cmds,
 
 int calData(command_vec cmds) {
     return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        return ilc.reportCalibrationData(address);
+        return ilcs[bus].reportCalibrationData(address);
     });
 }
 
@@ -289,13 +295,13 @@ int calSet(command_vec cmds) {
         uint8_t channel = std::stoi(*(++c));
         float offset = std::stof(*(++c));
         float sensitivity = std::stof(*(++c));
-        return ilc.setOffsetAndSensitivity(address, channel, offset, sensitivity);
+        return ilcs[bus].setOffsetAndSensitivity(address, channel, offset, sensitivity);
     });
 }
 
 int info(command_vec cmds) {
     return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        return ilc.reportServerID(address);
+        return ilcs[bus].reportServerID(address);
     });
 }
 
