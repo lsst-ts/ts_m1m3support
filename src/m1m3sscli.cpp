@@ -36,6 +36,8 @@
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
 
+unsigned int _printout = 0;
+
 class PrintILC : public ElectromechanicalPneumaticILC {
 public:
     PrintILC(uint8_t bus) : ElectromechanicalPneumaticILC(bus) { setAlwaysTrigger(true); }
@@ -58,11 +60,21 @@ protected:
                                         float backupSensitivity[4]) override;
 };
 
+void _printSepline() {
+    if (_printout > 0) {
+        std::cout << std::endl;
+    }
+    _printout++;
+}
+
 void PrintILC::processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAppType,
                                uint8_t networkNodeType, uint8_t ilcSelectedOptions,
                                uint8_t networkNodeOptions, uint8_t majorRev, uint8_t minorRev,
                                std::string firmwareName) {
-    std::cout << "Address: " << std::to_string(address) << std::endl
+    _printSepline();
+    std::cout << "Bus: " << std::to_string(getBus()) << " (" << static_cast<char>('A' - 1 + getBus()) << ")"
+              << std::endl
+              << "Address: " << std::to_string(address) << std::endl
               << "UniqueID: " << std::hex << std::setw(8) << std::setfill('0') << (uniqueID) << std::endl
               << "ILC application type: " << std::to_string(ilcAppType) << std::endl
               << "Network node type: " << std::to_string(networkNodeType) << std::endl
@@ -70,11 +82,11 @@ void PrintILC::processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAp
               << "Network node options: " << std::to_string(networkNodeOptions) << std::endl
               << "Firmware revision: " << std::to_string(majorRev) << "." << std::to_string(minorRev)
               << std::endl
-              << "Firmware name: " << firmwareName << std::endl
-              << std::endl;
+              << "Firmware name: " << firmwareName << std::endl;
 }
 
 void PrintILC::processResetServer(uint8_t address) {
+    _printSepline();
     std::cout << "Reseted " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
 }
 
@@ -90,8 +102,8 @@ void print4(const char* name, t a[4]) {
 void PrintILC::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                       float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
                                       float backupSensitivity[4]) {
+    _printSepline();
     std::cout << "Calibration data " << std::to_string(getBus()) << "/" << std::to_string(address)
-              << std::endl
               << std::endl;
 
     int vi[4] = {1, 2, 3, 4};
@@ -215,6 +227,11 @@ ForceActuatorApplicationSettings forceActuators;
  * is the address (1-46). Or a number >= 101 and <= 443, denoting force
  * actuator ID. Single number 1-6 is for hardpoints.
  *
+ * :warn: Please note that bus number passed to call function is 0 based (e.g.
+ * bus 1 is passed as 0). That's different from FPGA functions, where bus is 1
+ * based. This is because call is assumed to access ilcs array with bus index,
+ * where ilcs indices are 0 based.
+ *
  * @param cmds commands array
  * @param call function to call
  *
@@ -226,14 +243,15 @@ int callFunction(command_vec cmds,
         ilcs[i].clear();
     }
 
+    _printout = 0;
+
     if (cmds.empty()) {
-        std::cout << "Info for all ILC" << std::endl;
+        std::cout << "Command for all ILC" << std::endl;
         command_vec::iterator beg = cmds.begin();
         for (int i = 0; i < 156; i++) {
             ForceActuatorTableRow row = forceActuators.Table[i];
-            call(row.Subnet, row.Address, beg, cmds);
+            call(row.Subnet - 1, row.Address, beg, cmds);
         }
-        return 0;
     }
 
     for (command_vec::iterator c = cmds.begin(); c != cmds.end(); c++) {
@@ -272,7 +290,12 @@ int callFunction(command_vec cmds,
             return -1;
         }
 
-        call(bus, address, c, cmds);
+        if (bus < 1 || bus > ILC_BUS || address == -1) {
+            std::cerr << "Invalid ILC address: " << *c << std::endl;
+            return -1;
+        }
+
+        call(bus - 1, address, c, cmds);
     }
 
     for (int i = 0; i < ILC_BUS; i++) {
