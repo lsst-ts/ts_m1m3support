@@ -72,7 +72,7 @@
     <ForceActuatorLimitsTablePath>Tables/ForceActuatorLimitsTable.csv</ForceActuatorLimitsTablePath>
     <ForceActuatorNearZNeighborsTablePath>Tables/ForceActuatorNearNeighborZTable.csv</ForceActuatorNearZNeighborsTablePath>
     <ForceActuatorNeighborsTablePath>Tables/ForceActuatorNeighborsTable.csv</ForceActuatorNeighborsTablePath>
-    <UseInclinometer>1</UseInclinometer>
+    <UseInclinometer>0</UseInclinometer>
     <MirrorXMoment>-65311</MirrorXMoment>
     <MirrorYMoment>-20000</MirrorYMoment>
     <MirrorZMoment>-20000</MirrorZMoment>

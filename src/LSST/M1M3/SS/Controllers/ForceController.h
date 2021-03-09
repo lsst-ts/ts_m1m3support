@@ -209,7 +209,7 @@ public:
     void zeroActiveOpticForces();
 
     void applyAzimuthForces();
-    void updateAzimuthForces(float azimuthAngle);
+    void updateAzimuthForces(MTMount_azimuthC* tmaAzimuthData);
     void zeroAzimuthForces();
 
     void applyBalanceForces();

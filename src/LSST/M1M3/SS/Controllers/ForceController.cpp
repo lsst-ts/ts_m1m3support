@@ -349,9 +349,9 @@ void ForceController::applyAzimuthForces() {
     }
 }
 
-void ForceController::updateAzimuthForces(float azimuthAngle) {
+void ForceController::updateAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
     SPDLOG_TRACE("ForceController: updateAzimuthForces()");
-    _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(azimuthAngle);
+    _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
 }
 
 void ForceController::zeroAzimuthForces() {
