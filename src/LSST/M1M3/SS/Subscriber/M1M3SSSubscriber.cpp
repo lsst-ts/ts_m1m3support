@@ -486,20 +486,18 @@ Command* M1M3SSSubscriber::tryAcceptCommandKillForceActuatorBumpTest() {
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
-    /*	int32_t result = _mtMountSAL->getSample_Az(&_tmaAzimuth);
-            if (result == 0) {
-                    return CommandFactory::create(Commands::TMAAzimuthSampleCommand, &_tmaAzimuth,
-       0);
-            }*/
+    int32_t result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
+    if (result == 0) {
+        return CommandFactory::create(Commands::TMAAzimuthSampleCommand, &_tmaAzimuth, 0);
+    }
     return 0;
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAElevation() {
-    /*	int32_t result = _mtMountSAL->getSample_Alt(&_tmaElevation);
-            if (result == 0) {
-                    return CommandFactory::create(Commands::TMAElevationSampleCommand,
-       &_tmaElevation, 0);
-            }*/
+    int32_t result = _mtMountSAL->getSample_elevation(&_tmaElevation);
+    if (result == 0) {
+        return CommandFactory::create(Commands::TMAElevationSampleCommand, &_tmaElevation, 0);
+    }
     return 0;
 }
 
