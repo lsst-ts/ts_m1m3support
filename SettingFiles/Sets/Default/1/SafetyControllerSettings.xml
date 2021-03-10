@@ -101,4 +101,9 @@
         <AirPressureCountThreshold>50</AirPressureCountThreshold>
         <AirPressurePeriod>50</AirPressurePeriod>
     </ILCSettings>
+    <TMASettings>
+        <AzimuthTimeout>0.1</AzimuthTimeout>
+        <ElevationTimeout>0.1</ElevationTimeout>
+        <InclinometerDeviationArcMin>10</InclinometerDeviationArcMin>
+    </TMASettings>
 </SafetyControllerSettings>
