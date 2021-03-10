@@ -34,6 +34,15 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Controls mirror safety. Sets _errorCodeData->errorCode to the first detected
+ * fault. checkSafety() method then sends mirror to fault state if any fault is
+ * detected.
+ *
+ * This is a layer above computational layer. Its either check some safety
+ * rules, or is signaled safety rules violation. If mirror safety rules are
+ * violated, checkSafety() method sends the mirror to a fault state.
+ */
 class SafetyController {
 public:
     SafetyController(SafetyControllerSettings* safetyControllerSettings);
@@ -120,6 +129,19 @@ public:
     void hardpointActuatorMeasuredForce(int actuatorDataIndex, bool conditionFlag);
     void hardpointActuatorAirPressure(int actuatorDataIndex, bool conditionFlag);
 
+    void tmaAzimuthTimeout(double currentTimeout);
+    void tmaElevationTimeout(double currentTimeout);
+    void tmaInclinometerDeviation(double currentDeviation);
+
+    /**
+     * Check if mirror safety rules are fulfilled. When safety rules are not
+     * fulfilled, returns States::LoweringFaultState.
+     *
+     * @param preferredNextState returns this state if mirror safety is not violated
+     *
+     * @return preferredNextState if mirror safety is not violated,
+     * States::LoweringFaultState otherwise.
+     */
     States::Type checkSafety(States::Type preferredNextState);
 
 private:

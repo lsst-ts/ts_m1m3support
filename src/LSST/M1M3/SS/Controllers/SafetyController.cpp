@@ -400,6 +400,22 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
                     sum >= _safetyControllerSettings->ILC.AirPressureCountThreshold);
 }
 
+void SafetyController::tmaAzimuthTimeout(double currentTimeout) {
+    _updateOverride(FaultCodes::TMAAzimuthTimeout, _safetyControllerSettings->TMA.AzimuthTimeout > 0,
+                    currentTimeout > _safetyControllerSettings->TMA.AzimuthTimeout);
+}
+
+void SafetyController::tmaElevationTimeout(double currentTimeout) {
+    _updateOverride(FaultCodes::TMAElevationTimeout, _safetyControllerSettings->TMA.ElevationTimeout > 0,
+                    currentTimeout > _safetyControllerSettings->TMA.ElevationTimeout);
+}
+
+void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
+    _updateOverride(FaultCodes::TMAInclinometerDeviation,
+                    _safetyControllerSettings->TMA.InclinometerDeviation > 0,
+                    currentDeviation > _safetyControllerSettings->TMA.InclinometerDeviation);
+}
+
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
         M1M3SSPublisher::get().logErrorCode();
