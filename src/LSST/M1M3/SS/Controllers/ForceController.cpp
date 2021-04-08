@@ -84,7 +84,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _gyroData = M1M3SSPublisher::get().getGyroData();
 
     _elevation_Timestamp = 0;
-    _elevation_Angle_Actual = NAN;
+    _elevation_Actual = NAN;
 
     reset();
 
@@ -154,7 +154,7 @@ void ForceController::reset() {
 
 void ForceController::updateTMAElevationData(MTMount_elevationC* tmaElevationData) {
     SPDLOG_TRACE("ForceController: updateTMAElevationData()");
-    _elevation_Angle_Actual = tmaElevationData->actualPosition;
+    _elevation_Actual = tmaElevationData->actualPosition;
     _elevation_Timestamp = tmaElevationData->timestamp;
 }
 
@@ -246,7 +246,7 @@ void ForceController::updateAppliedForces() {
         if (_elevationForceComponent.isEnabled()) {
             double elevationAngle = _forceActuatorSettings->UseInclinometer
                                             ? _inclinometerData->inclinometerAngle
-                                            : _elevation_Angle_Actual;
+                                            : _elevation_Actual;
             // Convert elevation angle to zenith angle (used by matrix)
             elevationAngle = 90.0 - elevationAngle;
             _elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);

@@ -283,7 +283,7 @@ private:
     MTM1M3_gyroDataC* _gyroData;
 
     double _elevation_Timestamp;
-    double _elevation_Angle_Actual;
+    double _elevation_Actual;
 
     std::vector<ForceActuatorNeighbors> _neighbors;
 
