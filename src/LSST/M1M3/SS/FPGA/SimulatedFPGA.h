@@ -59,9 +59,6 @@ public:
     void close() override;
     void finalize() override;
 
-    uint16_t getTxCommand(uint8_t bus) override {}
-    uint16_t getRxCommand(uint8_t bus) override {}
-
     void waitForOuterLoopClock(uint32_t timeout) override;
     void ackOuterLoopClock() override;
 
@@ -82,6 +79,7 @@ public:
 
     void waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered = NULL) override {}
     void ackIrqs(uint32_t irqs) override {}
+    uint32_t getIrq(uint8_t bus) override { return 0; }
 
     void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) override;
     void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) override;

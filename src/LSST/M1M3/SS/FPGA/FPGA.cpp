@@ -86,27 +86,6 @@ void FPGA::finalize() {
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Finalize());
 }
 
-uint16_t FPGA::getTxCommand(uint8_t bus) { return FPGAAddresses::ModbusSubnetsTx[bus - 1]; }
-
-uint16_t FPGA::getRxCommand(uint8_t bus) { return FPGAAddresses::ModbusSubnetsRx[bus - 1]; }
-
-uint32_t FPGA::getIrq(uint8_t bus) {
-    switch (bus) {
-        case 1:
-            return NiFpga_Irq_1;
-        case 2:
-            return NiFpga_Irq_2;
-        case 3:
-            return NiFpga_Irq_3;
-        case 4:
-            return NiFpga_Irq_4;
-        case 5:
-            return NiFpga_Irq_5;
-        default:
-            return 0;
-    }
-}
-
 void FPGA::waitForOuterLoopClock(uint32_t timeout) {
     uint32_t assertedIRQs = 0;
     uint8_t timedOut = false;

@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <NiFpga.h>
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
 
@@ -42,6 +43,27 @@ IFPGA& IFPGA::get() {
     static LSST::M1M3::SS::FPGA fpga;
     return fpga;
 #endif
+}
+
+uint16_t IFPGA::getTxCommand(uint8_t bus) { return FPGAAddresses::ModbusSubnetsTx[bus - 1]; }
+
+uint16_t IFPGA::getRxCommand(uint8_t bus) { return FPGAAddresses::ModbusSubnetsRx[bus - 1]; }
+
+uint32_t IFPGA::getIrq(uint8_t bus) {
+    switch (bus) {
+        case 1:
+            return NiFpga_Irq_1;
+        case 2:
+            return NiFpga_Irq_2;
+        case 3:
+            return NiFpga_Irq_3;
+        case 4:
+            return NiFpga_Irq_4;
+        case 5:
+            return NiFpga_Irq_5;
+        default:
+            return 0;
+    }
 }
 
 void IFPGA::setPower(bool aux, bool network) {

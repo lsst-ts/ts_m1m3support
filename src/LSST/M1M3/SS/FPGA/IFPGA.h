@@ -50,6 +50,10 @@ public:
 
     static IFPGA& get();
 
+    uint16_t getTxCommand(uint8_t bus) override;
+    uint16_t getRxCommand(uint8_t bus) override;
+    uint32_t getIrq(uint8_t bus) override;
+
     /**
      * Call after pullTelemetry to retrieve telemetry data.
      *

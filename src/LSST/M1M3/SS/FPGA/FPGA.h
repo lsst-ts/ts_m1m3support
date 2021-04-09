@@ -51,10 +51,6 @@ public:
     void close() override;
     void finalize() override;
 
-    uint16_t getTxCommand(uint8_t bus) override;
-    uint16_t getRxCommand(uint8_t bus) override;
-    uint32_t getIrq(uint8_t bus) override;
-
     void waitForOuterLoopClock(uint32_t timeout) override;
     void ackOuterLoopClock() override;
 
