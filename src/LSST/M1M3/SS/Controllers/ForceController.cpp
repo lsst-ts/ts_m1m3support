@@ -281,13 +281,12 @@ void ForceController::processAppliedForces() {
     _checkNearNeighbors();
     _checkMirrorWeight();
     _checkFarNeighbors();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
     if (_elevationForceComponent.isEnabled()) {
-        Model::get().getSafetyController()->tmaAzimuthTimeout(
-                fabs(_azimuth_Timestamp - M1M3SSPublisher::get().getTimestamp()));
+        Model::get().getSafetyController()->tmaAzimuthTimeout(fabs(_azimuth_Timestamp - timestamp));
     }
     if (_azimuthForceComponent.isEnabled()) {
-        Model::get().getSafetyController()->tmaElevationTimeout(
-                fabs(_elevation_Timestamp - M1M3SSPublisher::get().getTimestamp()));
+        Model::get().getSafetyController()->tmaElevationTimeout(fabs(_elevation_Timestamp - timestamp));
     }
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
