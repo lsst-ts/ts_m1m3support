@@ -84,6 +84,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
     _gyroData = M1M3SSPublisher::get().getGyroData();
 
+    _azimuth_Timestamp = 0;
+
     _elevation_Timestamp = 0;
     _elevation_Actual = NAN;
 
@@ -280,6 +282,10 @@ void ForceController::processAppliedForces() {
     _checkMirrorWeight();
     _checkFarNeighbors();
     if (_elevationForceComponent.isEnabled()) {
+        Model::get().getSafetyController()->tmaAzimuthTimeout(
+                fabs(_azimuth_Timestamp - M1M3SSPublisher::get().getTimestamp()));
+    }
+    if (_azimuthForceComponent.isEnabled()) {
         Model::get().getSafetyController()->tmaElevationTimeout(
                 fabs(_elevation_Timestamp - M1M3SSPublisher::get().getTimestamp()));
     }
@@ -353,9 +359,12 @@ void ForceController::applyAzimuthForces() {
     }
 }
 
-void ForceController::updateAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
-    SPDLOG_TRACE("ForceController: updateAzimuthForces()");
-    _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
+void ForceController::updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
+    SPDLOG_TRACE("ForceController: updateTMAAzimuthForces()");
+    _azimuth_Timestamp = tmaAzimuthData->timestamp;
+    if (_azimuthForceComponent.isEnabled()) {
+        _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
+    }
 }
 
 void ForceController::zeroAzimuthForces() {
