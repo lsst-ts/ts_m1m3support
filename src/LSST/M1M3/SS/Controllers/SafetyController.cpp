@@ -401,14 +401,16 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
 }
 
 void SafetyController::tmaAzimuthTimeout(double currentTimeout) {
-    _safetyViolated(FaultCodes::TMAAzimuthTimeout, _safetyControllerSettings->TMA.AzimuthTimeout > 0,
-                    currentTimeout > _safetyControllerSettings->TMA.AzimuthTimeout);
+    if (_safetyViolated(FaultCodes::TMAAzimuthTimeout, _safetyControllerSettings->TMA.AzimuthTimeout > 0,
+                        currentTimeout > _safetyControllerSettings->TMA.AzimuthTimeout)) {
+        SPDLOG_ERROR("TMA Azimuth timeouted {:.2f}", currentTimeout);
+    }
 }
 
 void SafetyController::tmaElevationTimeout(double currentTimeout) {
     if (_safetyViolated(FaultCodes::TMAElevationTimeout, _safetyControllerSettings->TMA.ElevationTimeout > 0,
                         currentTimeout > _safetyControllerSettings->TMA.ElevationTimeout)) {
-        SPDLOG_ERROR("TMA timeouted {:.2f}", currentTimeout);
+        SPDLOG_ERROR("TMA Elevation timeouted {:.2f}", currentTimeout);
     }
 }
 
