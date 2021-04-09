@@ -15,6 +15,7 @@
 #include <getopt.h>
 #include <cstring>
 #include <iostream>
+#include <signal.h>
 
 #include <chrono>
 #include <thread>
@@ -51,6 +52,11 @@ void printHelp() {
 
 int debugLevel = 0;
 int debugLevelSAL = 0;
+
+void sigKill(int signal) {
+    SPDLOG_DEBUG("Kill/int signal received");
+    ControllerThread::get().enqueue(CommandFactory::create(Commands::ExitControlCommand));
+}
 
 std::vector<spdlog::sink_ptr> sinks;
 
@@ -132,6 +138,9 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     SPDLOG_INFO("Main: Queuing EnterControl command");
     ControllerThread::get().enqueue(CommandFactory::create(Commands::EnterControlCommand));
 
+    signal(SIGKILL, sigKill);
+    signal(SIGINT, sigKill);
+
     try {
         SPDLOG_INFO("Main: Starting pps thread");
         std::thread pps([&ppsThread] { ppsThread.run(); });
@@ -166,7 +175,6 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
         outerLoopClock.join();
     } catch (std::exception& ex) {
         SPDLOG_CRITICAL("Error starting.stopping or joining threads: {)", ex.what());
-        exit(1);
     }
 }
 
