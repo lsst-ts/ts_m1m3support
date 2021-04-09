@@ -34,6 +34,15 @@ namespace SS {
  */
 struct TMASafetySettings {
     /**
+     * Initializes settings to -1.
+     */
+    TMASafetySettings() {
+        AzimuthTimeout = -1;
+        ElevationTimeout = -1;
+        InclinometerDeviation = -1;
+    }
+
+    /**
      * Timeout for azimuth telemetry. When last received value is older than
      * timeout, CsC shall fault the mirror. <0 for no timeout.
      */

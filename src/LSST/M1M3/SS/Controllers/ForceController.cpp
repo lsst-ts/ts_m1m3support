@@ -27,6 +27,7 @@
 #include <ForceActuatorSettings.h>
 #include <ForceActuatorLimits.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <PIDSettings.h>
 #include <Range.h>
@@ -248,8 +249,7 @@ void ForceController::updateAppliedForces() {
                                             ? _inclinometerData->inclinometerAngle
                                             : _elevation_Actual;
             // Convert elevation angle to zenith angle (used by matrix)
-            elevationAngle = 90.0 - elevationAngle;
-            _elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);
+            _elevationForceComponent.applyElevationForcesByElevationAngle(90.0 - elevationAngle);
         }
         _elevationForceComponent.update();
     }
@@ -279,6 +279,10 @@ void ForceController::processAppliedForces() {
     _checkNearNeighbors();
     _checkMirrorWeight();
     _checkFarNeighbors();
+    if (_elevationForceComponent.isEnabled()) {
+        Model::get().getSafetyController()->tmaElevationTimeout(
+                fabs(_elevation_Timestamp - M1M3SSPublisher::get().getTimestamp()));
+    }
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
 

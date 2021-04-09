@@ -23,7 +23,10 @@
 
 #include <Context.h>
 #include <TMAElevationSampleCommand.h>
+#include <LimitLog.h>
+#include <SettingReader.h>
 #include <cstring>
+#include <chrono>
 
 namespace LSST {
 namespace M1M3 {
@@ -34,7 +37,16 @@ TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC* data) {
     memcpy(&_data, data, sizeof(MTMount_elevationC));
 }
 
-void TMAElevationSampleCommand::execute() { Context::get().storeTMAElevationSample(this); }
+void TMAElevationSampleCommand::execute() {
+    double diff = _data.timestamp - M1M3SSPublisher::get().getTimestamp();
+    double limit = SettingReader::get().getSafetyControllerSettings()->TMA.ElevationTimeout;
+    if (limit > 0 && fabs(diff) > limit) {
+        using namespace std::chrono_literals;
+        TG_LOG_ERROR(2s, "Received elevation timestamp deviates by more than {0:.2f}s: {1:.2f}", limit, diff);
+        return;
+    }
+    Context::get().storeTMAElevationSample(this);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */

@@ -145,7 +145,16 @@ public:
     States::Type checkSafety(States::Type preferredNextState);
 
 private:
-    void _updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag);
+    /**
+     * Check if safety condition is not met.
+     *
+     * @param faultCode
+     * @param enabledFlag
+     * @param conditionFlag
+     *
+     * @return true if safety condition is met, false otherwise.
+     */
+    bool _safetyViolated(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag);
 
     SafetyControllerSettings* _safetyControllerSettings;
 
