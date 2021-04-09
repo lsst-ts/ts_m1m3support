@@ -402,22 +402,24 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
 
 void SafetyController::tmaAzimuthTimeout(double currentTimeout) {
     if (_safetyViolated(FaultCodes::TMAAzimuthTimeout, _safetyControllerSettings->TMA.AzimuthTimeout > 0,
-                        currentTimeout > _safetyControllerSettings->TMA.AzimuthTimeout)) {
+                        fabs(currentTimeout) > _safetyControllerSettings->TMA.AzimuthTimeout)) {
         SPDLOG_ERROR("TMA Azimuth timeouted ({:.3f}s)", currentTimeout);
     }
 }
 
 void SafetyController::tmaElevationTimeout(double currentTimeout) {
     if (_safetyViolated(FaultCodes::TMAElevationTimeout, _safetyControllerSettings->TMA.ElevationTimeout > 0,
-                        currentTimeout > _safetyControllerSettings->TMA.ElevationTimeout)) {
+                        fabs(currentTimeout) > _safetyControllerSettings->TMA.ElevationTimeout)) {
         SPDLOG_ERROR("TMA Elevation timeouted ({:.3f}s)", currentTimeout);
     }
 }
 
 void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
-    _safetyViolated(FaultCodes::TMAInclinometerDeviation,
-                    _safetyControllerSettings->TMA.InclinometerDeviation > 0,
-                    currentDeviation > _safetyControllerSettings->TMA.InclinometerDeviation);
+    if (_safetyViolated(FaultCodes::TMAInclinometerDeviation,
+                        _safetyControllerSettings->TMA.InclinometerDeviation > 0,
+                        fabs(currentDeviation) > _safetyControllerSettings->TMA.InclinometerDeviation)) {
+        SPDLOG_ERROR("TMA Elevation - inclinometer mismatch: {:.3f} deg", currentDeviation);
+    }
 }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {

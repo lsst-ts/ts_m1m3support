@@ -247,9 +247,15 @@ void ForceController::updateAppliedForces() {
     }
     if (_elevationForceComponent.isEnabled() || _elevationForceComponent.isDisabling()) {
         if (_elevationForceComponent.isEnabled()) {
-            double elevationAngle = _forceActuatorSettings->UseInclinometer
-                                            ? _inclinometerData->inclinometerAngle
-                                            : _elevation_Actual;
+            double elevationAngle;
+            if (_forceActuatorSettings->UseInclinometer) {
+                elevationAngle = _inclinometerData->inclinometerAngle;
+            } else {
+                elevationAngle = _elevation_Actual;
+                _safetyController->tmaInclinometerDeviation(_elevation_Actual -
+                                                            _inclinometerData->inclinometerAngle);
+            }
+
             // Convert elevation angle to zenith angle (used by matrix)
             _elevationForceComponent.applyElevationForcesByElevationAngle(90.0 - elevationAngle);
         }
@@ -283,10 +289,10 @@ void ForceController::processAppliedForces() {
     _checkFarNeighbors();
     double timestamp = M1M3SSPublisher::get().getTimestamp();
     if (_elevationForceComponent.isEnabled()) {
-        Model::get().getSafetyController()->tmaAzimuthTimeout(fabs(_azimuth_Timestamp - timestamp));
+        Model::get().getSafetyController()->tmaAzimuthTimeout(_azimuth_Timestamp - timestamp);
     }
     if (_azimuthForceComponent.isEnabled()) {
-        Model::get().getSafetyController()->tmaElevationTimeout(fabs(_elevation_Timestamp - timestamp));
+        Model::get().getSafetyController()->tmaElevationTimeout(_elevation_Timestamp - timestamp);
     }
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }

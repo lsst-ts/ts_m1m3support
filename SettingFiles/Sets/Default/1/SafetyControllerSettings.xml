@@ -104,6 +104,6 @@
     <TMASettings>
         <AzimuthTimeout>0.5</AzimuthTimeout>
         <ElevationTimeout>0.5</ElevationTimeout>
-        <InclinometerDeviationArcMin>10</InclinometerDeviationArcMin>
+        <InclinometerDeviationDeg>2</InclinometerDeviationDeg>
     </TMASettings>
 </SafetyControllerSettings>

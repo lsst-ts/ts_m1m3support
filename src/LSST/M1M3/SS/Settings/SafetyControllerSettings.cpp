@@ -426,12 +426,10 @@ void SafetyControllerSettings::load(const std::string &filename) {
             doc.select_node("//SafetyControllerSettings/TMASettings/AzimuthTimeout").node().child_value());
     TMA.ElevationTimeout = boost::lexical_cast<float>(
             doc.select_node("//SafetyControllerSettings/TMASettings/ElevationTimeout").node().child_value());
-    TMA.InclinometerDeviation =
-            boost::lexical_cast<float>(
-                    doc.select_node("//SafetyControllerSettings/TMASettings/InclinometerDeviationArcMin")
-                            .node()
-                            .child_value()) /
-            60.0;
+    TMA.InclinometerDeviation = boost::lexical_cast<float>(
+            doc.select_node("//SafetyControllerSettings/TMASettings/InclinometerDeviationDeg")
+                    .node()
+                    .child_value());
 }
 
 } /* namespace SS */
