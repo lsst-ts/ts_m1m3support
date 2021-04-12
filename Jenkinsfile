@@ -20,7 +20,7 @@ properties(
 
 node {
 
-    def M1M3sim
+
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
 
@@ -41,7 +41,7 @@ node {
     stage('Cloning sources')
     {
         dir("ts_cRIOcpp") {
-            git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_cRIOcpp'
+            git branch: "master", url: 'https://github.com/lsst-ts/ts_cRIOcpp'
         }
         dir("ts_m1m3support") {
             git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
