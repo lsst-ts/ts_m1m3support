@@ -59,28 +59,30 @@ public:
     void close() override;
     void finalize() override;
 
-    void waitForOuterLoopClock(int32_t timeout) override;
+    void waitForOuterLoopClock(uint32_t timeout) override;
     void ackOuterLoopClock() override;
 
-    void waitForPPS(int32_t timeout) override;
+    void waitForPPS(uint32_t timeout) override;
     void ackPPS() override;
 
-    void waitForModbusIRQ(int32_t subnet, int32_t timeout) override;
+    void waitForModbusIRQ(int32_t subnet, uint32_t timeout) override;
     void ackModbusIRQ(int32_t subnet) override;
 
     void pullTelemetry() override;
     void pullHealthAndStatus() override;
 
-    void writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
-    void writeCommandFIFO(uint16_t data, int32_t timeoutInMs) override;
-    void writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
-    void writeRequestFIFO(uint16_t data, int32_t timeoutInMs) override;
+    void writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
+    void writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
     void writeTimestampFIFO(uint64_t timestamp) override;
-    void readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) override;
-    void readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) override;
+    void readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) override;
+    void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
+
+    void waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered = NULL) override {}
+    void ackIrqs(uint32_t irqs) override {}
+    uint32_t getIrq(uint8_t bus) override { return 0; }
 
     void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) override;
-    void readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs = 10) override;
+    void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) override;
 
 private:
     std::thread _monitorMountElevationThread;

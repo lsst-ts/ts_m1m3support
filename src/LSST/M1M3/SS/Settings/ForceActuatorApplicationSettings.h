@@ -121,7 +121,7 @@ public:
      *
      * @param actuatorId search for actuator with this ID
      *
-     * @return zIndex of the actuator with Id equal to actuatorId
+     * @return zIndex of the actuator with Id equal to actuatorId, -1 when not found
      */
     const int ActuatorIdToZIndex(int actuatorId);
 
