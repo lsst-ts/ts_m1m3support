@@ -25,12 +25,12 @@
 #define ILCMESSAGEFACTORY_H_
 
 #include <DataTypes.h>
+#include <ModbusBuffer.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ModbusBuffer;
 struct ILCApplicationSettings;
 
 class ILCMessageFactory {

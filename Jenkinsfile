@@ -20,7 +20,7 @@ properties(
 
 node {
 
-    def M1M3sim
+
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
 
@@ -38,8 +38,11 @@ node {
         M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), (params.noCache ? "--no-cache " : " ") + "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
     }
 
-    stage('Cloning source')
+    stage('Cloning sources')
     {
+        dir("ts_cRIOcpp") {
+            git branch: "master", url: 'https://github.com/lsst-ts/ts_cRIOcpp'
+        }
         dir("ts_m1m3support") {
             git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
         }
@@ -51,6 +54,8 @@ node {
              M1M3sim.inside("--entrypoint=''") {
                  if (params.clean) {
                  sh """
+                    cd $WORKSPACE/ts_cRIOcpp
+                    make clean
                     cd $WORKSPACE/ts_m1m3support
                     make clean
                  """
@@ -59,6 +64,8 @@ node {
                     source $SALUSER_HOME/.setup_salobj.sh
     
                     export PATH=/opt/lsst/software/stack/python/miniconda3-4.7.12/envs/lsst-scipipe-448abc6/bin:$PATH
+                    cd $WORKSPACE/ts_cRIOcpp
+                    make
     
                     cd $WORKSPACE/ts_m1m3support
                     make SIMULATOR=1
