@@ -49,7 +49,8 @@ void printHelp() {
               << "  -f runs on foreground, don't log to file" << std::endl
               << "  -h prints this help" << std::endl
               << "  -s increases SAL debugging (can be specified multiple times, default is 0)" << std::endl
-              << "  -v prints version and exits" << std::endl;
+              << "  -v prints version and exits" << std::endl
+              << "  -V prints SAL, XML and OSPL versions and exits" << std::endl;
 }
 
 int debugLevel = 0;
@@ -66,7 +67,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
     int enabledSinks = 0x3;
 
     int opt;
-    while ((opt = getopt(argc, argv, "bc:dfhsv")) != -1) {
+    while ((opt = getopt(argc, argv, "bc:dfhsvV")) != -1) {
         switch (opt) {
             case 'b':
                 enabledSinks &= ~0x01;
@@ -88,6 +89,11 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 break;
             case 'v':
                 std::cout << VERSION << std::endl;
+                exit(EXIT_SUCCESS);
+            case 'V':
+                std::cout << "SAL " << SAL_MTM1M3::getSALVersion() << std::endl
+                          << "XML " << SAL_MTM1M3::getXMLVersion() << std::endl
+                          << "OSPL " << SAL_MTM1M3::getOSPLVersion() << std::endl;
                 exit(EXIT_SUCCESS);
             default:
                 std::cerr << "Unknow option " << opt << std::endl;
