@@ -91,9 +91,12 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 std::cout << VERSION << std::endl;
                 exit(EXIT_SUCCESS);
             case 'V':
-                std::cout << "SAL " << SAL_MTM1M3::getSALVersion() << std::endl
-                          << "XML " << SAL_MTM1M3::getXMLVersion() << std::endl
-                          << "OSPL " << SAL_MTM1M3::getOSPLVersion() << std::endl;
+                std::cout << "SAL " << SAL_MTM1M3::getSALVersion() << " " << SAL_MTMount::getSALVersion()
+                          << std::endl
+                          << "XML " << SAL_MTM1M3::getXMLVersion() << " " << SAL_MTMount::getXMLVersion()
+                          << std::endl
+                          << "OSPL " << SAL_MTM1M3::getOSPLVersion() << " " << SAL_MTMount::getOSPLVersion()
+                          << std::endl;
                 exit(EXIT_SUCCESS);
             default:
                 std::cerr << "Unknow option " << opt << std::endl;
@@ -196,8 +199,6 @@ int main(int argc, char* const argv[]) {
 
     processArgs(argc, argv, configRoot);
 
-    SPDLOG_TRACE("Trace");
-    SPDLOG_DEBUG("Debug");
     SPDLOG_INFO("Main: Creating setting reader, root {}", configRoot);
     SettingReader::get().setRootPath(configRoot);
     SPDLOG_INFO("Main: Initializing M1M3 SAL");
@@ -213,6 +214,19 @@ int main(int argc, char* const argv[]) {
             (debugLevel == 0 ? spdlog::level::info
                              : (debugLevel == 1 ? spdlog::level::debug : spdlog::level::trace));
     spdlog::set_level(logLevel);
+
+    if (SAL_MTM1M3::getSALVersion() != SAL_MTMount::getSALVersion()) {
+        SPDLOG_WARN("SAL version mismatch: MTM1M3 {} MTMount {}", SAL_MTM1M3::getSALVersion(),
+                    SAL_MTMount::getSALVersion());
+    }
+    if (SAL_MTM1M3::getXMLVersion() != SAL_MTMount::getXMLVersion()) {
+        SPDLOG_WARN("XML mismatch: MTM1M3 {} MTMount {}", SAL_MTM1M3::getXMLVersion(),
+                    SAL_MTMount::getXMLVersion());
+    }
+    if (SAL_MTM1M3::getOSPLVersion() != SAL_MTMount::getOSPLVersion()) {
+        SPDLOG_WARN("OSPL version mismatch: MTM1M3 {} MTMount {}", SAL_MTM1M3::getOSPLVersion(),
+                    SAL_MTMount::getOSPLVersion());
+    }
 
     SPDLOG_INFO("Main: Initializing MTMount SAL");
     std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
