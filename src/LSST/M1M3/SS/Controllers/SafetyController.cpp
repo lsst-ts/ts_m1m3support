@@ -406,9 +406,8 @@ void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool c
     _forceActuatorFollowingErrorData[actuatorDataIndex].pop_front();
     _forceActuatorFollowingErrorData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
     int sum = 0;
-    for (std::list<int>::iterator i = _forceActuatorFollowingErrorData[actuatorDataIndex].begin();
-         i != _forceActuatorFollowingErrorData[actuatorDataIndex].end(); ++i) {
-        sum += (*i);
+    for (auto i : _forceActuatorFollowingErrorData[actuatorDataIndex]) {
+        sum += i;
     }
     _safetyViolated(FaultCodes::ForceActuatorFollowingError,
                     _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingError,
@@ -425,9 +424,8 @@ void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, boo
     _hardpointActuatorMeasuredForceData[actuatorDataIndex].pop_front();
     _hardpointActuatorMeasuredForceData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
     int sum = 0;
-    for (std::list<int>::iterator i = _hardpointActuatorMeasuredForceData[actuatorDataIndex].begin();
-         i != _hardpointActuatorMeasuredForceData[actuatorDataIndex].end(); ++i) {
-        sum += (*i);
+    for (auto i : _hardpointActuatorMeasuredForceData[actuatorDataIndex]) {
+        sum += i;
     }
     _safetyViolated(FaultCodes::HardpointActuatorMeasuredForceError,
                     _safetyControllerSettings->ILC.FaultOnHardpointActuatorMeasuredForce,
@@ -438,9 +436,8 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
     _hardpointActuatorAirPressureData[actuatorDataIndex].pop_front();
     _hardpointActuatorAirPressureData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
     int sum = 0;
-    for (std::list<int>::iterator i = _hardpointActuatorAirPressureData[actuatorDataIndex].begin();
-         i != _hardpointActuatorAirPressureData[actuatorDataIndex].end(); ++i) {
-        sum += (*i);
+    for (auto i : _hardpointActuatorAirPressureData[actuatorDataIndex]) {
+        sum += i;
     }
     _safetyViolated(FaultCodes::HardpointActuatorAirPressure,
                     _safetyControllerSettings->ILC.FaultOnAirPressure,
