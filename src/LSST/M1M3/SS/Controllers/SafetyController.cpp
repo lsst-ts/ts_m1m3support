@@ -64,284 +64,284 @@ void SafetyController::clearErrorCode() {
 }
 
 void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::AirControllerCommandOutputMismatch,
+    _safetyViolated(FaultCodes::AirControllerCommandOutputMismatch,
                     _safetyControllerSettings->AirController.FaultOnCommandOutputMismatch, conditionFlag);
 }
 void SafetyController::airControllerNotifyCommandSensorMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::AirControllerCommandSensorMismatch,
+    _safetyViolated(FaultCodes::AirControllerCommandSensorMismatch,
                     _safetyControllerSettings->AirController.FaultOnCommandSensorMismatch, conditionFlag);
 }
 
 void SafetyController::displacementNotifySensorReportsInvalidCommand(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsInvalidCommand,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsInvalidCommand,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsInvalidCommand,
                     conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsCommunicationTimeoutError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsCommunicationTimeoutError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsCommunicationTimeoutError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsCommunicationTimeoutError,
                     conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsDataLengthError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsDataLengthError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsDataLengthError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsDataLengthError,
                     conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsNumberOfParametersError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsNumberOfParametersError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsNumberOfParametersError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsNumberOfParametersError,
                     conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsParameterError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsParameterError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsParameterError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsParameterError,
                     conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsCommunicationError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsCommunicationError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsCommunicationError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsCommunicationError,
                     conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsIDNumberError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsIDNumberError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsIDNumberError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsIDNumberError, conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsExpansionLineError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsExpansionLineError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsExpansionLineError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsExpansionLineError,
                     conditionFlag);
 }
 void SafetyController::displacementNotifySensorReportsWriteControlError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementSensorReportsWriteControlError,
+    _safetyViolated(FaultCodes::DisplacementSensorReportsWriteControlError,
                     _safetyControllerSettings->Displacement.FaultOnSensorReportsWriteControlError,
                     conditionFlag);
 }
 void SafetyController::displacementNotifyResponseTimeoutError(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementResponseTimeoutError,
+    _safetyViolated(FaultCodes::DisplacementResponseTimeoutError,
                     _safetyControllerSettings->Displacement.FaultOnResponseTimeoutError, conditionFlag);
 }
 void SafetyController::displacementNotifyInvalidLength(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementInvalidLength,
+    _safetyViolated(FaultCodes::DisplacementInvalidLength,
                     _safetyControllerSettings->Displacement.FaultOnInvalidLength, conditionFlag);
 }
 void SafetyController::displacementNotifyInvalidResponse(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementInvalidResponse,
+    _safetyViolated(FaultCodes::DisplacementInvalidResponse,
                     _safetyControllerSettings->Displacement.FaultOnInvalidResponse, conditionFlag);
 }
 void SafetyController::displacementNotifyUnknownCommand(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementUnknownCommand,
+    _safetyViolated(FaultCodes::DisplacementUnknownCommand,
                     _safetyControllerSettings->Displacement.FaultOnUnknownCommand, conditionFlag);
 }
 void SafetyController::displacementNotifyUnknownProblem(bool conditionFlag) {
-    _updateOverride(FaultCodes::DisplacementUnknownProblem,
+    _safetyViolated(FaultCodes::DisplacementUnknownProblem,
                     _safetyControllerSettings->Displacement.FaultOnUnknownProblem, conditionFlag);
 }
 
 void SafetyController::inclinometerNotifyResponseTimeout(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerResponseTimeout,
+    _safetyViolated(FaultCodes::InclinometerResponseTimeout,
                     _safetyControllerSettings->Inclinometer.FaultOnResponseTimeout, conditionFlag);
 }
 void SafetyController::inclinometerNotifyInvalidCRC(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerInvalidCRC,
+    _safetyViolated(FaultCodes::InclinometerInvalidCRC,
                     _safetyControllerSettings->Inclinometer.FaultOnInvalidCRC, conditionFlag);
 }
 void SafetyController::inclinometerNotifyUnknownAddress(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerUnknownAddress,
+    _safetyViolated(FaultCodes::InclinometerUnknownAddress,
                     _safetyControllerSettings->Inclinometer.FaultOnUnknownAddress, conditionFlag);
 }
 void SafetyController::inclinometerNotifyUnknownFunction(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerUnknownFunction,
+    _safetyViolated(FaultCodes::InclinometerUnknownFunction,
                     _safetyControllerSettings->Inclinometer.FaultOnUnknownFunction, conditionFlag);
 }
 void SafetyController::inclinometerNotifyInvalidLength(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerInvalidLength,
+    _safetyViolated(FaultCodes::InclinometerInvalidLength,
                     _safetyControllerSettings->Inclinometer.FaultOnInvalidLength, conditionFlag);
 }
 void SafetyController::inclinometerNotifySensorReportsIllegalDataAddress(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerSensorReportsIllegalDataAddress,
+    _safetyViolated(FaultCodes::InclinometerSensorReportsIllegalDataAddress,
                     _safetyControllerSettings->Inclinometer.FaultOnSensorReportsIllegalDataAddress,
                     conditionFlag);
 }
 void SafetyController::inclinometerNotifySensorReportsIllegalFunction(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerSensorReportsIllegalFunction,
+    _safetyViolated(FaultCodes::InclinometerSensorReportsIllegalFunction,
                     _safetyControllerSettings->Inclinometer.FaultOnSensorReportsIllegalFunction,
                     conditionFlag);
 }
 void SafetyController::inclinometerNotifyUnknownProblem(bool conditionFlag) {
-    _updateOverride(FaultCodes::InclinometerUnknownProblem,
+    _safetyViolated(FaultCodes::InclinometerUnknownProblem,
                     _safetyControllerSettings->Inclinometer.FaultOnUnknownProblem, conditionFlag);
 }
 
 void SafetyController::interlockNotifyHeartbeatStateOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockHeartbeatStateOutputMismatch,
+    _safetyViolated(FaultCodes::InterlockHeartbeatStateOutputMismatch,
                     _safetyControllerSettings->Interlock.FaultOnHeartbeatStateOutputMismatch, conditionFlag);
 }
 void SafetyController::interlockNotifyAuxPowerNetworksOff(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockPowerNetworksOff,
+    _safetyViolated(FaultCodes::InterlockPowerNetworksOff,
                     _safetyControllerSettings->Interlock.FaultOnAuxPowerNetworksOff, conditionFlag);
 }
 void SafetyController::interlockNotifyThermalEquipmentOff(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockThermalEquipmentOff,
+    _safetyViolated(FaultCodes::InterlockThermalEquipmentOff,
                     _safetyControllerSettings->Interlock.FaultOnThermalEquipmentOff, conditionFlag);
 }
 void SafetyController::interlockNotifyAirSupplyOff(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockAirSupplyOff,
+    _safetyViolated(FaultCodes::InterlockAirSupplyOff,
                     _safetyControllerSettings->Interlock.FaultOnAirSupplyOff, conditionFlag);
 }
 void SafetyController::interlockNotifyCabinetDoorOpen(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockGISEarthquake,
+    _safetyViolated(FaultCodes::InterlockGISEarthquake,
                     _safetyControllerSettings->Interlock.FaultOnCabinetDoorOpen, conditionFlag);
 }
 void SafetyController::interlockNotifyTMAMotionStop(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockTMAMotionStop,
+    _safetyViolated(FaultCodes::InterlockTMAMotionStop,
                     _safetyControllerSettings->Interlock.FaultOnTMAMotionStop, conditionFlag);
 }
 void SafetyController::interlockNotifyGISHeartbeatLost(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockGISHeartbeatLost,
+    _safetyViolated(FaultCodes::InterlockGISHeartbeatLost,
                     _safetyControllerSettings->Interlock.FaultOnGISHeartbeatLost, conditionFlag);
 }
 
 void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerSafetyLimit,
+    _safetyViolated(FaultCodes::ForceControllerSafetyLimit,
                     _safetyControllerSettings->ForceController.FaultOnSafetyLimit, conditionFlag);
 }
 void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerXMomentLimit,
+    _safetyViolated(FaultCodes::ForceControllerXMomentLimit,
                     _safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag);
 }
 void SafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerYMomentLimit,
+    _safetyViolated(FaultCodes::ForceControllerYMomentLimit,
                     _safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag);
 }
 void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerZMomentLimit,
+    _safetyViolated(FaultCodes::ForceControllerZMomentLimit,
                     _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag);
 }
 void SafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerNearNeighborCheck,
+    _safetyViolated(FaultCodes::ForceControllerNearNeighborCheck,
                     _safetyControllerSettings->ForceController.FaultOnNearNeighborCheck, conditionFlag);
 }
 void SafetyController::forceControllerNotifyMagnitudeLimit(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerMagnitudeLimit,
+    _safetyViolated(FaultCodes::ForceControllerMagnitudeLimit,
                     _safetyControllerSettings->ForceController.FaultOnMagnitudeLimit, conditionFlag);
 }
 void SafetyController::forceControllerNotifyFarNeighborCheck(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerFarNeighborCheck,
+    _safetyViolated(FaultCodes::ForceControllerFarNeighborCheck,
                     _safetyControllerSettings->ForceController.FaultOnFarNeighborCheck, conditionFlag);
 }
 void SafetyController::forceControllerNotifyElevationForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerElevationForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerElevationForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnElevationForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyAzimuthForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerAzimuthForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerAzimuthForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnAzimuthForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyThermalForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerThermalForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerThermalForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnThermalForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyBalanceForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerBalanceForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerBalanceForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnBalanceForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyAccelerationForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerAccelerationForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerAccelerationForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnAccelerationForceClipping,
                     conditionFlag);
 }
 void SafetyController::forceControllerNotifyActiveOpticNetForceCheck(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerActiveOpticNetForceCheck,
+    _safetyViolated(FaultCodes::ForceControllerActiveOpticNetForceCheck,
                     _safetyControllerSettings->ForceController.FaultOnActiveOpticNetForceCheck,
                     conditionFlag);
 }
 void SafetyController::forceControllerNotifyActiveOpticForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerActiveOpticForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerActiveOpticForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnActiveOpticForceClipping,
                     conditionFlag);
 }
 void SafetyController::forceControllerNotifyStaticForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerStaticForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerStaticForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnStaticForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyAberrationNetForceCheck(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerAberrationNetForceCheck,
+    _safetyViolated(FaultCodes::ForceControllerAberrationNetForceCheck,
                     _safetyControllerSettings->ForceController.FaultOnAberrationNetForceCheck, conditionFlag);
 }
 void SafetyController::forceControllerNotifyAberrationForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerAberrationForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerAberrationForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnAberrationForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerOffsetForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerOffsetForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnOffsetForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyVelocityForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerVelocityForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerVelocityForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnVelocityForceClipping, conditionFlag);
 }
 void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerForceClipping,
+    _safetyViolated(FaultCodes::ForceControllerForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnForceClipping, conditionFlag);
 }
 
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::CellLightOutputMismatch,
+    _safetyViolated(FaultCodes::CellLightOutputMismatch,
                     _safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag);
 }
 void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::CellLightSensorMismatch,
+    _safetyViolated(FaultCodes::CellLightSensorMismatch,
                     _safetyControllerSettings->CellLights.FaultOnSensorMismatch, conditionFlag);
 }
 
 void SafetyController::powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerPowerNetworkAOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerPowerNetworkAOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnPowerNetworkAOutputMismatch,
                     conditionFlag);
 }
 void SafetyController::powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerPowerNetworkBOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerPowerNetworkBOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnPowerNetworkBOutputMismatch,
                     conditionFlag);
 }
 void SafetyController::powerControllerNotifyPowerNetworkCOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerPowerNetworkCOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerPowerNetworkCOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnPowerNetworkCOutputMismatch,
                     conditionFlag);
 }
 void SafetyController::powerControllerNotifyPowerNetworkDOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerPowerNetworkDOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerPowerNetworkDOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnPowerNetworkDOutputMismatch,
                     conditionFlag);
 }
 void SafetyController::powerControllerNotifyAuxPowerNetworkAOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerAuxPowerNetworkAOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerAuxPowerNetworkAOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkAOutputMismatch,
                     conditionFlag);
 }
 void SafetyController::powerControllerNotifyAuxPowerNetworkBOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerAuxPowerNetworkBOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerAuxPowerNetworkBOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkBOutputMismatch,
                     conditionFlag);
 }
 void SafetyController::powerControllerNotifyAuxPowerNetworkCOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerAuxPowerNetworkCOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerAuxPowerNetworkCOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkCOutputMismatch,
                     conditionFlag);
 }
 void SafetyController::powerControllerNotifyAuxPowerNetworkDOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::PowerControllerAuxPowerNetworkDOutputMismatch,
+    _safetyViolated(FaultCodes::PowerControllerAuxPowerNetworkDOutputMismatch,
                     _safetyControllerSettings->PowerController.FaultOnAuxPowerNetworkDOutputMismatch,
                     conditionFlag);
 }
 
 void SafetyController::raiseOperationTimeout(bool conditionFlag) {
-    _updateOverride(FaultCodes::RaiseOperationTimeout,
+    _safetyViolated(FaultCodes::RaiseOperationTimeout,
                     _safetyControllerSettings->RaiseOperation.FaultOnTimeout, conditionFlag);
 }
 
 void SafetyController::lowerOperationTimeout(bool conditionFlag) {
-    _updateOverride(FaultCodes::LowerOperationTimeout,
+    _safetyViolated(FaultCodes::LowerOperationTimeout,
                     _safetyControllerSettings->LowerOperation.FaultOnTimeout, conditionFlag);
 }
 
@@ -353,7 +353,7 @@ void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
          i != _ilcCommunicationTimeoutData.end(); ++i) {
         sum += (*i);
     }
-    _updateOverride(FaultCodes::ILCCommunicationTimeout,
+    _safetyViolated(FaultCodes::ILCCommunicationTimeout,
                     _safetyControllerSettings->ILC.FaultOnCommunicationTimeout,
                     sum >= _safetyControllerSettings->ILC.CommunicationTimeoutCountThreshold);
 }
@@ -366,13 +366,13 @@ void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool c
          i != _forceActuatorFollowingErrorData[actuatorDataIndex].end(); ++i) {
         sum += (*i);
     }
-    _updateOverride(FaultCodes::ForceActuatorFollowingError,
+    _safetyViolated(FaultCodes::ForceActuatorFollowingError,
                     _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingError,
                     sum >= _safetyControllerSettings->ILC.ForceActuatorFollowingErrorCountThreshold);
 }
 
 void SafetyController::hardpointActuatorLoadCellError(bool conditionFlag) {
-    _updateOverride(FaultCodes::HardpointActuatorLoadCellError,
+    _safetyViolated(FaultCodes::HardpointActuatorLoadCellError,
                     _safetyControllerSettings->ILC.FaultOnHardpointActuatorLoadCellError, conditionFlag);
 }
 void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, bool conditionFlag) {
@@ -383,7 +383,7 @@ void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, boo
          i != _hardpointActuatorMeasuredForceData[actuatorDataIndex].end(); ++i) {
         sum += (*i);
     }
-    _updateOverride(FaultCodes::HardpointActuatorMeasuredForceError,
+    _safetyViolated(FaultCodes::HardpointActuatorMeasuredForceError,
                     _safetyControllerSettings->ILC.FaultOnHardpointActuatorMeasuredForce,
                     sum >= _safetyControllerSettings->ILC.HardpointActuatorMeasuredForceCountThreshold);
 }
@@ -395,9 +395,31 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
          i != _hardpointActuatorAirPressureData[actuatorDataIndex].end(); ++i) {
         sum += (*i);
     }
-    _updateOverride(FaultCodes::HardpointActuatorAirPressure,
+    _safetyViolated(FaultCodes::HardpointActuatorAirPressure,
                     _safetyControllerSettings->ILC.FaultOnAirPressure,
                     sum >= _safetyControllerSettings->ILC.AirPressureCountThreshold);
+}
+
+void SafetyController::tmaAzimuthTimeout(double currentTimeout) {
+    if (_safetyViolated(FaultCodes::TMAAzimuthTimeout, _safetyControllerSettings->TMA.AzimuthTimeout > 0,
+                        fabs(currentTimeout) > _safetyControllerSettings->TMA.AzimuthTimeout)) {
+        SPDLOG_ERROR("TMA Azimuth timeouted ({:.3f}s)", currentTimeout);
+    }
+}
+
+void SafetyController::tmaElevationTimeout(double currentTimeout) {
+    if (_safetyViolated(FaultCodes::TMAElevationTimeout, _safetyControllerSettings->TMA.ElevationTimeout > 0,
+                        fabs(currentTimeout) > _safetyControllerSettings->TMA.ElevationTimeout)) {
+        SPDLOG_ERROR("TMA Elevation timeouted ({:.3f}s)", currentTimeout);
+    }
+}
+
+void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
+    if (_safetyViolated(FaultCodes::TMAInclinometerDeviation,
+                        _safetyControllerSettings->TMA.InclinometerDeviation > 0,
+                        fabs(currentDeviation) > _safetyControllerSettings->TMA.InclinometerDeviation)) {
+        SPDLOG_ERROR("TMA Elevation - inclinometer mismatch: {:.3f} deg", currentDeviation);
+    }
 }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
@@ -409,11 +431,12 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     return preferredNextState;
 }
 
-void SafetyController::_updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {
+bool SafetyController::_safetyViolated(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag) {
     bool faultConditionExists = enabledFlag && conditionFlag;
     if (faultConditionExists && _errorCodeData->errorCode == FaultCodes::NoFault) {
         _errorCodeData->errorCode = faultCode;
     }
+    return faultConditionExists;
 }
 
 } /* namespace SS */

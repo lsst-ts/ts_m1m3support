@@ -421,6 +421,15 @@ void SafetyControllerSettings::load(const std::string &filename) {
                     .child_value());
     this->ILC.AirPressurePeriod = boost::lexical_cast<int32_t>(
             doc.select_node("//SafetyControllerSettings/ILCSettings/AirPressurePeriod").node().child_value());
+
+    TMA.AzimuthTimeout = boost::lexical_cast<float>(
+            doc.select_node("//SafetyControllerSettings/TMASettings/AzimuthTimeout").node().child_value());
+    TMA.ElevationTimeout = boost::lexical_cast<float>(
+            doc.select_node("//SafetyControllerSettings/TMASettings/ElevationTimeout").node().child_value());
+    TMA.InclinometerDeviation = boost::lexical_cast<float>(
+            doc.select_node("//SafetyControllerSettings/TMASettings/InclinometerDeviationDeg")
+                    .node()
+                    .child_value());
 }
 
 } /* namespace SS */

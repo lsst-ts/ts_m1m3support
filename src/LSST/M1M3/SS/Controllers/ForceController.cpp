@@ -27,6 +27,7 @@
 #include <ForceActuatorSettings.h>
 #include <ForceActuatorLimits.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <PIDSettings.h>
 #include <Range.h>
@@ -83,8 +84,10 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
     _gyroData = M1M3SSPublisher::get().getGyroData();
 
+    _azimuth_Timestamp = 0;
+
     _elevation_Timestamp = 0;
-    _elevation_Angle_Actual = NAN;
+    _elevation_Actual = NAN;
 
     reset();
 
@@ -154,7 +157,7 @@ void ForceController::reset() {
 
 void ForceController::updateTMAElevationData(MTMount_elevationC* tmaElevationData) {
     SPDLOG_TRACE("ForceController: updateTMAElevationData()");
-    _elevation_Angle_Actual = tmaElevationData->actualPosition;
+    _elevation_Actual = tmaElevationData->actualPosition;
     _elevation_Timestamp = tmaElevationData->timestamp;
 }
 
@@ -244,12 +247,17 @@ void ForceController::updateAppliedForces() {
     }
     if (_elevationForceComponent.isEnabled() || _elevationForceComponent.isDisabling()) {
         if (_elevationForceComponent.isEnabled()) {
-            double elevationAngle = _forceActuatorSettings->UseInclinometer
-                                            ? _inclinometerData->inclinometerAngle
-                                            : _elevation_Angle_Actual;
+            double elevationAngle;
+            if (_forceActuatorSettings->UseInclinometer) {
+                elevationAngle = _inclinometerData->inclinometerAngle;
+            } else {
+                elevationAngle = _elevation_Actual;
+                _safetyController->tmaInclinometerDeviation(_elevation_Actual -
+                                                            _inclinometerData->inclinometerAngle);
+            }
+
             // Convert elevation angle to zenith angle (used by matrix)
-            elevationAngle = 90.0 - elevationAngle;
-            _elevationForceComponent.applyElevationForcesByElevationAngle(elevationAngle);
+            _elevationForceComponent.applyElevationForcesByElevationAngle(90.0 - elevationAngle);
         }
         _elevationForceComponent.update();
     }
@@ -279,6 +287,15 @@ void ForceController::processAppliedForces() {
     _checkNearNeighbors();
     _checkMirrorWeight();
     _checkFarNeighbors();
+    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    if (_forceActuatorSettings->UseInclinometer == 0) {
+        if (_elevationForceComponent.isEnabled()) {
+            Model::get().getSafetyController()->tmaAzimuthTimeout(_azimuth_Timestamp - timestamp);
+        }
+        if (_azimuthForceComponent.isEnabled()) {
+            Model::get().getSafetyController()->tmaElevationTimeout(_elevation_Timestamp - timestamp);
+        }
+    }
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
 
@@ -349,9 +366,12 @@ void ForceController::applyAzimuthForces() {
     }
 }
 
-void ForceController::updateAzimuthForces(float azimuthAngle) {
-    SPDLOG_TRACE("ForceController: updateAzimuthForces()");
-    _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(azimuthAngle);
+void ForceController::updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
+    SPDLOG_TRACE("ForceController: updateTMAAzimuthForces()");
+    _azimuth_Timestamp = tmaAzimuthData->timestamp;
+    if (_azimuthForceComponent.isEnabled()) {
+        _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
+    }
 }
 
 void ForceController::zeroAzimuthForces() {

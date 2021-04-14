@@ -36,6 +36,7 @@ const int32_t _MASK_POWER_CONTROLLER = 0x7 << 16;
 const int32_t _MASK_TIMEOUTS = 0x8 << 16;
 const int32_t _MASK_FORCE_ACTUATOR = 0x9 << 16;
 const int32_t _MASK_HARDPOINT = 0xA << 16;
+constexpr int32_t _MASK_TMA = 0xB << 16;
 
 /**
  * Fault codes. Implemented as 32bit integer. Send as errorCode in generic
@@ -118,6 +119,9 @@ struct FaultCodes {
         HardpointActuatorLoadCellError = _MASK_HARDPOINT | 0x02,
         HardpointActuatorMeasuredForceError = _MASK_HARDPOINT | 0x03,
         HardpointActuatorAirPressure = _MASK_HARDPOINT | 0x04,
+        TMAAzimuthTimeout = _MASK_TMA | 0x01,
+        TMAElevationTimeout = _MASK_TMA | 0x02,
+        TMAInclinometerDeviation = _MASK_TMA | 0x04,
     };
 };
 

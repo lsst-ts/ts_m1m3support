@@ -209,7 +209,7 @@ public:
     void zeroActiveOpticForces();
 
     void applyAzimuthForces();
-    void updateAzimuthForces(float azimuthAngle);
+    void updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData);
     void zeroAzimuthForces();
 
     void applyBalanceForces();
@@ -282,8 +282,10 @@ private:
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_gyroDataC* _gyroData;
 
+    double _azimuth_Timestamp;
+
     double _elevation_Timestamp;
-    double _elevation_Angle_Actual;
+    double _elevation_Actual;
 
     std::vector<ForceActuatorNeighbors> _neighbors;
 
