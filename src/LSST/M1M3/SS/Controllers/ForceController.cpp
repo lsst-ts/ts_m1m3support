@@ -669,7 +669,8 @@ bool ForceController::_checkMirrorWeight() {
     bool previousWarning = _forceSetpointWarning->magnitudeWarning;
     _forceSetpointWarning->magnitudeWarning =
             globalForce > (_mirrorWeight * _forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
-    _safetyController->forceControllerNotifyMagnitudeLimit(_forceSetpointWarning->magnitudeWarning, globalForce);
+    _safetyController->forceControllerNotifyMagnitudeLimit(_forceSetpointWarning->magnitudeWarning,
+                                                           globalForce);
     return _forceSetpointWarning->magnitudeWarning != previousWarning;
 }
 
