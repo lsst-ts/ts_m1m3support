@@ -34,6 +34,7 @@
 #include <RaiseOperationSafetySettings.h>
 #include <LowerOperationSafetySettings.h>
 #include <ILCSafetySettings.h>
+#include <TMASafetySettings.h>
 #include <string>
 
 namespace LSST {
@@ -55,6 +56,7 @@ public:
     RaiseOperationSafetySettings RaiseOperation;
     LowerOperationSafetySettings LowerOperation;
     ILCSafetySettings ILC;
+    TMASafetySettings TMA;
 
     /**
      * Loads safety settings.
