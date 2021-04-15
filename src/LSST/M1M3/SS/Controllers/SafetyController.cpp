@@ -412,7 +412,7 @@ void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool c
     _safetyViolated(FaultCodes::ForceActuatorFollowingError,
                     _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingError,
                     sum >= _safetyControllerSettings->ILC.ForceActuatorFollowingErrorCountThreshold,
-                    "Force actuator Following Error {}", sum);
+                    "Force Actuator {} Following Error {}", actuatorDataIndex, sum);
 }
 
 void SafetyController::hardpointActuatorLoadCellError(bool conditionFlag) {
@@ -430,7 +430,7 @@ void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, boo
     _safetyViolated(FaultCodes::HardpointActuatorMeasuredForceError,
                     _safetyControllerSettings->ILC.FaultOnHardpointActuatorMeasuredForce,
                     sum >= _safetyControllerSettings->ILC.HardpointActuatorMeasuredForceCountThreshold,
-                    "Hardpoint Actuator Measured Forces {}", sum);
+                    "Hardpoint Actuator {} Measured Forces {}", actuatorDataIndex, sum);
 }
 void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool conditionFlag) {
     _hardpointActuatorAirPressureData[actuatorDataIndex].pop_front();
@@ -442,7 +442,7 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool 
     _safetyViolated(FaultCodes::HardpointActuatorAirPressure,
                     _safetyControllerSettings->ILC.FaultOnAirPressure,
                     sum >= _safetyControllerSettings->ILC.AirPressureCountThreshold,
-                    "Hardpoint Actuator Air Pressure {}", sum);
+                    "Hardpoint Actuator {} Air Pressure {}", actuatorDataIndex, sum);
 }
 
 void SafetyController::tmaAzimuthTimeout(double currentTimeout) {
