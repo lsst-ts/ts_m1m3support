@@ -35,8 +35,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
     SPDLOG_DEBUG("SafetyController: SafetyController()");
     _safetyControllerSettings = safetyControllerSettings;
     _errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
-    _errorCodeData->errorCode = FaultCodes::NoFault;
-    _errorCodeData->errorReport = "";
+    _clearError();
     M1M3SSPublisher::get().logErrorCode();
     for (int i = 0; i < _safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
         _ilcCommunicationTimeoutData.push_back(0);
@@ -60,8 +59,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
 
 void SafetyController::clearErrorCode() {
     SPDLOG_INFO("SafetyController: clearErrorCode()");
-    _errorCodeData->errorCode = FaultCodes::NoFault;
-    _errorCodeData->errorReport = "";
+    _clearError();
     M1M3SSPublisher::get().logErrorCode();
 }
 
@@ -470,11 +468,15 @@ void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
         M1M3SSPublisher::get().logErrorCode();
-        _errorCodeData->errorCode = FaultCodes::NoFault;
-        _errorCodeData->errorReport = "";
+        _clearError();
         return States::LoweringFaultState;
     }
     return preferredNextState;
+}
+
+void SafetyController::_clearError() {
+    _errorCodeData->errorCode = FaultCodes::NoFault;
+    _errorCodeData->errorReport = "Error cleared";
 }
 
 } /* namespace SS */

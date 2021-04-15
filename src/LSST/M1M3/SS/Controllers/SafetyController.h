@@ -157,6 +157,8 @@ private:
         }
     }
 
+    void _clearError();
+
     SafetyControllerSettings* _safetyControllerSettings;
 
     MTM1M3_logevent_errorCodeC* _errorCodeData;
