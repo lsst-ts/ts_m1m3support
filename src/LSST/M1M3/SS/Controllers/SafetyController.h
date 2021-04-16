@@ -129,7 +129,16 @@ public:
 
     void hardpointActuatorLoadCellError(bool conditionFlag);
     void hardpointActuatorMeasuredForce(int actuatorDataIndex, bool conditionFlag);
-    void hardpointActuatorAirPressure(int actuatorDataIndex, bool conditionFlag);
+
+    /** Checks hardpoint breakway air pressure. Triggers fault if pressure is
+     * outside of bounds for more than
+     * SafetyControllerSettings/ILC.AirPressureCountThreshold.
+     *
+     * @param actuatorDataIndex HP actuator index (0-5)
+     * @param conditionFlag -1 if bellow low, 1 if above high, 0 for in bounds
+     * @param airPressure current air pressure
+     */
+    void hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag, float airPressure);
 
     void tmaAzimuthTimeout(double currentTimeout);
     void tmaElevationTimeout(double currentTimeout);

@@ -430,17 +430,29 @@ void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, boo
                     sum >= _safetyControllerSettings->ILC.HardpointActuatorMeasuredForceCountThreshold,
                     "Hardpoint Actuator #{} Measured Forces {}", actuatorDataIndex + 1, sum);
 }
-void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, bool conditionFlag) {
+void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag,
+                                                    float airPressure) {
     _hardpointActuatorAirPressureData[actuatorDataIndex].pop_front();
     _hardpointActuatorAirPressureData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
+    int absSum = 0;
     int sum = 0;
     for (auto i : _hardpointActuatorAirPressureData[actuatorDataIndex]) {
+        absSum += abs(i);
         sum += i;
     }
-    _safetyViolated(FaultCodes::HardpointActuatorAirPressure,
+    _updateOverride(
+            FaultCodes::HardpointActuatorAirPressureLow, _safetyControllerSettings->ILC.FaultOnAirPressure,
+            -sum >= _safetyControllerSettings->ILC.AirPressureCountThreshold,
+            "Hardpoint Actuator #{} Air Pressure Low {} sum {}", actuatorDataIndex + 1, airPressure, sum);
+    _updateOverride(
+            FaultCodes::HardpointActuatorAirPressureHigh, _safetyControllerSettings->ILC.FaultOnAirPressure,
+            sum >= _safetyControllerSettings->ILC.AirPressureCountThreshold,
+            "Hardpoint Actuator #{} Air Pressure High {} sum {}", actuatorDataIndex + 1, airPressure, sum);
+    _updateOverride(FaultCodes::HardpointActuatorAirPressureOutside,
                     _safetyControllerSettings->ILC.FaultOnAirPressure,
-                    sum >= _safetyControllerSettings->ILC.AirPressureCountThreshold,
-                    "Hardpoint Actuator #{} Air Pressure {}", actuatorDataIndex + 1, sum);
+                    absSum >= _safetyControllerSettings->ILC.AirPressureCountThreshold,
+                    "Hardpoint Actuator #{} Air Pressure Oscillates {} absSum {} sum {}",
+                    actuatorDataIndex + 1, airPressure, absSum, sum);
 }
 
 void SafetyController::tmaAzimuthTimeout(double currentTimeout) {
