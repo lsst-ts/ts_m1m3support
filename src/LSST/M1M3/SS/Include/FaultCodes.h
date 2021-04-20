@@ -141,6 +141,10 @@ struct FaultCodes {
          * HardpointActuatorSettings/AirPressureWarningHigh
          */
         HardpointActuatorAirPressureOutside = _MASK_HARDPOINT | 0x06,
+
+        TMAAzimuthTimeout = _MASK_TMA | 0x01,
+        TMAElevationTimeout = _MASK_TMA | 0x02,
+        TMAInclinometerDeviation = _MASK_TMA | 0x04,
     };
 };
 
