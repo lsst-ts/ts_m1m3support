@@ -36,29 +36,55 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Wrapper object for MTM1M3_logevent_forceActuatorWarningC.
+ * Wrapper object for MTM1M3_logevent_forceActuatorWarningC. Keeps track of
+ * changes to parsed data, and sends updates only if data changed.
  */
 class ForceActuatorWarning : public MTM1M3_logevent_forceActuatorWarningC {
 public:
     ForceActuatorWarning() {
-        memset(lastFAServerStatusResponse, 0xFF, sizeof(lastFAServerStatusResponse));
-        memset(lastForceDemandResponse, 0xFF, sizeof(lastForceDemandResponse));
-        memset(lastDCAStatus, 0xFF, sizeof(lastDCAStatus));
-        shouldSend = false;
+        memset(_lastFAServerStatusResponse, 0xFF, sizeof(_lastFAServerStatusResponse));
+        memset(_lastForceDemandResponse, 0xFF, sizeof(_lastForceDemandResponse));
+        memset(_lastDCAStatus, 0xFF, sizeof(_lastDCAStatus));
+        _shouldSend = false;
     }
+
     void setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
 
+    /**
+     * Parses FA server status (included in response to function code 18).
+     *
+     * @param buffer receiving buffer
+     * @param dataIndex FA index
+     */
     void parseFAServerStatusResponse(ModbusBuffer *buffer, int32_t dataIndex);
+
+    /**
+     * Parses FA status (included in response to function code 75).
+     *
+     * @param buffer receiving buffer
+     * @param dataIndex FA index
+     * @param broadcastCounter actual (expected) value of broadcast counter
+     */
     void parseStatus(ModbusBuffer *buffer, int32_t dataIndex, const DDS::Short broadcastCounter);
+
+    /**
+     * Parses DCA status (included in response to function code 121).
+     *
+     * @param buffer receiving buffer
+     * @param dataIndex FA index
+     */
     void parseDCAStatus(ModbusBuffer *buffer, int32_t dataIndex);
 
+    /**
+     * Sends updates through SAL/DDS.
+     */
     void log();
 
 private:
-    uint16_t lastFAServerStatusResponse[FA_COUNT];
-    uint8_t lastForceDemandResponse[FA_COUNT];
-    uint16_t lastDCAStatus[FA_COUNT];
-    bool shouldSend;
+    uint16_t _lastFAServerStatusResponse[FA_COUNT];
+    uint8_t _lastForceDemandResponse[FA_COUNT];
+    uint16_t _lastDCAStatus[FA_COUNT];
+    bool _shouldSend;
 };
 
 }  // namespace SS

@@ -30,7 +30,7 @@ namespace SS {
 
 void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
     uint16_t ilcStatus = buffer->readU16();
-    if (lastFAServerStatusResponse[dataIndex] == ilcStatus) {
+    if (_lastFAServerStatusResponse[dataIndex] == ilcStatus) {
         return;
     }
     majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
@@ -66,18 +66,17 @@ void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int
     auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
     // 0x4000 is SMC Power (HP only)
     // 0x8000 is reserved
-    lastFAServerStatusResponse[dataIndex] = ilcStatus;
-    shouldSend = true;
+    _lastFAServerStatusResponse[dataIndex] = ilcStatus;
+    _shouldSend = true;
 }
 
 void ForceActuatorWarning::parseStatus(ModbusBuffer* buffer, const int32_t dataIndex,
                                        DDS::Short broadcastCounter) {
     uint8_t ilcStatus = buffer->readU8();
-    printf("br counters: %d %d %d\n", dataIndex, broadcastCounter, (ilcStatus & 0xF0) >> 4);
     bool brCntWarning = broadcastCounter != ((ilcStatus & 0xF0) >> 4);
     // bit 0x10 becomes brCntWarning
     ilcStatus = (ilcStatus & !0xF0) | (brCntWarning ? 0x10 : 0x00);
-    if (lastForceDemandResponse[dataIndex] == ilcStatus) {
+    if (_lastForceDemandResponse[dataIndex] == ilcStatus) {
         return;
     }
     ilcFault[dataIndex] = (ilcStatus & 0x01) != 0;
@@ -85,13 +84,13 @@ void ForceActuatorWarning::parseStatus(ModbusBuffer* buffer, const int32_t dataI
     // 0x04 is reserved
     // 0x08 is reserved
     broadcastCounterWarning[dataIndex] = brCntWarning;
-    lastForceDemandResponse[dataIndex] = ilcStatus;
-    shouldSend = true;
+    _lastForceDemandResponse[dataIndex] = ilcStatus;
+    _shouldSend = true;
 }
 
 void ForceActuatorWarning::parseDCAStatus(ModbusBuffer* buffer, int32_t dataIndex) {
     uint16_t dcaStatus = buffer->readU16();
-    if (lastDCAStatus[dataIndex] == dcaStatus) {
+    if (_lastDCAStatus[dataIndex] == dcaStatus) {
         return;
     }
 
@@ -111,11 +110,12 @@ void ForceActuatorWarning::parseDCAStatus(ModbusBuffer* buffer, int32_t dataInde
     mezzanineApplicationCRCMismatch[dataIndex] = (dcaStatus & 0x2000) != 0;
     // 0x4000 is reserved
     mezzanineBootloaderActive[dataIndex] = (dcaStatus & 0x8000) != 0;
-    shouldSend = true;
+    _lastDCAStatus[dataIndex] = dcaStatus;
+    _shouldSend = true;
 }
 
 void ForceActuatorWarning::log() {
-    if (shouldSend == false) {
+    if (_shouldSend == false) {
         return;
     }
     anyMajorFault = false;
@@ -195,7 +195,7 @@ void ForceActuatorWarning::log() {
                  anyMezzanineApplicationMissing || anyMezzanineApplicationCRCMismatch || anyILCFault ||
                  anyBroadcastCounterWarning;
     M1M3SSPublisher::get().logForceActuatorWarning(this);
-    shouldSend = false;
+    _shouldSend = false;
 }
 
 }  // namespace SS

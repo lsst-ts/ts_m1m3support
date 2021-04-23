@@ -133,7 +133,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     uint64_t d = buffer->readLength();
     double globalTimestamp = Timestamp::fromRaw((d << 48) | (c << 32) | (b << 16) | a);
     _forceActuatorState->timestamp = globalTimestamp;
-    M1M3SSPublisher::get().getForceActuatorWarning()->setTimestamp(globalTimestamp);
+    M1M3SSPublisher::getForceActuatorWarning()->setTimestamp(globalTimestamp);
     _forceWarning->timestamp = globalTimestamp;
     _forceActuatorData->timestamp = globalTimestamp;
     _hardpointActuatorState->timestamp = globalTimestamp;
@@ -337,7 +337,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
             }
         }
     }
-    M1M3SSPublisher::get().getForceActuatorWarning()->log();
+    M1M3SSPublisher::getForceActuatorWarning()->log();
 }
 
 void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm) {
@@ -556,7 +556,7 @@ void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer* buffer,
 void ILCResponseParser::_parseReportFAServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _forceActuatorState->ilcState[dataIndex] = buffer->readU8();
-    M1M3SSPublisher::get().getForceActuatorWarning()->parseFAServerStatusResponse(buffer, dataIndex);
+    M1M3SSPublisher::getForceActuatorWarning()->parseFAServerStatusResponse(buffer, dataIndex);
     buffer->skipToNextFrame();
 }
 
@@ -669,8 +669,8 @@ void ILCResponseParser::_parseForceDemandResponse(ModbusBuffer* buffer, uint8_t 
 
 void ILCResponseParser::_parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
-    M1M3SSPublisher::get().getForceActuatorWarning()->parseStatus(buffer, dataIndex,
-                                                                  _outerLoopData->broadcastCounter);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
@@ -686,8 +686,8 @@ void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer* buffer, 
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
     int xIndex = map.XDataIndex;
     int yIndex = map.YDataIndex;
-    M1M3SSPublisher::get().getForceActuatorWarning()->parseStatus(buffer, dataIndex,
-                                                                  _outerLoopData->broadcastCounter);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     _forceActuatorData->secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
     float x = 0;
@@ -738,8 +738,8 @@ void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer* buffer,
 
 void ILCResponseParser::_parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
-    M1M3SSPublisher::get().getForceActuatorWarning()->parseStatus(buffer, dataIndex,
-                                                                  _outerLoopData->broadcastCounter);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
@@ -755,8 +755,8 @@ void ILCResponseParser::_parseDualAxisPneumaticForceStatusResponse(ModbusBuffer*
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
     int xIndex = map.XDataIndex;
     int yIndex = map.YDataIndex;
-    M1M3SSPublisher::get().getForceActuatorWarning()->parseStatus(buffer, dataIndex,
-                                                                  _outerLoopData->broadcastCounter);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     _forceActuatorData->secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
     float x = 0;
@@ -919,7 +919,7 @@ void ILCResponseParser::_parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, 
 }
 
 void ILCResponseParser::_parseReportDCAStatusResponse(ModbusBuffer* buffer, ILCMap map) {
-    M1M3SSPublisher::get().getForceActuatorWarning()->parseDCAStatus(buffer, map.DataIndex);
+    M1M3SSPublisher::getForceActuatorWarning()->parseDCAStatus(buffer, map.DataIndex);
     buffer->skipToNextFrame();
 }
 

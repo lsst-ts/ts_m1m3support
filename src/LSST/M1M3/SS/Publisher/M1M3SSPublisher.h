@@ -134,7 +134,7 @@ public:
     }
     MTM1M3_logevent_forceActuatorInfoC* getEventForceActuatorInfo() { return &_eventForceActuatorInfo; }
     MTM1M3_logevent_forceActuatorStateC* getEventForceActuatorState() { return &_eventForceActuatorState; }
-    ForceActuatorWarning* getForceActuatorWarning() { return &_forceActuatorWarning; }
+    static ForceActuatorWarning* getForceActuatorWarning() { return &(get()._forceActuatorWarning); }
     MTM1M3_logevent_forceSetpointWarningC* getEventForceSetpointWarning() {
         return &_eventForceSetpointWarning;
     }
