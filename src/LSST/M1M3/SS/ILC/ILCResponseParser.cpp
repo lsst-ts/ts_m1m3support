@@ -53,7 +53,6 @@ ILCResponseParser::ILCResponseParser() {
     _hardpointActuatorData = 0;
     _forceActuatorInfo = 0;
     _forceActuatorState = 0;
-    _forceActuatorWarning = 0;
     _forceWarning = 0;
     _appliedCylinderForces = 0;
     _forceActuatorData = 0;
@@ -83,7 +82,6 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
     _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
     _forceActuatorInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceActuatorWarning = M1M3SSPublisher::get().getEventForceActuatorWarning();
     _forceWarning = M1M3SSPublisher::get().getEventForceActuatorForceWarning();
     _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
     _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
@@ -135,7 +133,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     uint64_t d = buffer->readLength();
     double globalTimestamp = Timestamp::fromRaw((d << 48) | (c << 32) | (b << 16) | a);
     _forceActuatorState->timestamp = globalTimestamp;
-    _forceActuatorWarning->timestamp = globalTimestamp;
+    M1M3SSPublisher::getForceActuatorWarning()->setTimestamp(globalTimestamp);
     _forceWarning->timestamp = globalTimestamp;
     _forceActuatorData->timestamp = globalTimestamp;
     _hardpointActuatorState->timestamp = globalTimestamp;
@@ -339,6 +337,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
             }
         }
     }
+    M1M3SSPublisher::getForceActuatorWarning()->log();
 }
 
 void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm) {
@@ -557,40 +556,7 @@ void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer* buffer,
 void ILCResponseParser::_parseReportFAServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _forceActuatorState->ilcState[dataIndex] = buffer->readU8();
-    uint16_t ilcStatus = buffer->readU16();
-    _forceActuatorWarning->majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
-    _forceActuatorWarning->minorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
-    // 0x0004 is reserved
-    _forceActuatorWarning->faultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
-    _forceActuatorWarning->mainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
-    _forceActuatorWarning->backupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
-    // 0x0040 is reserved
-    // 0x0080 is reserved
-    // 0x0100 is limit switch (HP only)
-    // 0x0200 is limit switch (HP only)
-    // 0x0400 is reserved
-    // 0x0800 is reserved
-    // 0x1000 is reserved
-    _forceActuatorWarning->mezzanineError[dataIndex] = (ilcStatus & 0x2000) != 0;
-    _forceActuatorWarning->mezzanineBootloaderActive[dataIndex] = (ilcStatus & 0x4000) != 0;
-    // 0x8000 is reserved
-    uint16_t ilcFaults = buffer->readU16();
-    _forceActuatorWarning->uniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
-    _forceActuatorWarning->applicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
-    _forceActuatorWarning->applicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
-    _forceActuatorWarning->applicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
-    _forceActuatorWarning->oneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
-    _forceActuatorWarning->oneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
-    _forceActuatorWarning->oneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
-    // 0x0080 is reserved
-    _forceActuatorWarning->watchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
-    _forceActuatorWarning->brownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
-    _forceActuatorWarning->eventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
-    // 0x0800 is Motor Driver (HP only)
-    _forceActuatorWarning->ssrPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
-    _forceActuatorWarning->auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
-    // 0x4000 is SMC Power (HP only)
-    // 0x8000 is reserved
+    M1M3SSPublisher::getForceActuatorWarning()->parseFAServerStatusResponse(buffer, dataIndex);
     buffer->skipToNextFrame();
 }
 
@@ -703,13 +669,8 @@ void ILCResponseParser::_parseForceDemandResponse(ModbusBuffer* buffer, uint8_t 
 
 void ILCResponseParser::_parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
-    uint8_t status = buffer->readU8();
-    _forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
-    _forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
-    // 0x04 is reserved
-    // 0x08 is reserved
-    _forceActuatorWarning->broadcastCounterWarning[dataIndex] =
-            _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
@@ -725,13 +686,8 @@ void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer* buffer, 
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
     int xIndex = map.XDataIndex;
     int yIndex = map.YDataIndex;
-    uint8_t status = buffer->readU8();
-    _forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
-    _forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
-    // 0x04 is reserved
-    // 0x08 is reserved
-    _forceActuatorWarning->broadcastCounterWarning[dataIndex] =
-            _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     _forceActuatorData->secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
     float x = 0;
@@ -782,13 +738,8 @@ void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer* buffer,
 
 void ILCResponseParser::_parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
-    uint8_t status = buffer->readU8();
-    _forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
-    _forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
-    // 0x04 is reserved
-    // 0x08 is reserved
-    _forceActuatorWarning->broadcastCounterWarning[dataIndex] =
-            _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
@@ -804,13 +755,8 @@ void ILCResponseParser::_parseDualAxisPneumaticForceStatusResponse(ModbusBuffer*
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
     int xIndex = map.XDataIndex;
     int yIndex = map.YDataIndex;
-    uint8_t status = buffer->readU8();
-    _forceActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
-    _forceActuatorWarning->mezzanineError[dataIndex] = (status & 0x02) != 0;
-    // 0x04 is reserved
-    // 0x08 is reserved
-    _forceActuatorWarning->broadcastCounterWarning[dataIndex] =
-            _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+    M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
+                                                            _outerLoopData->broadcastCounter);
     _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
     _forceActuatorData->secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
     float x = 0;
@@ -973,24 +919,7 @@ void ILCResponseParser::_parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, 
 }
 
 void ILCResponseParser::_parseReportDCAStatusResponse(ModbusBuffer* buffer, ILCMap map) {
-    int32_t dataIndex = map.DataIndex;
-    uint16_t status = buffer->readU16();
-    // 0x0001 is DCA Outputs Enabled (wont report)
-    _forceActuatorWarning->mezzaninePowerFault[dataIndex] = (status & 0x0002) != 0;
-    _forceActuatorWarning->mezzanineCurrentAmp1Fault[dataIndex] = (status & 0x0004) != 0;
-    _forceActuatorWarning->mezzanineCurrentAmp2Fault[dataIndex] = (status & 0x0008) != 0;
-    _forceActuatorWarning->mezzanineUniqueIdCRCError[dataIndex] = (status & 0x0010) != 0;
-    // 0x0020 is reserved
-    _forceActuatorWarning->mezzanineMainCalibrationError[dataIndex] = (status & 0x0040) != 0;
-    _forceActuatorWarning->mezzanineBackupCalibrationError[dataIndex] = (status & 0x0080) != 0;
-    _forceActuatorWarning->mezzanineEventTrapReset[dataIndex] = (status & 0x0100) != 0;
-    // 0x0200 is reserved
-    // 0x0400 is reserved
-    // 0x0800 is reserved
-    _forceActuatorWarning->mezzanineApplicationMissing[dataIndex] = (status & 0x1000) != 0;
-    _forceActuatorWarning->mezzanineApplicationCRCMismatch[dataIndex] = (status & 0x2000) != 0;
-    // 0x4000 is reserved
-    _forceActuatorWarning->mezzanineBootloaderActive[dataIndex] = (status & 0x8000) != 0;
+    M1M3SSPublisher::getForceActuatorWarning()->parseDCAStatus(buffer, map.DataIndex);
     buffer->skipToNextFrame();
 }
 
