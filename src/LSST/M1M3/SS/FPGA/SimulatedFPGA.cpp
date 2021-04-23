@@ -205,6 +205,10 @@ void SimulatedFPGA::pullTelemetry() {
 
 void SimulatedFPGA::pullHealthAndStatus() {}
 
+uint8_t _broadCastCounter() {
+    return static_cast<uint8_t>(M1M3SSPublisher::get().getOuterLoopData()->broadcastCounter) << 4;
+}
+
 void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length;) {
         uint16_t signal = data[i++];
@@ -475,12 +479,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             uint8_t word1 = _readModbus(data[i++]);
                             uint8_t word2 = _readModbus(data[i++]);
                             uint8_t word3 = _readModbus(data[i++]);
-                            _writeModbus(response, address);   // Write Address
-                            _writeModbus(response, function);  // Write Function
-                            _writeModbus(response,
-                                         (uint8_t)M1M3SSPublisher::get()
-                                                 .getOuterLoopData()
-                                                 ->broadcastCounter);  // Write ILC Status
+                            _writeModbus(response, address);              // Write Address
+                            _writeModbus(response, function);             // Write Function
+                            _writeModbus(response, _broadCastCounter());  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)((static_cast<uint32_t>(word1) << 16) |
                                                     (static_cast<uint32_t>(word2) << 8) | word3)) /
@@ -508,13 +509,10 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 76: {                             // Force And Status
-                            _writeModbus(response, address);   // Write Address
-                            _writeModbus(response, function);  // Write Function
-                            _writeModbus(response,
-                                         (uint8_t)M1M3SSPublisher::get()
-                                                 .getOuterLoopData()
-                                                 ->broadcastCounter);  // Write ILC Status
+                        case 76: {                                        // Force And Status
+                            _writeModbus(response, address);              // Write Address
+                            _writeModbus(response, function);             // Write Function
+                            _writeModbus(response, _broadCastCounter());  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)M1M3SSPublisher::get()
                                                     .getEventAppliedCylinderForces()
@@ -538,7 +536,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                 _writeModbus(response, buffer[3]);
                                 _writeModbus(response, buffer[2]);
                                 _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write Secondary Cylinder Force
+                                _writeModbus(response,
+                                             buffer[0]);  // Write Secondary Cylinder Force
                             }
                             _writeModbusCRC(response);
                             break;
@@ -625,12 +624,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                     }
 
                     auto fillHPStatus = [address, function, &response, this](int steps) {
-                        _writeModbus(response, address);   // Write Address
-                        _writeModbus(response, function);  // Write Function
-                        _writeModbus(response,
-                                     (uint8_t)M1M3SSPublisher::get()
-                                             .getOuterLoopData()
-                                             ->broadcastCounter);  // Write ILC Status
+                        _writeModbus(response, address);              // Write Address
+                        _writeModbus(response, function);             // Write Function
+                        _writeModbus(response, _broadCastCounter());  // Write ILC Status
                         // Number of steps issued / 4 + current encoder
                         // The encoder is also inverted after being received to match axis direction
                         // So we have to also invert the encoder here to counteract that
