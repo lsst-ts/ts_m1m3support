@@ -24,6 +24,8 @@
 #ifndef SAFETYCONTROLLER_H_
 #define SAFETYCONTROLLER_H_
 
+#include <spdlog/spdlog.h>
+
 #include <FaultCodes.h>
 #include <StateTypes.h>
 #include <SafetyControllerSettings.h>
@@ -89,7 +91,7 @@ public:
     void forceControllerNotifyYMomentLimit(bool conditionFlag);
     void forceControllerNotifyZMomentLimit(bool conditionFlag);
     void forceControllerNotifyNearNeighborCheck(bool conditionFlag);
-    void forceControllerNotifyMagnitudeLimit(bool conditionFlag);
+    void forceControllerNotifyMagnitudeLimit(bool conditionFlag, float globalForce);
     void forceControllerNotifyFarNeighborCheck(bool conditionFlag);
     void forceControllerNotifyElevationForceClipping(bool conditionFlag);
     void forceControllerNotifyAzimuthForceClipping(bool conditionFlag);
@@ -127,7 +129,16 @@ public:
 
     void hardpointActuatorLoadCellError(bool conditionFlag);
     void hardpointActuatorMeasuredForce(int actuatorDataIndex, bool conditionFlag);
-    void hardpointActuatorAirPressure(int actuatorDataIndex, bool conditionFlag);
+
+    /** Checks hardpoint breakway air pressure. Triggers fault if pressure is
+     * outside of bounds for more than
+     * SafetyControllerSettings/ILC.AirPressureCountThreshold.
+     *
+     * @param actuatorDataIndex HP actuator index (0-5)
+     * @param conditionFlag -1 if bellow low, 1 if above high, 0 for in bounds
+     * @param airPressure current air pressure
+     */
+    void hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag, float airPressure);
 
     void tmaAzimuthTimeout(double currentTimeout);
     void tmaElevationTimeout(double currentTimeout);
@@ -145,16 +156,17 @@ public:
     States::Type checkSafety(States::Type preferredNextState);
 
 private:
-    /**
-     * Check if safety condition is not met.
-     *
-     * @param faultCode
-     * @param enabledFlag
-     * @param conditionFlag
-     *
-     * @return true if safety condition is met, false otherwise.
-     */
-    bool _safetyViolated(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag);
+    template <typename... Args>
+    void _updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag,
+                         std::string errorReport, Args&&... args) {
+        bool faultConditionExists = enabledFlag && conditionFlag;
+        if (faultConditionExists && _errorCodeData->errorCode == FaultCodes::NoFault) {
+            _errorCodeData->errorCode = faultCode;
+            _errorCodeData->errorReport = fmt::format(errorReport, args...);
+        }
+    }
+
+    void _clearError();
 
     SafetyControllerSettings* _safetyControllerSettings;
 
