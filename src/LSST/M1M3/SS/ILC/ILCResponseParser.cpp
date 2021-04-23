@@ -1114,12 +1114,14 @@ void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float airPressure = _hardpointMonitorData->breakawayPressure[actuatorId];
     float min = _hardpointActuatorSettings->AirPressureWarningLow;
     float max = _hardpointActuatorSettings->AirPressureWarningHigh;
-    bool loadCellError = airPressure > max || airPressure < min;
+    int loadCellError = 0;
+    if (airPressure > max) loadCellError = 1;
+    if (airPressure < min) loadCellError = -1;
     if (_detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState ||
         _detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveState) {
-        _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError);
+        _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError, airPressure);
     } else {
-        _safetyController->hardpointActuatorAirPressure(actuatorId, false);
+        _safetyController->hardpointActuatorAirPressure(actuatorId, 0, airPressure);
     }
 }
 
