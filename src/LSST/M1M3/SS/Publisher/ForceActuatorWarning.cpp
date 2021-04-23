@@ -28,6 +28,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+ForceActuatorWarning::ForceActuatorWarning() {
+    memset(_lastFAServerStatusResponse, 0xFF, sizeof(_lastFAServerStatusResponse));
+    memset(_lastForceDemandResponse, 0xFF, sizeof(_lastForceDemandResponse));
+    memset(_lastDCAStatus, 0xFF, sizeof(_lastDCAStatus));
+    _shouldSend = false;
+}
+
 void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
     uint16_t ilcStatus = buffer->readU16();
     if (_lastFAServerStatusResponse[dataIndex] == ilcStatus) {

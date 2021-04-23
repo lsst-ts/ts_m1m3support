@@ -37,17 +37,23 @@ namespace SS {
 
 /**
  * Wrapper object for MTM1M3_logevent_forceActuatorWarningC. Keeps track of
- * changes to parsed data, and sends updates only if data changed.
+ * changes to parsed data, and sends updates only if data changed. Variables
+ * inherited from MTM1M3_logevent_forceActuatorWarningC are reset in first pass
+ * of various parse* methods.
  */
 class ForceActuatorWarning : public MTM1M3_logevent_forceActuatorWarningC {
 public:
-    ForceActuatorWarning() {
-        memset(_lastFAServerStatusResponse, 0xFF, sizeof(_lastFAServerStatusResponse));
-        memset(_lastForceDemandResponse, 0xFF, sizeof(_lastForceDemandResponse));
-        memset(_lastDCAStatus, 0xFF, sizeof(_lastDCAStatus));
-        _shouldSend = false;
-    }
+    /**
+     * Construct new ForceActuatorWarning, sets internal variables to 0xFF
+     * (actual ILC shall never send those responses).
+     */
+    ForceActuatorWarning();
 
+    /**
+     * Sets logEvent timestamp.
+     *
+     * @param globalTimestamp actual timestamp
+     */
     void setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
 
     /**
