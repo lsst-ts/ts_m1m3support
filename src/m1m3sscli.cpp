@@ -121,30 +121,6 @@ void PrintILC::processCalibrationData(uint8_t address, float mainADCK[4], float 
     print4("Backup Sensitivity", backupSensitivity);
 }
 
-void PrintILC::processResetServer(uint8_t address) {
-    std::cout << "Reseted " << _bus << "/" << address << std::endl;
-}
-
-template <typename t>
-void print4(const char* name, t a[4]) {
-    std::cout << std::setw(10) << name;
-    for (int i = 0; i < 4; i++) {
-        std::cout << " " << std::setw(10) << a[i];
-    }
-    std::cout << std::endl;
-};
-
-void PrintILC::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
-                                      float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
-                                      float backupSensitivity[4]) {
-    std::cout << "Calibration data " << _bus << "/" << address << std::endl;
-
-    int vi[4] = {1, 2, 3, 4};
-    print4("Values", vi);
-
-    print4("Main ADC Kn", mainADCK);
-}
-
 constexpr int NEED_FPGA = 0x01;
 
 class M1M3TScli : public CliApp {
@@ -359,14 +335,6 @@ int info(command_vec cmds) {
     return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
         return ilcs[bus].reportServerID(address);
     });
-}
-
-int calData(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t a) { return ilc.reportCalibrationData(a); });
-}
-
-int info(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t a) { return ilc.reportServerID(a); });
 }
 
 int openFPGA(command_vec cmds) {
