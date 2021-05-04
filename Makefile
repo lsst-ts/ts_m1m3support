@@ -6,13 +6,13 @@ include Makefile.inc
 #
 
 # All Target
-all: ts_M1M3Support $(m1m3sscli)
+all: ts-M1M3support $(m1m3sscli)
 
 src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
 
 # Tool invocations
-ts_M1M3Support: src/ts_M1M3Support.cpp.o src/libM1M3SS.a
+ts-M1M3support: src/ts-M1M3support.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
 	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a
 
@@ -31,7 +31,7 @@ src/%.cpp.o: src/%.cpp
 
 CRIO_IP = 10.0.0.11
 
-deploy: ts_M1M3Support m1m3cli
+deploy: ts-M1M3support m1m3cli
 	@echo '[SCP] $^'
 	${co}scp $^ admin@${CRIO_IP}:
 	@echo '[SCP] Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx'
