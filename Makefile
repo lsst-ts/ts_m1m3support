@@ -1,6 +1,6 @@
 include Makefile.inc
 
-.PHONY: all clean deploy tests FORCE doc
+.PHONY: all clean deploy tests FORCE doc simulator
 
 # Add inputs and outputs from these tool invocations to the build variables 
 #
@@ -48,3 +48,6 @@ junit: tests
 
 doc:
 	${co}doxygen Doxyfile
+
+simulator:
+	@${MAKE} SIMULATOR=1
