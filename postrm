@@ -1,0 +1,3 @@
+#!/bin/sh
+update-rc.d ts-M1M3suport remove
+userdel m1m3
