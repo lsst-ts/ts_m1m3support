@@ -26,7 +26,7 @@ set -a
 set +a
 
 startdaemon(){
-	echo -n "Starting TS M1M3i support:"
+	echo -n "Starting TS M1M3 support:"
 	start-stop-daemon --start --oknodo --pidfile ${PIDFILE} --startas $DAEMON -- -p ${PIDFILE} -u m1m3:m1m3
 	echo "done"
 }
