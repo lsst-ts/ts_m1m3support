@@ -82,7 +82,7 @@ void ForceActuatorWarning::parseStatus(ModbusBuffer* buffer, const int32_t dataI
     uint8_t ilcStatus = buffer->readU8();
     bool brCntWarning = broadcastCounter != ((ilcStatus & 0xF0) >> 4);
     // bit 0x10 becomes brCntWarning
-    ilcStatus = (ilcStatus & !0xF0) | (brCntWarning ? 0x10 : 0x00);
+    ilcStatus = (ilcStatus & ~0xF0) | (brCntWarning ? 0x10 : 0x00);
     if (_lastForceDemandResponse[dataIndex] == ilcStatus) {
         return;
     }
