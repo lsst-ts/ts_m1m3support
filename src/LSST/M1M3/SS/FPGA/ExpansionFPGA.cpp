@@ -56,7 +56,7 @@ void ExpansionFPGA::open() {
     if (!expansionFPGAApplicationSettings->Enabled) {
         return;
     }
-    NiOpen("/home/admin/ts_m1m3support/Bitfiles", NiFpga_ts_M1M3SupportExpansionFPGA,
+    NiOpen("/var/lib/ts-M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA,
            expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session));
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
