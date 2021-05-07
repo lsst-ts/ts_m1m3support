@@ -345,8 +345,11 @@ int main(int argc, char* const argv[]) {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     m1m3SAL->setDebugLevel(debugLevelSAL);
 
-    sinks.push_back(std::make_shared<SALSink_mt>(m1m3SAL));
-    setSinks();
+    if (enabledSinks & 0x10) {
+        sinks.push_back(std::make_shared<SALSink_mt>(m1m3SAL));
+        setSinks();
+        SPDLOG_INFO("Enabled SAL logger");
+    }
 
     if (SAL_MTM1M3::getSALVersion() != SAL_MTMount::getSALVersion()) {
         SPDLOG_WARN("SAL version mismatch: MTM1M3 {} MTMount {}", SAL_MTM1M3::getSALVersion(),
@@ -379,7 +382,6 @@ int main(int argc, char* const argv[]) {
         runFPGAs(m1m3SAL, mtMountSAL, startPipe[1]);
 
         expansionFPGA->close();
-
         fpga->close();
         fpga->finalize();
     } catch (NiError& nie) {
@@ -388,7 +390,10 @@ int main(int argc, char* const argv[]) {
             close(startPipe[1]);
         }
         SPDLOG_CRITICAL("Main: Error initializing FPGA: {}", nie.what());
+        expansionFPGA->close();
+        fpga->close();
         fpga->finalize();
+        expansionFPGA->close();
         mtMountSAL->salShutdown();
         m1m3SAL->salShutdown();
         return -1;
@@ -397,7 +402,14 @@ int main(int argc, char* const argv[]) {
     mtMountSAL->salShutdown();
 
     SPDLOG_INFO("Main: Shutting down M1M3 SAL");
+    if (enabledSinks & 0x10) {
+        sinks.pop_back();
+        setSinks();
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+    }
     m1m3SAL->salShutdown();
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     SPDLOG_INFO("Main: Shutdown complete");
 
