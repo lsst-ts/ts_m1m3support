@@ -1,3 +1,4 @@
 #!/bin/sh
-update-rc.d ts-M1M3suport remove
+/etc/init.d/ts-M1M3support stop
 userdel m1m3
+update-rc.d ts-M1M3support remove

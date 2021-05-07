@@ -2,3 +2,4 @@
 useradd -r -U m1m3
 chown -R m1m3:m1m3 /var/lib/ts-M1M3support/*.lvbitx
 update-rc.d ts-M1M3support defaults
+/etc/init.d/ts-M1M3support start
