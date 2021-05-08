@@ -359,6 +359,7 @@ public:
     void logSettingVersions();
     void logSettingsApplied();
     void tryLogSettingsApplied();
+    void logSoftwareVersions();
     void logSummaryState();
     void tryLogSummaryState();
 
