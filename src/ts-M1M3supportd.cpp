@@ -307,6 +307,11 @@ int main(int argc, char* const argv[]) {
                           << std::endl;
                 exit(EXIT_FAILURE);
             }
+            if (chown(pidFile, runAs->pw_uid, runGroup->gr_gid)) {
+                std::cerr << "Error: Cannot change owner of " << pidFile << ":" << strerror(errno)
+                          << std::endl;
+                exit(EXIT_FAILURE);
+            }
             char retbuf[2000];
             memset(retbuf, 0, sizeof(retbuf));
             signal(SIGALRM, [](int) {
@@ -412,13 +417,6 @@ int main(int argc, char* const argv[]) {
     std::this_thread::sleep_for(2s);
 
     SPDLOG_INFO("Main: Shutdown complete");
-
-    if (pidFile) {
-        unlink(pidFile);
-        if (errno) {
-            SPDLOG_INFO("Cannot unlink {}: {}", pidFile, strerror(errno));
-        }
-    }
 
     return 0;
 }

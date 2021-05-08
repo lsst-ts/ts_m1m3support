@@ -45,7 +45,7 @@ startdaemon(){
 }
 stopdaemon(){
 	echo -n "Stopping TS M1M3 support:"
-	start-stop-daemon --stop --retry 5 -p ${PIDFILE}
+	start-stop-daemon --stop --oknodo --remove-pidfile --retry 5 -p ${PIDFILE}
 	echo "done"
 }
 
