@@ -59,7 +59,7 @@
 #endif
 #include <NiError.h>
 
-using namespace std;
+using namespace std::chrono;
 using namespace LSST::M1M3::SS;
 
 void printHelp() {
@@ -405,13 +405,20 @@ int main(int argc, char* const argv[]) {
     if (enabledSinks & 0x10) {
         sinks.pop_back();
         setSinks();
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        std::this_thread::sleep_for(1000us);
     }
     m1m3SAL->salShutdown();
 
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(2s);
 
     SPDLOG_INFO("Main: Shutdown complete");
+
+    if (pidFile) {
+        unlink(pidFile);
+        if (errno) {
+            SPDLOG_INFO("Cannot unlink {}: {}", pidFile, strerror(errno));
+        }
+    }
 
     return 0;
 }
