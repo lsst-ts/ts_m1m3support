@@ -47,7 +47,7 @@ FPGA::FPGA() {
     _ppsIRQContext = 0;
 }
 
-FPGA::~FPGA() { finalize(); }
+FPGA::~FPGA() {}
 
 void FPGA::initialize() {
     SPDLOG_DEBUG("FPGA: initialize()");
