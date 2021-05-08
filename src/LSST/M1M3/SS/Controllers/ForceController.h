@@ -323,7 +323,8 @@ private:
 
         void reset() override {
             if (_counter > 0) {
-                SPDLOG_INFO("FA ID {} following error is back into limits after {} failures", _counter);
+                SPDLOG_INFO("FA ID {} axis {} following error is back into limits after {} failures", _faId,
+                            _axis, _counter);
                 _counter = 0;
             }
         }

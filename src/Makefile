@@ -45,7 +45,8 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/States" \
 	-I"LSST/M1M3/SS/Subscriber" \
 	-I"LSST/M1M3/SS/Threads" \
-	-I"LSST/M1M3/SS/Utility"
+	-I"LSST/M1M3/SS/Utility" \
+	-DVERSION="\"$(VERSION)\""
 
 libM1M3SS.a: $(OBJS)
 	@echo '[AR ] $@'

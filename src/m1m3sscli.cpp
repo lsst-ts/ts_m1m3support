@@ -58,6 +58,9 @@ protected:
     virtual void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                         float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
                                         float backupSensitivity[4]) override;
+
+private:
+    uint8_t _bus;
 };
 
 void _printSepline() {
@@ -132,10 +135,12 @@ protected:
 
 void M1M3TScli::printUsage() {
     std::cout << "M1M3 Thermal System command line tool. Access M1M3 Thermal System FPGA." << std::endl
+              << "Version " << VERSION << std::endl
               << "Options: " << std::endl
               << "  -h   help" << std::endl
               << "  -O   don't auto open (and run) FPGA" << std::endl
-              << "  -v   increase verbosity" << std::endl;
+              << "  -v   increase verbosity" << std::endl
+              << "  -V   prints version and exit" << std::endl;
     command_vec cmds;
     helpCommands(cmds);
 }
@@ -157,6 +162,10 @@ void M1M3TScli::processArg(int opt, const char* optarg) {
         case 'v':
             _verbose++;
             break;
+
+        case 'V':
+            std::cout << VERSION << std::endl;
+            exit(EXIT_SUCCESS);
 
         default:
             std::cerr << "Unknown command: " << (char)(opt) << std::endl;
@@ -408,7 +417,7 @@ command_t commands[] = {
         {NULL, NULL, NULL, 0, NULL, NULL}};
 
 int main(int argc, char* const argv[]) {
-    command_vec cmds = cli.init(commands, "hOv", argc, argv);
+    command_vec cmds = cli.init(commands, "hOvV", argc, argv);
 
     spdlog::init_thread_pool(8192, 1);
     std::vector<spdlog::sink_ptr> sinks;
@@ -427,7 +436,7 @@ int main(int argc, char* const argv[]) {
     }
 
     if (cmds.empty()) {
-        std::cout << "Please type help for more help." << std::endl;
+        std::cout << "Version " VERSION ". Please type help for more help." << std::endl;
         cli.goInteractive("M1M3TS > ");
         closeFPGA();
         return 0;

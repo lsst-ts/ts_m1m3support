@@ -113,6 +113,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingsApplied");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
 
@@ -2037,6 +2038,16 @@ void M1M3SSPublisher::tryLogSettingsApplied() {
     if (_eventSettingsApplied.settingsVersion.compare(_previousEventSettingsApplied.settingsVersion) != 0) {
         this->logSettingsApplied();
     }
+}
+
+void M1M3SSPublisher::logSoftwareVersions() {
+    MTM1M3_logevent_softwareVersionsC versions;
+    versions.salVersion = SAL_MTM1M3::getSALVersion();
+    versions.xmlVersion = SAL_MTM1M3::getXMLVersion();
+    versions.openSpliceVersion = SAL_MTM1M3::getOSPLVersion();
+    versions.cscVersion = VERSION;
+    versions.subsystemVersions = "";
+    _m1m3SAL->logEvent_softwareVersions(&versions, 0);
 }
 
 void M1M3SSPublisher::logSummaryState() {
