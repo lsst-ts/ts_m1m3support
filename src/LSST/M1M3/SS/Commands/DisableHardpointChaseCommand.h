@@ -36,16 +36,10 @@ class DisableHardpointChaseCommand : public Command {
 public:
     DisableHardpointChaseCommand(int32_t commandID, MTM1M3_command_disableHardpointChaseC* data);
 
-    MTM1M3_command_disableHardpointChaseC* getData() { return &_data; }
-
-    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    MTM1M3_command_disableHardpointChaseC _data;
 };
 
 } /* namespace SS */
