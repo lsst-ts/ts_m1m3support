@@ -26,6 +26,7 @@
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 #include <CommandFactory.h>
+#include <SetAirSlewFlagCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
 #include <spdlog/spdlog.h>
 
@@ -63,7 +64,7 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitEngineering");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_testAir");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setAirSlewFlag");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_testHardpoint");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_testForceActuator");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_moveHardpointActuators");
@@ -274,10 +275,10 @@ Command* M1M3SSSubscriber::tryAcceptCommandExitEngineering() {
     return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandTestAir() {
-    int32_t commandID = _m1m3SAL->acceptCommand_testAir(&_testAirData);
+Command* M1M3SSSubscriber::tryAcceptCommandSetAirSlewFlag() {
+    int32_t commandID = _m1m3SAL->acceptCommand_setAirSlewFlag(&_setAirSlewFlagData);
     if (commandID > 0) {
-        return CommandFactory::create(Commands::TestAirCommand, &_testAirData, commandID);
+        return new SetAirSlewFlagCommand(commandID, &_setAirSlewFlagData);
     }
     return 0;
 }

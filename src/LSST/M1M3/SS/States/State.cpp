@@ -92,8 +92,8 @@ States::Type State::enterEngineering(EnterEngineeringCommand* command) {
 States::Type State::exitEngineering(ExitEngineeringCommand* command) {
     return this->rejectCommandInvalidState(command, "ExitEngineering");
 }
-States::Type State::testAir(TestAirCommand* command) {
-    return this->rejectCommandInvalidState(command, "TestAir");
+States::Type State::setAirSlewFlag(SetAirSlewFlagCommand* command) {
+    return this->rejectCommandInvalidState(command, "SetAirSlewFlag");
 }
 States::Type State::testHardpoint(TestHardpointCommand* command) {
     return this->rejectCommandInvalidState(command, "TestHardpoint");

@@ -167,10 +167,10 @@ void Context::exitEngineering(ExitEngineeringCommand* command) {
     _updateCurrentStateIfRequired(state->exitEngineering(command));
 }
 
-void Context::testAir(TestAirCommand* command) {
-    SPDLOG_DEBUG("Context: testAir()");
+void Context::setAirSlewFlag(SetAirSlewFlagCommand* command) {
+    SPDLOG_DEBUG("Context: setAirSlewFlag()");
     State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->testAir(command));
+    _updateCurrentStateIfRequired(state->setAirSlewFlag(command));
 }
 
 void Context::testHardpoint(TestHardpointCommand* command) {

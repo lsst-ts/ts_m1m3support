@@ -22,27 +22,30 @@
  */
 
 #include <Context.h>
-#include <TestAirCommand.h>
+#include <SetAirSlewFlagCommand.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestAirCommand::TestAirCommand(int32_t commandID, MTM1M3_command_testAirC*) { this->commandID = commandID; }
-
-void TestAirCommand::execute() { Context::get().testAir(this); }
-
-void TestAirCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_INPROGRESS, "In-Progress");
+SetAirSlewFlagCommand::SetAirSlewFlagCommand(int32_t in_commandID, MTM1M3_command_setAirSlewFlagC* data) {
+    commandID = in_commandID;
+    slewFlag = data->slewFlag;
 }
 
-void TestAirCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_COMPLETE, "Completed");
+void SetAirSlewFlagCommand::execute() { Context::get().setAirSlewFlag(this); }
+
+void SetAirSlewFlagCommand::ackInProgress() {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_INPROGRESS, "In-Progress");
 }
 
-void TestAirCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_FAILED, "Failed: " + reason);
+void SetAirSlewFlagCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_COMPLETE, "Completed");
+}
+
+void SetAirSlewFlagCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

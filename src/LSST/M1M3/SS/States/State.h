@@ -50,7 +50,7 @@
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
-#include <TestAirCommand.h>
+#include <SetAirSlewFlagCommand.h>
 #include <TestHardpointCommand.h>
 #include <TestForceActuatorCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
@@ -133,7 +133,7 @@ public:
     virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     virtual States::Type enterEngineering(EnterEngineeringCommand* command);
     virtual States::Type exitEngineering(ExitEngineeringCommand* command);
-    virtual States::Type testAir(TestAirCommand* command);
+    virtual States::Type setAirSlewFlag(SetAirSlewFlagCommand* command);
     virtual States::Type testHardpoint(TestHardpointCommand* command);
     virtual States::Type testForceActuator(TestForceActuatorCommand* command);
     virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command);

@@ -49,7 +49,7 @@
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
-#include <TestAirCommand.h>
+#include <SetAirSlewFlagCommand.h>
 #include <TestHardpointCommand.h>
 #include <TestForceActuatorCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
@@ -127,7 +127,7 @@ public:
     void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     void enterEngineering(EnterEngineeringCommand* command);
     void exitEngineering(ExitEngineeringCommand* command);
-    void testAir(TestAirCommand* command);
+    void setAirSlewFlag(SetAirSlewFlagCommand* command);
     void testHardpoint(TestHardpointCommand* command);
     void testForceActuator(TestForceActuatorCommand* command);
     void moveHardpointActuators(MoveHardpointActuatorsCommand* command);

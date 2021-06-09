@@ -393,7 +393,7 @@ public:
     void ackCommandclearAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenterEngineering(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandtestAir(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandsetAirSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandtestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandtestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandmoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);

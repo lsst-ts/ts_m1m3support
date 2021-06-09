@@ -43,7 +43,6 @@
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
-#include <TestAirCommand.h>
 #include <TestHardpointCommand.h>
 #include <TestForceActuatorCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
@@ -125,8 +124,6 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new EnterEngineeringCommand(commandID, (MTM1M3_command_enterEngineeringC*)data);
         case Commands::ExitEngineeringCommand:
             return new ExitEngineeringCommand(commandID, (MTM1M3_command_exitEngineeringC*)data);
-        case Commands::TestAirCommand:
-            return new TestAirCommand(commandID, (MTM1M3_command_testAirC*)data);
         case Commands::TestHardpointCommand:
             return new TestHardpointCommand(commandID, (MTM1M3_command_testHardpointC*)data);
         case Commands::TestForceActuatorCommand:

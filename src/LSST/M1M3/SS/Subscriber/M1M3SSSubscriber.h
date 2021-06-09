@@ -83,7 +83,7 @@ public:
     Command* tryAcceptCommandClearActiveOpticForces();
     Command* tryAcceptCommandEnterEngineering();
     Command* tryAcceptCommandExitEngineering();
-    Command* tryAcceptCommandTestAir();
+    Command* tryAcceptCommandSetAirSlewFlag();
     Command* tryAcceptCommandTestHardpoint();
     Command* tryAcceptCommandTestForceActuator();
     Command* tryAcceptCommandMoveHardpointActuators();
@@ -138,7 +138,7 @@ private:
     MTM1M3_command_clearActiveOpticForcesC _clearActiveOpticForcesData;
     MTM1M3_command_enterEngineeringC _enterEngineeringData;
     MTM1M3_command_exitEngineeringC _exitEngineeringData;
-    MTM1M3_command_testAirC _testAirData;
+    MTM1M3_command_setAirSlewFlagC _setAirSlewFlagData;
     MTM1M3_command_testHardpointC _testHardpointData;
     MTM1M3_command_testForceActuatorC _testForceActuatorData;
     MTM1M3_command_moveHardpointActuatorsC _moveHardpointActuatorsData;

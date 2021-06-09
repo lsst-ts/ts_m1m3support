@@ -54,7 +54,6 @@ struct Commands {
         ClearActiveOpticForcesCommand = 18,
         EnterEngineeringCommand = 19,
         ExitEngineeringCommand = 20,
-        TestAirCommand = 21,
         TestHardpointCommand = 22,
         TestForceActuatorCommand = 23,
         MoveHardpointActuatorsCommand = 24,
