@@ -26,7 +26,7 @@ SAL_CPPFLAGS := -I${OSPL_HOME}/include -I${OSPL_HOME}/include/sys -I${OSPL_HOME}
 
 LIBS := -ldl -ldcpssacpp -ldcpsgapi -lddsuser -lddskernel -lpthread -lddsserialization -lddsconfparser -lddsconf -lddsdatabase -lddsutil -lddsos ${SAL_WORK_DIR}/lib/libSAL_MTM1M3.a ${SAL_WORK_DIR}/lib/libSAL_MTMount.a
 
-LIBS_FLAGS := -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib"
+LIBS_FLAGS += -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib"
 
 GIT := $(shell command -v git 2> /dev/null)
 
