@@ -119,12 +119,6 @@ void Context::lowerM1M3(LowerM1M3Command* command) {
     _updateCurrentStateIfRequired(state->lowerM1M3(command));
 }
 
-void Context::applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command) {
-    SPDLOG_DEBUG("Context: applyAberrationForcesByBendingModes()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->applyAberrationForcesByBendingModes(command));
-}
-
 void Context::applyAberrationForces(ApplyAberrationForcesCommand* command) {
     SPDLOG_DEBUG("Context: applyAberrationForces()");
     State* state = StaticStateFactory::get().create(_currentState);
@@ -135,12 +129,6 @@ void Context::clearAberrationForces(ClearAberrationForcesCommand* command) {
     SPDLOG_DEBUG("Context: clearAberrationForces()");
     State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->clearAberrationForces(command));
-}
-
-void Context::applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command) {
-    SPDLOG_DEBUG("Context: applyActiveOpticForcesByBendingModes()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->applyActiveOpticForcesByBendingModes(command));
 }
 
 void Context::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {

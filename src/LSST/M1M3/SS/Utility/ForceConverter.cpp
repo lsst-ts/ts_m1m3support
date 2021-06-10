@@ -101,37 +101,6 @@ ForcesAndMoments ForceConverter::calculateForcesAndMoments(
     return fm;
 }
 
-DistributedForces ForceConverter::calculateForceFromBendingModes(ForceActuatorSettings* forceActuatorSettings,
-                                                                 float* coefficients) {
-    DistributedForces forces;
-    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int mIndex = zIndex * 22;
-        forces.ZForces[zIndex] = forceActuatorSettings->BendingModeTable[mIndex + 0] * coefficients[0] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 1] * coefficients[1] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 2] * coefficients[2] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 3] * coefficients[3] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 4] * coefficients[4] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 5] * coefficients[5] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 6] * coefficients[6] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 7] * coefficients[7] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 8] * coefficients[8] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 9] * coefficients[9] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 10] * coefficients[10] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 11] * coefficients[11] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 12] * coefficients[12] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 13] * coefficients[13] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 14] * coefficients[14] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 15] * coefficients[15] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 16] * coefficients[16] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 17] * coefficients[17] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 18] * coefficients[18] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 19] * coefficients[19] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 20] * coefficients[20] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 21] * coefficients[21];
-    }
-    return forces;
-}
-
 DistributedForces ForceConverter::calculateForceFromAngularAcceleration(
         ForceActuatorSettings* forceActuatorSettings, float angularAccelerationX, float angularAccelerationY,
         float angularAccelerationZ) {

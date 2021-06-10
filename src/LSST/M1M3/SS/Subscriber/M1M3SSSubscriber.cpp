@@ -56,10 +56,8 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearOffsetForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_raiseM1M3");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_lowerM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyAberrationForcesByBendingModes");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyAberrationForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearAberrationForces");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForcesByBendingModes");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
@@ -203,16 +201,6 @@ Command* M1M3SSSubscriber::tryAcceptCommandLowerM1M3() {
     return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationForcesByBendingModes() {
-    int32_t commandID = _m1m3SAL->acceptCommand_applyAberrationForcesByBendingModes(
-            &_applyAberrationForcesByBendingModesData);
-    if (commandID > 0) {
-        return CommandFactory::create(Commands::ApplyAberrationForcesByBendingModesCommand,
-                                      &_applyAberrationForcesByBendingModesData, commandID);
-    }
-    return 0;
-}
-
 Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationForces() {
     int32_t commandID = _m1m3SAL->acceptCommand_applyAberrationForces(&_applyAberrationForcesData);
     if (commandID > 0) {
@@ -227,16 +215,6 @@ Command* M1M3SSSubscriber::tryAcceptCommandClearAberrationForces() {
     if (commandID > 0) {
         return CommandFactory::create(Commands::ClearAberrationForcesCommand, &_clearAberrationForcesData,
                                       commandID);
-    }
-    return 0;
-}
-
-Command* M1M3SSSubscriber::tryAcceptCommandApplyActiveOpticForcesByBendingModes() {
-    int32_t commandID = _m1m3SAL->acceptCommand_applyActiveOpticForcesByBendingModes(
-            &_applyActiveOpticForcesByBendingModesData);
-    if (commandID > 0) {
-        return CommandFactory::create(Commands::ApplyActiveOpticForcesByBendingModesCommand,
-                                      &_applyActiveOpticForcesByBendingModesData, commandID);
     }
     return 0;
 }

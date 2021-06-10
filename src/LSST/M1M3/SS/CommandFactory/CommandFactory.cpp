@@ -35,10 +35,8 @@
 #include <ClearOffsetForcesCommand.h>
 #include <RaiseM1M3Command.h>
 #include <LowerM1M3Command.h>
-#include <ApplyAberrationForcesByBendingModesCommand.h>
 #include <ApplyAberrationForcesCommand.h>
 #include <ClearAberrationForcesCommand.h>
-#include <ApplyActiveOpticForcesByBendingModesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
@@ -104,16 +102,10 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new RaiseM1M3Command(commandID, (MTM1M3_command_raiseM1M3C*)data);
         case Commands::LowerM1M3Command:
             return new LowerM1M3Command(commandID, (MTM1M3_command_lowerM1M3C*)data);
-        case Commands::ApplyAberrationForcesByBendingModesCommand:
-            return new ApplyAberrationForcesByBendingModesCommand(
-                    commandID, (MTM1M3_command_applyAberrationForcesByBendingModesC*)data);
         case Commands::ApplyAberrationForcesCommand:
             return new ApplyAberrationForcesCommand(commandID, (MTM1M3_command_applyAberrationForcesC*)data);
         case Commands::ClearAberrationForcesCommand:
             return new ClearAberrationForcesCommand(commandID, (MTM1M3_command_clearAberrationForcesC*)data);
-        case Commands::ApplyActiveOpticForcesByBendingModesCommand:
-            return new ApplyActiveOpticForcesByBendingModesCommand(
-                    commandID, (MTM1M3_command_applyActiveOpticForcesByBendingModesC*)data);
         case Commands::ApplyActiveOpticForcesCommand:
             return new ApplyActiveOpticForcesCommand(commandID,
                                                      (MTM1M3_command_applyActiveOpticForcesC*)data);

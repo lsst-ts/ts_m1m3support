@@ -299,14 +299,6 @@ void ForceController::processAppliedForces() {
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
 
-void ForceController::applyAberrationForcesByBendingModes(float* coefficients) {
-    SPDLOG_INFO("ForceController: applyAberrationForcesByBendingModes()");
-    if (!_aberrationForceComponent.isEnabled()) {
-        _aberrationForceComponent.enable();
-    }
-    _aberrationForceComponent.applyAberrationForcesByBendingModes(coefficients);
-}
-
 void ForceController::applyAberrationForces(float* z) {
     SPDLOG_INFO("ForceController: applyAberrationForces()");
     if (!_aberrationForceComponent.isEnabled()) {
@@ -334,14 +326,6 @@ void ForceController::zeroAccelerationForces() {
     if (_accelerationForceComponent.isEnabled()) {
         _accelerationForceComponent.disable();
     }
-}
-
-void ForceController::applyActiveOpticForcesByBendingModes(float* coefficients) {
-    SPDLOG_INFO("ForceController: applyActiveOpticForcesByBendingModes()");
-    if (!_activeOpticForceComponent.isEnabled()) {
-        _activeOpticForceComponent.enable();
-    }
-    _activeOpticForceComponent.applyActiveOpticForcesByBendingModes(coefficients);
 }
 
 void ForceController::applyActiveOpticForces(float* z) {
