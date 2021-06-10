@@ -83,7 +83,6 @@ public:
     Command* tryAcceptCommandExitEngineering();
     Command* tryAcceptCommandSetAirSlewFlag();
     Command* tryAcceptCommandTestHardpoint();
-    Command* tryAcceptCommandTestForceActuator();
     Command* tryAcceptCommandMoveHardpointActuators();
     Command* tryAcceptCommandEnableHardpointChase();
     Command* tryAcceptCommandDisableHardpointChase();
@@ -136,7 +135,6 @@ private:
     MTM1M3_command_exitEngineeringC _exitEngineeringData;
     MTM1M3_command_setAirSlewFlagC _setAirSlewFlagData;
     MTM1M3_command_testHardpointC _testHardpointData;
-    MTM1M3_command_testForceActuatorC _testForceActuatorData;
     MTM1M3_command_moveHardpointActuatorsC _moveHardpointActuatorsData;
     MTM1M3_command_enableHardpointChaseC _enableHardpointChaseData;
     MTM1M3_command_disableHardpointChaseC _disableHardpointChaseData;

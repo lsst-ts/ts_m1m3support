@@ -53,7 +53,6 @@ struct Commands {
         EnterEngineeringCommand = 19,
         ExitEngineeringCommand = 20,
         TestHardpointCommand = 22,
-        TestForceActuatorCommand = 23,
         MoveHardpointActuatorsCommand = 24,
         EnableHardpointChaseCommand = 25,
         DisableHardpointChaseCommand = 26,

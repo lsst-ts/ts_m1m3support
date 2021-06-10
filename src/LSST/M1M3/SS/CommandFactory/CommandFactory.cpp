@@ -42,7 +42,6 @@
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
 #include <TestHardpointCommand.h>
-#include <TestForceActuatorCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
@@ -118,8 +117,6 @@ Command* CommandFactory::create(Commands::Type commandType, void* data, int32_t 
             return new ExitEngineeringCommand(commandID, (MTM1M3_command_exitEngineeringC*)data);
         case Commands::TestHardpointCommand:
             return new TestHardpointCommand(commandID, (MTM1M3_command_testHardpointC*)data);
-        case Commands::TestForceActuatorCommand:
-            return new TestForceActuatorCommand(commandID, (MTM1M3_command_testForceActuatorC*)data);
         case Commands::MoveHardpointActuatorsCommand:
             return new MoveHardpointActuatorsCommand(commandID,
                                                      (MTM1M3_command_moveHardpointActuatorsC*)data);

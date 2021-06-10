@@ -50,7 +50,6 @@
 #include <ExitEngineeringCommand.h>
 #include <SetAirSlewFlagCommand.h>
 #include <TestHardpointCommand.h>
-#include <TestForceActuatorCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
@@ -129,7 +128,6 @@ public:
     virtual States::Type exitEngineering(ExitEngineeringCommand* command);
     virtual States::Type setAirSlewFlag(SetAirSlewFlagCommand* command);
     virtual States::Type testHardpoint(TestHardpointCommand* command);
-    virtual States::Type testForceActuator(TestForceActuatorCommand* command);
     virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command);
     virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command);
     virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command);

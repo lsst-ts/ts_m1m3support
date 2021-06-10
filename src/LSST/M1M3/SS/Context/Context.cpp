@@ -167,12 +167,6 @@ void Context::testHardpoint(TestHardpointCommand* command) {
     _updateCurrentStateIfRequired(state->testHardpoint(command));
 }
 
-void Context::testForceActuator(TestForceActuatorCommand* command) {
-    SPDLOG_DEBUG("Context: testForceActuator()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->testForceActuator(command));
-}
-
 void Context::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
     SPDLOG_DEBUG("Context: moveHardpointActuators()");
     State* state = StaticStateFactory::get().create(_currentState);

@@ -64,7 +64,6 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitEngineering");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_setAirSlewFlag");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_testHardpoint");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_testForceActuator");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_moveHardpointActuators");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableHardpointChase");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableHardpointChase");
@@ -265,14 +264,6 @@ Command* M1M3SSSubscriber::tryAcceptCommandTestHardpoint() {
     int32_t commandID = _m1m3SAL->acceptCommand_testHardpoint(&_testHardpointData);
     if (commandID > 0) {
         return CommandFactory::create(Commands::TestHardpointCommand, &_testHardpointData, commandID);
-    }
-    return 0;
-}
-
-Command* M1M3SSSubscriber::tryAcceptCommandTestForceActuator() {
-    int32_t commandID = _m1m3SAL->acceptCommand_testForceActuator(&_testForceActuatorData);
-    if (commandID > 0) {
-        return CommandFactory::create(Commands::TestForceActuatorCommand, &_testForceActuatorData, commandID);
     }
     return 0;
 }
