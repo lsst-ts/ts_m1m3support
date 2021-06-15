@@ -63,7 +63,7 @@ node {
                  sh """
                     source $SALUSER_HOME/.setup_salobj.sh
     
-                    export PATH=$CONDA_PREFIX/bin:$PATH
+                    export PATH=\$CONDA_PREFIX/bin:$PATH
                     cd $WORKSPACE/ts_cRIOcpp
                     make
     
