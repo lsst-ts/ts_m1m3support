@@ -29,13 +29,14 @@ node {
         sh "printenv"
 
         dir("ts_Dockerfiles") {
-            git branch: (BRANCH == "master" ? "master" : "develop"), url: 'https://github.com/lsst-ts/ts_Dockerfiles'
+//            git branch: (BRANCH == "master" ? "master" : "develop"), url: 'https://github.com/lsst-ts/ts_Dockerfiles'
+            git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_Dockerfiles'
         }
     }
 
     stage('Building dev container')
     {
-        M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), (params.noCache ? "--no-cache " : " ") + "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
+        M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), (params.noCache ? "--no-cache " : " ") + "--target lsstts-cpp-dev --build-arg XML_BRANCH=HEAD ts_Dockerfiles/mtm1m3_sim")
     }
 
     stage('Cloning sources')
