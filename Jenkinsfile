@@ -63,7 +63,7 @@ node {
                  sh """
                     source $SALUSER_HOME/.setup_salobj.sh
     
-                    export PATH=/opt/lsst/software/stack/python/miniconda3-4.7.12/envs/lsst-scipipe-448abc6/bin:$PATH
+                    export PATH=\$CONDA_PREFIX/bin:$PATH
                     cd $WORKSPACE/ts_cRIOcpp
                     make
     
