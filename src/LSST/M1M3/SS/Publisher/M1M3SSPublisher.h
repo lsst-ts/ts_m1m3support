@@ -383,19 +383,14 @@ public:
     void ackCommandclearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandraiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandlowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyActiveOpticForcesByBendingModes(int32_t commandID, int32_t ackCode,
-                                                        std::string description);
     void ackCommandapplyActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandclearActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyAberrationForcesByBendingModes(int32_t commandID, int32_t ackCode,
-                                                       std::string description);
     void ackCommandapplyAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandclearAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenterEngineering(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandtestAir(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandsetAirSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandtestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandtestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandmoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommanddisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);

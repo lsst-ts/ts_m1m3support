@@ -67,18 +67,11 @@ States::Type State::raiseM1M3(RaiseM1M3Command* command) {
 States::Type State::lowerM1M3(LowerM1M3Command* command) {
     return this->rejectCommandInvalidState(command, "LowerM1M3");
 }
-States::Type State::applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ApplyAberrationForcesByBendingModes");
-}
 States::Type State::applyAberrationForces(ApplyAberrationForcesCommand* command) {
     return this->rejectCommandInvalidState(command, "ApplyAberrationForces");
 }
 States::Type State::clearAberrationForces(ClearAberrationForcesCommand* command) {
     return this->rejectCommandInvalidState(command, "ClearAberrationForces");
-}
-States::Type State::applyActiveOpticForcesByBendingModes(
-        ApplyActiveOpticForcesByBendingModesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ApplyActiveOpticForcesByBendingModes");
 }
 States::Type State::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
     return this->rejectCommandInvalidState(command, "ApplyActiveOpticForces");
@@ -92,14 +85,11 @@ States::Type State::enterEngineering(EnterEngineeringCommand* command) {
 States::Type State::exitEngineering(ExitEngineeringCommand* command) {
     return this->rejectCommandInvalidState(command, "ExitEngineering");
 }
-States::Type State::testAir(TestAirCommand* command) {
-    return this->rejectCommandInvalidState(command, "TestAir");
+States::Type State::setAirSlewFlag(SetAirSlewFlagCommand* command) {
+    return this->rejectCommandInvalidState(command, "SetAirSlewFlag");
 }
 States::Type State::testHardpoint(TestHardpointCommand* command) {
     return this->rejectCommandInvalidState(command, "TestHardpoint");
-}
-States::Type State::testForceActuator(TestForceActuatorCommand* command) {
-    return this->rejectCommandInvalidState(command, "TestForceActuator");
 }
 States::Type State::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
     return this->rejectCommandInvalidState(command, "MoveHardpointActuators");

@@ -32,7 +32,7 @@ namespace SS {
  * Parameters for PID calculations. Used in PID.
  */
 struct PIDParameters {
-    //* Size of step (seconds?)
+    //* Length of step (seconds)
     double Timestep;
     //* Proportional gain (unitless)
     double P;
@@ -40,11 +40,15 @@ struct PIDParameters {
     double I;
     //* Derivative gain (unitless)
     double D;
-    //*
+    /**
+     * The N term. See (PID implementation)
+     * [https://confluence.lsstcorp.org/pages/viewpage.action?pageId=34209829&preview=/34209829/135102468/PID%20Implementation%20in%20Software%20v_2.pdf]
+     * for details. Setting this to 0 will cancle Kd (derivative term).
+     */
     double N;
 };
 
-} /* namespace SS */
+}  // namespace SS
 }  // namespace M1M3
 }  // namespace LSST
 

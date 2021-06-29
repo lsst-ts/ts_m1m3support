@@ -156,14 +156,9 @@ void FPGA::pullTelemetry() {
     supportFPGAData.DisplacementRaw8 = U8ArrayUtilities::I32(buffer, 138);
     supportFPGAData.AccelerometerSampleCount = U8ArrayUtilities::U64(buffer, 142);
     supportFPGAData.AccelerometerSampleTimestamp = U8ArrayUtilities::U64(buffer, 150);
-    supportFPGAData.AccelerometerRaw1 = U8ArrayUtilities::SGL(buffer, 158);
-    supportFPGAData.AccelerometerRaw2 = U8ArrayUtilities::SGL(buffer, 162);
-    supportFPGAData.AccelerometerRaw3 = U8ArrayUtilities::SGL(buffer, 166);
-    supportFPGAData.AccelerometerRaw4 = U8ArrayUtilities::SGL(buffer, 170);
-    supportFPGAData.AccelerometerRaw5 = U8ArrayUtilities::SGL(buffer, 174);
-    supportFPGAData.AccelerometerRaw6 = U8ArrayUtilities::SGL(buffer, 178);
-    supportFPGAData.AccelerometerRaw7 = U8ArrayUtilities::SGL(buffer, 182);
-    supportFPGAData.AccelerometerRaw8 = U8ArrayUtilities::SGL(buffer, 186);
+    for (int i = 0; i < 8; i++) {
+        supportFPGAData.AccelerometerRaw[i] = U8ArrayUtilities::SGL(buffer, 158 + i * 4);
+    }
     supportFPGAData.GyroTxBytes = U8ArrayUtilities::U64(buffer, 190);
     supportFPGAData.GyroRxBytes = U8ArrayUtilities::U64(buffer, 198);
     supportFPGAData.GyroTxFrames = U8ArrayUtilities::U64(buffer, 206);

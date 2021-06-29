@@ -68,7 +68,7 @@ node {
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    make SIMULATOR=1
+                    make simulator
                     make junit
                  """
              }
@@ -96,7 +96,7 @@ node {
                     source $SALUSER_HOME/.setup_salobj.sh
     
                     cd $WORKSPACE/ts_m1m3support
-                    ./ts_M1M3Support -c SettingFiles &
+                    ./ts-M1M3supportd -c SettingFiles &
     
                     echo "Waiting for 30 seconds"
                     sleep 30
@@ -104,7 +104,7 @@ node {
                     cd $SALUSER_HOME/repos
                     ./ts_sal/test/MTM1M3/cpp/src/sacpp_MTM1M3_start_commander Default
                     sleep 30
-                    killall ts_M1M3Support
+                    killall ts-M1M3supportd
                 """
             }
         }

@@ -47,9 +47,6 @@ void ForceActuatorSettings::load(const std::string &filename) {
     TableLoader::loadTable(
             1, 1, 3, &AccelerationZTable,
             doc.select_node("//ForceActuatorSettings/AccelerationZTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 22, &BendingModeTable,
-            doc.select_node("//ForceActuatorSettings/BendingModeTablePath").node().child_value());
     TableLoader::loadTable(1, 1, 6, &AzimuthXTable,
                            doc.select_node("//ForceActuatorSettings/AzimuthXTablePath").node().child_value());
     TableLoader::loadTable(1, 1, 6, &AzimuthYTable,

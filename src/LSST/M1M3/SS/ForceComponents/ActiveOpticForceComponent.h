@@ -41,7 +41,6 @@ public:
                               ForceActuatorSettings* forceActuatorSettings);
 
     void applyActiveOpticForces(float* z);
-    void applyActiveOpticForcesByBendingModes(float* coefficients);
 
 protected:
     void postEnableDisableActions() override;

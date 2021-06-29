@@ -50,7 +50,7 @@ doc:
 	${co}doxygen Doxyfile
 
 simulator:
-	@${MAKE} SIMULATOR=1
+	@${MAKE} SIMULATOR=1 DEBUG=1
 
 ipk: ts-M1M3supportd m1m3sscli ts-M1M3support_${VERSION}_x64.ipk
 

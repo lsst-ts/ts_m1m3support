@@ -197,14 +197,12 @@ public:
      */
     void processAppliedForces();
 
-    void applyAberrationForcesByBendingModes(float* coefficients);
     void applyAberrationForces(float* z);
     void zeroAberrationForces();
 
     void applyAccelerationForces();
     void zeroAccelerationForces();
 
-    void applyActiveOpticForcesByBendingModes(float* coefficients);
     void applyActiveOpticForces(float* z);
     void zeroActiveOpticForces();
 

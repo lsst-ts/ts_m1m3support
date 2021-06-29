@@ -41,17 +41,14 @@
 #include <ClearOffsetForcesCommand.h>
 #include <RaiseM1M3Command.h>
 #include <LowerM1M3Command.h>
-#include <ApplyAberrationForcesByBendingModesCommand.h>
 #include <ApplyAberrationForcesCommand.h>
 #include <ClearAberrationForcesCommand.h>
-#include <ApplyActiveOpticForcesByBendingModesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
-#include <TestAirCommand.h>
+#include <SetAirSlewFlagCommand.h>
 #include <TestHardpointCommand.h>
-#include <TestForceActuatorCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
@@ -119,17 +116,14 @@ public:
     void clearOffsetForces(ClearOffsetForcesCommand* command);
     void raiseM1M3(RaiseM1M3Command* command);
     void lowerM1M3(LowerM1M3Command* command);
-    void applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command);
     void applyAberrationForces(ApplyAberrationForcesCommand* command);
     void clearAberrationForces(ClearAberrationForcesCommand* command);
-    void applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command);
     void applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
     void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     void enterEngineering(EnterEngineeringCommand* command);
     void exitEngineering(ExitEngineeringCommand* command);
-    void testAir(TestAirCommand* command);
+    void setAirSlewFlag(SetAirSlewFlagCommand* command);
     void testHardpoint(TestHardpointCommand* command);
-    void testForceActuator(TestForceActuatorCommand* command);
     void moveHardpointActuators(MoveHardpointActuatorsCommand* command);
     void enableHardpointChase(EnableHardpointChaseCommand* command);
     void disableHardpointChase(DisableHardpointChaseCommand* command);

@@ -32,15 +32,6 @@ namespace SS {
 DisableHardpointChaseCommand::DisableHardpointChaseCommand(int32_t commandID,
                                                            MTM1M3_command_disableHardpointChaseC* data) {
     this->commandID = commandID;
-    _data.hardpointActuator = data->hardpointActuator;
-}
-
-bool DisableHardpointChaseCommand::validate() {
-    if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
-                "DisableHardpointChase", "The field HardpointActuator must be in range [1, 6].");
-    }
-    return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
 }
 
 void DisableHardpointChaseCommand::execute() { Context::get().disableHardpointChase(this); }

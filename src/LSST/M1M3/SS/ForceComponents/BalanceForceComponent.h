@@ -36,6 +36,22 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Distributes balance forces. Only active when enabledHardpointChase command
+ * was called. Takes forces and moments measured on hardpoints (transformed to
+ * XYZ space from hardpoints load cells measurements), feed them through PIDs,
+ * and calculates force offsets (12*X, 100*Y, 156*Z). Applied balance forces
+ * are published in appliedBalanceForces SAL/DDS event.
+ *
+ * The purpose of this is to see almost 0 forces acting on hardpoints.
+ * Hardpoints task is not to actively steer the mirror, their purpose is to
+ * hold mirror in position. Mirror is being steered by applying offsets
+ * (moving) hardpoints, which are immediately (as hardpoints moves and forces
+ * are being measured on hardpoints load cells) offloaded to 156 mirror force
+ * actuators (assuming hardpoints chase is enabled).
+ *
+ * @see LSST::M1M3::SS::PID
+ */
 class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent(SafetyController* safetyController,
@@ -43,6 +59,19 @@ public:
                           ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
 
     void applyBalanceForces(float* x, float* y, float* z);
+
+    /**
+     * Called from ForceController::updateAppliedForces. Feeds in hardpoint
+     * force and moments measured from the hardpoint load cells and transformed
+     * into xyz forces and moments.
+     *
+     * @param xForce X projection of force acting on hardpoints
+     * @param yForce Y projection of force acting on hardpoints
+     * @param zForce Z projection of force acting on hardpoints
+     * @param xMoment X projection of moment acting on hardpoints
+     * @param yMoment Y projection of moment acting on hardpoints
+     * @param zMoment Z projection of moment acting on hardpoints
+     */
     void applyBalanceForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                           float yMoment, float zMoment);
 
