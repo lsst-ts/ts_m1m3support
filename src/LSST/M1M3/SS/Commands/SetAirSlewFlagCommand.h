@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef APPLYACTIVEOPTICFORCESBYBENDINGMODESCOMMAND_H_
-#define APPLYACTIVEOPTICFORCESBYBENDINGMODESCOMMAND_H_
+#ifndef SETAIRSLEWFLAGCOMMAND_H_
+#define SETAIRSLEWFLAGCOMMAND_H_
 
 #include <Command.h>
 #include <SAL_MTM1M3C.h>
@@ -32,24 +32,24 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ApplyActiveOpticForcesByBendingModesCommand : public Command {
+/**
+ * Sets slew flag for force actuators. Should be used for testing booster
+ * valves - slew flag operates booster valves.
+ */
+class SetAirSlewFlagCommand : public Command {
 public:
-    ApplyActiveOpticForcesByBendingModesCommand(int32_t commandID,
-                                                MTM1M3_command_applyActiveOpticForcesByBendingModesC* data);
-
-    MTM1M3_command_applyActiveOpticForcesByBendingModesC* getData() { return &_data; }
+    SetAirSlewFlagCommand(int32_t commandID, MTM1M3_command_setAirSlewFlagC*);
 
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 
-private:
-    MTM1M3_command_applyActiveOpticForcesByBendingModesC _data;
+    bool slewFlag;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* APPLYACTIVEOPTICFORCESBYBENDINGMODESCOMMAND_H_ */
+#endif  // !SETAIRSLEWFLAGCOMMAND_H_

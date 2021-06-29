@@ -43,7 +43,6 @@ public:
     std::vector<float> AccelerationXTable;
     std::vector<float> AccelerationYTable;
     std::vector<float> AccelerationZTable;
-    std::vector<float> BendingModeTable;
     std::vector<float> AzimuthXTable;
     std::vector<float> AzimuthYTable;
     std::vector<float> AzimuthZTable;

@@ -42,17 +42,14 @@
 #include <ClearOffsetForcesCommand.h>
 #include <RaiseM1M3Command.h>
 #include <LowerM1M3Command.h>
-#include <ApplyAberrationForcesByBendingModesCommand.h>
 #include <ApplyAberrationForcesCommand.h>
 #include <ClearAberrationForcesCommand.h>
-#include <ApplyActiveOpticForcesByBendingModesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
-#include <TestAirCommand.h>
+#include <SetAirSlewFlagCommand.h>
 #include <TestHardpointCommand.h>
-#include <TestForceActuatorCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
@@ -123,19 +120,14 @@ public:
     virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command);
     virtual States::Type raiseM1M3(RaiseM1M3Command* command);
     virtual States::Type lowerM1M3(LowerM1M3Command* command);
-    virtual States::Type applyAberrationForcesByBendingModes(
-            ApplyAberrationForcesByBendingModesCommand* command);
     virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command);
     virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command);
-    virtual States::Type applyActiveOpticForcesByBendingModes(
-            ApplyActiveOpticForcesByBendingModesCommand* command);
     virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
     virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     virtual States::Type enterEngineering(EnterEngineeringCommand* command);
     virtual States::Type exitEngineering(ExitEngineeringCommand* command);
-    virtual States::Type testAir(TestAirCommand* command);
+    virtual States::Type setAirSlewFlag(SetAirSlewFlagCommand* command);
     virtual States::Type testHardpoint(TestHardpointCommand* command);
-    virtual States::Type testForceActuator(TestForceActuatorCommand* command);
     virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command);
     virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command);
     virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command);

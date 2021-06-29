@@ -159,14 +159,9 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.DisplacementRaw8 = (int32_t)(getRndPM1() + 80) * 1000.0;
     this->supportFPGAData.AccelerometerSampleCount++;
     this->supportFPGAData.AccelerometerSampleTimestamp = timestamp;
-    this->supportFPGAData.AccelerometerRaw1 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw2 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw3 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw4 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw5 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw6 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw7 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw8 = getRndPM1() * 0.01;
+    for (int i = 0; i < 8; i++) {
+        supportFPGAData.AccelerometerRaw[i] = getRndPM1() * 0.01;
+    }
     this->supportFPGAData.GyroTxBytes = 0;
     this->supportFPGAData.GyroRxBytes = 0;
     this->supportFPGAData.GyroTxFrames = 0;

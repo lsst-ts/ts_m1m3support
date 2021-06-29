@@ -65,13 +65,6 @@ void AberrationForceComponent::applyAberrationForces(float* z) {
     }
 }
 
-void AberrationForceComponent::applyAberrationForcesByBendingModes(float* coefficients) {
-    SPDLOG_DEBUG("AberrationForceComponent: applyAberrationForcesByBendingModes()");
-    DistributedForces forces =
-            ForceConverter::calculateForceFromBendingModes(_forceActuatorSettings, coefficients);
-    applyAberrationForces(forces.ZForces);
-}
-
 void AberrationForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("AberrationForceComponent: postEnableDisableActions()");
 

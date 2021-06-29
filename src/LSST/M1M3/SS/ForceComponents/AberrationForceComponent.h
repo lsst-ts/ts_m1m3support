@@ -41,7 +41,6 @@ public:
                              ForceActuatorSettings* forceActuatorSettings);
 
     void applyAberrationForces(float* z);
-    void applyAberrationForcesByBendingModes(float* coefficients);
 
 protected:
     void postEnableDisableActions() override;

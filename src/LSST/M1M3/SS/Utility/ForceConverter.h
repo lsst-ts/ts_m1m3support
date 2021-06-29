@@ -80,8 +80,6 @@ public:
             ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
             ForceActuatorSettings* forceActuatorSettings, float* zForces);
 
-    static DistributedForces calculateForceFromBendingModes(ForceActuatorSettings* forceActuatorSettings,
-                                                            float* coefficients);
     static DistributedForces calculateForceFromAngularAcceleration(
             ForceActuatorSettings* forceActuatorSettings, float angularAccelerationX,
             float angularAccelerationY, float angularAccelerationZ);

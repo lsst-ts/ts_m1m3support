@@ -41,7 +41,7 @@ public:
 
     virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) override;
     virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command) override;
-    virtual States::Type testAir(TestAirCommand* command) override;
+    virtual States::Type setAirSlewFlag(SetAirSlewFlagCommand* command) override;
 
 protected:
     /**

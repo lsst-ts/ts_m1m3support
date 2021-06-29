@@ -23,6 +23,7 @@
 
 #include <Accelerometer.h>
 #include <AccelerometerSettings.h>
+#include <Conversion.h>
 #include <IFPGA.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
@@ -53,54 +54,14 @@ void Accelerometer::processData() {
     SPDLOG_TRACE("Accelerometer: processData()");
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     _accelerometerData->timestamp = Timestamp::fromFPGA(fpgaData->AccelerometerSampleTimestamp);
-    _accelerometerData->rawAccelerometer[0] = fpgaData->AccelerometerRaw1;
-    _accelerometerData->rawAccelerometer[1] = fpgaData->AccelerometerRaw2;
-    _accelerometerData->rawAccelerometer[2] = fpgaData->AccelerometerRaw3;
-    _accelerometerData->rawAccelerometer[3] = fpgaData->AccelerometerRaw4;
-    _accelerometerData->rawAccelerometer[4] = fpgaData->AccelerometerRaw5;
-    _accelerometerData->rawAccelerometer[5] = fpgaData->AccelerometerRaw6;
-    _accelerometerData->rawAccelerometer[6] = fpgaData->AccelerometerRaw7;
-    _accelerometerData->rawAccelerometer[7] = fpgaData->AccelerometerRaw8;
-    _accelerometerData->accelerometer[0] =
-            ((_accelerometerData->rawAccelerometer[0] - _accelerometerSettings->AccelerometerBias[0]) *
-             _accelerometerSettings->AccelerometerSensitivity[0]) *
-                    _accelerometerSettings->AccelerometerScalars[0] +
-            _accelerometerSettings->AccelerometerOffsets[0];
-    _accelerometerData->accelerometer[1] =
-            ((_accelerometerData->rawAccelerometer[1] - _accelerometerSettings->AccelerometerBias[1]) *
-             _accelerometerSettings->AccelerometerSensitivity[1]) *
-                    _accelerometerSettings->AccelerometerScalars[1] +
-            _accelerometerSettings->AccelerometerOffsets[1];
-    _accelerometerData->accelerometer[2] =
-            ((_accelerometerData->rawAccelerometer[2] - _accelerometerSettings->AccelerometerBias[2]) *
-             _accelerometerSettings->AccelerometerSensitivity[2]) *
-                    _accelerometerSettings->AccelerometerScalars[2] +
-            _accelerometerSettings->AccelerometerOffsets[2];
-    _accelerometerData->accelerometer[3] =
-            ((_accelerometerData->rawAccelerometer[3] - _accelerometerSettings->AccelerometerBias[3]) *
-             _accelerometerSettings->AccelerometerSensitivity[3]) *
-                    _accelerometerSettings->AccelerometerScalars[3] +
-            _accelerometerSettings->AccelerometerOffsets[3];
-    _accelerometerData->accelerometer[4] =
-            ((_accelerometerData->rawAccelerometer[4] - _accelerometerSettings->AccelerometerBias[4]) *
-             _accelerometerSettings->AccelerometerSensitivity[4]) *
-                    _accelerometerSettings->AccelerometerScalars[4] +
-            _accelerometerSettings->AccelerometerOffsets[4];
-    _accelerometerData->accelerometer[5] =
-            ((_accelerometerData->rawAccelerometer[5] - _accelerometerSettings->AccelerometerBias[5]) *
-             _accelerometerSettings->AccelerometerSensitivity[5]) *
-                    _accelerometerSettings->AccelerometerScalars[5] +
-            _accelerometerSettings->AccelerometerOffsets[5];
-    _accelerometerData->accelerometer[6] =
-            ((_accelerometerData->rawAccelerometer[6] - _accelerometerSettings->AccelerometerBias[6]) *
-             _accelerometerSettings->AccelerometerSensitivity[6]) *
-                    _accelerometerSettings->AccelerometerScalars[6] +
-            _accelerometerSettings->AccelerometerOffsets[6];
-    _accelerometerData->accelerometer[7] =
-            ((_accelerometerData->rawAccelerometer[7] - _accelerometerSettings->AccelerometerBias[7]) *
-             _accelerometerSettings->AccelerometerSensitivity[7]) *
-                    _accelerometerSettings->AccelerometerScalars[7] +
-            _accelerometerSettings->AccelerometerOffsets[7];
+    for (int i = 0; i < 8; i++) {
+        _accelerometerData->rawAccelerometer[i] = fpgaData->AccelerometerRaw[i];
+        _accelerometerData->accelerometer[i] = G2M_S_2(
+                ((_accelerometerData->rawAccelerometer[i] - _accelerometerSettings->AccelerometerBias[i]) *
+                 _accelerometerSettings->AccelerometerSensitivity[i]) *
+                        _accelerometerSettings->AccelerometerScalars[i] +
+                _accelerometerSettings->AccelerometerOffsets[i]);
+    }
     _accelerometerData->angularAccelerationX =
             (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
             _accelerometerSettings->AngularAccelerationXDistance;

@@ -21,33 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TESTFORCEACTUATORCOMMAND_H_
-#define TESTFORCEACTUATORCOMMAND_H_
-
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <Context.h>
+#include <SetAirSlewFlagCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class TestForceActuatorCommand : public Command {
-public:
-    TestForceActuatorCommand(int32_t commandID, MTM1M3_command_testForceActuatorC* data);
+SetAirSlewFlagCommand::SetAirSlewFlagCommand(int32_t in_commandID, MTM1M3_command_setAirSlewFlagC* data) {
+    commandID = in_commandID;
+    slewFlag = data->slewFlag;
+}
 
-    bool validate() override;
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+void SetAirSlewFlagCommand::execute() { Context::get().setAirSlewFlag(this); }
 
-private:
-    MTM1M3_command_testForceActuatorC _data;
-};
+void SetAirSlewFlagCommand::ackInProgress() {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_INPROGRESS, "In-Progress");
+}
+
+void SetAirSlewFlagCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_COMPLETE, "Completed");
+}
+
+void SetAirSlewFlagCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_FAILED, "Failed: " + reason);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
-
-#endif /* TESTFORCEACTUATORCOMMAND_H_ */
