@@ -94,6 +94,8 @@ node {
             M1M3sim.inside("--entrypoint=''") {
                 sh """
                     source $SALUSER_HOME/.setup_salobj.sh
+
+                    export LSST_DDS_PARTITION_PREFIX=test
     
                     cd $WORKSPACE/ts_m1m3support
                     ./ts-M1M3supportd -c SettingFiles &
