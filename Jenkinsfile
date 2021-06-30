@@ -69,7 +69,7 @@ node {
     
                     cd $WORKSPACE/ts_m1m3support
                     make simulator
-                    make junit
+                    make junit || true
                  """
              }
         }
