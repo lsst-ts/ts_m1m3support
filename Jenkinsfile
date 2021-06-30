@@ -69,7 +69,8 @@ node {
     
                     cd $WORKSPACE/ts_m1m3support
                     make simulator
-                    make junit || true
+
+                    LSST_DDS_PARTITION_PREFIX=test make junit || true
                  """
              }
         }
