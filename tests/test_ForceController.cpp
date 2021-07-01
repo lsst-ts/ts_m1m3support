@@ -191,9 +191,9 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         checkRejectedForces(0, 8148.78857, 8148.49805, 62.31575, -0.04463, 9.12726);
 
         forceController.applyOffsetForcesByMirrorForces(1000, -1000, 200000, 20000, 20000, -300000);
-        runAndCheck(forceController, 7.04272, 16290.53516, 17706.45117, 265.5639, 140.84802, -2095.92236);
-        checkRejectedForces(7.04272, 16290.53516, 17706.45117, 265.5639, 140.84802, -2095.92236);
-        runAndCheck(forceController, 14.08545, 24432.2793, 27264.40625, 468.81464, 281.73798, -4200.97021);
+        runAndCheck(forceController, 6.9610, 16290.5351, 17690.03906, 258.0899, 135.1448, -2071.3198);
+        checkRejectedForces(6.96104, 16290.5351, 17690.0390, 258.0899, 135.1448, -2071.3198);
+        runAndCheck(forceController, 13.92207, 24432.2793, 27231.5839, 453.8573, 270.3363, -4151.7695);
     }
 
     SECTION("Elevation 45 deg with 100% support, force sum doesn't support mirror") {
