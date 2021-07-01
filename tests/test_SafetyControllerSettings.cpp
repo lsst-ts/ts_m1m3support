@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 support system package.
+ * This file is part of LSST M1M3 SS test suite. Tests SafetyControllerSettings.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the LSST Telescope and Site Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,33 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TESTFORCEACTUATORCOMMAND_H_
-#define TESTFORCEACTUATORCOMMAND_H_
+#define CATCH_CONFIG_MAIN
+#include <catch/catch.hpp>
 
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <SafetyControllerSettings.h>
+#include <SafetyController.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-class TestForceActuatorCommand : public Command {
-public:
-    TestForceActuatorCommand(int32_t commandID, MTM1M3_command_testForceActuatorC* data);
+TEST_CASE("SafetyControllerSettings load", "[SafetyControllerSettings]") {
+    SafetyControllerSettings safetyControllerSettings;
 
-    bool validate() override;
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+    REQUIRE_NOTHROW(
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xml"));
 
-private:
-    MTM1M3_command_testForceActuatorC _data;
-};
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif /* TESTFORCEACTUATORCOMMAND_H_ */
+    REQUIRE_THROWS(
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xm"));
+}

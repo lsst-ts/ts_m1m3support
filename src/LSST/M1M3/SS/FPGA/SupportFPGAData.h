@@ -61,14 +61,7 @@ public:
     int32_t DisplacementRaw8;
     uint64_t AccelerometerSampleCount;
     uint64_t AccelerometerSampleTimestamp;
-    float AccelerometerRaw1;
-    float AccelerometerRaw2;
-    float AccelerometerRaw3;
-    float AccelerometerRaw4;
-    float AccelerometerRaw5;
-    float AccelerometerRaw6;
-    float AccelerometerRaw7;
-    float AccelerometerRaw8;
+    float AccelerometerRaw[8];
     uint64_t GyroTxBytes;
     uint64_t GyroRxBytes;
     uint64_t GyroTxFrames;

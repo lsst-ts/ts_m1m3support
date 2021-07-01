@@ -15,6 +15,6 @@
     <HardpointMeasuredForceFSBWarningLow>-100</HardpointMeasuredForceFSBWarningLow>
     <HardpointMeasuredForceWarningHigh>2000</HardpointMeasuredForceWarningHigh>
     <HardpointMeasuredForceWarningLow>-2000</HardpointMeasuredForceWarningLow>
-    <AirPressureWarningHigh>125</AirPressureWarningHigh>
+    <AirPressureWarningHigh>127</AirPressureWarningHigh>
     <AirPressureWarningLow>110</AirPressureWarningLow>
 </HardpointActuatorSettings>

@@ -36,16 +36,10 @@ class EnableHardpointChaseCommand : public Command {
 public:
     EnableHardpointChaseCommand(int32_t commandID, MTM1M3_command_enableHardpointChaseC*);
 
-    MTM1M3_command_enableHardpointChaseC* getData() { return &_data; }
-
-    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
-
-private:
-    MTM1M3_command_enableHardpointChaseC _data;
 };
 
 } /* namespace SS */

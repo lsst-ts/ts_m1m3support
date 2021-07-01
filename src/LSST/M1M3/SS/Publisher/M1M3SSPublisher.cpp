@@ -113,6 +113,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingsApplied");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
 
@@ -771,212 +772,6 @@ void M1M3SSPublisher::tryLogForceActuatorState() {
     }
     if (changeDetected) {
         this->logForceActuatorState();
-    }
-}
-
-void M1M3SSPublisher::logForceActuatorWarning() {
-    _eventForceActuatorWarning.anyMajorFault = false;
-    _eventForceActuatorWarning.anyMinorFault = false;
-    _eventForceActuatorWarning.anyFaultOverride = false;
-    _eventForceActuatorWarning.anyMainCalibrationError = false;
-    _eventForceActuatorWarning.anyBackupCalibrationError = false;
-    _eventForceActuatorWarning.anyMezzanineError = false;
-    _eventForceActuatorWarning.anyMezzanineBootloaderActive = false;
-    _eventForceActuatorWarning.anyUniqueIdCRCError = false;
-    _eventForceActuatorWarning.anyApplicationTypeMismatch = false;
-    _eventForceActuatorWarning.anyApplicationMissing = false;
-    _eventForceActuatorWarning.anyApplicationCRCMismatch = false;
-    _eventForceActuatorWarning.anyOneWireMissing = false;
-    _eventForceActuatorWarning.anyOneWire1Mismatch = false;
-    _eventForceActuatorWarning.anyOneWire2Mismatch = false;
-    _eventForceActuatorWarning.anyWatchdogReset = false;
-    _eventForceActuatorWarning.anyBrownOut = false;
-    _eventForceActuatorWarning.anyEventTrapReset = false;
-    _eventForceActuatorWarning.anySSRPowerFault = false;
-    _eventForceActuatorWarning.anyAuxPowerFault = false;
-    _eventForceActuatorWarning.anyMezzaninePowerFault = false;
-    _eventForceActuatorWarning.anyMezzanineCurrentAmp1Fault = false;
-    _eventForceActuatorWarning.anyMezzanineCurrentAmp2Fault = false;
-    _eventForceActuatorWarning.anyMezzanineUniqueIdCRCError = false;
-    _eventForceActuatorWarning.anyMezzanineMainCalibrationError = false;
-    _eventForceActuatorWarning.anyMezzanineBackupCalibrationError = false;
-    _eventForceActuatorWarning.anyMezzanineEventTrapReset = false;
-    _eventForceActuatorWarning.anyMezzanineApplicationMissing = false;
-    _eventForceActuatorWarning.anyMezzanineApplicationCRCMismatch = false;
-    _eventForceActuatorWarning.anyILCFault = false;
-    _eventForceActuatorWarning.anyBroadcastCounterWarning = false;
-    for (int i = 0; i < FA_COUNT; ++i) {
-        _eventForceActuatorWarning.anyMajorFault =
-                _eventForceActuatorWarning.anyMajorFault || _eventForceActuatorWarning.majorFault[i];
-        _eventForceActuatorWarning.anyMinorFault =
-                _eventForceActuatorWarning.anyMinorFault || _eventForceActuatorWarning.minorFault[i];
-        _eventForceActuatorWarning.anyFaultOverride =
-                _eventForceActuatorWarning.anyFaultOverride || _eventForceActuatorWarning.faultOverride[i];
-        _eventForceActuatorWarning.anyMainCalibrationError =
-                _eventForceActuatorWarning.anyMainCalibrationError ||
-                _eventForceActuatorWarning.mainCalibrationError[i];
-        _eventForceActuatorWarning.anyBackupCalibrationError =
-                _eventForceActuatorWarning.anyBackupCalibrationError ||
-                _eventForceActuatorWarning.backupCalibrationError[i];
-        _eventForceActuatorWarning.anyMezzanineError =
-                _eventForceActuatorWarning.anyMezzanineError || _eventForceActuatorWarning.mezzanineError[i];
-        _eventForceActuatorWarning.anyMezzanineBootloaderActive =
-                _eventForceActuatorWarning.anyMezzanineBootloaderActive ||
-                _eventForceActuatorWarning.mezzanineBootloaderActive[i];
-        _eventForceActuatorWarning.anyUniqueIdCRCError = _eventForceActuatorWarning.anyUniqueIdCRCError ||
-                                                         _eventForceActuatorWarning.uniqueIdCRCError[i];
-        _eventForceActuatorWarning.anyApplicationTypeMismatch =
-                _eventForceActuatorWarning.anyApplicationTypeMismatch ||
-                _eventForceActuatorWarning.applicationTypeMismatch[i];
-        _eventForceActuatorWarning.anyApplicationMissing = _eventForceActuatorWarning.anyApplicationMissing ||
-                                                           _eventForceActuatorWarning.applicationMissing[i];
-        _eventForceActuatorWarning.anyApplicationCRCMismatch =
-                _eventForceActuatorWarning.anyApplicationCRCMismatch ||
-                _eventForceActuatorWarning.applicationCRCMismatch[i];
-        _eventForceActuatorWarning.anyOneWireMissing =
-                _eventForceActuatorWarning.anyOneWireMissing || _eventForceActuatorWarning.oneWireMissing[i];
-        _eventForceActuatorWarning.anyOneWire1Mismatch = _eventForceActuatorWarning.anyOneWire1Mismatch ||
-                                                         _eventForceActuatorWarning.oneWire1Mismatch[i];
-        _eventForceActuatorWarning.anyOneWire2Mismatch = _eventForceActuatorWarning.anyOneWire2Mismatch ||
-                                                         _eventForceActuatorWarning.oneWire2Mismatch[i];
-        _eventForceActuatorWarning.anyWatchdogReset =
-                _eventForceActuatorWarning.anyWatchdogReset || _eventForceActuatorWarning.watchdogReset[i];
-        _eventForceActuatorWarning.anyBrownOut =
-                _eventForceActuatorWarning.anyBrownOut || _eventForceActuatorWarning.brownOut[i];
-        _eventForceActuatorWarning.anyEventTrapReset =
-                _eventForceActuatorWarning.anyEventTrapReset || _eventForceActuatorWarning.eventTrapReset[i];
-        _eventForceActuatorWarning.anySSRPowerFault =
-                _eventForceActuatorWarning.anySSRPowerFault || _eventForceActuatorWarning.ssrPowerFault[i];
-        _eventForceActuatorWarning.anyAuxPowerFault =
-                _eventForceActuatorWarning.anyAuxPowerFault || _eventForceActuatorWarning.auxPowerFault[i];
-        _eventForceActuatorWarning.anyMezzaninePowerFault =
-                _eventForceActuatorWarning.anyMezzaninePowerFault ||
-                _eventForceActuatorWarning.mezzaninePowerFault[i];
-        _eventForceActuatorWarning.anyMezzanineCurrentAmp1Fault =
-                _eventForceActuatorWarning.anyMezzanineCurrentAmp1Fault ||
-                _eventForceActuatorWarning.mezzanineCurrentAmp1Fault[i];
-        _eventForceActuatorWarning.anyMezzanineCurrentAmp2Fault =
-                _eventForceActuatorWarning.anyMezzanineCurrentAmp2Fault ||
-                _eventForceActuatorWarning.mezzanineCurrentAmp2Fault[i];
-        _eventForceActuatorWarning.anyMezzanineUniqueIdCRCError =
-                _eventForceActuatorWarning.anyMezzanineUniqueIdCRCError ||
-                _eventForceActuatorWarning.mezzanineUniqueIdCRCError[i];
-        _eventForceActuatorWarning.anyMezzanineMainCalibrationError =
-                _eventForceActuatorWarning.anyMezzanineMainCalibrationError ||
-                _eventForceActuatorWarning.mezzanineMainCalibrationError[i];
-        _eventForceActuatorWarning.anyMezzanineBackupCalibrationError =
-                _eventForceActuatorWarning.anyMezzanineBackupCalibrationError ||
-                _eventForceActuatorWarning.mezzanineBackupCalibrationError[i];
-        _eventForceActuatorWarning.anyMezzanineEventTrapReset =
-                _eventForceActuatorWarning.anyMezzanineEventTrapReset ||
-                _eventForceActuatorWarning.mezzanineEventTrapReset[i];
-        _eventForceActuatorWarning.anyMezzanineApplicationMissing =
-                _eventForceActuatorWarning.anyMezzanineApplicationMissing ||
-                _eventForceActuatorWarning.mezzanineApplicationMissing[i];
-        _eventForceActuatorWarning.anyMezzanineApplicationCRCMismatch =
-                _eventForceActuatorWarning.anyMezzanineApplicationCRCMismatch ||
-                _eventForceActuatorWarning.mezzanineApplicationCRCMismatch[i];
-        _eventForceActuatorWarning.anyILCFault =
-                _eventForceActuatorWarning.anyILCFault || _eventForceActuatorWarning.ilcFault[i];
-        _eventForceActuatorWarning.anyBroadcastCounterWarning =
-                _eventForceActuatorWarning.anyBroadcastCounterWarning ||
-                _eventForceActuatorWarning.broadcastCounterWarning[i];
-    }
-    _eventForceActuatorWarning.anyWarning =
-            _eventForceActuatorWarning.anyMajorFault || _eventForceActuatorWarning.anyMinorFault ||
-            _eventForceActuatorWarning.anyFaultOverride ||
-            _eventForceActuatorWarning.anyMainCalibrationError ||
-            _eventForceActuatorWarning.anyBackupCalibrationError ||
-            _eventForceActuatorWarning.anyMezzanineError ||
-            _eventForceActuatorWarning.anyMezzanineBootloaderActive ||
-            _eventForceActuatorWarning.anyUniqueIdCRCError ||
-            _eventForceActuatorWarning.anyApplicationTypeMismatch ||
-            _eventForceActuatorWarning.anyApplicationMissing ||
-            _eventForceActuatorWarning.anyApplicationCRCMismatch ||
-            _eventForceActuatorWarning.anyOneWireMissing || _eventForceActuatorWarning.anyOneWire1Mismatch ||
-            _eventForceActuatorWarning.anyOneWire2Mismatch || _eventForceActuatorWarning.anyWatchdogReset ||
-            _eventForceActuatorWarning.anyBrownOut || _eventForceActuatorWarning.anyEventTrapReset ||
-            _eventForceActuatorWarning.anySSRPowerFault || _eventForceActuatorWarning.anyAuxPowerFault ||
-            _eventForceActuatorWarning.anyMezzaninePowerFault ||
-            _eventForceActuatorWarning.anyMezzanineCurrentAmp1Fault ||
-            _eventForceActuatorWarning.anyMezzanineCurrentAmp2Fault ||
-            _eventForceActuatorWarning.anyMezzanineUniqueIdCRCError ||
-            _eventForceActuatorWarning.anyMezzanineMainCalibrationError ||
-            _eventForceActuatorWarning.anyMezzanineBackupCalibrationError ||
-            _eventForceActuatorWarning.anyMezzanineEventTrapReset ||
-            _eventForceActuatorWarning.anyMezzanineApplicationMissing ||
-            _eventForceActuatorWarning.anyMezzanineApplicationCRCMismatch ||
-            _eventForceActuatorWarning.anyILCFault || _eventForceActuatorWarning.anyBroadcastCounterWarning;
-    _m1m3SAL->logEvent_forceActuatorWarning(&_eventForceActuatorWarning, 0);
-    _previousEventForceActuatorWarning = _eventForceActuatorWarning;
-}
-
-void M1M3SSPublisher::tryLogForceActuatorWarning() {
-    bool changeDetected = false;
-    for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                _eventForceActuatorWarning.majorFault[i] !=
-                        _previousEventForceActuatorWarning.majorFault[i] ||
-                _eventForceActuatorWarning.minorFault[i] !=
-                        _previousEventForceActuatorWarning.minorFault[i] ||
-                _eventForceActuatorWarning.faultOverride[i] !=
-                        _previousEventForceActuatorWarning.faultOverride[i] ||
-                _eventForceActuatorWarning.mainCalibrationError[i] !=
-                        _previousEventForceActuatorWarning.mainCalibrationError[i] ||
-                _eventForceActuatorWarning.backupCalibrationError[i] !=
-                        _previousEventForceActuatorWarning.backupCalibrationError[i] ||
-                _eventForceActuatorWarning.mezzanineError[i] !=
-                        _previousEventForceActuatorWarning.mezzanineError[i] ||
-                _eventForceActuatorWarning.mezzanineBootloaderActive[i] !=
-                        _previousEventForceActuatorWarning.mezzanineBootloaderActive[i] ||
-                _eventForceActuatorWarning.uniqueIdCRCError[i] !=
-                        _previousEventForceActuatorWarning.uniqueIdCRCError[i] ||
-                _eventForceActuatorWarning.applicationTypeMismatch[i] !=
-                        _previousEventForceActuatorWarning.applicationTypeMismatch[i] ||
-                _eventForceActuatorWarning.applicationMissing[i] !=
-                        _previousEventForceActuatorWarning.applicationMissing[i] ||
-                _eventForceActuatorWarning.applicationCRCMismatch[i] !=
-                        _previousEventForceActuatorWarning.applicationCRCMismatch[i] ||
-                _eventForceActuatorWarning.oneWireMissing[i] !=
-                        _previousEventForceActuatorWarning.oneWireMissing[i] ||
-                _eventForceActuatorWarning.oneWire1Mismatch[i] !=
-                        _previousEventForceActuatorWarning.oneWire1Mismatch[i] ||
-                _eventForceActuatorWarning.oneWire2Mismatch[i] !=
-                        _previousEventForceActuatorWarning.oneWire2Mismatch[i] ||
-                _eventForceActuatorWarning.watchdogReset[i] !=
-                        _previousEventForceActuatorWarning.watchdogReset[i] ||
-                _eventForceActuatorWarning.brownOut[i] != _previousEventForceActuatorWarning.brownOut[i] ||
-                _eventForceActuatorWarning.eventTrapReset[i] !=
-                        _previousEventForceActuatorWarning.eventTrapReset[i] ||
-                _eventForceActuatorWarning.ssrPowerFault[i] !=
-                        _previousEventForceActuatorWarning.ssrPowerFault[i] ||
-                _eventForceActuatorWarning.auxPowerFault[i] !=
-                        _previousEventForceActuatorWarning.auxPowerFault[i] ||
-                _eventForceActuatorWarning.mezzaninePowerFault[i] !=
-                        _previousEventForceActuatorWarning.mezzaninePowerFault[i] ||
-                _eventForceActuatorWarning.mezzanineCurrentAmp1Fault[i] !=
-                        _previousEventForceActuatorWarning.mezzanineCurrentAmp1Fault[i] ||
-                _eventForceActuatorWarning.mezzanineCurrentAmp2Fault[i] !=
-                        _previousEventForceActuatorWarning.mezzanineCurrentAmp2Fault[i] ||
-                _eventForceActuatorWarning.mezzanineUniqueIdCRCError[i] !=
-                        _previousEventForceActuatorWarning.mezzanineUniqueIdCRCError[i] ||
-                _eventForceActuatorWarning.mezzanineMainCalibrationError[i] !=
-                        _previousEventForceActuatorWarning.mezzanineMainCalibrationError[i] ||
-                _eventForceActuatorWarning.mezzanineBackupCalibrationError[i] !=
-                        _previousEventForceActuatorWarning.mezzanineBackupCalibrationError[i] ||
-                _eventForceActuatorWarning.mezzanineEventTrapReset[i] !=
-                        _previousEventForceActuatorWarning.mezzanineEventTrapReset[i] ||
-                _eventForceActuatorWarning.mezzanineApplicationMissing[i] !=
-                        _previousEventForceActuatorWarning.mezzanineApplicationMissing[i] ||
-                _eventForceActuatorWarning.mezzanineApplicationCRCMismatch[i] !=
-                        _previousEventForceActuatorWarning.mezzanineApplicationCRCMismatch[i] ||
-                _eventForceActuatorWarning.ilcFault[i] != _previousEventForceActuatorWarning.ilcFault[i] ||
-                _eventForceActuatorWarning.broadcastCounterWarning[i] !=
-                        _previousEventForceActuatorWarning.broadcastCounterWarning[i];
-    }
-    if (changeDetected) {
-        this->logForceActuatorForceWarning();
     }
 }
 
@@ -2245,6 +2040,16 @@ void M1M3SSPublisher::tryLogSettingsApplied() {
     }
 }
 
+void M1M3SSPublisher::logSoftwareVersions() {
+    MTM1M3_logevent_softwareVersionsC versions;
+    versions.salVersion = SAL_MTM1M3::getSALVersion();
+    versions.xmlVersion = SAL_MTM1M3::getXMLVersion();
+    versions.openSpliceVersion = SAL_MTM1M3::getOSPLVersion();
+    versions.cscVersion = VERSION;
+    versions.subsystemVersions = "";
+    _m1m3SAL->logEvent_softwareVersions(&versions, 0);
+}
+
 void M1M3SSPublisher::logSummaryState() {
     _m1m3SAL->logEvent_summaryState(&_eventSummaryState, 0);
     _previousEventSummaryState = _eventSummaryState;
@@ -2274,17 +2079,14 @@ ACK_COMMAND(applyOffsetForces)
 ACK_COMMAND(clearOffsetForces)
 ACK_COMMAND(raiseM1M3)
 ACK_COMMAND(lowerM1M3)
-ACK_COMMAND(applyActiveOpticForcesByBendingModes)
 ACK_COMMAND(applyActiveOpticForces)
 ACK_COMMAND(clearActiveOpticForces)
-ACK_COMMAND(applyAberrationForcesByBendingModes)
 ACK_COMMAND(applyAberrationForces)
 ACK_COMMAND(clearAberrationForces)
 ACK_COMMAND(enterEngineering)
 ACK_COMMAND(exitEngineering)
-ACK_COMMAND(testAir)
+ACK_COMMAND(setAirSlewFlag)
 ACK_COMMAND(testHardpoint)
-ACK_COMMAND(testForceActuator)
 ACK_COMMAND(moveHardpointActuators)
 ACK_COMMAND(enableHardpointChase)
 ACK_COMMAND(disableHardpointChase)

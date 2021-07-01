@@ -23,6 +23,8 @@
 
 #include <Context.h>
 #include <TMAAzimuthSampleCommand.h>
+#include <SettingReader.h>
+#include <LimitLog.h>
 #include <cstring>
 
 namespace LSST {
@@ -34,7 +36,16 @@ TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) {
     memcpy(&_data, data, sizeof(MTMount_azimuthC));
 }
 
-void TMAAzimuthSampleCommand::execute() { Context::get().storeTMAAzimuthSample(this); }
+void TMAAzimuthSampleCommand::execute() {
+    double diff = _data.timestamp - M1M3SSPublisher::get().getTimestamp();
+    double limit = SettingReader::get().getSafetyControllerSettings()->TMA.AzimuthTimeout;
+    if (limit > 0 && fabs(diff) > limit) {
+        using namespace std::chrono_literals;
+        TG_LOG_ERROR(2s, "Received azimuth timestamp deviates by more than {0:.3f}s: {1:.3f}", limit, diff);
+        return;
+    }
+    Context::get().storeTMAAzimuthSample(this);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */

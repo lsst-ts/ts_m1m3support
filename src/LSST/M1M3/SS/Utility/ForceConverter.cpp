@@ -101,37 +101,6 @@ ForcesAndMoments ForceConverter::calculateForcesAndMoments(
     return fm;
 }
 
-DistributedForces ForceConverter::calculateForceFromBendingModes(ForceActuatorSettings* forceActuatorSettings,
-                                                                 float* coefficients) {
-    DistributedForces forces;
-    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int mIndex = zIndex * 22;
-        forces.ZForces[zIndex] = forceActuatorSettings->BendingModeTable[mIndex + 0] * coefficients[0] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 1] * coefficients[1] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 2] * coefficients[2] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 3] * coefficients[3] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 4] * coefficients[4] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 5] * coefficients[5] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 6] * coefficients[6] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 7] * coefficients[7] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 8] * coefficients[8] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 9] * coefficients[9] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 10] * coefficients[10] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 11] * coefficients[11] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 12] * coefficients[12] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 13] * coefficients[13] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 14] * coefficients[14] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 15] * coefficients[15] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 16] * coefficients[16] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 17] * coefficients[17] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 18] * coefficients[18] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 19] * coefficients[19] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 20] * coefficients[20] +
-                                 forceActuatorSettings->BendingModeTable[mIndex + 21] * coefficients[21];
-    }
-    return forces;
-}
-
 DistributedForces ForceConverter::calculateForceFromAngularAcceleration(
         ForceActuatorSettings* forceActuatorSettings, float angularAccelerationX, float angularAccelerationY,
         float angularAccelerationZ) {
@@ -320,17 +289,16 @@ DistributedForces ForceConverter::calculateForceDistribution(ForceActuatorSettin
         forces.XForces[i] += forceActuatorSettings->ForceDistributionZTable[i * 3 + 0] * zForce;
         forces.YForces[i] += forceActuatorSettings->ForceDistributionZTable[i * 3 + 1] * zForce;
         forces.ZForces[i] += forceActuatorSettings->ForceDistributionZTable[i * 3 + 2] * zForce;
-        // The moment table produces forces in millinewtons, need to multiply by 1000 to bring it up to
-        // newtons
-        forces.XForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 0] * xMoment * 1000.0;
-        forces.YForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 1] * xMoment * 1000.0;
-        forces.ZForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 2] * xMoment * 1000.0;
-        forces.XForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 0] * yMoment * 1000.0;
-        forces.YForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 1] * yMoment * 1000.0;
-        forces.ZForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 2] * yMoment * 1000.0;
-        forces.XForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 0] * zMoment * 1000.0;
-        forces.YForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 1] * zMoment * 1000.0;
-        forces.ZForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 2] * zMoment * 1000.0;
+
+        forces.XForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 0] * xMoment;
+        forces.YForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 1] * xMoment;
+        forces.ZForces[i] += forceActuatorSettings->MomentDistributionXTable[i * 3 + 2] * xMoment;
+        forces.XForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 0] * yMoment;
+        forces.YForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 1] * yMoment;
+        forces.ZForces[i] += forceActuatorSettings->MomentDistributionYTable[i * 3 + 2] * yMoment;
+        forces.XForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 0] * zMoment;
+        forces.YForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 1] * zMoment;
+        forces.ZForces[i] += forceActuatorSettings->MomentDistributionZTable[i * 3 + 2] * zMoment;
     }
     return forces;
 }

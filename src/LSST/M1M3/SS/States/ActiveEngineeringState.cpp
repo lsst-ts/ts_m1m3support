@@ -28,10 +28,8 @@
 #include <Inclinometer.h>
 #include <ForceController.h>
 #include <ApplyOffsetForcesCommand.h>
-#include <ApplyAberrationForcesByBendingModesCommand.h>
 #include <ApplyAberrationForcesCommand.h>
 #include <ClearAberrationForcesCommand.h>
-#include <ApplyActiveOpticForcesByBendingModesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <SafetyController.h>
@@ -79,22 +77,6 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     Model::get().getPowerController()->setAllPowerNetworks(true);
     return Model::get().getSafetyController()->checkSafety(States::ActiveState);
-}
-
-States::Type ActiveEngineeringState::applyAberrationForcesByBendingModes(
-        ApplyAberrationForcesByBendingModesCommand* command) {
-    SPDLOG_INFO("EnabledActiveState: applyAberrationForcesByBendingModes()");
-    Model::get().getForceController()->applyAberrationForcesByBendingModes(command->getData()->coefficients);
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveEngineeringState::applyActiveOpticForcesByBendingModes(
-        ApplyActiveOpticForcesByBendingModesCommand* command) {
-    SPDLOG_INFO("EnabledActiveState: applyActiveOpticForcesByBendingModes()");
-    Model::get().getForceController()->applyActiveOpticForcesByBendingModes(command->getData()->coefficients);
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command) {

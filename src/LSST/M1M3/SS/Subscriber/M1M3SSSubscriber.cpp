@@ -26,6 +26,7 @@
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 #include <CommandFactory.h>
+#include <SetAirSlewFlagCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
 #include <spdlog/spdlog.h>
 
@@ -55,17 +56,14 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearOffsetForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_raiseM1M3");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_lowerM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyAberrationForcesByBendingModes");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyAberrationForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearAberrationForces");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForcesByBendingModes");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitEngineering");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_testAir");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setAirSlewFlag");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_testHardpoint");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_testForceActuator");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_moveHardpointActuators");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableHardpointChase");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableHardpointChase");
@@ -202,16 +200,6 @@ Command* M1M3SSSubscriber::tryAcceptCommandLowerM1M3() {
     return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationForcesByBendingModes() {
-    int32_t commandID = _m1m3SAL->acceptCommand_applyAberrationForcesByBendingModes(
-            &_applyAberrationForcesByBendingModesData);
-    if (commandID > 0) {
-        return CommandFactory::create(Commands::ApplyAberrationForcesByBendingModesCommand,
-                                      &_applyAberrationForcesByBendingModesData, commandID);
-    }
-    return 0;
-}
-
 Command* M1M3SSSubscriber::tryAcceptCommandApplyAberrationForces() {
     int32_t commandID = _m1m3SAL->acceptCommand_applyAberrationForces(&_applyAberrationForcesData);
     if (commandID > 0) {
@@ -226,16 +214,6 @@ Command* M1M3SSSubscriber::tryAcceptCommandClearAberrationForces() {
     if (commandID > 0) {
         return CommandFactory::create(Commands::ClearAberrationForcesCommand, &_clearAberrationForcesData,
                                       commandID);
-    }
-    return 0;
-}
-
-Command* M1M3SSSubscriber::tryAcceptCommandApplyActiveOpticForcesByBendingModes() {
-    int32_t commandID = _m1m3SAL->acceptCommand_applyActiveOpticForcesByBendingModes(
-            &_applyActiveOpticForcesByBendingModesData);
-    if (commandID > 0) {
-        return CommandFactory::create(Commands::ApplyActiveOpticForcesByBendingModesCommand,
-                                      &_applyActiveOpticForcesByBendingModesData, commandID);
     }
     return 0;
 }
@@ -274,10 +252,10 @@ Command* M1M3SSSubscriber::tryAcceptCommandExitEngineering() {
     return 0;
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandTestAir() {
-    int32_t commandID = _m1m3SAL->acceptCommand_testAir(&_testAirData);
+Command* M1M3SSSubscriber::tryAcceptCommandSetAirSlewFlag() {
+    int32_t commandID = _m1m3SAL->acceptCommand_setAirSlewFlag(&_setAirSlewFlagData);
     if (commandID > 0) {
-        return CommandFactory::create(Commands::TestAirCommand, &_testAirData, commandID);
+        return new SetAirSlewFlagCommand(commandID, &_setAirSlewFlagData);
     }
     return 0;
 }
@@ -286,14 +264,6 @@ Command* M1M3SSSubscriber::tryAcceptCommandTestHardpoint() {
     int32_t commandID = _m1m3SAL->acceptCommand_testHardpoint(&_testHardpointData);
     if (commandID > 0) {
         return CommandFactory::create(Commands::TestHardpointCommand, &_testHardpointData, commandID);
-    }
-    return 0;
-}
-
-Command* M1M3SSSubscriber::tryAcceptCommandTestForceActuator() {
-    int32_t commandID = _m1m3SAL->acceptCommand_testForceActuator(&_testForceActuatorData);
-    if (commandID > 0) {
-        return CommandFactory::create(Commands::TestForceActuatorCommand, &_testForceActuatorData, commandID);
     }
     return 0;
 }
@@ -486,20 +456,18 @@ Command* M1M3SSSubscriber::tryAcceptCommandKillForceActuatorBumpTest() {
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
-    /*	int32_t result = _mtMountSAL->getSample_Az(&_tmaAzimuth);
-            if (result == 0) {
-                    return CommandFactory::create(Commands::TMAAzimuthSampleCommand, &_tmaAzimuth,
-       0);
-            }*/
+    int32_t result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
+    if (result == 0) {
+        return CommandFactory::create(Commands::TMAAzimuthSampleCommand, &_tmaAzimuth, 0);
+    }
     return 0;
 }
 
 Command* M1M3SSSubscriber::tryGetSampleTMAElevation() {
-    /*	int32_t result = _mtMountSAL->getSample_Alt(&_tmaElevation);
-            if (result == 0) {
-                    return CommandFactory::create(Commands::TMAElevationSampleCommand,
-       &_tmaElevation, 0);
-            }*/
+    int32_t result = _mtMountSAL->getSample_elevation(&_tmaElevation);
+    if (result == 0) {
+        return CommandFactory::create(Commands::TMAElevationSampleCommand, &_tmaElevation, 0);
+    }
     return 0;
 }
 

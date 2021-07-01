@@ -29,6 +29,8 @@
 #include <SAL_MTM1M3C.h>
 #include <ccpp_sal_MTM1M3.h>
 
+#include <ForceActuatorWarning.h>
+
 #include <memory>
 
 namespace LSST {
@@ -132,9 +134,7 @@ public:
     }
     MTM1M3_logevent_forceActuatorInfoC* getEventForceActuatorInfo() { return &_eventForceActuatorInfo; }
     MTM1M3_logevent_forceActuatorStateC* getEventForceActuatorState() { return &_eventForceActuatorState; }
-    MTM1M3_logevent_forceActuatorWarningC* getEventForceActuatorWarning() {
-        return &_eventForceActuatorWarning;
-    }
+    static ForceActuatorWarning* getForceActuatorWarning() { return &(get()._forceActuatorWarning); }
     MTM1M3_logevent_forceSetpointWarningC* getEventForceSetpointWarning() {
         return &_eventForceSetpointWarning;
     }
@@ -293,8 +293,9 @@ public:
     void tryLogForceActuatorInfo();
     void logForceActuatorState();
     void tryLogForceActuatorState();
-    void logForceActuatorWarning();
-    void tryLogForceActuatorWarning();
+    void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {
+        _m1m3SAL->logEvent_forceActuatorWarning(data, 0);
+    }
     void logForceSetpointWarning();
     void tryLogForceSetpointWarning();
     void logGyroWarning();
@@ -358,6 +359,7 @@ public:
     void logSettingVersions();
     void logSettingsApplied();
     void tryLogSettingsApplied();
+    void logSoftwareVersions();
     void logSummaryState();
     void tryLogSummaryState();
 
@@ -381,19 +383,14 @@ public:
     void ackCommandclearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandraiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandlowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyActiveOpticForcesByBendingModes(int32_t commandID, int32_t ackCode,
-                                                        std::string description);
     void ackCommandapplyActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandclearActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyAberrationForcesByBendingModes(int32_t commandID, int32_t ackCode,
-                                                       std::string description);
     void ackCommandapplyAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandclearAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenterEngineering(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandtestAir(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandsetAirSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandtestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandtestForceActuator(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandmoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommanddisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
@@ -461,7 +458,7 @@ private:
     MTM1M3_logevent_forceActuatorForceWarningC _eventForceActuatorForceWarning;
     MTM1M3_logevent_forceActuatorInfoC _eventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _eventForceActuatorState;
-    MTM1M3_logevent_forceActuatorWarningC _eventForceActuatorWarning;
+    ForceActuatorWarning _forceActuatorWarning;
     MTM1M3_logevent_forceSetpointWarningC _eventForceSetpointWarning;
     MTM1M3_logevent_gyroWarningC _eventGyroWarning;
     MTM1M3_logevent_hardpointActuatorInfoC _eventHardpointActuatorInfo;
@@ -521,7 +518,6 @@ private:
     MTM1M3_logevent_forceActuatorForceWarningC _previousEventForceActuatorForceWarning;
     MTM1M3_logevent_forceActuatorInfoC _previousEventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _previousEventForceActuatorState;
-    MTM1M3_logevent_forceActuatorWarningC _previousEventForceActuatorWarning;
     MTM1M3_logevent_forceSetpointWarningC _previousEventForceSetpointWarning;
     MTM1M3_logevent_gyroWarningC _previousEventGyroWarning;
     MTM1M3_logevent_hardpointActuatorInfoC _previousEventHardpointActuatorInfo;

@@ -116,7 +116,7 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
 void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
     SPDLOG_DEBUG("BalanceForceComponent: updatePID()");
     PID* pid = _idToPID(id);
-    if (pid != 0) {
+    if (pid != NULL) {
         pid->updateParameters(parameters);
     }
 }
@@ -124,7 +124,7 @@ void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
 void BalanceForceComponent::resetPID(int id) {
     SPDLOG_DEBUG("BalanceForceComponent: resetPID()");
     PID* pid = _idToPID(id);
-    if (pid != 0) {
+    if (pid != NULL) {
         pid->restoreInitialParameters();
     }
 }

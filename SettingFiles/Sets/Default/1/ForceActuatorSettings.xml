@@ -3,7 +3,6 @@
     <AccelerationXTablePath>Tables/AccelerationXTable.csv</AccelerationXTablePath>
     <AccelerationYTablePath>Tables/AccelerationYTable.csv</AccelerationYTablePath>
     <AccelerationZTablePath>Tables/AccelerationZTable.csv</AccelerationZTablePath>
-    <BendingModeTablePath>Tables/BendingModeTable.csv</BendingModeTablePath>
     <AzimuthXTablePath>Tables/AzimuthXTable.csv</AzimuthXTablePath>
     <AzimuthYTablePath>Tables/AzimuthYTable.csv</AzimuthYTablePath>
     <AzimuthZTablePath>Tables/AzimuthZTable.csv</AzimuthZTablePath>

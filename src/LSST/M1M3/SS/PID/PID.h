@@ -33,13 +33,16 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Implements PID discrete time controller.
+ * Implements PID discrete time controller. Used for filtering forces measured
+ * from hardpoints for balance force component corrections to force actuators.
  *
  * See PID discussion at
  * [Confluence](https://confluence.lsstcorp.org/pages/viewpage.action?pageId=34209829)
  * for details. The [PID Implementation in
  * Software](https://confluence.lsstcorp.org/pages/viewpage.action?pageId=34209829&preview=/34209829/135102468/PID%20Implementation%20in%20Software%20v_2.pdf)
  * has details about the calculations.
+ *
+ * @see LSST::M1M3::SS::BalanceForceComponent
  */
 class PID {
 public:

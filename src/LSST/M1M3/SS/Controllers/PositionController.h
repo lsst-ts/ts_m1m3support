@@ -65,8 +65,6 @@ public:
      */
     double getRaiseLowerTimeout();
 
-    bool enableChase(int32_t actuatorID);
-    void disableChase(int32_t actuatorID);
     bool enableChaseAll();
     void disableChaseAll();
 
