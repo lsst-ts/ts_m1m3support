@@ -119,12 +119,6 @@ void Context::lowerM1M3(LowerM1M3Command* command) {
     _updateCurrentStateIfRequired(state->lowerM1M3(command));
 }
 
-void Context::applyAberrationForcesByBendingModes(ApplyAberrationForcesByBendingModesCommand* command) {
-    SPDLOG_DEBUG("Context: applyAberrationForcesByBendingModes()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->applyAberrationForcesByBendingModes(command));
-}
-
 void Context::applyAberrationForces(ApplyAberrationForcesCommand* command) {
     SPDLOG_DEBUG("Context: applyAberrationForces()");
     State* state = StaticStateFactory::get().create(_currentState);
@@ -135,12 +129,6 @@ void Context::clearAberrationForces(ClearAberrationForcesCommand* command) {
     SPDLOG_DEBUG("Context: clearAberrationForces()");
     State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->clearAberrationForces(command));
-}
-
-void Context::applyActiveOpticForcesByBendingModes(ApplyActiveOpticForcesByBendingModesCommand* command) {
-    SPDLOG_DEBUG("Context: applyActiveOpticForcesByBendingModes()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->applyActiveOpticForcesByBendingModes(command));
 }
 
 void Context::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
@@ -167,22 +155,16 @@ void Context::exitEngineering(ExitEngineeringCommand* command) {
     _updateCurrentStateIfRequired(state->exitEngineering(command));
 }
 
-void Context::testAir(TestAirCommand* command) {
-    SPDLOG_DEBUG("Context: testAir()");
+void Context::setAirSlewFlag(SetAirSlewFlagCommand* command) {
+    SPDLOG_DEBUG("Context: setAirSlewFlag()");
     State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->testAir(command));
+    _updateCurrentStateIfRequired(state->setAirSlewFlag(command));
 }
 
 void Context::testHardpoint(TestHardpointCommand* command) {
     SPDLOG_DEBUG("Context: testHardpoint()");
     State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->testHardpoint(command));
-}
-
-void Context::testForceActuator(TestForceActuatorCommand* command) {
-    SPDLOG_DEBUG("Context: testForceActuator()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->testForceActuator(command));
 }
 
 void Context::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {

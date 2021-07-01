@@ -39,6 +39,7 @@ States::Type OfflineState::update(UpdateCommand* command) {
 
 States::Type OfflineState::enterControl(EnterControlCommand* command) {
     SPDLOG_INFO("OfflineState: enterControl()");
+    M1M3SSPublisher::get().logSoftwareVersions();
     Model::get().publishRecommendedSettings();
     // Model::get().getDigitalInputOutput()->turnAirOff();
     // Model::get().getDigitalInputOutput()->turnCellLightsOff();

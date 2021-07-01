@@ -21,35 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef APPLYACTIVEOPTICFORCESBYBENDINGMODESCOMMAND_H_
-#define APPLYACTIVEOPTICFORCESBYBENDINGMODESCOMMAND_H_
-
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <Context.h>
+#include <SetAirSlewFlagCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ApplyActiveOpticForcesByBendingModesCommand : public Command {
-public:
-    ApplyActiveOpticForcesByBendingModesCommand(int32_t commandID,
-                                                MTM1M3_command_applyActiveOpticForcesByBendingModesC* data);
+SetAirSlewFlagCommand::SetAirSlewFlagCommand(int32_t in_commandID, MTM1M3_command_setAirSlewFlagC* data) {
+    commandID = in_commandID;
+    slewFlag = data->slewFlag;
+}
 
-    MTM1M3_command_applyActiveOpticForcesByBendingModesC* getData() { return &_data; }
+void SetAirSlewFlagCommand::execute() { Context::get().setAirSlewFlag(this); }
 
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+void SetAirSlewFlagCommand::ackInProgress() {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_INPROGRESS, "In-Progress");
+}
 
-private:
-    MTM1M3_command_applyActiveOpticForcesByBendingModesC _data;
-};
+void SetAirSlewFlagCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_COMPLETE, "Completed");
+}
+
+void SetAirSlewFlagCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_FAILED, "Failed: " + reason);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
-
-#endif /* APPLYACTIVEOPTICFORCESBYBENDINGMODESCOMMAND_H_ */

@@ -31,15 +31,7 @@ namespace SS {
 
 RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data) {
     this->commandID = commandID;
-    _data.raiseM1M3 = data->raiseM1M3;
     _data.bypassReferencePosition = data->bypassReferencePosition;
-}
-
-bool RaiseM1M3Command::validate() {
-    if (!_data.raiseM1M3) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("RaiseM1M3", "The field RaiseM1M3 is not TRUE.");
-    }
-    return _data.raiseM1M3;
 }
 
 void RaiseM1M3Command::execute() { Context::get().raiseM1M3(this); }

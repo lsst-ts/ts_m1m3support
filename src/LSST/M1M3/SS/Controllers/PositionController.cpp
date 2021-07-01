@@ -60,24 +60,6 @@ double PositionController::getRaiseLowerTimeout() {
     return _positionControllerSettings->RaiseLowerTimeoutInSeconds;
 }
 
-bool PositionController::enableChase(int32_t actuatorID) {
-    SPDLOG_INFO("PositionController: enableChase({:d})", actuatorID);
-    if (_hardpointActuatorState->motionState[actuatorID - 1] != HardpointActuatorMotionStates::Standby) {
-        return false;
-    }
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _hardpointActuatorState->motionState[actuatorID - 1] = HardpointActuatorMotionStates::Chasing;
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
-    return true;
-}
-
-void PositionController::disableChase(int32_t actuatorID) {
-    SPDLOG_INFO("PositionController: disableChase({:d})", actuatorID);
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _hardpointActuatorState->motionState[actuatorID - 1] = HardpointActuatorMotionStates::Standby;
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
-}
-
 bool PositionController::enableChaseAll() {
     SPDLOG_INFO("PositionController: enableChaseAll()");
     if (_hardpointActuatorState->motionState[0] != HardpointActuatorMotionStates::Standby ||

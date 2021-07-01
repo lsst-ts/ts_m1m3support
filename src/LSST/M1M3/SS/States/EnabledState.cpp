@@ -52,7 +52,7 @@ EnabledState::EnabledState(std::string name) : State(name) {}
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAAzimuthSample()");
-    Model::get().getForceController()->updateAzimuthForces((float)command->getData()->actualPosition);
+    Model::get().getForceController()->updateTMAAzimuthForces(command->getData());
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -62,14 +62,13 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* co
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledState::testAir(TestAirCommand* command) {
-    // TODO: Remove, this is a test command that has been taken for toggling boost valve control
+States::Type EnabledState::setAirSlewFlag(SetAirSlewFlagCommand* command) {
     MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
             M1M3SSPublisher::get().getEventForceActuatorState();
     MTM1M3_outerLoopDataC* outerLoop = M1M3SSPublisher::get().getOuterLoopData();
-    SPDLOG_INFO("EnabledState: toggleBoostValve to {}", !forceActuatorState->slewFlag);
-    forceActuatorState->slewFlag = !forceActuatorState->slewFlag;
-    outerLoop->slewFlag = forceActuatorState->slewFlag;
+    SPDLOG_INFO("EnabledState: setAirSlewFlag to {}", command->slewFlag);
+    forceActuatorState->slewFlag = command->slewFlag;
+    outerLoop->slewFlag = command->slewFlag;
 
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }

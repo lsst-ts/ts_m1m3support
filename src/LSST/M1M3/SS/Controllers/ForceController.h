@@ -197,19 +197,17 @@ public:
      */
     void processAppliedForces();
 
-    void applyAberrationForcesByBendingModes(float* coefficients);
     void applyAberrationForces(float* z);
     void zeroAberrationForces();
 
     void applyAccelerationForces();
     void zeroAccelerationForces();
 
-    void applyActiveOpticForcesByBendingModes(float* coefficients);
     void applyActiveOpticForces(float* z);
     void zeroActiveOpticForces();
 
     void applyAzimuthForces();
-    void updateAzimuthForces(float azimuthAngle);
+    void updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData);
     void zeroAzimuthForces();
 
     void applyBalanceForces();
@@ -282,8 +280,10 @@ private:
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_gyroDataC* _gyroData;
 
+    double _azimuth_Timestamp;
+
     double _elevation_Timestamp;
-    double _elevation_Angle_Actual;
+    double _elevation_Actual;
 
     std::vector<ForceActuatorNeighbors> _neighbors;
 
@@ -321,7 +321,8 @@ private:
 
         void reset() override {
             if (_counter > 0) {
-                SPDLOG_INFO("FA ID {} following error is back into limits after {} failures", _counter);
+                SPDLOG_INFO("FA ID {} axis {} following error is back into limits after {} failures", _faId,
+                            _axis, _counter);
                 _counter = 0;
             }
         }

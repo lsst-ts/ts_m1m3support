@@ -30,6 +30,7 @@
 #include <ForcesAndMoments.h>
 #include <ForceConverter.h>
 #include <DistributedForces.h>
+#include <LimitLog.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -54,7 +55,9 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
     SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForces()");
 
     if (!isEnabled()) {
-        SPDLOG_ERROR("AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
+        using namespace std::chrono_literals;
+        TG_LOG_ERROR(5s,
+                     "AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
         return;
     }
 

@@ -21,30 +21,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Context.h>
-#include <TestAirCommand.h>
-#include <M1M3SSPublisher.h>
+#ifndef CONVERSION_H_
+#define CONVERSION_H_
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+inline double G2M_S_2(double g) { return g * 9.80665; }
 
-TestAirCommand::TestAirCommand(int32_t commandID, MTM1M3_command_testAirC*) { this->commandID = commandID; }
-
-void TestAirCommand::execute() { Context::get().testAir(this); }
-
-void TestAirCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void TestAirCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_COMPLETE, "Completed");
-}
-
-void TestAirCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandtestAir(this->commandID, ACK_FAILED, "Failed: " + reason);
-}
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+#endif  //* CONVERSION_H_

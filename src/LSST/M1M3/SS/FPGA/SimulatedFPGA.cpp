@@ -107,17 +107,17 @@ void SimulatedFPGA::close() { SPDLOG_DEBUG("SimulatedFPGA: close()"); }
 
 void SimulatedFPGA::finalize() { SPDLOG_DEBUG("SimulatedFPGA: finalize()"); }
 
-void SimulatedFPGA::waitForOuterLoopClock(int32_t timeout) {
+void SimulatedFPGA::waitForOuterLoopClock(uint32_t timeout) {
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 }
 
 void SimulatedFPGA::ackOuterLoopClock() {}
 
-void SimulatedFPGA::waitForPPS(int32_t timeout) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
+void SimulatedFPGA::waitForPPS(uint32_t timeout) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 
 void SimulatedFPGA::ackPPS() {}
 
-void SimulatedFPGA::waitForModbusIRQ(int32_t subnet, int32_t timeout) {}
+void SimulatedFPGA::waitForModbusIRQ(int32_t subnet, uint32_t timeout) {}
 
 void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
 
@@ -159,14 +159,9 @@ void SimulatedFPGA::pullTelemetry() {
     this->supportFPGAData.DisplacementRaw8 = (int32_t)(getRndPM1() + 80) * 1000.0;
     this->supportFPGAData.AccelerometerSampleCount++;
     this->supportFPGAData.AccelerometerSampleTimestamp = timestamp;
-    this->supportFPGAData.AccelerometerRaw1 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw2 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw3 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw4 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw5 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw6 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw7 = getRndPM1() * 0.01;
-    this->supportFPGAData.AccelerometerRaw8 = getRndPM1() * 0.01;
+    for (int i = 0; i < 8; i++) {
+        supportFPGAData.AccelerometerRaw[i] = getRndPM1() * 0.01;
+    }
     this->supportFPGAData.GyroTxBytes = 0;
     this->supportFPGAData.GyroRxBytes = 0;
     this->supportFPGAData.GyroTxFrames = 0;
@@ -205,8 +200,12 @@ void SimulatedFPGA::pullTelemetry() {
 
 void SimulatedFPGA::pullHealthAndStatus() {}
 
-void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
-    for (int i = 0; i < length;) {
+uint8_t _broadCastCounter() {
+    return static_cast<uint8_t>(M1M3SSPublisher::get().getOuterLoopData()->broadcastCounter) << 4;
+}
+
+void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
+    for (size_t i = 0; i < length;) {
         uint16_t signal = data[i++];
         uint16_t dataLength = 0;
         uint16_t subnet = 0;
@@ -364,7 +363,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
             response->push((uint16_t)(rawTimestamp >> 16));
             response->push((uint16_t)(rawTimestamp >> 32));
             response->push((uint16_t)(rawTimestamp >> 48));  // Write Global Timestamp
-            int endIndex = i - 1 + dataLength - 1;
+            size_t endIndex = i - 1 + dataLength - 1;
             // The first -1 is for the software trigger
             // The second -1 is for the trigger
             while (i < endIndex) {
@@ -475,12 +474,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             uint8_t word1 = _readModbus(data[i++]);
                             uint8_t word2 = _readModbus(data[i++]);
                             uint8_t word3 = _readModbus(data[i++]);
-                            _writeModbus(response, address);   // Write Address
-                            _writeModbus(response, function);  // Write Function
-                            _writeModbus(response,
-                                         (uint8_t)M1M3SSPublisher::get()
-                                                 .getOuterLoopData()
-                                                 ->broadcastCounter);  // Write ILC Status
+                            _writeModbus(response, address);              // Write Address
+                            _writeModbus(response, function);             // Write Function
+                            _writeModbus(response, _broadCastCounter());  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)((static_cast<uint32_t>(word1) << 16) |
                                                     (static_cast<uint32_t>(word2) << 8) | word3)) /
@@ -508,13 +504,10 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 76: {                             // Force And Status
-                            _writeModbus(response, address);   // Write Address
-                            _writeModbus(response, function);  // Write Function
-                            _writeModbus(response,
-                                         (uint8_t)M1M3SSPublisher::get()
-                                                 .getOuterLoopData()
-                                                 ->broadcastCounter);  // Write ILC Status
+                        case 76: {                                        // Force And Status
+                            _writeModbus(response, address);              // Write Address
+                            _writeModbus(response, function);             // Write Function
+                            _writeModbus(response, _broadCastCounter());  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)M1M3SSPublisher::get()
                                                     .getEventAppliedCylinderForces()
@@ -538,7 +531,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                                 _writeModbus(response, buffer[3]);
                                 _writeModbus(response, buffer[2]);
                                 _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write Secondary Cylinder Force
+                                _writeModbus(response,
+                                             buffer[0]);  // Write Secondary Cylinder Force
                             }
                             _writeModbusCRC(response);
                             break;
@@ -625,12 +619,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, int32_t length, int32_t tim
                     }
 
                     auto fillHPStatus = [address, function, &response, this](int steps) {
-                        _writeModbus(response, address);   // Write Address
-                        _writeModbus(response, function);  // Write Function
-                        _writeModbus(response,
-                                     (uint8_t)M1M3SSPublisher::get()
-                                             .getOuterLoopData()
-                                             ->broadcastCounter);  // Write ILC Status
+                        _writeModbus(response, address);              // Write Address
+                        _writeModbus(response, function);             // Write Function
+                        _writeModbus(response, _broadCastCounter());  // Write ILC Status
                         // Number of steps issued / 4 + current encoder
                         // The encoder is also inverted after being received to match axis direction
                         // So we have to also invert the encoder here to counteract that
@@ -889,9 +880,7 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     response->push(0xA000);  // Write End of Frame
 }
 
-void SimulatedFPGA::writeCommandFIFO(uint16_t data, int32_t timeoutInMs) {}
-
-void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
+void SimulatedFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     int signal = data[0];
     std::queue<uint16_t>* modbusResponse = 0;
     switch (signal) {
@@ -963,18 +952,12 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t* data, int32_t length, int32_t tim
     }
 }
 
-void SimulatedFPGA::writeRequestFIFO(uint16_t data, int32_t timeoutInMs) {
-    uint16_t newData[1];
-    newData[0] = data;
-    writeRequestFIFO(newData, 1, timeoutInMs);
-}
-
 void SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) {}
 
-void SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, int32_t length, int32_t timeoutInMs) {}
+void SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) {}
 
-void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t timeoutInMs) {
-    for (int i = 0; i < length; ++i) {
+void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
+    for (size_t i = 0; i < length; ++i) {
         data[i] = _u16Response.front();
         _u16Response.pop();
     }
@@ -982,8 +965,8 @@ void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, int32_t length, int32_t 
 
 void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}
 
-void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, int32_t length, int32_t timeoutInMs) {
-    for (int i = 0; i < length; i++) {
+void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs) {
+    for (size_t i = 0; i < length; i++) {
         data[i] = i;
     }
 }

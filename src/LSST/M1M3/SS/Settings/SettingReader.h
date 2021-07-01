@@ -92,6 +92,7 @@ public:
     ILCApplicationSettings* loadILCApplicationSettings();
     RecommendedApplicationSettings* loadRecommendedApplicationSettings();
     SafetyControllerSettings* loadSafetyControllerSettings();
+    SafetyControllerSettings* getSafetyControllerSettings() { return &_safetyControllerSettings; }
     PositionControllerSettings* loadPositionControllerSettings();
     AccelerometerSettings* loadAccelerometerSettings();
     DisplacementSensorSettings* loadDisplacementSensorSettings();

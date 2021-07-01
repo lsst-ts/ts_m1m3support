@@ -1,28 +1,28 @@
 include Makefile.inc
 
-.PHONY: all clean deploy tests FORCE doc
+.PHONY: all clean deploy tests FORCE doc simulator ipk
 
 # Add inputs and outputs from these tool invocations to the build variables 
 #
 
 # All Target
-all: ts_M1M3Support $(m1m3cli)
+all: ts-M1M3supportd $(m1m3sscli)
 
 src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
 
 # Tool invocations
-ts_M1M3Support: src/ts_M1M3Support.cpp.o src/libM1M3SS.a
+ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
-	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS)
+	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a
 
-m1m3cli: src/m1m3cli.cpp.o src/cliapp/CliApp.cpp.o src/libM1M3SS.a
+m1m3sscli: src/m1m3sscli.cpp.o src/libM1M3SS.a $(CRIOCPP)/lib/libcRIOcpp.a
 	@echo '[LD ] $@'
-	${co}$(CPP) -o $@ $^ -L/usr/lib64 -lpthread -lreadline -ldl
+	${co}$(CPP) -o $@ $^ -L/usr/lib64 -lpthread -lreadline -ldl $(CRIOCPP)/lib/libcRIOcpp.a
 
 # Other Targets
 clean:
-	@$(foreach file,ts_M1M3Support src/ts_M1M3Support.cpp.o src/m1m3cli.cpp.o doc, echo '[RM ] ${file}'; $(RM) -r $(file);)
+	@$(foreach file,ts_M1M3Support src/ts_M1M3Support.cpp.o src/m1m3cli.cpp.o doc *.ipk ipk, echo '[RM ] ${file}'; $(RM) -r $(file);)
 	@$(foreach dir,src tests,$(MAKE) -C ${dir} $@;)
 
 # file targets
@@ -31,7 +31,7 @@ src/%.cpp.o: src/%.cpp
 
 CRIO_IP = 10.0.0.11
 
-deploy: ts_M1M3Support m1m3cli
+deploy: ts-M1M3supportd m1m3cli
 	@echo '[SCP] $^'
 	${co}scp $^ admin@${CRIO_IP}:
 	@echo '[SCP] Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx'
@@ -48,3 +48,30 @@ junit: tests
 
 doc:
 	${co}doxygen Doxyfile
+
+simulator:
+	@${MAKE} SIMULATOR=1 DEBUG=1
+
+ipk: ts-M1M3supportd m1m3sscli ts-M1M3support_${VERSION}_x64.ipk
+
+ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
+	@echo '[MK ] ipk $@'
+	${co}mkdir -p ipk/data/usr/sbin
+	${co}mkdir -p ipk/data/etc/init.d
+	${co}mkdir -p ipk/data/etc/default
+	${co}mkdir -p ipk/data/var/lib/ts-M1M3support
+	${co}mkdir -p ipk/control
+	${co}cp ts-M1M3supportd ipk/data/usr/sbin/ts-M1M3supportd
+	${co}cp m1m3sscli ipk/data/usr/sbin/m1m3sscli
+	${co}cp init ipk/data/etc/init.d/ts-M1M3support
+	${co}cp default_ts-M1M3support ipk/data/etc/default/ts-M1M3support
+	${co}cp -r SettingFiles/* ipk/data/var/lib/ts-M1M3support
+	${co}cp -r Bitfiles/* ipk/data/var/lib/ts-M1M3support
+	${co}sed s?@VERSION@?$(VERSION)?g control.ipk.in > ipk/control/control
+	${co}cp postinst prerm postrm ipk/control
+	${co}echo -e "/etc/default/ts-M1M3support" > ipk/control/conffiles
+	${co}find SettingFiles -name '*.xml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/ts-M1M3support#' >> ipk/control/conffiles
+	${co}echo "2.0" > ipk/debian-binary
+	${co}tar czf ipk/data.tar.gz -P --transform "s#^ipk/data#.#" --owner=0 --group=0 ipk/data
+	${co}tar czf ipk/control.tar.gz -P --transform "s#^ipk/control#.#" --owner=0 --group=0 ipk/control
+	${co}ar r $@ ipk/control.tar.gz ipk/data.tar.gz ipk/debian-binary

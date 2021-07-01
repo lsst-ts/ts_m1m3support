@@ -65,13 +65,6 @@ void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
     }
 }
 
-void ActiveOpticForceComponent::applyActiveOpticForcesByBendingModes(float* coefficients) {
-    SPDLOG_DEBUG("ActiveOpticForceComponent: applyActiveOpticForcesByBendingModes()");
-    DistributedForces forces =
-            ForceConverter::calculateForceFromBendingModes(_forceActuatorSettings, coefficients);
-    applyActiveOpticForces(forces.ZForces);
-}
-
 void ActiveOpticForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("ActiveOpticForceComponent: postEnableDisableActions()");
 
