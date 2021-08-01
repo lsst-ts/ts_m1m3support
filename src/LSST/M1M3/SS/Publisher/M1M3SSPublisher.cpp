@@ -74,6 +74,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_commandRejectionWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_detailedState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_enabledForceActuators");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_errorCode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorForceWarning");
