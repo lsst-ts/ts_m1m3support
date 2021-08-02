@@ -29,6 +29,7 @@
 #include <SAL_MTM1M3C.h>
 #include <ccpp_sal_MTM1M3.h>
 
+#include <EnabledForceActuators.h>
 #include <ForceActuatorWarning.h>
 
 #include <memory>
@@ -125,6 +126,7 @@ public:
     MTM1M3_logevent_displacementSensorWarningC* getEventDisplacementSensorWarning() {
         return &_eventDisplacementSensorWarning;
     }
+    static EnabledForceActuators* getEnabledForceActuators() { return &(get()._enabledForceActuators); }
     MTM1M3_logevent_errorCodeC* getEventErrorCode() { return &_eventErrorCode; }
     MTM1M3_logevent_forceActuatorBumpTestStatusC* getEventForceActuatorBumpTestStatus() {
         return &_eventForceActuatorBumpTestStatus;
@@ -456,6 +458,7 @@ private:
     MTM1M3_logevent_commandRejectionWarningC _eventCommandRejectionWarning;
     MTM1M3_logevent_detailedStateC _eventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _eventDisplacementSensorWarning;
+    EnabledForceActuators _enabledForceActuators;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _eventForceActuatorBumpTestStatus;
     MTM1M3_logevent_forceActuatorForceWarningC _eventForceActuatorForceWarning;
