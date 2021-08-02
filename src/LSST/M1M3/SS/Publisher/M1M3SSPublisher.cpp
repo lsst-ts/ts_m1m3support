@@ -2110,6 +2110,9 @@ ACK_COMMAND(programILC)
 ACK_COMMAND(modbusTransmit)
 ACK_COMMAND(forceActuatorBumpTest)
 ACK_COMMAND(killForceActuatorBumpTest)
+ACK_COMMAND(disableForceActuator)
+ACK_COMMAND(enableForceActuator)
+ACK_COMMAND(enableAllForceActuators)
 
 } /* namespace SS */
 } /* namespace M1M3 */

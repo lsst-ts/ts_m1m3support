@@ -24,13 +24,25 @@
 #include <Context.h>
 #include <EnableForceActuatorCommand.h>
 #include <M1M3SSPublisher.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 
 EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t in_commandID,
                                                        MTM1M3_command_enableForceActuatorC* data) {
     commandID = in_commandID;
-    actuatorID = data->actuatorId;
+    _actuatorId = data->actuatorId;
+    actuatorIndex = -1;
+}
+
+bool EnableForceActuatorCommand::validate() {
+    actuatorIndex =
+            SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(_actuatorId);
+    if (actuatorIndex < 0) {
+        M1M3SSPublisher::get().logCommandRejectionWarning("EnableForceActuator", "Invalid actuatorId.");
+        return false;
+    }
+    return true;
 }
 
 void EnableForceActuatorCommand::execute() { Context::get().enableForceActuator(this); }
@@ -43,6 +55,6 @@ void EnableForceActuatorCommand::ackComplete() {
     M1M3SSPublisher::get().ackCommandenableForceActuator(commandID, ACK_COMPLETE, "Completed");
 }
 
-void EnableForceActuatorCommand::ackFailed() {
+void EnableForceActuatorCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::get().ackCommandenableForceActuator(commandID, ACK_FAILED, "Failed: " + reason);
 }

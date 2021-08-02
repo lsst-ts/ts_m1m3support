@@ -24,16 +24,28 @@
 #include <Context.h>
 #include <DisableForceActuatorCommand.h>
 #include <M1M3SSPublisher.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 
 DisableForceActuatorCommand::DisableForceActuatorCommand(int32_t in_commandID,
                                                          MTM1M3_command_disableForceActuatorC* data) {
     commandID = in_commandID;
-    actuatorID = data->actuatorId;
+    _actuatorId = data->actuatorId;
+    actuatorIndex = -1;
 }
 
-void DisableForceActuatorCommand::execute() { Context::get().enableForceActuator(this); }
+bool DisableForceActuatorCommand::validate() {
+    actuatorIndex =
+            SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(_actuatorId);
+    if (actuatorIndex < 0) {
+        M1M3SSPublisher::get().logCommandRejectionWarning("DisableForceActuator", "Invalid actuatorId.");
+        return false;
+    }
+    return true;
+}
+
+void DisableForceActuatorCommand::execute() { Context::get().disableForceActuator(this); }
 
 void DisableForceActuatorCommand::ackInProgress() {
     M1M3SSPublisher::get().ackCommanddisableForceActuator(commandID, ACK_INPROGRESS, "In-Progress");
@@ -43,6 +55,6 @@ void DisableForceActuatorCommand::ackComplete() {
     M1M3SSPublisher::get().ackCommanddisableForceActuator(commandID, ACK_COMPLETE, "Completed");
 }
 
-void DisableForceActuatorCommand::ackFailed() {
+void DisableForceActuatorCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::get().ackCommanddisableForceActuator(commandID, ACK_FAILED, "Failed: " + reason);
 }

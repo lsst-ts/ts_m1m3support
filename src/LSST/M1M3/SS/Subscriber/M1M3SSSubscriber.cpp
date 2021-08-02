@@ -28,6 +28,9 @@
 #include <CommandFactory.h>
 #include <SetAirSlewFlagCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
+#include <DisableForceActuatorCommand.h>
+#include <EnableForceActuatorCommand.h>
+#include <EnableAllForceActuatorsCommand.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -461,7 +464,7 @@ Command* M1M3SSSubscriber::tryAcceptCommandKillForceActuatorBumpTest() {
 Command* M1M3SSSubscriber::tryAcceptCommandDisableForceActuator() {
     int32_t commandID = _m1m3SAL->acceptCommand_disableForceActuator(&_disableForceActuatorData);
     if (commandID > 0) {
-        return 0;
+        return new DisableForceActuatorCommand(commandID, &_disableForceActuatorData);
     }
     return 0;
 }
@@ -469,7 +472,7 @@ Command* M1M3SSSubscriber::tryAcceptCommandDisableForceActuator() {
 Command* M1M3SSSubscriber::tryAcceptCommandEnableForceActuator() {
     int32_t commandID = _m1m3SAL->acceptCommand_enableForceActuator(&_enableForceActuatorData);
     if (commandID > 0) {
-        return 0;
+        return new EnableForceActuatorCommand(commandID, &_enableForceActuatorData);
     }
     return 0;
 }
@@ -477,7 +480,7 @@ Command* M1M3SSSubscriber::tryAcceptCommandEnableForceActuator() {
 Command* M1M3SSSubscriber::tryAcceptCommandEnableAllForceActuators() {
     int32_t commandID = _m1m3SAL->acceptCommand_enableAllForceActuators(&_enableAllForceActuatorsData);
     if (commandID > 0) {
-        return 0;
+        return new EnableAllForceActuatorsCommand(commandID, &_enableAllForceActuatorsData);
     }
     return 0;
 }

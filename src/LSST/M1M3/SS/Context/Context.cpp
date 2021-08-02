@@ -312,21 +312,21 @@ void Context::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* comman
 }
 
 void Context::disableForceActuator(DisableForceActuatorCommand* command) {
-    SPDLOG_DEBUG("Context: disableForceActuator({})", command->actuatorId);
-    State* state = StaticStateFactor::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->disableForceActuator(command);
+    SPDLOG_DEBUG("Context: disableForceActuator({})", command->actuatorIndex);
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->disableForceActuator(command));
 }
 
 void Context::enableForceActuator(EnableForceActuatorCommand* command) {
-    SPDLOG_DEBUG("Context: enableForceActuator({})", command->actuatorId);
-    State* state = StaticStateFactor::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->enableForceActuator(command);
+    SPDLOG_DEBUG("Context: enableForceActuator({})", command->actuatorIndex);
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->enableForceActuator(command));
 }
 
 void Context::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
     SPDLOG_DEBUG("Context: enableAllForceActuators()");
-    State* state = StaticStateFactor::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->enableAllForceActuator(command);
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->enableAllForceActuators(command));
 }
 
 void Context::_updateCurrentStateIfRequired(States::Type potentialNewState) {

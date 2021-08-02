@@ -39,10 +39,16 @@ class DisableForceActuatorCommand : public Command {
 public:
     DisableForceActuatorCommand(int32_t commandID, MTM1M3_command_disableForceActuatorC* data);
 
+    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
+
+    int32_t actuatorIndex;
+
+private:
+    int32_t _actuatorId;
 };
 
 } /* namespace SS */

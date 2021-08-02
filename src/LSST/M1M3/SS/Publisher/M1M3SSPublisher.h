@@ -419,6 +419,9 @@ public:
     void ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommanddisableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandenableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandenableAllForceActuators(int32_t commandID, int32_t ackCode, std::string description);
 
 private:
     M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;

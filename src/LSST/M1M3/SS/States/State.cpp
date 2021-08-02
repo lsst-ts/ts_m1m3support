@@ -163,13 +163,13 @@ States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command)
 States::Type State::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
     return this->rejectCommandInvalidState(command, "KillForceActuatorBumpTest");
 }
-States::Type State::disableForceActuator(DisableForceActuatorsCommand* command) {
+States::Type State::disableForceActuator(DisableForceActuatorCommand* command) {
     return rejectCommandInvalidState(command, "DisableForceActuator");
 }
 States::Type State::enableForceActuator(EnableForceActuatorCommand* command) {
     return rejectCommandInvalidState(command, "EnableForceActuator");
 }
-States::Type State::enableForceActuator(EnableAllForceActuatorsCommand* command) {
+States::Type State::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
     return rejectCommandInvalidState(command, "EnableAllForceActuators");
 }
 

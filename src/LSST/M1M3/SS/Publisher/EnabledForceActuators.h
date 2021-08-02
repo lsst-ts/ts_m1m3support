@@ -56,6 +56,7 @@ public:
     void setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
 
     void setEnabled(int32_t dataIndex, bool enabled);
+    void setEnabledAll();
 
     /**
      * Sends updates through SAL/DDS.

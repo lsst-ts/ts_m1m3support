@@ -42,6 +42,6 @@ void EnableAllForceActuatorsCommand::ackComplete() {
     M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_COMPLETE, "Completed");
 }
 
-void EnableAllForceActuatorsCommand::ackFailed() {
+void EnableAllForceActuatorsCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_FAILED, "Failed: " + reason);
 }

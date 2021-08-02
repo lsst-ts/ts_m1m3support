@@ -51,6 +51,9 @@ public:
     virtual States::Type turnPowerOn(TurnPowerOnCommand* command) override;
     virtual States::Type turnPowerOff(TurnPowerOffCommand* command) override;
     virtual States::Type modbusTransmit(ModbusTransmitCommand* command) override;
+    virtual States::Type disableForceActuator(DisableForceActuatorCommand* command);
+    virtual States::Type enableForceActuator(EnableForceActuatorCommand* command);
+    virtual States::Type enableAllForceActuators(EnableAllForceActuatorsCommand* command);
 };
 
 } /* namespace SS */

@@ -41,6 +41,15 @@ void EnabledForceActuators::setEnabled(int32_t dataIndex, bool enabled) {
     _shouldSend = true;
 }
 
+void EnabledForceActuators::setEnabledAll() {
+    for (int i = 0; i < FA_COUNT; i++) {
+        if (forceActuatorEnabled[i] == false) {
+            forceActuatorEnabled[i] = true;
+            _shouldSend = true;
+        }
+    }
+}
+
 void EnabledForceActuators::log() {
     if (_shouldSend == false) {
         return;
