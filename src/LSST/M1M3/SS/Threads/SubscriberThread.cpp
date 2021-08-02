@@ -81,6 +81,9 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandModbusTransmit());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandForceActuatorBumpTest());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandKillForceActuatorBumpTest());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisableForceActuator();
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableForceActuator());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableAllForceActuators());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAAzimuth());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAElevation());
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

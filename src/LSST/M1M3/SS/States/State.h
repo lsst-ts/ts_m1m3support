@@ -152,6 +152,7 @@ public:
     virtual States::Type modbusTransmit(ModbusTransmitCommand* command);
     virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command);
     virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command);
+    virtual States::Type enableForceActuator(Command* command);
 
 protected:
     std::string name;

@@ -163,6 +163,15 @@ States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command)
 States::Type State::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
     return this->rejectCommandInvalidState(command, "KillForceActuatorBumpTest");
 }
+States::Type State::disableForceActuator(DisableForceActuatorsCommand* command) {
+    return rejectCommandInvalidState(command, "DisableForceActuator");
+}
+States::Type State::enableForceActuator(EnableForceActuatorCommand* command) {
+    return rejectCommandInvalidState(command, "EnableForceActuator");
+}
+States::Type State::enableForceActuator(EnableAllForceActuatorsCommand* command) {
+    return rejectCommandInvalidState(command, "EnableAllForceActuators");
+}
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";

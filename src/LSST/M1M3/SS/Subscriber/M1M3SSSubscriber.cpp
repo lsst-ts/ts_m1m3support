@@ -86,6 +86,9 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_forceActuatorBumpTest");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_killForceActuatorBumpTest");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableForceActuator");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableAllForceActuators");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableForceActuator");
 
     _mtMountSAL->salTelemetrySub((char*)"MTMount_azimuth");
     _mtMountSAL->salTelemetrySub((char*)"MTMount_elevation");
@@ -451,6 +454,30 @@ Command* M1M3SSSubscriber::tryAcceptCommandKillForceActuatorBumpTest() {
     int32_t commandID = _m1m3SAL->acceptCommand_killForceActuatorBumpTest(&_killForceActuatorBumpTestData);
     if (commandID > 0) {
         return new KillForceActuatorBumpTestCommand(commandID, &_killForceActuatorBumpTestData);
+    }
+    return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandDisableForceActuator() {
+    int32_t commandID = _m1m3SAL->acceptCommand_disableForceActuator(&_disableForceActuatorData);
+    if (commandID > 0) {
+        return 0;
+    }
+    return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandEnableForceActuator() {
+    int32_t commandID = _m1m3SAL->acceptCommand_enableForceActuator(&_enableForceActuatorData);
+    if (commandID > 0) {
+        return 0;
+    }
+    return 0;
+}
+
+Command* M1M3SSSubscriber::tryAcceptCommandEnableAllForceActuators() {
+    int32_t commandID = _m1m3SAL->acceptCommand_enableAllForceActuators(&_enableAllForceActuatorsData);
+    if (commandID > 0) {
+        return 0;
     }
     return 0;
 }
