@@ -35,12 +35,32 @@ namespace SS {
 class ILCMessageFactory;
 class ILCSubnetData;
 
+/**
+ * Abstract class. Holds list of ILCs on the bus. Allows CSC to query ILCs of
+ * their status etc.
+ *
+ * Buses 1-4 holds only Force Actuator (FA) ILCs. Bus 5 is reserved for
+ * Hardpoint Actuator (HP).
+ *
+ * The major challenge in commanding ILCs on the buses is to keep messages
+ * short. Not all ILCs can be quiered in a single call. ILCs which will be
+ * quired are selected on every update. See RoundRobin::Inc calls in ::update
+ * methods of various BusLists - those select ILCs to query (after broadcast command with .
+ */
 class BusList : public IBusList {
 protected:
+    /**
+     * Status of messages on a subnet.
+     */
     ILCSubnetData* subnetData;
     ILCMessageFactory* ilcMessageFactory;
 
+    /**
+     * Buffer holding data send to FPGA Command FIFO.
+     */
     ModbusBuffer buffer;
+
+    // number of expected responses
     int32_t expectedHPResponses[HP_COUNT];
     int32_t expectedFAResponses[FA_COUNT];
     int32_t expectedHMResponses[HP_COUNT];
@@ -57,7 +77,14 @@ public:
     int32_t* getExpectedHMResponses() { return this->expectedHMResponses; }
 
 protected:
+    /**
+     * Writes command to start a subnet message on the bus. Length is filled in endSubnet() method.
+     */
     void startSubnet(uint8_t subnet);
+
+    /**
+     * Ends subnet. Writes IRQ trigger and sets buffer length.
+     */
     void endSubnet();
 };
 

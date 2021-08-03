@@ -36,6 +36,9 @@ struct ILCTypes {
     enum Type { Unknown = 0, HP = 1, FA = 2, HM = 3 };
 };
 
+/**
+ * ILC data. Contains subnet, address and more of an ILC on subnet.
+ */
 struct ILCMap {
     ILCTypes::Type Type;
     uint8_t Subnet;
@@ -45,6 +48,11 @@ struct ILCMap {
     int32_t XDataIndex;
     int32_t YDataIndex;
     int32_t SecondaryDataIndex;
+
+    /**
+     * When true, ILC communication is disabled (ILC is not queried for any
+     * data).
+     */
     bool Disabled;
 };
 

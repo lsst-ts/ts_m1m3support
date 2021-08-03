@@ -95,6 +95,11 @@ public:
     void writeFreezeSensorListBuffer();
     void writeRaisedListBuffer();
     void writeActiveListBuffer();
+
+    /**
+     * Called in enabled state. Calls once writeRaisedListBuffer and twice (to
+     * get more data) writeActiveListBuffer.
+     */
     void writeControlListBuffer();
 
     void triggerModbus();
