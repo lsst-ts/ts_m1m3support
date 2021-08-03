@@ -44,6 +44,15 @@ BumpTestController::BumpTestController() {
 
     _testForce = 222;
 
+    MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
+            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+    for (int i = 0; i < FA_COUNT; i++) {
+        forceActuatorBumpTestStatus->primaryTest[i] = MTM1M3_shared_BumpTest_NotTested;
+    }
+    for (int i = 0; i < FA_X_COUNT + FA_Y_COUNT; i++) {
+        forceActuatorBumpTestStatus->secondaryTest[i] = MTM1M3_shared_BumpTest_NotTested;
+    }
+
     M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
