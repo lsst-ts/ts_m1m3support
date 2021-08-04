@@ -123,11 +123,12 @@ ILCMap ILCSubnetData::getMap(int32_t actuatorId) {
 
 void ILCSubnetData::disableFA(int32_t actuatorId) {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container container = this->subnetData[subnetIndex];
-        for (int i = 0; i < container.FACount; ++i) {
-            if (container.FAIndex[i].ActuatorId == actuatorId) {
-                container.FAIndex[i].Disabled = true;
-                SPDLOG_INFO("ILCSubnetData::disableFA({}, {}) actuator disable", actuatorId, i);
+        Container* container = &subnetData[subnetIndex];
+        for (int i = 0; i < container->FACount; ++i) {
+            if (container->FAIndex[i].ActuatorId == actuatorId) {
+                container->FAIndex[i].Disabled = true;
+                SPDLOG_INFO("ILCSubnetData::disableFA({}, {}, {}) actuator disabled", actuatorId, subnetIndex,
+                            i);
                 return;
             }
         }
@@ -137,11 +138,12 @@ void ILCSubnetData::disableFA(int32_t actuatorId) {
 
 void ILCSubnetData::enableFA(int32_t actuatorId) {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container container = this->subnetData[subnetIndex];
-        for (int i = 0; i < container.FACount; ++i) {
-            if (container.FAIndex[i].ActuatorId == actuatorId) {
-                container.FAIndex[i].Disabled = false;
-                SPDLOG_INFO("ILCSubnetData::enableFA({}, {}) actuator enabled", actuatorId, i);
+        Container* container = &subnetData[subnetIndex];
+        for (int i = 0; i < container->FACount; ++i) {
+            if (container->FAIndex[i].ActuatorId == actuatorId) {
+                container->FAIndex[i].Disabled = false;
+                SPDLOG_INFO("ILCSubnetData::enableFA({}, {}, {}) actuator enabled", actuatorId, subnetIndex,
+                            i);
                 return;
             }
         }
@@ -151,9 +153,9 @@ void ILCSubnetData::enableFA(int32_t actuatorId) {
 
 void ILCSubnetData::enableAllFA() {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container container = this->subnetData[subnetIndex];
-        for (int i = 0; i < container.FACount; ++i) {
-            container.FAIndex[i].Disabled = false;
+        Container* container = &subnetData[subnetIndex];
+        for (int i = 0; i < container->FACount; ++i) {
+            container->FAIndex[i].Disabled = false;
         }
     }
     SPDLOG_INFO("ILCSubnetData::enableAllFA()");
