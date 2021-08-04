@@ -76,6 +76,7 @@ void printHelp() {
               << "  -h prints this help" << std::endl
               << "  -p PID file, started as daemon on background" << std::endl
               << "  -s increases SAL debugging (can be specified multiple times, default is 0)" << std::endl
+              << "  -S don't transmit log messages on SAL/DDS" << std::endl
               << "  -u <user>:<group> run under user & group" << std::endl
               << "  -v prints version and exits" << std::endl
               << "  -V prints SAL, XML and OSPL versions and exits" << std::endl;
@@ -98,7 +99,7 @@ int enabledSinks = 0x10;
 
 void processArgs(int argc, char* const argv[], const char*& configRoot) {
     int opt;
-    while ((opt = getopt(argc, argv, "bc:dfhp:su:vV")) != -1) {
+    while ((opt = getopt(argc, argv, "bc:dfhp:sSu:vV")) != -1) {
         switch (opt) {
             case 'b':
                 enabledSinks |= 0x02;
@@ -121,6 +122,9 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 break;
             case 's':
                 debugLevelSAL++;
+                break;
+            case 'S':
+                enabledSinks &= ~0x10;
                 break;
             case 'u': {
                 char* sep = strchr(optarg, ':');
