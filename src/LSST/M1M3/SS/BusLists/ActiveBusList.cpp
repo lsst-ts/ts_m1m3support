@@ -31,9 +31,7 @@
 #include <cstring>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
@@ -43,6 +41,12 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
     _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
     _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
     _forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
+}
+
+void ActiveBusList::buildBuffer() {
+    BusList::buildBuffer();
+    SPDLOG_DEBUG("ActiveBusList: buildBuffer()");
+
     _lvdtSampleClock = 0;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         _setForceCommandIndex[subnetIndex] = -1;
@@ -218,7 +222,3 @@ void ActiveBusList::update() {
         }
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

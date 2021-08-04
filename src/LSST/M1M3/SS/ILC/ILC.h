@@ -61,7 +61,10 @@ namespace M1M3 {
 namespace SS {
 
 /*!
- * The ILC class used to communicate with the M1M3's 5 subnets.
+ * The ILC class used to communicate with the M1M3's 5 subnets. Uses BusList
+ * subclasses to send queries to FPGA.
+ *
+ * @see BusList
  */
 class ILC {
 public:
@@ -73,6 +76,11 @@ public:
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
         SafetyController* safetyController);
     virtual ~ILC();
+
+    /**
+     * (Re)-build all bus lists.
+     */
+    void buildBusLists();
 
     void programILC(int32_t actuatorId, std::string filePath);
     void modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data);
@@ -177,7 +185,7 @@ private:
     uint8_t _subnetToRxAddress(uint8_t subnet);
     uint8_t _subnetToTxAddress(uint8_t subnet);
 
-    void _writeBusList(IBusList* busList);
+    void _writeBusList(BusList* busList);
 
     void _updateHPSteps();
 };
