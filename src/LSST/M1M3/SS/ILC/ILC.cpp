@@ -472,6 +472,21 @@ void ILC::publishHardpointMonitorStatus() {
 
 void ILC::publishHardpointMonitorData() { M1M3SSPublisher::get().putHardpointMonitorData(); }
 
+void ILC::disableFA(uint32_t actuatorId) {
+    _subnetData.disableFA(actuatorId);
+    buildBusLists();
+}
+
+void ILC::enableFA(uint32_t actuatorId) {
+    _subnetData.enableFA(actuatorId);
+    buildBusLists();
+}
+
+void ILC::enableAllFA() {
+    _subnetData.enableAllFA();
+    buildBusLists();
+}
+
 uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:
