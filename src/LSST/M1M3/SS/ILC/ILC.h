@@ -128,6 +128,10 @@ public:
     void publishHardpointMonitorStatus();
     void publishHardpointMonitorData();
 
+    void disableFA(uint32_t actuatorId) { _subnetData.disableFA(actuatorId); }
+    void enableFA(uint32_t actuatorId) { _subnetData.enableFA(actuatorId); }
+    void enableAllFA() { _subnetData.enableAllFA(); }
+
 private:
     SafetyController* _safetyController;
     ILCSubnetData _subnetData;

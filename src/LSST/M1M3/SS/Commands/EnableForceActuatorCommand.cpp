@@ -31,13 +31,13 @@ using namespace LSST::M1M3::SS;
 EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t in_commandID,
                                                        MTM1M3_command_enableForceActuatorC* data) {
     commandID = in_commandID;
-    _actuatorId = data->actuatorId;
+    actuatorId = data->actuatorId;
     actuatorIndex = -1;
 }
 
 bool EnableForceActuatorCommand::validate() {
     actuatorIndex =
-            SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(_actuatorId);
+            SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
     if (actuatorIndex < 0) {
         M1M3SSPublisher::get().logCommandRejectionWarning("EnableForceActuator", "Invalid actuatorId.");
         return false;

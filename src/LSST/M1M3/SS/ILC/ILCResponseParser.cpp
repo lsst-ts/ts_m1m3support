@@ -973,7 +973,7 @@ void ILCResponseParser::_checkForceActuatorMeasuredForce(ILCMap map) {
                 secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit;
         bool previousSecondaryLimit = _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex];
         _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
-        anyChange = anyChange || secondaryLimitWarning != previousSecondaryLimit;
+        anyChange |= secondaryLimitWarning != previousSecondaryLimit;
     }
 
     if (anyChange) {

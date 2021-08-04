@@ -45,10 +45,8 @@ public:
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 
+    int32_t actuatorId;
     int32_t actuatorIndex;
-
-private:
-    int32_t _actuatorId;
 };
 
 } /* namespace SS */

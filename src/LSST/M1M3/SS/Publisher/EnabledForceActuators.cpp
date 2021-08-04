@@ -23,6 +23,7 @@
 
 #include <EnabledForceActuators.h>
 #include <M1M3SSPublisher.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -38,6 +39,30 @@ void EnabledForceActuators::setEnabled(int32_t dataIndex, bool enabled) {
         return;
     }
     forceActuatorEnabled[dataIndex] = enabled;
+    if (enabled == false) {
+        // if disabling an FA, makes sure its reported force is 0
+        MTM1M3_forceActuatorDataC* faData = M1M3SSPublisher::get().getForceActuatorData();
+        faData->primaryCylinderForce[dataIndex] = 0;
+        faData->zForce[dataIndex] = 0;
+
+        int secondaryIndex = SettingReader::get()
+                                     .getForceActuatorApplicationSettings()
+                                     ->ZIndexToSecondaryCylinderIndex[dataIndex];
+        if (secondaryIndex >= 0) {
+            faData->secondaryCylinderForce[secondaryIndex] = 0;
+            int xIndex =
+                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToXIndex[dataIndex];
+            if (xIndex >= 0) {
+                faData->xForce[xIndex] = 0;
+            }
+
+            int yIndex =
+                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToYIndex[dataIndex];
+            if (yIndex >= 0) {
+                faData->yForce[yIndex] = 0;
+            }
+        }
+    }
     _shouldSend = true;
 }
 
