@@ -46,7 +46,6 @@
 #include <ILCResponseParser.h>
 #include <SAL_MTM1M3C.h>
 #include <FirmwareUpdate.h>
-#include <IBusList.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>

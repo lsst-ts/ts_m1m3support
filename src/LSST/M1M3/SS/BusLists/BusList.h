@@ -24,7 +24,6 @@
 #ifndef BUSLIST_H_
 #define BUSLIST_H_
 
-#include <IBusList.h>
 #include <ModbusBuffer.h>
 #include <ILCDataTypes.h>
 
@@ -55,7 +54,7 @@ class ILCSubnetData;
  * ServerState,..) are distributed, and only ILC subset is updated on every
  * loop. The subset moves in round-robin fashion.
  */
-class BusList : public IBusList {
+class BusList {
 public:
     BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
