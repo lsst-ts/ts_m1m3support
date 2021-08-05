@@ -28,13 +28,17 @@
 #include <SAL_MTM1M3C.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("SetADCScanRateBusList: SetADCScanRateBusList()");
+}
+
+void SetADCScanRateBusList::buildBuffer() {
+    BusList::buildBuffer();
+    SPDLOG_DEBUG("SetADCScanRateBusList: buildBuffer()");
+
     MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
             M1M3SSPublisher::get().getEventHardpointActuatorInfo();
@@ -64,7 +68,3 @@ SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessa
     }
     this->buffer.setLength(this->buffer.getIndex());
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

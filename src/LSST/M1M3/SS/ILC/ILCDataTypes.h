@@ -36,15 +36,23 @@ struct ILCTypes {
     enum Type { Unknown = 0, HP = 1, FA = 2, HM = 3 };
 };
 
+/**
+ * ILC data. Contains subnet, address and more of an ILC on subnet.
+ */
 struct ILCMap {
     ILCTypes::Type Type;
     uint8_t Subnet;
     uint8_t Address;
-    int32_t ActuatorId;
-    int32_t DataIndex;
-    int32_t XDataIndex;
-    int32_t YDataIndex;
-    int32_t SecondaryDataIndex;
+    int32_t ActuatorId;          /// Actuator ID. 100-443 for FA, 0-5 for HP
+    int32_t DataIndex;           /// Z index. 0-155
+    int32_t XDataIndex;          /// X index. -1 for single axis FA, 0-99
+    int32_t YDataIndex;          /// Y index, -1 for single axis FA, 0-11
+    int32_t SecondaryDataIndex;  /// secondary index, -1 for single axis, 0-111
+
+    /**
+     * When true, ILC communication is disabled (ILC is not queried for any
+     * data).
+     */
     bool Disabled;
 };
 

@@ -28,14 +28,18 @@
 #include <RoundRobin.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("FreezeSensorBusList: FreezeSensorBusList()");
     _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
+}
+
+void FreezeSensorBusList::buildBuffer() {
+    BusList::buildBuffer();
+    SPDLOG_DEBUG("FreezeSensorBusList: buildBuffer()");
+
     _lvdtSampleClock = 0;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         _freezeSensorCommandIndex[subnetIndex] = -1;
@@ -167,7 +171,3 @@ void FreezeSensorBusList::update() {
         }
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

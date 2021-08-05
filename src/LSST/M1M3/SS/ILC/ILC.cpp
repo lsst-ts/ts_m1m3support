@@ -33,7 +33,7 @@
 #include <FPGAAddresses.h>
 #include <Timestamp.h>
 #include <cstring>
-#include <IBusList.h>
+#include <BusList.h>
 #include <SAL_MTM1M3C.h>
 #include <ForceConverter.h>
 #include <spdlog/spdlog.h>
@@ -45,9 +45,7 @@
 
 #define ADDRESS_COUNT 256
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -93,9 +91,32 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
     _hardpointActuatorInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
     _controlListToggle = 0;
     _positionController = positionController;
+
+    buildBusLists();
 }
 
 ILC::~ILC() {}
+
+void ILC::buildBusLists() {
+    _busListSetADCChannelOffsetAndSensitivity.buildBuffer();
+    _busListSetADCScanRate.buildBuffer();
+    _busListSetBoostValveDCAGains.buildBuffer();
+    _busListReset.buildBuffer();
+    _busListReportServerID.buildBuffer();
+    _busListReportServerStatus.buildBuffer();
+    _busListReportADCScanRate.buildBuffer();
+    _busListReadCalibration.buildBuffer();
+    _busListReadBoostValveDCAGains.buildBuffer();
+    _busListReportDCAID.buildBuffer();
+    _busListReportDCAStatus.buildBuffer();
+    _busListChangeILCModeDisabled.buildBuffer();
+    _busListChangeILCModeEnabled.buildBuffer();
+    _busListChangeILCModeStandby.buildBuffer();
+    _busListChangeILCModeClearFaults.buildBuffer();
+    _busListFreezeSensor.buildBuffer();
+    _busListRaised.buildBuffer();
+    _busListActive.buildBuffer();
+}
 
 void ILC::programILC(int32_t actuatorId, std::string filePath) {
     SPDLOG_DEBUG("ILC: programILC({},{})", actuatorId, filePath);
@@ -451,6 +472,21 @@ void ILC::publishHardpointMonitorStatus() {
 
 void ILC::publishHardpointMonitorData() { M1M3SSPublisher::get().putHardpointMonitorData(); }
 
+void ILC::disableFA(uint32_t actuatorId) {
+    _subnetData.disableFA(actuatorId);
+    buildBusLists();
+}
+
+void ILC::enableFA(uint32_t actuatorId) {
+    _subnetData.enableFA(actuatorId);
+    buildBusLists();
+}
+
+void ILC::enableAllFA() {
+    _subnetData.enableAllFA();
+    buildBusLists();
+}
+
 uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:
@@ -485,7 +521,7 @@ uint8_t ILC::_subnetToTxAddress(uint8_t subnet) {
     }
 }
 
-void ILC::_writeBusList(IBusList* busList) {
+void ILC::_writeBusList(BusList* busList) {
     IFPGA::get().writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
     _responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(),
                                          busList->getExpectedHMResponses());
@@ -509,7 +545,3 @@ void ILC::_updateHPSteps() {
         }
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

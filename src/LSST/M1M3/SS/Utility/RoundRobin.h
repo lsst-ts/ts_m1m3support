@@ -30,10 +30,28 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Methods for round robin token/index.
+ */
 class RoundRobin {
 public:
+    /**
+     * Increase index. If index is > limit, returns 0 (next index in round robin).
+     *
+     * @param index current index
+     * @param limit maximum size
+     *
+     * @return next index
+     */
     static int32_t Inc(int32_t index, int32_t limit) { return (index + 1) < limit ? (index + 1) : 0; }
 
+    /**
+     * Returns ILC next broadcast counter. Broadcast counter is 4 bites (0-15).
+     *
+     * @param broadcastCounter current broadcast counter value
+     *
+     * @return next broadcast counter value.
+     */
     static uint8_t BroadcastCounter(uint8_t broadcastCounter) {
         return (broadcastCounter + 1) < 16 ? (broadcastCounter + 1) : 0;
     }

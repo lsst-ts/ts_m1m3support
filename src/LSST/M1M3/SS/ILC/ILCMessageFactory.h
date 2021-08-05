@@ -38,6 +38,14 @@ public:
     ILCMessageFactory(ILCApplicationSettings* ilcApplicationSettings);
 
     void reportServerID(ModbusBuffer* buffer, uint8_t address);
+
+    /**
+     * Calls ILC function 18 (0x12) (ReportServerStatus). Retrieves ILC
+     * failures bits.
+     *
+     * @param buffer ModbusBuffer where request will be written
+     * @param address ILC address
+     */
     void reportServerStatus(ModbusBuffer* buffer, uint8_t address);
     void changeILCMode(ModbusBuffer* buffer, uint8_t address, uint16_t mode);
     void reportILCMode(ModbusBuffer* buffer, uint8_t address);
@@ -57,6 +65,14 @@ public:
                                       int32_t primarySetpoint);
     void unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
                                     int32_t primarySetpoint, int32_t secondarySetpoint);
+
+    /**
+     * Calls ILC function 76 (0x4C) Pneumatic ILC - Force [N] and Status
+     * Request. This retrieves forces measured on ILC.
+     *
+     * @param buffer ModbusBuffer where request will be written
+     * @param address ILC address
+     */
     void pneumaticForceStatus(ModbusBuffer* buffer, uint8_t address);
     void setADCScanRate(ModbusBuffer* buffer, uint8_t address, uint8_t rate);
     void reportADCScanRate(ModbusBuffer* buffer, uint8_t address);

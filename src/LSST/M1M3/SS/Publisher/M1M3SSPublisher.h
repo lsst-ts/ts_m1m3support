@@ -29,6 +29,7 @@
 #include <SAL_MTM1M3C.h>
 #include <ccpp_sal_MTM1M3.h>
 
+#include <EnabledForceActuators.h>
 #include <ForceActuatorWarning.h>
 
 #include <memory>
@@ -125,6 +126,7 @@ public:
     MTM1M3_logevent_displacementSensorWarningC* getEventDisplacementSensorWarning() {
         return &_eventDisplacementSensorWarning;
     }
+    static EnabledForceActuators* getEnabledForceActuators() { return &(get()._enabledForceActuators); }
     MTM1M3_logevent_errorCodeC* getEventErrorCode() { return &_eventErrorCode; }
     MTM1M3_logevent_forceActuatorBumpTestStatusC* getEventForceActuatorBumpTestStatus() {
         return &_eventForceActuatorBumpTestStatus;
@@ -283,6 +285,9 @@ public:
     void logDetailedState();
     void tryLogDetailedState();
     void logDisplacementSensorWarning();
+    void logEnabledForceActuators(MTM1M3_logevent_enabledForceActuatorsC* data) {
+        _m1m3SAL->logEvent_enabledForceActuators(data, 0);
+    }
     void tryLogDisplacementSensorWarning();
     void logErrorCode();
     void tryLogErrorCode();
@@ -414,6 +419,9 @@ public:
     void ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommanddisableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandenableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandenableAllForceActuators(int32_t commandID, int32_t ackCode, std::string description);
 
 private:
     M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;
@@ -453,6 +461,7 @@ private:
     MTM1M3_logevent_commandRejectionWarningC _eventCommandRejectionWarning;
     MTM1M3_logevent_detailedStateC _eventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _eventDisplacementSensorWarning;
+    EnabledForceActuators _enabledForceActuators;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _eventForceActuatorBumpTestStatus;
     MTM1M3_logevent_forceActuatorForceWarningC _eventForceActuatorForceWarning;

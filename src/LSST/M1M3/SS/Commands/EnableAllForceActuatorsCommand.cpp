@@ -21,31 +21,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef IBUSLIST_H_
-#define IBUSLIST_H_
+#include <Context.h>
+#include <EnableAllForceActuatorsCommand.h>
+#include <M1M3SSPublisher.h>
 
-#include <DataTypes.h>
+using namespace LSST::M1M3::SS;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(
+        int32_t in_commandID, MTM1M3_command_enableAllForceActuatorsC* data) {
+    commandID = in_commandID;
+}
 
-class IBusList {
-public:
-    virtual ~IBusList();
+void EnableAllForceActuatorsCommand::execute() { Context::get().enableAllForceActuators(this); }
 
-    virtual int32_t getLength();
-    virtual uint16_t* getBuffer();
+void EnableAllForceActuatorsCommand::ackInProgress() {
+    M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_INPROGRESS, "In-Progress");
+}
 
-    virtual int32_t* getExpectedHPResponses();
-    virtual int32_t* getExpectedFAResponses();
-    virtual int32_t* getExpectedHMResponses();
+void EnableAllForceActuatorsCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_COMPLETE, "Completed");
+}
 
-    virtual void update();
-};
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif /* IBUSLIST_H_ */
+void EnableAllForceActuatorsCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_FAILED, "Failed: " + reason);
+}

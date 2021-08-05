@@ -21,24 +21,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef REPORTDCASTATUSBUSLIST_H_
-#define REPORTDCASTATUSBUSLIST_H_
+#ifndef DISABLEFORCEACTUATORCOMMAND_H_
+#define DISABLEFORCEACTUATORCOMMAND_H_
 
-#include <BusList.h>
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ReportDCAStatusBusList : public BusList {
+/**
+ * Disable single force actuator for use in static support.
+ */
+class DisableForceActuatorCommand : public Command {
 public:
-    ReportDCAStatusBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+    DisableForceActuatorCommand(int32_t commandID, MTM1M3_command_disableForceActuatorC* data);
 
-    void buildBuffer() override;
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+
+    int32_t actuatorId;
+    int32_t actuatorIndex;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* REPORTDCASTATUSBUSLIST_H_ */
+#endif /* DISABLEFORCEACTUATORCOMMAND_H_*/

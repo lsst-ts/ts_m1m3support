@@ -21,31 +21,54 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANGEILCMODEBUSLIST_H_
-#define CHANGEILCMODEBUSLIST_H_
+#ifndef LSST_ENABLEDFORCEACTUATORS_H
+#define LSST_ENABLEDFORCEACTUATORS_H
 
-#include <BusList.h>
+#include <SAL_MTM1M3.h>
+
 #include <ILCDataTypes.h>
 #include <ModbusBuffer.h>
+
+#include <string.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ChangeILCModeBusList : public BusList {
+/**
+ * Wrapper object for MTM1M3_logevent_enabledForceActuatorsC. Keeps track of
+ * changes to parsed data, and sends updates only if data changed. Variables
+ * inherited from MTM1M3_logevent_enabledForceActuatorsC in first pass
+ * of various parse* methods.
+ */
+class EnabledForceActuators : public MTM1M3_logevent_enabledForceActuatorsC {
 public:
-    ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode,
-                         ILCModes::Type hmMode);
+    /**
+     * Construct new EnabledForceActuators, sets all enabled.
+     */
+    EnabledForceActuators();
 
-    void buildBuffer() override;
+    /**
+     * Sets logEvent timestamp.
+     *
+     * @param globalTimestamp actual timestamp
+     */
+    void setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
+
+    void setEnabled(int32_t dataIndex, bool enabled);
+    void setEnabledAll();
+
+    /**
+     * Sends updates through SAL/DDS.
+     */
+    void log();
 
 private:
-    ILCModes::Type _mode;
-    ILCModes::Type _hmMode;
+    bool _shouldSend;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* CHANGEILCMODEBUSLIST_H_ */
+#endif  // LSST_ENABLEDFORCEACTUATORS_H

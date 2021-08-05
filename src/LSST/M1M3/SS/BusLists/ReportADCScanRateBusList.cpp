@@ -26,14 +26,18 @@
 #include <ILCMessageFactory.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ReportADCScanRateBusList::ReportADCScanRateBusList(ILCSubnetData* subnetData,
                                                    ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportADCScanRateBusList: ReportADCScanRateBusList()");
+}
+
+void ReportADCScanRateBusList::buildBuffer() {
+    BusList::buildBuffer();
+    SPDLOG_DEBUG("ReportADCScanRateBusList: buildBuffer()");
+
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
@@ -58,7 +62,3 @@ ReportADCScanRateBusList::ReportADCScanRateBusList(ILCSubnetData* subnetData,
     }
     this->buffer.setLength(this->buffer.getIndex());
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
