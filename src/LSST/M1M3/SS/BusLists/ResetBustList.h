@@ -33,6 +33,8 @@ namespace SS {
 class ResetBustList : public BusList {
 public:
     ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+
+    void buildBuffer() override;
 };
 
 } /* namespace SS */

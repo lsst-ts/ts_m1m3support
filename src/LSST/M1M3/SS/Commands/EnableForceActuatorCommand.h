@@ -21,23 +21,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <IBusList.h>
+#ifndef ENABLEFORCEACTUATORCOMMAND_H_
+#define ENABLEFORCEACTUATORCOMMAND_H_
+
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-IBusList::~IBusList() {}
+/**
+ * Enable single force actuator for use in static support.
+ */
+class EnableForceActuatorCommand : public Command {
+public:
+    EnableForceActuatorCommand(int32_t commandID, MTM1M3_command_enableForceActuatorC* data);
 
-int32_t IBusList::getLength() { return 0; }
-uint16_t* IBusList::getBuffer() { return 0; }
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 
-int32_t* IBusList::getExpectedHPResponses() { return 0; }
-int32_t* IBusList::getExpectedFAResponses() { return 0; }
-int32_t* IBusList::getExpectedHMResponses() { return 0; }
-
-void IBusList::update() {}
+    int32_t actuatorId;
+    int32_t actuatorIndex;
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif /* ENABLEFORCEACTUATORCOMMAND_H_ */

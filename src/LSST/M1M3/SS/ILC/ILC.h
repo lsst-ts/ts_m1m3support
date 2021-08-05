@@ -46,7 +46,6 @@
 #include <ILCResponseParser.h>
 #include <SAL_MTM1M3C.h>
 #include <FirmwareUpdate.h>
-#include <IBusList.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -61,7 +60,10 @@ namespace M1M3 {
 namespace SS {
 
 /*!
- * The ILC class used to communicate with the M1M3's 5 subnets.
+ * The ILC class used to communicate with the M1M3's 5 subnets. Uses BusList
+ * subclasses to send queries to FPGA.
+ *
+ * @see BusList
  */
 class ILC {
 public:
@@ -73,6 +75,11 @@ public:
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
         SafetyController* safetyController);
     virtual ~ILC();
+
+    /**
+     * (Re)-build all bus lists.
+     */
+    void buildBusLists();
 
     void programILC(int32_t actuatorId, std::string filePath);
     void modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data);
@@ -95,6 +102,11 @@ public:
     void writeFreezeSensorListBuffer();
     void writeRaisedListBuffer();
     void writeActiveListBuffer();
+
+    /**
+     * Called in enabled state. Calls once writeRaisedListBuffer and twice (to
+     * get more data) writeActiveListBuffer.
+     */
     void writeControlListBuffer();
 
     void triggerModbus();
@@ -122,6 +134,10 @@ public:
     void publishHardpointMonitorInfo();
     void publishHardpointMonitorStatus();
     void publishHardpointMonitorData();
+
+    void disableFA(uint32_t actuatorId);
+    void enableFA(uint32_t actuatorId);
+    void enableAllFA();
 
 private:
     SafetyController* _safetyController;
@@ -168,7 +184,7 @@ private:
     uint8_t _subnetToRxAddress(uint8_t subnet);
     uint8_t _subnetToTxAddress(uint8_t subnet);
 
-    void _writeBusList(IBusList* busList);
+    void _writeBusList(BusList* busList);
 
     void _updateHPSteps();
 };

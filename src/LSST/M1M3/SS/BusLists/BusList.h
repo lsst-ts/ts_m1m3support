@@ -24,7 +24,6 @@
 #ifndef BUSLIST_H_
 #define BUSLIST_H_
 
-#include <IBusList.h>
 #include <ModbusBuffer.h>
 #include <ILCDataTypes.h>
 
@@ -35,19 +34,37 @@ namespace SS {
 class ILCMessageFactory;
 class ILCSubnetData;
 
-class BusList : public IBusList {
-protected:
-    ILCSubnetData* subnetData;
-    ILCMessageFactory* ilcMessageFactory;
-
-    ModbusBuffer buffer;
-    int32_t expectedHPResponses[HP_COUNT];
-    int32_t expectedFAResponses[FA_COUNT];
-    int32_t expectedHMResponses[HP_COUNT];
-    int32_t subnetStartIndex;
-
+/**
+ * Abstract class. Holds list of ILCs on the bus. Allows CSC to query ILCs of
+ * their status, command what is needed etc. This is achieved by storing
+ * (caching) ModbusBuffer with required bytes, which is updated in update call
+ * with new force demands etc.
+ *
+ * Buses 1-4 holds only Force Actuator (FA) ILCs. Bus 5 is reserved for
+ * Hardpoint Actuator (HP).
+ *
+ * The major challenge in commanding ILCs on the buses is to keep messages
+ * short and this system as fast as possible. Not all ILCs can be queried in a
+ * single loop for all data.
+ *
+ * To speed up query build-up, FPGA transmitt buffer is prepared in buildBuffer
+ * methed. It is then updated at specified parts in update method.
+ *
+ * Only required data are quieried in every loop. Other queries (e.g.
+ * ServerState,..) are distributed, and only ILC subset is updated on every
+ * loop. The subset moves in round-robin fashion.
+ */
+class BusList {
 public:
     BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+
+    /**
+     * (Re)-build message send to FPGA. Should be called when external
+     * conditions changes - e.g. when an ILC is disabled.
+     *
+     * @note called from ILC::buildBusLists()
+     */
+    virtual void buildBuffer();
 
     int32_t getLength() { return this->buffer.getLength(); }
     uint16_t* getBuffer() { return this->buffer.getBuffer(); }
@@ -56,8 +73,38 @@ public:
     int32_t* getExpectedFAResponses() { return this->expectedFAResponses; }
     int32_t* getExpectedHMResponses() { return this->expectedHMResponses; }
 
+    /**
+     * Called when update to buffer is required. Shall write new values to ILC
+     * commands etc.
+     */
+    virtual void update() {}
+
 protected:
+    /**
+     * Status of messages on a subnet.
+     */
+    ILCSubnetData* subnetData;
+    ILCMessageFactory* ilcMessageFactory;
+
+    /**
+     * Buffer holding data send to FPGA Command FIFO.
+     */
+    ModbusBuffer buffer;
+
+    // number of expected responses
+    int32_t expectedHPResponses[HP_COUNT];
+    int32_t expectedFAResponses[FA_COUNT];
+    int32_t expectedHMResponses[HP_COUNT];
+    int32_t subnetStartIndex;
+
+    /**
+     * Writes command to start a subnet message on the bus. Length is filled in endSubnet() method.
+     */
     void startSubnet(uint8_t subnet);
+
+    /**
+     * Ends subnet. Writes IRQ trigger and sets buffer length.
+     */
     void endSubnet();
 };
 

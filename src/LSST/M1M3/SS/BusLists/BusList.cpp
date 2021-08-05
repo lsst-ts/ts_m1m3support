@@ -24,18 +24,22 @@
 #include <BusList.h>
 #include <FPGAAddresses.h>
 #include <cstring>
+#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 BusList::BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory) {
     this->subnetData = subnetData;
     this->ilcMessageFactory = ilcMessageFactory;
-    memset(this->expectedHPResponses, 0, sizeof(this->expectedHPResponses));
-    memset(this->expectedFAResponses, 0, sizeof(this->expectedFAResponses));
-    memset(this->expectedHMResponses, 0, sizeof(this->expectedHMResponses));
-    this->subnetStartIndex = 0;
+}
+
+void BusList::buildBuffer() {
+    SPDLOG_DEBUG("BusList: buildBuffer()");
+    memset(expectedHPResponses, 0, sizeof(expectedHPResponses));
+    memset(expectedFAResponses, 0, sizeof(expectedFAResponses));
+    memset(expectedHMResponses, 0, sizeof(expectedHMResponses));
+    subnetStartIndex = 0;
+    buffer.reset();
 }
 
 void BusList::startSubnet(uint8_t subnet) {
@@ -69,7 +73,3 @@ void BusList::endSubnet() {
     this->buffer.writeTriggerIRQ();
     this->buffer.set(this->subnetStartIndex, this->buffer.getIndex() - this->subnetStartIndex - 1);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

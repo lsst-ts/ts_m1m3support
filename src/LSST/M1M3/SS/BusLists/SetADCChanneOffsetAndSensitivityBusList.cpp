@@ -27,14 +27,18 @@
 #include <SAL_MTM1M3C.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(
         ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("SetADCChanneOffsetAndSensitivityBusList: SetADCChanneOffsetAndSensitivityBusList()");
+}
+
+void SetADCChanneOffsetAndSensitivityBusList::buildBuffer() {
+    BusList::buildBuffer();
+    SPDLOG_DEBUG("SetADCChanneOffsetAndSensitivityBusList: buildBuffer()");
+
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; ++subnetIndex) {
         startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < subnetData->getFACount(subnetIndex); ++faIndex) {
@@ -60,7 +64,3 @@ SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList
     }
     buffer.setLength(buffer.getIndex());
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

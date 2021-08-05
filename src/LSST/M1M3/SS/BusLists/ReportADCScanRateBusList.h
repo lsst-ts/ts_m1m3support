@@ -33,6 +33,8 @@ namespace SS {
 class ReportADCScanRateBusList : public BusList {
 public:
     ReportADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+
+    void buildBuffer() override;
 };
 
 } /* namespace SS */

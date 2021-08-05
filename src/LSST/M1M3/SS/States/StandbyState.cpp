@@ -107,6 +107,7 @@ States::Type StandbyState::start(StartCommand* command) {
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     digitalInputOutput->tryToggleHeartbeat();
+    M1M3SSPublisher::getEnabledForceActuators()->log();
     M1M3SSPublisher::get().tryLogForceActuatorState();
     std::this_thread::sleep_for(20ms);
     ilc->verifyResponses();
