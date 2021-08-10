@@ -610,8 +610,10 @@ bool ForceController::_checkMirrorMoments() {
 bool ForceController::_checkNearNeighbors() {
     SPDLOG_TRACE("ForceController: checkNearNeighbors()");
     float nominalZ = _mirrorWeight / (float)FA_COUNT;
+    float nominalZWarning = nominalZ * _forceActuatorSettings->SetpointNearNeighborLimitPercentage;
     bool warningChanged = false;
     _forceSetpointWarning->anyNearNeighborWarning = false;
+    std::string failed;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         float nearZ = 0;
         int nearNeighbors = _neighbors[zIndex].NearZIDs.size();
@@ -624,14 +626,20 @@ bool ForceController::_checkNearNeighbors() {
         nearZ /= nearNeighbors;
         float deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
 
+        if (deltaZ > nominalZWarning) {
+            _forceSetpointWarning->nearNeighborWarning[zIndex] = true;
+            failed += std::to_string(_forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex)) + ":" +
+                      std::to_string(deltaZ) + " ";
+        } else {
+            _forceSetpointWarning->nearNeighborWarning[zIndex] = false;
+        }
+
         bool previousWarning = _forceSetpointWarning->nearNeighborWarning[zIndex];
-        _forceSetpointWarning->nearNeighborWarning[zIndex] =
-                deltaZ > (nominalZ * _forceActuatorSettings->SetpointNearNeighborLimitPercentage);
-        _forceSetpointWarning->anyNearNeighborWarning = _forceSetpointWarning->anyNearNeighborWarning ||
-                                                        _forceSetpointWarning->nearNeighborWarning[zIndex];
+        _forceSetpointWarning->anyNearNeighborWarning |= _forceSetpointWarning->nearNeighborWarning[zIndex];
         warningChanged |= (_forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning);
     }
-    _safetyController->forceControllerNotifyNearNeighborCheck(_forceSetpointWarning->anyNearNeighborWarning);
+    _safetyController->forceControllerNotifyNearNeighborCheck(_forceSetpointWarning->anyNearNeighborWarning,
+                                                              failed, nominalZ, nominalZWarning);
     return warningChanged;
 }
 
