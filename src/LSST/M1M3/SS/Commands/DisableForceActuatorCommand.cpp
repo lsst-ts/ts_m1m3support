@@ -42,7 +42,10 @@ bool DisableForceActuatorCommand::validate() {
         M1M3SSPublisher::get().logCommandRejectionWarning("DisableForceActuator", "Invalid actuatorId.");
         return false;
     }
-    return true;
+    // neighbor check
+    SettingReader::get()
+
+            return true;
 }
 
 void DisableForceActuatorCommand::execute() { Context::get().disableForceActuator(this); }

@@ -105,22 +105,26 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
         _zero[i] = 0;
         ForceActuatorNeighbors neighbors;
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
-            int32_t id = _forceActuatorSettings->Neighbors[i].NearZIDs[j];
-            for (unsigned int k = 0; k < FA_COUNT; ++k) {
-                if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
-                    neighbors.NearZIDs.push_back(k);
-                    break;
-                }
+            int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
+                    _forceActuatorSettings->Neighbors[i].NearZIDs[j]);
+            if (index < 0) {
+                SPDLOG_CRITICAL("Invalid near neighbor ID: {} FA index {} ID {}",
+                                _forceActuatorSettings->Neighbors[i].NearZIDs[j], i,
+                                _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+                exit(EXIT_FAILURE);
             }
+            neighbors.NearZIDs.push_back(index);
         }
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
-            int32_t id = _forceActuatorSettings->Neighbors[i].FarIDs[j];
-            for (unsigned int k = 0; k < FA_COUNT; ++k) {
-                if (_forceActuatorApplicationSettings->Table[k].ActuatorID == id) {
-                    neighbors.FarIDs.push_back(k);
-                    break;
-                }
+            int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
+                    _forceActuatorSettings->Neighbors[i].FarIDs[j]);
+            if (index < 0) {
+                SPDLOG_CRITICAL("Invalid far neighbor ID: {} FA index {} ID {}",
+                                _forceActuatorSettings->Neighbors[i].FarIDs[j], i,
+                                _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+                exit(EXIT_FAILURE);
             }
+            neighbors.FarIDs.push_back(index);
         }
         _neighbors.push_back(neighbors);
     }
