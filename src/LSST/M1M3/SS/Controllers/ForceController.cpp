@@ -40,9 +40,7 @@
 #include <iostream>
 using namespace std;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                  ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
@@ -103,7 +101,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     for (int i = 0; i < FA_COUNT; i++) {
         _mirrorWeight += df.ZForces[i];
         _zero[i] = 0;
-        ForceActuatorNeighbors neighbors;
+        ForceActuatorIndicesNeighbors neighbors;
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].NearZIDs.size(); ++j) {
             int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
                     _forceActuatorSettings->Neighbors[i].NearZIDs[j]);
@@ -113,7 +111,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
                                 _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
                 exit(EXIT_FAILURE);
             }
-            neighbors.NearZIDs.push_back(index);
+            neighbors.NearZIndices.push_back(index);
         }
         for (unsigned int j = 0; j < _forceActuatorSettings->Neighbors[i].FarIDs.size(); ++j) {
             int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
@@ -124,7 +122,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
                                 _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
                 exit(EXIT_FAILURE);
             }
-            neighbors.FarIDs.push_back(index);
+            neighbors.FarIndices.push_back(index);
         }
         _neighbors.push_back(neighbors);
     }
@@ -620,9 +618,9 @@ bool ForceController::_checkNearNeighbors() {
     std::string failed;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         float nearZ = 0;
-        int nearNeighbors = _neighbors[zIndex].NearZIDs.size();
+        int nearNeighbors = _neighbors[zIndex].NearZIndices.size();
         for (int j = 0; j < nearNeighbors; ++j) {
-            int neighborZIndex = _neighbors[zIndex].NearZIDs[j];
+            int neighborZIndex = _neighbors[zIndex].NearZIndices[j];
 
             nearZ += _appliedForces->zForces[neighborZIndex];
         }
@@ -699,9 +697,9 @@ bool ForceController::_checkFarNeighbors() {
         }
 
         z = _appliedForces->zForces[zIndex];
-        int farNeighbors = _neighbors[zIndex].FarIDs.size();
+        int farNeighbors = _neighbors[zIndex].FarIndices.size();
         for (int j = 0; j < farNeighbors; ++j) {
-            int neighborZIndex = _neighbors[zIndex].FarIDs[j];
+            int neighborZIndex = _neighbors[zIndex].FarIndices[j];
             int neighborXIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[neighborZIndex];
             int neighborYIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[neighborZIndex];
 
@@ -726,7 +724,3 @@ bool ForceController::_checkFarNeighbors() {
     _safetyController->forceControllerNotifyFarNeighborCheck(_forceSetpointWarning->anyFarNeighborWarning);
     return warningChanged;
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
