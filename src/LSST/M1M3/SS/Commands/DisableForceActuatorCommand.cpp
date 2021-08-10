@@ -46,13 +46,12 @@ bool DisableForceActuatorCommand::validate() {
     }
 
     // neighbor check
-    for (auto farID : SettingReader::get().getForceActuatorSettings()->Neighbors[actuatorIndex].FarIDs) {
-        if (Model::get().getILC()->isDisabled(farID)) {
-            M1M3SSPublisher::get().commandFailed(
-                    "DisableForceActuatorCommand",
-                    "Actuator ID {} is far neighbor of already disabled FA ID {}", actuatorId, farID);
-            return false;
-        }
+    uint32_t farID = Model::get().getILC()->hasDisabledFarNeighbor(actuatorIndex);
+    if (farID > 0) {
+        M1M3SSPublisher::get().commandFailed("DisableForceActuatorCommand",
+                                             "Actuator ID {} is far neighbor of already disabled FA ID {}",
+                                             actuatorId, farID);
+        return false;
     }
 
     return true;

@@ -487,6 +487,15 @@ void ILC::enableAllFA() {
     buildBusLists();
 }
 
+uint32_t ILC::hasDisabledFarNeighbor(uint32_t actuatorIndex) {
+    for (auto farID : _forceActuatorSettings->Neighbors[actuatorIndex].FarIDs) {
+        if (isDisabled(farID)) {
+            return farID;
+        }
+    }
+    return 0;
+}
+
 uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:

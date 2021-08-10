@@ -122,6 +122,11 @@ ILCMap ILCSubnetData::getMap(int32_t actuatorId) {
 }
 
 void ILCSubnetData::disableFA(int32_t actuatorId) {
+    if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
+        SPDLOG_CRITICAL("Race condition? Disabling actuator with far neighbor disabled");
+        return;
+    }
+
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
         Container* container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
