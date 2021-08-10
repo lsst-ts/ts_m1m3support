@@ -72,7 +72,7 @@ void FinalForceComponent::applyForcesByComponents() {
 
     for (int i = 0; i < FA_COUNT; ++i) {
         if (i < 12) {
-            int zIndex = _forceActuatorApplicationSettings->XIndexToZXIndex[i];
+            int zIndex = _forceActuatorApplicationSettings->XIndexToZIndex[i];
 
             if (_enabledForceActuators->forceActuatorEnabled[zIndex] == true) {
                 xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
@@ -85,7 +85,7 @@ void FinalForceComponent::applyForcesByComponents() {
         }
 
         if (i < 100) {
-            int zIndex = _forceActuatorApplicationSettings->YIndexToZXIndex[i];
+            int zIndex = _forceActuatorApplicationSettings->YIndexToZIndex[i];
 
             if (_enabledForceActuators->forceActuatorEnabled[zIndex] == true) {
                 yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +

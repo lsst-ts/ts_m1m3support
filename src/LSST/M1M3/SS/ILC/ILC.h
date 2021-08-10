@@ -139,6 +139,8 @@ public:
     void enableFA(uint32_t actuatorId);
     void enableAllFA();
 
+    bool isDisabled(uint32_t actuatorId) { return _subnetData.getMap(actuatorId).Disabled; }
+
 private:
     SafetyController* _safetyController;
     ILCSubnetData _subnetData;

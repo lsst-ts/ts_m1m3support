@@ -24,6 +24,7 @@
 #include <Context.h>
 #include <DisableForceActuatorCommand.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
@@ -39,13 +40,22 @@ bool DisableForceActuatorCommand::validate() {
     actuatorIndex =
             SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
     if (actuatorIndex < 0) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("DisableForceActuator", "Invalid actuatorId.");
+        M1M3SSPublisher::get().commandFailed("DisableForceActuator", "Invalid actuatorId for FA ID {}",
+                                             actuatorId);
         return false;
     }
-    // neighbor check
-    SettingReader::get()
 
-            return true;
+    // neighbor check
+    for (auto farID : SettingReader::get().getForceActuatorSettings()->Neighbors[actuatorIndex].FarIDs) {
+        if (Model::get().getILC()->isDisabled(farID)) {
+            M1M3SSPublisher::get().commandFailed(
+                    "DisableForceActuatorCommand",
+                    "Actuator ID {} is far neighbor of already disabled FA ID {}", actuatorId, farID);
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void DisableForceActuatorCommand::execute() { Context::get().disableForceActuator(this); }

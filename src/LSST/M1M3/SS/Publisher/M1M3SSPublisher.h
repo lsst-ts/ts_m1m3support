@@ -33,6 +33,7 @@
 #include <ForceActuatorWarning.h>
 
 #include <memory>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -279,9 +280,13 @@ public:
     void logCellLightWarning();
     void tryLogCellLightWarning();
     void logCommandRejectionWarning();
-    void tryLogCommandRejectionWarning();
     void logCommandRejectionWarning(std::string command, std::string reason);
-    void tryLogCommandRejectionWarning(std::string command, std::string reason);
+    template <typename... Args>
+    void commandFailed(std::string command, std::string const& format, Args const&... args) {
+        std::string reason = fmt::format(format, args...);
+        logCommandRejectionWarning(command, reason);
+        throw std::runtime_error(reason);
+    }
     void logDetailedState();
     void tryLogDetailedState();
     void logDisplacementSensorWarning();
