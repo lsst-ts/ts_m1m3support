@@ -473,6 +473,10 @@ void ILC::publishHardpointMonitorStatus() {
 void ILC::publishHardpointMonitorData() { M1M3SSPublisher::get().putHardpointMonitorData(); }
 
 void ILC::disableFA(uint32_t actuatorId) {
+    if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
+        SPDLOG_CRITICAL("Race condition? Disabling actuator with far neighbor disabled");
+        return;
+    }
     _subnetData.disableFA(actuatorId);
     buildBusLists();
 }

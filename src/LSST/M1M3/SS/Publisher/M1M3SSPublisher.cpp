@@ -516,11 +516,6 @@ void M1M3SSPublisher::logCommandRejectionWarning(std::string command, std::strin
     this->logCommandRejectionWarning();
 }
 
-void M1M3SSPublisher::commandFailed(std::string command, std::string reason) {
-    logCommandRejectionWarning(command, reason);
-    throw std::runtime_error(reason);
-}
-
 void M1M3SSPublisher::logDetailedState() {
     _m1m3SAL->logEvent_detailedState(&_eventDetailedState, 0);
     _previousEventDetailedState = _eventDetailedState;

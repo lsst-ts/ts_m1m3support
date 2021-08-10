@@ -35,7 +35,8 @@ namespace SS {
 ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                              ForceActuatorSettings* forceActuatorSettings,
                              HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-                             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
+                             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
+        : _forceActuatorApplicationSettings(forceActuatorApplicationSettings) {
     SPDLOG_DEBUG("ILCSubnetData::ILCSubnetData()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->subnetData[subnetIndex].FACount = 0;
@@ -43,7 +44,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
         this->subnetData[subnetIndex].HMCount = 0;
     }
     for (int i = 0; i < FA_COUNT; i++) {
-        ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
+        ForceActuatorTableRow row = _forceActuatorApplicationSettings->Table[i];
         int32_t subnetIndex = row.Subnet - 1;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::FA;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
@@ -51,11 +52,11 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = i;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].XDataIndex =
-                forceActuatorApplicationSettings->ZIndexToXIndex[i];
+                _forceActuatorApplicationSettings->ZIndexToXIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].YDataIndex =
-                forceActuatorApplicationSettings->ZIndexToYIndex[i];
+                _forceActuatorApplicationSettings->ZIndexToYIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].SecondaryDataIndex =
-                forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
+                _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled =
                 forceActuatorSettings->IsActuatorDisabled(row.ActuatorID);
         ILCMap map = this->subnetData[subnetIndex].ILCDataFromAddress[row.Address];
@@ -122,11 +123,6 @@ ILCMap ILCSubnetData::getMap(int32_t actuatorId) {
 }
 
 void ILCSubnetData::disableFA(int32_t actuatorId) {
-    if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
-        SPDLOG_CRITICAL("Race condition? Disabling actuator with far neighbor disabled");
-        return;
-    }
-
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
         Container* container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
