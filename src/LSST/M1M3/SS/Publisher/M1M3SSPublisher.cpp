@@ -509,25 +509,11 @@ void M1M3SSPublisher::logCommandRejectionWarning() {
     _previousEventCommandRejectionWarning = _eventCommandRejectionWarning;
 }
 
-void M1M3SSPublisher::tryLogCommandRejectionWarning() {
-    if (_eventCommandRejectionWarning.command.compare(_previousEventCommandRejectionWarning.command) != 0 ||
-        _eventCommandRejectionWarning.reason.compare(_previousEventCommandRejectionWarning.reason) != 0) {
-        this->logCommandRejectionWarning();
-    }
-}
-
 void M1M3SSPublisher::logCommandRejectionWarning(std::string command, std::string reason) {
     _eventCommandRejectionWarning.timestamp = this->getTimestamp();
     _eventCommandRejectionWarning.command = command;
     _eventCommandRejectionWarning.reason = reason;
     this->logCommandRejectionWarning();
-}
-
-void M1M3SSPublisher::tryLogCommandRejectionWarning(std::string command, std::string reason) {
-    _eventCommandRejectionWarning.timestamp = this->getTimestamp();
-    _eventCommandRejectionWarning.command = command;
-    _eventCommandRejectionWarning.reason = reason;
-    this->tryLogCommandRejectionWarning();
 }
 
 void M1M3SSPublisher::logDetailedState() {

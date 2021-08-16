@@ -101,10 +101,15 @@ void SubscriberThread::stop() { _keepRunning = false; }
 
 void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
     if (command) {
-        if (command->validate()) {
-            ControllerThread::get().enqueue(command);
-        } else {
-            command->ackFailed("Validation");
+        try {
+            if (command->validate()) {
+                ControllerThread::get().enqueue(command);
+            } else {
+                command->ackFailed("Validation");
+                delete command;
+            }
+        } catch (std::exception& ex) {
+            command->ackFailed(ex.what());
             delete command;
         }
     }

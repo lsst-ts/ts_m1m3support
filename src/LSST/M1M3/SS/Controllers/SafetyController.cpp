@@ -242,10 +242,12 @@ void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag) {
                     _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag,
                     "Force controller Z Moment Limit");
 }
-void SafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag) {
+void SafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed,
+                                                              float nominalZ, float nominalZWarning) {
     _updateOverride(FaultCodes::ForceControllerNearNeighborCheck,
                     _safetyControllerSettings->ForceController.FaultOnNearNeighborCheck, conditionFlag,
-                    "Force controller Near Neighbor Check failed");
+                    "Force controller Near Neighbor Check failed: {} > {} ({})", failed, nominalZWarning,
+                    nominalZ);
 }
 void SafetyController::forceControllerNotifyMagnitudeLimit(bool conditionFlag, float globalForce) {
     _updateOverride(FaultCodes::ForceControllerMagnitudeLimit,

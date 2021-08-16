@@ -135,9 +135,42 @@ public:
     void publishHardpointMonitorStatus();
     void publishHardpointMonitorData();
 
+    /**
+     * Disable given FA.
+     *
+     * @param actuatorId actutor ID (101..443) to disable
+     */
     void disableFA(uint32_t actuatorId);
+
+    /**
+     * Enables given FA.
+     *
+     * @param actuatorId actuator ID (101..443) to enable
+     */
     void enableFA(uint32_t actuatorId);
+
+    /**
+     * Enables all force actuators.
+     */
     void enableAllFA();
+
+    /**
+     * Check if given actuator is disabled.
+     *
+     * @param actuatorId Actuator ID (101..443)
+     *
+     * @return true when given actuator is disabled, false otherwise
+     */
+    bool isDisabled(uint32_t actuatorId) { return _subnetData.getMap(actuatorId).Disabled; }
+
+    /**
+     * Check if any far neighbor of an actuator with given index is disabled.
+     *
+     * @param actuatorIndex actuator index (0-155) of FA to check
+     *
+     * @return disabled actuator ID (101..) or 0 when no disabled actuator was found
+     */
+    uint32_t hasDisabledFarNeighbor(uint32_t actuatorIndex);
 
 private:
     SafetyController* _safetyController;

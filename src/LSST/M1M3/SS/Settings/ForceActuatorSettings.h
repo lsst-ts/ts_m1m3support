@@ -25,7 +25,6 @@
 #define FORCEACTUATORSETTINGS_H_
 
 #include <DataTypes.h>
-#include <ForceActuatorNeighbors.h>
 #include <ForceActuatorLimits.h>
 #include <ForceComponentSettings.h>
 #include <ForceActuatorBumpTestSettings.h>
@@ -36,6 +35,11 @@
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+
+struct ForceActuatorNeighbors {
+    std::vector<int32_t> NearZIDs;
+    std::vector<int32_t> FarIDs;
+};
 
 class ForceActuatorSettings {
 public:

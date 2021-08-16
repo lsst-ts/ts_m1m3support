@@ -41,6 +41,7 @@ FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
                                          ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
     _safetyController = safetyController;
+    _enabledForceActuators = M1M3SSPublisher::get().getEnabledForceActuators();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
@@ -71,24 +72,40 @@ void FinalForceComponent::applyForcesByComponents() {
 
     for (int i = 0; i < FA_COUNT; ++i) {
         if (i < 12) {
-            xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
-                          _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
-                          _appliedOffsetForces->xForces[i] + _appliedStaticForces->xForces[i] +
-                          _appliedThermalForces->xForces[i] + _appliedVelocityForces->xForces[i]);
+            int zIndex = _forceActuatorApplicationSettings->XIndexToZIndex[i];
+
+            if (_enabledForceActuators->forceActuatorEnabled[zIndex] == true) {
+                xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
+                              _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
+                              _appliedOffsetForces->xForces[i] + _appliedStaticForces->xForces[i] +
+                              _appliedThermalForces->xForces[i] + _appliedVelocityForces->xForces[i]);
+            } else {
+                xTarget[i] = 0;
+            }
         }
 
         if (i < 100) {
-            yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +
-                          _appliedBalanceForces->yForces[i] + _appliedElevationForces->yForces[i] +
-                          _appliedOffsetForces->yForces[i] + _appliedStaticForces->yForces[i] +
-                          _appliedThermalForces->yForces[i] + _appliedVelocityForces->yForces[i]);
+            int zIndex = _forceActuatorApplicationSettings->YIndexToZIndex[i];
+
+            if (_enabledForceActuators->forceActuatorEnabled[zIndex] == true) {
+                yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +
+                              _appliedBalanceForces->yForces[i] + _appliedElevationForces->yForces[i] +
+                              _appliedOffsetForces->yForces[i] + _appliedStaticForces->yForces[i] +
+                              _appliedThermalForces->yForces[i] + _appliedVelocityForces->yForces[i]);
+            } else {
+                yTarget[i] = 0;
+            }
         }
 
-        zTarget[i] = (_appliedAberrationForces->zForces[i] + _appliedAccelerationForces->zForces[i] +
-                      _appliedActiveOpticForces->zForces[i] + _appliedAzimuthForces->zForces[i] +
-                      _appliedBalanceForces->zForces[i] + _appliedElevationForces->zForces[i] +
-                      _appliedOffsetForces->zForces[i] + _appliedStaticForces->zForces[i] +
-                      _appliedThermalForces->zForces[i] + _appliedVelocityForces->zForces[i]);
+        if (_enabledForceActuators->forceActuatorEnabled[i] == true) {
+            zTarget[i] = (_appliedAberrationForces->zForces[i] + _appliedAccelerationForces->zForces[i] +
+                          _appliedActiveOpticForces->zForces[i] + _appliedAzimuthForces->zForces[i] +
+                          _appliedBalanceForces->zForces[i] + _appliedElevationForces->zForces[i] +
+                          _appliedOffsetForces->zForces[i] + _appliedStaticForces->zForces[i] +
+                          _appliedThermalForces->zForces[i] + _appliedVelocityForces->zForces[i]);
+        } else {
+            zTarget[i] = 0;
+        }
     }
 }
 
