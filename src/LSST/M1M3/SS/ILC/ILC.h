@@ -138,14 +138,14 @@ public:
     /**
      * Disable given FA.
      *
-     * @param actuatorId actutor ID (101..44x) to disable
+     * @param actuatorId actutor ID (101..443) to disable
      */
     void disableFA(uint32_t actuatorId);
 
     /**
      * Enables given FA.
      *
-     * @param actuatorId actuator ID (101..44x) to enable
+     * @param actuatorId actuator ID (101..443) to enable
      */
     void enableFA(uint32_t actuatorId);
 
@@ -157,7 +157,7 @@ public:
     /**
      * Check if given actuator is disabled.
      *
-     * @param actuatorId Actuator ID (101..44x)
+     * @param actuatorId Actuator ID (101..443)
      *
      * @return true when given actuator is disabled, false otherwise
      */

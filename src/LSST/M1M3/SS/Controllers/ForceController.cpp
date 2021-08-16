@@ -29,6 +29,7 @@
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <SafetyController.h>
+#include <SettingReader.h>
 #include <PIDSettings.h>
 #include <Range.h>
 #include <cmath>
@@ -617,6 +618,12 @@ bool ForceController::_checkNearNeighbors() {
     _forceSetpointWarning->anyNearNeighborWarning = false;
     std::string failed;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
+        // ignore check for disabled FA
+        if (Model::get().getILC()->isDisabled(
+                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(zIndex))) {
+            continue;
+        }
+
         float nearZ = 0;
         int nearNeighbors = _neighbors[zIndex].NearZIndices.size();
         for (int j = 0; j < nearNeighbors; ++j) {
@@ -682,6 +689,12 @@ bool ForceController::_checkFarNeighbors() {
     bool warningChanged = false;
     _forceSetpointWarning->anyFarNeighborWarning = false;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
+        // ignore check for disabled FA
+        if (Model::get().getILC()->isDisabled(
+                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(zIndex))) {
+            continue;
+        }
+
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
 
