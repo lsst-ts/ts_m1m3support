@@ -82,6 +82,9 @@ public:
     void disableFA(int32_t actuatorId);
     void enableFA(int32_t actuatorId);
     void enableAllFA();
+
+private:
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
 };
 
 } /* namespace SS */

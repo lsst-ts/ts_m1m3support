@@ -24,6 +24,7 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_FINALFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_FINALFORCECOMPONENT_H_
 
+#include <EnabledForceActuators.h>
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -64,6 +65,7 @@ protected:
 
 private:
     SafetyController* _safetyController;
+    EnabledForceActuators* _enabledForceActuators;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
     ForceActuatorSettings* _forceActuatorSettings;
 
