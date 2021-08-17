@@ -148,7 +148,7 @@ PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
 
 AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
     SPDLOG_DEBUG("SettingReader: loadAccelerometerSettings()");
-    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.xml").c_str());
+    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.yaml").c_str());
     return &_accelerometerSettings;
 }
 
