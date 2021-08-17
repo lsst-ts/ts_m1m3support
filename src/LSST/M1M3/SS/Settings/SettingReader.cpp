@@ -154,7 +154,7 @@ AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
 
 DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
     SPDLOG_DEBUG("SettingReader: loadDisplacementSensorSettings()");
-    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.xml").c_str());
+    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.yaml").c_str());
     return &_displacementSensorSettings;
 }
 

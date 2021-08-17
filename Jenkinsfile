@@ -41,9 +41,9 @@ node {
     stage('Installing dependencies')
     {
         withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
-              M1M3sim.inside("--entrypoint=''") {
+              M1M3sim.inside("--entrypoint='' -u root") {
                   sh """
-                     source $SALUSER_HOME/.setup_salobj.sh
+                     source $SALUSER_HOME/.setup.sh
                      conda install -y readline yaml-cpp
                   """
               }
@@ -80,9 +80,9 @@ node {
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIX/include make simulator
+                    LIBS_FLAGS=-L/usr/lib64 SAL_CPPFLAGS=-I/usr/include make simulator
 
-                    LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIX/include make junit || true
+                    LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L/usr/lib64 SAL_CPPFLAGS=-I/usr/include make junit || true
                  """
              }
         }

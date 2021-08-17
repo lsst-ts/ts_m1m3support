@@ -35,28 +35,16 @@ namespace SS {
 class DisplacementSensorSettings {
 public:
     std::vector<double> ConverterMatrix;
-    int32_t N1Port;
-    int32_t N2Port;
-    int32_t N3Port;
-    int32_t N4Port;
-    int32_t N5Port;
-    int32_t N6Port;
-    int32_t N7Port;
-    int32_t N8Port;
-    double N1Offset;
-    double N2Offset;
-    double N3Offset;
-    double N4Offset;
-    double N5Offset;
-    double N6Offset;
-    double N7Offset;
-    double N8Offset;
+    std::vector<int32_t> NPorts;
+    std::vector<double> NOffsets;
     double XPositionOffset;
     double YPositionOffset;
     double ZPositionOffset;
     double XRotationOffset;
     double YRotationOffset;
     double ZRotationOffset;
+
+    DisplacementSensorSettings() : NPorts(8), NOffsets(8) {}
 
     void load(const std::string &filename);
 };
