@@ -142,7 +142,7 @@ SafetyControllerSettings* SettingReader::loadSafetyControllerSettings() {
 
 PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
     SPDLOG_DEBUG("SettingReader: loadPositionControllerSettings()");
-    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.xml").c_str());
+    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.yaml").c_str());
     return &_positionControllerSettings;
 }
 
