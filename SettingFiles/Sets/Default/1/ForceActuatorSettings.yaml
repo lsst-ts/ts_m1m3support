@@ -1,4 +1,4 @@
-DisabledActuators:
+DisabledActuators: []
 AccelerationXTablePath: Tables/AccelerationXTable.csv
 AccelerationYTablePath: Tables/AccelerationYTable.csv
 AccelerationZTablePath: Tables/AccelerationZTable.csv

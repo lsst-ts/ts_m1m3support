@@ -42,7 +42,6 @@ void AccelerometerSettings::load(const std::string &filename) {
             AccelerometerScalars[i] = accNode["Scalar"].as<float>();
         }
     } catch (YAML::Exception &ex) {
-        SPDLOG_CRITICAL("YAML Loading {}: {}", filename, ex.what());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 }

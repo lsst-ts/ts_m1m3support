@@ -164,7 +164,6 @@ public:
     bool IsActuatorDisabled(int32_t actId);
 
 private:
-    void _loadDisabledActuators(const std::string line);
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
 };

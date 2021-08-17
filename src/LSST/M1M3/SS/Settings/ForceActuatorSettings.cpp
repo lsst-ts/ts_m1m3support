@@ -32,7 +32,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        _loadDisabledActuators(doc["DisabledActuators"].as<std::string>());
+        DisabledActuators = doc["DisabledActuators"].as<std::vector<int32_t>>();
         TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
         TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
         TableLoader::loadTable(1, 1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
@@ -184,10 +184,8 @@ void ForceActuatorSettings::load(const std::string &filename) {
 
         BumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
         BumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
-
     } catch (YAML::Exception &ex) {
-        SPDLOG_CRITICAL("YAML Loading {}: {}", filename, ex.what());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 }
 
@@ -200,21 +198,8 @@ bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
     return false;
 }
 
-void ForceActuatorSettings::_loadDisabledActuators(const std::string line) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-    tokenizer tok(line);
-    tokenizer::iterator i = tok.begin();
-    DisabledActuators.clear();
-    while (i != tok.end()) {
-        DisabledActuators.push_back(boost::lexical_cast<int32_t>(*i));
-        SPDLOG_WARN("ForceActuatorSettings: Disabled Actuator {:d}",
-                    DisabledActuators[DisabledActuators.size() - 1]);
-        ++i;
-    }
-}
-
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
+    typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
     std::string fullname = SettingReader::get().getFilePath(filename);
     std::ifstream inputStream(fullname.c_str());
     if (!inputStream.is_open()) {
@@ -247,7 +232,7 @@ void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename)
 }
 
 void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
+    typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
     std::string fullname = SettingReader::get().getFilePath(filename);
     std::ifstream inputStream(fullname.c_str());
     if (!inputStream.is_open()) {
