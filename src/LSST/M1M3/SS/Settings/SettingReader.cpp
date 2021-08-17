@@ -30,9 +30,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 SettingReader& SettingReader::get() {
     static SettingReader instance;
@@ -181,7 +179,7 @@ ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSet
 
 PIDSettings* SettingReader::loadPIDSettings() {
     SPDLOG_DEBUG("SettingReader: loadPIDSettings()");
-    _pidSettings.load(_getSetPath("PIDSettings.xml"));
+    _pidSettings.load(_getSetPath("PIDSettings.yaml"));
     return &_pidSettings;
 }
 
@@ -196,7 +194,3 @@ std::string SettingReader::_getBasePath(std::string file) { return _rootPath + "
 std::string SettingReader::_getSetPath(std::string file) {
     return _rootPath + "/Sets/" + _currentSet + "/" + _currentVersion + "/" + file;
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

@@ -38,6 +38,15 @@ node {
         M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), (params.noCache ? "--no-cache " : " ") + "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
     }
 
+    stage('Installing dependencies')
+    {
+        M1M3sim.inside("--entrypoint=''") {a
+            sh """
+                conda install -y readline yaml-cpp
+            """
+        }
+    }
+
     stage('Cloning sources')
     {
         dir("ts_cRIOcpp") {
@@ -68,9 +77,9 @@ node {
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    make simulator
+                    LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIX/include make simulator
 
-                    LSST_DDS_PARTITION_PREFIX=test make junit || true
+                    LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIX/include make junit || true
                  """
              }
         }
