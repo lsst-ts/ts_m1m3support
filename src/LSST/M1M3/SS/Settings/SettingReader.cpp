@@ -105,7 +105,7 @@ AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
 
 ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadForceActuatorSettings()");
-    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.yaml").c_str());
+    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.yaml"));
     return &_forceActuatorSettings;
 }
 
@@ -118,7 +118,7 @@ HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplic
 
 HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointActuatorSettings()");
-    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.yaml").c_str());
+    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.yaml"));
     return &_hardpointActuatorSettings;
 }
 
@@ -136,38 +136,37 @@ RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSetting
 
 SafetyControllerSettings* SettingReader::loadSafetyControllerSettings() {
     SPDLOG_DEBUG("SettingReader: loadSafetyControllerSettings()");
-    _safetyControllerSettings.load(_getSetPath("SafetyControllerSettings.xml").c_str());
+    _safetyControllerSettings.load(_getSetPath("SafetyControllerSettings.yaml"));
     return &_safetyControllerSettings;
 }
 
 PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
     SPDLOG_DEBUG("SettingReader: loadPositionControllerSettings()");
-    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.yaml").c_str());
+    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.yaml"));
     return &_positionControllerSettings;
 }
 
 AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
     SPDLOG_DEBUG("SettingReader: loadAccelerometerSettings()");
-    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.yaml").c_str());
+    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.yaml"));
     return &_accelerometerSettings;
 }
 
 DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
     SPDLOG_DEBUG("SettingReader: loadDisplacementSensorSettings()");
-    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.yaml").c_str());
+    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.yaml"));
     return &_displacementSensorSettings;
 }
 
 HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointMonitorApplicationSettings()");
-    _hardpointMonitorApplicationSettings.load(
-            _getBasePath("HardpointMonitorApplicationSettings.xml").c_str());
+    _hardpointMonitorApplicationSettings.load(_getBasePath("HardpointMonitorApplicationSettings.xml"));
     return &_hardpointMonitorApplicationSettings;
 }
 
 GyroSettings* SettingReader::loadGyroSettings() {
     SPDLOG_DEBUG("SettingReader: loadGyroSettings()");
-    _gyroSettings.load(_getSetPath("GyroSettings.yaml").c_str());
+    _gyroSettings.load(_getSetPath("GyroSettings.yaml"));
     return &_gyroSettings;
 }
 
