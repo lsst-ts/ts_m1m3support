@@ -105,7 +105,7 @@ AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
 
 ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadForceActuatorSettings()");
-    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.xml").c_str());
+    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.yaml").c_str());
     return &_forceActuatorSettings;
 }
 

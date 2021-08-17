@@ -80,9 +80,9 @@ node {
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    LIBS_FLAGS=-L/usr/lib64 SAL_CPPFLAGS=-I/usr/include make simulator
+                    make LIBS_FLAGS="-L\$CONDA_PREFIX/lib -L\$OSPL_HOME/lib -L\$LSST_SDK_INSTALL/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" simulator
 
-                    LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L/usr/lib64 SAL_CPPFLAGS=-I/usr/include make junit || true
+                    LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIXinclude make junit || true
                  """
              }
         }

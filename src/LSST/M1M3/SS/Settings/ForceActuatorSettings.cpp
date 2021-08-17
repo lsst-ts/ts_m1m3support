@@ -22,391 +22,173 @@
  */
 
 #include <ForceActuatorSettings.h>
-#include <XMLDocLoad.h>
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-#include <fstream>
+#include <yaml-cpp/yaml.h>
 #include <TableLoader.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void ForceActuatorSettings::load(const std::string &filename) {
-    pugi::xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    _loadDisabledActuators(doc.select_node("//ForceActuatorSettings/DisabledActuators").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &AccelerationXTable,
-            doc.select_node("//ForceActuatorSettings/AccelerationXTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &AccelerationYTable,
-            doc.select_node("//ForceActuatorSettings/AccelerationYTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &AccelerationZTable,
-            doc.select_node("//ForceActuatorSettings/AccelerationZTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 6, &AzimuthXTable,
-                           doc.select_node("//ForceActuatorSettings/AzimuthXTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 6, &AzimuthYTable,
-                           doc.select_node("//ForceActuatorSettings/AzimuthYTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 6, &AzimuthZTable,
-                           doc.select_node("//ForceActuatorSettings/AzimuthZTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 6, &HardpointForceMomentTable,
-            doc.select_node("//ForceActuatorSettings/HardpointForceMomentTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &ForceDistributionXTable,
-            doc.select_node("//ForceActuatorSettings/ForceDistributionXTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &ForceDistributionYTable,
-            doc.select_node("//ForceActuatorSettings/ForceDistributionYTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &ForceDistributionZTable,
-            doc.select_node("//ForceActuatorSettings/ForceDistributionZTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &MomentDistributionXTable,
-            doc.select_node("//ForceActuatorSettings/MomentDistributionXTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &MomentDistributionYTable,
-            doc.select_node("//ForceActuatorSettings/MomentDistributionYTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &MomentDistributionZTable,
-            doc.select_node("//ForceActuatorSettings/MomentDistributionZTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 6, &ElevationXTable,
-            doc.select_node("//ForceActuatorSettings/ElevationXTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 6, &ElevationYTable,
-            doc.select_node("//ForceActuatorSettings/ElevationYTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 6, &ElevationZTable,
-            doc.select_node("//ForceActuatorSettings/ElevationZTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 1, &StaticXTable,
-                           doc.select_node("//ForceActuatorSettings/StaticXTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 1, &StaticYTable,
-                           doc.select_node("//ForceActuatorSettings/StaticYTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 1, &StaticZTable,
-                           doc.select_node("//ForceActuatorSettings/StaticZTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 6, &ThermalXTable,
-                           doc.select_node("//ForceActuatorSettings/ThermalXTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 6, &ThermalYTable,
-                           doc.select_node("//ForceActuatorSettings/ThermalYTablePath").node().child_value());
-    TableLoader::loadTable(1, 1, 6, &ThermalZTable,
-                           doc.select_node("//ForceActuatorSettings/ThermalZTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &VelocityXTable,
-            doc.select_node("//ForceActuatorSettings/VelocityXTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &VelocityYTable,
-            doc.select_node("//ForceActuatorSettings/VelocityYTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &VelocityZTable,
-            doc.select_node("//ForceActuatorSettings/VelocityZTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &VelocityXZTable,
-            doc.select_node("//ForceActuatorSettings/VelocityXZTablePath").node().child_value());
-    TableLoader::loadTable(
-            1, 1, 3, &VelocityYZTable,
-            doc.select_node("//ForceActuatorSettings/VelocityYZTablePath").node().child_value());
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
 
-    TableLoader::loadLimitTable(
-            1, 1, &AberrationLimitZTable,
-            doc.select_node("//ForceActuatorSettings/AberrationLimitZTablePath").node().child_value());
-    NetAberrationForceTolerance = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/NetAberrationForceTolerance").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &AccelerationLimitXTable,
-            doc.select_node("//ForceActuatorSettings/AccelerationLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &AccelerationLimitYTable,
-            doc.select_node("//ForceActuatorSettings/AccelerationLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &AccelerationLimitZTable,
-            doc.select_node("//ForceActuatorSettings/AccelerationLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ActiveOpticLimitZTable,
-            doc.select_node("//ForceActuatorSettings/ActiveOpticLimitZTablePath").node().child_value());
-    NetActiveOpticForceTolerance = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/NetActiveOpticForceTolerance").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &AzimuthLimitXTable,
-            doc.select_node("//ForceActuatorSettings/AzimuthLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &AzimuthLimitYTable,
-            doc.select_node("//ForceActuatorSettings/AzimuthLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &AzimuthLimitZTable,
-            doc.select_node("//ForceActuatorSettings/AzimuthLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &BalanceLimitXTable,
-            doc.select_node("//ForceActuatorSettings/BalanceLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &BalanceLimitYTable,
-            doc.select_node("//ForceActuatorSettings/BalanceLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &BalanceLimitZTable,
-            doc.select_node("//ForceActuatorSettings/BalanceLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ElevationLimitXTable,
-            doc.select_node("//ForceActuatorSettings/ElevationLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ElevationLimitYTable,
-            doc.select_node("//ForceActuatorSettings/ElevationLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ElevationLimitZTable,
-            doc.select_node("//ForceActuatorSettings/ElevationLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ForceLimitXTable,
-            doc.select_node("//ForceActuatorSettings/ForceLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ForceLimitYTable,
-            doc.select_node("//ForceActuatorSettings/ForceLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ForceLimitZTable,
-            doc.select_node("//ForceActuatorSettings/ForceLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &StaticLimitXTable,
-            doc.select_node("//ForceActuatorSettings/StaticLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &StaticLimitYTable,
-            doc.select_node("//ForceActuatorSettings/StaticLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &StaticLimitZTable,
-            doc.select_node("//ForceActuatorSettings/StaticLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &OffsetLimitXTable,
-            doc.select_node("//ForceActuatorSettings/OffsetLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &OffsetLimitYTable,
-            doc.select_node("//ForceActuatorSettings/OffsetLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &OffsetLimitZTable,
-            doc.select_node("//ForceActuatorSettings/OffsetLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ThermalLimitXTable,
-            doc.select_node("//ForceActuatorSettings/ThermalLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ThermalLimitYTable,
-            doc.select_node("//ForceActuatorSettings/ThermalLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &ThermalLimitZTable,
-            doc.select_node("//ForceActuatorSettings/ThermalLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &VelocityLimitXTable,
-            doc.select_node("//ForceActuatorSettings/VelocityLimitXTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &VelocityLimitYTable,
-            doc.select_node("//ForceActuatorSettings/VelocityLimitYTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &VelocityLimitZTable,
-            doc.select_node("//ForceActuatorSettings/VelocityLimitZTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &CylinderLimitPrimaryTable,
-            doc.select_node("//ForceActuatorSettings/CylinderLimitPrimaryTablePath").node().child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &CylinderLimitSecondaryTable,
-            doc.select_node("//ForceActuatorSettings/CylinderLimitSecondaryTablePath").node().child_value());
+        _loadDisabledActuators(doc["DisabledActuators"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &AzimuthXTable, doc["AzimuthXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &AzimuthYTable, doc["AzimuthYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &AzimuthZTable, doc["AzimuthZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &HardpointForceMomentTable,
+                               doc["HardpointForceMomentTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &ForceDistributionXTable,
+                               doc["ForceDistributionXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &ForceDistributionYTable,
+                               doc["ForceDistributionYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &ForceDistributionZTable,
+                               doc["ForceDistributionZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &MomentDistributionXTable,
+                               doc["MomentDistributionXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &MomentDistributionYTable,
+                               doc["MomentDistributionYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &MomentDistributionZTable,
+                               doc["MomentDistributionZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &ElevationXTable, doc["ElevationXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &ElevationYTable, doc["ElevationYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &ElevationZTable, doc["ElevationZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 1, &StaticXTable, doc["StaticXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 1, &StaticYTable, doc["StaticYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 1, &StaticZTable, doc["StaticZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &ThermalXTable, doc["ThermalXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &ThermalYTable, doc["ThermalYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &ThermalZTable, doc["ThermalZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &VelocityXTable, doc["VelocityXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &VelocityYTable, doc["VelocityYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &VelocityZTable, doc["VelocityZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
 
-    TableLoader::loadLimitTable(
-            1, 1, &MeasuredPrimaryCylinderLimitTable,
-            doc.select_node("//ForceActuatorSettings/MeasuredPrimaryCylinderLimitTablePath")
-                    .node()
-                    .child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &MeasuredSecondaryCylinderLimitTable,
-            doc.select_node("//ForceActuatorSettings/MeasuredSecondaryCylinderLimitTablePath")
-                    .node()
-                    .child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &FollowingErrorPrimaryCylinderLimitTable,
-            doc.select_node("//ForceActuatorSettings/FollowingErrorPrimaryCylinderLimitTablePath")
-                    .node()
-                    .child_value());
-    TableLoader::loadLimitTable(
-            1, 1, &FollowingErrorSecondaryCylinderLimitTable,
-            doc.select_node("//ForceActuatorSettings/FollowingErrorSecondaryCylinderLimitTablePath")
-                    .node()
-                    .child_value());
+        TableLoader::loadLimitTable(1, 1, &AberrationLimitZTable,
+                                    doc["AberrationLimitZTablePath"].as<std::string>());
+        NetAberrationForceTolerance =
+                boost::lexical_cast<float>(doc["NetAberrationForceTolerance"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &AccelerationLimitXTable,
+                                    doc["AccelerationLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &AccelerationLimitYTable,
+                                    doc["AccelerationLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &AccelerationLimitZTable,
+                                    doc["AccelerationLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ActiveOpticLimitZTable,
+                                    doc["ActiveOpticLimitZTablePath"].as<std::string>());
+        NetActiveOpticForceTolerance =
+                boost::lexical_cast<float>(doc["NetActiveOpticForceTolerance"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &AzimuthLimitXTable,
+                                    doc["AzimuthLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &AzimuthLimitYTable,
+                                    doc["AzimuthLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &AzimuthLimitZTable,
+                                    doc["AzimuthLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &BalanceLimitXTable,
+                                    doc["BalanceLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &BalanceLimitYTable,
+                                    doc["BalanceLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &BalanceLimitZTable,
+                                    doc["BalanceLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ElevationLimitXTable,
+                                    doc["ElevationLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ElevationLimitYTable,
+                                    doc["ElevationLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ElevationLimitZTable,
+                                    doc["ElevationLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ForceLimitXTable, doc["ForceLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ForceLimitYTable, doc["ForceLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ForceLimitZTable, doc["ForceLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &StaticLimitXTable, doc["StaticLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &StaticLimitYTable, doc["StaticLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &StaticLimitZTable, doc["StaticLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &OffsetLimitXTable, doc["OffsetLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &OffsetLimitYTable, doc["OffsetLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &OffsetLimitZTable, doc["OffsetLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ThermalLimitXTable,
+                                    doc["ThermalLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ThermalLimitYTable,
+                                    doc["ThermalLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &ThermalLimitZTable,
+                                    doc["ThermalLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &VelocityLimitXTable,
+                                    doc["VelocityLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &VelocityLimitYTable,
+                                    doc["VelocityLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &VelocityLimitZTable,
+                                    doc["VelocityLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &CylinderLimitPrimaryTable,
+                                    doc["CylinderLimitPrimaryTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &CylinderLimitSecondaryTable,
+                                    doc["CylinderLimitSecondaryTablePath"].as<std::string>());
 
-    Neighbors.clear();
-    for (int i = 0; i < FA_COUNT; ++i) {
-        ForceActuatorNeighbors neighbors;
-        Neighbors.push_back(neighbors);
+        TableLoader::loadLimitTable(1, 1, &MeasuredPrimaryCylinderLimitTable,
+                                    doc["MeasuredPrimaryCylinderLimitTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &MeasuredSecondaryCylinderLimitTable,
+                                    doc["MeasuredSecondaryCylinderLimitTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &FollowingErrorPrimaryCylinderLimitTable,
+                                    doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, 1, &FollowingErrorSecondaryCylinderLimitTable,
+                                    doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
+
+        Neighbors.clear();
+        for (int i = 0; i < FA_COUNT; ++i) {
+            ForceActuatorNeighbors neighbors;
+            Neighbors.push_back(neighbors);
+        }
+        _loadNearNeighborZTable(doc["ForceActuatorNearZNeighborsTablePath"].as<std::string>());
+        _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
+
+        UseInclinometer = doc["UseInclinometer"].as<int32_t>();
+        MirrorXMoment = doc["MirrorXMoment"].as<float>();
+        MirrorYMoment = doc["MirrorYMoment"].as<float>();
+        MirrorZMoment = doc["MirrorZMoment"].as<float>();
+        SetpointXMomentLowLimitPercentage = doc["SetpointXMomentLowLimitPercentage"].as<float>();
+        SetpointXMomentHighLimitPercentage = doc["SetpointXMomentHighLimitPercentage"].as<float>();
+        SetpointYMomentLowLimitPercentage = doc["SetpointYMomentLowLimitPercentage"].as<float>();
+        SetpointYMomentHighLimitPercentage = doc["SetpointYMomentHighLimitPercentage"].as<float>();
+        SetpointZMomentLowLimitPercentage = doc["SetpointZMomentLowLimitPercentage"].as<float>();
+        SetpointZMomentHighLimitPercentage = doc["SetpointZMomentHighLimitPercentage"].as<float>();
+        SetpointNearNeighborLimitPercentage = doc["SetpointNearNeighborLimitPercentage"].as<float>();
+        SetpointMirrorWeightLimitPercentage = doc["SetpointMirrorWeightLimitPercentage"].as<float>();
+        SetpointFarNeighborLimitPercentage = doc["SetpointFarNeighborLimitPercentage"].as<float>();
+
+        MirrorCenterOfGravityX = doc["MirrorCenterOfGravityX"].as<float>();
+        MirrorCenterOfGravityY = doc["MirrorCenterOfGravityY"].as<float>();
+        MirrorCenterOfGravityZ = doc["MirrorCenterOfGravityZ"].as<float>();
+
+        RaiseIncrementPercentage = doc["RaiseIncrementPercentage"].as<double>();
+        LowerDecrementPercentage = doc["LowerDecrementPercentage"].as<double>();
+        RaiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
+
+        AberrationComponentSettings.set(doc["AberrationForceComponent"]);
+        AccelerationComponentSettings.set(doc["AccelerationForceComponent"]);
+        ActiveOpticComponentSettings.set(doc["ActiveOpticForceComponent"]);
+        AzimuthComponentSettings.set(doc["AzimuthForceComponent"]);
+        BalanceComponentSettings.set(doc["BalanceForceComponent"]);
+        ElevationComponentSettings.set(doc["ElevationForceComponent"]);
+        OffsetComponentSettings.set(doc["OffsetForceComponent"]);
+        StaticComponentSettings.set(doc["StaticForceComponent"]);
+        ThermalComponentSettings.set(doc["ThermalForceComponent"]);
+        VelocityComponentSettings.set(doc["VelocityForceComponent"]);
+        FinalComponentSettings.set(doc["FinalForceComponent"]);
+
+        auto bumpTest = doc["BumpTest"];
+
+        TestedTolerances.set(bumpTest["TestedTolerances"]);
+        NonTestedTolerances.set(bumpTest["NonTestedTolerances"]);
+
+        BumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
+        BumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
+
+    } catch (YAML::Exception &ex) {
+        SPDLOG_CRITICAL("YAML Loading {}: {}", filename, ex.what());
+        exit(EXIT_FAILURE);
     }
-    _loadNearNeighborZTable(doc.select_node("//ForceActuatorSettings/ForceActuatorNearZNeighborsTablePath")
-                                    .node()
-                                    .child_value());
-    _loadNeighborsTable(
-            doc.select_node("//ForceActuatorSettings/ForceActuatorNeighborsTablePath").node().child_value());
-
-    UseInclinometer =
-            boost::lexical_cast<int32_t>(
-                    doc.select_node("//ForceActuatorSettings/UseInclinometer").node().child_value()) != 0;
-    MirrorXMoment = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/MirrorXMoment").node().child_value());
-    MirrorYMoment = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/MirrorYMoment").node().child_value());
-    MirrorZMoment = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/MirrorZMoment").node().child_value());
-    SetpointXMomentLowLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointXMomentLowLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointXMomentHighLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointXMomentHighLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointYMomentLowLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointYMomentLowLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointYMomentHighLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointYMomentHighLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointZMomentLowLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointZMomentLowLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointZMomentHighLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointZMomentHighLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointNearNeighborLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointNearNeighborLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointMirrorWeightLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointMirrorWeightLimitPercentage")
-                    .node()
-                    .child_value());
-    SetpointFarNeighborLimitPercentage = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/SetpointFarNeighborLimitPercentage")
-                    .node()
-                    .child_value());
-
-    MirrorCenterOfGravityX = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityX").node().child_value());
-    MirrorCenterOfGravityY = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityY").node().child_value());
-    MirrorCenterOfGravityZ = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/MirrorCenterOfGravityZ").node().child_value());
-
-    RaiseIncrementPercentage = boost::lexical_cast<double>(
-            doc.select_node("//ForceActuatorSettings/RaiseIncrementPercentage").node().child_value());
-    LowerDecrementPercentage = boost::lexical_cast<double>(
-            doc.select_node("//ForceActuatorSettings/LowerDecrementPercentage").node().child_value());
-    RaiseLowerFollowingErrorLimit = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/RaiseLowerFollowingErrorLimit").node().child_value());
-
-    AberrationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/AberrationForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    AberrationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/AberrationForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    AccelerationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/AccelerationForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    AccelerationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/AccelerationForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    ActiveOpticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/ActiveOpticForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    ActiveOpticComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/ActiveOpticForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    AzimuthComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/AzimuthForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    AzimuthComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/AzimuthForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    BalanceComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/BalanceForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    BalanceComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/BalanceForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    ElevationComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/ElevationForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    ElevationComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/ElevationForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    OffsetComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/OffsetForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    OffsetComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/OffsetForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    StaticComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/StaticForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    StaticComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/StaticForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    ThermalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/ThermalForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    ThermalComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/ThermalForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    VelocityComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/VelocityForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    VelocityComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/VelocityForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    FinalComponentSettings.MaxRateOfChange = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/FinalForceComponent/MaxRateOfChange")
-                    .node()
-                    .child_value());
-    FinalComponentSettings.NearZeroValue = boost::lexical_cast<float>(
-            doc.select_node("//ForceActuatorSettings/FinalForceComponent/NearZeroValue")
-                    .node()
-                    .child_value());
-
-    TestedTolerances.set(doc.select_node("//ForceActuatorSettings/BumpTest/TestedTolerances").node());
-    NonTestedTolerances.set(doc.select_node("//ForceActuatorSettings/BumpTest/NonTestedTolerances").node());
-
-    BumpTestSettleTime =
-            doc.select_node("//ForceActuatorSettings/BumpTest/SettleTime").node().text().as_float(3.0);
-    BumpTestMeasurements =
-            doc.select_node("//ForceActuatorSettings/BumpTest/Measurements").node().text().as_int(10);
 }
 
 bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
@@ -494,7 +276,3 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
     }
     inputStream.close();
 }
-
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
