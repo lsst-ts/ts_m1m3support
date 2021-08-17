@@ -23,70 +23,39 @@
 
 #include <HardpointActuatorSettings.h>
 #include <TableLoader.h>
-#include <XMLDocLoad.h>
-#include <cstring>
-#include <boost/lexical_cast.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 HardpointActuatorSettings::HardpointActuatorSettings() { memset(_encoderOffset, 0, sizeof(_encoderOffset)); }
 
 void HardpointActuatorSettings::load(const std::string &filename) {
-    pugi::xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    TableLoader::loadTable(
-            1, 1, 6, &HardpointDisplacementToMirrorPosition,
-            doc.select_node("//HardpointActuatorSettings/HardpointDisplacementToMirrorPositionTablePath")
-                    .node()
-                    .child_value());
-    TableLoader::loadTable(
-            1, 1, 6, &MirrorPositionToHardpointDisplacement,
-            doc.select_node("//HardpointActuatorSettings/MirrorPositionToHardpointDisplacementTablePath")
-                    .node()
-                    .child_value());
-    MicrometersPerStep = boost::lexical_cast<double>(
-            doc.select_node("//HardpointActuatorSettings/MicrometersPerStep").node().child_value());
-    MicrometersPerEncoder = boost::lexical_cast<double>(
-            doc.select_node("//HardpointActuatorSettings/MicrometersPerEncoder").node().child_value());
-    for (int hp = 0; hp < 6; hp++) {
-        _encoderOffset[hp] = boost::lexical_cast<int32_t>(
-                doc.select_node(("//HardpointActuatorSettings/HP" + std::to_string(hp + 1) + "EncoderOffset")
-                                        .c_str())
-                        .node()
-                        .child_value());
-    }
-    HardpointMeasuredForceFaultHigh = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFaultHigh")
-                    .node()
-                    .child_value());
-    HardpointMeasuredForceFaultLow = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFaultLow")
-                    .node()
-                    .child_value());
-    HardpointMeasuredForceFSBWarningHigh = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFSBWarningHigh")
-                    .node()
-                    .child_value());
-    HardpointMeasuredForceFSBWarningLow = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceFSBWarningLow")
-                    .node()
-                    .child_value());
-    HardpointMeasuredForceWarningHigh = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceWarningHigh")
-                    .node()
-                    .child_value());
-    HardpointMeasuredForceWarningLow = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/HardpointMeasuredForceWarningLow")
-                    .node()
-                    .child_value());
-    AirPressureWarningHigh = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/AirPressureWarningHigh").node().child_value());
-    AirPressureWarningLow = boost::lexical_cast<float>(
-            doc.select_node("//HardpointActuatorSettings/AirPressureWarningLow").node().child_value());
-}
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+        TableLoader::loadTable(1, 1, 6, &HardpointDisplacementToMirrorPosition,
+                               doc["HardpointDisplacementToMirrorPositionTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, 6, &MirrorPositionToHardpointDisplacement,
+                               doc["MirrorPositionToHardpointDisplacementTablePath"].as<std::string>());
+        MicrometersPerStep = doc["MicrometersPerStep"].as<double>();
+        MicrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
+
+        std::vector<int32_t> offsetVec = doc["HPEncoderOffsets"].as<std::vector<int32_t>>();
+        if (offsetVec.size() != 6) {
+            throw std::runtime_error(fmt::format("Invalid HP offsets size, expected 6, received {}", offsetVec.size());
+        }
+        memcpy(_encoderOffset, offsetVec.data(), HP_COUNT * sizeof(int32_t));
+        HardpointMeasuredForceFaultHigh = doc["HardpointMeasuredForceFaultHigh"].as<float>();
+        HardpointMeasuredForceFaultLow = doc["HardpointMeasuredForceFaultLow"].as<float>();
+        HardpointMeasuredForceFSBWarningHigh = doc["HardpointMeasuredForceFSBWarningHigh"].as<float>();
+        HardpointMeasuredForceFSBWarningLow = doc["HardpointMeasuredForceFSBWarningLow"].as<float>();
+        HardpointMeasuredForceWarningHigh = doc["HardpointMeasuredForceWarningHigh"].as<float>();
+        HardpointMeasuredForceWarningLow = doc["HardpointMeasuredForceWarningLow"].as<float>();
+        AirPressureWarningHigh = doc["AirPressureWarningHigh"].as<float>();
+        AirPressureWarningLow = doc["AirPressureWarningLow"].as<float>();
+
+    } catch (YAML::Exception &ex) {
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+    }
+}

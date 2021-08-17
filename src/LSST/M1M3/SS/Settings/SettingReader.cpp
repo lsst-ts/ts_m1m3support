@@ -118,7 +118,7 @@ HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplic
 
 HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointActuatorSettings()");
-    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.xml").c_str());
+    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.yaml").c_str());
     return &_hardpointActuatorSettings;
 }
 

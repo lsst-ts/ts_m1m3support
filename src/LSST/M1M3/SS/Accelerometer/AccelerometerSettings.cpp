@@ -30,6 +30,7 @@ using namespace LSST::M1M3::SS;
 void AccelerometerSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
+
         GsToMetersPerSecondSqrd = doc["GsToMetersPerSecondSqrd"].as<float>();
         AngularAccelerationXDistance = doc["AngularAccelerationXDistance"].as<float>();
         AngularAccelerationYDistance = doc["AngularAccelerationYDistance"].as<float>();
