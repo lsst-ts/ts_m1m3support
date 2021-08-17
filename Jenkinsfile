@@ -43,7 +43,7 @@ node {
         withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
               M1M3sim.inside("--entrypoint='' -u root") {
                   sh """
-                     source $SALUSER_HOME/.setup.sh
+                     source $SALUSER_HOME/.setup_salobj.sh
                      conda install -y readline yaml-cpp
                   """
               }
