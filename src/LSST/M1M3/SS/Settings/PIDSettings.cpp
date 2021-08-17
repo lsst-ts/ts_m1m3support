@@ -47,7 +47,6 @@ void PIDSettings::load(const std::string &filename) {
         parsePID(doc["My"], &My);
         parsePID(doc["Mz"], &Mz);
     } catch (YAML::Exception &ex) {
-        SPDLOG_CRITICAL("YAML Loading {}: {}", filename, ex.what());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 }

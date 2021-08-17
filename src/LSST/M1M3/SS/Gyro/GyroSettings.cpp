@@ -37,12 +37,10 @@ void GyroSettings::load(const std::string &filename) {
         AngularVelocityZOffset = doc["AngularVelocityZOffset"].as<float>();
         AxesMatrix = doc["AxesMatrix"].as<std::vector<double>>();
     } catch (YAML::Exception &ex) {
-        SPDLOG_CRITICAL("YAML Loading {}: {}", filename, ex.what());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 
     if (AxesMatrix.size() != 9) {
-        SPDLOG_CRITICAL("Invalid AxesMatrix length: {}, expected 9", AxesMatrix.size());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("Invalid AxesMatrix length: {}, expected 9", AxesMatrix.size()));
     }
 }

@@ -44,16 +44,13 @@ void DisplacementSensorSettings::load(const std::string &filename) {
         YRotationOffset = doc["YRotationOffset"].as<double>();
         ZRotationOffset = doc["ZRotationOffset"].as<double>();
     } catch (YAML::Exception &ex) {
-        SPDLOG_CRITICAL("YAML Loading {}: {}", filename, ex.what());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 
     if (NPorts.size() != 8) {
-        SPDLOG_CRITICAL("Invalid NPorts length: {}, expected 8", NPorts.size());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("Invalid NPorts length: {}, expected 8", NPorts.size()));
     }
     if (NOffsets.size() != 8) {
-        SPDLOG_CRITICAL("Invalid NPorts length: {}, expected 8", NOffsets.size());
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(fmt::format("Invalid NPorts length: {}, expected 8", NOffsets.size()));
     }
 }
