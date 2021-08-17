@@ -42,8 +42,9 @@ void HardpointActuatorSettings::load(const std::string &filename) {
         MicrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
 
         std::vector<int32_t> offsetVec = doc["HPEncoderOffsets"].as<std::vector<int32_t>>();
-        if (offsetVec.size() != 6) {
-            throw std::runtime_error(fmt::format("Invalid HP offsets size, expected 6, received {}", offsetVec.size());
+        if (offsetVec.size() != HP_COUNT) {
+            throw std::runtime_error(fmt::format("Invalid HP offsets size, expected {}, received {}",
+                                                 HP_COUNT, offsetVec.size()));
         }
         memcpy(_encoderOffset, offsetVec.data(), HP_COUNT * sizeof(int32_t));
         HardpointMeasuredForceFaultHigh = doc["HardpointMeasuredForceFaultHigh"].as<float>();

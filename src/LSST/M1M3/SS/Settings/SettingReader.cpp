@@ -185,7 +185,7 @@ PIDSettings* SettingReader::loadPIDSettings() {
 
 InclinometerSettings* SettingReader::loadInclinometerSettings() {
     SPDLOG_DEBUG("SettingReader: loadInclinometerSettings()");
-    _inclinometerSettings.load(_getSetPath("InclinometerSettings.xml"));
+    _inclinometerSettings.load(_getSetPath("InclinometerSettings.yaml"));
     return &_inclinometerSettings;
 }
 
