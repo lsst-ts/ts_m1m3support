@@ -167,7 +167,7 @@ HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicat
 
 GyroSettings* SettingReader::loadGyroSettings() {
     SPDLOG_DEBUG("SettingReader: loadGyroSettings()");
-    _gyroSettings.load(_getSetPath("GyroSettings.xml").c_str());
+    _gyroSettings.load(_getSetPath("GyroSettings.yaml").c_str());
     return &_gyroSettings;
 }
 

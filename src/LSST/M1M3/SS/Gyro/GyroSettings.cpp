@@ -22,34 +22,27 @@
  */
 
 #include <GyroSettings.h>
-#include <XMLDocLoad.h>
-#include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void GyroSettings::load(const std::string &filename) {
-    pugi::xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    this->DataRate =
-            boost::lexical_cast<int>(doc.select_node("//GyroSettings/DataRate").node().child_value());
-    this->AngularVelocityXOffset = boost::lexical_cast<float>(
-            doc.select_node("//GyroSettings/AngularVelocityXOffset").node().child_value());
-    this->AngularVelocityYOffset = boost::lexical_cast<float>(
-            doc.select_node("//GyroSettings/AngularVelocityYOffset").node().child_value());
-    this->AngularVelocityZOffset = boost::lexical_cast<float>(
-            doc.select_node("//GyroSettings/AngularVelocityZOffset").node().child_value());
-    std::string axesMatrix = doc.select_node("//GyroSettings/AxesMatrix").node().child_value();
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-    tokenizer tokenize(axesMatrix);
-    this->AxesMatrix.clear();
-    for (tokenizer::iterator token = tokenize.begin(); token != tokenize.end(); ++token) {
-        this->AxesMatrix.push_back(boost::lexical_cast<double>(*token));
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
+
+        DataRate = doc["DataRate"].as<int>();
+        AngularVelocityXOffset = doc["AngularVelocityXOffset"].as<float>();
+        AngularVelocityYOffset = doc["AngularVelocityYOffset"].as<float>();
+        AngularVelocityZOffset = doc["AngularVelocityZOffset"].as<float>();
+        AxesMatrix = doc["AxesMatrix"].as<std::vector<double>>();
+    } catch (YAML::Exception &ex) {
+        SPDLOG_CRITICAL("YAML Loading {}: {}", filename, ex.what());
+        exit(EXIT_FAILURE);
+    }
+
+    if (AxesMatrix.size() != 9) {
+        SPDLOG_CRITICAL("Invalid AxesMatrix length: {}, expected 9", AxesMatrix.size());
+        exit(EXIT_FAILURE);
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

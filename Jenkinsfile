@@ -40,10 +40,13 @@ node {
 
     stage('Installing dependencies')
     {
-        M1M3sim.inside("--entrypoint=''") {a
-            sh """
-                conda install -y readline yaml-cpp
-            """
+        withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
+              M1M3sim.inside("--entrypoint=''") {
+                  sh """
+                     source $SALUSER_HOME/.setup_salobj.sh
+                     conda install -y readline yaml-cpp
+                  """
+              }
         }
     }
 
