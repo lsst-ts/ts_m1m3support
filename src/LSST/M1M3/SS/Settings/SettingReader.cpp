@@ -160,7 +160,7 @@ DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
 
 HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointMonitorApplicationSettings()");
-    _hardpointMonitorApplicationSettings.load(_getBasePath("HardpointMonitorApplicationSettings.xml"));
+    _hardpointMonitorApplicationSettings.load(_getBasePath("HardpointMonitorApplicationSettings.yaml"));
     return &_hardpointMonitorApplicationSettings;
 }
 
