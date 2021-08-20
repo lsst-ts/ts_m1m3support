@@ -57,9 +57,12 @@ node {
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    LIBS_FLAGS="-L\$CONDA_PREFIX/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" PKG_CONFIG_PATH=\$CONDA_PREFIX/lib/pkgconfig make simulator
+                    export LIBS_FLAGS="-L\$CONDA_PREFIX/lib" 
+                    export SAL_CPPFLAGS="-I\$CONDA_PREFIX/include"
+                    export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig"
 
-                    LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIXinclude make junit || true
+                    make simulator
+                    make junit || true
                  """
              }
         }
