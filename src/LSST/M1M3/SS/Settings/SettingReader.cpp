@@ -23,6 +23,7 @@
 
 #include <SettingReader.h>
 #include <boost/tokenizer.hpp>
+#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
 
 #include <string.h>
@@ -99,7 +100,7 @@ void SettingReader::configure(std::string settingsToApply) {
 
 AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadAliasApplicationSettings()");
-    _aliasApplicationSettings.load(_getBasePath("AliasApplicationSettings.xml").c_str());
+    _aliasApplicationSettings.load(_getBasePath("AliasApplicationSettings.yaml"));
     return &_aliasApplicationSettings;
 }
 

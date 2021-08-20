@@ -22,37 +22,25 @@
  */
 
 #include <AliasApplicationSettings.h>
-#include <pugixml/pugixml.hpp>
-#include <XMLDocLoad.h>
-#include <boost/tokenizer.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void AliasApplicationSettings::load(const std::string &filename) {
-    pugi::xml_document doc;
-    XMLDocLoad(filename, doc);
-    pugi::xpath_node_set nodes = doc.select_nodes("//AliasApplicationSettings/Aliases/Alias");
+    Aliases.clear();
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
 
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-
-    this->Aliases.clear();
-    for (pugi::xpath_node_set::const_iterator node = nodes.begin(); node != nodes.end(); ++node) {
-        std::string value = node->node().child_value();
-        tokenizer tokenize(value);
-        tokenizer::iterator token = tokenize.begin();
-        Alias alias;
-        alias.Name = *token;
-        ++token;
-        alias.Set = *token;
-        ++token;
-        alias.Version = *token;
-
-        this->Aliases.push_back(alias);
+        for (auto it = doc.begin(); it != doc.end(); ++it) {
+            Alias alias;
+            alias.Name = it->first.as<std::string>();
+            alias.Set = it->second["Set"].as<std::string>();
+            alias.Version = it->second["Version"].as<std::string>();
+            Aliases.push_back(alias);
+            SPDLOG_DEBUG("Alias {}->{}:{}", alias.Name, alias.Set, alias.Version);
+        }
+    } catch (YAML::Exception &ex) {
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
