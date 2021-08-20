@@ -23,7 +23,6 @@
 
 #include <HardpointActuatorApplicationSettings.h>
 #include <SettingReader.h>
-#include <XMLDocLoad.h>
 #include <string>
 #include <iostream>
 #include <fstream>
