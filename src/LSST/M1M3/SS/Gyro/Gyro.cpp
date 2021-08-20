@@ -31,7 +31,6 @@
 #include <SAL_MTM1M3C.h>
 #include <spdlog/spdlog.h>
 
-#include <boost/lexical_cast.hpp>
 #include <cstring>
 #include <thread>
 #include <chrono>
@@ -97,7 +96,7 @@ void Gyro::setAxis() {
     SPDLOG_INFO("Gyro: setAxis()");
     std::string command = "=AXES";
     for (unsigned int i = 0; i < _gyroSettings->AxesMatrix.size(); ++i) {
-        command = command + "," + boost::lexical_cast<std::string>(_gyroSettings->AxesMatrix[i]);
+        command = command + "," + std::to_string(_gyroSettings->AxesMatrix[i]);
     }
     this->writeCommand(command + "\r\n");
     std::this_thread::sleep_for(10ms);
@@ -105,7 +104,7 @@ void Gyro::setAxis() {
 
 void Gyro::setDataRate() {
     SPDLOG_INFO("Gyro: setDataRate()");
-    this->writeCommand("=DR," + boost::lexical_cast<std::string>(_gyroSettings->DataRate) + "\r\n");
+    this->writeCommand("=DR," + std::to_string(_gyroSettings->DataRate) + "\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
