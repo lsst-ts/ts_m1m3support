@@ -44,7 +44,11 @@ node {
               M1M3sim.inside("--entrypoint='' -u root") {
                   sh """
                      source $SALUSER_HOME/.setup_salobj.sh
+                     export PATH=\$CONDA_PREFIX/bin:$PATH
                      conda install -y readline yaml-cpp
+                     ls -l \$CONDA_PREFIX/include
+                     ls -l \$CONDA_PREFIX/include/yaml-cpp
+                     pkg-config --cflags yaml-cpp
                   """
               }
         }
@@ -80,7 +84,9 @@ node {
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    make LIBS_FLAGS="-L\$CONDA_PREFIX/lib -L\$OSPL_HOME/lib -L\$LSST_SDK_INSTALL/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" simulator
+                    ls -l \$CONDA_PREFIX/include
+                    ls -l \$CONDA_PREFIX/include/yaml-cpp
+                    LIBS_FLAGS="-L\$CONDA_PREFIX/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" make VERBOSE=1 simulator
 
                     LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIXinclude make junit || true
                  """

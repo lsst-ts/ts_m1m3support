@@ -83,4 +83,3 @@ void HardpointActuatorApplicationSettings::load(const std::string &filename) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 }
-

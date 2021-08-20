@@ -2016,16 +2016,7 @@ void M1M3SSPublisher::tryLogPreclippedVelocityForces() {
 
 void M1M3SSPublisher::logSettingVersions() { _m1m3SAL->logEvent_settingVersions(&_eventSettingVersions, 0); }
 
-void M1M3SSPublisher::logSettingsApplied() {
-    _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0);
-    _previousEventSettingsApplied = _eventSettingsApplied;
-}
-
-void M1M3SSPublisher::tryLogSettingsApplied() {
-    if (_eventSettingsApplied.settingsVersion.compare(_previousEventSettingsApplied.settingsVersion) != 0) {
-        this->logSettingsApplied();
-    }
-}
+void M1M3SSPublisher::logSettingsApplied() { _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0); }
 
 void M1M3SSPublisher::logSoftwareVersions() {
     MTM1M3_logevent_softwareVersionsC versions;

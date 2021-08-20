@@ -368,7 +368,6 @@ public:
     void tryLogPreclippedVelocityForces();
     void logSettingVersions();
     void logSettingsApplied();
-    void tryLogSettingsApplied();
     void logSoftwareVersions();
     void logSummaryState();
     void tryLogSummaryState();
@@ -561,7 +560,6 @@ private:
     MTM1M3_logevent_preclippedStaticForcesC _previousEventPreclippedStaticForces;
     MTM1M3_logevent_preclippedThermalForcesC _previousEventPreclippedThermalForces;
     MTM1M3_logevent_preclippedVelocityForcesC _previousEventPreclippedVelocityForces;
-    MTM1M3_logevent_settingsAppliedC _previousEventSettingsApplied;
     MTM1M3_logevent_summaryStateC _previousEventSummaryState;
 };
 

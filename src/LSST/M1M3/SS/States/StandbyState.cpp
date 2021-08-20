@@ -27,6 +27,7 @@
 #include <Model.h>
 #include <SafetyController.h>
 #include <PowerController.h>
+#include <SettingReader.h>
 #include <StartCommand.h>
 #include <Gyro.h>
 
@@ -49,6 +50,11 @@ States::Type StandbyState::update(UpdateCommand* command) {
 States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
     Model::get().loadSettings(command->getData()->settingsToApply);
+    M1M3SSPublisher::get().getEventSettingsApplied()->settingsVersion =
+            SettingReader::get().getSettingsVersion();
+    M1M3SSPublisher::get().getEventSettingsApplied->otherSettingsEvents = "";
+    M1M3SSPublisher::get().logSettingsApplied();
+
     PowerController* powerController = Model::get().getPowerController();
     ILC* ilc = Model::get().getILC();
     DigitalInputOutput* digitalInputOutput = Model::get().getDigitalInputOutput();
