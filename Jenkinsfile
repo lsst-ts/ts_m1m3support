@@ -19,41 +19,9 @@ properties(
 )
 
 node {
-
-
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
-
-    stage('Cloning Dockerfile')
-    {
-        sh "printenv"
-
-        dir("ts_Dockerfiles") {
-            git branch: (BRANCH == "master" ? "master" : "develop"), url: 'https://github.com/lsst-ts/ts_Dockerfiles'
-        }
-    }
-
-    stage('Building dev container')
-    {
-        M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), (params.noCache ? "--no-cache " : " ") + "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
-    }
-
-    stage('Installing dependencies')
-    {
-        withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
-              M1M3sim.inside("--entrypoint='' -u root") {
-                  sh """
-                     source $SALUSER_HOME/.setup_salobj.sh
-                     export PATH=\$CONDA_PREFIX/bin:$PATH
-                     conda install -y readline yaml-cpp
-                     ls -l \$CONDA_PREFIX/include
-                     ls -l \$CONDA_PREFIX/include/yaml-cpp
-                     pkg-config --cflags yaml-cpp
-                  """
-              }
-        }
-    }
-
+    def XML_BRANCH = (BRANCH == "master") ? BRANCH : "develop"
     stage('Cloning sources')
     {
         dir("ts_cRIOcpp") {
@@ -62,6 +30,11 @@ node {
         dir("ts_m1m3support") {
             git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
         }
+    }
+
+    stage('Building dev container')
+    {
+        M1M3sim = docker.build("m1m3sim:" + env.BRANCH_NAME.replace("/", "_"), "--build-arg XML_BRANCH=$XML_BRANCH " + (params.noCache ? "--no-cache " : " ") + "$WORKSPACE/ts_m1m3support")
     }
 
     stage("Running tests")
@@ -86,7 +59,7 @@ node {
                     cd $WORKSPACE/ts_m1m3support
                     ls -l \$CONDA_PREFIX/include
                     ls -l \$CONDA_PREFIX/include/yaml-cpp
-                    LIBS_FLAGS="-L\$CONDA_PREFIX/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" make VERBOSE=1 simulator
+                    LIBS_FLAGS="-L\$CONDA_PREFIX/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" PKG_CONFIG_PATH=\$CONDA_PREFIX/lib/pkgconfig make VERBOSE=1 simulator
 
                     LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIXinclude make junit || true
                  """
