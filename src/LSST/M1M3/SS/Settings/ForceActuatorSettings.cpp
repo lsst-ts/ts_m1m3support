@@ -143,7 +143,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
         _loadNearNeighborZTable(doc["ForceActuatorNearZNeighborsTablePath"].as<std::string>());
         _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
 
-        UseInclinometer = doc["UseInclinometer"].as<int32_t>();
+        UseInclinometer = doc["UseInclinometer"].as<bool>();
         MirrorXMoment = doc["MirrorXMoment"].as<float>();
         MirrorYMoment = doc["MirrorYMoment"].as<float>();
         MirrorZMoment = doc["MirrorZMoment"].as<float>();

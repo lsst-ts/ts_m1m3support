@@ -66,7 +66,7 @@ CylinderLimitSecondaryTablePath: Tables/CylinderLimitSecondaryTable.csv
 ForceActuatorLimitsTablePath: Tables/ForceActuatorLimitsTable.csv
 ForceActuatorNearZNeighborsTablePath: Tables/ForceActuatorNearNeighborZTable.csv
 ForceActuatorNeighborsTablePath: Tables/ForceActuatorNeighborsTable.csv
-UseInclinometer: 1
+UseInclinometer: True
 MirrorXMoment: -65311
 MirrorYMoment: -20000
 MirrorZMoment: -20000
