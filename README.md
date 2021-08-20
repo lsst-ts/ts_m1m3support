@@ -84,9 +84,6 @@ response queue, added to command response queue and finally readout.
 
 ## Included external libraries
 
-* **src/pugixml** Light-weight [XML library](https://pugixml.org/) (MIT
-  License) [version](src/pugixml/pugixml.hpp)
-
 * **src/spdlog** [SpeedLog](https://github.com/gabime/spdlog) library (see
   [version.h](src/spdlog/version.h) for version)
 
