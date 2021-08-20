@@ -125,7 +125,7 @@ HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
 
 ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadILCApplicationSettings()");
-    _ilcApplicationSettings.load(_getBasePath("ILCApplicationSettings.xml").c_str());
+    _ilcApplicationSettings.load(_getBasePath("ILCApplicationSettings.yaml"));
     return &_ilcApplicationSettings;
 }
 
