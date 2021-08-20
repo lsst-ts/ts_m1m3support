@@ -52,7 +52,7 @@ States::Type StandbyState::start(StartCommand* command) {
     Model::get().loadSettings(command->getData()->settingsToApply);
     M1M3SSPublisher::get().getEventSettingsApplied()->settingsVersion =
             SettingReader::get().getSettingsVersion();
-    M1M3SSPublisher::get().getEventSettingsApplied->otherSettingsEvents = "";
+    M1M3SSPublisher::get().getEventSettingsApplied()->otherSettingsEvents = "";
     M1M3SSPublisher::get().logSettingsApplied();
 
     PowerController* powerController = Model::get().getPowerController();

@@ -57,9 +57,7 @@ node {
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    ls -l \$CONDA_PREFIX/include
-                    ls -l \$CONDA_PREFIX/include/yaml-cpp
-                    LIBS_FLAGS="-L\$CONDA_PREFIX/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" PKG_CONFIG_PATH=\$CONDA_PREFIX/lib/pkgconfig make VERBOSE=1 simulator
+                    LIBS_FLAGS="-L\$CONDA_PREFIX/lib" SAL_CPPFLAGS="-I\$CONDA_PREFIX/include" PKG_CONFIG_PATH=\$CONDA_PREFIX/lib/pkgconfig make simulator
 
                     LSST_DDS_PARTITION_PREFIX=test LIBS_FLAGS=-L\$CONDA_PREFIX/lib SAL_CPPFLAGS=-I\$CONDA_PREFIXinclude make junit || true
                  """
