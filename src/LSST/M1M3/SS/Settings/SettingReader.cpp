@@ -173,7 +173,7 @@ GyroSettings* SettingReader::loadGyroSettings() {
 
 ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadExpansionFPGAApplicationSettings()");
-    _expansionFPGAApplicationSettings.load(_getBasePath("ExpansionFPGAApplicationSettings.xml").c_str());
+    _expansionFPGAApplicationSettings.load(_getBasePath("ExpansionFPGAApplicationSettings.yaml"));
     return &_expansionFPGAApplicationSettings;
 }
 
