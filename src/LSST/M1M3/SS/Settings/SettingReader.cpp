@@ -112,8 +112,7 @@ ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
 
 HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointActuatorApplicationSettings()");
-    _hardpointActuatorApplicationSettings.load(
-            _getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
+    _hardpointActuatorApplicationSettings.load(_getBasePath("HardpointActuatorApplicationSettings.yaml"));
     return &_hardpointActuatorApplicationSettings;
 }
 
@@ -131,7 +130,7 @@ ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
 
 RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadRecommendedApplicationSettings()");
-    _recommendedApplicationSettings.load(_getBasePath("RecommendedApplicationSettings.xml").c_str());
+    _recommendedApplicationSettings.load(_getBasePath("RecommendedApplicationSettings.yaml"));
     return &_recommendedApplicationSettings;
 }
 
