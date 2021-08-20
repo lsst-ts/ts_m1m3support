@@ -121,7 +121,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     SafetyControllerSettings safetyControllerSettings;
     REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xml"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yaml"));
 
     runAndCheck(Model::get().getForceController(), 0, 0, 0, 0, 0, 0);
 

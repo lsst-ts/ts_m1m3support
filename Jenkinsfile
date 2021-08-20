@@ -62,7 +62,7 @@ node {
                     export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig"
 
                     make simulator
-                    make junit || true
+                    LSST_DDS_PARTITION_PREFIX=test make junit || true
                  """
              }
         }
