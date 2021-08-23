@@ -93,12 +93,10 @@ public:
     std::vector<float> VelocityYZTable;
 
     std::vector<Limit> AberrationLimitZTable;
-    float NetAberrationForceTolerance;
     std::vector<Limit> AccelerationLimitXTable;
     std::vector<Limit> AccelerationLimitYTable;
     std::vector<Limit> AccelerationLimitZTable;
     std::vector<Limit> ActiveOpticLimitZTable;
-    float NetActiveOpticForceTolerance;
     std::vector<Limit> AzimuthLimitXTable;
     std::vector<Limit> AzimuthLimitYTable;
     std::vector<Limit> AzimuthLimitZTable;

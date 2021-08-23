@@ -81,8 +81,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
 
         TableLoader::loadLimitTable(1, 1, &AberrationLimitZTable,
                                     doc["AberrationLimitZTablePath"].as<std::string>());
-        NetAberrationForceTolerance =
-                boost::lexical_cast<float>(doc["NetAberrationForceTolerance"].as<std::string>());
+        netAberrationForceTolerance = doc["NetAberrationForceTolerance"].as<float>();
         TableLoader::loadLimitTable(1, 1, &AccelerationLimitXTable,
                                     doc["AccelerationLimitXTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, 1, &AccelerationLimitYTable,
@@ -91,8 +90,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
                                     doc["AccelerationLimitZTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, 1, &ActiveOpticLimitZTable,
                                     doc["ActiveOpticLimitZTablePath"].as<std::string>());
-        NetActiveOpticForceTolerance =
-                boost::lexical_cast<float>(doc["NetActiveOpticForceTolerance"].as<std::string>());
+        netActiveOpticForceTolerance = doc["NetActiveOpticForceTolerance"].as<float>();
         TableLoader::loadLimitTable(1, 1, &AzimuthLimitXTable,
                                     doc["AzimuthLimitXTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, 1, &AzimuthLimitYTable,
