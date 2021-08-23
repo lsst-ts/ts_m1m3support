@@ -315,6 +315,9 @@ public:
     void tryLogGyroWarning();
     void logHardpointActuatorInfo();
     void tryLogHardpointActuatorInfo();
+    void logHardpointActuatorSettings(MTM1M3_logevent_hardpointActuatorSettingsC* data) {
+        _m1m3SAL->logEvent_hardpointActuatorSettings(data, 0);
+    }
     void logHardpointActuatorState();
     void tryLogHardpointActuatorState();
     void logHardpointActuatorWarning();

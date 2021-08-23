@@ -24,6 +24,8 @@
 #ifndef HARDPOINTACTUATORSETTINGS_H_
 #define HARDPOINTACTUATORSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+
 #include <DataTypes.h>
 #include <string>
 #include <vector>
@@ -32,24 +34,16 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class HardpointActuatorSettings {
+class HardpointActuatorSettings : public MTM1M3_logevent_hardpointActuatorSettingsC {
 public:
     std::vector<double> HardpointDisplacementToMirrorPosition;
     std::vector<double> MirrorPositionToHardpointDisplacement;
-    double MicrometersPerStep;
-    double MicrometersPerEncoder;
-    float HardpointMeasuredForceFaultHigh;
-    float HardpointMeasuredForceFaultLow;
-    float HardpointMeasuredForceFSBWarningHigh;
-    float HardpointMeasuredForceFSBWarningLow;
-    float HardpointMeasuredForceWarningHigh;
-    float HardpointMeasuredForceWarningLow;
-    float AirPressureWarningHigh;
-    float AirPressureWarningLow;
 
     HardpointActuatorSettings();
 
     void load(const std::string &filename);
+
+    void log();
 
     /**
      * Returns zero offset for given hardpoint.

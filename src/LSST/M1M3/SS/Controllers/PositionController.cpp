@@ -256,8 +256,8 @@ bool PositionController::moveToAbsolute(double x, double y, double z, double rX,
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
     int32_t encoderValues[6];
-    double stepsToEncoder = _hardpointActuatorSettings->MicrometersPerStep /
-                            _hardpointActuatorSettings->MicrometersPerEncoder;
+    double stepsToEncoder = _hardpointActuatorSettings->micrometersPerStep /
+                            _hardpointActuatorSettings->micrometersPerEncoder;
     for (int i = 0; i < HP_COUNT; ++i) {
         encoderValues[i] = _hardpointInfo->referencePosition[i] + steps[i] * stepsToEncoder;
     }
@@ -274,8 +274,8 @@ bool PositionController::translate(double x, double y, double z, double rX, doub
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
     int32_t encoderValues[6];
-    double stepsToEncoder = _hardpointActuatorSettings->MicrometersPerStep /
-                            _hardpointActuatorSettings->MicrometersPerEncoder;
+    double stepsToEncoder = _hardpointActuatorSettings->micrometersPerStep /
+                            _hardpointActuatorSettings->micrometersPerEncoder;
     for (int i = 0; i < HP_COUNT; ++i) {
         encoderValues[i] = _hardpointActuatorData->encoder[i] + steps[i] * stepsToEncoder;
     }
@@ -381,7 +381,7 @@ void PositionController::_convertToSteps(int32_t* steps, double x, double y, dou
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[4] * rY +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[5] * rZ) *
                (MILLIMETERS_PER_METER * MICROMETERS_PER_MILLIMETER /
-                _hardpointActuatorSettings->MicrometersPerStep);
+                _hardpointActuatorSettings->micrometersPerStep);
     steps[3] = (_hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[6] * x +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[7] * y +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[8] * z +
@@ -389,7 +389,7 @@ void PositionController::_convertToSteps(int32_t* steps, double x, double y, dou
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[10] * rY +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[11] * rZ) *
                (MILLIMETERS_PER_METER * MICROMETERS_PER_MILLIMETER /
-                _hardpointActuatorSettings->MicrometersPerStep);
+                _hardpointActuatorSettings->micrometersPerStep);
     steps[4] = (_hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[12] * x +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[13] * y +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[14] * z +
@@ -397,7 +397,7 @@ void PositionController::_convertToSteps(int32_t* steps, double x, double y, dou
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[16] * rY +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[17] * rZ) *
                (MILLIMETERS_PER_METER * MICROMETERS_PER_MILLIMETER /
-                _hardpointActuatorSettings->MicrometersPerStep);
+                _hardpointActuatorSettings->micrometersPerStep);
     steps[5] = (_hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[18] * x +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[19] * y +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[20] * z +
@@ -405,7 +405,7 @@ void PositionController::_convertToSteps(int32_t* steps, double x, double y, dou
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[22] * rY +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[23] * rZ) *
                (MILLIMETERS_PER_METER * MICROMETERS_PER_MILLIMETER /
-                _hardpointActuatorSettings->MicrometersPerStep);
+                _hardpointActuatorSettings->micrometersPerStep);
     steps[0] = (_hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[24] * x +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[25] * y +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[26] * z +
@@ -413,7 +413,7 @@ void PositionController::_convertToSteps(int32_t* steps, double x, double y, dou
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[28] * rY +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[29] * rZ) *
                (MILLIMETERS_PER_METER * MICROMETERS_PER_MILLIMETER /
-                _hardpointActuatorSettings->MicrometersPerStep);
+                _hardpointActuatorSettings->micrometersPerStep);
     steps[1] = (_hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[30] * x +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[31] * y +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[32] * z +
@@ -421,7 +421,7 @@ void PositionController::_convertToSteps(int32_t* steps, double x, double y, dou
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[34] * rY +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[35] * rZ) *
                (MILLIMETERS_PER_METER * MICROMETERS_PER_MILLIMETER /
-                _hardpointActuatorSettings->MicrometersPerStep);
+                _hardpointActuatorSettings->micrometersPerStep);
 }
 
 } /* namespace SS */

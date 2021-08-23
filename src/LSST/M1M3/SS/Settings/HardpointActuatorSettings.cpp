@@ -22,6 +22,7 @@
  */
 
 #include <HardpointActuatorSettings.h>
+#include <M1M3SSPublisher.h>
 #include <TableLoader.h>
 #include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
@@ -38,8 +39,8 @@ void HardpointActuatorSettings::load(const std::string &filename) {
                                doc["HardpointDisplacementToMirrorPositionTablePath"].as<std::string>());
         TableLoader::loadTable(1, 1, 6, &MirrorPositionToHardpointDisplacement,
                                doc["MirrorPositionToHardpointDisplacementTablePath"].as<std::string>());
-        MicrometersPerStep = doc["MicrometersPerStep"].as<double>();
-        MicrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
+        micrometersPerStep = doc["MicrometersPerStep"].as<double>();
+        micrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
 
         std::vector<int32_t> offsetVec = doc["HPEncoderOffsets"].as<std::vector<int32_t>>();
         if (offsetVec.size() != HP_COUNT) {
@@ -47,16 +48,20 @@ void HardpointActuatorSettings::load(const std::string &filename) {
                                                  HP_COUNT, offsetVec.size()));
         }
         memcpy(_encoderOffset, offsetVec.data(), HP_COUNT * sizeof(int32_t));
-        HardpointMeasuredForceFaultHigh = doc["HardpointMeasuredForceFaultHigh"].as<float>();
-        HardpointMeasuredForceFaultLow = doc["HardpointMeasuredForceFaultLow"].as<float>();
-        HardpointMeasuredForceFSBWarningHigh = doc["HardpointMeasuredForceFSBWarningHigh"].as<float>();
-        HardpointMeasuredForceFSBWarningLow = doc["HardpointMeasuredForceFSBWarningLow"].as<float>();
-        HardpointMeasuredForceWarningHigh = doc["HardpointMeasuredForceWarningHigh"].as<float>();
-        HardpointMeasuredForceWarningLow = doc["HardpointMeasuredForceWarningLow"].as<float>();
-        AirPressureWarningHigh = doc["AirPressureWarningHigh"].as<float>();
-        AirPressureWarningLow = doc["AirPressureWarningLow"].as<float>();
+        hardpointMeasuredForceFaultHigh = doc["HardpointMeasuredForceFaultHigh"].as<float>();
+        hardpointMeasuredForceFaultLow = doc["HardpointMeasuredForceFaultLow"].as<float>();
+        hardpointMeasuredForceFSBWarningHigh = doc["HardpointMeasuredForceFSBWarningHigh"].as<float>();
+        hardpointMeasuredForceFSBWarningLow = doc["HardpointMeasuredForceFSBWarningLow"].as<float>();
+        hardpointMeasuredForceWarningHigh = doc["HardpointMeasuredForceWarningHigh"].as<float>();
+        hardpointMeasuredForceWarningLow = doc["HardpointMeasuredForceWarningLow"].as<float>();
+        airPressureWarningHigh = doc["AirPressureWarningHigh"].as<float>();
+        airPressureWarningLow = doc["AirPressureWarningLow"].as<float>();
 
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+
+    log();
 }
+
+void HardpointActuatorSettings::log() { M1M3SSPublisher::get().logHardpointActuatorSettings(this); }
