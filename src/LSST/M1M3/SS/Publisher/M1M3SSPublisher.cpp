@@ -79,6 +79,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorForceWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceSetpointWarning");

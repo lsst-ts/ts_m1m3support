@@ -44,11 +44,11 @@ ForcesAndMoments ForceConverter::calculateForcesAndMoments(
         int xIndex = forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
         float rx = forceActuatorApplicationSettings->Table[zIndex].XPosition -
-                   forceActuatorSettings->MirrorCenterOfGravityX;
+                   forceActuatorSettings->mirrorCenterOfGravityX;
         float ry = forceActuatorApplicationSettings->Table[zIndex].YPosition -
-                   forceActuatorSettings->MirrorCenterOfGravityY;
+                   forceActuatorSettings->mirrorCenterOfGravityY;
         float rz = forceActuatorApplicationSettings->Table[zIndex].ZPosition -
-                   forceActuatorSettings->MirrorCenterOfGravityZ;
+                   forceActuatorSettings->mirrorCenterOfGravityZ;
         float fx = 0;
         float fy = 0;
         float fz = zForces[zIndex];
@@ -85,11 +85,11 @@ ForcesAndMoments ForceConverter::calculateForcesAndMoments(
     fm.ForceMagnitude = 0;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         float rx = forceActuatorApplicationSettings->Table[zIndex].XPosition -
-                   forceActuatorSettings->MirrorCenterOfGravityX;
+                   forceActuatorSettings->mirrorCenterOfGravityX;
         float ry = forceActuatorApplicationSettings->Table[zIndex].YPosition -
-                   forceActuatorSettings->MirrorCenterOfGravityY;
+                   forceActuatorSettings->mirrorCenterOfGravityY;
         float rz = forceActuatorApplicationSettings->Table[zIndex].ZPosition -
-                   forceActuatorSettings->MirrorCenterOfGravityZ;
+                   forceActuatorSettings->mirrorCenterOfGravityZ;
         float fx = 0;
         float fy = 0;
         float fz = zForces[zIndex];

@@ -22,9 +22,12 @@
  */
 
 #include <ForceActuatorSettings.h>
+#include <SettingReader.h>
+#include <M1M3SSPublisher.h>
 #include <yaml-cpp/yaml.h>
 #include <TableLoader.h>
 #include <spdlog/spdlog.h>
+#include <algorithm>
 
 using namespace LSST::M1M3::SS;
 
@@ -32,7 +35,15 @@ void ForceActuatorSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        DisabledActuators = doc["DisabledActuators"].as<std::vector<int32_t>>();
+        auto disabledIndices = doc["DisabledActuators"].as<std::vector<bool>>();
+
+        for (int i = 0; i < FA_COUNT; ++i) {
+            disabledActuators[i] =
+                    std::find(disabledIndices.begin(), disabledIndices.end(),
+                              SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
+                                      i)) != disabledIndices.end();
+        }
+
         TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
         TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
         TableLoader::loadTable(1, 1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
@@ -143,27 +154,27 @@ void ForceActuatorSettings::load(const std::string &filename) {
         _loadNearNeighborZTable(doc["ForceActuatorNearZNeighborsTablePath"].as<std::string>());
         _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
 
-        UseInclinometer = doc["UseInclinometer"].as<bool>();
-        MirrorXMoment = doc["MirrorXMoment"].as<float>();
-        MirrorYMoment = doc["MirrorYMoment"].as<float>();
-        MirrorZMoment = doc["MirrorZMoment"].as<float>();
-        SetpointXMomentLowLimitPercentage = doc["SetpointXMomentLowLimitPercentage"].as<float>();
-        SetpointXMomentHighLimitPercentage = doc["SetpointXMomentHighLimitPercentage"].as<float>();
-        SetpointYMomentLowLimitPercentage = doc["SetpointYMomentLowLimitPercentage"].as<float>();
-        SetpointYMomentHighLimitPercentage = doc["SetpointYMomentHighLimitPercentage"].as<float>();
-        SetpointZMomentLowLimitPercentage = doc["SetpointZMomentLowLimitPercentage"].as<float>();
-        SetpointZMomentHighLimitPercentage = doc["SetpointZMomentHighLimitPercentage"].as<float>();
-        SetpointNearNeighborLimitPercentage = doc["SetpointNearNeighborLimitPercentage"].as<float>();
-        SetpointMirrorWeightLimitPercentage = doc["SetpointMirrorWeightLimitPercentage"].as<float>();
-        SetpointFarNeighborLimitPercentage = doc["SetpointFarNeighborLimitPercentage"].as<float>();
+        useInclinometer = doc["UseInclinometer"].as<bool>();
+        mirrorXMoment = doc["MirrorXMoment"].as<float>();
+        mirrorYMoment = doc["MirrorYMoment"].as<float>();
+        mirrorZMoment = doc["MirrorZMoment"].as<float>();
+        setpointXMomentLowLimitPercentage = doc["SetpointXMomentLowLimitPercentage"].as<float>();
+        setpointXMomentHighLimitPercentage = doc["SetpointXMomentHighLimitPercentage"].as<float>();
+        setpointYMomentLowLimitPercentage = doc["SetpointYMomentLowLimitPercentage"].as<float>();
+        setpointYMomentHighLimitPercentage = doc["SetpointYMomentHighLimitPercentage"].as<float>();
+        setpointZMomentLowLimitPercentage = doc["SetpointZMomentLowLimitPercentage"].as<float>();
+        setpointZMomentHighLimitPercentage = doc["SetpointZMomentHighLimitPercentage"].as<float>();
+        setpointNearNeighborLimitPercentage = doc["SetpointNearNeighborLimitPercentage"].as<float>();
+        setpointMirrorWeightLimitPercentage = doc["SetpointMirrorWeightLimitPercentage"].as<float>();
+        setpointFarNeighborLimitPercentage = doc["SetpointFarNeighborLimitPercentage"].as<float>();
 
-        MirrorCenterOfGravityX = doc["MirrorCenterOfGravityX"].as<float>();
-        MirrorCenterOfGravityY = doc["MirrorCenterOfGravityY"].as<float>();
-        MirrorCenterOfGravityZ = doc["MirrorCenterOfGravityZ"].as<float>();
+        mirrorCenterOfGravityX = doc["MirrorCenterOfGravityX"].as<float>();
+        mirrorCenterOfGravityY = doc["MirrorCenterOfGravityY"].as<float>();
+        mirrorCenterOfGravityZ = doc["MirrorCenterOfGravityZ"].as<float>();
 
-        RaiseIncrementPercentage = doc["RaiseIncrementPercentage"].as<double>();
-        LowerDecrementPercentage = doc["LowerDecrementPercentage"].as<double>();
-        RaiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
+        raiseIncrementPercentage = doc["RaiseIncrementPercentage"].as<double>();
+        lowerDecrementPercentage = doc["LowerDecrementPercentage"].as<double>();
+        raiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
 
         AberrationComponentSettings.set(doc["AberrationForceComponent"]);
         AccelerationComponentSettings.set(doc["AccelerationForceComponent"]);
@@ -182,20 +193,20 @@ void ForceActuatorSettings::load(const std::string &filename) {
         TestedTolerances.set(bumpTest["TestedTolerances"]);
         NonTestedTolerances.set(bumpTest["NonTestedTolerances"]);
 
-        BumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
-        BumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
+        bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
+        bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+
+    log();
 }
 
-bool ForceActuatorSettings::IsActuatorDisabled(int32_t actId) {
-    for (unsigned int i = 0; i < DisabledActuators.size(); ++i) {
-        if (DisabledActuators[i] == actId) {
-            return true;
-        }
-    }
-    return false;
+void ForceActuatorSettings::log() { M1M3SSPublisher::get().logForceActuatorSettings(this); }
+
+bool ForceActuatorSettings::isActuatorDisabled(int32_t actId) {
+    return disabledActuators[SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
+            actId)];
 }
 
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {

@@ -8,7 +8,7 @@ USER saluser
 ARG XML_BRANCH
 
 WORKDIR /home/saluser/repos/ts_xml
-RUN git checkout $XML_BRANCH && git pull
+RUN git pull && git checkout $XML_BRANCH && git pull
 
 WORKDIR /home/saluser
 RUN source .setup.sh \

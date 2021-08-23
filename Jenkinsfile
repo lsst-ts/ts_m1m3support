@@ -21,7 +21,9 @@ properties(
 node {
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
-    def XML_BRANCH = (BRANCH == "master") ? BRANCH : "develop"
+    // branches requiring changes in XML from default develop branch
+    def USE_SAME_XML_BRANCH = ["master", "develop", "tickets/DM-31425"]
+    def XML_BRANCH = USE_SAME_XML_BRANCH.indexOf(BRANCH) == -1 ? "develop" : BRANCH
     stage('Cloning sources')
     {
         dir("ts_cRIOcpp") {

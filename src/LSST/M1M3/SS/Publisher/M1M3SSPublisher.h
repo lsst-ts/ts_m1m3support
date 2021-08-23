@@ -296,6 +296,9 @@ public:
     void tryLogDisplacementSensorWarning();
     void logErrorCode();
     void tryLogErrorCode();
+    void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC* data) {
+        _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
+    }
     void logForceActuatorBumpTestStatus();
     void logForceActuatorForceWarning();
     void tryLogForceActuatorForceWarning();

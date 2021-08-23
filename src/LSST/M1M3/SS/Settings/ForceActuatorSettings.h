@@ -24,6 +24,8 @@
 #ifndef FORCEACTUATORSETTINGS_H_
 #define FORCEACTUATORSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+
 #include <DataTypes.h>
 #include <ForceActuatorLimits.h>
 #include <ForceComponentSettings.h>
@@ -41,9 +43,27 @@ struct ForceActuatorNeighbors {
     std::vector<int32_t> FarIDs;
 };
 
-class ForceActuatorSettings {
+/**
+ * Stores force actuator settings. Publish settings through SAL/DDS.
+ */
+class ForceActuatorSettings : public MTM1M3_logevent_forceActuatorSettingsC {
 public:
-    std::vector<int> DisabledActuators;
+    void load(const std::string &filename);
+
+    /**
+     * Returns true if actuator with given ID is disabled in configuration file.
+     *
+     * @param actId actuator ID (101..443)
+     *
+     * @return true if given actuator is disabled in configuration file.
+     */
+    bool isActuatorDisabled(int32_t actId);
+
+    /**
+     * Sends updates through SAL/DDS.
+     */
+    void log();
+
     std::vector<float> AccelerationXTable;
     std::vector<float> AccelerationYTable;
     std::vector<float> AccelerationZTable;
@@ -113,27 +133,6 @@ public:
 
     std::vector<ForceActuatorNeighbors> Neighbors;
 
-    bool UseInclinometer;
-    float MirrorXMoment;
-    float MirrorYMoment;
-    float MirrorZMoment;
-    float SetpointXMomentLowLimitPercentage;
-    float SetpointXMomentHighLimitPercentage;
-    float SetpointYMomentLowLimitPercentage;
-    float SetpointYMomentHighLimitPercentage;
-    float SetpointZMomentLowLimitPercentage;
-    float SetpointZMomentHighLimitPercentage;
-    float SetpointNearNeighborLimitPercentage;
-    float SetpointMirrorWeightLimitPercentage;
-    float SetpointFarNeighborLimitPercentage;
-    float MirrorCenterOfGravityX;
-    float MirrorCenterOfGravityY;
-    float MirrorCenterOfGravityZ;
-
-    double RaiseIncrementPercentage;
-    double LowerDecrementPercentage;
-    float RaiseLowerFollowingErrorLimit;
-
     ForceComponentSettings AberrationComponentSettings;
     ForceComponentSettings AccelerationComponentSettings;
     ForceComponentSettings ActiveOpticComponentSettings;
@@ -155,13 +154,6 @@ public:
      * Tolerances for actuators not tested.
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
-
-    float BumpTestSettleTime;
-    float BumpTestMeasurements;
-
-    void load(const std::string &filename);
-
-    bool IsActuatorDisabled(int32_t actId);
 
 private:
     void _loadNearNeighborZTable(const std::string &filename);
