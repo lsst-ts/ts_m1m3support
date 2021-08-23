@@ -478,16 +478,19 @@ void ILC::disableFA(uint32_t actuatorId) {
         return;
     }
     _subnetData.disableFA(actuatorId);
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, false);
     buildBusLists();
 }
 
 void ILC::enableFA(uint32_t actuatorId) {
     _subnetData.enableFA(actuatorId);
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, true);
     buildBusLists();
 }
 
 void ILC::enableAllFA() {
     _subnetData.enableAllFA();
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabledAll();
     buildBusLists();
 }
 

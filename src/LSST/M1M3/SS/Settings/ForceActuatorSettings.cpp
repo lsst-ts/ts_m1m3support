@@ -24,6 +24,7 @@
 #include <ForceActuatorSettings.h>
 #include <SettingReader.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <yaml-cpp/yaml.h>
 #include <TableLoader.h>
 #include <spdlog/spdlog.h>
@@ -38,10 +39,9 @@ void ForceActuatorSettings::load(const std::string &filename) {
         auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
         for (int i = 0; i < FA_COUNT; ++i) {
+            int faId = SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(i);
             enabledActuators[i] =
-                    std::find(disabledIndices.begin(), disabledIndices.end(),
-                              SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
-                                      i)) == disabledIndices.end();
+                    std::find(disabledIndices.begin(), disabledIndices.end(), faId) == disabledIndices.end();
         }
 
         TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());

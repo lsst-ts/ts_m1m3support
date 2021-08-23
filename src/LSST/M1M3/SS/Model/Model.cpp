@@ -193,6 +193,13 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Creating gyro");
     _gyro = new Gyro(gyroSettings);
 
+    // apply disabled FA from setting
+    for (int i = 0; i < FA_COUNT; i++) {
+        if (forceActuatorSettings->isActuatorDisabled(i)) {
+            _ilc->disableFA(forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+        }
+    }
+
     SPDLOG_INFO("Model: Settings applied");
 }
 
