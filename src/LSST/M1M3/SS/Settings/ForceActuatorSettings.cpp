@@ -36,6 +36,8 @@ void ForceActuatorSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
+        timestamp = M1M3SSPublisher::get().getTimestamp();
+
         auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
         for (int i = 0; i < FA_COUNT; ++i) {
