@@ -57,7 +57,7 @@ public:
      *
      * @return true if given actuator is disabled in configuration file.
      */
-    bool isActuatorDisabled(int32_t actId);
+    bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
 
     /**
      * Sends updates through SAL/DDS.

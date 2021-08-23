@@ -35,13 +35,13 @@ void ForceActuatorSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        auto disabledIndices = doc["DisabledActuators"].as<std::vector<bool>>();
+        auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
         for (int i = 0; i < FA_COUNT; ++i) {
-            disabledActuators[i] =
+            enabledActuators[i] =
                     std::find(disabledIndices.begin(), disabledIndices.end(),
                               SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
-                                      i)) != disabledIndices.end();
+                                      i)) == disabledIndices.end();
         }
 
         TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
@@ -203,11 +203,6 @@ void ForceActuatorSettings::load(const std::string &filename) {
 }
 
 void ForceActuatorSettings::log() { M1M3SSPublisher::get().logForceActuatorSettings(this); }
-
-bool ForceActuatorSettings::isActuatorDisabled(int32_t actId) {
-    return disabledActuators[SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
-            actId)];
-}
 
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
