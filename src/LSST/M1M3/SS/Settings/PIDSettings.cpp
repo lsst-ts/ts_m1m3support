@@ -21,32 +21,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PIDParameters.h>
 #include <PIDSettings.h>
-#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
-
-void parsePID(const YAML::Node &node, PIDParameters *params) {
-    params->Timestep = node["Timestep"].as<double>();
-    params->P = node["P"].as<double>();
-    params->I = node["I"].as<double>();
-    params->D = node["D"].as<double>();
-    params->N = node["N"].as<double>();
-}
 
 void PIDSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        parsePID(doc["Fx"], &Fx);
-        parsePID(doc["Fy"], &Fy);
-        parsePID(doc["Fz"], &Fz);
-        parsePID(doc["Mx"], &Mx);
-        parsePID(doc["My"], &My);
-        parsePID(doc["Mz"], &Mz);
+        _parsePID(doc["Fx"], 0);
+        _parsePID(doc["Fy"], 1);
+        _parsePID(doc["Fz"], 2);
+        _parsePID(doc["Mx"], 3);
+        _parsePID(doc["My"], 4);
+        _parsePID(doc["Mz"], 5);
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+}
+
+PIDParameters PIDSettings::getParameters(int index) {
+    return PIDParameters(timestep[index], P[index], I[index], D[index], N[index]);
+}
+
+void PIDSettings::_parsePID(const YAML::Node &node, int index) {
+    timestep[index] = node["Timestep"].as<double>();
+    P[index] = node["P"].as<double>();
+    I[index] = node["I"].as<double>();
+    D[index] = node["D"].as<double>();
+    N[index] = node["N"].as<double>();
 }
