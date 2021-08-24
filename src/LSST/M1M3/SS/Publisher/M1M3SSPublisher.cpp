@@ -55,7 +55,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_powerSupplyData");
 
     SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Events");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyWarning");

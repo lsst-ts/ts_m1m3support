@@ -231,6 +231,10 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
+    void logAccelerometerSettings(MTM1M3_logevent_acceleromaterSettingsC* data) {
+        _m1m3SAL->logEvent_accelerometerSettigns(data, 0);
+    }
+
     /**
      * @brief Sends AccelerometerWarning event.
      *

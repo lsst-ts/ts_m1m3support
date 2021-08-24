@@ -24,23 +24,17 @@
 #ifndef ACCELEROMETERSETTINGS_H_
 #define ACCELEROMETERSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+#include <M1M3SSPublisher.h>
+
 #include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class AccelerometerSettings {
+class AccelerometerSettings : public MTM1M3_logevent_accelerometerSettingsC {
 public:
-    float GsToMetersPerSecondSqrd;
-    float AngularAccelerationXDistance;
-    float AngularAccelerationYDistance;
-    float AngularAccelerationZDistance;
-    float AccelerometerBias[8];
-    float AccelerometerSensitivity[8];
-    float AccelerometerOffsets[8];
-    float AccelerometerScalars[8];
-
     void load(const std::string &filename);
 };
 
