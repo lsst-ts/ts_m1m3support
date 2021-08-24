@@ -36,13 +36,13 @@ void DisplacementSensorSettings::load(const std::string &filename) {
         NPorts = doc["NPorts"].as<std::vector<int32_t>>();
         NOffsets = doc["NOffsets"].as<std::vector<double>>();
 
-        XPositionOffset = doc["XPositionOffset"].as<double>();
-        YPositionOffset = doc["YPositionOffset"].as<double>();
-        ZPositionOffset = doc["ZPositionOffset"].as<double>();
+        xPositionOffset = doc["XPositionOffset"].as<double>();
+        yPositionOffset = doc["YPositionOffset"].as<double>();
+        zPositionOffset = doc["ZPositionOffset"].as<double>();
 
-        XRotationOffset = doc["XRotationOffset"].as<double>();
-        YRotationOffset = doc["YRotationOffset"].as<double>();
-        ZRotationOffset = doc["ZRotationOffset"].as<double>();
+        xRotationOffset = doc["XRotationOffset"].as<double>();
+        yRotationOffset = doc["YRotationOffset"].as<double>();
+        zRotationOffset = doc["ZRotationOffset"].as<double>();
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
@@ -53,4 +53,6 @@ void DisplacementSensorSettings::load(const std::string &filename) {
     if (NOffsets.size() != 8) {
         throw std::runtime_error(fmt::format("Invalid NPorts length: {}, expected 8", NOffsets.size()));
     }
+
+    log();
 }

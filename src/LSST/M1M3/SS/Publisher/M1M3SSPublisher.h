@@ -289,6 +289,9 @@ public:
     }
     void logDetailedState();
     void tryLogDetailedState();
+    void logDisplacementSensorSettings(MTM1M3_logevent_displacementSensorSettingsC* data) {
+        _m1m3SAL->logEvent_displacementSensorSettings(data, 0);
+    }
     void logDisplacementSensorWarning();
     void logEnabledForceActuators(MTM1M3_logevent_enabledForceActuatorsC* data) {
         _m1m3SAL->logEvent_enabledForceActuators(data, 0);

@@ -124,7 +124,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[6] * _imsData->rawSensorData[ports[6]] +
                  _displacementSensorSettings->ConverterMatrix[7] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->XPositionOffset;
+                _displacementSensorSettings->xPositionOffset;
         _imsData->yPosition =
                 (_displacementSensorSettings->ConverterMatrix[8] * _imsData->rawSensorData[ports[0]] +
                  _displacementSensorSettings->ConverterMatrix[9] * _imsData->rawSensorData[ports[1]] +
@@ -135,7 +135,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[14] * _imsData->rawSensorData[ports[6]] +
                  _displacementSensorSettings->ConverterMatrix[15] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->YPositionOffset;
+                _displacementSensorSettings->yPositionOffset;
         _imsData->zPosition =
                 (_displacementSensorSettings->ConverterMatrix[16] * _imsData->rawSensorData[ports[0]] +
                  _displacementSensorSettings->ConverterMatrix[17] * _imsData->rawSensorData[ports[1]] +
@@ -146,7 +146,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[22] * _imsData->rawSensorData[ports[6]] +
                  _displacementSensorSettings->ConverterMatrix[23] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->ZPositionOffset;
+                _displacementSensorSettings->zPositionOffset;
         _imsData->xRotation =
                 (_displacementSensorSettings->ConverterMatrix[24] * _imsData->rawSensorData[ports[0]] +
                  _displacementSensorSettings->ConverterMatrix[25] * _imsData->rawSensorData[ports[1]] +
@@ -157,7 +157,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[30] * _imsData->rawSensorData[ports[6]] +
                  _displacementSensorSettings->ConverterMatrix[31] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->XRotationOffset;
+                _displacementSensorSettings->xRotationOffset;
         _imsData->yRotation =
                 (_displacementSensorSettings->ConverterMatrix[32] * _imsData->rawSensorData[ports[0]] +
                  _displacementSensorSettings->ConverterMatrix[33] * _imsData->rawSensorData[ports[1]] +
@@ -168,7 +168,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[38] * _imsData->rawSensorData[ports[6]] +
                  _displacementSensorSettings->ConverterMatrix[39] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->YRotationOffset;
+                _displacementSensorSettings->yRotationOffset;
         _imsData->zRotation =
                 (_displacementSensorSettings->ConverterMatrix[40] * _imsData->rawSensorData[ports[0]] +
                  _displacementSensorSettings->ConverterMatrix[41] * _imsData->rawSensorData[ports[1]] +
@@ -179,7 +179,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[46] * _imsData->rawSensorData[ports[6]] +
                  _displacementSensorSettings->ConverterMatrix[47] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->ZRotationOffset;
+                _displacementSensorSettings->zRotationOffset;
         M1M3SSPublisher::get().putIMSData();
         if (!_errorCleared &&
             _fpgaData->DisplacementSampleTimestamp > _fpgaData->DisplacementErrorTimestamp) {
