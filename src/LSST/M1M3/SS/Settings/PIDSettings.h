@@ -35,7 +35,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct PIDSettings : public MTM1M3_logevent_PIDSettingsC {
+struct PIDSettings : public MTM1M3_logevent_pidSettingsC {
     void load(const std::string &filename);
 
     void log() { M1M3SSPublisher::get().logPIDSettings(this); }

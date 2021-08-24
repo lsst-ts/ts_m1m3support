@@ -353,7 +353,7 @@ public:
     void tryLogModbusResponse();
     void logPIDInfo();
     void tryLogPIDInfo();
-    void logPIDSettings(MTM1M3_logevent_PIDSettingsC* data) { _m1m3SAL->logEvent_PIDSettings(data, 0); }
+    void logPIDSettings(MTM1M3_logevent_PIDSettingsC* data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
     void logPowerStatus();
     void tryLogPowerStatus();
     void logPowerSupplyStatus();

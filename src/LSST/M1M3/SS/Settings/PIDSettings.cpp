@@ -44,13 +44,13 @@ void PIDSettings::load(const std::string &filename) {
 }
 
 PIDParameters PIDSettings::getParameters(int index) {
-    return PIDParameters(timestep[index], P[index], I[index], D[index], N[index]);
+    return PIDParameters(timestep[index], p[index], i[index], d[index], n[index]);
 }
 
 void PIDSettings::_parsePID(const YAML::Node &node, int index) {
     timestep[index] = node["Timestep"].as<double>();
-    P[index] = node["P"].as<double>();
-    I[index] = node["I"].as<double>();
-    D[index] = node["D"].as<double>();
-    N[index] = node["N"].as<double>();
+    p[index] = node["P"].as<double>();
+    i[index] = node["I"].as<double>();
+    d[index] = node["D"].as<double>();
+    n[index] = node["N"].as<double>();
 }
