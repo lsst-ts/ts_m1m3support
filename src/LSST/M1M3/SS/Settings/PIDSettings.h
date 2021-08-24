@@ -38,6 +38,8 @@ namespace SS {
 struct PIDSettings : public MTM1M3_logevent_PIDSettingsC {
     void load(const std::string &filename);
 
+    void log() { M1M3SSPublisher::get().logPIDSettings(this); }
+
     PIDParameters getParameters(int index);
 
 private:

@@ -104,7 +104,7 @@ void Gyro::setAxis() {
 
 void Gyro::setDataRate() {
     SPDLOG_INFO("Gyro: setDataRate()");
-    this->writeCommand("=DR," + std::to_string(_gyroSettings->DataRate) + "\r\n");
+    this->writeCommand("=DR," + std::to_string(_gyroSettings->dataRate) + "\r\n");
     std::this_thread::sleep_for(10ms);
 }
 
@@ -178,9 +178,9 @@ void Gyro::processData() {
     if (fpgaData->GyroSampleTimestamp > _lastSampleTimestamp) {
         _lastSampleTimestamp = fpgaData->GyroSampleTimestamp;
         _gyroData->timestamp = Timestamp::fromFPGA(fpgaData->GyroSampleTimestamp);
-        _gyroData->angularVelocityX = fpgaData->GyroRawX + _gyroSettings->AngularVelocityXOffset;
-        _gyroData->angularVelocityY = fpgaData->GyroRawY + _gyroSettings->AngularVelocityYOffset;
-        _gyroData->angularVelocityZ = fpgaData->GyroRawZ + _gyroSettings->AngularVelocityZOffset;
+        _gyroData->angularVelocityX = fpgaData->GyroRawX + _gyroSettings->AngularVelocityOffset[0];
+        _gyroData->angularVelocityY = fpgaData->GyroRawY + _gyroSettings->AngularVelocityOffset[1];
+        _gyroData->angularVelocityZ = fpgaData->GyroRawZ + _gyroSettings->AngularVelocityOffset[2];
         _gyroData->sequenceNumber = fpgaData->GyroSequenceNumber;
         _gyroData->temperature = fpgaData->GyroTemperature;
         uint8_t status = fpgaData->GyroStatus;

@@ -31,10 +31,10 @@ void GyroSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        DataRate = doc["DataRate"].as<int>();
-        AngularVelocityXOffset = doc["AngularVelocityXOffset"].as<float>();
-        AngularVelocityYOffset = doc["AngularVelocityYOffset"].as<float>();
-        AngularVelocityZOffset = doc["AngularVelocityZOffset"].as<float>();
+        dataRate = doc["DataRate"].as<int>();
+        angularVelocityOffset[0] = doc["AngularVelocityXOffset"].as<float>();
+        angularVelocityOffset[1] = doc["AngularVelocityYOffset"].as<float>();
+        angularVelocityOffset[2] = doc["AngularVelocityZOffset"].as<float>();
         AxesMatrix = doc["AxesMatrix"].as<std::vector<double>>();
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
@@ -43,4 +43,6 @@ void GyroSettings::load(const std::string &filename) {
     if (AxesMatrix.size() != 9) {
         throw std::runtime_error(fmt::format("Invalid AxesMatrix length: {}, expected 9", AxesMatrix.size()));
     }
+
+    log();
 }

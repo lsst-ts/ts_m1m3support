@@ -39,6 +39,8 @@ void PIDSettings::load(const std::string &filename) {
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+
+    log();
 }
 
 PIDParameters PIDSettings::getParameters(int index) {

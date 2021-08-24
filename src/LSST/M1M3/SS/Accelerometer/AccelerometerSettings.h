@@ -36,6 +36,8 @@ namespace SS {
 class AccelerometerSettings : public MTM1M3_logevent_accelerometerSettingsC {
 public:
     void load(const std::string &filename);
+
+    void log() { M1M3SSPublisher::get.logAccelerometerSettings(this); }
 };
 
 } /* namespace SS */

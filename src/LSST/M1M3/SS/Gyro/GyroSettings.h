@@ -24,6 +24,9 @@
 #ifndef GYROSETTINGS_H_
 #define GYROSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+#include <M1M3SSPublisher.h>
+
 #include <string>
 #include <vector>
 
@@ -31,14 +34,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct GyroSettings {
-    int DataRate;
-    float AngularVelocityXOffset;
-    float AngularVelocityYOffset;
-    float AngularVelocityZOffset;
+struct GyroSettings : public MTM1M3_logevent_gyroSettingsC {
     std::vector<double> AxesMatrix;
 
     void load(const std::string &filename);
+
+    void log() { M1M3SSPublisher::get().logGyroSettings(this); }
 };
 
 } /* namespace SS */

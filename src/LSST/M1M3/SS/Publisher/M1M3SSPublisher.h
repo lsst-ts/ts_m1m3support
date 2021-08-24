@@ -318,6 +318,7 @@ public:
     }
     void logForceSetpointWarning();
     void tryLogForceSetpointWarning();
+    void logGyroSettings(MTM1M3_logevent_gyroSettingsC* data) { _m1m3SAL->logEvent_gyroSettings(data, 0); }
     void logGyroWarning();
     void tryLogGyroWarning();
     void logHardpointActuatorInfo();

@@ -87,6 +87,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceSetpointWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorSettings");
