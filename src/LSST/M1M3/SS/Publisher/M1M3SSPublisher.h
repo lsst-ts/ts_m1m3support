@@ -231,8 +231,8 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
-    void logAccelerometerSettings(MTM1M3_logevent_acceleromaterSettingsC* data) {
-        _m1m3SAL->logEvent_accelerometerSettigns(data, 0);
+    void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
+        _m1m3SAL->logEvent_accelerometerSettings(data, 0);
     }
 
     /**
@@ -339,6 +339,9 @@ public:
     void logHeartbeat();
     void logILCWarning();
     void tryLogILCWarning();
+    void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC* data) {
+        _m1m3SAL->logEvent_inclinometerSettings(data, 0);
+    }
     void logInclinometerSensorWarning();
     void tryLogInclinometerSensorWarning();
     void logInterlockStatus();
@@ -350,6 +353,7 @@ public:
     void tryLogModbusResponse();
     void logPIDInfo();
     void tryLogPIDInfo();
+    void logPIDSettings(MTM1M3_logevent_PIDSettingsC* data) { _m1m3SAL->logEvent_PIDSettings(data, 0); }
     void logPowerStatus();
     void tryLogPowerStatus();
     void logPowerSupplyStatus();
