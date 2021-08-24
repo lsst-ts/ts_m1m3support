@@ -31,14 +31,16 @@ void InclinometerSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        Offset = doc["Offset"].as<float>();
+        offset = doc["Offset"].as<float>();
 
         auto limits = doc["Limits"];
-        FaultLow = limits["FaultLow"].as<float>();
-        WarningLow = limits["WarningLow"].as<float>();
-        WarningHigh = limits["WarningHigh"].as<float>();
-        FaultHigh = limits["FaultHigh"].as<float>();
+        faultLow = limits["FaultLow"].as<float>();
+        warningLow = limits["WarningLow"].as<float>();
+        warningHigh = limits["WarningHigh"].as<float>();
+        faultHigh = limits["FaultHigh"].as<float>();
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+
+    log();
 }
