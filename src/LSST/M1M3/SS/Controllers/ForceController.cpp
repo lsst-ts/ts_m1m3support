@@ -593,7 +593,7 @@ bool ForceController::_checkMirrorMoments() {
             _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentLowLimitFactor,
             xMoment);
     _forceSetpointWarning->yMomentWarning = !Range::InRange(
-            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentHighLimitFator,
+            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentHighLimitFactor,
             _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentLowLimitFactor,
             yMoment);
     _forceSetpointWarning->zMomentWarning = !Range::InRange(
