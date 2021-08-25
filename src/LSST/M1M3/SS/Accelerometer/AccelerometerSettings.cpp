@@ -31,7 +31,6 @@ void AccelerometerSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        GsToMetersPerSecondSqrd = doc["GsToMetersPerSecondSqrd"].as<float>();
         angularAccelerationDistance[0] = doc["AngularAccelerationXDistance"].as<float>();
         angularAccelerationDistance[1] = doc["AngularAccelerationYDistance"].as<float>();
         angularAccelerationDistance[2] = doc["AngularAccelerationZDistance"].as<float>();
@@ -39,7 +38,7 @@ void AccelerometerSettings::load(const std::string &filename) {
             auto accNode = doc["Accelerometer" + std::to_string(i + 1)];
             bias[i] = accNode["Bias"].as<float>();
             sensitivity[i] = accNode["Sensitivity"].as<float>();
-            offset[i] = accNode["Offset"].as<float>();
+            accelerometerOffset[i] = accNode["Offset"].as<float>();
             scalar[i] = accNode["Scalar"].as<float>();
         }
     } catch (YAML::Exception &ex) {

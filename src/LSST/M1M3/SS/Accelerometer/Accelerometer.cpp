@@ -60,7 +60,7 @@ void Accelerometer::processData() {
                 G2M_S_2(((_accelerometerData->rawAccelerometer[i] - _accelerometerSettings->bias[i]) *
                          _accelerometerSettings->sensitivity[i]) *
                                 _accelerometerSettings->scalar[i] +
-                        _accelerometerSettings->offset[i]);
+                        _accelerometerSettings->accelerometerOffset[i]);
     }
     _accelerometerData->angularAccelerationX =
             (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
