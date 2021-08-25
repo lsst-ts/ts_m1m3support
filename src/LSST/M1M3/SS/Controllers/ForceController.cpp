@@ -613,7 +613,7 @@ bool ForceController::_checkNearNeighbors() {
     float nominalZWarning = nominalZ * _forceActuatorSettings->setpointNearNeighborLimitFactor;
     bool warningChanged = false;
     _forceSetpointWarning->anyNearNeighborWarning = false;
-    std::string failed;
+    string failed;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
         if (Model::get().getILC()->isDisabled(
@@ -630,12 +630,12 @@ bool ForceController::_checkNearNeighbors() {
         }
 
         nearZ /= nearNeighbors;
-        float deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
+        float deltaZ = abs(_appliedForces->zForces[zIndex] - nearZ);
 
         if (deltaZ > nominalZWarning) {
             _forceSetpointWarning->nearNeighborWarning[zIndex] = true;
-            failed += std::to_string(_forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex)) + ":" +
-                      std::to_string(deltaZ) + " ";
+            failed += to_string(_forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex)) + ":" +
+                      to_string(deltaZ) + " ";
         } else {
             _forceSetpointWarning->nearNeighborWarning[zIndex] = false;
         }
