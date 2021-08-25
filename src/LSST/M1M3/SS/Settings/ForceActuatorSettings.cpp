@@ -156,15 +156,15 @@ void ForceActuatorSettings::load(const std::string &filename) {
         mirrorXMoment = doc["MirrorXMoment"].as<float>();
         mirrorYMoment = doc["MirrorYMoment"].as<float>();
         mirrorZMoment = doc["MirrorZMoment"].as<float>();
-        setpointXMomentLowLimitPercentage = doc["SetpointXMomentLowLimitPercentage"].as<float>();
-        setpointXMomentHighLimitPercentage = doc["SetpointXMomentHighLimitPercentage"].as<float>();
-        setpointYMomentLowLimitPercentage = doc["SetpointYMomentLowLimitPercentage"].as<float>();
-        setpointYMomentHighLimitPercentage = doc["SetpointYMomentHighLimitPercentage"].as<float>();
-        setpointZMomentLowLimitPercentage = doc["SetpointZMomentLowLimitPercentage"].as<float>();
-        setpointZMomentHighLimitPercentage = doc["SetpointZMomentHighLimitPercentage"].as<float>();
-        setpointNearNeighborLimitPercentage = doc["SetpointNearNeighborLimitPercentage"].as<float>();
-        setpointMirrorWeightLimitPercentage = doc["SetpointMirrorWeightLimitPercentage"].as<float>();
-        setpointFarNeighborLimitPercentage = doc["SetpointFarNeighborLimitPercentage"].as<float>();
+        setpointXMomentLowLimitFactor = doc["SetpointXMomentLowLimitFactor"].as<float>();
+        setpointXMomentHighLimitFactor = doc["SetpointXMomentHighLimitFactor"].as<float>();
+        setpointYMomentLowLimitFactor = doc["SetpointYMomentLowLimitFactor"].as<float>();
+        setpointYMomentHighLimitFactor = doc["SetpointYMomentHighLimitFactor"].as<float>();
+        setpointZMomentLowLimitFactor = doc["SetpointZMomentLowLimitFactor"].as<float>();
+        setpointZMomentHighLimitFactor = doc["SetpointZMomentHighLimitFactor"].as<float>();
+        setpointNearNeighborLimitFactor = doc["SetpointNearNeighborLimitFactor"].as<float>();
+        setpointMirrorWeightLimitFactor = doc["SetpointMirrorWeightLimitFactor"].as<float>();
+        setpointFarNeighborLimitFactor = doc["SetpointFarNeighborLimitFactor"].as<float>();
 
         mirrorCenterOfGravityX = doc["MirrorCenterOfGravityX"].as<float>();
         mirrorCenterOfGravityY = doc["MirrorCenterOfGravityY"].as<float>();

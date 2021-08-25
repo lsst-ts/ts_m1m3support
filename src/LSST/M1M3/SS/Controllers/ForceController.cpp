@@ -589,19 +589,16 @@ bool ForceController::_checkMirrorMoments() {
     float yMoment = _appliedForces->my;
     float zMoment = _appliedForces->mz;
     _forceSetpointWarning->xMomentWarning = !Range::InRange(
-            _forceActuatorSettings->mirrorXMoment *
-                    _forceActuatorSettings->setpointXMomentHighLimitPercentage,
-            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentLowLimitPercentage,
+            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentHighLimitFactor,
+            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentLowLimitFactor,
             xMoment);
     _forceSetpointWarning->yMomentWarning = !Range::InRange(
-            _forceActuatorSettings->mirrorYMoment *
-                    _forceActuatorSettings->setpointYMomentHighLimitPercentage,
-            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentLowLimitPercentage,
+            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentHighLimitFator,
+            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentLowLimitFactor,
             yMoment);
     _forceSetpointWarning->zMomentWarning = !Range::InRange(
-            _forceActuatorSettings->mirrorZMoment *
-                    _forceActuatorSettings->setpointZMomentHighLimitPercentage,
-            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentLowLimitPercentage,
+            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentHighLimitFactor,
+            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentLowLimitFactor,
             zMoment);
     _safetyController->forceControllerNotifyXMomentLimit(_forceSetpointWarning->xMomentWarning);
     _safetyController->forceControllerNotifyYMomentLimit(_forceSetpointWarning->yMomentWarning);
@@ -613,7 +610,7 @@ bool ForceController::_checkMirrorMoments() {
 bool ForceController::_checkNearNeighbors() {
     SPDLOG_TRACE("ForceController: checkNearNeighbors()");
     float nominalZ = _mirrorWeight / (float)FA_COUNT;
-    float nominalZWarning = nominalZ * _forceActuatorSettings->setpointNearNeighborLimitPercentage;
+    float nominalZWarning = nominalZ * _forceActuatorSettings->setpointNearNeighborLimitFactor;
     bool warningChanged = false;
     _forceSetpointWarning->anyNearNeighborWarning = false;
     std::string failed;
@@ -669,7 +666,7 @@ bool ForceController::_checkMirrorWeight() {
     float globalForce = x + y + z;
     bool previousWarning = _forceSetpointWarning->magnitudeWarning;
     _forceSetpointWarning->magnitudeWarning =
-            globalForce > (_mirrorWeight * _forceActuatorSettings->setpointMirrorWeightLimitPercentage);
+            globalForce > (_mirrorWeight * _forceActuatorSettings->setpointMirrorWeightLimitFactor);
     _safetyController->forceControllerNotifyMagnitudeLimit(_forceSetpointWarning->magnitudeWarning,
                                                            globalForce);
     return _forceSetpointWarning->magnitudeWarning != previousWarning;
@@ -682,7 +679,7 @@ bool ForceController::_checkFarNeighbors() {
     float globalZ = _appliedForces->fz;
     float globalForce = sqrt(globalX * globalX + globalY * globalY + globalZ * globalZ);
     float globalAverageForce = globalForce / FA_COUNT;
-    float tolerance = globalAverageForce * _forceActuatorSettings->setpointNearNeighborLimitPercentage;
+    float tolerance = globalAverageForce * _forceActuatorSettings->setpointNearNeighborLimitFactor;
     if (tolerance < 1) {
         tolerance = 1;
     }
