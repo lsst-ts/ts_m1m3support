@@ -31,7 +31,7 @@ void InclinometerSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        offset = doc["Offset"].as<float>();
+        inclinometerOffset = doc["Offset"].as<float>();
 
         auto limits = doc["Limits"];
         faultLow = limits["FaultLow"].as<float>();
