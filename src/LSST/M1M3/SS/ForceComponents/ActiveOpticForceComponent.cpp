@@ -89,7 +89,7 @@ void ActiveOpticForceComponent::postUpdateActions() {
         _preclippedActiveOpticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedActiveOpticForces->zForces[zIndex],
-                                         _appliedActiveOpticForces->zForces[zIndex]);
+                                         _appliedActiveOpticForces->zForces + zIndex);
         _forceSetpointWarning->activeOpticForceWarning[zIndex] |= notInRange;
         clippingRequired |= _forceSetpointWarning->activeOpticForceWarning[zIndex];
     }
