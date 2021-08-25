@@ -99,6 +99,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_heartbeat");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_ilcWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_logLevel");
