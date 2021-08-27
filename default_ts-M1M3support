@@ -1,7 +1,3 @@
-#Configurations to start on this VMS
-#VMS="M1M3"
-#VMS="M2 CameraRotator"
-
 OSPL_HOME=/opt/OpenSpliceDDS/V6.11.0/HDE/x86_64.linux
 OSPL_RELEASE=6.11.0
 LSST_DDS_PARTITION_PREFIX=summit
