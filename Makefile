@@ -70,7 +70,7 @@ ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
 	${co}sed s?@VERSION@?$(VERSION)?g control.ipk.in > ipk/control/control
 	${co}cp postinst prerm postrm ipk/control
 	${co}echo -e "/etc/default/ts-M1M3support" > ipk/control/conffiles
-	${co}find SettingFiles -name '*.xml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/ts-M1M3support#' >> ipk/control/conffiles
+	${co}find SettingFiles -name '*.yaml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/ts-M1M3support#' >> ipk/control/conffiles
 	${co}echo "2.0" > ipk/debian-binary
 	${co}tar czf ipk/data.tar.gz -P --transform "s#^ipk/data#.#" --owner=0 --group=0 ipk/data
 	${co}tar czf ipk/control.tar.gz -P --transform "s#^ipk/control#.#" --owner=0 --group=0 ipk/control
