@@ -55,7 +55,7 @@ public:
      */
     void setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
 
-    void setEnabled(int32_t dataIndex, bool enabled);
+    void setEnabled(int32_t actuatorId, bool enabled);
     void setEnabledAll();
 
     /**

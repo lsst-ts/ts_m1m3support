@@ -70,8 +70,8 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
     _nonTestedWarning = SettingReader::get().getForceActuatorSettings()->NonTestedTolerances.warning;
     _nonTestedError = SettingReader::get().getForceActuatorSettings()->NonTestedTolerances.error;
 
-    _testSettleTime = SettingReader::get().getForceActuatorSettings()->BumpTestSettleTime;
-    _testMeasurements = SettingReader::get().getForceActuatorSettings()->BumpTestMeasurements;
+    _testSettleTime = SettingReader::get().getForceActuatorSettings()->bumpTestSettleTime;
+    _testMeasurements = SettingReader::get().getForceActuatorSettings()->bumpTestMeasurements;
 
     _testPrimary = testPrimary;
     _testSecondary = _secondaryIndex < 0 ? false : testSecondary;

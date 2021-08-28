@@ -24,6 +24,8 @@
 #ifndef FORCECONTROLLERSAFETYSETTINGS_H_
 #define FORCECONTROLLERSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 struct ForceControllerSafetySettings {
     bool FaultOnSafetyLimit;
     bool FaultOnXMomentLimit;
@@ -45,6 +47,29 @@ struct ForceControllerSafetySettings {
     bool FaultOnOffsetForceClipping;
     bool FaultOnVelocityForceClipping;
     bool FaultOnForceClipping;
+
+    void set(YAML::Node node) {
+        FaultOnSafetyLimit = node["FaultOnSafetyLimit"].as<bool>();
+        FaultOnXMomentLimit = node["FaultOnXMomentLimit"].as<bool>();
+        FaultOnYMomentLimit = node["FaultOnYMomentLimit"].as<bool>();
+        FaultOnZMomentLimit = node["FaultOnZMomentLimit"].as<bool>();
+        FaultOnNearNeighborCheck = node["FaultOnNearNeighborCheck"].as<bool>();
+        FaultOnMagnitudeLimit = node["FaultOnMagnitudeLimit"].as<bool>();
+        FaultOnFarNeighborCheck = node["FaultOnFarNeighborCheck"].as<bool>();
+        FaultOnElevationForceClipping = node["FaultOnElevationForceClipping"].as<bool>();
+        FaultOnAzimuthForceClipping = node["FaultOnAzimuthForceClipping"].as<bool>();
+        FaultOnThermalForceClipping = node["FaultOnThermalForceClipping"].as<bool>();
+        FaultOnBalanceForceClipping = node["FaultOnBalanceForceClipping"].as<bool>();
+        FaultOnAccelerationForceClipping = node["FaultOnAccelerationForceClipping"].as<bool>();
+        FaultOnActiveOpticNetForceCheck = node["FaultOnActiveOpticNetForceCheck"].as<bool>();
+        FaultOnActiveOpticForceClipping = node["FaultOnActiveOpticForceClipping"].as<bool>();
+        FaultOnStaticForceClipping = node["FaultOnStaticForceClipping"].as<bool>();
+        FaultOnAberrationNetForceCheck = node["FaultOnAberrationNetForceCheck"].as<bool>();
+        FaultOnAberrationForceClipping = node["FaultOnAberrationForceClipping"].as<bool>();
+        FaultOnOffsetForceClipping = node["FaultOnOffsetForceClipping"].as<bool>();
+        FaultOnVelocityForceClipping = node["FaultOnVelocityForceClipping"].as<bool>();
+        FaultOnForceClipping = node["FaultOnForceClipping"].as<bool>();
+    }
 };
 
 #endif /* FORCECONTROLLERSAFETYSETTINGS_H_ */

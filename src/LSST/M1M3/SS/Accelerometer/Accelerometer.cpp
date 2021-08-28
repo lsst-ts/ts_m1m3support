@@ -56,22 +56,22 @@ void Accelerometer::processData() {
     _accelerometerData->timestamp = Timestamp::fromFPGA(fpgaData->AccelerometerSampleTimestamp);
     for (int i = 0; i < 8; i++) {
         _accelerometerData->rawAccelerometer[i] = fpgaData->AccelerometerRaw[i];
-        _accelerometerData->accelerometer[i] = G2M_S_2(
-                ((_accelerometerData->rawAccelerometer[i] - _accelerometerSettings->AccelerometerBias[i]) *
-                 _accelerometerSettings->AccelerometerSensitivity[i]) *
-                        _accelerometerSettings->AccelerometerScalars[i] +
-                _accelerometerSettings->AccelerometerOffsets[i]);
+        _accelerometerData->accelerometer[i] =
+                G2M_S_2(((_accelerometerData->rawAccelerometer[i] - _accelerometerSettings->bias[i]) *
+                         _accelerometerSettings->sensitivity[i]) *
+                                _accelerometerSettings->scalar[i] +
+                        _accelerometerSettings->accelerometerOffset[i]);
     }
     _accelerometerData->angularAccelerationX =
             (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
-            _accelerometerSettings->AngularAccelerationXDistance;
+            _accelerometerSettings->angularAccelerationDistance[0];
     _accelerometerData->angularAccelerationY =
             (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
-            _accelerometerSettings->AngularAccelerationYDistance;
+            _accelerometerSettings->angularAccelerationDistance[1];
     _accelerometerData->angularAccelerationZ =
             (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
              _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
-            (_accelerometerSettings->AngularAccelerationZDistance * 2);
+            (_accelerometerSettings->angularAccelerationDistance[2] * 2);
     M1M3SSPublisher::get().putAccelerometerData();
 }
 

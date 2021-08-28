@@ -117,11 +117,11 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     REQUIRE_NOTHROW(Model::get().loadSettings("Default"));
 
-    REQUIRE(SettingReader::get().getForceActuatorSettings()->UseInclinometer == true);
+    REQUIRE(SettingReader::get().getForceActuatorSettings()->useInclinometer == true);
 
     SafetyControllerSettings safetyControllerSettings;
     REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xml"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yaml"));
 
     runAndCheck(Model::get().getForceController(), 0, 0, 0, 0, 0, 0);
 

@@ -22,24 +22,18 @@
  */
 
 #include <ExpansionFPGAApplicationSettings.h>
-#include <XMLDocLoad.h>
-#include <boost/lexical_cast.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-using namespace pugi;
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void ExpansionFPGAApplicationSettings::load(const std::string &filename) {
-    xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    this->Enabled =
-            boost::lexical_cast<uint32_t>(
-                    doc.select_node("//ExpansionFPGAApplicationSettings/Enabled").node().child_value()) != 0;
-    this->Resource = doc.select_node("//ExpansionFPGAApplicationSettings/Resource").node().child_value();
-}
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+        Enabled = doc["Enabled"].as<bool>();
+        Resource = doc["Resource"].as<std::string>();
+    } catch (YAML::Exception &ex) {
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+    }
+}

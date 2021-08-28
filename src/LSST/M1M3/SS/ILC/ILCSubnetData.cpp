@@ -57,8 +57,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
                 _forceActuatorApplicationSettings->ZIndexToYIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].SecondaryDataIndex =
                 _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
-        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled =
-                forceActuatorSettings->IsActuatorDisabled(row.ActuatorID);
+        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled = false;
         ILCMap map = this->subnetData[subnetIndex].ILCDataFromAddress[row.Address];
         this->subnetData[subnetIndex].FAIndex.push_back(map);
         this->subnetData[subnetIndex].FACount += 1;

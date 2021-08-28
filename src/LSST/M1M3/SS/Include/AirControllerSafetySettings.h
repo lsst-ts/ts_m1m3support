@@ -24,9 +24,16 @@
 #ifndef AIRCONTROLLERSAFETYSETTINGS_H_
 #define AIRCONTROLLERSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 struct AirControllerSafetySettings {
     bool FaultOnCommandOutputMismatch;
     bool FaultOnCommandSensorMismatch;
+
+    void set(YAML::Node node) {
+        FaultOnCommandOutputMismatch = node["FaultOnCommandOutputMismatch"].as<bool>();
+        FaultOnCommandSensorMismatch = node["FaultOnCommandSensorMismatch"].as<bool>();
+    }
 };
 
 #endif /* AIRCONTROLLERSAFETYSETTINGS_H_ */

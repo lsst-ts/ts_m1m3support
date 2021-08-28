@@ -193,21 +193,18 @@ States::Type EngineeringState::modbusTransmit(ModbusTransmitCommand* command) {
 States::Type EngineeringState::disableForceActuator(DisableForceActuatorCommand* command) {
     SPDLOG_INFO("{}: disableForceActuator({}, {})", name, command->actuatorId, command->actuatorIndex);
     Model::get().getILC()->disableFA(command->actuatorId);
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(command->actuatorIndex, false);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::enableForceActuator(EnableForceActuatorCommand* command) {
     SPDLOG_INFO("{}: enableForceActuator({}, {})", name, command->actuatorId, command->actuatorIndex);
     Model::get().getILC()->enableFA(command->actuatorId);
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(command->actuatorIndex, true);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
     SPDLOG_INFO("{}: enableAllForceActuators()", name);
     Model::get().getILC()->enableAllFA();
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabledAll();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

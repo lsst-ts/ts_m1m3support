@@ -24,21 +24,20 @@
 #ifndef INCLINOMETERSETTINGS_H_
 #define INCLINOMETERSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+#include <M1M3SSPublisher.h>
+
 #include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class InclinometerSettings {
+class InclinometerSettings : public MTM1M3_logevent_inclinometerSettingsC {
 public:
-    float Offset;
-    float FaultLow;
-    float WarningLow;
-    float WarningHigh;
-    float FaultHigh;
-
     void load(const std::string &filename);
+
+    void log() { M1M3SSPublisher::get().logInclinometerSettings(this); }
 };
 
 } /* namespace SS */
