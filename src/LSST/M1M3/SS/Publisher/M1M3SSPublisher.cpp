@@ -29,7 +29,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) { SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()"); }
+M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) {
+    SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()");
+    _eventSettingsApplied.otherSettingsEvents = "forceActuatorSettings";
+}
 
 M1M3SSPublisher& M1M3SSPublisher::get() {
     static M1M3SSPublisher publisher;
@@ -52,7 +55,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_powerSupplyData");
 
     SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Events");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyWarning");
@@ -73,17 +76,21 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_cellLightWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_commandRejectionWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_detailedState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_enabledForceActuators");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_errorCode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorForceWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceSetpointWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorInfo");
@@ -92,11 +99,13 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_heartbeat");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_ilcWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_logLevel");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_modbusResponse");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerWarning");
@@ -2016,16 +2025,7 @@ void M1M3SSPublisher::tryLogPreclippedVelocityForces() {
 
 void M1M3SSPublisher::logSettingVersions() { _m1m3SAL->logEvent_settingVersions(&_eventSettingVersions, 0); }
 
-void M1M3SSPublisher::logSettingsApplied() {
-    _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0);
-    _previousEventSettingsApplied = _eventSettingsApplied;
-}
-
-void M1M3SSPublisher::tryLogSettingsApplied() {
-    if (_eventSettingsApplied.settingsVersion.compare(_previousEventSettingsApplied.settingsVersion) != 0) {
-        this->logSettingsApplied();
-    }
-}
+void M1M3SSPublisher::logSettingsApplied() { _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0); }
 
 void M1M3SSPublisher::logSoftwareVersions() {
     MTM1M3_logevent_softwareVersionsC versions;

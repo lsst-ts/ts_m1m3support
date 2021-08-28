@@ -24,6 +24,8 @@
 #ifndef ILCSAFETYSETTINGS_H_
 #define ILCSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -42,6 +44,24 @@ struct ILCSafetySettings {
     bool FaultOnAirPressure;
     int AirPressureCountThreshold;
     int AirPressurePeriod;
+
+    void set(YAML::Node node) {
+        FaultOnCommunicationTimeout = node["FaultOnCommunicationTimeout"].as<bool>();
+        CommunicationTimeoutCountThreshold = node["CommunicationTimeoutCountThreshold"].as<int>();
+        CommunicationTimeoutPeriod = node["CommunicationTimeoutPeriod"].as<int>();
+        FaultOnForceActuatorFollowingError = node["FaultOnForceActuatorFollowingError"].as<bool>();
+        ForceActuatorFollowingErrorCountThreshold =
+                node["ForceActuatorFollowingErrorCountThreshold"].as<int>();
+        ForceActuatorFollowingErrorPeriod = node["ForceActuatorFollowingErrorPeriod"].as<int>();
+        FaultOnHardpointActuatorLoadCellError = node["FaultOnHardpointActuatorLoadCellError"].as<bool>();
+        FaultOnHardpointActuatorMeasuredForce = node["FaultOnHardpointActuatorMeasuredForce"].as<bool>();
+        HardpointActuatorMeasuredForceCountThreshold =
+                node["HardpointActuatorMeasuredForceCountThreshold"].as<int>();
+        HardpointActuatorMeasuredForcePeriod = node["HardpointActuatorMeasuredForcePeriod"].as<int>();
+        FaultOnAirPressure = node["FaultOnAirPressure"].as<bool>();
+        AirPressureCountThreshold = node["AirPressureCountThreshold"].as<int>();
+        AirPressurePeriod = node["AirPressurePeriod"].as<int>();
+    }
 };
 
 } /* namespace SS */

@@ -103,96 +103,83 @@ void Displacement::processData() {
         _imsData->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementSampleTimestamp);
         // We need to swap the direction of the IMS reading, note sensor 5 and 7 are mounted opposite
         // We also need to convert the raw sensor values to millimeters
-        _imsData->rawSensorData[0] =
-                50.0 - ((_fpgaData->DisplacementRaw1 + _displacementSensorSettings->N1Offset) / 10000.0);
-        _imsData->rawSensorData[1] =
-                50.0 - ((_fpgaData->DisplacementRaw2 + _displacementSensorSettings->N2Offset) / 10000.0);
-        _imsData->rawSensorData[2] =
-                50.0 - ((_fpgaData->DisplacementRaw3 + _displacementSensorSettings->N3Offset) / 10000.0);
-        _imsData->rawSensorData[3] =
-                50.0 - ((_fpgaData->DisplacementRaw4 + _displacementSensorSettings->N4Offset) / 10000.0);
-        _imsData->rawSensorData[4] =
-                50.0 - ((_fpgaData->DisplacementRaw5 + _displacementSensorSettings->N5Offset) / 10000.0);
-        _imsData->rawSensorData[5] =
-                ((_fpgaData->DisplacementRaw6 + _displacementSensorSettings->N6Offset) / 10000.0);
-        _imsData->rawSensorData[6] =
-                50.0 - ((_fpgaData->DisplacementRaw7 + _displacementSensorSettings->N7Offset) / 10000.0);
+        double* NOffsets = _displacementSensorSettings->NOffsets.data();
+        _imsData->rawSensorData[0] = 50.0 - ((_fpgaData->DisplacementRaw1 + NOffsets[0]) / 10000.0);
+        _imsData->rawSensorData[1] = 50.0 - ((_fpgaData->DisplacementRaw2 + NOffsets[1]) / 10000.0);
+        _imsData->rawSensorData[2] = 50.0 - ((_fpgaData->DisplacementRaw3 + NOffsets[2]) / 10000.0);
+        _imsData->rawSensorData[3] = 50.0 - ((_fpgaData->DisplacementRaw4 + NOffsets[3]) / 10000.0);
+        _imsData->rawSensorData[4] = 50.0 - ((_fpgaData->DisplacementRaw5 + NOffsets[4]) / 10000.0);
+        _imsData->rawSensorData[5] = ((_fpgaData->DisplacementRaw6 + NOffsets[5]) / 10000.0);
+        _imsData->rawSensorData[6] = 50.0 - ((_fpgaData->DisplacementRaw7 + NOffsets[6]) / 10000.0);
         _imsData->rawSensorData[7] =
-                ((_fpgaData->DisplacementRaw8 + _displacementSensorSettings->N8Offset) / 10000.0);
-        int p1 = _displacementSensorSettings->N1Port;
-        int p2 = _displacementSensorSettings->N2Port;
-        int p3 = _displacementSensorSettings->N3Port;
-        int p4 = _displacementSensorSettings->N4Port;
-        int p5 = _displacementSensorSettings->N5Port;
-        int p6 = _displacementSensorSettings->N6Port;
-        int p7 = _displacementSensorSettings->N7Port;
-        int p8 = _displacementSensorSettings->N8Port;
+                ((_fpgaData->DisplacementRaw8 + _displacementSensorSettings->NOffsets[7]) / 10000.0);
+        int32_t* ports = _displacementSensorSettings->NPorts.data();
         _imsData->xPosition =
-                (_displacementSensorSettings->ConverterMatrix[0] * _imsData->rawSensorData[p1] +
-                 _displacementSensorSettings->ConverterMatrix[1] * _imsData->rawSensorData[p2] +
-                 _displacementSensorSettings->ConverterMatrix[2] * _imsData->rawSensorData[p3] +
-                 _displacementSensorSettings->ConverterMatrix[3] * _imsData->rawSensorData[p4] +
-                 _displacementSensorSettings->ConverterMatrix[4] * _imsData->rawSensorData[p5] +
-                 _displacementSensorSettings->ConverterMatrix[5] * _imsData->rawSensorData[p6] +
-                 _displacementSensorSettings->ConverterMatrix[6] * _imsData->rawSensorData[p7] +
-                 _displacementSensorSettings->ConverterMatrix[7] * _imsData->rawSensorData[p8]) /
+                (_displacementSensorSettings->ConverterMatrix[0] * _imsData->rawSensorData[ports[0]] +
+                 _displacementSensorSettings->ConverterMatrix[1] * _imsData->rawSensorData[ports[1]] +
+                 _displacementSensorSettings->ConverterMatrix[2] * _imsData->rawSensorData[ports[2]] +
+                 _displacementSensorSettings->ConverterMatrix[3] * _imsData->rawSensorData[ports[3]] +
+                 _displacementSensorSettings->ConverterMatrix[4] * _imsData->rawSensorData[ports[4]] +
+                 _displacementSensorSettings->ConverterMatrix[5] * _imsData->rawSensorData[ports[5]] +
+                 _displacementSensorSettings->ConverterMatrix[6] * _imsData->rawSensorData[ports[6]] +
+                 _displacementSensorSettings->ConverterMatrix[7] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->XPositionOffset;
+                _displacementSensorSettings->xPositionOffset;
         _imsData->yPosition =
-                (_displacementSensorSettings->ConverterMatrix[8] * _imsData->rawSensorData[p1] +
-                 _displacementSensorSettings->ConverterMatrix[9] * _imsData->rawSensorData[p2] +
-                 _displacementSensorSettings->ConverterMatrix[10] * _imsData->rawSensorData[p3] +
-                 _displacementSensorSettings->ConverterMatrix[11] * _imsData->rawSensorData[p4] +
-                 _displacementSensorSettings->ConverterMatrix[12] * _imsData->rawSensorData[p5] +
-                 _displacementSensorSettings->ConverterMatrix[13] * _imsData->rawSensorData[p6] +
-                 _displacementSensorSettings->ConverterMatrix[14] * _imsData->rawSensorData[p7] +
-                 _displacementSensorSettings->ConverterMatrix[15] * _imsData->rawSensorData[p8]) /
+                (_displacementSensorSettings->ConverterMatrix[8] * _imsData->rawSensorData[ports[0]] +
+                 _displacementSensorSettings->ConverterMatrix[9] * _imsData->rawSensorData[ports[1]] +
+                 _displacementSensorSettings->ConverterMatrix[10] * _imsData->rawSensorData[ports[2]] +
+                 _displacementSensorSettings->ConverterMatrix[11] * _imsData->rawSensorData[ports[3]] +
+                 _displacementSensorSettings->ConverterMatrix[12] * _imsData->rawSensorData[ports[4]] +
+                 _displacementSensorSettings->ConverterMatrix[13] * _imsData->rawSensorData[ports[5]] +
+                 _displacementSensorSettings->ConverterMatrix[14] * _imsData->rawSensorData[ports[6]] +
+                 _displacementSensorSettings->ConverterMatrix[15] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->YPositionOffset;
+                _displacementSensorSettings->yPositionOffset;
         _imsData->zPosition =
-                (_displacementSensorSettings->ConverterMatrix[16] * _imsData->rawSensorData[p1] +
-                 _displacementSensorSettings->ConverterMatrix[17] * _imsData->rawSensorData[p2] +
-                 _displacementSensorSettings->ConverterMatrix[18] * _imsData->rawSensorData[p3] +
-                 _displacementSensorSettings->ConverterMatrix[19] * _imsData->rawSensorData[p4] +
-                 _displacementSensorSettings->ConverterMatrix[20] * _imsData->rawSensorData[p5] +
-                 _displacementSensorSettings->ConverterMatrix[21] * _imsData->rawSensorData[p6] +
-                 _displacementSensorSettings->ConverterMatrix[22] * _imsData->rawSensorData[p7] +
-                 _displacementSensorSettings->ConverterMatrix[23] * _imsData->rawSensorData[p8]) /
+                (_displacementSensorSettings->ConverterMatrix[16] * _imsData->rawSensorData[ports[0]] +
+                 _displacementSensorSettings->ConverterMatrix[17] * _imsData->rawSensorData[ports[1]] +
+                 _displacementSensorSettings->ConverterMatrix[18] * _imsData->rawSensorData[ports[2]] +
+                 _displacementSensorSettings->ConverterMatrix[19] * _imsData->rawSensorData[ports[3]] +
+                 _displacementSensorSettings->ConverterMatrix[20] * _imsData->rawSensorData[ports[4]] +
+                 _displacementSensorSettings->ConverterMatrix[21] * _imsData->rawSensorData[ports[5]] +
+                 _displacementSensorSettings->ConverterMatrix[22] * _imsData->rawSensorData[ports[6]] +
+                 _displacementSensorSettings->ConverterMatrix[23] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->ZPositionOffset;
+                _displacementSensorSettings->zPositionOffset;
         _imsData->xRotation =
-                (_displacementSensorSettings->ConverterMatrix[24] * _imsData->rawSensorData[p1] +
-                 _displacementSensorSettings->ConverterMatrix[25] * _imsData->rawSensorData[p2] +
-                 _displacementSensorSettings->ConverterMatrix[26] * _imsData->rawSensorData[p3] +
-                 _displacementSensorSettings->ConverterMatrix[27] * _imsData->rawSensorData[p4] +
-                 _displacementSensorSettings->ConverterMatrix[28] * _imsData->rawSensorData[p5] +
-                 _displacementSensorSettings->ConverterMatrix[29] * _imsData->rawSensorData[p6] +
-                 _displacementSensorSettings->ConverterMatrix[30] * _imsData->rawSensorData[p7] +
-                 _displacementSensorSettings->ConverterMatrix[31] * _imsData->rawSensorData[p8]) /
+                (_displacementSensorSettings->ConverterMatrix[24] * _imsData->rawSensorData[ports[0]] +
+                 _displacementSensorSettings->ConverterMatrix[25] * _imsData->rawSensorData[ports[1]] +
+                 _displacementSensorSettings->ConverterMatrix[26] * _imsData->rawSensorData[ports[2]] +
+                 _displacementSensorSettings->ConverterMatrix[27] * _imsData->rawSensorData[ports[3]] +
+                 _displacementSensorSettings->ConverterMatrix[28] * _imsData->rawSensorData[ports[4]] +
+                 _displacementSensorSettings->ConverterMatrix[29] * _imsData->rawSensorData[ports[5]] +
+                 _displacementSensorSettings->ConverterMatrix[30] * _imsData->rawSensorData[ports[6]] +
+                 _displacementSensorSettings->ConverterMatrix[31] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->XRotationOffset;
+                _displacementSensorSettings->xRotationOffset;
         _imsData->yRotation =
-                (_displacementSensorSettings->ConverterMatrix[32] * _imsData->rawSensorData[p1] +
-                 _displacementSensorSettings->ConverterMatrix[33] * _imsData->rawSensorData[p2] +
-                 _displacementSensorSettings->ConverterMatrix[34] * _imsData->rawSensorData[p3] +
-                 _displacementSensorSettings->ConverterMatrix[35] * _imsData->rawSensorData[p4] +
-                 _displacementSensorSettings->ConverterMatrix[36] * _imsData->rawSensorData[p5] +
-                 _displacementSensorSettings->ConverterMatrix[37] * _imsData->rawSensorData[p6] +
-                 _displacementSensorSettings->ConverterMatrix[38] * _imsData->rawSensorData[p7] +
-                 _displacementSensorSettings->ConverterMatrix[39] * _imsData->rawSensorData[p8]) /
+                (_displacementSensorSettings->ConverterMatrix[32] * _imsData->rawSensorData[ports[0]] +
+                 _displacementSensorSettings->ConverterMatrix[33] * _imsData->rawSensorData[ports[1]] +
+                 _displacementSensorSettings->ConverterMatrix[34] * _imsData->rawSensorData[ports[2]] +
+                 _displacementSensorSettings->ConverterMatrix[35] * _imsData->rawSensorData[ports[3]] +
+                 _displacementSensorSettings->ConverterMatrix[36] * _imsData->rawSensorData[ports[4]] +
+                 _displacementSensorSettings->ConverterMatrix[37] * _imsData->rawSensorData[ports[5]] +
+                 _displacementSensorSettings->ConverterMatrix[38] * _imsData->rawSensorData[ports[6]] +
+                 _displacementSensorSettings->ConverterMatrix[39] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->YRotationOffset;
+                _displacementSensorSettings->yRotationOffset;
         _imsData->zRotation =
-                (_displacementSensorSettings->ConverterMatrix[40] * _imsData->rawSensorData[p1] +
-                 _displacementSensorSettings->ConverterMatrix[41] * _imsData->rawSensorData[p2] +
-                 _displacementSensorSettings->ConverterMatrix[42] * _imsData->rawSensorData[p3] +
-                 _displacementSensorSettings->ConverterMatrix[43] * _imsData->rawSensorData[p4] +
-                 _displacementSensorSettings->ConverterMatrix[44] * _imsData->rawSensorData[p5] +
-                 _displacementSensorSettings->ConverterMatrix[45] * _imsData->rawSensorData[p6] +
-                 _displacementSensorSettings->ConverterMatrix[46] * _imsData->rawSensorData[p7] +
-                 _displacementSensorSettings->ConverterMatrix[47] * _imsData->rawSensorData[p8]) /
+                (_displacementSensorSettings->ConverterMatrix[40] * _imsData->rawSensorData[ports[0]] +
+                 _displacementSensorSettings->ConverterMatrix[41] * _imsData->rawSensorData[ports[1]] +
+                 _displacementSensorSettings->ConverterMatrix[42] * _imsData->rawSensorData[ports[2]] +
+                 _displacementSensorSettings->ConverterMatrix[43] * _imsData->rawSensorData[ports[3]] +
+                 _displacementSensorSettings->ConverterMatrix[44] * _imsData->rawSensorData[ports[4]] +
+                 _displacementSensorSettings->ConverterMatrix[45] * _imsData->rawSensorData[ports[5]] +
+                 _displacementSensorSettings->ConverterMatrix[46] * _imsData->rawSensorData[ports[6]] +
+                 _displacementSensorSettings->ConverterMatrix[47] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
-                _displacementSensorSettings->ZRotationOffset;
+                _displacementSensorSettings->zRotationOffset;
         M1M3SSPublisher::get().putIMSData();
         if (!_errorCleared &&
             _fpgaData->DisplacementSampleTimestamp > _fpgaData->DisplacementErrorTimestamp) {

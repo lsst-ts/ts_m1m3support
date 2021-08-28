@@ -24,6 +24,8 @@
 #ifndef TMASAFETYSETTINGS_H_
 #define TMASAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -60,6 +62,17 @@ struct TMASafetySettings {
      * fault the mirror. <0 for no deviation checks.
      */
     float InclinometerDeviation;
+
+    /**
+     * Sets value from YAML node.
+     *
+     * @param node YAML node
+     */
+    void set(YAML::Node node) {
+        AzimuthTimeout = node["AzimuthTimeout"].as<float>();
+        ElevationTimeout = node["ElevationTimeout"].as<float>();
+        InclinometerDeviation = node["InclinometerDeviationDeg"].as<float>();
+    }
 };
 
 }  // namespace SS

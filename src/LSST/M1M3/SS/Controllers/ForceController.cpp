@@ -166,7 +166,7 @@ void ForceController::updateTMAElevationData(MTMount_elevationC* tmaElevationDat
 
 void ForceController::incSupportPercentage() {
     SPDLOG_TRACE("ForceController: incSupportPercentage()");
-    _forceActuatorState->supportPercentage += _forceActuatorSettings->RaiseIncrementPercentage;
+    _forceActuatorState->supportPercentage += _forceActuatorSettings->raiseIncrementPercentage;
     if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 100.0;
     }
@@ -175,7 +175,7 @@ void ForceController::incSupportPercentage() {
 
 void ForceController::decSupportPercentage() {
     SPDLOG_TRACE("ForceController: decSupportPercentage()");
-    _forceActuatorState->supportPercentage -= _forceActuatorSettings->LowerDecrementPercentage;
+    _forceActuatorState->supportPercentage -= _forceActuatorSettings->lowerDecrementPercentage;
     if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
     }
@@ -200,7 +200,7 @@ bool ForceController::supportPercentageZeroed() { return _forceActuatorState->su
 
 bool ForceController::followingErrorInTolerance() {
     SPDLOG_TRACE("ForceController: followingErrorInTolerance()");
-    float limit = _forceActuatorSettings->RaiseLowerFollowingErrorLimit;
+    float limit = _forceActuatorSettings->raiseLowerFollowingErrorLimit;
     bool inTolerance = true;
 
     for (int i = 0; i < FA_COUNT; ++i) {
@@ -251,7 +251,7 @@ void ForceController::updateAppliedForces() {
     if (_elevationForceComponent.isEnabled() || _elevationForceComponent.isDisabling()) {
         if (_elevationForceComponent.isEnabled()) {
             double elevationAngle;
-            if (_forceActuatorSettings->UseInclinometer) {
+            if (_forceActuatorSettings->useInclinometer) {
                 elevationAngle = _inclinometerData->inclinometerAngle;
             } else {
                 elevationAngle = _elevation_Actual;
@@ -291,7 +291,7 @@ void ForceController::processAppliedForces() {
     _checkMirrorWeight();
     _checkFarNeighbors();
     double timestamp = M1M3SSPublisher::get().getTimestamp();
-    if (_forceActuatorSettings->UseInclinometer == 0) {
+    if (_forceActuatorSettings->useInclinometer == false) {
         if (_elevationForceComponent.isEnabled()) {
             Model::get().getSafetyController()->tmaAzimuthTimeout(_azimuth_Timestamp - timestamp);
         }
@@ -589,19 +589,16 @@ bool ForceController::_checkMirrorMoments() {
     float yMoment = _appliedForces->my;
     float zMoment = _appliedForces->mz;
     _forceSetpointWarning->xMomentWarning = !Range::InRange(
-            _forceActuatorSettings->MirrorXMoment *
-                    _forceActuatorSettings->SetpointXMomentHighLimitPercentage,
-            _forceActuatorSettings->MirrorXMoment * _forceActuatorSettings->SetpointXMomentLowLimitPercentage,
+            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentHighLimitFactor,
+            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentLowLimitFactor,
             xMoment);
     _forceSetpointWarning->yMomentWarning = !Range::InRange(
-            _forceActuatorSettings->MirrorYMoment *
-                    _forceActuatorSettings->SetpointYMomentHighLimitPercentage,
-            _forceActuatorSettings->MirrorYMoment * _forceActuatorSettings->SetpointYMomentLowLimitPercentage,
+            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentHighLimitFactor,
+            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentLowLimitFactor,
             yMoment);
     _forceSetpointWarning->zMomentWarning = !Range::InRange(
-            _forceActuatorSettings->MirrorZMoment *
-                    _forceActuatorSettings->SetpointZMomentHighLimitPercentage,
-            _forceActuatorSettings->MirrorZMoment * _forceActuatorSettings->SetpointZMomentLowLimitPercentage,
+            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentHighLimitFactor,
+            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentLowLimitFactor,
             zMoment);
     _safetyController->forceControllerNotifyXMomentLimit(_forceSetpointWarning->xMomentWarning);
     _safetyController->forceControllerNotifyYMomentLimit(_forceSetpointWarning->yMomentWarning);
@@ -613,10 +610,10 @@ bool ForceController::_checkMirrorMoments() {
 bool ForceController::_checkNearNeighbors() {
     SPDLOG_TRACE("ForceController: checkNearNeighbors()");
     float nominalZ = _mirrorWeight / (float)FA_COUNT;
-    float nominalZWarning = nominalZ * _forceActuatorSettings->SetpointNearNeighborLimitPercentage;
+    float nominalZWarning = nominalZ * _forceActuatorSettings->setpointNearNeighborLimitFactor;
     bool warningChanged = false;
     _forceSetpointWarning->anyNearNeighborWarning = false;
-    std::string failed;
+    string failed;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
         if (Model::get().getILC()->isDisabled(
@@ -633,12 +630,12 @@ bool ForceController::_checkNearNeighbors() {
         }
 
         nearZ /= nearNeighbors;
-        float deltaZ = std::abs(_appliedForces->zForces[zIndex] - nearZ);
+        float deltaZ = abs(_appliedForces->zForces[zIndex] - nearZ);
 
         if (deltaZ > nominalZWarning) {
             _forceSetpointWarning->nearNeighborWarning[zIndex] = true;
-            failed += std::to_string(_forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex)) + ":" +
-                      std::to_string(deltaZ) + " ";
+            failed += to_string(_forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex)) + ":" +
+                      to_string(deltaZ) + " ";
         } else {
             _forceSetpointWarning->nearNeighborWarning[zIndex] = false;
         }
@@ -669,7 +666,7 @@ bool ForceController::_checkMirrorWeight() {
     float globalForce = x + y + z;
     bool previousWarning = _forceSetpointWarning->magnitudeWarning;
     _forceSetpointWarning->magnitudeWarning =
-            globalForce > (_mirrorWeight * _forceActuatorSettings->SetpointMirrorWeightLimitPercentage);
+            globalForce > (_mirrorWeight * _forceActuatorSettings->setpointMirrorWeightLimitFactor);
     _safetyController->forceControllerNotifyMagnitudeLimit(_forceSetpointWarning->magnitudeWarning,
                                                            globalForce);
     return _forceSetpointWarning->magnitudeWarning != previousWarning;
@@ -682,7 +679,7 @@ bool ForceController::_checkFarNeighbors() {
     float globalZ = _appliedForces->fz;
     float globalForce = sqrt(globalX * globalX + globalY * globalY + globalZ * globalZ);
     float globalAverageForce = globalForce / FA_COUNT;
-    float tolerance = globalAverageForce * _forceActuatorSettings->SetpointNearNeighborLimitPercentage;
+    float tolerance = globalAverageForce * _forceActuatorSettings->setpointNearNeighborLimitFactor;
     if (tolerance < 1) {
         tolerance = 1;
     }

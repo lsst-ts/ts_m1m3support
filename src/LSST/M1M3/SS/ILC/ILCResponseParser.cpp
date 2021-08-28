@@ -640,7 +640,7 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
     // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
-            (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->MicrometersPerEncoder) /
+            (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->micrometersPerEncoder) /
             (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
     buffer->skipToNextFrame();
     _checkHardpointActuatorMeasuredForce(dataIndex);
@@ -1019,18 +1019,18 @@ void ILCResponseParser::_checkForceActuatorFollowingError(ILCMap map) {
 
 void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId) {
     float measuredForce = _hardpointActuatorData->measuredForce[actuatorId];
-    float loadCellMax = _hardpointActuatorSettings->HardpointMeasuredForceFaultHigh;
-    float loadCellMin = _hardpointActuatorSettings->HardpointMeasuredForceFaultLow;
+    float loadCellMax = _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh;
+    float loadCellMin = _hardpointActuatorSettings->hardpointMeasuredForceFaultLow;
     bool loadCellError = measuredForce > loadCellMax || measuredForce < loadCellMin;
     _safetyController->hardpointActuatorLoadCellError(loadCellError);
 
     if (_detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState ||
         _detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveState) {
-        float max = _hardpointActuatorSettings->HardpointMeasuredForceWarningHigh;
-        float min = _hardpointActuatorSettings->HardpointMeasuredForceWarningLow;
+        float max = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
+        float min = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (_forceActuatorState->balanceForcesApplied) {
-            max = _hardpointActuatorSettings->HardpointMeasuredForceFSBWarningHigh;
-            min = _hardpointActuatorSettings->HardpointMeasuredForceFSBWarningLow;
+            max = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
+            min = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
         }
         bool measuredForceError = measuredForce > max || measuredForce < min;
         _safetyController->hardpointActuatorMeasuredForce(actuatorId, measuredForceError);
@@ -1041,8 +1041,8 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
 
 void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float airPressure = _hardpointMonitorData->breakawayPressure[actuatorId];
-    float min = _hardpointActuatorSettings->AirPressureWarningLow;
-    float max = _hardpointActuatorSettings->AirPressureWarningHigh;
+    float min = _hardpointActuatorSettings->airPressureWarningLow;
+    float max = _hardpointActuatorSettings->airPressureWarningHigh;
     int loadCellError = 0;
     if (airPressure > max) loadCellError = 1;
     if (airPressure < min) loadCellError = -1;

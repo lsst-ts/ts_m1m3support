@@ -34,30 +34,32 @@ EnabledForceActuators::EnabledForceActuators() {
     _shouldSend = true;
 }
 
-void EnabledForceActuators::setEnabled(int32_t dataIndex, bool enabled) {
-    if (forceActuatorEnabled[dataIndex] == enabled) {
+void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
+    int32_t actuatorIndex =
+            SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+    if (forceActuatorEnabled[actuatorIndex] == enabled) {
         return;
     }
-    forceActuatorEnabled[dataIndex] = enabled;
+    forceActuatorEnabled[actuatorIndex] = enabled;
     if (enabled == false) {
         // if disabling an FA, makes sure its reported force is 0
         MTM1M3_forceActuatorDataC* faData = M1M3SSPublisher::get().getForceActuatorData();
-        faData->primaryCylinderForce[dataIndex] = 0;
-        faData->zForce[dataIndex] = 0;
+        faData->primaryCylinderForce[actuatorIndex] = 0;
+        faData->zForce[actuatorIndex] = 0;
 
         int secondaryIndex = SettingReader::get()
                                      .getForceActuatorApplicationSettings()
-                                     ->ZIndexToSecondaryCylinderIndex[dataIndex];
+                                     ->ZIndexToSecondaryCylinderIndex[actuatorIndex];
         if (secondaryIndex >= 0) {
             faData->secondaryCylinderForce[secondaryIndex] = 0;
             int xIndex =
-                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToXIndex[dataIndex];
+                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToXIndex[actuatorIndex];
             if (xIndex >= 0) {
                 faData->xForce[xIndex] = 0;
             }
 
             int yIndex =
-                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToYIndex[dataIndex];
+                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToYIndex[actuatorIndex];
             if (yIndex >= 0) {
                 faData->yForce[yIndex] = 0;
             }

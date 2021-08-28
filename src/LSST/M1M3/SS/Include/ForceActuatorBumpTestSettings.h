@@ -24,7 +24,7 @@
 #ifndef LSST_M1M3_SS_INCLUDE_FORCEACTUATORBUMPTESTSETTINGS_H
 #define LSST_M1M3_SS_INCLUDE_FORCEACTUATORBUMPTESTSETTINGS_H
 
-#include <pugixml/pugixml.hpp>
+#include <yaml-cpp/yaml.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -44,15 +44,15 @@ struct ForceActuatorBumpTestSettings {
      */
     float error;
 
-    void set(const pugi::xml_node &node) {
-        warning = node.child("Warning").text().as_float(-1);
+    void set(YAML::Node node) {
+        warning = node["Warning"].as<float>();
         if (warning < 0)
-            throw std::runtime_error("Invalid/missing Force Actuator Bump Test Warning value (" +
-                                     node.path() + "/Warning: " + std::to_string(warning));
+            throw std::runtime_error("Invalid Force Actuator Bump Test Warning value (" + node.Tag() +
+                                     "/Warning: " + std::to_string(warning));
 
-        error = node.child("Error").text().as_float(-1);
+        error = node["Error"].as<float>();
         if (error < 0)
-            throw std::runtime_error("Invalid/missing Force Actuator Bump Test Error value (" + node.path() +
+            throw std::runtime_error("Invalid Force Actuator Bump Test Error value (" + node.Tag() +
                                      "/Error: " + std::to_string(warning));
     }
 };

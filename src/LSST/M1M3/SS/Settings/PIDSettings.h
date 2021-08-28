@@ -24,22 +24,26 @@
 #ifndef PIDSETTINGS_H_
 #define PIDSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+#include <M1M3SSPublisher.h>
 #include <PIDParameters.h>
+
+#include <yaml-cpp/yaml.h>
 #include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct PIDSettings {
-    PIDParameters Fx;
-    PIDParameters Fy;
-    PIDParameters Fz;
-    PIDParameters Mx;
-    PIDParameters My;
-    PIDParameters Mz;
-
+struct PIDSettings : public MTM1M3_logevent_pidSettingsC {
     void load(const std::string &filename);
+
+    void log() { M1M3SSPublisher::get().logPIDSettings(this); }
+
+    PIDParameters getParameters(int index);
+
+private:
+    void _parsePID(const YAML::Node &node, int index);
 };
 
 } /* namespace SS */

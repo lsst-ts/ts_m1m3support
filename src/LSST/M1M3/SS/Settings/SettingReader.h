@@ -70,6 +70,8 @@ public:
 
     std::string getFilePath(std::string filename);
 
+    std::string getSettingsVersion() { return _currentSet + ":" + _currentVersion; }
+
     /**
      * Select given configuration set.
      *

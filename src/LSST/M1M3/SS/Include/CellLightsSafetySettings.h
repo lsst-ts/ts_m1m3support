@@ -24,6 +24,8 @@
 #ifndef CELLLIGHTSSAFETYSETTINGS_H_
 #define CELLLIGHTSSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -31,6 +33,11 @@ namespace SS {
 struct CellLightsSafetySettings {
     bool FaultOnOutputMismatch;
     bool FaultOnSensorMismatch;
+
+    void set(YAML::Node node) {
+        FaultOnOutputMismatch = node["FaultOnOutputMismatch"].as<bool>();
+        FaultOnSensorMismatch = node["FaultOnSensorMismatch"].as<bool>();
+    }
 };
 
 } /* namespace SS */

@@ -231,6 +231,10 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
+    void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
+        _m1m3SAL->logEvent_accelerometerSettings(data, 0);
+    }
+
     /**
      * @brief Sends AccelerometerWarning event.
      *
@@ -289,6 +293,9 @@ public:
     }
     void logDetailedState();
     void tryLogDetailedState();
+    void logDisplacementSensorSettings(MTM1M3_logevent_displacementSensorSettingsC* data) {
+        _m1m3SAL->logEvent_displacementSensorSettings(data, 0);
+    }
     void logDisplacementSensorWarning();
     void logEnabledForceActuators(MTM1M3_logevent_enabledForceActuatorsC* data) {
         _m1m3SAL->logEvent_enabledForceActuators(data, 0);
@@ -296,6 +303,9 @@ public:
     void tryLogDisplacementSensorWarning();
     void logErrorCode();
     void tryLogErrorCode();
+    void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC* data) {
+        _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
+    }
     void logForceActuatorBumpTestStatus();
     void logForceActuatorForceWarning();
     void tryLogForceActuatorForceWarning();
@@ -308,10 +318,14 @@ public:
     }
     void logForceSetpointWarning();
     void tryLogForceSetpointWarning();
+    void logGyroSettings(MTM1M3_logevent_gyroSettingsC* data) { _m1m3SAL->logEvent_gyroSettings(data, 0); }
     void logGyroWarning();
     void tryLogGyroWarning();
     void logHardpointActuatorInfo();
     void tryLogHardpointActuatorInfo();
+    void logHardpointActuatorSettings(MTM1M3_logevent_hardpointActuatorSettingsC* data) {
+        _m1m3SAL->logEvent_hardpointActuatorSettings(data, 0);
+    }
     void logHardpointActuatorState();
     void tryLogHardpointActuatorState();
     void logHardpointActuatorWarning();
@@ -325,6 +339,9 @@ public:
     void logHeartbeat();
     void logILCWarning();
     void tryLogILCWarning();
+    void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC* data) {
+        _m1m3SAL->logEvent_inclinometerSettings(data, 0);
+    }
     void logInclinometerSensorWarning();
     void tryLogInclinometerSensorWarning();
     void logInterlockStatus();
@@ -336,6 +353,7 @@ public:
     void tryLogModbusResponse();
     void logPIDInfo();
     void tryLogPIDInfo();
+    void logPIDSettings(MTM1M3_logevent_pidSettingsC* data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
     void logPowerStatus();
     void tryLogPowerStatus();
     void logPowerSupplyStatus();
@@ -368,7 +386,6 @@ public:
     void tryLogPreclippedVelocityForces();
     void logSettingVersions();
     void logSettingsApplied();
-    void tryLogSettingsApplied();
     void logSoftwareVersions();
     void logSummaryState();
     void tryLogSummaryState();
@@ -561,7 +578,6 @@ private:
     MTM1M3_logevent_preclippedStaticForcesC _previousEventPreclippedStaticForces;
     MTM1M3_logevent_preclippedThermalForcesC _previousEventPreclippedThermalForces;
     MTM1M3_logevent_preclippedVelocityForcesC _previousEventPreclippedVelocityForces;
-    MTM1M3_logevent_settingsAppliedC _previousEventSettingsApplied;
     MTM1M3_logevent_summaryStateC _previousEventSummaryState;
 };
 

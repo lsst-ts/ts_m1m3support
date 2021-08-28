@@ -334,22 +334,22 @@ void ILC::flushAll() {
 void ILC::calculateHPPostion() {
     double displacement[] = {
             ((_hardpointActuatorData->encoder[0] - _hardpointActuatorInfo->referencePosition[0]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[1] - _hardpointActuatorInfo->referencePosition[1]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[2] - _hardpointActuatorInfo->referencePosition[2]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[3] - _hardpointActuatorInfo->referencePosition[3]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[4] - _hardpointActuatorInfo->referencePosition[4]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[5] - _hardpointActuatorInfo->referencePosition[5]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
     };
     _hardpointActuatorData->xPosition =
@@ -478,16 +478,19 @@ void ILC::disableFA(uint32_t actuatorId) {
         return;
     }
     _subnetData.disableFA(actuatorId);
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, false);
     buildBusLists();
 }
 
 void ILC::enableFA(uint32_t actuatorId) {
     _subnetData.enableFA(actuatorId);
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, true);
     buildBusLists();
 }
 
 void ILC::enableAllFA() {
     _subnetData.enableAllFA();
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabledAll();
     buildBusLists();
 }
 

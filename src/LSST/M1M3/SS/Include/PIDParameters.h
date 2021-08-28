@@ -24,6 +24,8 @@
 #ifndef PIDPARAMETERS_H_
 #define PIDPARAMETERS_H_
 
+#include <math.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -32,6 +34,24 @@ namespace SS {
  * Parameters for PID calculations. Used in PID.
  */
 struct PIDParameters {
+    PIDParameters() { Timestep = P = I = D = N = NAN; }
+
+    PIDParameters(const PIDParameters& pid) {
+        Timestep = pid.Timestep;
+        P = pid.P;
+        I = pid.I;
+        D = pid.D;
+        N = pid.N;
+    }
+
+    PIDParameters(double _timestep, double _p, double _i, double _d, double _n) {
+        Timestep = _timestep;
+        P = _p;
+        I = _i;
+        D = _d;
+        N = _n;
+    }
+
     //* Length of step (seconds)
     double Timestep;
     //* Proportional gain (unitless)
