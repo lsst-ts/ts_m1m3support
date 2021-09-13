@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <LoweringFaultState.h>
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyControllerSettings.h>
@@ -435,7 +436,7 @@ void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, boo
 void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag,
                                                     float airPressure) {
     _hardpointActuatorAirPressureData[actuatorDataIndex].pop_front();
-    _hardpointActuatorAirPressureData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
+    _hardpointActuatorAirPressureData[actuatorDataIndex].push_back(conditionFlag);
     int absSum = 0;
     int sum = 0;
     for (auto i : _hardpointActuatorAirPressureData[actuatorDataIndex]) {
@@ -478,7 +479,9 @@ void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
+        LoweringFaultState::ensureFaulted();
         M1M3SSPublisher::get().logErrorCode();
+        SPDLOG_ERROR("Faulted ({}): {}", _errorCodeData->errorCode, _errorCodeData->errorReport);
         _clearError();
         return States::LoweringFaultState;
     }
