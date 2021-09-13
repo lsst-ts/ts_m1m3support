@@ -479,6 +479,7 @@ void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
+        // shall first make sure mirror is faulted, before performing anything else (logging,..)
         LoweringFaultState::ensureFaulted();
         M1M3SSPublisher::get().logErrorCode();
         SPDLOG_ERROR("Faulted ({}): {}", _errorCodeData->errorCode, _errorCodeData->errorReport);
