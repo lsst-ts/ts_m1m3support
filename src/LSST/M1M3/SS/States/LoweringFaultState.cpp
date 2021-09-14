@@ -36,12 +36,17 @@ LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
 
 States::Type LoweringFaultState::update(UpdateCommand* command) {
     SPDLOG_TRACE("LoweringFaultState: update()");
+    ensureFaulted();
+    FaultState::update(command);
+    return States::FaultState;
+}
+
+void LoweringFaultState::ensureFaulted() {
+    SPDLOG_TRACE("LoweringFaultState: ensureFaulted()");
     Model::get().getPowerController()->setAllAuxPowerNetworks(false);
     // TODO: Uncomment when its not so hot out
     // Model::get().getDigitalInputOutput()->turnAirOff();
     Model::get().getForceController()->reset();
-    FaultState::update(command);
-    return States::FaultState;
 }
 
 } /* namespace SS */
