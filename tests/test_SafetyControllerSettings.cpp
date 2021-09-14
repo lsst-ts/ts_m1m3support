@@ -25,7 +25,6 @@
 #include <catch/catch.hpp>
 
 #include <SafetyControllerSettings.h>
-#include <SafetyController.h>
 
 using namespace LSST::M1M3::SS;
 

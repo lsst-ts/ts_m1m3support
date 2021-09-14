@@ -25,3 +25,14 @@
 # Metadata
 *.aliases
 *.lvlps
+
+ts-M1M3supportd
+m1m3sscli
+
+!tests/test_*.cpp
+tests/test_*
+
+# log files
+MTM1M3_*
+ospl-error.log
+ospl-info.log
