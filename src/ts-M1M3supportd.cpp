@@ -137,6 +137,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 std::cout << VERSION << std::endl;
                 exit(EXIT_SUCCESS);
             case 'V':
+#if 0
                 std::cout << "SAL " << SAL_MTM1M3::getSALVersion() << " " << SAL_MTMount::getSALVersion()
                           << std::endl
                           << "XML " << SAL_MTM1M3::getXMLVersion() << " " << SAL_MTMount::getXMLVersion()
@@ -144,6 +145,10 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                           << "OSPL " << SAL_MTM1M3::getOSPLVersion() << " " << SAL_MTMount::getOSPLVersion()
                           << std::endl;
                 exit(EXIT_SUCCESS);
+#else
+                std::cerr << "Not supported, needs new ts_sal" << std::endl;
+                exit(EXIT_FAILURE);
+#endif
             default:
                 std::cerr << "Unknow option " << opt << std::endl;
                 printHelp();
@@ -356,6 +361,7 @@ int main(int argc, char* const argv[]) {
         SPDLOG_INFO("Enabled SAL logger");
     }
 
+#if 0
     if (SAL_MTM1M3::getSALVersion() != SAL_MTMount::getSALVersion()) {
         SPDLOG_WARN("SAL version mismatch: MTM1M3 {} MTMount {}", SAL_MTM1M3::getSALVersion(),
                     SAL_MTMount::getSALVersion());
@@ -368,6 +374,7 @@ int main(int argc, char* const argv[]) {
         SPDLOG_WARN("OSPL version mismatch: MTM1M3 {} MTMount {}", SAL_MTM1M3::getOSPLVersion(),
                     SAL_MTMount::getOSPLVersion());
     }
+#endif
 
     SPDLOG_INFO("Main: Initializing MTMount SAL");
     std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
