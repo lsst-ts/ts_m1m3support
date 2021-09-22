@@ -32,6 +32,7 @@
 #include <cRIO/Singleton.h>
 
 #include <EnabledForceActuators.h>
+#include <ForceActuatorPressure.h>
 #include <ForceActuatorWarning.h>
 #include <PowerSupplyStatus.h>
 
@@ -69,6 +70,7 @@ public:
      * @see putAccelerometerData
      */
     MTM1M3_accelerometerDataC* getAccelerometerData() { return &_accelerometerData; }
+    static ForceActuatorPressure* getForceActuatorPressure() { return &(get()._forceActuatorPressure); }
     MTM1M3_gyroDataC* getGyroData() { return &_gyroData; }
     MTM1M3_hardpointActuatorDataC* getHardpointActuatorData() { return &_hardpointActuatorData; }
     MTM1M3_hardpointMonitorDataC* getHardpointMonitorData() { return &_hardpointMonitorData; }
@@ -420,6 +422,7 @@ private:
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
 
     MTM1M3_accelerometerDataC _accelerometerData;
+    ForceActuatorPressure _forceActuatorPressure;
     MTM1M3_gyroDataC _gyroData;
     MTM1M3_hardpointActuatorDataC _hardpointActuatorData;
     MTM1M3_hardpointMonitorDataC _hardpointMonitorData;

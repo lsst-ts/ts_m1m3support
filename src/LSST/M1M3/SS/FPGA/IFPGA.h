@@ -189,6 +189,9 @@ public:
      */
     virtual void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) = 0;
 
+    void writeMPUFIFO(cRIO::MPU&) override {}
+    void readMPUFIFO(cRIO::MPU&) override {}
+
     /**
      * Sets all auxiliary and network buses power (A-D).
      *

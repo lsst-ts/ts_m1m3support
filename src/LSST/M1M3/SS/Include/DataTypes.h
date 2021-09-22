@@ -51,6 +51,9 @@
 /// Number of secondary (X or Y) actuators.
 #define FA_S_COUNT (FA_X_COUNT + FA_Y_COUNT)
 
+#define FA_PRIMARY_COUNT FA_COUNT
+#define FA_SECONDARY_COUNT (FA_X_COUNT + FA_Y_COUNT)
+
 /// Maximal number of Force Actuator near neighbors
 #define FA_MAX_NEAR_COUNT 7
 

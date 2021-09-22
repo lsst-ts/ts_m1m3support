@@ -41,6 +41,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Telemetry");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_accelerometerData");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_forceActuatorData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_forceActuatorPressure");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_gyroData");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_hardpointActuatorData");
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_hardpointMonitorData");

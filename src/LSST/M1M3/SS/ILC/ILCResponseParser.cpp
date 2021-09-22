@@ -818,11 +818,7 @@ void ILCResponseParser::_parseReadFACalibrationResponse(ModbusBuffer* buffer, IL
 }
 
 void ILCResponseParser::_parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
-    buffer->readSGL();
-    buffer->readSGL();
-    buffer->readSGL();
-    buffer->readSGL();
-    buffer->skipToNextFrame();
+    M1M3SSPublisher::getForceActuatorPressure()->parseReadDCAPressureValuesResponse(buffer, map.DataIndex, map.SecondaryDataIndex);
 }
 
 void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
