@@ -100,8 +100,8 @@ void RaisedBusList::buildBuffer() {
             uint8_t address = subnetData->getFAIndex(subnetIndex, statusIndex).Address;
             int32_t dataIndex = subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
             _faStatusCommandIndex[subnetIndex] = buffer.getIndex();
-            ilcMessageFactory->reportServerStatus(&buffer, address);
             ilcMessageFactory->reportDCAPressure(&buffer, address);
+            ilcMessageFactory->reportServerStatus(&buffer, address);
             expectedFAResponses[dataIndex] = 3;
         }
         if (subnetData->getHPCount(subnetIndex) > 0) {
@@ -200,8 +200,8 @@ void RaisedBusList::update() {
             dataIndex = subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
 
             buffer.setIndex(_faStatusCommandIndex[subnetIndex]);
-            ilcMessageFactory->reportServerStatus(&buffer, address);
             ilcMessageFactory->reportDCAPressure(&buffer, address);
+            ilcMessageFactory->reportServerStatus(&buffer, address);
             expectedFAResponses[dataIndex] = 3;
         }
         if (subnetData->getHPCount(subnetIndex) > 0) {

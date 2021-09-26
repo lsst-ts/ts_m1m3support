@@ -110,9 +110,12 @@ void FPGA::waitForModbusIRQ(int32_t subnet, uint32_t timeout) {
     uint32_t irqs = getIrq(subnet);
     if (irqs != 0) {
         uint32_t assertedIRQs = 0;
-        uint8_t timedOut = false;
+        NiFpga_Bool timedOut = false;
         NiThrowError(__PRETTY_FUNCTION__,
                      NiFpga_WaitOnIrqs(_session, _modbusIRQContext, irqs, timeout, &assertedIRQs, &timedOut));
+        if (timedOut == true) {
+            SPDLOG_WARN("Timeouted waiting for modbus IRQ on subnet {}", subnet);
+        }
     }
 }
 
@@ -265,6 +268,6 @@ void FPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeo
                                data, length, timeoutInMs, &_remaining));
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
