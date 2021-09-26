@@ -123,7 +123,7 @@ public:
      *
      * @return zIndex of the actuator with Id equal to actuatorId, -1 when not found
      */
-    const int ActuatorIdToZIndex(int actuatorId);
+    static const int ActuatorIdToZIndex(int actuatorId);
 
     const int XIndexToActuatorId(int xIndex) { return ZIndexToActuatorId(XIndexToZIndex[xIndex]); }
     const int YIndexToActuatorId(int yIndex) { return ZIndexToActuatorId(YIndexToZIndex[yIndex]); }
