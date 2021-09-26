@@ -30,23 +30,24 @@ namespace SS {
 
 ForceActuatorPressure::ForceActuatorPressure() {
     for (size_t primaryIndex = 0; primaryIndex < FA_PRIMARY_COUNT; primaryIndex++) {
-       primaryCylinderPullPressures[primaryIndex] = NAN;
-       primaryCylinderPushPressures[primaryIndex] = NAN;
+        primaryCylinderPullPressures[primaryIndex] = NAN;
+        primaryCylinderPushPressures[primaryIndex] = NAN;
     }
 
     for (size_t secondaryIndex = 0; secondaryIndex < FA_SECONDARY_COUNT; secondaryIndex++) {
-       secondaryCylinderPullPressures[secondaryIndex] = NAN;
-       secondaryCylinderPushPressures[secondaryIndex] = NAN;
+        secondaryCylinderPullPressures[secondaryIndex] = NAN;
+        secondaryCylinderPushPressures[secondaryIndex] = NAN;
     }
 }
 
-void ForceActuatorPressure::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, int32_t primaryIndex, int32_t secondaryIndex) {
+void ForceActuatorPressure::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, int32_t primaryIndex,
+                                                               int32_t secondaryIndex) {
+    timestamps[primaryIndex] = M1M3SSPublisher::get().getTimestamp();
     primaryCylinderPushPressures[primaryIndex] = buffer->readSGL();
     primaryCylinderPullPressures[primaryIndex] = buffer->readSGL();
     if (secondaryIndex >= 0) {
         secondaryCylinderPullPressures[secondaryIndex] = buffer->readSGL();
         secondaryCylinderPushPressures[secondaryIndex] = buffer->readSGL();
-
     }
     buffer->skipToNextFrame();
 }

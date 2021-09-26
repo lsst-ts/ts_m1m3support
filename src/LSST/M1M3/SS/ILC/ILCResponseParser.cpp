@@ -381,34 +381,27 @@ void ILCResponseParser::verifyResponses() {
             _faExpectedResponses[i] = 0;
         }
     }
-    if (warn) {
-        anyTimeout = true;
-    }
-    warn = false;
     for (int i = 0; i < HP_COUNT; i++) {
         if (_hpExpectedResponses[i] != 0) {
-            warn = true;
+            anyTimeout = true;
+            SPDLOG_WARN("ILCResponseParser: Hardpoint actuator #{} response timeout - {}", i,
+                        _hpExpectedResponses[i]);
             _warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
             _hpExpectedResponses[i] = 0;
             TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) actuator response timeout", i + 1,
                         _hardpointActuatorInfo->referenceId[i]);
         }
     }
-    if (warn) {
-        anyTimeout = true;
-    }
-    warn = false;
     for (int i = 0; i < HP_COUNT; ++i) {
         if (_hmExpectedResponses[i] != 0) {
-            warn = true;
+            anyTimeout = true;
+            SPDLOG_WARN("ILCResponseParser: Hardpoint monitor #{} response timeout - {}", i,
+                        _hmExpectedResponses[i]);
             _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
             _hmExpectedResponses[i] = 0;
             TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) monitor response timeout", i + 1,
                         _hardpointMonitorInfo->referenceId[i]);
         }
-    }
-    if (warn) {
-        anyTimeout = true;
     }
 
     _safetyController->ilcCommunicationTimeout(anyTimeout);
@@ -818,7 +811,8 @@ void ILCResponseParser::_parseReadFACalibrationResponse(ModbusBuffer* buffer, IL
 }
 
 void ILCResponseParser::_parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
-    M1M3SSPublisher::getForceActuatorPressure()->parseReadDCAPressureValuesResponse(buffer, map.DataIndex, map.SecondaryDataIndex);
+    M1M3SSPublisher::getForceActuatorPressure()->parseReadDCAPressureValuesResponse(buffer, map.DataIndex,
+                                                                                    map.SecondaryDataIndex);
 }
 
 void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {

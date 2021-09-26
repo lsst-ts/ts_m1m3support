@@ -53,20 +53,19 @@ void RaisedBusList::buildBuffer() {
         _roundRobinFAReportServerStatusIndex[subnetIndex] = 0;
     }
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
-        this->startSubnet(subnetIndex);
-        if (this->subnetData->getFACount(subnetIndex) > 0) {
-            _setForceCommandIndex[subnetIndex] = this->buffer.getIndex();
+        startSubnet(subnetIndex);
+        if (subnetData->getFACount(subnetIndex) > 0) {
+            _setForceCommandIndex[subnetIndex] = buffer.getIndex();
             int32_t saaPrimary[16];
             int32_t daaPrimary[32];
             int32_t daaSecondary[32];
             memset(saaPrimary, 0, sizeof(saaPrimary));
             memset(daaPrimary, 0, sizeof(daaPrimary));
             memset(daaSecondary, 0, sizeof(daaSecondary));
-            for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
-                uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
-                int32_t primaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-                int32_t secondaryDataIndex =
-                        this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
+            for (int faIndex = 0; faIndex < subnetData->getFACount(subnetIndex); faIndex++) {
+                uint8_t address = subnetData->getFAIndex(subnetIndex, faIndex).Address;
+                int32_t primaryDataIndex = subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
+                int32_t secondaryDataIndex = subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
                 if (address <= 16) {
                     saaPrimary[address - 1] = _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
@@ -77,97 +76,98 @@ void RaisedBusList::buildBuffer() {
                             _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
                 }
             }
-            this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
-                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
-                                                          daaSecondary);
-            this->buffer.writeTimestamp();
-            for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
-                uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
-                int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-                bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
+            ilcMessageFactory->broadcastForceDemand(&buffer, _outerLoopData->broadcastCounter,
+                                                    _outerLoopData->slewFlag, saaPrimary, daaPrimary,
+                                                    daaSecondary);
+            buffer.writeTimestamp();
+            for (int faIndex = 0; faIndex < subnetData->getFACount(subnetIndex); faIndex++) {
+                uint8_t address = subnetData->getFAIndex(subnetIndex, faIndex).Address;
+                int32_t dataIndex = subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
+                bool disabled = subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
                 if (!disabled) {
-                    this->ilcMessageFactory->pneumaticForceStatus(&this->buffer, address);
-                    this->expectedFAResponses[dataIndex] = 1;
+                    ilcMessageFactory->pneumaticForceStatus(&buffer, address);
+                    expectedFAResponses[dataIndex] = 1;
+                } else {
+                    expectedFAResponses[dataIndex] = 0;
                 }
             }
             int32_t statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
-            while (this->subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
+            while (subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
                 _roundRobinFAReportServerStatusIndex[subnetIndex] =
-                        RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
+                        RoundRobin::Inc(statusIndex, subnetData->getFACount(subnetIndex));
                 statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             }
-            uint8_t address = this->subnetData->getFAIndex(subnetIndex, statusIndex).Address;
-            int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
-            _faStatusCommandIndex[subnetIndex] = this->buffer.getIndex();
-            this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-            this->expectedFAResponses[dataIndex] = 2;
+            uint8_t address = subnetData->getFAIndex(subnetIndex, statusIndex).Address;
+            int32_t dataIndex = subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
+            _faStatusCommandIndex[subnetIndex] = buffer.getIndex();
+            ilcMessageFactory->reportServerStatus(&buffer, address);
+            ilcMessageFactory->reportDCAPressure(&buffer, address);
+            expectedFAResponses[dataIndex] = 3;
         }
-        if (this->subnetData->getHPCount(subnetIndex) > 0) {
-            _moveStepCommandIndex[subnetIndex] = this->buffer.getIndex();
+        if (subnetData->getHPCount(subnetIndex) > 0) {
+            _moveStepCommandIndex[subnetIndex] = buffer.getIndex();
             int8_t steps[78];
-            for (int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
-                uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
-                int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
+            for (int hpIndex = 0; hpIndex < subnetData->getHPCount(subnetIndex); hpIndex++) {
+                uint8_t address = subnetData->getHPIndex(subnetIndex, hpIndex).Address;
+                int32_t dataIndex = subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
                 // Steps are swapped because negative steps extend and positive steps retract
                 // This doesn't match what most people would expect so we are swapping it
                 steps[address - 1] = -_hardpointActuatorData->stepsCommanded[dataIndex];
             }
-            this->ilcMessageFactory->broadcastStepMotor(&this->buffer, _outerLoopData->broadcastCounter,
-                                                        steps);
-            this->buffer.writeTimestamp();
-            for (int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
-                uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
-                int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-                bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
+            ilcMessageFactory->broadcastStepMotor(&buffer, _outerLoopData->broadcastCounter, steps);
+            buffer.writeTimestamp();
+            for (int hpIndex = 0; hpIndex < subnetData->getHPCount(subnetIndex); hpIndex++) {
+                uint8_t address = subnetData->getHPIndex(subnetIndex, hpIndex).Address;
+                int32_t dataIndex = subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
+                bool disabled = subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
                 if (!disabled) {
-                    this->ilcMessageFactory->electromechanicalForceAndStatus(&this->buffer, address);
-                    this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-                    this->expectedHPResponses[dataIndex] = 2;
+                    ilcMessageFactory->electromechanicalForceAndStatus(&buffer, address);
+                    ilcMessageFactory->reportServerStatus(&buffer, address);
+                    expectedHPResponses[dataIndex] = 2;
                 }
             }
         }
-        for (int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
-            uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
-            int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
-            bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+        for (int hmIndex = 0; hmIndex < subnetData->getHMCount(subnetIndex); hmIndex++) {
+            uint8_t address = subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+            int32_t dataIndex = subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
+            bool disabled = subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
             if (!disabled) {
-                this->ilcMessageFactory->reportDCAPressure(&this->buffer, address);
-                this->ilcMessageFactory->reportDCAStatus(&this->buffer, address);
-                this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-                this->expectedHMResponses[dataIndex] = 3;
+                ilcMessageFactory->reportDCAPressure(&buffer, address);
+                ilcMessageFactory->reportDCAStatus(&buffer, address);
+                ilcMessageFactory->reportServerStatus(&buffer, address);
+                expectedHMResponses[dataIndex] = 3;
             }
         }
-        if (this->subnetData->getHMCount(subnetIndex) > 0) {
-            _hmLVDTCommandIndex[subnetIndex] = this->buffer.getIndex();
-            for (int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
-                uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
-                bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+        if (subnetData->getHMCount(subnetIndex) > 0) {
+            _hmLVDTCommandIndex[subnetIndex] = buffer.getIndex();
+            for (int hmIndex = 0; hmIndex < subnetData->getHMCount(subnetIndex); hmIndex++) {
+                uint8_t address = subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+                bool disabled = subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
                 if (!disabled) {
-                    this->ilcMessageFactory->nopReportLVDT(&this->buffer, address);
+                    ilcMessageFactory->nopReportLVDT(&buffer, address);
                 }
             }
         }
-        this->endSubnet();
+        endSubnet();
     }
-    this->buffer.setLength(this->buffer.getIndex());
+    buffer.setLength(buffer.getIndex());
 }
 
 void RaisedBusList::update() {
     _outerLoopData->broadcastCounter = RoundRobin::BroadcastCounter(_outerLoopData->broadcastCounter);
 
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
-        if (this->subnetData->getFACount(subnetIndex) > 0) {
+        if (subnetData->getFACount(subnetIndex) > 0) {
             int32_t saaPrimary[16];
             int32_t daaPrimary[32];
             int32_t daaSecondary[32];
             memset(saaPrimary, 0, sizeof(saaPrimary));
             memset(daaPrimary, 0, sizeof(daaPrimary));
             memset(daaSecondary, 0, sizeof(daaSecondary));
-            for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
-                uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
-                int32_t primaryDataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
-                int32_t secondaryDataIndex =
-                        this->subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
+            for (int faIndex = 0; faIndex < subnetData->getFACount(subnetIndex); faIndex++) {
+                uint8_t address = subnetData->getFAIndex(subnetIndex, faIndex).Address;
+                int32_t primaryDataIndex = subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
+                int32_t secondaryDataIndex = subnetData->getFAIndex(subnetIndex, faIndex).SecondaryDataIndex;
 
                 if (address <= 16) {
                     saaPrimary[address - 1] = _appliedCylinderForces->primaryCylinderForces[primaryDataIndex];
@@ -178,55 +178,57 @@ void RaisedBusList::update() {
                             _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex];
                 }
             }
-            this->buffer.setIndex(_setForceCommandIndex[subnetIndex]);
-            this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
-                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
-                                                          daaSecondary);
+            buffer.setIndex(_setForceCommandIndex[subnetIndex]);
+            ilcMessageFactory->broadcastForceDemand(&buffer, _outerLoopData->broadcastCounter,
+                                                    _outerLoopData->slewFlag, saaPrimary, daaPrimary,
+                                                    daaSecondary);
 
             int32_t statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
-            int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
-            this->expectedFAResponses[dataIndex] = 1;
+            int32_t dataIndex = subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
+            // revert back previous data index; this needs to be enabled, as
+            // only enabled FA are considered
+            expectedFAResponses[dataIndex] = 1;
             _roundRobinFAReportServerStatusIndex[subnetIndex] =
-                    RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
+                    RoundRobin::Inc(statusIndex, subnetData->getFACount(subnetIndex));
             statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
-            while (this->subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
+            while (subnetData->getFAIndex(subnetIndex, statusIndex).Disabled) {
                 _roundRobinFAReportServerStatusIndex[subnetIndex] =
-                        RoundRobin::Inc(statusIndex, this->subnetData->getFACount(subnetIndex));
+                        RoundRobin::Inc(statusIndex, subnetData->getFACount(subnetIndex));
                 statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             }
-            uint8_t address = this->subnetData->getFAIndex(subnetIndex, statusIndex).Address;
-            dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
+            uint8_t address = subnetData->getFAIndex(subnetIndex, statusIndex).Address;
+            dataIndex = subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
 
-            this->buffer.setIndex(_faStatusCommandIndex[subnetIndex]);
-            this->ilcMessageFactory->reportServerStatus(&this->buffer, address);
-            this->expectedFAResponses[dataIndex] = 2;
+            buffer.setIndex(_faStatusCommandIndex[subnetIndex]);
+            ilcMessageFactory->reportServerStatus(&buffer, address);
+            ilcMessageFactory->reportDCAPressure(&buffer, address);
+            expectedFAResponses[dataIndex] = 3;
         }
-        if (this->subnetData->getHPCount(subnetIndex) > 0) {
+        if (subnetData->getHPCount(subnetIndex) > 0) {
             int8_t steps[78];
-            for (int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
-                uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
-                int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
+            for (int hpIndex = 0; hpIndex < subnetData->getHPCount(subnetIndex); hpIndex++) {
+                uint8_t address = subnetData->getHPIndex(subnetIndex, hpIndex).Address;
+                int32_t dataIndex = subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
                 // Steps are swapped because negative steps extend and positive steps retract
                 // This doesn't match what most people would expect so we are swapping it
                 steps[address - 1] = -_hardpointActuatorData->stepsCommanded[dataIndex];
             }
-            this->buffer.setIndex(_moveStepCommandIndex[subnetIndex]);
-            this->ilcMessageFactory->broadcastStepMotor(&this->buffer, _outerLoopData->broadcastCounter,
-                                                        steps);
+            buffer.setIndex(_moveStepCommandIndex[subnetIndex]);
+            ilcMessageFactory->broadcastStepMotor(&buffer, _outerLoopData->broadcastCounter, steps);
         }
-        if (this->subnetData->getHMCount(subnetIndex) > 0) {
-            this->buffer.setIndex(_hmLVDTCommandIndex[subnetIndex]);
-            for (int hmIndex = 0; hmIndex < this->subnetData->getHMCount(subnetIndex); hmIndex++) {
-                uint8_t address = this->subnetData->getHMIndex(subnetIndex, hmIndex).Address;
-                int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
-                bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
+        if (subnetData->getHMCount(subnetIndex) > 0) {
+            buffer.setIndex(_hmLVDTCommandIndex[subnetIndex]);
+            for (int hmIndex = 0; hmIndex < subnetData->getHMCount(subnetIndex); hmIndex++) {
+                uint8_t address = subnetData->getHMIndex(subnetIndex, hmIndex).Address;
+                int32_t dataIndex = subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
+                bool disabled = subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
                 if (!disabled) {
                     if (_lvdtSampleClock == 0) {
-                        this->ilcMessageFactory->reportLVDT(&this->buffer, address);
-                        this->expectedHMResponses[dataIndex] = 4;
+                        ilcMessageFactory->reportLVDT(&buffer, address);
+                        expectedHMResponses[dataIndex] = 4;
                     } else {
-                        this->ilcMessageFactory->nopReportLVDT(&this->buffer, address);
-                        this->expectedHMResponses[dataIndex] = 3;
+                        ilcMessageFactory->nopReportLVDT(&buffer, address);
+                        expectedHMResponses[dataIndex] = 3;
                     }
                 }
             }

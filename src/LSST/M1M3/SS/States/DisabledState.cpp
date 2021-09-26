@@ -70,6 +70,7 @@ States::Type DisabledState::update(UpdateCommand* command) {
     ilc->verifyResponses();
     ilc->publishForceActuatorStatus();
     ForceActuatorData::instance().send();
+    M1M3SSPublisher::get().putForceActuatorPressure();
     ilc->publishHardpointStatus();
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();

@@ -249,7 +249,8 @@ void ILC::read(uint8_t subnet) {
     IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
     uint16_t reportedLength = _rxBuffer.readLength();
     if (reportedLength == 0) {
-        throw std::runtime_error(fmt::format("ILC subnet {}: Timeout on response", subnet));
+        SPDLOG_ERROR("ILC: Timeout on reading response length (subnet {})", subnet);
+        return;
     }
 
     _rxBuffer.setIndex(0);

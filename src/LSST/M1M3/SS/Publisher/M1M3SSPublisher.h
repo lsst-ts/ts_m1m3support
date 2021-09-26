@@ -197,6 +197,7 @@ public:
     void putForceActuatorData(MTM1M3_forceActuatorDataC* data) {
         _m1m3SAL->putSample_forceActuatorData(data);
     }
+    void putForceActuatorPressure();
     void putGyroData();
     void putHardpointActuatorData();
     void putHardpointMonitorData();

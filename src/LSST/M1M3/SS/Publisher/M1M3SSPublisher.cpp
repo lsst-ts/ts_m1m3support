@@ -136,13 +136,21 @@ void M1M3SSPublisher::reset() {
 }
 
 void M1M3SSPublisher::putAccelerometerData() { _m1m3SAL->putSample_accelerometerData(&_accelerometerData); }
+
+void M1M3SSPublisher::putForceActuatorPressure() {
+    _m1m3SAL->putSample_forceActuatorPressure(&_forceActuatorPressure);
+}
+
 void M1M3SSPublisher::putGyroData() { _m1m3SAL->putSample_gyroData(&_gyroData); }
+
 void M1M3SSPublisher::putHardpointActuatorData() {
     _m1m3SAL->putSample_hardpointActuatorData(&_hardpointActuatorData);
 }
+
 void M1M3SSPublisher::putHardpointMonitorData() {
     _m1m3SAL->putSample_hardpointMonitorData(&_hardpointMonitorData);
 }
+
 void M1M3SSPublisher::putIMSData() { _m1m3SAL->putSample_imsData(&_imsData); }
 void M1M3SSPublisher::putInclinometerData() { _m1m3SAL->putSample_inclinometerData(&_inclinometerData); }
 void M1M3SSPublisher::putOuterLoopData() { _m1m3SAL->putSample_outerLoopData(&_outerLoopData); }
