@@ -49,7 +49,6 @@ void ILCApplicationSettings::load(const std::string &filename) {
         SetADCChannelOffsetAndSensitivity = timings["SetADCChannelOffsetAndSensitivity"].as<uint32_t>();
         Reset = timings["Reset"].as<uint32_t>();
         ReadCalibration = timings["ReadCalibration"].as<uint32_t>();
-        ReadDCAPressureValues = timings["ReadDCAPressureValues"].as<uint32_t>();
         ReportDCAID = timings["ReportDCAID"].as<uint32_t>();
         ReportDCAStatus = timings["ReportDCAStatus"].as<uint32_t>();
         ReportDCAPressure = timings["ReportDCAPressure"].as<uint32_t>();

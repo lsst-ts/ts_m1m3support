@@ -49,7 +49,6 @@ struct ILCApplicationSettings {
     uint32_t SetADCChannelOffsetAndSensitivity;
     uint32_t Reset;
     uint32_t ReadCalibration;
-    uint32_t ReadDCAPressureValues;
     uint32_t ReportDCAID;
     uint32_t ReportDCAStatus;
     uint32_t ReportDCAPressure;

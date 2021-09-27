@@ -16,7 +16,6 @@ Timings:
   SetADCChannelOffsetAndSensitivity: 36250
   Reset: 84840
   ReadCalibration: 1725
-  ReadDCAPressureValues: 100100
   ReportDCAID: 385
   ReportDCAStatus: 255
   ReportDCAPressure: 400
