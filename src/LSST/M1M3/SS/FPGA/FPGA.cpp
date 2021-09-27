@@ -88,9 +88,12 @@ void FPGA::finalize() {
 
 void FPGA::waitForOuterLoopClock(uint32_t timeout) {
     uint32_t assertedIRQs = 0;
-    uint8_t timedOut = false;
+    NiFpga_Bool timedOut = false;
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_WaitOnIrqs(_session, _outerLoopIRQContext, NiFpga_Irq_0, timeout,
                                                         &assertedIRQs, &timedOut));
+    if (timedOut) {
+        SPDLOG_WARN("Timeouted waitinfr for outer loop (IRQ 0)");
+    }
 }
 
 void FPGA::ackOuterLoopClock() {
@@ -99,9 +102,12 @@ void FPGA::ackOuterLoopClock() {
 
 void FPGA::waitForPPS(uint32_t timeout) {
     uint32_t assertedIRQs = 0;
-    uint8_t timedOut = false;
+    NiFpga_Bool timedOut = false;
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_WaitOnIrqs(_session, _ppsIRQContext, NiFpga_Irq_10, timeout,
                                                         &assertedIRQs, &timedOut));
+    if (timedOut) {
+        SPDLOG_WARN("Timeouted waiting for PPS (IRQ 10)");
+    }
 }
 
 void FPGA::ackPPS() { NiThrowError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(_session, NiFpga_Irq_10)); }
@@ -244,9 +250,12 @@ void FPGA::waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered) {
         _contexes[k] = contex;
     }
 
-    NiFpga_Bool timeouted = false;
+    NiFpga_Bool timedOut = false;
     NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_WaitOnIrqs(_session, contex, irqs, timeout, triggered, &timeouted));
+                 NiFpga_WaitOnIrqs(_session, contex, irqs, timeout, triggered, &timedOut));
+    if (timedOut) {
+        SPDLOG_WARN("Timeouted waiting for IRQs mask {:b}", irqs);
+    }
 }
 
 void FPGA::ackIrqs(uint32_t irqs) {
