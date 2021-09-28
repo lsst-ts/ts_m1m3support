@@ -21,7 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <CommandFactory.h>
+#include <EnterControlCommand.h>
+#include <ExitControlCommand.h>
 #include <Context.h>
 #include <ControllerThread.h>
 #include <IExpansionFPGA.h>
@@ -91,7 +92,7 @@ std::string daemonGroup("m1m3");
 
 void sigKill(int signal) {
     SPDLOG_DEBUG("Kill/int signal received");
-    ControllerThread::get().enqueue(CommandFactory::create(Commands::ExitControlCommand));
+    ControllerThread::get().enqueue(new ExitControlCommand());
 }
 
 std::vector<spdlog::sink_ptr> sinks;
@@ -186,7 +187,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     SPDLOG_INFO("Main: Creating pps thread");
     PPSThread ppsThread;
     SPDLOG_INFO("Main: Queuing EnterControl command");
-    ControllerThread::get().enqueue(CommandFactory::create(Commands::EnterControlCommand));
+    ControllerThread::get().enqueue(new EnterControlCommand());
 
     signal(SIGKILL, sigKill);
     signal(SIGINT, sigKill);
