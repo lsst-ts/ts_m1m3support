@@ -22,12 +22,12 @@ node {
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
     // branches requiring changes in XML from default develop branch
-    def USE_SAME_XML_BRANCH = ["master", "develop", "tickets/DM-31425"]
-    def XML_BRANCH = USE_SAME_XML_BRANCH.indexOf(BRANCH) == -1 ? "develop" : BRANCH
+    def XML_BRANCH = BRANCH in ["master"] ? BRANCH : "develop"
+    def CRIO_BRANCH = BRANCH in ["master"] ? BRANCH : "develop"
     stage('Cloning sources')
     {
         dir("ts_cRIOcpp") {
-            git branch: "master", url: 'https://github.com/lsst-ts/ts_cRIOcpp'
+            git branch: CRIO_BRANCH, url: 'https://github.com/lsst-ts/ts_cRIOcpp'
         }
         dir("ts_m1m3support") {
             git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
