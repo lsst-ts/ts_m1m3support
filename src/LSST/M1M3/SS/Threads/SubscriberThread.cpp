@@ -21,7 +21,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <CommandFactory.h>
 #include <ControllerThread.h>
 #include <SubscriberThread.h>
 #include <M1M3SSSubscriber.h>

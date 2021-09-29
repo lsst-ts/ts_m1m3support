@@ -23,7 +23,6 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/FirmwareUpdate" \
 	-I"LSST/M1M3/SS/Accelerometer" \
 	-I"LSST/M1M3/SS/BusLists" \
-	-I"LSST/M1M3/SS/CommandFactory" \
 	-I"LSST/M1M3/SS/Controllers" \
 	-I"LSST/M1M3/SS/Displacement" \
 	-I"LSST/M1M3/SS/Inclinometer" \
