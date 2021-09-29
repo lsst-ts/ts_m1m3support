@@ -69,6 +69,9 @@ public:
     void readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) override;
     void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
 
+    void readMPUFIFO(cRIO::MPU& mpu) override {}
+    void writeMPUFIFO(cRIO::MPU& mpu) override {}
+
     void waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered = NULL) override;
     void ackIrqs(uint32_t irqs) override;
 
