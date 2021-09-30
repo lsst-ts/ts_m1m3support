@@ -55,9 +55,9 @@ protected:
     virtual ILCUnits getILCs(command_vec cmds) override;
 };
 
-class PrintElectromechanical: public ElectromechanicalPneumaticILC, public PrintILC {
+class PrintElectromechanical : public ElectromechanicalPneumaticILC, public PrintILC {
 public:
-    PrintElectromechanical(uint8_t bus) : ElectromechanicalPneumaticILC(bus), PrintILC(bus) {}
+    PrintElectromechanical(uint8_t bus) : ILC(bus), ElectromechanicalPneumaticILC(bus), PrintILC(bus) {}
 
 protected:
     virtual void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
@@ -79,7 +79,8 @@ public:
 };
 
 M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(name, description) {
-    addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>", "Power off/on ILC bus");
+    addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>",
+               "Power off/on ILC bus");
 
     addILC(std::make_shared<PrintElectromechanical>(1));
     addILC(std::make_shared<PrintElectromechanical>(2));
@@ -126,7 +127,7 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
         int address = -1;
         try {
             if (division != std::string::npos) {
-                bus = std::stoi(c.substr(0, division));
+                bus = std::stoi(c.substr(0, division)) - 1;
                 address = std::stoi(c.substr(division + 1));
                 if (address <= 0 || address > 46) {
                     std::cerr << "Invalid address " << c << std::endl;
@@ -156,7 +157,7 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
             std::cerr << "Non-numeric address: " << c << std::endl;
         }
 
-        if (bus < 1 || bus > ILC_BUS || address == -1) {
+        if (bus < 0 || bus >= ILC_BUS || address == -1) {
             std::cerr << "Invalid ILC address: " << c << std::endl;
             ret = -1;
             continue;
@@ -193,11 +194,11 @@ void print4(const char* name, t a[4]) {
         std::cout << " " << std::setw(15) << std::setprecision(10) << a[i];
     }
     std::cout << std::endl;
-};
+}
 
 void PrintElectromechanical::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
-                                      float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
-                                      float backupSensitivity[4]) {
+                                                    float mainSensitivity[4], float backupADCK[4],
+                                                    float backupOffset[4], float backupSensitivity[4]) {
     _printSepline();
     std::cout << "Calibration data " << std::to_string(getBus()) << "/" << std::to_string(address)
               << std::endl;
