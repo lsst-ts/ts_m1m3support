@@ -60,9 +60,12 @@ public:
     PrintElectromechanical(uint8_t bus) : ILC(bus), ElectromechanicalPneumaticILC(bus), PrintILC(bus) {}
 
 protected:
-    virtual void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
-                                        float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
-                                        float backupSensitivity[4]) override;
+    void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
+                                float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
+                                float backupSensitivity[4]) override;
+
+    void processMezzaninePressure(uint8_t address, float primaryPush, float primaryPull, float secondaryPush,
+                                  float secondaryPull) override;
 };
 
 class PrintSSFPGA : public FPGAClass {
@@ -81,6 +84,20 @@ public:
 M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(name, description) {
     addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>",
                "Power off/on ILC bus");
+
+    addILCCommand(
+            "calibration",
+            [](ILCUnit u) {
+                dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportCalibrationData(u.second);
+            },
+            "Read calibration data");
+
+    addILCCommand(
+            "pressure",
+            [](ILCUnit u) {
+                dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
+            },
+            "Read mezzanine pressure");
 
     addILC(std::make_shared<PrintElectromechanical>(1));
     addILC(std::make_shared<PrintElectromechanical>(2));
@@ -215,6 +232,20 @@ void PrintElectromechanical::processCalibrationData(uint8_t address, float mainA
     print4("Backup Sensitivity", backupSensitivity);
 }
 
+void PrintElectromechanical::processMezzaninePressure(uint8_t address, float primaryPush, float primaryPull,
+                                                      float secondaryPush, float secondaryPull) {
+    _printSepline();
+    std::cout << "Pressure data " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
+
+    auto printPushPull = [](const char* name, float push, float pull) {
+        std::cout << std::setw(10) << name << std::setw(8) << std::setprecision(2) << std::fixed << push
+                  << " | " << std::setw(8) << std::setprecision(2) << std::fixed << push << std::endl;
+    };
+
+    printPushPull("Primary", primaryPush, primaryPull);
+    printPushPull("Secondary", secondaryPush, secondaryPull);
+}
+
 M1M3SScli cli("M1M3SS", "M1M3 Support System Command Line Interface");
 
 void _printBuffer(std::string prefix, uint16_t* buf, size_t len) {
@@ -246,12 +277,6 @@ void PrintSSFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t ti
 
 #if 0
 
-int calData(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        return ilcs[bus].reportCalibrationData(address);
-    });
-}
-
 int calSet(command_vec cmds) {
     return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
         uint8_t channel = std::stoi(*(++c));
@@ -260,36 +285,6 @@ int calSet(command_vec cmds) {
         return ilcs[bus].setOffsetAndSensitivity(address, channel, offset, sensitivity);
     });
 }
-
-int openFPGA(command_vec cmds) {
-    if (fpga != NULL) {
-        std::cerr << "FPGA already opened!" << std::endl;
-        return 1;
-    }
-    char dir[255];
-    if (cmds.size() == 0) {
-        getcwd(dir, 255);
-    } else {
-        memcpy(dir, cmds[0].c_str(), cmds[0].length() + 1);
-    }
-    fpga = new PrintSSFPGA();
-    fpga->initialize();
-    fpga->open();
-    return 0;
-}
-
-command_t commands[] = {
-        {"caldata", &calData, "s?", NEED_FPGA, "<address>..", "Print ILC calibration data"},
-        {"calset", &calSet, "siff", NEED_FPGA, "<address> <channel> <ADC Kn> <offset> <setpoint>",
-         "Set calibration data for given channel"},
-        {"close", [=](command_vec) { return closeFPGA(); }, "", NEED_FPGA, NULL, "Close FPGA connection"},
-        {"help", [=](command_vec cmds) { return cli.helpCommands(cmds); }, "", 0, NULL,
-         "Print commands help"},
-        {"info", &info, "s?", NEED_FPGA, "<address>..", "Print ILC info"},
-        {"open", &openFPGA, "", 0, NULL, "Open FPGA"},
-        {"power", &setPower, "i", NEED_FPGA, "<0|1>", "Power off/on ILC bus"},
-        {"verbose", &verbose, "?", 0, "<new level>", "Report/set verbosity level"},
-        {NULL, NULL, NULL, 0, NULL, NULL}};
 
 #endif
 
