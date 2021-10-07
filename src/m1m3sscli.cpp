@@ -88,14 +88,14 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
     addILCCommand(
             "calibration",
             [](ILCUnit u) {
-                dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportCalibrationData(u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportCalibrationData(u.second);
             },
             "Read calibration data");
 
     addILCCommand(
             "pressure",
             [](ILCUnit u) {
-                dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
             },
             "Read mezzanine pressure");
 
@@ -189,6 +189,9 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
             ForceActuatorTableRow row = forceActuators.Table[i];
             units.push_back(ILCUnit(getILC(row.Subnet - 1), row.Address));
         }
+        for (int i = 1; i < 7; i++) {
+            units.push_back(ILCUnit(getILC(4), i));
+        }
         ret = 0;
     }
 
@@ -238,7 +241,7 @@ void PrintElectromechanical::processMezzaninePressure(uint8_t address, float pri
     std::cout << "Pressure data " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
 
     auto printPushPull = [](const char* name, float push, float pull) {
-        std::cout << std::setw(10) << name << std::setw(8) << std::setprecision(2) << std::fixed << push
+        std::cout << std::setfill(' ') << std::setw(10) << name << ": " << std::setw(8) << std::setprecision(2) << std::fixed << push
                   << " | " << std::setw(8) << std::setprecision(2) << std::fixed << push << std::endl;
     };
 
