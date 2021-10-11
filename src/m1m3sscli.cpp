@@ -138,14 +138,40 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
     ILCUnits units;
     int ret = -2;
 
+    auto getBus = [](std::string b)->int {
+        if (b.length() != 1) {
+            throw std::runtime_error("Invalid bus length - expected one character, got " + b);
+        }
+        if (b[0] >= 'A' && b[0] <= 'E') {
+            return b[0] - 'A';
+        }
+        if (b[0] >= 'a' && b[0] <= 'e') {
+            return b[0] - 'A';
+        }
+        if (b[0] >= '1' && b[0] <= '5') {
+            return b[0] - '1';
+        }
+        throw std::runtime_error("Invalid bus name: " + b);
+    };
+
     for (auto c : cmds) {
         size_t division = c.find('/');
         int bus = -1;
         int address = -1;
         try {
             if (division != std::string::npos) {
-                bus = std::stoi(c.substr(0, division)) - 1;
-                address = std::stoi(c.substr(division + 1));
+                bus = getBus(c.substr(0, division));
+                std::string add_s = c.substr(division + 1);
+                if (add_s == "*") {
+                    for (int i = 0; i < 156; i++) {
+                        ForceActuatorTableRow row = forceActuators.Table[i];
+                        if (row.Subnet == bus + 1) {
+                            units.push_back(ILCUnit(getILC(row.Subnet - 1), row.Address));
+                        }
+                    }
+                    continue;
+                }
+                address = std::stoi(add_s);
                 if (address <= 0 || address > 46) {
                     std::cerr << "Invalid address " << c << std::endl;
                     continue;
