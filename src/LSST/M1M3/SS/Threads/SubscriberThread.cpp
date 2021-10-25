@@ -76,8 +76,6 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyOffsetForcesByMirrorForce());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandUpdatePID());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandResetPID());
-        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandProgramILC());
-        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandModbusTransmit());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandForceActuatorBumpTest());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandKillForceActuatorBumpTest());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisableForceActuator());

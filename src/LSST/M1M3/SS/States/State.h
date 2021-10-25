@@ -70,8 +70,6 @@
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <UpdatePIDCommand.h>
 #include <ResetPIDCommand.h>
-#include <ProgramILCCommand.h>
-#include <ModbusTransmitCommand.h>
 #include <ForceActuatorBumpTestCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
 #include <DisableForceActuatorCommand.h>
@@ -151,8 +149,6 @@ public:
     virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
     virtual States::Type updatePID(UpdatePIDCommand* command);
     virtual States::Type resetPID(ResetPIDCommand* command);
-    virtual States::Type programILC(ProgramILCCommand* command);
-    virtual States::Type modbusTransmit(ModbusTransmitCommand* command);
     virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command);
     virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command);
     virtual States::Type disableForceActuator(DisableForceActuatorCommand* command);

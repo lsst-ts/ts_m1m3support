@@ -437,8 +437,6 @@ public:
                                                   std::string description);
     void ackCommandupdatePID(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandresetPID(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandprogramILC(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommanddisableForceActuator(int32_t commandID, int32_t ackCode, std::string description);

@@ -42,8 +42,6 @@ public:
     virtual States::Type update(UpdateCommand* command) override;
     virtual States::Type enable(EnableCommand* command) override;
     virtual States::Type standby(StandbyCommand* command) override;
-    virtual States::Type programILC(ProgramILCCommand* command) override;
-    virtual States::Type modbusTransmit(ModbusTransmitCommand* command) override;
 };
 
 } /* namespace SS */
