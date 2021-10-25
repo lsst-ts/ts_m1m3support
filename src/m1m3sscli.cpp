@@ -138,7 +138,7 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
     ILCUnits units;
     int ret = -2;
 
-    auto getBus = [](std::string b)->int {
+    auto getBus = [](std::string b) -> int {
         if (b.length() != 1) {
             throw std::runtime_error("Invalid bus length - expected one character, got " + b);
         }
@@ -267,8 +267,9 @@ void PrintElectromechanical::processMezzaninePressure(uint8_t address, float pri
     std::cout << "Pressure data " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
 
     auto printPushPull = [](const char* name, float push, float pull) {
-        std::cout << std::setfill(' ') << std::setw(10) << name << ": " << std::setw(8) << std::setprecision(2) << std::fixed << push
-                  << " | " << std::setw(8) << std::setprecision(2) << std::fixed << push << std::endl;
+        std::cout << std::setfill(' ') << std::setw(10) << name << ": " << std::setw(8)
+                  << std::setprecision(2) << std::fixed << push << " | " << std::setw(8)
+                  << std::setprecision(2) << std::fixed << push << std::endl;
     };
 
     printPushPull("Primary", primaryPush, primaryPull);
