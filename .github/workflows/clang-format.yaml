@@ -13,4 +13,3 @@ jobs:
         source: './src/LSST ./tests ./src/m1m3sscli.cpp ./src/ts-M1M3supportd.cpp'
         extensions: 'h,cpp'
         clangFormatVersion: 9
-        style: file
