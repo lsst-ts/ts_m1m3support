@@ -55,13 +55,13 @@ node {
                     source $SALUSER_HOME/.setup_salobj.sh
     
                     export PATH=\$CONDA_PREFIX/bin:$PATH
+                    export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig"
                     cd $WORKSPACE/ts_cRIOcpp
                     make
     
                     cd $WORKSPACE/ts_m1m3support
                     export LIBS_FLAGS="-L\$CONDA_PREFIX/lib" 
                     export SAL_CPPFLAGS="-I\$CONDA_PREFIX/include"
-                    export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig"
 
                     make simulator
                     LSST_DDS_PARTITION_PREFIX=test make junit || true
