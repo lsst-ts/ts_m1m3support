@@ -166,7 +166,6 @@ public:
     }
     MTM1M3_logevent_interlockStatusC* getEventInterlockStatus() { return &_eventInterlockStatus; }
     MTM1M3_logevent_interlockWarningC* getEventInterlockWarning() { return &_eventInterlockWarning; }
-    MTM1M3_logevent_modbusResponseC* getEventModbusResponse() { return &_eventModbusResponse; }
     MTM1M3_logevent_pidInfoC* getEventPIDInfo() { return &_eventPIDInfo; }
     MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &_eventPowerStatus; }
     MTM1M3_logevent_powerSupplyStatusC* getEventPowerSupplyStatus() { return &_eventPowerSupplyStatus; }
@@ -349,8 +348,6 @@ public:
     void logInterlockWarning();
     void tryLogInterlockWarning();
     void newLogLevel(int newLevel);
-    void logModbusResponse();
-    void tryLogModbusResponse();
     void logPIDInfo();
     void tryLogPIDInfo();
     void logPIDSettings(MTM1M3_logevent_pidSettingsC* data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
@@ -501,7 +498,6 @@ private:
     MTM1M3_logevent_inclinometerSensorWarningC _eventInclinometerSensorWarning;
     MTM1M3_logevent_interlockStatusC _eventInterlockStatus;
     MTM1M3_logevent_interlockWarningC _eventInterlockWarning;
-    MTM1M3_logevent_modbusResponseC _eventModbusResponse;
     MTM1M3_logevent_pidInfoC _eventPIDInfo;
     MTM1M3_logevent_powerStatusC _eventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _eventPowerSupplyStatus;
@@ -559,7 +555,6 @@ private:
     MTM1M3_logevent_inclinometerSensorWarningC _previousEventInclinometerSensorWarning;
     MTM1M3_logevent_interlockStatusC _previousEventInterlockStatus;
     MTM1M3_logevent_interlockWarningC _previousEventInterlockWarning;
-    MTM1M3_logevent_modbusResponseC _previousEventModbusResponse;
     MTM1M3_logevent_pidInfoC _previousEventPIDInfo;
     MTM1M3_logevent_powerStatusC _previousEventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _previousEventPowerSupplyStatus;

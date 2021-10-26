@@ -103,7 +103,6 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_logLevel");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_modbusResponse");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
@@ -1575,21 +1574,6 @@ void M1M3SSPublisher::newLogLevel(int newLevel) {
     MTM1M3_logevent_logLevelC logLevel;
     logLevel.level = newLevel;
     _m1m3SAL->logEvent_logLevel(&logLevel, 0);
-}
-
-void M1M3SSPublisher::logModbusResponse() {
-    _m1m3SAL->logEvent_modbusResponse(&_eventModbusResponse, 0);
-    _previousEventModbusResponse = _eventModbusResponse;
-}
-
-void M1M3SSPublisher::tryLogModbusResponse() {
-    if (_eventModbusResponse.responseValid != _previousEventModbusResponse.responseValid ||
-        _eventModbusResponse.address != _previousEventModbusResponse.address ||
-        _eventModbusResponse.functionCode != _previousEventModbusResponse.functionCode ||
-        _eventModbusResponse.crc != _previousEventModbusResponse.crc ||
-        _eventModbusResponse.dataLength != _previousEventModbusResponse.dataLength) {
-        this->logModbusResponse();
-    }
 }
 
 void M1M3SSPublisher::logPIDInfo() {
