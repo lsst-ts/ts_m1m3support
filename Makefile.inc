@@ -16,7 +16,6 @@ ifdef SIMULATOR
 else
   C := gcc -Wall -fmessage-length=0 ${c_opts}
   CPP := g++ -std=c++14 -Wall -fmessage-length=0 ${c_opts}
-  m1m3sscli := m1m3sscli
 endif
 
 CRIOCPP := ../ts_cRIOcpp/

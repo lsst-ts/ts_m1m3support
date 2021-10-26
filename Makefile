@@ -6,7 +6,7 @@ include Makefile.inc
 #
 
 # All Target
-all: ts-M1M3supportd $(m1m3sscli)
+all: ts-M1M3supportd m1m3sscli
 
 src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
@@ -18,7 +18,7 @@ ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
 
 m1m3sscli: src/m1m3sscli.cpp.o src/libM1M3SS.a $(CRIOCPP)/lib/libcRIOcpp.a
 	@echo '[LD ] $@'
-	${co}$(CPP) -o $@ $^ -L/usr/lib64 -lpthread -lreadline -ldl $(CRIOCPP)/lib/libcRIOcpp.a
+	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a -lreadline
 
 # Other Targets
 clean:

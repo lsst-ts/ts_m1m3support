@@ -20,12 +20,21 @@
  * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifdef SIMULATOR
+#include <SimulatedFPGA.h>
+#define FPGAClass SimulatedFPGA
+#else
+#include <FPGA.h>
+#define FPGAClass LSST::M1M3::SS::FPGA
+#endif
+
 #include <FPGA.h>
 #include <ForceActuatorApplicationSettings.h>
 
+#include <cRIO/FPGACliApp.h>
 #include <cRIO/ElectromechanicalPneumaticILC.h>
+#include <cRIO/PrintILC.h>
 
-#include <CliApp.hpp>
 #include <iostream>
 #include <iomanip>
 
@@ -36,341 +45,68 @@
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
 
-unsigned int _printout = 0;
-
-class PrintILC : public ElectromechanicalPneumaticILC {
+class M1M3SScli : public FPGACliApp {
 public:
-    PrintILC(uint8_t bus) : ElectromechanicalPneumaticILC(bus) { setAlwaysTrigger(true); }
+    M1M3SScli(const char* name, const char* description);
+    int setPower(command_vec cmds);
 
 protected:
-    void processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAppType, uint8_t networkNodeType,
-                         uint8_t ilcSelectedOptions, uint8_t networkNodeOptions, uint8_t majorRev,
-                         uint8_t minorRev, std::string firmwareName);
-
-    void processServerStatus(uint8_t address, uint8_t mode, uint16_t status, uint16_t faults) override {}
-
-    void processChangeILCMode(uint8_t address, uint16_t mode) override {}
-
-    void processSetTempILCAddress(uint8_t address, uint8_t newAddress) override {}
-
-    void processResetServer(uint8_t address) override;
-
-    virtual void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
-                                        float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
-                                        float backupSensitivity[4]) override;
-
-private:
-    uint8_t _bus;
+    virtual LSST::cRIO::FPGA* newFPGA(const char* dir) override;
+    virtual ILCUnits getILCs(command_vec cmds) override;
 };
 
-void _printSepline() {
-    if (_printout > 0) {
-        std::cout << std::endl;
-    }
-    _printout++;
-}
-
-void PrintILC::processServerID(uint8_t address, uint64_t uniqueID, uint8_t ilcAppType,
-                               uint8_t networkNodeType, uint8_t ilcSelectedOptions,
-                               uint8_t networkNodeOptions, uint8_t majorRev, uint8_t minorRev,
-                               std::string firmwareName) {
-    _printSepline();
-    std::cout << "Bus: " << std::to_string(getBus()) << " (" << static_cast<char>('A' - 1 + getBus()) << ")"
-              << std::endl
-              << "Address: " << std::to_string(address) << std::endl
-              << "UniqueID: " << std::hex << std::setw(8) << std::setfill('0') << (uniqueID) << std::endl
-              << "ILC application type: " << std::to_string(ilcAppType) << std::endl
-              << "Network node type: " << std::to_string(networkNodeType) << std::endl
-              << "ILC selected options: " << std::to_string(ilcSelectedOptions) << std::endl
-              << "Network node options: " << std::to_string(networkNodeOptions) << std::endl
-              << "Firmware revision: " << std::to_string(majorRev) << "." << std::to_string(minorRev)
-              << std::endl
-              << "Firmware name: " << firmwareName << std::endl;
-}
-
-void PrintILC::processResetServer(uint8_t address) {
-    _printSepline();
-    std::cout << "Reseted " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
-}
-
-template <typename t>
-void print4(const char* name, t a[4]) {
-    std::cout << std::setfill(' ') << std::setw(18) << name;
-    for (int i = 0; i < 4; i++) {
-        std::cout << " " << std::setw(15) << std::setprecision(10) << a[i];
-    }
-    std::cout << std::endl;
-};
-
-void PrintILC::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
-                                      float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
-                                      float backupSensitivity[4]) {
-    _printSepline();
-    std::cout << "Calibration data " << std::to_string(getBus()) << "/" << std::to_string(address)
-              << std::endl;
-
-    int vi[4] = {1, 2, 3, 4};
-    print4("Values", vi);
-
-    print4("Main ADC Kn", mainADCK);
-    print4("Main Offset", mainOffset);
-    print4("Main Sensitivity", mainSensitivity);
-
-    print4("Backup ADC Kn", backupADCK);
-    print4("Backup Offset", backupOffset);
-    print4("Backup Sensitivity", backupSensitivity);
-}
-
-constexpr int NEED_FPGA = 0x01;
-
-class M1M3TScli : public CliApp {
+class PrintElectromechanical : public ElectromechanicalPneumaticILC, public PrintILC {
 public:
-    M1M3TScli(const char* description) : CliApp(description) {}
+    PrintElectromechanical(uint8_t bus) : ILC(bus), ElectromechanicalPneumaticILC(bus), PrintILC(bus) {}
 
 protected:
-    void printUsage() override;
-    void processArg(int opt, const char* optarg) override;
-    int processCommand(const command_t* cmd, const command_vec& args) override;
+    void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
+                                float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
+                                float backupSensitivity[4]) override;
+
+    void processMezzaninePressure(uint8_t address, float primaryPush, float primaryPull, float secondaryPush,
+                                  float secondaryPull) override;
 };
 
-void M1M3TScli::printUsage() {
-    std::cout << "M1M3 Thermal System command line tool. Access M1M3 Thermal System FPGA." << std::endl
-              << "Version " << VERSION << std::endl
-              << "Options: " << std::endl
-              << "  -h   help" << std::endl
-              << "  -O   don't auto open (and run) FPGA" << std::endl
-              << "  -v   increase verbosity" << std::endl
-              << "  -V   prints version and exit" << std::endl;
-    command_vec cmds;
-    helpCommands(cmds);
-}
-
-bool _autoOpen = true;
-int _verbose = 0;
-
-void M1M3TScli::processArg(int opt, const char* optarg) {
-    switch (opt) {
-        case 'h':
-            printAppHelp();
-            exit(EXIT_SUCCESS);
-            break;
-
-        case 'O':
-            _autoOpen = false;
-            break;
-
-        case 'v':
-            _verbose++;
-            break;
-
-        case 'V':
-            std::cout << VERSION << std::endl;
-            exit(EXIT_SUCCESS);
-
-        default:
-            std::cerr << "Unknown command: " << (char)(opt) << std::endl;
-            exit(EXIT_FAILURE);
-    }
-}
-
-void _printBuffer(std::string prefix, uint16_t* buf, size_t len) {
-    if (_verbose == 0) {
-        return;
-    }
-
-    std::cout << prefix;
-    for (size_t i = 0; i < len; i++) {
-        std::cout << std::hex << std::setfill('0') << std::setw(4) << buf[i] << " ";
-    }
-    std::cout << std::endl;
-}
-
-class PrintSSFPGA : public LSST::M1M3::SS::FPGA {
+class PrintSSFPGA : public FPGAClass {
 public:
-    PrintSSFPGA() : FPGA() {}
+#ifdef SIMULATOR
+    PrintSSFPGA() : SimulatedFPGA() {}
+#else
+    PrintSSFPGA() : LSST::M1M3::SS::FPGA() {}
+#endif
 
-    void writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeout) override {
-        _printBuffer("C> ", data, length);
-        FPGA::writeCommandFIFO(data, length, timeout);
-    }
-
-    void writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeout) {
-        _printBuffer("R> ", data, length);
-        FPGA::writeRequestFIFO(data, length, timeout);
-    }
-
-    void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeout) override {
-        FPGA::readU16ResponseFIFO(data, length, timeout);
-        _printBuffer("R< ", data, length);
-    }
+    void writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeout) override;
+    void writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeout) override;
+    void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeout) override;
 };
 
-PrintSSFPGA* fpga = NULL;
-constexpr int ILC_BUS = 5;
-PrintILC ilcs[ILC_BUS] = {PrintILC(1), PrintILC(2), PrintILC(3), PrintILC(4), PrintILC(5)};
+M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(name, description) {
+    addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>",
+               "Power off/on ILC bus");
 
-int M1M3TScli::processCommand(const command_t* cmd, const command_vec& args) {
-    if ((cmd->flags & NEED_FPGA) && fpga == NULL) {
-        std::cerr << "Command " << cmd->command << " needs opened FPGA. Please call open command first"
-                  << std::endl;
-        return -1;
-    }
-    return CliApp::processCommand(cmd, args);
+    addILCCommand(
+            "calibration",
+            [](ILCUnit u) {
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportCalibrationData(u.second);
+            },
+            "Read calibration data");
+
+    addILCCommand(
+            "pressure",
+            [](ILCUnit u) {
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
+            },
+            "Read mezzanine pressure");
+
+    addILC(std::make_shared<PrintElectromechanical>(1));
+    addILC(std::make_shared<PrintElectromechanical>(2));
+    addILC(std::make_shared<PrintElectromechanical>(3));
+    addILC(std::make_shared<PrintElectromechanical>(4));
+    addILC(std::make_shared<PrintElectromechanical>(5));
 }
 
-int closeFPGA() {
-    fpga->close();
-    delete fpga;
-    fpga = NULL;
-    return 0;
-}
-
-ForceActuatorApplicationSettings forceActuators;
-
-/**
- * Process command arguments, call given function. Function accepts three
- * arguments - bus number (1-5), FA address, command arguments begin and
- * command arguments. It returns <0 on error.
- *
- * Address is either <bus>/<address>, where bus is bus number (1-5) and address
- * is the address (1-46). Or a number >= 101 and <= 443, denoting force
- * actuator ID. Single number 1-6 is for hardpoints.
- *
- * :warn: Please note that bus number passed to call function is 0 based (e.g.
- * bus 1 is passed as 0). That's different from FPGA functions, where bus is 1
- * based. This is because call is assumed to access ilcs array with bus index,
- * where ilcs indices are 0 based.
- *
- * @param cmds commands array
- * @param call function to call
- *
- * @return
- */
-int callFunction(command_vec cmds,
-                 std::function<void(uint8_t, uint8_t, command_vec::iterator&, command_vec)> call) {
-    for (int i = 0; i < ILC_BUS; i++) {
-        ilcs[i].clear();
-    }
-
-    _printout = 0;
-
-    if (cmds.empty()) {
-        std::cout << "Command for all ILC" << std::endl;
-        command_vec::iterator beg = cmds.begin();
-        for (int i = 0; i < 156; i++) {
-            ForceActuatorTableRow row = forceActuators.Table[i];
-            call(row.Subnet - 1, row.Address, beg, cmds);
-        }
-    }
-
-    for (command_vec::iterator c = cmds.begin(); c != cmds.end(); c++) {
-        std::size_t division = c->find('/');
-        int bus = -1;
-        int address = -1;
-        try {
-            if (division != std::string::npos) {
-                bus = std::stoi(c->substr(0, division));
-                address = std::stoi(c->substr(division + 1));
-                if (address <= 0 || address > 46) {
-                    std::cerr << "Invalid address " << *c << std::endl;
-                    return -1;
-                }
-            }
-            // try to find bus & address by FA/HP ID
-            else {
-                int id = std::stoi(*c);
-                if (id >= 101 && id <= 443) {
-                    id = forceActuators.ActuatorIdToZIndex(id);
-                    if (id < 0) {
-                        std::cerr << "Unknown actuator ID " << id << std::endl;
-                        return -1;
-                    }
-                    ForceActuatorTableRow row = forceActuators.Table[id];
-                    if (_verbose) {
-                        std::cout << "Id: " << id << " address: " << std::to_string(bus) << "/"
-                                  << std::to_string(address) << std::endl;
-                    }
-                    bus = row.Subnet;
-                    address = row.Address;
-                }
-            }
-        } catch (std::logic_error& e) {
-            std::cerr << "Non-numeric address: " << *c << std::endl;
-            return -1;
-        }
-
-        if (bus < 1 || bus > ILC_BUS || address == -1) {
-            std::cerr << "Invalid ILC address: " << *c << std::endl;
-            return -1;
-        }
-
-        call(bus - 1, address, c, cmds);
-    }
-
-    for (int i = 0; i < ILC_BUS; i++) {
-        if (ilcs[i].getLength() > 0) {
-            fpga->ilcCommands(ilcs[i]);
-        }
-    }
-
-    return 0;
-}
-
-int calData(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        return ilcs[bus].reportCalibrationData(address);
-    });
-}
-
-int calSet(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        uint8_t channel = std::stoi(*(++c));
-        float offset = std::stof(*(++c));
-        float sensitivity = std::stof(*(++c));
-        return ilcs[bus].setOffsetAndSensitivity(address, channel, offset, sensitivity);
-    });
-}
-
-int info(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        return ilcs[bus].reportServerID(address);
-    });
-}
-
-int openFPGA(command_vec cmds) {
-    if (fpga != NULL) {
-        std::cerr << "FPGA already opened!" << std::endl;
-        return 1;
-    }
-    char dir[255];
-    if (cmds.size() == 0) {
-        getcwd(dir, 255);
-    } else {
-        memcpy(dir, cmds[0].c_str(), cmds[0].length() + 1);
-    }
-    fpga = new PrintSSFPGA();
-    fpga->initialize();
-    fpga->open();
-    return 0;
-}
-
-M1M3TScli cli("M1M3 Thermal System Command Line Interface");
-
-void _updateVerbosity(int newVerbose) {
-    _verbose = newVerbose;
-    spdlog::level::level_enum logLevel = spdlog::level::trace;
-
-    switch (_verbose) {
-        case 0:
-            logLevel = spdlog::level::info;
-        case 1:
-            logLevel = spdlog::level::debug;
-            break;
-    }
-    spdlog::set_level(logLevel);
-}
-
-int setPower(command_vec cmds) {
+int M1M3SScli::setPower(command_vec cmds) {
     uint16_t net = 1;
     uint16_t aux = 0;
     switch (cmds.size()) {
@@ -388,59 +124,197 @@ int setPower(command_vec cmds) {
             return -1;
     }
     uint16_t pa[16] = {65, aux, 66, aux, 67, aux, 68, aux, 69, net, 70, net, 71, net, 72, net};
-    fpga->writeCommandFIFO(pa, 16, 0);
+    getFPGA()->writeCommandFIFO(pa, 16, 0);
     return 0;
 }
 
-int verbose(command_vec cmds) {
-    switch (cmds.size()) {
-        case 1:
-            _updateVerbosity(std::stoi(cmds[0]));
-        case 0:
-            std::cout << "Verbosity level: " << _verbose << std::endl;
-            break;
+LSST::cRIO::FPGA* M1M3SScli::newFPGA(const char* dir) { return new PrintSSFPGA(); }
+
+constexpr int ILC_BUS = 5;
+
+ForceActuatorApplicationSettings forceActuators;
+
+ILCUnits M1M3SScli::getILCs(command_vec cmds) {
+    ILCUnits units;
+    int ret = -2;
+
+    auto getBus = [](std::string b)->int {
+        if (b.length() != 1) {
+            throw std::runtime_error("Invalid bus length - expected one character, got " + b);
+        }
+        if (b[0] >= 'A' && b[0] <= 'E') {
+            return b[0] - 'A';
+        }
+        if (b[0] >= 'a' && b[0] <= 'e') {
+            return b[0] - 'A';
+        }
+        if (b[0] >= '1' && b[0] <= '5') {
+            return b[0] - '1';
+        }
+        throw std::runtime_error("Invalid bus name: " + b);
+    };
+
+    for (auto c : cmds) {
+        size_t division = c.find('/');
+        int bus = -1;
+        int address = -1;
+        try {
+            if (division != std::string::npos) {
+                bus = getBus(c.substr(0, division));
+                std::string add_s = c.substr(division + 1);
+                if (add_s == "*") {
+                    for (int i = 0; i < 156; i++) {
+                        ForceActuatorTableRow row = forceActuators.Table[i];
+                        if (row.Subnet == bus + 1) {
+                            units.push_back(ILCUnit(getILC(row.Subnet - 1), row.Address));
+                        }
+                    }
+                    continue;
+                }
+                address = std::stoi(add_s);
+                if (address <= 0 || address > 46) {
+                    std::cerr << "Invalid address " << c << std::endl;
+                    continue;
+                }
+            }
+            // try to find bus & address by FA/HP ID
+            else {
+                int id = std::stoi(c);
+                if (id >= 101 && id <= 443) {
+                    id = forceActuators.ActuatorIdToZIndex(id);
+                    if (id < 0) {
+                        std::cerr << "Unknown actuator ID " << c << std::endl;
+                        ret = -1;
+                        continue;
+                    }
+                    ForceActuatorTableRow row = forceActuators.Table[id];
+                    if (getDebugLevel() > 1) {
+                        std::cout << "Id: " << id << " address: " << std::to_string(bus) << "/"
+                                  << std::to_string(address) << std::endl;
+                    }
+                    bus = row.Subnet - 1;
+                    address = row.Address;
+                }
+            }
+        } catch (std::logic_error& e) {
+            std::cerr << "Non-numeric address: " << c << std::endl;
+        }
+
+        if (bus < 0 || bus >= ILC_BUS || address == -1) {
+            std::cerr << "Invalid ILC address: " << c << std::endl;
+            ret = -1;
+            continue;
+        }
+
+        units.push_back(ILCUnit(getILC(bus), address));
     }
-    return 0;
+
+    if (ret == -2 && units.empty()) {
+        std::cout << "Command for all ILC" << std::endl;
+        for (int i = 0; i < 156; i++) {
+            ForceActuatorTableRow row = forceActuators.Table[i];
+            units.push_back(ILCUnit(getILC(row.Subnet - 1), row.Address));
+        }
+        for (int i = 1; i < 7; i++) {
+            units.push_back(ILCUnit(getILC(4), i));
+        }
+        ret = 0;
+    }
+
+    return units;
 }
 
-command_t commands[] = {
-        {"caldata", &calData, "s?", NEED_FPGA, "<address>..", "Print ILC calibration data"},
-        {"calset", &calSet, "siff", NEED_FPGA, "<address> <channel> <ADC Kn> <offset> <setpoint>",
-         "Set calibration data for given channel"},
-        {"close", [=](command_vec) { return closeFPGA(); }, "", NEED_FPGA, NULL, "Close FPGA connection"},
-        {"help", [=](command_vec cmds) { return cli.helpCommands(cmds); }, "", 0, NULL,
-         "Print commands help"},
-        {"info", &info, "s?", NEED_FPGA, "<address>..", "Print ILC info"},
-        {"open", &openFPGA, "", 0, NULL, "Open FPGA"},
-        {"power", &setPower, "i", NEED_FPGA, "<0|1>", "Power off/on ILC bus"},
-        {"verbose", &verbose, "?", 0, "<new level>", "Report/set verbosity level"},
-        {NULL, NULL, NULL, 0, NULL, NULL}};
+unsigned int _printout = 0;
 
-int main(int argc, char* const argv[]) {
-    command_vec cmds = cli.init(commands, "hOvV", argc, argv);
-
-    spdlog::init_thread_pool(8192, 1);
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-
-    auto logger = std::make_shared<spdlog::async_logger>("m1m3tscli", sinks.begin(), sinks.end(),
-                                                         spdlog::thread_pool(),
-                                                         spdlog::async_overflow_policy::block);
-    spdlog::set_default_logger(logger);
-    _updateVerbosity(_verbose);
-
-    if (_autoOpen) {
-        command_vec cmds;
-        openFPGA(cmds);
-        // IFPGA::get().setPower(false, true);
+void _printSepline() {
+    if (_printout > 0) {
+        std::cout << std::endl;
     }
-
-    if (cmds.empty()) {
-        std::cout << "Version " VERSION ". Please type help for more help." << std::endl;
-        cli.goInteractive("M1M3TS > ");
-        closeFPGA();
-        return 0;
-    }
-
-    return cli.processCmdVector(cmds);
+    _printout++;
 }
+
+template <typename t>
+void print4(const char* name, t a[4]) {
+    std::cout << std::setfill(' ') << std::setw(18) << name;
+    for (int i = 0; i < 4; i++) {
+        std::cout << " " << std::setw(15) << std::setprecision(10) << a[i];
+    }
+    std::cout << std::endl;
+}
+
+void PrintElectromechanical::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
+                                                    float mainSensitivity[4], float backupADCK[4],
+                                                    float backupOffset[4], float backupSensitivity[4]) {
+    _printSepline();
+    std::cout << "Calibration data " << std::to_string(getBus()) << "/" << std::to_string(address)
+              << std::endl;
+
+    int vi[4] = {1, 2, 3, 4};
+    print4("Values", vi);
+
+    print4("Main ADC Kn", mainADCK);
+    print4("Main Offset", mainOffset);
+    print4("Main Sensitivity", mainSensitivity);
+
+    print4("Backup ADC Kn", backupADCK);
+    print4("Backup Offset", backupOffset);
+    print4("Backup Sensitivity", backupSensitivity);
+}
+
+void PrintElectromechanical::processMezzaninePressure(uint8_t address, float primaryPush, float primaryPull,
+                                                      float secondaryPush, float secondaryPull) {
+    _printSepline();
+    std::cout << "Pressure data " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
+
+    auto printPushPull = [](const char* name, float push, float pull) {
+        std::cout << std::setfill(' ') << std::setw(10) << name << ": " << std::setw(8) << std::setprecision(2) << std::fixed << push
+                  << " | " << std::setw(8) << std::setprecision(2) << std::fixed << push << std::endl;
+    };
+
+    printPushPull("Primary", primaryPush, primaryPull);
+    printPushPull("Secondary", secondaryPush, secondaryPull);
+}
+
+M1M3SScli cli("M1M3SS", "M1M3 Support System Command Line Interface");
+
+void _printBuffer(std::string prefix, uint16_t* buf, size_t len) {
+    if (cli.getDebugLevel() == 0) {
+        return;
+    }
+
+    std::cout << prefix;
+    for (size_t i = 0; i < len; i++) {
+        std::cout << std::hex << std::setfill('0') << std::setw(4) << buf[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+void PrintSSFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeout) {
+    _printBuffer("C> ", data, length);
+    FPGAClass::writeCommandFIFO(data, length, timeout);
+}
+
+void PrintSSFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeout) {
+    _printBuffer("R> ", data, length);
+    FPGAClass::writeRequestFIFO(data, length, timeout);
+}
+
+void PrintSSFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeout) {
+    FPGAClass::readU16ResponseFIFO(data, length, timeout);
+    _printBuffer("R< ", data, length);
+}
+
+#if 0
+
+int calSet(command_vec cmds) {
+    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
+        uint8_t channel = std::stoi(*(++c));
+        float offset = std::stof(*(++c));
+        float sensitivity = std::stof(*(++c));
+        return ilcs[bus].setOffsetAndSensitivity(address, channel, offset, sensitivity);
+    });
+}
+
+#endif
+
+int main(int argc, char* const argv[]) { return cli.run(argc, argv); }
