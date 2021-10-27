@@ -25,6 +25,7 @@
 #include <FPGAAddresses.h>
 #include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
+#include <InterlockWarning.h>
 #include <SafetyController.h>
 #include <Timestamp.h>
 #include <Range.h>
@@ -49,7 +50,6 @@ DigitalInputOutput::DigitalInputOutput() {
     _cellLightStatus = M1M3SSPublisher::get().getEventCellLightStatus();
     _cellLightWarning = M1M3SSPublisher::get().getEventCellLightWarning();
     _interlockStatus = M1M3SSPublisher::get().getEventInterlockStatus();
-    _interlockWarning = M1M3SSPublisher::get().getEventInterlockWarning();
 
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
@@ -60,7 +60,6 @@ DigitalInputOutput::DigitalInputOutput() {
     memset(_cellLightStatus, 0, sizeof(MTM1M3_logevent_cellLightStatusC));
     memset(_cellLightWarning, 0, sizeof(MTM1M3_logevent_cellLightWarningC));
     memset(_interlockStatus, 0, sizeof(MTM1M3_logevent_interlockStatusC));
-    memset(_interlockWarning, 0, sizeof(MTM1M3_logevent_interlockWarningC));
 }
 
 void DigitalInputOutput::setSafetyController(SafetyController* safetyController) {
@@ -97,16 +96,16 @@ void DigitalInputOutput::processData() {
         _interlockStatus->timestamp = timestamp;
         _interlockStatus->heartbeatOutputState = (fpgaData->DigitalOutputStates & 0x01) != 0;
 
-        _interlockWarning->timestamp = timestamp;
-        _interlockWarning->heartbeatStateOutputMismatch =
-                _interlockStatus->heartbeatOutputState != _interlockStatus->heartbeatCommandedState;
+        InterlockWarning::instance().setHearbeatOutputMismatch(
+                timestamp,
+                _interlockStatus->heartbeatOutputState != _interlockStatus->heartbeatCommandedState);
 
         if (_safetyController) {
             _safetyController->airControllerNotifyCommandOutputMismatch(
                     _airSupplyWarning->commandOutputMismatch);
             _safetyController->cellLightNotifyOutputMismatch(_cellLightWarning->cellLightsOutputMismatch);
             _safetyController->interlockNotifyHeartbeatStateOutputMismatch(
-                    _interlockWarning->heartbeatStateOutputMismatch);
+                    InterlockWarning::instance().heartbeatStateOutputMismatch);
         }
     }
     if (fpgaData->DigitalInputTimestamp != _lastDITimestamp) {
@@ -133,24 +132,20 @@ void DigitalInputOutput::processData() {
         _cellLightWarning->cellLightsSensorMismatch =
                 _cellLightStatus->cellLightsCommandedOn != _cellLightStatus->cellLightsOn;
 
-        _interlockWarning->timestamp = timestamp;
-        _interlockWarning->auxPowerNetworksOff = (fpgaData->DigitalInputStates & 0x0001) == 0;
-        _interlockWarning->thermalEquipmentOff = (fpgaData->DigitalInputStates & 0x0002) == 0;
-        _interlockWarning->airSupplyOff = (fpgaData->DigitalInputStates & 0x0008) == 0;
-        _interlockWarning->cabinetDoorOpen = (fpgaData->DigitalInputStates & 0x0010) == 0;
-        _interlockWarning->tmaMotionStop = (fpgaData->DigitalInputStates & 0x0040) == 0;
-        _interlockWarning->gisHeartbeatLost = (fpgaData->DigitalInputStates & 0x0080) == 0;
+        InterlockWarning::instance().setData(timestamp, fpgaData->DigitalInputStates);
 
         if (_safetyController) {
             _safetyController->airControllerNotifyCommandSensorMismatch(
                     _airSupplyWarning->commandSensorMismatch);
             _safetyController->cellLightNotifySensorMismatch(_cellLightWarning->cellLightsSensorMismatch);
-            _safetyController->interlockNotifyAuxPowerNetworksOff(_interlockWarning->auxPowerNetworksOff);
-            _safetyController->interlockNotifyThermalEquipmentOff(_interlockWarning->thermalEquipmentOff);
-            _safetyController->interlockNotifyAirSupplyOff(_interlockWarning->airSupplyOff);
-            _safetyController->interlockNotifyCabinetDoorOpen(_interlockWarning->cabinetDoorOpen);
-            _safetyController->interlockNotifyTMAMotionStop(_interlockWarning->tmaMotionStop);
-            _safetyController->interlockNotifyGISHeartbeatLost(_interlockWarning->gisHeartbeatLost);
+            _safetyController->interlockNotifyAuxPowerNetworksOff(
+                    InterlockWarning::instance().auxPowerNetworksOff);
+            _safetyController->interlockNotifyThermalEquipmentOff(
+                    InterlockWarning::instance().thermalEquipmentOff);
+            _safetyController->interlockNotifyAirSupplyOff(InterlockWarning::instance().airSupplyOff);
+            _safetyController->interlockNotifyCabinetDoorOpen(InterlockWarning::instance().cabinetDoorOpen);
+            _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
+            _safetyController->interlockNotifyGISHeartbeatLost(InterlockWarning::instance().gisHeartbeatLost);
         }
     }
     if (tryPublish) {
@@ -159,7 +154,6 @@ void DigitalInputOutput::processData() {
         M1M3SSPublisher::get().tryLogCellLightStatus();
         M1M3SSPublisher::get().tryLogCellLightWarning();
         M1M3SSPublisher::get().tryLogInterlockStatus();
-        M1M3SSPublisher::get().tryLogInterlockWarning();
     }
 }
 

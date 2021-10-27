@@ -1548,29 +1548,6 @@ void M1M3SSPublisher::tryLogInterlockStatus() {
     }
 }
 
-void M1M3SSPublisher::logInterlockWarning() {
-    _eventInterlockWarning.anyWarning =
-            _eventInterlockWarning.heartbeatStateOutputMismatch ||
-            _eventInterlockWarning.auxPowerNetworksOff || _eventInterlockWarning.thermalEquipmentOff ||
-            _eventInterlockWarning.airSupplyOff || _eventInterlockWarning.cabinetDoorOpen ||
-            _eventInterlockWarning.tmaMotionStop || _eventInterlockWarning.gisHeartbeatLost;
-    _m1m3SAL->logEvent_interlockWarning(&_eventInterlockWarning, 0);
-    _previousEventInterlockWarning = _eventInterlockWarning;
-}
-
-void M1M3SSPublisher::tryLogInterlockWarning() {
-    if (_eventInterlockWarning.heartbeatStateOutputMismatch !=
-                _previousEventInterlockWarning.heartbeatStateOutputMismatch ||
-        _eventInterlockWarning.auxPowerNetworksOff != _previousEventInterlockWarning.auxPowerNetworksOff ||
-        _eventInterlockWarning.thermalEquipmentOff != _previousEventInterlockWarning.thermalEquipmentOff ||
-        _eventInterlockWarning.airSupplyOff != _previousEventInterlockWarning.airSupplyOff ||
-        _eventInterlockWarning.cabinetDoorOpen != _previousEventInterlockWarning.cabinetDoorOpen ||
-        _eventInterlockWarning.tmaMotionStop != _previousEventInterlockWarning.tmaMotionStop ||
-        _eventInterlockWarning.gisHeartbeatLost != _previousEventInterlockWarning.gisHeartbeatLost) {
-        this->logInterlockWarning();
-    }
-}
-
 void M1M3SSPublisher::newLogLevel(int newLevel) {
     MTM1M3_logevent_logLevelC logLevel;
     logLevel.level = newLevel;
