@@ -45,7 +45,6 @@
 #include <ActiveBusList.h>
 #include <ILCResponseParser.h>
 #include <SAL_MTM1M3C.h>
-#include <FirmwareUpdate.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -80,9 +79,6 @@ public:
      * (Re)-build all bus lists.
      */
     void buildBusLists();
-
-    void programILC(int32_t actuatorId, std::string filePath);
-    void modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data);
 
     void writeCalibrationDataBuffer();
     void writeSetADCScanRateBuffer();
@@ -196,7 +192,6 @@ private:
     FreezeSensorBusList _busListFreezeSensor;
     RaisedBusList _busListRaised;
     ActiveBusList _busListActive;
-    FirmwareUpdate _firmwareUpdate;
 
     HardpointActuatorSettings* _hardpointActuatorSettings;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;

@@ -37,7 +37,6 @@
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
 #include <ILC.h>
-#include <ModbusTransmitCommand.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -180,13 +179,6 @@ States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command) {
     if (command->getData()->turnAuxPowerNetworkDOff) {
         Model::get().getPowerController()->setAuxPowerNetworkD(false);
     }
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type EngineeringState::modbusTransmit(ModbusTransmitCommand* command) {
-    SPDLOG_INFO("{}: modbusTransmit()", this->name);
-    Model::get().getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode,
-                                          command->getData()->dataLength, command->getData()->data);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

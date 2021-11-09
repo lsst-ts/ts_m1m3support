@@ -151,12 +151,6 @@ States::Type State::updatePID(UpdatePIDCommand* command) {
 States::Type State::resetPID(ResetPIDCommand* command) {
     return this->rejectCommandInvalidState(command, "ResetPID");
 }
-States::Type State::programILC(ProgramILCCommand* command) {
-    return this->rejectCommandInvalidState(command, "ProgramILC");
-}
-States::Type State::modbusTransmit(ModbusTransmitCommand* command) {
-    return this->rejectCommandInvalidState(command, "ModbusTransmit");
-}
 States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     return this->rejectCommandInvalidState(command, "ForceActuatorBumpTest");
 }
