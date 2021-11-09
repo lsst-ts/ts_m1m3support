@@ -50,10 +50,8 @@
 #include <ForceActuatorBumpTestCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
 #include <LowerM1M3Command.h>
-#include <ModbusTransmitCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <PositionM1M3Command.h>
-#include <ProgramILCCommand.h>
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
@@ -127,8 +125,6 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForcesByMirrorForce");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_updatePID");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_resetPID");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_programILC");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_modbusTransmit");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_forceActuatorBumpTest");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_killForceActuatorBumpTest");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableForceActuator");
@@ -231,9 +227,6 @@ COMMAND(ApplyOffsetForcesByMirrorForce, applyOffsetForcesByMirrorForce)
 
 COMMAND(UpdatePID, updatePID)
 COMMAND(ResetPID, resetPID)
-
-COMMAND(ProgramILC, programILC)
-COMMAND(ModbusTransmit, modbusTransmit)
 
 COMMAND(ForceActuatorBumpTest, forceActuatorBumpTest)
 COMMAND(KillForceActuatorBumpTest, killForceActuatorBumpTest)

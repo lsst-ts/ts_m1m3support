@@ -287,18 +287,6 @@ void Context::resetPID(ResetPIDCommand* command) {
     _updateCurrentStateIfRequired(state->resetPID(command));
 }
 
-void Context::programILC(ProgramILCCommand* command) {
-    SPDLOG_DEBUG("Context: programILC()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->programILC(command));
-}
-
-void Context::modbusTransmit(ModbusTransmitCommand* command) {
-    SPDLOG_DEBUG("Context: modbusTransmit()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->modbusTransmit(command));
-}
-
 void Context::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     SPDLOG_DEBUG("Context: forceActuatorBumpTest()");
     State* state = StaticStateFactory::get().create(_currentState);
