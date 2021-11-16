@@ -71,13 +71,14 @@ public:
     /**
      *
      *
-     * @param globalTimestamp
-     * @param mismatched
+     * @param globalTimestamp actual timestamp
+     * @param mismatched if true, heartbeat is
      */
     void setHearbeatOutputMismatch(double globalTimestamp, bool mismatched) {
         if (_heartbeatMismatch < 0 || _heartbeatMismatch != mismatched) {
             timestamp = globalTimestamp;
             _heartbeatMismatch = mismatched;
+            heartbeatStateOutputMismatch = mismatched;
             M1M3SSPublisher::get().logInterlockWarning(this);
         }
     }
