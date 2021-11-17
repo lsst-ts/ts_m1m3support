@@ -101,8 +101,6 @@ public:
     Command* tryAcceptCommandApplyOffsetForcesByMirrorForce();
     Command* tryAcceptCommandUpdatePID();
     Command* tryAcceptCommandResetPID();
-    Command* tryAcceptCommandProgramILC();
-    Command* tryAcceptCommandModbusTransmit();
     Command* tryAcceptCommandForceActuatorBumpTest();
     Command* tryAcceptCommandKillForceActuatorBumpTest();
     Command* tryAcceptCommandDisableForceActuator();
@@ -156,8 +154,6 @@ private:
     MTM1M3_command_applyOffsetForcesByMirrorForceC _applyOffsetForcesByMirrorForceData;
     MTM1M3_command_updatePIDC _updatePIDData;
     MTM1M3_command_resetPIDC _resetPIDData;
-    MTM1M3_command_programILCC _programILCData;
-    MTM1M3_command_modbusTransmitC _modbusTransmitData;
     MTM1M3_command_forceActuatorBumpTestC _forceActuatorBumpTestData;
     MTM1M3_command_killForceActuatorBumpTestC _killForceActuatorBumpTestData;
     MTM1M3_command_disableForceActuatorC _disableForceActuatorData;

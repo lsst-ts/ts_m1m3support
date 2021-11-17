@@ -79,8 +79,7 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
                                            ILCModes::ClearFaults),
           _busListFreezeSensor(&_subnetData, &_ilcMessageFactory),
           _busListRaised(&_subnetData, &_ilcMessageFactory),
-          _busListActive(&_subnetData, &_ilcMessageFactory),
-          _firmwareUpdate(&_subnetData) {
+          _busListActive(&_subnetData, &_ilcMessageFactory) {
     SPDLOG_DEBUG("ILC: ILC()");
     _safetyController = safetyController;
     _hardpointActuatorSettings = hardpointActuatorSettings;
@@ -116,45 +115,6 @@ void ILC::buildBusLists() {
     _busListFreezeSensor.buildBuffer();
     _busListRaised.buildBuffer();
     _busListActive.buildBuffer();
-}
-
-void ILC::programILC(int32_t actuatorId, std::string filePath) {
-    SPDLOG_DEBUG("ILC: programILC({},{})", actuatorId, filePath);
-    _firmwareUpdate.Program(actuatorId, filePath);
-}
-
-void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data) {
-    ILCMap map = _subnetData.getMap(actuatorId);
-    int subnet = map.Subnet;
-    int address = map.Address;
-    if (subnet == 255 || address == 255) {
-        SPDLOG_ERROR("ILC: Modbus Transmit unknown actuator {}", actuatorId);
-        return;
-    }
-    ModbusBuffer buffer;
-    buffer.setIndex(0);
-    buffer.setLength(0);
-    buffer.writeSubnet((uint8_t)_subnetToTxAddress(subnet));
-    buffer.writeLength(0);
-    buffer.writeSoftwareTrigger();
-
-    buffer.writeU8((uint8_t)address);
-    buffer.writeU8((uint8_t)functionCode);
-    for (int i = 0; i < dataLength && i < 252; ++i) {
-        buffer.writeU8((uint8_t)data[i]);
-    }
-    buffer.writeCRC(dataLength + 2);
-    buffer.writeEndOfFrame();
-    buffer.writeWaitForRx(10000);
-
-    buffer.writeTriggerIRQ();
-    buffer.set(1, buffer.getIndex() - 2);
-    buffer.setLength(buffer.getIndex());
-
-    _responseParser.grabNextResponse();
-    IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
-    waitForSubnet(subnet, 5000);
-    read(subnet);
 }
 
 void ILC::writeCalibrationDataBuffer() {

@@ -69,8 +69,6 @@
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <UpdatePIDCommand.h>
 #include <ResetPIDCommand.h>
-#include <ProgramILCCommand.h>
-#include <ModbusTransmitCommand.h>
 #include <ForceActuatorBumpTestCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
 #include <DisableForceActuatorCommand.h>
@@ -147,8 +145,6 @@ public:
     void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
     void updatePID(UpdatePIDCommand* command);
     void resetPID(ResetPIDCommand* command);
-    void programILC(ProgramILCCommand* command);
-    void modbusTransmit(ModbusTransmitCommand* command);
     void forceActuatorBumpTest(ForceActuatorBumpTestCommand* command);
     void killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command);
     void disableForceActuator(DisableForceActuatorCommand* command);
