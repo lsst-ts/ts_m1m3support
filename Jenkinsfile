@@ -36,7 +36,7 @@ node {
 
     stage('Building dev container')
     {
-        M1M3sim = docker.build("m1m3sim:" + env.BRANCH_NAME.replace("/", "_"), "--build-arg XML_BRANCH=$XML_BRANCH " + (params.noCache ? "--no-cache " : " ") + "$WORKSPACE/ts_m1m3support")
+        M1M3sim = docker.build("m1m3sim:" + env.BRANCH_NAME.replace("/", "_"), "--target crio-develop --build-arg XML_BRANCH=$XML_BRANCH " + (params.noCache ? "--no-cache " : " ") + "$WORKSPACE/ts_m1m3support")
     }
 
     stage("Running tests")
@@ -52,16 +52,12 @@ node {
                  """
                  }
                  sh """
-                    source $SALUSER_HOME/.setup_salobj.sh
+                    source $SALUSER_HOME/.crio_setup.sh
     
-                    export PATH=\$CONDA_PREFIX/bin:$PATH
-                    export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig"
                     cd $WORKSPACE/ts_cRIOcpp
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    export LIBS_FLAGS="-L\$CONDA_PREFIX/lib" 
-                    export SAL_CPPFLAGS="-I\$CONDA_PREFIX/include"
 
                     make simulator
                     LSST_DDS_PARTITION_PREFIX=test make junit || true
