@@ -93,7 +93,6 @@ private:
     MTM1M3_logevent_cellLightStatusC* _cellLightStatus;
     MTM1M3_logevent_cellLightWarningC* _cellLightWarning;
     MTM1M3_logevent_interlockStatusC* _interlockStatus;
-    MTM1M3_logevent_interlockWarningC* _interlockWarning;
 
     uint64_t _lastDOTimestamp;
     uint64_t _lastDITimestamp;

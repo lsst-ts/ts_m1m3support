@@ -345,8 +345,9 @@ public:
     void tryLogInclinometerSensorWarning();
     void logInterlockStatus();
     void tryLogInterlockStatus();
-    void logInterlockWarning();
-    void tryLogInterlockWarning();
+    void logInterlockWarning(MTM1M3_logevent_interlockWarningC* data) {
+        _m1m3SAL->logEvent_interlockWarning(data, 0);
+    };
     void newLogLevel(int newLevel);
     void logPIDInfo();
     void tryLogPIDInfo();
