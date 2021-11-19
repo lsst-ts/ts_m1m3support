@@ -102,6 +102,7 @@ void EnabledState::runLoop() {
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
     M1M3SSPublisher::get().tryLogHardpointActuatorWarning();
+    M1M3SSPublisher::get().getEnabledForceActuators()->log();
 }
 
 void EnabledState::sendTelemetry() {

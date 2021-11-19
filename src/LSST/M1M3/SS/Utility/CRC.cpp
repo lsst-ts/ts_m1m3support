@@ -22,12 +22,9 @@
  */
 
 #include <CRC.h>
-#include <boost/crc.hpp>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 uint16_t CRC::modbus(uint8_t* buffer, int32_t startIndex, int32_t length) {
     uint16_t crc = 0xFFFF;
@@ -60,7 +57,3 @@ uint16_t CRC::modbus(uint16_t* buffer, int32_t startIndex, int32_t length) {
     }
     return crc;
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

@@ -35,7 +35,8 @@ class ActiveBusList : public BusList {
 public:
     ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
-    void update();
+    void buildBuffer() override;
+    void update() override;
 
 private:
     MTM1M3_outerLoopDataC* _outerLoopData;

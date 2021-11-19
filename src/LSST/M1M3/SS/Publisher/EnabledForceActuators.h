@@ -21,37 +21,54 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COMMANDFACTORY_H_
-#define COMMANDFACTORY_H_
+#ifndef LSST_ENABLEDFORCEACTUATORS_H
+#define LSST_ENABLEDFORCEACTUATORS_H
 
-#include <DataTypes.h>
-#include <CommandTypes.h>
-#include <Command.h>
+#include <SAL_MTM1M3.h>
+
+#include <ILCDataTypes.h>
+#include <ModbusBuffer.h>
+
+#include <string.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * @brief Creates dynamically allocated Command objects.
+ * Wrapper object for MTM1M3_logevent_enabledForceActuatorsC. Keeps track of
+ * changes to parsed data, and sends updates only if data changed. Variables
+ * inherited from MTM1M3_logevent_enabledForceActuatorsC in first pass
+ * of various parse* methods.
  */
-class CommandFactory {
+class EnabledForceActuators : public MTM1M3_logevent_enabledForceActuatorsC {
 public:
     /**
-     * Creates a command.
-     *
-     * @param[in] commandType The type of command to create.
-     * @param[in] data The data for the command.
-     * @param[in] commandID The command ID (optional).
-     *
-     * @return Pointer to the created Command object. The returned command is
-     * dynamically allocated and must be deleted.
+     * Construct new EnabledForceActuators, sets all enabled.
      */
-    static Command* create(Commands::Type commandType, void* data = 0, int32_t commandID = 0);
+    EnabledForceActuators();
+
+    /**
+     * Sets logEvent timestamp.
+     *
+     * @param globalTimestamp actual timestamp
+     */
+    void setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
+
+    void setEnabled(int32_t actuatorId, bool enabled);
+    void setEnabledAll();
+
+    /**
+     * Sends updates through SAL/DDS.
+     */
+    void log();
+
+private:
+    bool _shouldSend;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* COMMANDFACTORY_H_ */
+#endif  // LSST_ENABLEDFORCEACTUATORS_H

@@ -34,6 +34,8 @@ namespace SS {
 class SetADCScanRateBusList : public BusList {
 public:
     SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+
+    void buildBuffer() override;
 };
 
 } /* namespace SS */

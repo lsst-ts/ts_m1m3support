@@ -42,12 +42,12 @@ BalanceForceComponent::BalanceForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
         : ForceComponent("Balance", forceActuatorSettings->BalanceComponentSettings),
-          _fx(0, pidSettings->Fx),
-          _fy(1, pidSettings->Fy),
-          _fz(2, pidSettings->Fz),
-          _mx(3, pidSettings->Mx),
-          _my(4, pidSettings->My),
-          _mz(5, pidSettings->Mz) {
+          _fx(0, pidSettings->getParameters(0)),
+          _fy(1, pidSettings->getParameters(1)),
+          _fz(2, pidSettings->getParameters(2)),
+          _mx(3, pidSettings->getParameters(3)),
+          _my(4, pidSettings->getParameters(4)),
+          _mz(5, pidSettings->getParameters(5)) {
     _safetyController = safetyController;
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

@@ -21,38 +21,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Context.h>
-#include <ModbusTransmitCommand.h>
-#include <M1M3SSPublisher.h>
+#ifndef DISABLEFORCEACTUATORCOMMAND_H_
+#define DISABLEFORCEACTUATORCOMMAND_H_
+
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ModbusTransmitCommand::ModbusTransmitCommand(int32_t commandID, MTM1M3_command_modbusTransmitC* data) {
-    this->commandID = commandID;
-    _data.actuatorId = data->actuatorId;
-    _data.functionCode = data->functionCode;
-    for (int i = 0; i < 252; i++) {
-        _data.data[i] = data->data[i];
-    }
-    _data.dataLength = data->dataLength;
-}
+/**
+ * Disable single force actuator for use in static support.
+ */
+class DisableForceActuatorCommand : public Command {
+public:
+    DisableForceActuatorCommand(int32_t commandID, MTM1M3_command_disableForceActuatorC* data);
 
-void ModbusTransmitCommand::execute() { Context::get().modbusTransmit(this); }
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 
-void ModbusTransmitCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandmodbusTransmit(this->commandID, ACK_INPROGRESS, "In-Progress");
-}
-
-void ModbusTransmitCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandmodbusTransmit(this->commandID, ACK_COMPLETE, "Completed");
-}
-
-void ModbusTransmitCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandmodbusTransmit(this->commandID, ACK_FAILED, "Failed: " + reason);
-}
+    int32_t actuatorId;
+    int32_t actuatorIndex;
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif /* DISABLEFORCEACTUATORCOMMAND_H_*/

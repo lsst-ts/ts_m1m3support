@@ -19,33 +19,24 @@ properties(
 )
 
 node {
-
-
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
-
-    stage('Cloning Dockerfile')
+    // branches requiring changes in XML from default develop branch
+    def XML_BRANCH = BRANCH in ["master"] ? BRANCH : "develop"
+    def CRIO_BRANCH = BRANCH in ["master", "tickets/DM-31953"] ? BRANCH : "develop"
+    stage('Cloning sources')
     {
-        sh "printenv"
-
-        dir("ts_Dockerfiles") {
-            git branch: (BRANCH == "master" ? "master" : "develop"), url: 'https://github.com/lsst-ts/ts_Dockerfiles'
+        dir("ts_cRIOcpp") {
+            git branch: CRIO_BRANCH, url: 'https://github.com/lsst-ts/ts_cRIOcpp'
+        }
+        dir("ts_m1m3support") {
+            git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
         }
     }
 
     stage('Building dev container')
     {
-        M1M3sim = docker.build("lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"), (params.noCache ? "--no-cache " : " ") + "--target lsstts-cpp-dev ts_Dockerfiles/mtm1m3_sim")
-    }
-
-    stage('Cloning sources')
-    {
-        dir("ts_cRIOcpp") {
-            git branch: "master", url: 'https://github.com/lsst-ts/ts_cRIOcpp'
-        }
-        dir("ts_m1m3support") {
-            git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
-        }
+        M1M3sim = docker.build("m1m3sim:" + env.BRANCH_NAME.replace("/", "_"), "--target crio-develop --build-arg XML_BRANCH=$XML_BRANCH " + (params.noCache ? "--no-cache " : " ") + "$WORKSPACE/ts_m1m3support")
     }
 
     stage("Running tests")
@@ -61,15 +52,14 @@ node {
                  """
                  }
                  sh """
-                    source $SALUSER_HOME/.setup_salobj.sh
+                    source $SALUSER_HOME/.crio_setup.sh
     
-                    export PATH=\$CONDA_PREFIX/bin:$PATH
                     cd $WORKSPACE/ts_cRIOcpp
                     make
     
                     cd $WORKSPACE/ts_m1m3support
-                    make simulator
 
+                    make simulator
                     LSST_DDS_PARTITION_PREFIX=test make junit || true
                  """
              }

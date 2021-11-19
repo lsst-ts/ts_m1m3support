@@ -21,15 +21,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef FORCEACTUATORNEIGHBORS_H_
-#define FORCEACTUATORNEIGHBORS_H_
+#ifndef ENABLEALLFORCEACTUATORCOMMAND_H_
+#define ENABLEALLFORCEACTUATORCOMMAND_H_
 
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
-#include <vector>
 
-struct ForceActuatorNeighbors {
-    std::vector<int32_t> NearZIDs;
-    std::vector<int32_t> FarIDs;
+namespace LSST {
+namespace M1M3 {
+namespace SS {
+
+/**
+ * Enable all force actuators for use in static support.
+ */
+class EnableAllForceActuatorsCommand : public Command {
+public:
+    EnableAllForceActuatorsCommand(int32_t commandID, MTM1M3_command_enableAllForceActuatorsC* data);
+
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
-#endif /* FORCEACTUATORNEIGHBORS_H_ */
+} /* namespace SS */
+} /* namespace M1M3 */
+} /* namespace LSST */
+
+#endif /* ENABLEALLFORCEACTUATORCOMMAND_H_ */

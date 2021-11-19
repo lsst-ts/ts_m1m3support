@@ -36,6 +36,12 @@ class ChangeILCModeBusList : public BusList {
 public:
     ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode,
                          ILCModes::Type hmMode);
+
+    void buildBuffer() override;
+
+private:
+    ILCModes::Type _mode;
+    ILCModes::Type _hmMode;
 };
 
 } /* namespace SS */

@@ -54,12 +54,7 @@ public:
     double RaiseLowerForceLimitLow;
     double RaiseLowerForceLimitHigh;
     double RaiseLowerTimeoutInSeconds;
-    int32_t ReferencePositionEncoder1;
-    int32_t ReferencePositionEncoder2;
-    int32_t ReferencePositionEncoder3;
-    int32_t ReferencePositionEncoder4;
-    int32_t ReferencePositionEncoder5;
-    int32_t ReferencePositionEncoder6;
+    int32_t ReferencePositionEncoder[HP_COUNT];
 
     void load(const std::string &filename);
 };

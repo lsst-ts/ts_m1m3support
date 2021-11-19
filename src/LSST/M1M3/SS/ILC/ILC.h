@@ -45,8 +45,6 @@
 #include <ActiveBusList.h>
 #include <ILCResponseParser.h>
 #include <SAL_MTM1M3C.h>
-#include <FirmwareUpdate.h>
-#include <IBusList.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -61,7 +59,10 @@ namespace M1M3 {
 namespace SS {
 
 /*!
- * The ILC class used to communicate with the M1M3's 5 subnets.
+ * The ILC class used to communicate with the M1M3's 5 subnets. Uses BusList
+ * subclasses to send queries to FPGA.
+ *
+ * @see BusList
  */
 class ILC {
 public:
@@ -74,8 +75,10 @@ public:
         SafetyController* safetyController);
     virtual ~ILC();
 
-    void programILC(int32_t actuatorId, std::string filePath);
-    void modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data);
+    /**
+     * (Re)-build all bus lists.
+     */
+    void buildBusLists();
 
     void writeCalibrationDataBuffer();
     void writeSetADCScanRateBuffer();
@@ -95,6 +98,11 @@ public:
     void writeFreezeSensorListBuffer();
     void writeRaisedListBuffer();
     void writeActiveListBuffer();
+
+    /**
+     * Called in enabled state. Calls once writeRaisedListBuffer and twice (to
+     * get more data) writeActiveListBuffer.
+     */
     void writeControlListBuffer();
 
     void triggerModbus();
@@ -123,6 +131,43 @@ public:
     void publishHardpointMonitorStatus();
     void publishHardpointMonitorData();
 
+    /**
+     * Disable given FA.
+     *
+     * @param actuatorId actutor ID (101..443) to disable
+     */
+    void disableFA(uint32_t actuatorId);
+
+    /**
+     * Enables given FA.
+     *
+     * @param actuatorId actuator ID (101..443) to enable
+     */
+    void enableFA(uint32_t actuatorId);
+
+    /**
+     * Enables all force actuators.
+     */
+    void enableAllFA();
+
+    /**
+     * Check if given actuator is disabled.
+     *
+     * @param actuatorId Actuator ID (101..443)
+     *
+     * @return true when given actuator is disabled, false otherwise
+     */
+    bool isDisabled(uint32_t actuatorId) { return _subnetData.getMap(actuatorId).Disabled; }
+
+    /**
+     * Check if any far neighbor of an actuator with given index is disabled.
+     *
+     * @param actuatorIndex actuator index (0-155) of FA to check
+     *
+     * @return disabled actuator ID (101..) or 0 when no disabled actuator was found
+     */
+    uint32_t hasDisabledFarNeighbor(uint32_t actuatorIndex);
+
 private:
     SafetyController* _safetyController;
     ILCSubnetData _subnetData;
@@ -147,7 +192,6 @@ private:
     FreezeSensorBusList _busListFreezeSensor;
     RaisedBusList _busListRaised;
     ActiveBusList _busListActive;
-    FirmwareUpdate _firmwareUpdate;
 
     HardpointActuatorSettings* _hardpointActuatorSettings;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
@@ -168,7 +212,7 @@ private:
     uint8_t _subnetToRxAddress(uint8_t subnet);
     uint8_t _subnetToTxAddress(uint8_t subnet);
 
-    void _writeBusList(IBusList* busList);
+    void _writeBusList(BusList* busList);
 
     void _updateHPSteps();
 };

@@ -48,11 +48,9 @@ public:
     void incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm);
     void clearResponses();
     void verifyResponses();
-    void grabNextResponse();
 
 private:
     bool _validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
-    void _parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp, bool valid);
     void _parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId);
     void _parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map);
@@ -138,9 +136,6 @@ private:
     MTM1M3_logevent_ilcWarningC* _ilcWarning;
 
     MTM1M3_outerLoopDataC* _outerLoopData;
-
-    bool _grabResponse;
-    MTM1M3_logevent_modbusResponseC* _modbusResponse;
 };
 
 } /* namespace SS */

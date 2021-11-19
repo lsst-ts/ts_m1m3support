@@ -23,6 +23,7 @@
 
 #include <SettingReader.h>
 #include <boost/tokenizer.hpp>
+#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
 
 #include <string.h>
@@ -30,9 +31,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 SettingReader& SettingReader::get() {
     static SettingReader instance;
@@ -101,93 +100,91 @@ void SettingReader::configure(std::string settingsToApply) {
 
 AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadAliasApplicationSettings()");
-    _aliasApplicationSettings.load(_getBasePath("AliasApplicationSettings.xml").c_str());
+    _aliasApplicationSettings.load(_getBasePath("AliasApplicationSettings.yaml"));
     return &_aliasApplicationSettings;
 }
 
 ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadForceActuatorSettings()");
-    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.xml").c_str());
+    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.yaml"));
     return &_forceActuatorSettings;
 }
 
 HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointActuatorApplicationSettings()");
-    _hardpointActuatorApplicationSettings.load(
-            _getBasePath("HardpointActuatorApplicationSettings.xml").c_str());
+    _hardpointActuatorApplicationSettings.load(_getBasePath("HardpointActuatorApplicationSettings.yaml"));
     return &_hardpointActuatorApplicationSettings;
 }
 
 HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointActuatorSettings()");
-    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.xml").c_str());
+    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.yaml"));
     return &_hardpointActuatorSettings;
 }
 
 ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadILCApplicationSettings()");
-    _ilcApplicationSettings.load(_getBasePath("ILCApplicationSettings.xml").c_str());
+    _ilcApplicationSettings.load(_getBasePath("ILCApplicationSettings.yaml"));
     return &_ilcApplicationSettings;
 }
 
 RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadRecommendedApplicationSettings()");
-    _recommendedApplicationSettings.load(_getBasePath("RecommendedApplicationSettings.xml").c_str());
+    _recommendedApplicationSettings.load(_getBasePath("RecommendedApplicationSettings.yaml"));
     return &_recommendedApplicationSettings;
 }
 
 SafetyControllerSettings* SettingReader::loadSafetyControllerSettings() {
     SPDLOG_DEBUG("SettingReader: loadSafetyControllerSettings()");
-    _safetyControllerSettings.load(_getSetPath("SafetyControllerSettings.xml").c_str());
+    _safetyControllerSettings.load(_getSetPath("SafetyControllerSettings.yaml"));
     return &_safetyControllerSettings;
 }
 
 PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
     SPDLOG_DEBUG("SettingReader: loadPositionControllerSettings()");
-    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.xml").c_str());
+    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.yaml"));
     return &_positionControllerSettings;
 }
 
 AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
     SPDLOG_DEBUG("SettingReader: loadAccelerometerSettings()");
-    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.xml").c_str());
+    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.yaml"));
     return &_accelerometerSettings;
 }
 
 DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
     SPDLOG_DEBUG("SettingReader: loadDisplacementSensorSettings()");
-    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.xml").c_str());
+    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.yaml"));
     return &_displacementSensorSettings;
 }
 
 HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointMonitorApplicationSettings()");
-    _hardpointMonitorApplicationSettings.load(
-            _getBasePath("HardpointMonitorApplicationSettings.xml").c_str());
+    _hardpointMonitorApplicationSettings.load(_getBasePath("HardpointMonitorApplicationSettings.yaml"));
     return &_hardpointMonitorApplicationSettings;
 }
 
 GyroSettings* SettingReader::loadGyroSettings() {
     SPDLOG_DEBUG("SettingReader: loadGyroSettings()");
-    _gyroSettings.load(_getSetPath("GyroSettings.xml").c_str());
+    _gyroSettings.load(_getSetPath("GyroSettings.yaml"));
     return &_gyroSettings;
 }
 
 ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSettings() {
     SPDLOG_DEBUG("SettingReader: loadExpansionFPGAApplicationSettings()");
-    _expansionFPGAApplicationSettings.load(_getBasePath("ExpansionFPGAApplicationSettings.xml").c_str());
+    _expansionFPGAApplicationSettings.load(_getBasePath("ExpansionFPGAApplicationSettings.yaml"));
     return &_expansionFPGAApplicationSettings;
 }
 
 PIDSettings* SettingReader::loadPIDSettings() {
     SPDLOG_DEBUG("SettingReader: loadPIDSettings()");
-    _pidSettings.load(_getSetPath("PIDSettings.xml"));
+    _pidSettings.load(_getSetPath("PIDSettings.yaml"));
     return &_pidSettings;
 }
 
 InclinometerSettings* SettingReader::loadInclinometerSettings() {
     SPDLOG_DEBUG("SettingReader: loadInclinometerSettings()");
-    _inclinometerSettings.load(_getSetPath("InclinometerSettings.xml"));
+    _inclinometerSettings.load(_getSetPath("InclinometerSettings.yaml"));
     return &_inclinometerSettings;
 }
 
@@ -196,7 +193,3 @@ std::string SettingReader::_getBasePath(std::string file) { return _rootPath + "
 std::string SettingReader::_getSetPath(std::string file) {
     return _rootPath + "/Sets/" + _currentSet + "/" + _currentVersion + "/" + file;
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

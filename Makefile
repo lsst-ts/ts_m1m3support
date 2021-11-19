@@ -6,7 +6,7 @@ include Makefile.inc
 #
 
 # All Target
-all: ts-M1M3supportd $(m1m3sscli)
+all: ts-M1M3supportd m1m3sscli
 
 src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
@@ -18,7 +18,7 @@ ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
 
 m1m3sscli: src/m1m3sscli.cpp.o src/libM1M3SS.a $(CRIOCPP)/lib/libcRIOcpp.a
 	@echo '[LD ] $@'
-	${co}$(CPP) -o $@ $^ -L/usr/lib64 -lpthread -lreadline -ldl $(CRIOCPP)/lib/libcRIOcpp.a
+	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a -lreadline
 
 # Other Targets
 clean:
@@ -70,7 +70,7 @@ ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
 	${co}sed s?@VERSION@?$(VERSION)?g control.ipk.in > ipk/control/control
 	${co}cp postinst prerm postrm ipk/control
 	${co}echo -e "/etc/default/ts-M1M3support" > ipk/control/conffiles
-	${co}find SettingFiles -name '*.xml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/ts-M1M3support#' >> ipk/control/conffiles
+	${co}find SettingFiles -name '*.yaml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/ts-M1M3support#' >> ipk/control/conffiles
 	${co}echo "2.0" > ipk/debian-binary
 	${co}tar czf ipk/data.tar.gz -P --transform "s#^ipk/data#.#" --owner=0 --group=0 ipk/data
 	${co}tar czf ipk/control.tar.gz -P --transform "s#^ipk/control#.#" --owner=0 --group=0 ipk/control

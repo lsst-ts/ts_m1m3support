@@ -25,7 +25,6 @@
 #define EXITCONTROLCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -40,7 +39,7 @@ namespace SS {
  */
 class ExitControlCommand : public Command {
 public:
-    ExitControlCommand(int32_t commandID, MTM1M3_command_exitControlC*);
+    ExitControlCommand();
 
     void execute() override;
     void ackInProgress() override;

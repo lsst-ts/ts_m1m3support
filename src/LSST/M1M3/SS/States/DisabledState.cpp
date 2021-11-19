@@ -33,8 +33,6 @@
 #include <Gyro.h>
 #include <ForceController.h>
 #include <M1M3SSPublisher.h>
-#include <ProgramILCCommand.h>
-#include <ModbusTransmitCommand.h>
 #include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
 #include <FPGA.h>
@@ -100,19 +98,6 @@ States::Type DisabledState::standby(StandbyCommand* command) {
     M1M3SSPublisher::get().tryLogForceActuatorState();
     Model::get().getPowerController()->setBothPowerNetworks(false);
     return Model::get().getSafetyController()->checkSafety(States::StandbyState);
-}
-
-States::Type DisabledState::programILC(ProgramILCCommand* command) {
-    SPDLOG_INFO("DisabledState: programILC()");
-    Model::get().getILC()->programILC(command->getData()->actuatorId, command->getData()->filePath);
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type DisabledState::modbusTransmit(ModbusTransmitCommand* command) {
-    SPDLOG_INFO("DisabledState: modbusTransmit()");
-    Model::get().getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode,
-                                          command->getData()->dataLength, command->getData()->data);
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 } /* namespace SS */

@@ -5,7 +5,7 @@ all: libM1M3SS.a
 .PHONY: DEPS clean
 
 C_SRCS = $(shell find LSST NiFpga -name '*.c')
-CPP_SRCS = $(shell find LSST NiFpga pugixml -name '*.cpp')
+CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
 
 OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(CPP_SRCS))
 
@@ -23,7 +23,6 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/FirmwareUpdate" \
 	-I"LSST/M1M3/SS/Accelerometer" \
 	-I"LSST/M1M3/SS/BusLists" \
-	-I"LSST/M1M3/SS/CommandFactory" \
 	-I"LSST/M1M3/SS/Controllers" \
 	-I"LSST/M1M3/SS/Displacement" \
 	-I"LSST/M1M3/SS/Inclinometer" \
@@ -50,9 +49,7 @@ M1M3_CPPFLAGS := -I. \
 
 libM1M3SS.a: $(OBJS)
 	@echo '[AR ] $@'
-	${co}$(AR) r $@ $^
-	@echo '[RLB] $@'
-	${co}ranlib $@
+	${co}$(AR) rs $@ $^
 
 clean:
 	@$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)

@@ -33,7 +33,7 @@
 #include <FPGAAddresses.h>
 #include <Timestamp.h>
 #include <cstring>
-#include <IBusList.h>
+#include <BusList.h>
 #include <SAL_MTM1M3C.h>
 #include <ForceConverter.h>
 #include <spdlog/spdlog.h>
@@ -45,9 +45,7 @@
 
 #define ADDRESS_COUNT 256
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
@@ -81,8 +79,7 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
                                            ILCModes::ClearFaults),
           _busListFreezeSensor(&_subnetData, &_ilcMessageFactory),
           _busListRaised(&_subnetData, &_ilcMessageFactory),
-          _busListActive(&_subnetData, &_ilcMessageFactory),
-          _firmwareUpdate(&_subnetData) {
+          _busListActive(&_subnetData, &_ilcMessageFactory) {
     SPDLOG_DEBUG("ILC: ILC()");
     _safetyController = safetyController;
     _hardpointActuatorSettings = hardpointActuatorSettings;
@@ -93,47 +90,31 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
     _hardpointActuatorInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
     _controlListToggle = 0;
     _positionController = positionController;
+
+    buildBusLists();
 }
 
 ILC::~ILC() {}
 
-void ILC::programILC(int32_t actuatorId, std::string filePath) {
-    SPDLOG_DEBUG("ILC: programILC({},{})", actuatorId, filePath);
-    _firmwareUpdate.Program(actuatorId, filePath);
-}
-
-void ILC::modbusTransmit(int32_t actuatorId, int32_t functionCode, int32_t dataLength, int16_t* data) {
-    ILCMap map = _subnetData.getMap(actuatorId);
-    int subnet = map.Subnet;
-    int address = map.Address;
-    if (subnet == 255 || address == 255) {
-        SPDLOG_ERROR("ILC: Modbus Transmit unknown actuator {}", actuatorId);
-        return;
-    }
-    ModbusBuffer buffer;
-    buffer.setIndex(0);
-    buffer.setLength(0);
-    buffer.writeSubnet((uint8_t)_subnetToTxAddress(subnet));
-    buffer.writeLength(0);
-    buffer.writeSoftwareTrigger();
-
-    buffer.writeU8((uint8_t)address);
-    buffer.writeU8((uint8_t)functionCode);
-    for (int i = 0; i < dataLength && i < 252; ++i) {
-        buffer.writeU8((uint8_t)data[i]);
-    }
-    buffer.writeCRC(dataLength + 2);
-    buffer.writeEndOfFrame();
-    buffer.writeWaitForRx(10000);
-
-    buffer.writeTriggerIRQ();
-    buffer.set(1, buffer.getIndex() - 2);
-    buffer.setLength(buffer.getIndex());
-
-    _responseParser.grabNextResponse();
-    IFPGA::get().writeCommandFIFO(buffer.getBuffer(), buffer.getLength(), 0);
-    waitForSubnet(subnet, 5000);
-    read(subnet);
+void ILC::buildBusLists() {
+    _busListSetADCChannelOffsetAndSensitivity.buildBuffer();
+    _busListSetADCScanRate.buildBuffer();
+    _busListSetBoostValveDCAGains.buildBuffer();
+    _busListReset.buildBuffer();
+    _busListReportServerID.buildBuffer();
+    _busListReportServerStatus.buildBuffer();
+    _busListReportADCScanRate.buildBuffer();
+    _busListReadCalibration.buildBuffer();
+    _busListReadBoostValveDCAGains.buildBuffer();
+    _busListReportDCAID.buildBuffer();
+    _busListReportDCAStatus.buildBuffer();
+    _busListChangeILCModeDisabled.buildBuffer();
+    _busListChangeILCModeEnabled.buildBuffer();
+    _busListChangeILCModeStandby.buildBuffer();
+    _busListChangeILCModeClearFaults.buildBuffer();
+    _busListFreezeSensor.buildBuffer();
+    _busListRaised.buildBuffer();
+    _busListActive.buildBuffer();
 }
 
 void ILC::writeCalibrationDataBuffer() {
@@ -313,22 +294,22 @@ void ILC::flushAll() {
 void ILC::calculateHPPostion() {
     double displacement[] = {
             ((_hardpointActuatorData->encoder[0] - _hardpointActuatorInfo->referencePosition[0]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[1] - _hardpointActuatorInfo->referencePosition[1]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[2] - _hardpointActuatorInfo->referencePosition[2]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[3] - _hardpointActuatorInfo->referencePosition[3]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[4] - _hardpointActuatorInfo->referencePosition[4]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
             ((_hardpointActuatorData->encoder[5] - _hardpointActuatorInfo->referencePosition[5]) *
-             _hardpointActuatorSettings->MicrometersPerEncoder) /
+             _hardpointActuatorSettings->micrometersPerEncoder) /
                     (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER),
     };
     _hardpointActuatorData->xPosition =
@@ -451,6 +432,37 @@ void ILC::publishHardpointMonitorStatus() {
 
 void ILC::publishHardpointMonitorData() { M1M3SSPublisher::get().putHardpointMonitorData(); }
 
+void ILC::disableFA(uint32_t actuatorId) {
+    if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
+        SPDLOG_CRITICAL("Race condition? Disabling actuator with far neighbor disabled");
+        return;
+    }
+    _subnetData.disableFA(actuatorId);
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, false);
+    buildBusLists();
+}
+
+void ILC::enableFA(uint32_t actuatorId) {
+    _subnetData.enableFA(actuatorId);
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, true);
+    buildBusLists();
+}
+
+void ILC::enableAllFA() {
+    _subnetData.enableAllFA();
+    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabledAll();
+    buildBusLists();
+}
+
+uint32_t ILC::hasDisabledFarNeighbor(uint32_t actuatorIndex) {
+    for (auto farID : _forceActuatorSettings->Neighbors[actuatorIndex].FarIDs) {
+        if (isDisabled(farID)) {
+            return farID;
+        }
+    }
+    return 0;
+}
+
 uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:
@@ -485,7 +497,7 @@ uint8_t ILC::_subnetToTxAddress(uint8_t subnet) {
     }
 }
 
-void ILC::_writeBusList(IBusList* busList) {
+void ILC::_writeBusList(BusList* busList) {
     IFPGA::get().writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
     _responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(),
                                          busList->getExpectedHMResponses());
@@ -509,7 +521,3 @@ void ILC::_updateHPSteps() {
         }
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

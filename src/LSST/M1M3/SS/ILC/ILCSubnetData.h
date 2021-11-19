@@ -68,7 +68,23 @@ public:
     ILCMap getILCDataFromAddress(int32_t subnetIndex, uint8_t address) {
         return this->subnetData[subnetIndex].ILCDataFromAddress[address];
     }
+
+    /**
+     * Returns ILCMap for actuator with given ID.
+     *
+     * @param actuatorId ILC actuator ID.
+     *
+     * @return ILCMap object with Address and Subnet set to 255 when actuator
+     * isn't found.
+     */
     ILCMap getMap(int32_t actuatorId);
+
+    void disableFA(int32_t actuatorId);
+    void enableFA(int32_t actuatorId);
+    void enableAllFA();
+
+private:
+    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
 };
 
 } /* namespace SS */

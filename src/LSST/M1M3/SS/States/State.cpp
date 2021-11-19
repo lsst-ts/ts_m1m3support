@@ -151,17 +151,20 @@ States::Type State::updatePID(UpdatePIDCommand* command) {
 States::Type State::resetPID(ResetPIDCommand* command) {
     return this->rejectCommandInvalidState(command, "ResetPID");
 }
-States::Type State::programILC(ProgramILCCommand* command) {
-    return this->rejectCommandInvalidState(command, "ProgramILC");
-}
-States::Type State::modbusTransmit(ModbusTransmitCommand* command) {
-    return this->rejectCommandInvalidState(command, "ModbusTransmit");
-}
 States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     return this->rejectCommandInvalidState(command, "ForceActuatorBumpTest");
 }
 States::Type State::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
     return this->rejectCommandInvalidState(command, "KillForceActuatorBumpTest");
+}
+States::Type State::disableForceActuator(DisableForceActuatorCommand* command) {
+    return rejectCommandInvalidState(command, "DisableForceActuator");
+}
+States::Type State::enableForceActuator(EnableForceActuatorCommand* command) {
+    return rejectCommandInvalidState(command, "EnableForceActuator");
+}
+States::Type State::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
+    return rejectCommandInvalidState(command, "EnableAllForceActuators");
 }
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {

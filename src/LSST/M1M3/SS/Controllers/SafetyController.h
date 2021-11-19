@@ -90,7 +90,8 @@ public:
     void forceControllerNotifyXMomentLimit(bool conditionFlag);
     void forceControllerNotifyYMomentLimit(bool conditionFlag);
     void forceControllerNotifyZMomentLimit(bool conditionFlag);
-    void forceControllerNotifyNearNeighborCheck(bool conditionFlag);
+    void forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed, float nominalZ,
+                                                float nominalZWarning);
     void forceControllerNotifyMagnitudeLimit(bool conditionFlag, float globalForce);
     void forceControllerNotifyFarNeighborCheck(bool conditionFlag);
     void forceControllerNotifyElevationForceClipping(bool conditionFlag);

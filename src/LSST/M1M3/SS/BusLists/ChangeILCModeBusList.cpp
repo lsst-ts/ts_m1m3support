@@ -26,14 +26,20 @@
 #include <ILCMessageFactory.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
                                            ILCModes::Type mode, ILCModes::Type hmMode)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ChangeILCModeBusList: ChangeILCModeBusList()");
+    _mode = mode;
+    _hmMode = hmMode;
+}
+
+void ChangeILCModeBusList::buildBuffer() {
+    BusList::buildBuffer();
+    SPDLOG_DEBUG("ChangeILCModeBusList: buildBuffer()");
+
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
@@ -41,7 +47,7 @@ ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessage
             int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, faIndex).DataIndex;
             bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
             if (!disabled) {
-                this->ilcMessageFactory->changeILCMode(&this->buffer, address, mode);
+                this->ilcMessageFactory->changeILCMode(&this->buffer, address, _mode);
                 this->expectedFAResponses[dataIndex] = 1;
             }
         }
@@ -50,7 +56,7 @@ ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessage
             int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
             bool disabled = this->subnetData->getHPIndex(subnetIndex, hpIndex).Disabled;
             if (!disabled) {
-                this->ilcMessageFactory->changeILCMode(&this->buffer, address, mode);
+                this->ilcMessageFactory->changeILCMode(&this->buffer, address, _mode);
                 this->expectedHPResponses[dataIndex] = 1;
             }
         }
@@ -59,7 +65,7 @@ ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessage
             int32_t dataIndex = this->subnetData->getHMIndex(subnetIndex, hmIndex).DataIndex;
             bool disabled = this->subnetData->getHMIndex(subnetIndex, hmIndex).Disabled;
             if (!disabled) {
-                this->ilcMessageFactory->changeILCMode(&this->buffer, address, hmMode);
+                this->ilcMessageFactory->changeILCMode(&this->buffer, address, _hmMode);
                 this->expectedHMResponses[dataIndex] = 1;
             }
         }
@@ -67,7 +73,3 @@ ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessage
     }
     this->buffer.setLength(this->buffer.getIndex());
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

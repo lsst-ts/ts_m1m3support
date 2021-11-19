@@ -29,9 +29,11 @@
 #include <SAL_MTM1M3C.h>
 #include <ccpp_sal_MTM1M3.h>
 
+#include <EnabledForceActuators.h>
 #include <ForceActuatorWarning.h>
 
 #include <memory>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -125,6 +127,7 @@ public:
     MTM1M3_logevent_displacementSensorWarningC* getEventDisplacementSensorWarning() {
         return &_eventDisplacementSensorWarning;
     }
+    static EnabledForceActuators* getEnabledForceActuators() { return &(get()._enabledForceActuators); }
     MTM1M3_logevent_errorCodeC* getEventErrorCode() { return &_eventErrorCode; }
     MTM1M3_logevent_forceActuatorBumpTestStatusC* getEventForceActuatorBumpTestStatus() {
         return &_eventForceActuatorBumpTestStatus;
@@ -163,7 +166,6 @@ public:
     }
     MTM1M3_logevent_interlockStatusC* getEventInterlockStatus() { return &_eventInterlockStatus; }
     MTM1M3_logevent_interlockWarningC* getEventInterlockWarning() { return &_eventInterlockWarning; }
-    MTM1M3_logevent_modbusResponseC* getEventModbusResponse() { return &_eventModbusResponse; }
     MTM1M3_logevent_pidInfoC* getEventPIDInfo() { return &_eventPIDInfo; }
     MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &_eventPowerStatus; }
     MTM1M3_logevent_powerSupplyStatusC* getEventPowerSupplyStatus() { return &_eventPowerSupplyStatus; }
@@ -228,6 +230,10 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
+    void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
+        _m1m3SAL->logEvent_accelerometerSettings(data, 0);
+    }
+
     /**
      * @brief Sends AccelerometerWarning event.
      *
@@ -277,15 +283,28 @@ public:
     void logCellLightWarning();
     void tryLogCellLightWarning();
     void logCommandRejectionWarning();
-    void tryLogCommandRejectionWarning();
     void logCommandRejectionWarning(std::string command, std::string reason);
-    void tryLogCommandRejectionWarning(std::string command, std::string reason);
+    template <typename... Args>
+    void commandFailed(std::string command, std::string const& format, Args const&... args) {
+        std::string reason = fmt::format(format, args...);
+        logCommandRejectionWarning(command, reason);
+        throw std::runtime_error(reason);
+    }
     void logDetailedState();
     void tryLogDetailedState();
+    void logDisplacementSensorSettings(MTM1M3_logevent_displacementSensorSettingsC* data) {
+        _m1m3SAL->logEvent_displacementSensorSettings(data, 0);
+    }
     void logDisplacementSensorWarning();
+    void logEnabledForceActuators(MTM1M3_logevent_enabledForceActuatorsC* data) {
+        _m1m3SAL->logEvent_enabledForceActuators(data, 0);
+    }
     void tryLogDisplacementSensorWarning();
     void logErrorCode();
     void tryLogErrorCode();
+    void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC* data) {
+        _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
+    }
     void logForceActuatorBumpTestStatus();
     void logForceActuatorForceWarning();
     void tryLogForceActuatorForceWarning();
@@ -298,10 +317,14 @@ public:
     }
     void logForceSetpointWarning();
     void tryLogForceSetpointWarning();
+    void logGyroSettings(MTM1M3_logevent_gyroSettingsC* data) { _m1m3SAL->logEvent_gyroSettings(data, 0); }
     void logGyroWarning();
     void tryLogGyroWarning();
     void logHardpointActuatorInfo();
     void tryLogHardpointActuatorInfo();
+    void logHardpointActuatorSettings(MTM1M3_logevent_hardpointActuatorSettingsC* data) {
+        _m1m3SAL->logEvent_hardpointActuatorSettings(data, 0);
+    }
     void logHardpointActuatorState();
     void tryLogHardpointActuatorState();
     void logHardpointActuatorWarning();
@@ -315,17 +338,20 @@ public:
     void logHeartbeat();
     void logILCWarning();
     void tryLogILCWarning();
+    void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC* data) {
+        _m1m3SAL->logEvent_inclinometerSettings(data, 0);
+    }
     void logInclinometerSensorWarning();
     void tryLogInclinometerSensorWarning();
     void logInterlockStatus();
     void tryLogInterlockStatus();
-    void logInterlockWarning();
-    void tryLogInterlockWarning();
+    void logInterlockWarning(MTM1M3_logevent_interlockWarningC* data) {
+        _m1m3SAL->logEvent_interlockWarning(data, 0);
+    };
     void newLogLevel(int newLevel);
-    void logModbusResponse();
-    void tryLogModbusResponse();
     void logPIDInfo();
     void tryLogPIDInfo();
+    void logPIDSettings(MTM1M3_logevent_pidSettingsC* data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
     void logPowerStatus();
     void tryLogPowerStatus();
     void logPowerSupplyStatus();
@@ -358,7 +384,6 @@ public:
     void tryLogPreclippedVelocityForces();
     void logSettingVersions();
     void logSettingsApplied();
-    void tryLogSettingsApplied();
     void logSoftwareVersions();
     void logSummaryState();
     void tryLogSummaryState();
@@ -410,10 +435,11 @@ public:
                                                   std::string description);
     void ackCommandupdatePID(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandresetPID(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandprogramILC(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandmodbusTransmit(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommanddisableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandenableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandenableAllForceActuators(int32_t commandID, int32_t ackCode, std::string description);
 
 private:
     M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;
@@ -453,6 +479,7 @@ private:
     MTM1M3_logevent_commandRejectionWarningC _eventCommandRejectionWarning;
     MTM1M3_logevent_detailedStateC _eventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _eventDisplacementSensorWarning;
+    EnabledForceActuators _enabledForceActuators;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _eventForceActuatorBumpTestStatus;
     MTM1M3_logevent_forceActuatorForceWarningC _eventForceActuatorForceWarning;
@@ -472,7 +499,6 @@ private:
     MTM1M3_logevent_inclinometerSensorWarningC _eventInclinometerSensorWarning;
     MTM1M3_logevent_interlockStatusC _eventInterlockStatus;
     MTM1M3_logevent_interlockWarningC _eventInterlockWarning;
-    MTM1M3_logevent_modbusResponseC _eventModbusResponse;
     MTM1M3_logevent_pidInfoC _eventPIDInfo;
     MTM1M3_logevent_powerStatusC _eventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _eventPowerSupplyStatus;
@@ -530,7 +556,6 @@ private:
     MTM1M3_logevent_inclinometerSensorWarningC _previousEventInclinometerSensorWarning;
     MTM1M3_logevent_interlockStatusC _previousEventInterlockStatus;
     MTM1M3_logevent_interlockWarningC _previousEventInterlockWarning;
-    MTM1M3_logevent_modbusResponseC _previousEventModbusResponse;
     MTM1M3_logevent_pidInfoC _previousEventPIDInfo;
     MTM1M3_logevent_powerStatusC _previousEventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _previousEventPowerSupplyStatus;
@@ -547,7 +572,6 @@ private:
     MTM1M3_logevent_preclippedStaticForcesC _previousEventPreclippedStaticForces;
     MTM1M3_logevent_preclippedThermalForcesC _previousEventPreclippedThermalForces;
     MTM1M3_logevent_preclippedVelocityForcesC _previousEventPreclippedVelocityForces;
-    MTM1M3_logevent_settingsAppliedC _previousEventSettingsApplied;
     MTM1M3_logevent_summaryStateC _previousEventSummaryState;
 };
 

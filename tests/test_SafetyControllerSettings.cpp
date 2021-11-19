@@ -22,10 +22,9 @@
  */
 
 #define CATCH_CONFIG_MAIN
-#include <catch/catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <SafetyControllerSettings.h>
-#include <SafetyController.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -33,8 +32,8 @@ TEST_CASE("SafetyControllerSettings load", "[SafetyControllerSettings]") {
     SafetyControllerSettings safetyControllerSettings;
 
     REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xml"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yaml"));
 
     REQUIRE_THROWS(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xm"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yam"));
 }
