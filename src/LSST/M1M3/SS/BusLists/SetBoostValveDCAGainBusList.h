@@ -34,6 +34,8 @@ namespace SS {
 class SetBoostValveDCAGainBusList : public BusList {
 public:
     SetBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+
+    void buildBuffer() override;
 };
 
 } /* namespace SS */

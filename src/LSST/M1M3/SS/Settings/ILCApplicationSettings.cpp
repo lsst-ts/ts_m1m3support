@@ -22,74 +22,39 @@
  */
 
 #include <ILCApplicationSettings.h>
-#include <XMLDocLoad.h>
-#include <boost/lexical_cast.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-using namespace pugi;
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void ILCApplicationSettings::load(const std::string &filename) {
-    xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    this->ReportServerID = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReportServerID").node().child_value());
-    this->ReportServerStatus = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReportServerStatus").node().child_value());
-    this->ChangeILCMode = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ChangeILCMode").node().child_value());
-    this->BroadcastStepMotor = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/BroadcastStepMotor").node().child_value());
-    this->UnicastStepMotor = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/UnicastStepMotor").node().child_value());
-    this->ElectromechanicalForceAndStatus = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ElectromechanicalForceAndStatus")
-                    .node()
-                    .child_value());
-    this->BroadcastFreezeSensorValues = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/BroadcastFreezeSensorValues")
-                    .node()
-                    .child_value());
-    this->SetBoostValveDCAGains = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/SetBoostValveDCAGains").node().child_value());
-    this->ReadBoostValveDCAGains = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReadBoostValveDCAGains").node().child_value());
-    this->BroadcastForceDemand = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/BroadcastForceDemand").node().child_value());
-    this->UnicastSingleAxisForceDemand = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/UnicastSingleAxisForceDemand")
-                    .node()
-                    .child_value());
-    this->UnicastDualAxisForceDemand = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/UnicastDualAxisForceDemand")
-                    .node()
-                    .child_value());
-    this->PneumaticForceAndStatus = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/PneumaticForceAndStatus").node().child_value());
-    this->SetADCScanRate = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/SetADCScanRate").node().child_value());
-    this->SetADCChannelOffsetAndSensitivity = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/SetADCChannelOffsetAndSensitivity")
-                    .node()
-                    .child_value());
-    this->Reset = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/Reset").node().child_value());
-    this->ReadCalibration = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReadCalibration").node().child_value());
-    this->ReadDCAPressureValues = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReadDCAPressureValues").node().child_value());
-    this->ReportDCAID = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReportDCAID").node().child_value());
-    this->ReportDCAStatus = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReportDCAStatus").node().child_value());
-    this->ReportDCAPressure = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReportDCAPressure").node().child_value());
-    this->ReportLVDT = boost::lexical_cast<uint32_t>(
-            doc.select_node("//ILCApplicationSettings/Timings/ReportLVDT").node().child_value());
-}
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
+        auto timings = doc["Timings"];
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+        ReportServerID = timings["ReportServerID"].as<uint32_t>();
+        ReportServerStatus = timings["ReportServerStatus"].as<uint32_t>();
+        ChangeILCMode = timings["ChangeILCMode"].as<uint32_t>();
+        BroadcastStepMotor = timings["BroadcastStepMotor"].as<uint32_t>();
+        UnicastStepMotor = timings["UnicastStepMotor"].as<uint32_t>();
+        ElectromechanicalForceAndStatus = timings["ElectromechanicalForceAndStatus"].as<uint32_t>();
+        BroadcastFreezeSensorValues = timings["BroadcastFreezeSensorValues"].as<uint32_t>();
+        SetBoostValveDCAGains = timings["SetBoostValveDCAGains"].as<uint32_t>();
+        ReadBoostValveDCAGains = timings["ReadBoostValveDCAGains"].as<uint32_t>();
+        BroadcastForceDemand = timings["BroadcastForceDemand"].as<uint32_t>();
+        UnicastSingleAxisForceDemand = timings["UnicastSingleAxisForceDemand"].as<uint32_t>();
+        UnicastDualAxisForceDemand = timings["UnicastDualAxisForceDemand"].as<uint32_t>();
+        PneumaticForceAndStatus = timings["PneumaticForceAndStatus"].as<uint32_t>();
+        SetADCScanRate = timings["SetADCScanRate"].as<uint32_t>();
+        SetADCChannelOffsetAndSensitivity = timings["SetADCChannelOffsetAndSensitivity"].as<uint32_t>();
+        Reset = timings["Reset"].as<uint32_t>();
+        ReadCalibration = timings["ReadCalibration"].as<uint32_t>();
+        ReadDCAPressureValues = timings["ReadDCAPressureValues"].as<uint32_t>();
+        ReportDCAID = timings["ReportDCAID"].as<uint32_t>();
+        ReportDCAStatus = timings["ReportDCAStatus"].as<uint32_t>();
+        ReportDCAPressure = timings["ReportDCAPressure"].as<uint32_t>();
+        ReportLVDT = timings["ReportLVDT"].as<uint32_t>();
+    } catch (YAML::Exception &ex) {
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+    }
+}

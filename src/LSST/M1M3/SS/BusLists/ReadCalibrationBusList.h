@@ -33,6 +33,8 @@ namespace SS {
 class ReadCalibrationBusList : public BusList {
 public:
     ReadCalibrationBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+
+    void buildBuffer() override;
 };
 
 } /* namespace SS */

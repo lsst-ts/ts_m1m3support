@@ -40,6 +40,11 @@ public:
     LoweringFaultState();
 
     virtual States::Type update(UpdateCommand* command) override;
+
+    /**
+     * Perform actions needed to safe mirror on fault.
+     */
+    static void ensureFaulted();
 };
 
 } /* namespace SS */

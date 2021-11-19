@@ -29,7 +29,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) { SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()"); }
+M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) {
+    SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()");
+    _eventSettingsApplied.otherSettingsEvents = "forceActuatorSettings";
+}
 
 M1M3SSPublisher& M1M3SSPublisher::get() {
     static M1M3SSPublisher publisher;
@@ -52,7 +55,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salTelemetryPub((char*)"MTM1M3_powerSupplyData");
 
     SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Events");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyWarning");
@@ -73,16 +76,21 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_cellLightWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_commandRejectionWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_detailedState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_enabledForceActuators");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_errorCode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorForceWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceSetpointWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorInfo");
@@ -91,11 +99,12 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_heartbeat");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_ilcWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_logLevel");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_modbusResponse");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerWarning");
@@ -508,25 +517,11 @@ void M1M3SSPublisher::logCommandRejectionWarning() {
     _previousEventCommandRejectionWarning = _eventCommandRejectionWarning;
 }
 
-void M1M3SSPublisher::tryLogCommandRejectionWarning() {
-    if (_eventCommandRejectionWarning.command.compare(_previousEventCommandRejectionWarning.command) != 0 ||
-        _eventCommandRejectionWarning.reason.compare(_previousEventCommandRejectionWarning.reason) != 0) {
-        this->logCommandRejectionWarning();
-    }
-}
-
 void M1M3SSPublisher::logCommandRejectionWarning(std::string command, std::string reason) {
     _eventCommandRejectionWarning.timestamp = this->getTimestamp();
     _eventCommandRejectionWarning.command = command;
     _eventCommandRejectionWarning.reason = reason;
     this->logCommandRejectionWarning();
-}
-
-void M1M3SSPublisher::tryLogCommandRejectionWarning(std::string command, std::string reason) {
-    _eventCommandRejectionWarning.timestamp = this->getTimestamp();
-    _eventCommandRejectionWarning.command = command;
-    _eventCommandRejectionWarning.reason = reason;
-    this->tryLogCommandRejectionWarning();
 }
 
 void M1M3SSPublisher::logDetailedState() {
@@ -1552,48 +1547,10 @@ void M1M3SSPublisher::tryLogInterlockStatus() {
     }
 }
 
-void M1M3SSPublisher::logInterlockWarning() {
-    _eventInterlockWarning.anyWarning =
-            _eventInterlockWarning.heartbeatStateOutputMismatch ||
-            _eventInterlockWarning.auxPowerNetworksOff || _eventInterlockWarning.thermalEquipmentOff ||
-            _eventInterlockWarning.airSupplyOff || _eventInterlockWarning.cabinetDoorOpen ||
-            _eventInterlockWarning.tmaMotionStop || _eventInterlockWarning.gisHeartbeatLost;
-    _m1m3SAL->logEvent_interlockWarning(&_eventInterlockWarning, 0);
-    _previousEventInterlockWarning = _eventInterlockWarning;
-}
-
-void M1M3SSPublisher::tryLogInterlockWarning() {
-    if (_eventInterlockWarning.heartbeatStateOutputMismatch !=
-                _previousEventInterlockWarning.heartbeatStateOutputMismatch ||
-        _eventInterlockWarning.auxPowerNetworksOff != _previousEventInterlockWarning.auxPowerNetworksOff ||
-        _eventInterlockWarning.thermalEquipmentOff != _previousEventInterlockWarning.thermalEquipmentOff ||
-        _eventInterlockWarning.airSupplyOff != _previousEventInterlockWarning.airSupplyOff ||
-        _eventInterlockWarning.cabinetDoorOpen != _previousEventInterlockWarning.cabinetDoorOpen ||
-        _eventInterlockWarning.tmaMotionStop != _previousEventInterlockWarning.tmaMotionStop ||
-        _eventInterlockWarning.gisHeartbeatLost != _previousEventInterlockWarning.gisHeartbeatLost) {
-        this->logInterlockWarning();
-    }
-}
-
 void M1M3SSPublisher::newLogLevel(int newLevel) {
     MTM1M3_logevent_logLevelC logLevel;
     logLevel.level = newLevel;
     _m1m3SAL->logEvent_logLevel(&logLevel, 0);
-}
-
-void M1M3SSPublisher::logModbusResponse() {
-    _m1m3SAL->logEvent_modbusResponse(&_eventModbusResponse, 0);
-    _previousEventModbusResponse = _eventModbusResponse;
-}
-
-void M1M3SSPublisher::tryLogModbusResponse() {
-    if (_eventModbusResponse.responseValid != _previousEventModbusResponse.responseValid ||
-        _eventModbusResponse.address != _previousEventModbusResponse.address ||
-        _eventModbusResponse.functionCode != _previousEventModbusResponse.functionCode ||
-        _eventModbusResponse.crc != _previousEventModbusResponse.crc ||
-        _eventModbusResponse.dataLength != _previousEventModbusResponse.dataLength) {
-        this->logModbusResponse();
-    }
 }
 
 void M1M3SSPublisher::logPIDInfo() {
@@ -2029,16 +1986,7 @@ void M1M3SSPublisher::tryLogPreclippedVelocityForces() {
 
 void M1M3SSPublisher::logSettingVersions() { _m1m3SAL->logEvent_settingVersions(&_eventSettingVersions, 0); }
 
-void M1M3SSPublisher::logSettingsApplied() {
-    _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0);
-    _previousEventSettingsApplied = _eventSettingsApplied;
-}
-
-void M1M3SSPublisher::tryLogSettingsApplied() {
-    if (_eventSettingsApplied.settingsVersion.compare(_previousEventSettingsApplied.settingsVersion) != 0) {
-        this->logSettingsApplied();
-    }
-}
+void M1M3SSPublisher::logSettingsApplied() { _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0); }
 
 void M1M3SSPublisher::logSoftwareVersions() {
     MTM1M3_logevent_softwareVersionsC versions;
@@ -2105,10 +2053,11 @@ ACK_COMMAND(abortProfile)
 ACK_COMMAND(applyOffsetForcesByMirrorForce)
 ACK_COMMAND(updatePID)
 ACK_COMMAND(resetPID)
-ACK_COMMAND(programILC)
-ACK_COMMAND(modbusTransmit)
 ACK_COMMAND(forceActuatorBumpTest)
 ACK_COMMAND(killForceActuatorBumpTest)
+ACK_COMMAND(disableForceActuator)
+ACK_COMMAND(enableForceActuator)
+ACK_COMMAND(enableAllForceActuators)
 
 } /* namespace SS */
 } /* namespace M1M3 */

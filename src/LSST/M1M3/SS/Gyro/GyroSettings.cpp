@@ -22,34 +22,27 @@
  */
 
 #include <GyroSettings.h>
-#include <XMLDocLoad.h>
-#include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void GyroSettings::load(const std::string &filename) {
-    pugi::xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    this->DataRate =
-            boost::lexical_cast<int>(doc.select_node("//GyroSettings/DataRate").node().child_value());
-    this->AngularVelocityXOffset = boost::lexical_cast<float>(
-            doc.select_node("//GyroSettings/AngularVelocityXOffset").node().child_value());
-    this->AngularVelocityYOffset = boost::lexical_cast<float>(
-            doc.select_node("//GyroSettings/AngularVelocityYOffset").node().child_value());
-    this->AngularVelocityZOffset = boost::lexical_cast<float>(
-            doc.select_node("//GyroSettings/AngularVelocityZOffset").node().child_value());
-    std::string axesMatrix = doc.select_node("//GyroSettings/AxesMatrix").node().child_value();
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-    tokenizer tokenize(axesMatrix);
-    this->AxesMatrix.clear();
-    for (tokenizer::iterator token = tokenize.begin(); token != tokenize.end(); ++token) {
-        this->AxesMatrix.push_back(boost::lexical_cast<double>(*token));
-    }
-}
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+        dataRate = doc["DataRate"].as<int>();
+        angularVelocityOffset[0] = doc["AngularVelocityXOffset"].as<float>();
+        angularVelocityOffset[1] = doc["AngularVelocityYOffset"].as<float>();
+        angularVelocityOffset[2] = doc["AngularVelocityZOffset"].as<float>();
+        AxesMatrix = doc["AxesMatrix"].as<std::vector<double>>();
+    } catch (YAML::Exception &ex) {
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+    }
+
+    if (AxesMatrix.size() != 9) {
+        throw std::runtime_error(fmt::format("Invalid AxesMatrix length: {}, expected 9", AxesMatrix.size()));
+    }
+
+    log();
+}

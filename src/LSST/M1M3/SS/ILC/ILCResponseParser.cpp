@@ -62,8 +62,6 @@ ILCResponseParser::ILCResponseParser() {
     _hardpointMonitorData = 0;
     _ilcWarning = 0;
     _outerLoopData = 0;
-    _modbusResponse = 0;
-    _grabResponse = false;
     _detailedState = 0;
     _summaryState = 0;
 }
@@ -91,8 +89,6 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
     _hardpointMonitorData = M1M3SSPublisher::get().getHardpointMonitorData();
     _ilcWarning = M1M3SSPublisher::get().getEventILCWarning();
     _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
-    _modbusResponse = M1M3SSPublisher::get().getEventModbusResponse();
-    _grabResponse = false;
     _detailedState = M1M3SSPublisher::get().getEventDetailedState();
     _summaryState = M1M3SSPublisher::get().getEventSummaryState();
 
@@ -146,195 +142,187 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
         uint16_t length = 0;
         double timestamp = 0;
         if (_validateCRC(buffer, &length, &timestamp)) {
-            if (_grabResponse) {
-                _parseOneOffCommand(buffer, length, timestamp, true);
-            } else {
-                if (subnet >= 1 && subnet <= 5) {
-                    uint8_t address = buffer->readU8();
-                    uint8_t function = buffer->readU8();
-                    ILCMap map = _subnetData->getILCDataFromAddress(subnet - 1, address);
-                    int32_t dataIndex = map.DataIndex;
-                    switch (map.Type) {
-                        case ILCTypes::FA:
-                            _faExpectedResponses[dataIndex]--;
-                            switch (function) {
-                                case 17:
-                                    _parseReportFAServerIDResponse(buffer, map);
-                                    break;
-                                case 18:
-                                    _parseReportFAServerStatusResponse(buffer, map);
-                                    break;
-                                case 65:
-                                    _parseChangeFAILCModeResponse(buffer, map);
-                                    break;
-                                case 73:
-                                    _parseSetBoostValveDCAGainsResponse(buffer, map);
-                                    break;
-                                case 74:
-                                    _parseReadBoostValveDCAGainsResponse(buffer, map);
-                                    break;
-                                case 75:
-                                    _parseForceDemandResponse(buffer, address, map);
-                                    break;
-                                case 76:
-                                    _parsePneumaticForceStatusResponse(buffer, address, map);
-                                    break;
-                                case 80:
-                                    _parseSetFAADCScanRateResponse(buffer, map);
-                                    break;
-                                case 81:
-                                    _parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map);
-                                    break;
-                                case 107:
-                                    _parseFAResetResponse(buffer, map);
-                                    break;
-                                case 110:
-                                    _parseReadFACalibrationResponse(buffer, map);
-                                    break;
-                                case 119:
-                                    _parseReadDCAPressureValuesResponse(buffer, map);
-                                    break;
-                                case 120:
-                                    _parseReportDCAIDResponse(buffer, map);
-                                    break;
-                                case 121:
-                                    _parseReportDCAStatusResponse(buffer, map);
-                                    break;
-                                case 145:
-                                case 146:
-                                case 193:
-                                case 201:
-                                case 202:
-                                case 203:
-                                case 204:
-                                case 208:
-                                case 209:
-                                case 235:
-                                case 238:
-                                case 247:
-                                case 248:
-                                case 249:
-                                    _parseErrorResponse(buffer, timestamp, map.ActuatorId);
-                                    break;
-                                default:
-                                    SPDLOG_WARN(
-                                            "ILCResponseParser: Unknown FA function on subnet {:d} function "
-                                            "{:d}",
+            if (subnet >= 1 && subnet <= 5) {
+                uint8_t address = buffer->readU8();
+                uint8_t function = buffer->readU8();
+                ILCMap map = _subnetData->getILCDataFromAddress(subnet - 1, address);
+                int32_t dataIndex = map.DataIndex;
+                switch (map.Type) {
+                    case ILCTypes::FA:
+                        _faExpectedResponses[dataIndex]--;
+                        switch (function) {
+                            case 17:
+                                _parseReportFAServerIDResponse(buffer, map);
+                                break;
+                            case 18:
+                                _parseReportFAServerStatusResponse(buffer, map);
+                                break;
+                            case 65:
+                                _parseChangeFAILCModeResponse(buffer, map);
+                                break;
+                            case 73:
+                                _parseSetBoostValveDCAGainsResponse(buffer, map);
+                                break;
+                            case 74:
+                                _parseReadBoostValveDCAGainsResponse(buffer, map);
+                                break;
+                            case 75:
+                                _parseForceDemandResponse(buffer, address, map);
+                                break;
+                            case 76:
+                                _parsePneumaticForceStatusResponse(buffer, address, map);
+                                break;
+                            case 80:
+                                _parseSetFAADCScanRateResponse(buffer, map);
+                                break;
+                            case 81:
+                                _parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map);
+                                break;
+                            case 107:
+                                _parseFAResetResponse(buffer, map);
+                                break;
+                            case 110:
+                                _parseReadFACalibrationResponse(buffer, map);
+                                break;
+                            case 119:
+                                _parseReadDCAPressureValuesResponse(buffer, map);
+                                break;
+                            case 120:
+                                _parseReportDCAIDResponse(buffer, map);
+                                break;
+                            case 121:
+                                _parseReportDCAStatusResponse(buffer, map);
+                                break;
+                            case 145:
+                            case 146:
+                            case 193:
+                            case 201:
+                            case 202:
+                            case 203:
+                            case 204:
+                            case 208:
+                            case 209:
+                            case 235:
+                            case 238:
+                            case 247:
+                            case 248:
+                            case 249:
+                                _parseErrorResponse(buffer, timestamp, map.ActuatorId);
+                                break;
+                            default:
+                                SPDLOG_WARN(
+                                        "ILCResponseParser: Unknown FA function on subnet {:d} function "
+                                        "{:d}",
+                                        (int)function, subnet);
+                                _warnUnknownFunction(timestamp, map.ActuatorId);
+                                break;
+                        }
+                        break;
+                    case ILCTypes::HP:
+                        _hpExpectedResponses[dataIndex]--;
+                        switch (function) {
+                            case 17:
+                                _parseReportHPServerIDResponse(buffer, map);
+                                break;
+                            case 18:
+                                _parseReportHPServerStatusResponse(buffer, map);
+                                break;
+                            case 65:
+                                _parseChangeHPILCModeResponse(buffer, map);
+                                break;
+                            case 66:
+                            case 67:
+                                _parseElectromechanicalForceAndStatusResponse(buffer, map, timestamp);
+                                break;
+                            case 80:
+                                _parseSetHPADCScanRateResponse(buffer, map);
+                                break;
+                            case 81:
+                                _parseSetHPADCChannelOffsetAndSensitivityResponse(buffer, map);
+                                break;
+                            case 107:
+                                _parseHPResetResponse(buffer, map);
+                                break;
+                            case 110:
+                                _parseReadHPCalibrationResponse(buffer, map);
+                                break;
+                            case 145:
+                            case 146:
+                            case 193:
+                            case 194:
+                            case 195:
+                            case 208:
+                            case 209:
+                            case 235:
+                            case 238:
+                                _parseErrorResponse(buffer, timestamp, map.ActuatorId);
+                                break;
+                            default:
+                                SPDLOG_WARN("ILCResponseParser: Unknown HP function {:d} on subnet {:d}",
                                             (int)function, subnet);
-                                    _warnUnknownFunction(timestamp, map.ActuatorId);
-                                    break;
-                            }
-                            break;
-                        case ILCTypes::HP:
-                            _hpExpectedResponses[dataIndex]--;
-                            switch (function) {
-                                case 17:
-                                    _parseReportHPServerIDResponse(buffer, map);
-                                    break;
-                                case 18:
-                                    _parseReportHPServerStatusResponse(buffer, map);
-                                    break;
-                                case 65:
-                                    _parseChangeHPILCModeResponse(buffer, map);
-                                    break;
-                                case 66:
-                                case 67:
-                                    _parseElectromechanicalForceAndStatusResponse(buffer, map, timestamp);
-                                    break;
-                                case 80:
-                                    _parseSetHPADCScanRateResponse(buffer, map);
-                                    break;
-                                case 81:
-                                    _parseSetHPADCChannelOffsetAndSensitivityResponse(buffer, map);
-                                    break;
-                                case 107:
-                                    _parseHPResetResponse(buffer, map);
-                                    break;
-                                case 110:
-                                    _parseReadHPCalibrationResponse(buffer, map);
-                                    break;
-                                case 145:
-                                case 146:
-                                case 193:
-                                case 194:
-                                case 195:
-                                case 208:
-                                case 209:
-                                case 235:
-                                case 238:
-                                    _parseErrorResponse(buffer, timestamp, map.ActuatorId);
-                                    break;
-                                default:
-                                    SPDLOG_WARN("ILCResponseParser: Unknown HP function {:d} on subnet {:d}",
-                                                (int)function, subnet);
-                                    _warnUnknownFunction(timestamp, map.ActuatorId);
-                                    break;
-                            }
-                            break;
-                        case ILCTypes::HM:
-                            _hmExpectedResponses[dataIndex]--;
-                            switch (function) {
-                                case 17:
-                                    _parseReportHMServerIDResponse(buffer, map);
-                                    break;
-                                case 18:
-                                    _parseReportHMServerStatusResponse(buffer, map);
-                                    break;
-                                case 65:
-                                    _parseChangeHMILCModeResponse(buffer, map);
-                                    break;
-                                case 107:
-                                    _parseHMResetResponse(buffer, map);
-                                    break;
-                                case 119:
-                                    _parseReadHMPressureValuesResponse(buffer, map);
-                                    break;
-                                case 120:
-                                    _parseReportHMMezzanineIDResponse(buffer, map);
-                                    break;
-                                case 121:
-                                    _parseReportHMMezzanineStatusResponse(buffer, map);
-                                    break;
-                                case 122:
-                                    _parseReportLVDTResponse(buffer, map);
-                                    break;
-                                case 145:
-                                case 146:
-                                case 193:
-                                case 235:
-                                case 247:
-                                case 248:
-                                case 249:
-                                case 250:
-                                    _parseErrorResponse(buffer, timestamp, map.ActuatorId);
-                                    break;
-                                default:
-                                    SPDLOG_WARN("ILCResponseParser: Unknown HM function {:d} on subnet {:d}",
-                                                (int)function, subnet);
-                                    _warnUnknownFunction(timestamp, map.ActuatorId);
-                                    break;
-                            }
-                            break;
-                        default:
-                            SPDLOG_WARN(
-                                    "ILCResponseParser: Unknown address {:d} on subnet {:d} for function "
-                                    "code {:d}",
-                                    (int)address, (int)subnet, (int)function);
-                            _warnUnknownAddress(timestamp, map.ActuatorId);
-                            break;
-                    }
-                } else {
-                    SPDLOG_WARN("ILCResponseParser: Unknown subnet {:d}", subnet);
-                    _warnUnknownSubnet(timestamp);
+                                _warnUnknownFunction(timestamp, map.ActuatorId);
+                                break;
+                        }
+                        break;
+                    case ILCTypes::HM:
+                        _hmExpectedResponses[dataIndex]--;
+                        switch (function) {
+                            case 17:
+                                _parseReportHMServerIDResponse(buffer, map);
+                                break;
+                            case 18:
+                                _parseReportHMServerStatusResponse(buffer, map);
+                                break;
+                            case 65:
+                                _parseChangeHMILCModeResponse(buffer, map);
+                                break;
+                            case 107:
+                                _parseHMResetResponse(buffer, map);
+                                break;
+                            case 119:
+                                _parseReadHMPressureValuesResponse(buffer, map);
+                                break;
+                            case 120:
+                                _parseReportHMMezzanineIDResponse(buffer, map);
+                                break;
+                            case 121:
+                                _parseReportHMMezzanineStatusResponse(buffer, map);
+                                break;
+                            case 122:
+                                _parseReportLVDTResponse(buffer, map);
+                                break;
+                            case 145:
+                            case 146:
+                            case 193:
+                            case 235:
+                            case 247:
+                            case 248:
+                            case 249:
+                            case 250:
+                                _parseErrorResponse(buffer, timestamp, map.ActuatorId);
+                                break;
+                            default:
+                                SPDLOG_WARN("ILCResponseParser: Unknown HM function {:d} on subnet {:d}",
+                                            (int)function, subnet);
+                                _warnUnknownFunction(timestamp, map.ActuatorId);
+                                break;
+                        }
+                        break;
+                    default:
+                        SPDLOG_WARN(
+                                "ILCResponseParser: Unknown address {:d} on subnet {:d} for function "
+                                "code {:d}",
+                                (int)address, (int)subnet, (int)function);
+                        _warnUnknownAddress(timestamp, map.ActuatorId);
+                        break;
                 }
+            } else {
+                SPDLOG_WARN("ILCResponseParser: Unknown subnet {:d}", subnet);
+                _warnUnknownSubnet(timestamp);
             }
         } else {
             SPDLOG_WARN("ILCResponseParser: Invalid CRC on subnet {:d}", subnet);
-            if (_grabResponse) {
-                _parseOneOffCommand(buffer, length, timestamp, false);
-            } else {
-                _warnInvalidCRC(timestamp);
-            }
+            _warnInvalidCRC(timestamp);
         }
     }
     M1M3SSPublisher::getForceActuatorWarning()->log();
@@ -407,8 +395,6 @@ void ILCResponseParser::verifyResponses() {
     _safetyController->ilcCommunicationTimeout(anyTimeout);
 }
 
-void ILCResponseParser::grabNextResponse() { _grabResponse = true; }
-
 bool ILCResponseParser::_validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp) {
     int32_t addressIndex = buffer->getIndex();
     while (!buffer->endOfFrame() && !buffer->endOfBuffer() && (buffer->readLength() & 0xF000) != 0xB000) {
@@ -427,22 +413,6 @@ bool ILCResponseParser::_validateCRC(ModbusBuffer* buffer, uint16_t* length, dou
         buffer->readEndOfFrame();
         return false;
     }
-}
-
-void ILCResponseParser::_parseOneOffCommand(ModbusBuffer* buffer, uint16_t length, double timestamp,
-                                            bool valid) {
-    _grabResponse = false;
-    _modbusResponse->timestamp = timestamp;
-    _modbusResponse->responseValid = valid;
-    _modbusResponse->address = buffer->readU8();
-    _modbusResponse->functionCode = buffer->readU8();
-    _modbusResponse->dataLength = length - 4;
-    for (uint16_t i = 0; i < _modbusResponse->dataLength; ++i) {
-        _modbusResponse->data[i] = buffer->readU8();
-    }
-    _modbusResponse->crc = buffer->readCRC();
-    buffer->skipToNextFrame();
-    M1M3SSPublisher::get().logModbusResponse();
 }
 
 void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId) {
@@ -640,7 +610,7 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
     // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
-            (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->MicrometersPerEncoder) /
+            (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->micrometersPerEncoder) /
             (MICROMETERS_PER_MILLIMETER * MILLIMETERS_PER_METER);
     buffer->skipToNextFrame();
     _checkHardpointActuatorMeasuredForce(dataIndex);
@@ -973,7 +943,7 @@ void ILCResponseParser::_checkForceActuatorMeasuredForce(ILCMap map) {
                 secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit;
         bool previousSecondaryLimit = _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex];
         _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
-        anyChange = anyChange || secondaryLimitWarning != previousSecondaryLimit;
+        anyChange |= secondaryLimitWarning != previousSecondaryLimit;
     }
 
     if (anyChange) {
@@ -1019,18 +989,18 @@ void ILCResponseParser::_checkForceActuatorFollowingError(ILCMap map) {
 
 void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId) {
     float measuredForce = _hardpointActuatorData->measuredForce[actuatorId];
-    float loadCellMax = _hardpointActuatorSettings->HardpointMeasuredForceFaultHigh;
-    float loadCellMin = _hardpointActuatorSettings->HardpointMeasuredForceFaultLow;
+    float loadCellMax = _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh;
+    float loadCellMin = _hardpointActuatorSettings->hardpointMeasuredForceFaultLow;
     bool loadCellError = measuredForce > loadCellMax || measuredForce < loadCellMin;
     _safetyController->hardpointActuatorLoadCellError(loadCellError);
 
     if (_detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState ||
         _detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveState) {
-        float max = _hardpointActuatorSettings->HardpointMeasuredForceWarningHigh;
-        float min = _hardpointActuatorSettings->HardpointMeasuredForceWarningLow;
+        float max = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
+        float min = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (_forceActuatorState->balanceForcesApplied) {
-            max = _hardpointActuatorSettings->HardpointMeasuredForceFSBWarningHigh;
-            min = _hardpointActuatorSettings->HardpointMeasuredForceFSBWarningLow;
+            max = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
+            min = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
         }
         bool measuredForceError = measuredForce > max || measuredForce < min;
         _safetyController->hardpointActuatorMeasuredForce(actuatorId, measuredForceError);
@@ -1041,8 +1011,8 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
 
 void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float airPressure = _hardpointMonitorData->breakawayPressure[actuatorId];
-    float min = _hardpointActuatorSettings->AirPressureWarningLow;
-    float max = _hardpointActuatorSettings->AirPressureWarningHigh;
+    float min = _hardpointActuatorSettings->airPressureWarningLow;
+    float max = _hardpointActuatorSettings->airPressureWarningHigh;
     int loadCellError = 0;
     if (airPressure > max) loadCellError = 1;
     if (airPressure < min) loadCellError = -1;

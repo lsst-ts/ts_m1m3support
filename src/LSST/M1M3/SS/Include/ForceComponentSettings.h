@@ -24,6 +24,8 @@
 #ifndef LSST_M1M3_SS_INCLUDE_FORCECOMPONENTSETTINGS_H_
 #define LSST_M1M3_SS_INCLUDE_FORCECOMPONENTSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -31,6 +33,11 @@ namespace SS {
 struct ForceComponentSettings {
     float MaxRateOfChange;
     float NearZeroValue;
+
+    void set(YAML::Node node) {
+        MaxRateOfChange = node["MaxRateOfChange"].as<float>();
+        NearZeroValue = node["NearZeroValue"].as<float>();
+    }
 };
 
 }  // namespace SS

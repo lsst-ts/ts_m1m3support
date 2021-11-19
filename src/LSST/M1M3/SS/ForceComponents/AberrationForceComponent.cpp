@@ -107,14 +107,14 @@ void AberrationForceComponent::postUpdateActions() {
     _preclippedAberrationForces->my = fm.My;
 
     _forceSetpointWarning->aberrationNetForceWarning =
-            !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
-                            _forceActuatorSettings->NetAberrationForceTolerance,
+            !Range::InRange(-_forceActuatorSettings->netAberrationForceTolerance,
+                            _forceActuatorSettings->netAberrationForceTolerance,
                             _appliedAberrationForces->fz) ||
-            !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
-                            _forceActuatorSettings->NetAberrationForceTolerance,
+            !Range::InRange(-_forceActuatorSettings->netAberrationForceTolerance,
+                            _forceActuatorSettings->netAberrationForceTolerance,
                             _appliedAberrationForces->mx) ||
-            !Range::InRange(-_forceActuatorSettings->NetAberrationForceTolerance,
-                            _forceActuatorSettings->NetAberrationForceTolerance,
+            !Range::InRange(-_forceActuatorSettings->netAberrationForceTolerance,
+                            _forceActuatorSettings->netAberrationForceTolerance,
                             _appliedAberrationForces->my);
 
     _safetyController->forceControllerNotifyAberrationForceClipping(clippingRequired);

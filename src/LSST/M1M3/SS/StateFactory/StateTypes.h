@@ -25,7 +25,7 @@
 #define STATETYPES_H_
 
 #include <DataTypes.h>
-#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
+#include <sal_MTM1M3.h>  // Provides access to enumerations
 
 struct States {
     enum Type {

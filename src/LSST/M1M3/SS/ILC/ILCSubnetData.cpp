@@ -35,7 +35,8 @@ namespace SS {
 ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                              ForceActuatorSettings* forceActuatorSettings,
                              HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-                             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
+                             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
+        : _forceActuatorApplicationSettings(forceActuatorApplicationSettings) {
     SPDLOG_DEBUG("ILCSubnetData::ILCSubnetData()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->subnetData[subnetIndex].FACount = 0;
@@ -43,7 +44,7 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
         this->subnetData[subnetIndex].HMCount = 0;
     }
     for (int i = 0; i < FA_COUNT; i++) {
-        ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
+        ForceActuatorTableRow row = _forceActuatorApplicationSettings->Table[i];
         int32_t subnetIndex = row.Subnet - 1;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::FA;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
@@ -51,13 +52,12 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorAppl
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = i;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].XDataIndex =
-                forceActuatorApplicationSettings->ZIndexToXIndex[i];
+                _forceActuatorApplicationSettings->ZIndexToXIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].YDataIndex =
-                forceActuatorApplicationSettings->ZIndexToYIndex[i];
+                _forceActuatorApplicationSettings->ZIndexToYIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].SecondaryDataIndex =
-                forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
-        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled =
-                forceActuatorSettings->IsActuatorDisabled(row.ActuatorID);
+                _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
+        this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled = false;
         ILCMap map = this->subnetData[subnetIndex].ILCDataFromAddress[row.Address];
         this->subnetData[subnetIndex].FAIndex.push_back(map);
         this->subnetData[subnetIndex].FACount += 1;
@@ -119,6 +119,46 @@ ILCMap ILCSubnetData::getMap(int32_t actuatorId) {
     none.Address = 255;
     none.Subnet = 255;
     return none;
+}
+
+void ILCSubnetData::disableFA(int32_t actuatorId) {
+    for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
+        Container* container = &subnetData[subnetIndex];
+        for (int i = 0; i < container->FACount; ++i) {
+            if (container->FAIndex[i].ActuatorId == actuatorId) {
+                container->FAIndex[i].Disabled = true;
+                SPDLOG_INFO("ILCSubnetData::disableFA({}, {}, {}) actuator disabled", actuatorId, subnetIndex,
+                            i);
+                return;
+            }
+        }
+    }
+    SPDLOG_ERROR("ILCSubnetData::enableFA cannot find actuator with ID {}", actuatorId);
+}
+
+void ILCSubnetData::enableFA(int32_t actuatorId) {
+    for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
+        Container* container = &subnetData[subnetIndex];
+        for (int i = 0; i < container->FACount; ++i) {
+            if (container->FAIndex[i].ActuatorId == actuatorId) {
+                container->FAIndex[i].Disabled = false;
+                SPDLOG_INFO("ILCSubnetData::enableFA({}, {}, {}) actuator enabled", actuatorId, subnetIndex,
+                            i);
+                return;
+            }
+        }
+    }
+    SPDLOG_ERROR("ILCSubnetData::enableFA cannot find actuator with ID {}", actuatorId);
+}
+
+void ILCSubnetData::enableAllFA() {
+    for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
+        Container* container = &subnetData[subnetIndex];
+        for (int i = 0; i < container->FACount; ++i) {
+            container->FAIndex[i].Disabled = false;
+        }
+    }
+    SPDLOG_INFO("ILCSubnetData::enableAllFA()");
 }
 
 } /* namespace SS */

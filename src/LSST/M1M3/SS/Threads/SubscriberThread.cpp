@@ -21,7 +21,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <CommandFactory.h>
 #include <ControllerThread.h>
 #include <SubscriberThread.h>
 #include <M1M3SSSubscriber.h>
@@ -77,10 +76,11 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyOffsetForcesByMirrorForce());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandUpdatePID());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandResetPID());
-        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandProgramILC());
-        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandModbusTransmit());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandForceActuatorBumpTest());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandKillForceActuatorBumpTest());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisableForceActuator());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableForceActuator());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableAllForceActuators());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAAzimuth());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAElevation());
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -98,10 +98,15 @@ void SubscriberThread::stop() { _keepRunning = false; }
 
 void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
     if (command) {
-        if (command->validate()) {
-            ControllerThread::get().enqueue(command);
-        } else {
-            command->ackFailed("Validation");
+        try {
+            if (command->validate()) {
+                ControllerThread::get().enqueue(command);
+            } else {
+                command->ackFailed("Validation");
+                delete command;
+            }
+        } catch (std::exception& ex) {
+            command->ackFailed(ex.what());
             delete command;
         }
     }

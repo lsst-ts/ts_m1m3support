@@ -91,7 +91,7 @@ void Inclinometer::processData() {
         if (angle > 180.0) {
             angle = angle - 360.0;
         }
-        _inclinometerData->inclinometerAngle = angle + _inclinometerSettings->Offset;
+        _inclinometerData->inclinometerAngle = angle + _inclinometerSettings->inclinometerOffset;
         M1M3SSPublisher::get().putInclinometerData();
         if (!_errorCleared &&
             _fpgaData->InclinometerSampleTimestamp > _fpgaData->InclinometerErrorTimestamp) {

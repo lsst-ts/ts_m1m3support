@@ -26,14 +26,18 @@
 #include <ILCMessageFactory.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ReadBoostValveDCAGainBusList::ReadBoostValveDCAGainBusList(ILCSubnetData* subnetData,
                                                            ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReadBoostValveDCAGainBusList: ReadBoostValveDCAGainBusList()");
+}
+
+void ReadBoostValveDCAGainBusList::buildBuffer() {
+    BusList::buildBuffer();
+    SPDLOG_DEBUG("ReadBoostValveDCAGainBusList: buildBuffer()");
+
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
@@ -49,7 +53,3 @@ ReadBoostValveDCAGainBusList::ReadBoostValveDCAGainBusList(ILCSubnetData* subnet
     }
     this->buffer.setLength(this->buffer.getIndex());
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

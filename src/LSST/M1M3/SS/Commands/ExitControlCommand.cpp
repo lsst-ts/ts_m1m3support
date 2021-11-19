@@ -22,16 +22,13 @@
  */
 
 #include <Context.h>
-#include <ExitControlCommand.h>
 #include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitControlCommand::ExitControlCommand(int32_t commandID, MTM1M3_command_exitControlC*) {
-    this->commandID = commandID;
-}
+ExitControlCommand::ExitControlCommand() { this->commandID = commandID; }
 
 void ExitControlCommand::execute() { Context::get().exitControl(this); }
 

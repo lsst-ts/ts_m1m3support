@@ -24,6 +24,8 @@
 #ifndef INTERLOCKCONTROLLERSAFETYSETTINGS_H_
 #define INTERLOCKCONTROLLERSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 struct InterlockControllerSafetySettings {
     bool FaultOnHeartbeatStateOutputMismatch;
     bool FaultOnAuxPowerNetworksOff;
@@ -32,6 +34,16 @@ struct InterlockControllerSafetySettings {
     bool FaultOnCabinetDoorOpen;
     bool FaultOnTMAMotionStop;
     bool FaultOnGISHeartbeatLost;
+
+    void set(YAML::Node node) {
+        FaultOnHeartbeatStateOutputMismatch = node["FaultOnHeartbeatStateOutputMismatch"].as<bool>();
+        FaultOnAuxPowerNetworksOff = node["FaultOnAuxPowerNetworksOff"].as<bool>();
+        FaultOnThermalEquipmentOff = node["FaultOnThermalEquipmentOff"].as<bool>();
+        FaultOnAirSupplyOff = node["FaultOnAirSupplyOff"].as<bool>();
+        FaultOnCabinetDoorOpen = node["FaultOnCabinetDoorOpen"].as<bool>();
+        FaultOnTMAMotionStop = node["FaultOnTMAMotionStop"].as<bool>();
+        FaultOnGISHeartbeatLost = node["FaultOnGISHeartbeatLost"].as<bool>();
+    }
 };
 
 #endif /* INTERLOCKCONTROLLERSAFETYSETTINGS_H_ */

@@ -37,7 +37,6 @@
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
 #include <ILC.h>
-#include <ModbusTransmitCommand.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -183,10 +182,21 @@ States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command) {
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::modbusTransmit(ModbusTransmitCommand* command) {
-    SPDLOG_INFO("{}: modbusTransmit()", this->name);
-    Model::get().getILC()->modbusTransmit(command->getData()->actuatorId, command->getData()->functionCode,
-                                          command->getData()->dataLength, command->getData()->data);
+States::Type EngineeringState::disableForceActuator(DisableForceActuatorCommand* command) {
+    SPDLOG_INFO("{}: disableForceActuator({}, {})", name, command->actuatorId, command->actuatorIndex);
+    Model::get().getILC()->disableFA(command->actuatorId);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EngineeringState::enableForceActuator(EnableForceActuatorCommand* command) {
+    SPDLOG_INFO("{}: enableForceActuator({}, {})", name, command->actuatorId, command->actuatorIndex);
+    Model::get().getILC()->enableFA(command->actuatorId);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EngineeringState::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
+    SPDLOG_INFO("{}: enableAllForceActuators()", name);
+    Model::get().getILC()->enableAllFA();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

@@ -22,54 +22,28 @@
  */
 
 #include <PositionControllerSettings.h>
-#include <XMLDocLoad.h>
-#include <boost/lexical_cast.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void PositionControllerSettings::load(const std::string &filename) {
-    pugi::xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    this->ForceToStepsCoefficient = boost::lexical_cast<double>(
-            doc.select_node("//PositionControllerSettings/ForceToStepsCoefficient").node().child_value());
-    this->EncoderToStepsCoefficient = boost::lexical_cast<double>(
-            doc.select_node("//PositionControllerSettings/EncoderToStepsCoefficient").node().child_value());
-    this->MaxStepsPerLoop = boost::lexical_cast<int32_t>(
-            doc.select_node("//PositionControllerSettings/MaxStepsPerLoop").node().child_value());
-    this->RaiseLowerForceLimitLow = boost::lexical_cast<double>(
-            doc.select_node("//PositionControllerSettings/RaiseLowerForceLimitLow").node().child_value());
-    this->RaiseLowerForceLimitHigh = boost::lexical_cast<double>(
-            doc.select_node("//PositionControllerSettings/RaiseLowerForceLimitHigh").node().child_value());
-    this->RaiseLowerTimeoutInSeconds = boost::lexical_cast<double>(
-            doc.select_node("//PositionControllerSettings/RaiseLowerTimeoutInSeconds").node().child_value());
-    this->ReferencePositionEncoder1 = boost::lexical_cast<int32_t>(
-            doc.select_node("//PositionControllerSettings/ReferencePosition/HP1Encoder")
-                    .node()
-                    .child_value());
-    this->ReferencePositionEncoder2 = boost::lexical_cast<int32_t>(
-            doc.select_node("//PositionControllerSettings/ReferencePosition/HP2Encoder")
-                    .node()
-                    .child_value());
-    this->ReferencePositionEncoder3 = boost::lexical_cast<int32_t>(
-            doc.select_node("//PositionControllerSettings/ReferencePosition/HP3Encoder")
-                    .node()
-                    .child_value());
-    this->ReferencePositionEncoder4 = boost::lexical_cast<int32_t>(
-            doc.select_node("//PositionControllerSettings/ReferencePosition/HP4Encoder")
-                    .node()
-                    .child_value());
-    this->ReferencePositionEncoder5 = boost::lexical_cast<int32_t>(
-            doc.select_node("//PositionControllerSettings/ReferencePosition/HP5Encoder")
-                    .node()
-                    .child_value());
-    this->ReferencePositionEncoder6 = boost::lexical_cast<int32_t>(
-            doc.select_node("//PositionControllerSettings/ReferencePosition/HP6Encoder")
-                    .node()
-                    .child_value());
-}
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+        ForceToStepsCoefficient = doc["ForceToStepsCoefficient"].as<double>();
+        EncoderToStepsCoefficient = doc["EncoderToStepsCoefficient"].as<double>();
+        MaxStepsPerLoop = doc["MaxStepsPerLoop"].as<int32_t>();
+        RaiseLowerForceLimitLow = doc["RaiseLowerForceLimitLow"].as<double>();
+        RaiseLowerForceLimitHigh = doc["RaiseLowerForceLimitHigh"].as<double>();
+        RaiseLowerTimeoutInSeconds = doc["RaiseLowerTimeoutInSeconds"].as<double>();
+        std::vector<int32_t> encoders = doc["ReferencePosition"].as<std::vector<int32_t>>();
+        if (encoders.size() != HP_COUNT) {
+            throw std::runtime_error(fmt::format("Expecting {} encoder's ReferencePosition, got {}", HP_COUNT,
+                                                 encoders.size()));
+        }
+        memcpy(ReferencePositionEncoder, encoders.data(), sizeof(int32_t) * HP_COUNT);
+    } catch (YAML::Exception &ex) {
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+    }
+}

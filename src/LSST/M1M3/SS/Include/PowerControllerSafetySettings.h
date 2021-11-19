@@ -24,6 +24,8 @@
 #ifndef POWERCONTROLLERSAFETYSETTINGS_H_
 #define POWERCONTROLLERSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 struct PowerControllerSafetySettings {
     bool FaultOnPowerNetworkAOutputMismatch;
     bool FaultOnPowerNetworkBOutputMismatch;
@@ -33,6 +35,17 @@ struct PowerControllerSafetySettings {
     bool FaultOnAuxPowerNetworkBOutputMismatch;
     bool FaultOnAuxPowerNetworkCOutputMismatch;
     bool FaultOnAuxPowerNetworkDOutputMismatch;
+
+    void set(YAML::Node node) {
+        FaultOnPowerNetworkAOutputMismatch = node["FaultOnPowerNetworkAOutputMismatch"].as<bool>();
+        FaultOnPowerNetworkBOutputMismatch = node["FaultOnPowerNetworkBOutputMismatch"].as<bool>();
+        FaultOnPowerNetworkCOutputMismatch = node["FaultOnPowerNetworkCOutputMismatch"].as<bool>();
+        FaultOnPowerNetworkDOutputMismatch = node["FaultOnPowerNetworkDOutputMismatch"].as<bool>();
+        FaultOnAuxPowerNetworkAOutputMismatch = node["FaultOnAuxPowerNetworkAOutputMismatch"].as<bool>();
+        FaultOnAuxPowerNetworkBOutputMismatch = node["FaultOnAuxPowerNetworkBOutputMismatch"].as<bool>();
+        FaultOnAuxPowerNetworkCOutputMismatch = node["FaultOnAuxPowerNetworkCOutputMismatch"].as<bool>();
+        FaultOnAuxPowerNetworkDOutputMismatch = node["FaultOnAuxPowerNetworkDOutputMismatch"].as<bool>();
+    }
 };
 
 #endif /* POWERCONTROLLERSAFETYSETTINGS_H_ */

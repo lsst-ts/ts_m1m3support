@@ -25,7 +25,6 @@
 #define FORCECONTROLLER_H_
 
 #include <DataTypes.h>
-#include <ForceActuatorNeighbors.h>
 #include <ForcesAndMoments.h>
 #include <LimitTrigger.h>
 #include <SAL_MTM1M3C.h>
@@ -54,6 +53,11 @@
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+
+struct ForceActuatorIndicesNeighbors {
+    std::vector<int32_t> NearZIndices;
+    std::vector<int32_t> FarIndices;
+};
 
 /**
  * Coordinate force actuators force calculcation. The mirror weight and
@@ -285,7 +289,7 @@ private:
     double _elevation_Timestamp;
     double _elevation_Actual;
 
-    std::vector<ForceActuatorNeighbors> _neighbors;
+    std::vector<ForceActuatorIndicesNeighbors> _neighbors;
 
     float _zero[FA_COUNT];
     float _mirrorWeight;

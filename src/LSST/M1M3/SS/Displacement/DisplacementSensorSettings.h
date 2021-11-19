@@ -24,7 +24,10 @@
 #ifndef DISPLACEMENTSENSORSETTINGS_H_
 #define DISPLACEMENTSENSORSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+
 #include <DataTypes.h>
+#include <M1M3SSPublisher.h>
 #include <string>
 #include <vector>
 
@@ -32,33 +35,17 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class DisplacementSensorSettings {
+class DisplacementSensorSettings : public MTM1M3_logevent_displacementSensorSettingsC {
 public:
     std::vector<double> ConverterMatrix;
-    int32_t N1Port;
-    int32_t N2Port;
-    int32_t N3Port;
-    int32_t N4Port;
-    int32_t N5Port;
-    int32_t N6Port;
-    int32_t N7Port;
-    int32_t N8Port;
-    double N1Offset;
-    double N2Offset;
-    double N3Offset;
-    double N4Offset;
-    double N5Offset;
-    double N6Offset;
-    double N7Offset;
-    double N8Offset;
-    double XPositionOffset;
-    double YPositionOffset;
-    double ZPositionOffset;
-    double XRotationOffset;
-    double YRotationOffset;
-    double ZRotationOffset;
+    std::vector<int32_t> NPorts;
+    std::vector<double> NOffsets;
+
+    DisplacementSensorSettings() : NPorts(8), NOffsets(8) {}
 
     void load(const std::string &filename);
+
+    void log() { M1M3SSPublisher::get().logDisplacementSensorSettings(this); }
 };
 
 } /* namespace SS */

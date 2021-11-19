@@ -43,6 +43,7 @@ protected:
     int32_t commandID;
 
 public:
+    Command(int32_t _commandID = 0) : commandID(_commandID) {}
     virtual ~Command();
 
     /*!

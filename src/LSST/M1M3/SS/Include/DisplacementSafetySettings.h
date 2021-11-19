@@ -24,6 +24,8 @@
 #ifndef DISPLACEMENTSAFETYSETTINGS_H_
 #define DISPLACEMENTSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 struct DisplacementSafetySettings {
     bool FaultOnSensorReportsInvalidCommand;
     bool FaultOnSensorReportsCommunicationTimeoutError;
@@ -39,6 +41,25 @@ struct DisplacementSafetySettings {
     bool FaultOnInvalidResponse;
     bool FaultOnUnknownCommand;
     bool FaultOnUnknownProblem;
+
+    void set(YAML::Node node) {
+        FaultOnSensorReportsInvalidCommand = node["FaultOnSensorReportsInvalidCommand"].as<bool>();
+        FaultOnSensorReportsCommunicationTimeoutError =
+                node["FaultOnSensorReportsCommunicationTimeoutError"].as<bool>();
+        FaultOnSensorReportsDataLengthError = node["FaultOnSensorReportsDataLengthError"].as<bool>();
+        FaultOnSensorReportsNumberOfParametersError =
+                node["FaultOnSensorReportsNumberOfParametersError"].as<bool>();
+        FaultOnSensorReportsParameterError = node["FaultOnSensorReportsParameterError"].as<bool>();
+        FaultOnSensorReportsCommunicationError = node["FaultOnSensorReportsCommunicationError"].as<bool>();
+        FaultOnSensorReportsIDNumberError = node["FaultOnSensorReportsIDNumberError"].as<bool>();
+        FaultOnSensorReportsExpansionLineError = node["FaultOnSensorReportsExpansionLineError"].as<bool>();
+        FaultOnSensorReportsWriteControlError = node["FaultOnSensorReportsWriteControlError"].as<bool>();
+        FaultOnResponseTimeoutError = node["FaultOnResponseTimeoutError"].as<bool>();
+        FaultOnInvalidLength = node["FaultOnInvalidLength"].as<bool>();
+        FaultOnInvalidResponse = node["FaultOnInvalidResponse"].as<bool>();
+        FaultOnUnknownCommand = node["FaultOnUnknownCommand"].as<bool>();
+        FaultOnUnknownProblem = node["FaultOnUnknownProblem"].as<bool>();
+    }
 };
 
 #endif /* DISPLACEMENTSAFETYSETTINGS_H_ */

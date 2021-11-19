@@ -15,6 +15,7 @@ endif
 
 
 M1M3_CPPFLAGS := -I"/usr/include" \
+	-I"../$(CRIOCPP)/include" \
 	-I"../src" \
 	-I"../src/LSST/M1M3/SS/DigitalInputOutput" \
 	-I"../src/LSST/M1M3/SS/FirmwareUpdate" \

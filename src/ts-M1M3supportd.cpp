@@ -21,7 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <CommandFactory.h>
+#include <EnterControlCommand.h>
+#include <ExitControlCommand.h>
 #include <Context.h>
 #include <ControllerThread.h>
 #include <IExpansionFPGA.h>
@@ -76,6 +77,7 @@ void printHelp() {
               << "  -h prints this help" << std::endl
               << "  -p PID file, started as daemon on background" << std::endl
               << "  -s increases SAL debugging (can be specified multiple times, default is 0)" << std::endl
+              << "  -S don't transmit log messages on SAL/DDS" << std::endl
               << "  -u <user>:<group> run under user & group" << std::endl
               << "  -v prints version and exits" << std::endl
               << "  -V prints SAL, XML and OSPL versions and exits" << std::endl;
@@ -90,7 +92,7 @@ std::string daemonGroup("m1m3");
 
 void sigKill(int signal) {
     SPDLOG_DEBUG("Kill/int signal received");
-    ControllerThread::get().enqueue(CommandFactory::create(Commands::ExitControlCommand));
+    ControllerThread::get().enqueue(new ExitControlCommand());
 }
 
 std::vector<spdlog::sink_ptr> sinks;
@@ -98,7 +100,7 @@ int enabledSinks = 0x10;
 
 void processArgs(int argc, char* const argv[], const char*& configRoot) {
     int opt;
-    while ((opt = getopt(argc, argv, "bc:dfhp:su:vV")) != -1) {
+    while ((opt = getopt(argc, argv, "bc:dfhp:sSu:vV")) != -1) {
         switch (opt) {
             case 'b':
                 enabledSinks |= 0x02;
@@ -121,6 +123,9 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 break;
             case 's':
                 debugLevelSAL++;
+                break;
+            case 'S':
+                enabledSinks &= ~0x10;
                 break;
             case 'u': {
                 char* sep = strchr(optarg, ':');
@@ -182,7 +187,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     SPDLOG_INFO("Main: Creating pps thread");
     PPSThread ppsThread;
     SPDLOG_INFO("Main: Queuing EnterControl command");
-    ControllerThread::get().enqueue(CommandFactory::create(Commands::EnterControlCommand));
+    ControllerThread::get().enqueue(new EnterControlCommand());
 
     signal(SIGKILL, sigKill);
     signal(SIGINT, sigKill);

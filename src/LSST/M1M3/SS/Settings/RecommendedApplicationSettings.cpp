@@ -22,25 +22,19 @@
  */
 
 #include <RecommendedApplicationSettings.h>
-#include <XMLDocLoad.h>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
-using namespace pugi;
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 void RecommendedApplicationSettings::load(const std::string &filename) {
-    xml_document doc;
-    XMLDocLoad(filename.c_str(), doc);
-    xpath_node_set nodes =
-            doc.select_nodes("//RecommendedApplicationSettings/RecommendedSettings/RecommendedSetting");
-    this->RecommendedSettings.clear();
-    for (xpath_node_set::const_iterator node = nodes.begin(); node != nodes.end(); ++node) {
-        RecommendedSettings.push_back(node->node().child_value());
+    try {
+        YAML::Node doc = YAML::LoadFile(filename);
+
+        for (auto recommendedSetings : doc["RecommendedSettings"].as<std::vector<std::string>>()) {
+            RecommendedSettings.push_back(recommendedSetings);
+        }
+    } catch (YAML::Exception &ex) {
+        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

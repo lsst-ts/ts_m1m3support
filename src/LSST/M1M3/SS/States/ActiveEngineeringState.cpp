@@ -115,12 +115,8 @@ States::Type ActiveEngineeringState::runMirrorForceProfile(RunMirrorForceProfile
 
 States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand* command) {
     SPDLOG_INFO("ActiveEngineeringState: updatePID()");
-    PIDParameters parameters;
-    parameters.Timestep = command->getData()->timestep;
-    parameters.P = command->getData()->p;
-    parameters.I = command->getData()->i;
-    parameters.D = command->getData()->d;
-    parameters.N = command->getData()->n;
+    auto data = command->getData();
+    PIDParameters parameters(data->timestep, data->p, data->i, data->d, data->n);
     Model::get().getForceController()->updatePID(command->getData()->pid, parameters);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }

@@ -107,14 +107,14 @@ void ActiveOpticForceComponent::postUpdateActions() {
     _preclippedActiveOpticForces->my = fm.My;
 
     _forceSetpointWarning->activeOpticNetForceWarning =
-            !Range::InRange(-_forceActuatorSettings->NetActiveOpticForceTolerance,
-                            _forceActuatorSettings->NetActiveOpticForceTolerance,
+            !Range::InRange(-_forceActuatorSettings->netActiveOpticForceTolerance,
+                            _forceActuatorSettings->netActiveOpticForceTolerance,
                             _appliedActiveOpticForces->fz) ||
-            !Range::InRange(-_forceActuatorSettings->NetActiveOpticForceTolerance,
-                            _forceActuatorSettings->NetActiveOpticForceTolerance,
+            !Range::InRange(-_forceActuatorSettings->netActiveOpticForceTolerance,
+                            _forceActuatorSettings->netActiveOpticForceTolerance,
                             _appliedActiveOpticForces->mx) ||
-            !Range::InRange(-_forceActuatorSettings->NetActiveOpticForceTolerance,
-                            _forceActuatorSettings->NetActiveOpticForceTolerance,
+            !Range::InRange(-_forceActuatorSettings->netActiveOpticForceTolerance,
+                            _forceActuatorSettings->netActiveOpticForceTolerance,
                             _appliedActiveOpticForces->my);
 
     _safetyController->forceControllerNotifyActiveOpticForceClipping(clippingRequired);

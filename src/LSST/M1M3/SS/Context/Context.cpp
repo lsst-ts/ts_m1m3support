@@ -287,18 +287,6 @@ void Context::resetPID(ResetPIDCommand* command) {
     _updateCurrentStateIfRequired(state->resetPID(command));
 }
 
-void Context::programILC(ProgramILCCommand* command) {
-    SPDLOG_DEBUG("Context: programILC()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->programILC(command));
-}
-
-void Context::modbusTransmit(ModbusTransmitCommand* command) {
-    SPDLOG_DEBUG("Context: modbusTransmit()");
-    State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->modbusTransmit(command));
-}
-
 void Context::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     SPDLOG_DEBUG("Context: forceActuatorBumpTest()");
     State* state = StaticStateFactory::get().create(_currentState);
@@ -309,6 +297,24 @@ void Context::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* comman
     SPDLOG_DEBUG("Context: killForceActuatorBumpTest()");
     State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->killForceActuatorBumpTest(command));
+}
+
+void Context::disableForceActuator(DisableForceActuatorCommand* command) {
+    SPDLOG_DEBUG("Context: disableForceActuator({})", command->actuatorIndex);
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->disableForceActuator(command));
+}
+
+void Context::enableForceActuator(EnableForceActuatorCommand* command) {
+    SPDLOG_DEBUG("Context: enableForceActuator({})", command->actuatorIndex);
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->enableForceActuator(command));
+}
+
+void Context::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
+    SPDLOG_DEBUG("Context: enableAllForceActuators()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->enableAllForceActuators(command));
 }
 
 void Context::_updateCurrentStateIfRequired(States::Type potentialNewState) {

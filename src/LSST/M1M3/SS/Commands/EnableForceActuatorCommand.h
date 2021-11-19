@@ -21,22 +21,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "XMLDocLoad.h"
-#include <stdexcept>
+#ifndef ENABLEFORCEACTUATORCOMMAND_H_
+#define ENABLEFORCEACTUATORCOMMAND_H_
 
-using namespace pugi;
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-void XMLDocLoad(const std::string &filename, xml_document &doc) {
-    xml_parse_result res = doc.load_file(filename.c_str());
-    if (res.status != pugi::xml_parse_status::status_ok) {
-        throw std::runtime_error("Cannot load " + filename + ": " + res.description());
-    }
-}
+/**
+ * Enable single force actuator for use in static support.
+ */
+class EnableForceActuatorCommand : public Command {
+public:
+    EnableForceActuatorCommand(int32_t commandID, MTM1M3_command_enableForceActuatorC* data);
+
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+
+    int32_t actuatorId;
+    int32_t actuatorIndex;
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif /* ENABLEFORCEACTUATORCOMMAND_H_ */

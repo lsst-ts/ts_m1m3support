@@ -24,6 +24,8 @@
 #ifndef INCLINOMETERSAFETYSETTINGS_H_
 #define INCLINOMETERSAFETYSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 struct InclinometerSafetySettings {
     bool FaultOnResponseTimeout;
     bool FaultOnInvalidCRC;
@@ -33,6 +35,17 @@ struct InclinometerSafetySettings {
     bool FaultOnSensorReportsIllegalDataAddress;
     bool FaultOnSensorReportsIllegalFunction;
     bool FaultOnUnknownProblem;
+
+    void set(YAML::Node node) {
+        FaultOnResponseTimeout = node["FaultOnResponseTimeout"].as<bool>();
+        FaultOnInvalidCRC = node["FaultOnInvalidCRC"].as<bool>();
+        FaultOnUnknownAddress = node["FaultOnUnknownAddress"].as<bool>();
+        FaultOnUnknownFunction = node["FaultOnUnknownFunction"].as<bool>();
+        FaultOnInvalidLength = node["FaultOnInvalidLength"].as<bool>();
+        FaultOnSensorReportsIllegalDataAddress = node["FaultOnSensorReportsIllegalDataAddress"].as<bool>();
+        FaultOnSensorReportsIllegalFunction = node["FaultOnSensorReportsIllegalFunction"].as<bool>();
+        FaultOnUnknownProblem = node["FaultOnUnknownProblem"].as<bool>();
+    }
 };
 
 #endif /* INCLINOMETERSAFETYSETTINGS_H_ */
