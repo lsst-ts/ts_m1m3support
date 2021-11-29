@@ -146,7 +146,7 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
             return b[0] - 'A';
         }
         if (b[0] >= 'a' && b[0] <= 'e') {
-            return b[0] - 'A';
+            return b[0] - 'a';
         }
         if (b[0] >= '1' && b[0] <= '5') {
             return b[0] - '1';
