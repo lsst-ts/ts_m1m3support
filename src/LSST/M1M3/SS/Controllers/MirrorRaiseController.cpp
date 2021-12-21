@@ -77,7 +77,7 @@ void MirrorRaiseController::runLoop() {
     if (!_forceController->supportPercentageFilled()) {
         // We are still in the process of transferring the support force from the static supports
         // to the force actuators
-        if (_positionController->forcesInTolerance() && _forceController->followingErrorInTolerance()) {
+        if (_positionController->forcesInTolerance(true) && _forceController->followingErrorInTolerance()) {
             // The forces on the hardpoints are within tolerance and
             // the force actuators are following their setpoints, we can continue to transfer the
             // support force from the static supports to the force actuators
@@ -133,7 +133,7 @@ void MirrorRaiseController::complete() {
 
 bool MirrorRaiseController::checkTimeout() {
     return M1M3SSPublisher::get().getTimestamp() >=
-           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
+           (_cachedTimestamp + _positionController->getRaiseTimeout());
 }
 
 void MirrorRaiseController::timeout() {

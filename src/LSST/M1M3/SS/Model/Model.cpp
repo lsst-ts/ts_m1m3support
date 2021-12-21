@@ -277,13 +277,8 @@ void Model::_populateHardpointActuatorInfo(
         hardpointInfo->xPosition[row.Index] = row.XPosition;
         hardpointInfo->yPosition[row.Index] = row.YPosition;
         hardpointInfo->zPosition[row.Index] = row.ZPosition;
+        hardpointInfo->referencePosition[i] = positionControllerSettings->referencePosition[i];
     }
-    hardpointInfo->referencePosition[0] = positionControllerSettings->ReferencePositionEncoder[0];
-    hardpointInfo->referencePosition[1] = positionControllerSettings->ReferencePositionEncoder[1];
-    hardpointInfo->referencePosition[2] = positionControllerSettings->ReferencePositionEncoder[2];
-    hardpointInfo->referencePosition[3] = positionControllerSettings->ReferencePositionEncoder[3];
-    hardpointInfo->referencePosition[4] = positionControllerSettings->ReferencePositionEncoder[4];
-    hardpointInfo->referencePosition[5] = positionControllerSettings->ReferencePositionEncoder[5];
 }
 
 void Model::_populateHardpointMonitorInfo(
