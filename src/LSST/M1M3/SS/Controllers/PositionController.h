@@ -61,14 +61,15 @@ public:
     /**
      * Returns raise and lower timeout.
      *
-     * @return timeout for raise/lower in seconds
+     * @return timeout for raise in seconds
      */
-    double getRaiseLowerTimeout();
+    int getRaiseTimeout() { return _positionControllerSettings->raiseTimeout; }
+    int getLowerTimeout() { return _positionControllerSettings->lowerTimeout; }
 
     bool enableChaseAll();
     void disableChaseAll();
 
-    bool forcesInTolerance();
+    bool forcesInTolerance(bool raise);
     bool motionComplete();
 
     /**

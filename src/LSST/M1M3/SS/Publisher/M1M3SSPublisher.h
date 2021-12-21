@@ -230,6 +230,10 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
+    void logPositionControllerSettings(MTM1M3_logevent_positionControllerSettingsC* data) {
+        _m1m3SAL->logEvent_positionControllerSettings(data, 0);
+    }
+
     void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
         _m1m3SAL->logEvent_accelerometerSettings(data, 0);
     }

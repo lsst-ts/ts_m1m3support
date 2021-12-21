@@ -71,7 +71,7 @@ void MirrorLowerController::runLoop() {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
         // TODO: Does it matter if the following error is bad when we are trying to lower the mirror?
-        if (_positionController->forcesInTolerance()) {
+        if (_positionController->forcesInTolerance(false)) {
             // The forces on the hardpoints are within tolerance, we can continue to transfer the
             // support force from the static supports to the force actuators
             _forceController->decSupportPercentage();
@@ -103,7 +103,7 @@ void MirrorLowerController::complete() {
 
 bool MirrorLowerController::checkTimeout() {
     return M1M3SSPublisher::get().getTimestamp() >=
-           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
+           (_cachedTimestamp + _positionController->getLowerTimeout());
 }
 
 void MirrorLowerController::timeout() {
