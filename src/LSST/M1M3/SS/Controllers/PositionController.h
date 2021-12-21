@@ -25,6 +25,7 @@
 #define POSITIONCONTROLLER_H_
 
 #include <DataTypes.h>
+#include <Units.h>
 #include <HardpointActuatorSettings.h>
 #include <PositionControllerSettings.h>
 #include <SAL_MTM1M3C.h>
@@ -97,6 +98,9 @@ public:
      */
     bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
     bool moveToReferencePosition();
+    bool moveToLowerPosition() {
+        return moveToAbsolute(0, 0, _positionControllerSettings->lowerPositionOffsetZ * MM2M, 0, 0, 0);
+    }
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
     void stopMotion();
 
