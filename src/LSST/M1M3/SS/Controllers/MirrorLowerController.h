@@ -75,6 +75,7 @@ private:
     SafetyController* _safetyController;
     PowerController* _powerController;
     double _cachedTimestamp;
+    bool _movedToLowerPosition;
 };
 
 } /* namespace SS */
