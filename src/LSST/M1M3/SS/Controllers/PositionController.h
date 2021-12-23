@@ -98,9 +98,19 @@ public:
      */
     bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
     bool moveToReferencePosition();
-    bool moveToLowerPosition() {
-        return moveToAbsolute(0, 0, _positionControllerSettings->lowerPositionOffsetZ * MM2M, 0, 0, 0);
-    }
+
+    /**
+     * Moves mirror to position ideal for lowering. This position depends on
+     * telescope elevation. It is position defined in
+     * PositionControllerSettings/Lower/PositionOffset, multiplied by
+     * sin(elevation) for Z and cos(elevation) for Y. The multiplication tries
+     * to position mirror opposite to its gravity vectory. It is exactly what
+     * LBTO uses for off-zenith mirror lowering.
+     *
+     * @return false when move cannot be performed
+     */
+    bool moveToLowerPosition();
+
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
     void stopMotion();
 

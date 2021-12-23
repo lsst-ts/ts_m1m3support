@@ -9,6 +9,5 @@ Lower:
   HPForceLimitLow: -1000
   HPForceLimitHigh: 200
   Timeout: 600
-  PositionOffset:
-    Z: -5
+  PositionOffset: -3.5
 ReferencePosition: [32438, 37387, 43686, 44733, 34861, 40855]

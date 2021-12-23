@@ -32,6 +32,7 @@
 #include <PositionController.h>
 #include <SafetyController.h>
 #include <PowerController.h>
+#include <TMA.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <M1M3SSPublisher.h>
@@ -52,13 +53,13 @@ EnabledState::EnabledState(std::string name) : State(name) {}
 
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAAzimuthSample()");
-    Model::get().getForceController()->updateTMAAzimuthForces(command->getData());
+    TMA::instance().updateTMAAzimuth(command->getData());
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAElevationSample()");
-    Model::get().getForceController()->updateTMAElevationData(command->getData());
+    TMA::instance().updateTMAElevation(command->getData());
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

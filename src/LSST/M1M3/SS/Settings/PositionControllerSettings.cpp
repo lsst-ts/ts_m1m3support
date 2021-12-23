@@ -46,7 +46,7 @@ void PositionControllerSettings::load(const std::string &filename) {
         lowerHPForceLimitLow = lower["HPForceLimitLow"].as<int>();
         lowerHPForceLimitHigh = lower["HPForceLimitHigh"].as<int>();
         lowerTimeout = lower["Timeout"].as<int>();
-        lowerPositionOffsetZ = lower["PositionOffset"]["Z"].as<float>();
+        lowerPositionOffset = lower["PositionOffset"].as<float>();
 
         auto encoders = doc["ReferencePosition"].as<std::vector<int32_t>>();
         if (encoders.size() != HP_COUNT) {

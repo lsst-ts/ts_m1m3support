@@ -37,7 +37,7 @@ EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t in_commandID,
 
 bool EnableForceActuatorCommand::validate() {
     actuatorIndex =
-            SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+            SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
     if (actuatorIndex < 0) {
         M1M3SSPublisher::get().logCommandRejectionWarning("EnableForceActuator", "Invalid actuatorId.");
         return false;

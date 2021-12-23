@@ -51,7 +51,7 @@ States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
     Model::get().loadSettings(command->getData()->settingsToApply);
     M1M3SSPublisher::get().getEventSettingsApplied()->settingsVersion =
-            SettingReader::get().getSettingsVersion();
+            SettingReader::instance().getSettingsVersion();
     M1M3SSPublisher::get().getEventSettingsApplied()->otherSettingsEvents = "";
     M1M3SSPublisher::get().logSettingsApplied();
 

@@ -36,8 +36,8 @@ ForceActuatorBumpTestCommand::ForceActuatorBumpTestCommand(int32_t commandID,
 }
 
 bool ForceActuatorBumpTestCommand::validate() {
-    if (SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(_data.actuatorId) ==
-        -1) {
+    if (SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
+                _data.actuatorId) == -1) {
         M1M3SSPublisher::get().logCommandRejectionWarning("ForceActuatorBumpTest", "Invalid actuatorId.");
         return false;
     }
