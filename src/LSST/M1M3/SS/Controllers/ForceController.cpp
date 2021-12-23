@@ -32,6 +32,7 @@
 #include <SettingReader.h>
 #include <PIDSettings.h>
 #include <Range.h>
+#include <TMA.h>
 #include <cmath>
 #include <cstring>
 #include <vector>
@@ -82,11 +83,6 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
     _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
     _gyroData = M1M3SSPublisher::get().getGyroData();
-
-    _azimuth_Timestamp = 0;
-
-    _elevation_Timestamp = 0;
-    _elevation_Actual = NAN;
 
     reset();
 
@@ -156,12 +152,6 @@ void ForceController::reset() {
     _thermalForceComponent.reset();
     _velocityForceComponent.reset();
     _finalForceComponent.reset();
-}
-
-void ForceController::updateTMAElevationData(MTMount_elevationC* tmaElevationData) {
-    SPDLOG_TRACE("ForceController: updateTMAElevationData()");
-    _elevation_Actual = tmaElevationData->actualPosition;
-    _elevation_Timestamp = tmaElevationData->timestamp;
 }
 
 void ForceController::incSupportPercentage() {
@@ -250,14 +240,7 @@ void ForceController::updateAppliedForces() {
     }
     if (_elevationForceComponent.isEnabled() || _elevationForceComponent.isDisabling()) {
         if (_elevationForceComponent.isEnabled()) {
-            double elevationAngle;
-            if (_forceActuatorSettings->useInclinometer) {
-                elevationAngle = _inclinometerData->inclinometerAngle;
-            } else {
-                elevationAngle = _elevation_Actual;
-                _safetyController->tmaInclinometerDeviation(_elevation_Actual -
-                                                            _inclinometerData->inclinometerAngle);
-            }
+            double elevationAngle = TMA::instance().getElevation();
 
             // Convert elevation angle to zenith angle (used by matrix)
             _elevationForceComponent.applyElevationForcesByElevationAngle(90.0 - elevationAngle);
@@ -290,15 +273,9 @@ void ForceController::processAppliedForces() {
     _checkNearNeighbors();
     _checkMirrorWeight();
     _checkFarNeighbors();
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
-    if (_forceActuatorSettings->useInclinometer == false) {
-        if (_elevationForceComponent.isEnabled()) {
-            Model::get().getSafetyController()->tmaAzimuthTimeout(_azimuth_Timestamp - timestamp);
-        }
-        if (_azimuthForceComponent.isEnabled()) {
-            Model::get().getSafetyController()->tmaElevationTimeout(_elevation_Timestamp - timestamp);
-        }
-    }
+
+    TMA::instance().checkTimestamps(_azimuthForceComponent.isEnabled(), _elevationForceComponent.isEnabled());
+
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
 
@@ -355,7 +332,6 @@ void ForceController::applyAzimuthForces() {
 
 void ForceController::updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
     SPDLOG_TRACE("ForceController: updateTMAAzimuthForces()");
-    _azimuth_Timestamp = tmaAzimuthData->timestamp;
     if (_azimuthForceComponent.isEnabled()) {
         _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
     }
@@ -617,7 +593,8 @@ bool ForceController::_checkNearNeighbors() {
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
         if (Model::get().getILC()->isDisabled(
-                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(zIndex))) {
+                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
+                            zIndex))) {
             continue;
         }
 
@@ -688,7 +665,8 @@ bool ForceController::_checkFarNeighbors() {
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
         if (Model::get().getILC()->isDisabled(
-                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(zIndex))) {
+                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
+                            zIndex))) {
             continue;
         }
 

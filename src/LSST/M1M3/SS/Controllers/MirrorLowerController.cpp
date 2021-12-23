@@ -55,6 +55,17 @@ void MirrorLowerController::start() {
     if (_positionController->moveToLowerPosition() == false) {
         throw std::runtime_error("Cannot move to lower position before starting lowering the mirror");
     }
+
+    _forceController->zeroAberrationForces();
+    _forceController->zeroAccelerationForces();
+    _forceController->zeroActiveOpticForces();
+    _forceController->zeroAzimuthForces();
+    _forceController->zeroBalanceForces();
+    _forceController->applyElevationForces();
+    _forceController->zeroOffsetForces();
+    _forceController->zeroStaticForces();
+    _forceController->zeroThermalForces();
+    _forceController->zeroVelocityForces();
     _forceController->fillSupportPercentage();
 
     setStartTimestamp();
@@ -67,16 +78,6 @@ void MirrorLowerController::runLoop() {
         _movedToLowerPosition = _positionController->motionComplete();
         if (_movedToLowerPosition == true) {
             _positionController->enableChaseAll();
-            _forceController->zeroAberrationForces();
-            _forceController->zeroAccelerationForces();
-            _forceController->zeroActiveOpticForces();
-            _forceController->zeroAzimuthForces();
-            _forceController->zeroBalanceForces();
-            _forceController->applyElevationForces();
-            _forceController->zeroOffsetForces();
-            _forceController->zeroStaticForces();
-            _forceController->zeroThermalForces();
-            _forceController->zeroVelocityForces();
         }
     } else if (_forceController->supportPercentageZeroed() == false) {
         // We are still in the process of transfering the support force from the static supports

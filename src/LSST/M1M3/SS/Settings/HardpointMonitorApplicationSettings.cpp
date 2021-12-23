@@ -39,7 +39,7 @@ void HardpointMonitorApplicationSettings::load(const std::string &filename) {
         typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
 
         std::string hardpointActuatorTablePath =
-                SettingReader::get().getFilePath(doc["HardpointMonitorTablePath"].as<std::string>());
+                SettingReader::instance().getFilePath(doc["HardpointMonitorTablePath"].as<std::string>());
         std::ifstream inputStream(hardpointActuatorTablePath.c_str());
         if (!inputStream.is_open()) {
             throw std::runtime_error("Cannot read " + hardpointActuatorTablePath + ": " + strerror(errno));

@@ -28,6 +28,7 @@
 #include <HardpointActuatorMotionStates.h>
 #include <Range.h>
 #include <SAL_MTM1M3C.h>
+#include <TMA.h>
 
 #include <spdlog/spdlog.h>
 #include <stdlib.h>
@@ -272,6 +273,12 @@ bool PositionController::moveToAbsolute(double x, double y, double z, double rX,
 bool PositionController::moveToReferencePosition() {
     SPDLOG_INFO("PositionController: moveToReferencePosition()");
     return this->moveToEncoder(_hardpointInfo->referencePosition);
+}
+
+bool PositionController::moveToLowerPosition() {
+    double m_pos = _positionControllerSettings->lowerPositionOffset * MM2M;
+    return moveToAbsolute(0, m_pos * TMA::instance().getElevationCos(),
+                          m_pos * TMA::instance().getElevationSin(), 0, 0, 0);
 }
 
 bool PositionController::translate(double x, double y, double z, double rX, double rY, double rZ) {
