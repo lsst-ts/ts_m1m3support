@@ -39,17 +39,14 @@ namespace SS {
  * CommandFactory::create() and M1M3SSSubscriber in SubscriberThread::run().
  */
 class Command {
-protected:
-    int32_t commandID;
-
 public:
-    Command(int32_t _commandID = 0) : commandID(_commandID) {}
+    Command(int32_t commandID) : _commandID(commandID) {}
     virtual ~Command();
 
     /*!
      * Gets the command ID.
      */
-    virtual int32_t getCommandID() { return this->commandID; }
+    inline int32_t getCommandID() { return _commandID; }
 
     /*!
      * Validates the command.
@@ -72,6 +69,9 @@ public:
      * @param[in] reason The reason why the command has failed.
      */
     virtual void ackFailed(std::string reason);
+
+protected:
+    int32_t _commandID;
 };
 
 } /* namespace SS */

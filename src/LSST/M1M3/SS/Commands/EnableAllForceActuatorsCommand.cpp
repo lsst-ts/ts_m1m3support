@@ -27,21 +27,20 @@
 
 using namespace LSST::M1M3::SS;
 
-EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(
-        int32_t in_commandID, MTM1M3_command_enableAllForceActuatorsC* data) {
-    commandID = in_commandID;
-}
+EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(int32_t commandID,
+                                                               MTM1M3_command_enableAllForceActuatorsC* data)
+        : Command(commandID) {}
 
 void EnableAllForceActuatorsCommand::execute() { Context::get().enableAllForceActuators(this); }
 
 void EnableAllForceActuatorsCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandenableAllForceActuators(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableAllForceActuatorsCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandenableAllForceActuators(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void EnableAllForceActuatorsCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenableAllForceActuators(commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandenableAllForceActuators(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }

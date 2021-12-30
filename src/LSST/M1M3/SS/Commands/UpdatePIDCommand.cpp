@@ -29,8 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-UpdatePIDCommand::UpdatePIDCommand(int32_t commandID, MTM1M3_command_updatePIDC* data) {
-    this->commandID = commandID;
+UpdatePIDCommand::UpdatePIDCommand(int32_t commandID, MTM1M3_command_updatePIDC* data) : Command(commandID) {
     _data.pid = data->pid;
     _data.timestep = data->timestep;
     _data.p = data->p;
@@ -50,15 +49,15 @@ bool UpdatePIDCommand::validate() {
 void UpdatePIDCommand::execute() { Context::get().updatePID(this); }
 
 void UpdatePIDCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandupdatePID(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandupdatePID(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void UpdatePIDCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandupdatePID(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandupdatePID(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void UpdatePIDCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandupdatePID(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandupdatePID(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -30,22 +30,21 @@ namespace M1M3 {
 namespace SS {
 
 DisableHardpointChaseCommand::DisableHardpointChaseCommand(int32_t commandID,
-                                                           MTM1M3_command_disableHardpointChaseC* data) {
-    this->commandID = commandID;
-}
+                                                           MTM1M3_command_disableHardpointChaseC* data)
+        : Command(commandID) {}
 
 void DisableHardpointChaseCommand::execute() { Context::get().disableHardpointChase(this); }
 
 void DisableHardpointChaseCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommanddisableHardpointChase(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommanddisableHardpointChase(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableHardpointChaseCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommanddisableHardpointChase(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommanddisableHardpointChase(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void DisableHardpointChaseCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommanddisableHardpointChase(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommanddisableHardpointChase(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */
