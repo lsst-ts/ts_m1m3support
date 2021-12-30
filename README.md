@@ -88,7 +88,7 @@ response queue, added to command response queue and finally readout.
   [version.h](src/spdlog/version.h) for version)
 
 This software depends on the fmt lib (MIT License),
-and users must comply to its license: https://github.com/fmtlib/fmt/blob/master/LICENSE.rst
+and users must comply to its license: https://github.com/fmtlib/fmt/blob/main/LICENSE.rst
 
 # Building
 
