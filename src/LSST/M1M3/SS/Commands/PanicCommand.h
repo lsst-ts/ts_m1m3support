@@ -21,31 +21,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Context.h>
-#include <ExitEngineeringCommand.h>
-#include <M1M3SSPublisher.h>
+#ifndef PANICCOMMAND_H_
+#define PANICCOMMAND_H_
+
+#include <Command.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID, MTM1M3_command_exitEngineeringC*)
-        : Command(commandID) {}
+/*!
+ * Commands mirror to fault.
+ */
+class PanicCommand : public Command {
+public:
+    PanicCommand(int32_t commandID);
 
-void ExitEngineeringCommand::execute() { Context::get().exitEngineering(this); }
-
-void ExitEngineeringCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
-}
-
-void ExitEngineeringCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_COMPLETE, "Completed");
-}
-
-void ExitEngineeringCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
-}
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif /* PANICCOMMAND_H_ */

@@ -30,8 +30,8 @@ namespace M1M3 {
 namespace SS {
 
 RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(int32_t commandID,
-                                                           MTM1M3_command_runMirrorForceProfileC* data) {
-    this->commandID = commandID;
+                                                           MTM1M3_command_runMirrorForceProfileC* data)
+        : Command(commandID) {
     for (int i = 0; i < 1000; ++i) {
         _data.xForce[i] = data->xForce[i];
         _data.yForce[i] = data->yForce[i];
@@ -47,15 +47,15 @@ bool RunMirrorForceProfileCommand::validate() { return true; }
 void RunMirrorForceProfileCommand::execute() { Context::get().runMirrorForceProfile(this); }
 
 void RunMirrorForceProfileCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void RunMirrorForceProfileCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void RunMirrorForceProfileCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

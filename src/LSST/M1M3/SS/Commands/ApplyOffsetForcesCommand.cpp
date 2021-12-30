@@ -29,9 +29,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(int32_t commandID,
-                                                   MTM1M3_command_applyOffsetForcesC* data) {
-    this->commandID = commandID;
+ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_command_applyOffsetForcesC* data)
+        : Command(commandID) {
     for (int i = 0; i < FA_COUNT; i++) {
         if (i < FA_X_COUNT) {
             _data.xForces[i] = data->xForces[i];
@@ -48,15 +47,15 @@ bool ApplyOffsetForcesCommand::validate() { return true; }
 void ApplyOffsetForcesCommand::execute() { Context::get().applyOffsetForces(this); }
 
 void ApplyOffsetForcesCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandapplyOffsetForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ApplyOffsetForcesCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForces(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandapplyOffsetForces(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ApplyOffsetForcesCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandapplyOffsetForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

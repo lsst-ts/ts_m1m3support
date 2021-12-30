@@ -39,7 +39,7 @@ namespace SS {
  */
 class ExitControlCommand : public Command {
 public:
-    ExitControlCommand();
+    ExitControlCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;

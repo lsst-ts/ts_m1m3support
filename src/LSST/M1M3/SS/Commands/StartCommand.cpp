@@ -31,8 +31,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) {
-    this->commandID = commandID;
+StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) : Command(commandID) {
     _data.settingsToApply = data->settingsToApply;
 }
 
@@ -48,15 +47,15 @@ bool StartCommand::validate() {
 void StartCommand::execute() { Context::get().start(this); }
 
 void StartCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandstart(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandstart(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void StartCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandstart(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandstart(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void StartCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandstart(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandstart(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */
