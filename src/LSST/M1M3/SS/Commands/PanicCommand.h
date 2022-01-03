@@ -32,12 +32,14 @@ namespace M1M3 {
 namespace SS {
 
 /*!
- * Commands mirror to fault.
+ * Commands mirror to fault. Requires safety controller - allowed only after
+ * configuration had been loaded.
  */
 class PanicCommand : public Command {
 public:
     PanicCommand(int32_t commandID);
 
+    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;

@@ -32,6 +32,17 @@ namespace SS {
 
 PanicCommand::PanicCommand(int32_t commandID) : Command(commandID) {}
 
+bool PanicCommand::validate() {
+    if (Model::get().getSafetyController() == NULL) {
+        M1M3SSPublisher::get().logCommandRejectionWarning(
+                "Panic",
+                "Panic command cannot be called without Safety Controller (most likely called in a wrong "
+                "state).");
+        return false;
+    }
+    return true;
+}
+
 void PanicCommand::execute() { Model::get().getSafetyController()->userPanic(); }
 
 void PanicCommand::ackInProgress() {
