@@ -284,11 +284,6 @@ private:
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_gyroDataC* _gyroData;
 
-    double _azimuth_Timestamp;
-
-    double _elevation_Timestamp;
-    double _elevation_Actual;
-
     std::vector<ForceActuatorIndicesNeighbors> _neighbors;
 
     float _zero[FA_COUNT];

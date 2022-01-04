@@ -24,6 +24,8 @@
 #ifndef SETTINGREADER_H_
 #define SETTINGREADER_H_
 
+#include <cRIO/Singleton.h>
+
 #include <SafetyControllerSettings.h>
 #include <AliasApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -50,14 +52,9 @@ namespace SS {
  * Reads M1M3 support system configuration. Singleton, please use setRootPath
  * to configure configuration root directory.
  */
-class SettingReader {
+class SettingReader : public cRIO::Singleton<SettingReader> {
 public:
-    SettingReader() : _rootPath("UNDEFINED") {}
-
-    /**
-     * Returns SettingReader singleton.
-     */
-    static SettingReader& get();
+    SettingReader(token) : _rootPath("UNDEFINED") {}
 
     /**
      * Sets root path.

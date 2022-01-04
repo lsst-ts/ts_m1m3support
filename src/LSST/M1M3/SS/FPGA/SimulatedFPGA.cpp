@@ -394,7 +394,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                     }
 
                     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-                            SettingReader::get().getForceActuatorApplicationSettings();
+                            SettingReader::instance().getForceActuatorApplicationSettings();
                     int zIndex = -1;
                     for (int j = 0; j < FA_COUNT; ++j) {
                         if (forceActuatorApplicationSettings->Table[j].Subnet == subnet &&
@@ -632,7 +632,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         }
                         int32_t encoder =
                                 -(M1M3SSPublisher::get().getHardpointActuatorData()->encoder[address - 1]) +
-                                SettingReader::get().getHardpointActuatorSettings()->getEncoderOffset(
+                                SettingReader::instance().getHardpointActuatorSettings()->getEncoderOffset(
                                         address - 1) -
                                 steps / 4;
                         _writeModbus(response, (encoder >> 24) & 0xFF);
