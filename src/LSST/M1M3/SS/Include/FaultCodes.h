@@ -26,17 +26,18 @@
 
 #include <cstdint>
 
-const int32_t _MASK_AIR = 0x1 << 16;
-const int32_t _MASK_DISPLACEMENT = 0x2 << 16;
-const int32_t _MASK_INCLINOMETER = 0x3 << 16;
-const int32_t _MASK_INTERLOCK = 0x4 << 16;
-const int32_t _MASK_FORCE_CONTROLLER = 0x5 << 16;
-const int32_t _MASK_CELL_LIGHT = 0x6 << 16;
-const int32_t _MASK_POWER_CONTROLLER = 0x7 << 16;
-const int32_t _MASK_TIMEOUTS = 0x8 << 16;
-const int32_t _MASK_FORCE_ACTUATOR = 0x9 << 16;
-const int32_t _MASK_HARDPOINT = 0xA << 16;
+constexpr int32_t _MASK_AIR = 0x1 << 16;
+constexpr int32_t _MASK_DISPLACEMENT = 0x2 << 16;
+constexpr int32_t _MASK_INCLINOMETER = 0x3 << 16;
+constexpr int32_t _MASK_INTERLOCK = 0x4 << 16;
+constexpr int32_t _MASK_FORCE_CONTROLLER = 0x5 << 16;
+constexpr int32_t _MASK_CELL_LIGHT = 0x6 << 16;
+constexpr int32_t _MASK_POWER_CONTROLLER = 0x7 << 16;
+constexpr int32_t _MASK_TIMEOUTS = 0x8 << 16;
+constexpr int32_t _MASK_FORCE_ACTUATOR = 0x9 << 16;
+constexpr int32_t _MASK_HARDPOINT = 0xA << 16;
 constexpr int32_t _MASK_TMA = 0xB << 16;
+constexpr int32_t _MASK_USER = 0xC << 16;
 
 /**
  * Fault codes. Implemented as 32bit integer. Send as errorCode in generic
@@ -145,6 +146,8 @@ struct FaultCodes {
         TMAAzimuthTimeout = _MASK_TMA | 0x01,
         TMAElevationTimeout = _MASK_TMA | 0x02,
         TMAInclinometerDeviation = _MASK_TMA | 0x04,
+
+        UserPanic = _MASK_USER | 0x01,
     };
 };
 

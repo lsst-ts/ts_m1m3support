@@ -29,8 +29,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnPowerOffCommand::TurnPowerOffCommand(int32_t commandID, MTM1M3_command_turnPowerOffC* data) {
-    this->commandID = commandID;
+TurnPowerOffCommand::TurnPowerOffCommand(int32_t commandID, MTM1M3_command_turnPowerOffC* data)
+        : Command(commandID) {
     _data.turnPowerNetworkAOff = data->turnPowerNetworkAOff;
     _data.turnPowerNetworkBOff = data->turnPowerNetworkBOff;
     _data.turnPowerNetworkCOff = data->turnPowerNetworkCOff;
@@ -55,15 +55,15 @@ bool TurnPowerOffCommand::validate() {
 void TurnPowerOffCommand::execute() { Context::get().turnPowerOff(this); }
 
 void TurnPowerOffCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandturnPowerOff(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandturnPowerOff(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnPowerOffCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandturnPowerOff(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandturnPowerOff(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void TurnPowerOffCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandturnPowerOff(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandturnPowerOff(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

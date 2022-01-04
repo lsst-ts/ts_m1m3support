@@ -29,22 +29,21 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-AbortProfileCommand::AbortProfileCommand(int32_t commandID, MTM1M3_command_abortProfileC*) {
-    this->commandID = commandID;
-}
+AbortProfileCommand::AbortProfileCommand(int32_t commandID, MTM1M3_command_abortProfileC*)
+        : Command(commandID) {}
 
 void AbortProfileCommand::execute() { Context::get().abortProfile(this); }
 
 void AbortProfileCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandabortProfile(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandabortProfile(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void AbortProfileCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandabortProfile(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandabortProfile(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void AbortProfileCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandabortProfile(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandabortProfile(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

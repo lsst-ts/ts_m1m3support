@@ -28,9 +28,9 @@
 
 using namespace LSST::M1M3::SS;
 
-EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t in_commandID,
-                                                       MTM1M3_command_enableForceActuatorC* data) {
-    commandID = in_commandID;
+EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t commandID,
+                                                       MTM1M3_command_enableForceActuatorC* data)
+        : Command(commandID) {
     actuatorId = data->actuatorId;
     actuatorIndex = -1;
 }
@@ -48,13 +48,13 @@ bool EnableForceActuatorCommand::validate() {
 void EnableForceActuatorCommand::execute() { Context::get().enableForceActuator(this); }
 
 void EnableForceActuatorCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenableForceActuator(commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandenableForceActuator(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableForceActuatorCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenableForceActuator(commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandenableForceActuator(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void EnableForceActuatorCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenableForceActuator(commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandenableForceActuator(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }

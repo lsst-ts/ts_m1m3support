@@ -29,8 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ResetPIDCommand::ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* data) {
-    this->commandID = commandID;
+ResetPIDCommand::ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* data) : Command(commandID) {
     _data.pid = data->pid;
 }
 
@@ -45,15 +44,15 @@ bool ResetPIDCommand::validate() {
 void ResetPIDCommand::execute() { Context::get().resetPID(this); }
 
 void ResetPIDCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandresetPID(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandresetPID(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ResetPIDCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandresetPID(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandresetPID(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ResetPIDCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandresetPID(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandresetPID(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

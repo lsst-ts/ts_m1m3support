@@ -145,6 +145,8 @@ public:
     void tmaElevationTimeout(double currentTimeout);
     void tmaInclinometerDeviation(double currentDeviation);
 
+    void userPanic();
+
     /**
      * Check if mirror safety rules are fulfilled. When safety rules are not
      * fulfilled, returns States::LoweringFaultState.

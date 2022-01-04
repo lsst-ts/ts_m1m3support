@@ -29,22 +29,20 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnAirOnCommand::TurnAirOnCommand(int32_t commandID, MTM1M3_command_turnAirOnC*) {
-    this->commandID = commandID;
-}
+TurnAirOnCommand::TurnAirOnCommand(int32_t commandID, MTM1M3_command_turnAirOnC*) : Command(commandID) {}
 
 void TurnAirOnCommand::execute() { Context::get().turnAirOn(this); }
 
 void TurnAirOnCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandturnAirOn(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandturnAirOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnAirOnCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandturnAirOn(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandturnAirOn(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void TurnAirOnCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandturnAirOn(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandturnAirOn(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

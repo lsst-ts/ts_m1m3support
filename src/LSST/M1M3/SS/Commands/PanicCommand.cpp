@@ -21,29 +21,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Context.h>
-#include <ExitEngineeringCommand.h>
+#include <Model.h>
 #include <M1M3SSPublisher.h>
+
+#include <PanicCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID, MTM1M3_command_exitEngineeringC*)
-        : Command(commandID) {}
+PanicCommand::PanicCommand(int32_t commandID) : Command(commandID) {}
 
-void ExitEngineeringCommand::execute() { Context::get().exitEngineering(this); }
-
-void ExitEngineeringCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
+bool PanicCommand::validate() {
+    if (Model::get().getSafetyController() == NULL) {
+        M1M3SSPublisher::get().logCommandRejectionWarning(
+                "Panic",
+                "Panic command cannot be called without Safety Controller (most likely called in a wrong "
+                "state).");
+        return false;
+    }
+    return true;
 }
 
-void ExitEngineeringCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_COMPLETE, "Completed");
+void PanicCommand::execute() { Model::get().getSafetyController()->userPanic(); }
+
+void PanicCommand::ackInProgress() {
+    M1M3SSPublisher::get().ackCommandpanic(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
-void ExitEngineeringCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
+void PanicCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandpanic(getCommandID(), ACK_COMPLETE, "Complete");
+}
+
+void PanicCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::get().ackCommandpanic(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */
