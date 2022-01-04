@@ -25,6 +25,7 @@
 #define POSITIONCONTROLLER_H_
 
 #include <DataTypes.h>
+#include <Units.h>
 #include <HardpointActuatorSettings.h>
 #include <PositionControllerSettings.h>
 #include <SAL_MTM1M3C.h>
@@ -61,14 +62,15 @@ public:
     /**
      * Returns raise and lower timeout.
      *
-     * @return timeout for raise/lower in seconds
+     * @return timeout for raise in seconds
      */
-    double getRaiseLowerTimeout();
+    int getRaiseTimeout() { return _positionControllerSettings->raiseTimeout; }
+    int getLowerTimeout() { return _positionControllerSettings->lowerTimeout; }
 
     bool enableChaseAll();
     void disableChaseAll();
 
-    bool forcesInTolerance();
+    bool forcesInTolerance(bool raise);
     bool motionComplete();
 
     /**
@@ -96,6 +98,19 @@ public:
      */
     bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
     bool moveToReferencePosition();
+
+    /**
+     * Moves mirror to position ideal for lowering. This position depends on
+     * telescope elevation. It is position defined in
+     * PositionControllerSettings/Lower/PositionOffset, multiplied by
+     * sin(elevation) for Z and cos(elevation) for Y. The multiplication tries
+     * to position mirror opposite to its gravity vectory. It is exactly what
+     * LBTO uses for off-zenith mirror lowering.
+     *
+     * @return false when move cannot be performed
+     */
+    bool moveToLowerPosition();
+
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
     void stopMotion();
 

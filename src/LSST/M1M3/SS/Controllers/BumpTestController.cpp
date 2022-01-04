@@ -58,20 +58,20 @@ BumpTestController::BumpTestController() {
 }
 
 void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
-    _zIndex = SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
-    _xIndex = SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToXIndex[_zIndex];
-    _yIndex = SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToYIndex[_zIndex];
-    _secondaryIndex = SettingReader::get()
+    _zIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+    _xIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[_zIndex];
+    _yIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[_zIndex];
+    _secondaryIndex = SettingReader::instance()
                               .getForceActuatorApplicationSettings()
                               ->ZIndexToSecondaryCylinderIndex[_zIndex];
 
-    _testedWarning = SettingReader::get().getForceActuatorSettings()->TestedTolerances.warning;
-    _testedError = SettingReader::get().getForceActuatorSettings()->TestedTolerances.error;
-    _nonTestedWarning = SettingReader::get().getForceActuatorSettings()->NonTestedTolerances.warning;
-    _nonTestedError = SettingReader::get().getForceActuatorSettings()->NonTestedTolerances.error;
+    _testedWarning = SettingReader::instance().getForceActuatorSettings()->TestedTolerances.warning;
+    _testedError = SettingReader::instance().getForceActuatorSettings()->TestedTolerances.error;
+    _nonTestedWarning = SettingReader::instance().getForceActuatorSettings()->NonTestedTolerances.warning;
+    _nonTestedError = SettingReader::instance().getForceActuatorSettings()->NonTestedTolerances.error;
 
-    _testSettleTime = SettingReader::get().getForceActuatorSettings()->bumpTestSettleTime;
-    _testMeasurements = SettingReader::get().getForceActuatorSettings()->bumpTestMeasurements;
+    _testSettleTime = SettingReader::instance().getForceActuatorSettings()->bumpTestSettleTime;
+    _testMeasurements = SettingReader::instance().getForceActuatorSettings()->bumpTestMeasurements;
 
     _testPrimary = testPrimary;
     _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
@@ -317,7 +317,7 @@ bool BumpTestController::_collectAverages() {
 
 int axisIndexToActuatorId(char axis, int index) {
     const ForceActuatorApplicationSettings* forceSettings =
-            SettingReader::get().getForceActuatorApplicationSettings();
+            SettingReader::instance().getForceActuatorApplicationSettings();
 
     if (axis == 'X') return forceSettings->Table[forceSettings->XIndexToZIndex[index]].ActuatorID;
     if (axis == 'Y') return forceSettings->Table[forceSettings->YIndexToZIndex[index]].ActuatorID;
