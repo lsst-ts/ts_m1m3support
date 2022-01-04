@@ -30,8 +30,8 @@ namespace M1M3 {
 namespace SS {
 
 ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
-                                                             MTM1M3_command_applyActiveOpticForcesC* data) {
-    this->commandID = commandID;
+                                                             MTM1M3_command_applyActiveOpticForcesC* data)
+        : Command(commandID) {
     for (int i = 0; i < FA_COUNT; i++) {
         _data.zForces[i] = data->zForces[i];
     }
@@ -40,15 +40,15 @@ ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
 void ApplyActiveOpticForcesCommand::execute() { Context::get().applyActiveOpticForces(this); }
 
 void ApplyActiveOpticForcesCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ApplyActiveOpticForcesCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ApplyActiveOpticForcesCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

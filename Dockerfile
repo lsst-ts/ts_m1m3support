@@ -1,4 +1,6 @@
-FROM lsstts/develop-env:develop as crio-develop
+FROM lsstts/develop-env:c0023.001 as crio-develop
+
+ARG XML_BRANCH=develop
 
 USER root
 RUN chmod a+rwX -R /home/saluser/
@@ -22,6 +24,7 @@ export CPP_FLAGS="-I\$CONDA_PREFIX/include" \\n\
 export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig" \\n
 
 RUN source .crio_setup.sh && cd repos/ts_xml/sal_interfaces \
+    && git fetch && git checkout $XML_BRANCH \
     && cp *.xml MTM1M3/*.xml MTMount/*.xml $SAL_WORK_DIR \
     && salgenerator generate cpp MTM1M3 \
     && salgenerator generate cpp MTMount

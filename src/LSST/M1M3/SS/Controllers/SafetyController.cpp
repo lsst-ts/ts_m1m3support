@@ -533,6 +533,11 @@ void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
                     "TMA Elevation - inclinometer mismatch: {:.3f} deg", currentDeviation);
 }
 
+void SafetyController::userPanic() {
+    _updateOverride(FaultCodes::UserPanic, true, true,
+                    "User submitted Panic command (pushed panic button,..)");
+}
+
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
         // shall first make sure mirror is faulted, before performing anything else (logging,..)

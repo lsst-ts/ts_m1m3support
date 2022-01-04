@@ -92,7 +92,7 @@ std::string daemonGroup("m1m3");
 
 void sigKill(int signal) {
     SPDLOG_DEBUG("Kill/int signal received");
-    ControllerThread::get().enqueue(new ExitControlCommand());
+    ControllerThread::get().enqueue(new ExitControlCommand(-1));
 }
 
 std::vector<spdlog::sink_ptr> sinks;

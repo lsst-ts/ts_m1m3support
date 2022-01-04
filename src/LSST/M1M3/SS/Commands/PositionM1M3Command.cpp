@@ -29,8 +29,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PositionM1M3Command::PositionM1M3Command(int32_t commandID, MTM1M3_command_positionM1M3C* data) {
-    this->commandID = commandID;
+PositionM1M3Command::PositionM1M3Command(int32_t commandID, MTM1M3_command_positionM1M3C* data)
+        : Command(commandID) {
     _data.xPosition = data->xPosition;
     _data.yPosition = data->yPosition;
     _data.zPosition = data->zPosition;
@@ -42,15 +42,15 @@ PositionM1M3Command::PositionM1M3Command(int32_t commandID, MTM1M3_command_posit
 void PositionM1M3Command::execute() { Context::get().positionM1M3(this); }
 
 void PositionM1M3Command::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandpositionM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandpositionM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void PositionM1M3Command::ackComplete() {
-    M1M3SSPublisher::get().ackCommandpositionM1M3(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandpositionM1M3(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void PositionM1M3Command::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandpositionM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandpositionM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

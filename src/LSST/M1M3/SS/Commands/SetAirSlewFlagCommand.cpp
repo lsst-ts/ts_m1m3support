@@ -29,23 +29,23 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-SetAirSlewFlagCommand::SetAirSlewFlagCommand(int32_t in_commandID, MTM1M3_command_setAirSlewFlagC* data) {
-    commandID = in_commandID;
+SetAirSlewFlagCommand::SetAirSlewFlagCommand(int32_t commandID, MTM1M3_command_setAirSlewFlagC* data)
+        : Command(commandID) {
     slewFlag = data->slewFlag;
 }
 
 void SetAirSlewFlagCommand::execute() { Context::get().setAirSlewFlag(this); }
 
 void SetAirSlewFlagCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void SetAirSlewFlagCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void SetAirSlewFlagCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

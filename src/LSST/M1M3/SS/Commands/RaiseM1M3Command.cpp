@@ -29,23 +29,22 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data) {
-    this->commandID = commandID;
+RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data) : Command(commandID) {
     _data.bypassReferencePosition = data->bypassReferencePosition;
 }
 
 void RaiseM1M3Command::execute() { Context::get().raiseM1M3(this); }
 
 void RaiseM1M3Command::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandraiseM1M3(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandraiseM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void RaiseM1M3Command::ackComplete() {
-    M1M3SSPublisher::get().ackCommandraiseM1M3(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandraiseM1M3(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void RaiseM1M3Command::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandraiseM1M3(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandraiseM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

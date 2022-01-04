@@ -30,8 +30,8 @@ namespace M1M3 {
 namespace SS {
 
 ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
-        int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data) {
-    this->commandID = commandID;
+        int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data)
+        : Command(commandID) {
     _data.xForce = data->xForce;
     _data.yForce = data->yForce;
     _data.zForce = data->zForce;
@@ -43,17 +43,16 @@ ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
 void ApplyOffsetForcesByMirrorForceCommand::execute() { Context::get().applyOffsetForcesByMirrorForce(this); }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(this->commandID, ACK_INPROGRESS,
+    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_INPROGRESS,
                                                                     "In-Progress");
 }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(this->commandID, ACK_COMPLETE,
-                                                                    "Complete");
+    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(this->commandID, ACK_FAILED,
+    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_FAILED,
                                                                     "Failed: " + reason);
 }
 
