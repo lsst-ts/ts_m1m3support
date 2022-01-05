@@ -36,8 +36,7 @@ namespace SS {
 
 class VelocityForceComponent : public ForceComponent {
 public:
-    VelocityForceComponent(SafetyController* safetyController,
-                           ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    VelocityForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                            ForceActuatorSettings* forceActuatorSettings);
 
     void applyVelocityForces(float* x, float* y, float* z);

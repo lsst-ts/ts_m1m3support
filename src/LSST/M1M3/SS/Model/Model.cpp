@@ -166,8 +166,8 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _forceController;
     SPDLOG_INFO("Model: Creating force controller");
-    _forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings,
-                                           pidSettings, _safetyController);
+    _forceController =
+            new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings);
 
     SPDLOG_INFO("Model: Updating digital input output");
     _digitalInputOutput.setSafetyController(_safetyController);

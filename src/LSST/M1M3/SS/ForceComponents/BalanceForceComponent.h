@@ -54,8 +54,7 @@ namespace SS {
  */
 class BalanceForceComponent : public ForceComponent {
 public:
-    BalanceForceComponent(SafetyController* safetyController,
-                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    BalanceForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                           ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
 
     void applyBalanceForces(float* x, float* y, float* z);

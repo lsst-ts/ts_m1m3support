@@ -108,6 +108,9 @@ public:
     void forceControllerNotifyVelocityForceClipping(bool conditionFlag);
     void forceControllerNotifyForceClipping(bool conditionFlag);
 
+    void positionControllerNotifyLimitLow(int hp, bool conditionFlag);
+    void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
+
     void cellLightNotifyOutputMismatch(bool conditionFlag);
     void cellLightNotifySensorMismatch(bool conditionFlag);
 
@@ -179,6 +182,7 @@ private:
     std::list<int> _forceActuatorFollowingErrorData[FA_COUNT];
     std::list<int> _hardpointActuatorMeasuredForceData[HP_COUNT];
     std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
+    bool _hardpointLimitTriggered[HP_COUNT];
 };
 
 } /* namespace SS */

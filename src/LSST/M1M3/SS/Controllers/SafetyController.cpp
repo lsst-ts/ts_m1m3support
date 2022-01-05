@@ -56,6 +56,9 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
             _hardpointActuatorAirPressureData[j].push_back(0);
         }
     }
+    for (int i = 0; i < HP_COUNT; i++) {
+        _hardpointLimitTriggered[i] = false;
+    }
 }
 
 void SafetyController::clearErrorCode() {
@@ -370,6 +373,38 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
     _updateOverride(FaultCodes::ForceControllerForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnForceClipping, conditionFlag,
                     "Force controller force clipping");
+}
+
+void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
+    if (conditionFlag) {
+        if (_hardpointLimitTriggered[hp] == false) {
+            _updateOverride(FaultCodes::HardpointActuatorLimitLowError, true, conditionFlag,
+                            "Hardpoint #{} hit low limit", hp);
+            _hardpointLimitTriggered[hp] = true;
+        }
+
+    } else {
+        if (_hardpointLimitTriggered[hp] == true) {
+            SPDLOG_INFO("Hardpoint #{} low limit cleared", hp);
+            _hardpointLimitTriggered[hp] = false;
+        }
+    }
+}
+
+void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionFlag) {
+    if (conditionFlag) {
+        if (_hardpointLimitTriggered[hp] == false) {
+            _updateOverride(FaultCodes::HardpointActuatorLimitHighError, true, conditionFlag,
+                            "Hardpoint #{} hit high limit", hp);
+            _hardpointLimitTriggered[hp] = true;
+        }
+
+    } else {
+        if (_hardpointLimitTriggered[hp] == true) {
+            SPDLOG_INFO("Hardpoint #{} high limit cleared", hp);
+            _hardpointLimitTriggered[hp] = false;
+        }
+    }
 }
 
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) {

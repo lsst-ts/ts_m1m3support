@@ -131,8 +131,7 @@ struct ForceActuatorIndicesNeighbors {
 class ForceController {
 public:
     ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                    ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
-                    SafetyController* safetyController);
+                    ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
 
     void reset();
 
