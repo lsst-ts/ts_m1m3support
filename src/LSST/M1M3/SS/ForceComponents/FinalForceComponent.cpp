@@ -23,6 +23,7 @@
 
 #include <FinalForceComponent.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -36,11 +37,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
-                                         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                          ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _enabledForceActuators = M1M3SSPublisher::get().getEnabledForceActuators();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;

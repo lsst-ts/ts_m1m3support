@@ -46,12 +46,10 @@ public:
     /**
      * @brief Sets internal variables.
      *
-     * @param safetyController
      * @param forceActuatorApplicationSettings
      * @param forceActuatorSettings
      */
-    FinalForceComponent(SafetyController* safetyController,
-                        ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                         ForceActuatorSettings* forceActuatorSettings);
 
     /**

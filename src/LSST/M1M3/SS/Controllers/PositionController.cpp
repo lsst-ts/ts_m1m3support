@@ -25,6 +25,7 @@
 #include <PositionControllerSettings.h>
 #include <HardpointActuatorSettings.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <HardpointActuatorMotionStates.h>
 #include <Range.h>
 #include <SAL_MTM1M3C.h>
@@ -40,10 +41,12 @@ namespace SS {
 PositionController::PositionController(PositionControllerSettings* positionControllerSettings,
                                        HardpointActuatorSettings* hardpointActuatorSettings) {
     SPDLOG_DEBUG("PositionController: PositionController()");
+    _safetyController = Model::get().getSafetyController();
     _positionControllerSettings = positionControllerSettings;
     _hardpointActuatorSettings = hardpointActuatorSettings;
     _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
     _hardpointActuatorState = M1M3SSPublisher::get().getEventHardpointActuatorState();
+    _hardpointActuatorWarning = M1M3SSPublisher::get().getEventHardpointActuatorWarning();
     _hardpointInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
     _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
@@ -141,6 +144,7 @@ bool PositionController::forcesInTolerance(bool raise) {
                                                  (float)_positionControllerSettings->lowerHPForceLimitHigh,
                                                  _hardpointActuatorData->measuredForce[i]);
         }
+        checkLimits(i);
     }
     return inTolerance;
 }
@@ -376,10 +380,24 @@ void PositionController::updateSteps() {
                 break;
             }
         }
+        checkLimits(i);
     }
     if (publishState) {
         M1M3SSPublisher::get().tryLogHardpointActuatorState();
     }
+}
+
+void PositionController::checkLimits(int hp) {
+    SPDLOG_TRACE("PositionController: checkLimits({})", hp);
+    bool lowLimit = _hardpointActuatorData->stepsCommanded[hp] < 0 &&
+                    _hardpointActuatorWarning->limitSwitch1Operated[hp] == true;
+    bool highLimit = _hardpointActuatorData->stepsCommanded[hp] > 0 &&
+                     _hardpointActuatorWarning->limitSwitch2Operated[hp] == true;
+    if (lowLimit || highLimit) {
+        _hardpointActuatorData->stepsCommanded[hp] = 0;
+    }
+    _safetyController->positionControllerNotifyLimitLow(hp, lowLimit);
+    _safetyController->positionControllerNotifyLimitHigh(hp, highLimit);
 }
 
 void PositionController::_convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY,
