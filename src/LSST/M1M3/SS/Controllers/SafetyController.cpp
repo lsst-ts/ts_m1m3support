@@ -57,7 +57,8 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
         }
     }
     for (int i = 0; i < HP_COUNT; i++) {
-        _hardpointLimitTriggered[i] = false;
+        _hardpointLimitLowTriggered[i] = false;
+        _hardpointLimitHighTriggered[i] = false;
     }
 }
 
@@ -377,32 +378,32 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
 
 void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
     if (conditionFlag) {
-        if (_hardpointLimitTriggered[hp] == false) {
+        if (_hardpointLimitLowTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitLowError, true, conditionFlag,
                             "Hardpoint #{} hit low limit", hp);
-            _hardpointLimitTriggered[hp] = true;
+            _hardpointLimitLowTriggered[hp] = true;
         }
 
     } else {
-        if (_hardpointLimitTriggered[hp] == true) {
+        if (_hardpointLimitLowTriggered[hp] == true) {
             SPDLOG_INFO("Hardpoint #{} low limit cleared", hp);
-            _hardpointLimitTriggered[hp] = false;
+            _hardpointLimitLowTriggered[hp] = false;
         }
     }
 }
 
 void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionFlag) {
     if (conditionFlag) {
-        if (_hardpointLimitTriggered[hp] == false) {
+        if (_hardpointLimitHighTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitHighError, true, conditionFlag,
                             "Hardpoint #{} hit high limit", hp);
-            _hardpointLimitTriggered[hp] = true;
+            _hardpointLimitHighTriggered[hp] = true;
         }
 
     } else {
-        if (_hardpointLimitTriggered[hp] == true) {
+        if (_hardpointLimitHighTriggered[hp] == true) {
             SPDLOG_INFO("Hardpoint #{} high limit cleared", hp);
-            _hardpointLimitTriggered[hp] = false;
+            _hardpointLimitHighTriggered[hp] = false;
         }
     }
 }
