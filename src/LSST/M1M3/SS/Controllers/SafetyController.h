@@ -182,7 +182,8 @@ private:
     std::list<int> _forceActuatorFollowingErrorData[FA_COUNT];
     std::list<int> _hardpointActuatorMeasuredForceData[HP_COUNT];
     std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
-    bool _hardpointLimitTriggered[HP_COUNT];
+    bool _hardpointLimitLowTriggered[HP_COUNT];
+    bool _hardpointLimitHighTriggered[HP_COUNT];
 };
 
 } /* namespace SS */
