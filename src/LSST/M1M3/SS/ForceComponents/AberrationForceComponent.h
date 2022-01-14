@@ -36,8 +36,7 @@ namespace SS {
 
 class AberrationForceComponent : public ForceComponent {
 public:
-    AberrationForceComponent(SafetyController* safetyController,
-                             ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    AberrationForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                              ForceActuatorSettings* forceActuatorSettings);
 
     void applyAberrationForces(float* z);

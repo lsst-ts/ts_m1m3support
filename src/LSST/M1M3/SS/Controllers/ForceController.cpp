@@ -45,27 +45,22 @@ using namespace std;
 using namespace LSST::M1M3::SS;
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                 ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
-                                 SafetyController* safetyController)
-        : _aberrationForceComponent(safetyController, forceActuatorApplicationSettings,
-                                    forceActuatorSettings),
-          _accelerationForceComponent(safetyController, forceActuatorApplicationSettings,
-                                      forceActuatorSettings),
-          _activeOpticForceComponent(safetyController, forceActuatorApplicationSettings,
-                                     forceActuatorSettings),
-          _azimuthForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-          _balanceForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings,
-                                 pidSettings),
-          _elevationForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-          _offsetForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-          _staticForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-          _thermalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-          _velocityForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings),
-          _finalForceComponent(safetyController, forceActuatorApplicationSettings, forceActuatorSettings) {
+                                 ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
+        : _aberrationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _accelerationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _activeOpticForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _azimuthForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _balanceForceComponent(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings),
+          _elevationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _offsetForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _staticForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _thermalForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _velocityForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+          _finalForceComponent(forceActuatorApplicationSettings, forceActuatorSettings) {
     SPDLOG_DEBUG("ForceController: ForceController()");
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _pidSettings = pidSettings;
 
     _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
