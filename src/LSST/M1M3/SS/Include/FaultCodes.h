@@ -143,6 +143,18 @@ struct FaultCodes {
          */
         HardpointActuatorAirPressureOutside = _MASK_HARDPOINT | 0x06,
 
+        /**
+         * Triggered when hardpoint actuator is being commanded to move below
+         * low limit switch.
+         */
+        HardpointActuatorLimitLowError = _MASK_HARDPOINT | 0x07,
+
+        /**
+         * Triggered when hardpoint actuator is being commanded to move above
+         * low limit switch.
+         */
+        HardpointActuatorLimitHighError = _MASK_HARDPOINT | 0x08,
+
         TMAAzimuthTimeout = _MASK_TMA | 0x01,
         TMAElevationTimeout = _MASK_TMA | 0x02,
         TMAInclinometerDeviation = _MASK_TMA | 0x04,

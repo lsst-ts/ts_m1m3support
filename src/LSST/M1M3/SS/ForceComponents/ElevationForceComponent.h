@@ -36,8 +36,7 @@ namespace SS {
 
 class ElevationForceComponent : public ForceComponent {
 public:
-    ElevationForceComponent(SafetyController* safetyController,
-                            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    ElevationForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                             ForceActuatorSettings* forceActuatorSettings);
 
     void applyElevationForces(float* x, float* y, float* z);

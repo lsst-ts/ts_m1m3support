@@ -50,6 +50,7 @@ public:
     DisplacementSafetySettings Displacement;
     InclinometerSafetySettings Inclinometer;
     InterlockControllerSafetySettings Interlock;
+
     ForceControllerSafetySettings ForceController;
     CellLightsSafetySettings CellLights;
     PowerControllerSafetySettings PowerController;

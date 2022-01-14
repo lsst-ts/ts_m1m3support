@@ -23,6 +23,7 @@
 
 #include <VelocityForceComponent.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -37,11 +38,10 @@ namespace M1M3 {
 namespace SS {
 
 VelocityForceComponent::VelocityForceComponent(
-        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Velocity", forceActuatorSettings->VelocityComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();

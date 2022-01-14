@@ -28,6 +28,7 @@
 #include <Units.h>
 #include <HardpointActuatorSettings.h>
 #include <PositionControllerSettings.h>
+#include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
@@ -138,6 +139,11 @@ public:
      */
     void updateSteps();
 
+    /**
+     * Check the hardpoint doesn't try to move past limits.
+     */
+    void checkLimits(int hp);
+
 private:
     void _convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
 
@@ -146,11 +152,14 @@ private:
 
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
+    MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 
     int32_t _scaledMaxStepsPerLoop[6];
     int32_t _targetEncoderValues[6];
     int32_t _stableEncoderCount[6];
+
+    SafetyController* _safetyController;
 };
 
 } /* namespace SS */
