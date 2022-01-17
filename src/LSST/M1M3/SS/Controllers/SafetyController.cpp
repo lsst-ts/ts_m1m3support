@@ -59,6 +59,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointLimitLowTriggered[i] = false;
         _hardpointLimitHighTriggered[i] = false;
+        _hardpointFeViolations[i] = 0;
     }
 }
 
@@ -548,6 +549,20 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, int c
                     absSum >= _safetyControllerSettings->ILC.AirPressureCountThreshold,
                     "Hardpoint Actuator #{} Air Pressure Oscillates {} absSum {} sum {}",
                     actuatorDataIndex + 1, airPressure, absSum, sum);
+}
+
+void SafetyController::hardpointActuatorFollowingError(int hp, double fePercent) {
+    double feRange = _safetyControllerSettings->PositionController.FollowingErrorPercentage;
+    int feCounts = _safetyControllerSettings->PositionController.FaultNumberOfFollowingErrors;
+    double feObserved = fabs(100 - fePercent);
+    _updateOverride(FaultCodes::HardpointActuatorFollowingError,
+                    (feCounts >= 0) && (_hardpointFeViolations[hp] > feCounts), feObserved > feRange,
+                    "Hardpoint {} following error out of range: {:.2f}", hp, fePercent);
+    if (feObserved > feRange) {
+        _hardpointFeViolations[hp]++;
+    } else {
+        _hardpointFeViolations[hp] = 0;
+    }
 }
 
 void SafetyController::tmaAzimuthTimeout(double currentTimeout) {

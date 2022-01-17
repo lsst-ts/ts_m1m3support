@@ -144,6 +144,8 @@ public:
      */
     void hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag, float airPressure);
 
+    void hardpointActuatorFollowingError(int hp, double fePercent);
+
     void tmaAzimuthTimeout(double currentTimeout);
     void tmaElevationTimeout(double currentTimeout);
     void tmaInclinometerDeviation(double currentDeviation);
@@ -184,6 +186,7 @@ private:
     std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
     bool _hardpointLimitLowTriggered[HP_COUNT];
     bool _hardpointLimitHighTriggered[HP_COUNT];
+    int _hardpointFeViolations[HP_COUNT];
 };
 
 } /* namespace SS */

@@ -1,0 +1,30 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: https://github.com/lsst-ts/ts_m1m3support/blob/master/schema/SafetyControllerSettings.yaml
+# title must end with one or more spaces followed by the schema version, which must begin with "v"
+title: SafetyControllerSettings v1
+description: Schema for M1M3 support system safety controller settings (configuration file)
+type: object
+properties:
+  PositionControllerSettings:
+    type: object
+    description: >
+      Settings for position controller. Specify parameters for hardpoint faults.
+    properties:
+      FollowingErrorPercentage:
+        description: >
+          When following error ratio gets outside of that range (e.g. following
+          error percentage is either < 100 - FollowingErrorPercentage or > 100
+          + FollowingErrorPercentage), count as fault. When more than
+          FaultNumberOfFollowingErrors are counted, fault the mirror.
+        type: number
+      FaultNumberOfFollowingErrors:
+        description: >
+          Faults the mirror if more than this number of consecutive
+          FollowingErrorPercentage violations is detected.
+        type: integer
+    required:
+      - FollowingErrorPercentage
+      - FaultNumberOfFollowingErrors
+required:
+  - PositionControllerSettings
+additionalProperties: false

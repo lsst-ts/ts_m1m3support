@@ -29,7 +29,9 @@
 #include <InclinometerSafetySettings.h>
 #include <InterlockControllerSafetySettings.h>
 #include <ForceControllerSafetySettings.h>
+#include <PositionControllerSafetySettings.h>
 #include <CellLightsSafetySettings.h>
+#include <PositionControllerSafetySettings.h>
 #include <PowerControllerSafetySettings.h>
 #include <RaiseOperationSafetySettings.h>
 #include <LowerOperationSafetySettings.h>
@@ -53,6 +55,7 @@ public:
 
     ForceControllerSafetySettings ForceController;
     CellLightsSafetySettings CellLights;
+    PositionControllerSafetySettings PositionController;
     PowerControllerSafetySettings PowerController;
     RaiseOperationSafetySettings RaiseOperation;
     LowerOperationSafetySettings LowerOperation;
