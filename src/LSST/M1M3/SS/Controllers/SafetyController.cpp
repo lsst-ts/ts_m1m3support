@@ -381,13 +381,13 @@ void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFl
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitLowError, true, conditionFlag,
-                            "Hardpoint #{} hit low limit", hp);
+                            "Hardpoint #{} hit low limit", hp + 1);
             _hardpointLimitLowTriggered[hp] = true;
         }
 
     } else {
         if (_hardpointLimitLowTriggered[hp] == true) {
-            SPDLOG_INFO("Hardpoint #{} low limit cleared", hp);
+            SPDLOG_INFO("Hardpoint #{} low limit cleared", hp + 1);
             _hardpointLimitLowTriggered[hp] = false;
         }
     }
@@ -397,16 +397,24 @@ void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionF
     if (conditionFlag) {
         if (_hardpointLimitHighTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitHighError, true, conditionFlag,
-                            "Hardpoint #{} hit high limit", hp);
+                            "Hardpoint #{} hit high limit", hp + 1);
             _hardpointLimitHighTriggered[hp] = true;
         }
 
     } else {
         if (_hardpointLimitHighTriggered[hp] == true) {
-            SPDLOG_INFO("Hardpoint #{} high limit cleared", hp);
+            SPDLOG_INFO("Hardpoint #{} high limit cleared", hp + 1);
             _hardpointLimitHighTriggered[hp] = false;
         }
     }
+}
+
+void SafetyController::positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder) {
+    _updateOverride(FaultCodes::HardpointUnstableError,
+                    _safetyControllerSettings->PositionController.FaultOnUnstableCount > 0,
+                    unstableCount >= _safetyControllerSettings->PositionController.FaultOnUnstableCount,
+                    "Hardpoint #{} unstable during fine positioning {} times, delta {}", hp + 1,
+                    unstableCount, deltaEncoder);
 }
 
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) {

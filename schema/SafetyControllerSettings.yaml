@@ -20,11 +20,19 @@ properties:
       FaultNumberOfFollowingErrors:
         description: >
           Faults the mirror if more than this number of consecutive
-          FollowingErrorPercentage violations is detected.
+          FollowingErrorPercentage violations is detected. This check is
+          disabled if < 0 (for negative values).
+        type: integer
+      FaultOnUnstableCount:
+        description: >
+          Faults the mirror if during fine positioning encoder reported
+          position is off target position for this number of consecutive loops.
+          This check is disabled if <= 0.
         type: integer
     required:
       - FollowingErrorPercentage
       - FaultNumberOfFollowingErrors
+      - FaultOnUnstableCount
 required:
   - PositionControllerSettings
 additionalProperties: false

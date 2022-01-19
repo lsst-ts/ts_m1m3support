@@ -110,6 +110,7 @@ public:
 
     void positionControllerNotifyLimitLow(int hp, bool conditionFlag);
     void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
+    void positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder);
 
     void cellLightNotifyOutputMismatch(bool conditionFlag);
     void cellLightNotifySensorMismatch(bool conditionFlag);

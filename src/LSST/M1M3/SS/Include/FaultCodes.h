@@ -161,6 +161,11 @@ struct FaultCodes {
          */
         HardpointActuatorFollowingError = _MASK_HARDPOINT | 0x09,
 
+        /**
+         * Triggered when hardpoint cannot reach given encoder position during FinePositioning.
+         */
+        HardpointUnstableError = _MASK_HARDPOINT | 0x0A,
+
         TMAAzimuthTimeout = _MASK_TMA | 0x01,
         TMAElevationTimeout = _MASK_TMA | 0x02,
         TMAInclinometerDeviation = _MASK_TMA | 0x04,
