@@ -162,11 +162,12 @@ private:
     MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 
-    int32_t _scaledMaxStepsPerLoop[6];
-    int32_t _targetEncoderValues[6];
-    int32_t _stableEncoderCount[6];
+    int32_t _scaledMaxStepsPerLoop[HP_COUNT];
+    int32_t _targetEncoderValues[HP_COUNT];
+    int32_t _stableEncoderCount[HP_COUNT];
+    int32_t _unstableEncoderCount[HP_COUNT];
 
-    int32_t _lastEncoderCount[6];
+    int32_t _lastEncoderCount[HP_COUNT];
 
     SafetyController* _safetyController;
 };
