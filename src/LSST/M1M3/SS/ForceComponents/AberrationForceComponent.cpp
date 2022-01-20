@@ -89,8 +89,9 @@ void AberrationForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedAberrationForces->zForces[zIndex],
                                          _appliedAberrationForces->zForces + zIndex);
-        _forceSetpointWarning->aberrationForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->aberrationForceWarning[zIndex];
+        _forceSetpointWarning->aberrationForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->aberrationForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->aberrationForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
