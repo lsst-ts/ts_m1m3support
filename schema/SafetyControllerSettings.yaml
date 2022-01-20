@@ -27,7 +27,8 @@ properties:
         description: >
           Faults the mirror if during fine positioning encoder reported
           position is off target position for this number of consecutive loops.
-          This check is disabled if <= 0.
+          This check is disabled if <= 0. As this is in function called every
+          fourth loop run, value is in 1/(50/3) = 0.06 seconds.
         type: integer
     required:
       - FollowingErrorPercentage
