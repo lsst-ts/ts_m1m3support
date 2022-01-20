@@ -38,9 +38,7 @@
 #include "SAL_MTMount.h"
 #include "ccpp_sal_MTMount.h"
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 /**
  * Return data writen to modbus. The data are right shifted by 1 to allow for
@@ -48,7 +46,7 @@ namespace SS {
  */
 uint8_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
-double getRndPM1() { return static_cast<double>(rand()) / (RAND_MAX / 2.0) - 1.0; }
+double LSST::M1M3::SS::getRndPM1() { return static_cast<double>(rand()) / (RAND_MAX / 2.0) - 1.0; }
 
 SimulatedFPGA::SimulatedFPGA() {
     SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
@@ -69,6 +67,8 @@ SimulatedFPGA::SimulatedFPGA() {
     hardpointActuatorData->encoder[5] = 23546;
 
     _sendResponse = true;
+
+    _nextClock = std::chrono::steady_clock::now();
 }
 
 SimulatedFPGA::~SimulatedFPGA() {
@@ -108,7 +108,8 @@ void SimulatedFPGA::close() { SPDLOG_DEBUG("SimulatedFPGA: close()"); }
 void SimulatedFPGA::finalize() { SPDLOG_DEBUG("SimulatedFPGA: finalize()"); }
 
 void SimulatedFPGA::waitForOuterLoopClock(uint32_t timeout) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    std::this_thread::sleep_until(_nextClock);
+    _nextClock += std::chrono::milliseconds(20);
 }
 
 void SimulatedFPGA::ackOuterLoopClock() {}
@@ -970,7 +971,3 @@ void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint3
         data[i] = i;
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

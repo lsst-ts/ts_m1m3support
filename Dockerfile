@@ -25,6 +25,7 @@ export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig" \\n
 
 RUN source .crio_setup.sh && cd repos/ts_xml/sal_interfaces \
     && git fetch && git checkout $XML_BRANCH \
+    && touch $TS_XML_DIR/VERSION \
     && cp *.xml MTM1M3/*.xml MTMount/*.xml $SAL_WORK_DIR \
     && salgenerator generate cpp MTM1M3 \
     && salgenerator generate cpp MTMount

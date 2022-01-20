@@ -54,6 +54,10 @@ ForceControllerSettings:
   FaultOnOffsetForceClipping: Off
   FaultOnVelocityForceClipping: Off
   FaultOnForceClipping: Off
+PositionControllerSettings:
+  FollowingErrorPercentage: 50
+  FaultNumberOfFollowingErrors: 5
+  FaultOnUnstableCount: 100
 CellLightSettings:
   FaultOnOutputMismatch: Off
   FaultOnSensorMismatch: Off

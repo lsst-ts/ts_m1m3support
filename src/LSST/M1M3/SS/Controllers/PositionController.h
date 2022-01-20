@@ -116,8 +116,9 @@ public:
     void stopMotion();
 
     /**
-     * Should be run in a loop to command steps updates. Sets stepsCommanded
-     * and stepsQueued. What is happening with the actuators is governed by
+     * Called in any enabled state (raised, parked, ..). Sets stepsCommanded
+     * and stepsQueued. What is happening with the actuators is governed by its
+     * state.
      *
      * * **Standby**: both stepsCommanded and stepsQueued are set to 0.
      * * **Chasing**: MTM1M3_hardpointActuatorDataC measuredForce is multiplied
@@ -135,6 +136,10 @@ public:
      * _targetEncoderValues and encoder values > 2 are commanded. Transition to
      * Standby state if the difference remains <= ±2 for two loop runs.
      *
+     * This loop also monitors if encoder is following expected trajectory. If
+     * relative following error is outside prescribed range for configured loop,
+     * HardpointActuatorFollowingError is triggered.
+     *
      * @see PositionControllerSettings
      */
     void updateSteps();
@@ -147,6 +152,8 @@ public:
 private:
     void _convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
 
+    void _checkFollowingError(int hp);
+
     PositionControllerSettings* _positionControllerSettings;
     HardpointActuatorSettings* _hardpointActuatorSettings;
 
@@ -155,9 +162,12 @@ private:
     MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 
-    int32_t _scaledMaxStepsPerLoop[6];
-    int32_t _targetEncoderValues[6];
-    int32_t _stableEncoderCount[6];
+    int32_t _scaledMaxStepsPerLoop[HP_COUNT];
+    int32_t _targetEncoderValues[HP_COUNT];
+    int32_t _stableEncoderCount[HP_COUNT];
+    int32_t _unstableEncoderCount[HP_COUNT];
+
+    int32_t _lastEncoderCount[HP_COUNT];
 
     SafetyController* _safetyController;
 };

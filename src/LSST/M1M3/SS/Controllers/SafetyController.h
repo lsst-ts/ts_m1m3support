@@ -110,6 +110,7 @@ public:
 
     void positionControllerNotifyLimitLow(int hp, bool conditionFlag);
     void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
+    void positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder);
 
     void cellLightNotifyOutputMismatch(bool conditionFlag);
     void cellLightNotifySensorMismatch(bool conditionFlag);
@@ -143,6 +144,8 @@ public:
      * @param airPressure current air pressure
      */
     void hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag, float airPressure);
+
+    void hardpointActuatorFollowingError(int hp, double fePercent);
 
     void tmaAzimuthTimeout(double currentTimeout);
     void tmaElevationTimeout(double currentTimeout);
@@ -184,6 +187,7 @@ private:
     std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
     bool _hardpointLimitLowTriggered[HP_COUNT];
     bool _hardpointLimitHighTriggered[HP_COUNT];
+    int _hardpointFeViolations[HP_COUNT];
 };
 
 } /* namespace SS */
