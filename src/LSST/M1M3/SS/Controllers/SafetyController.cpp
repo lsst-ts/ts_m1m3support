@@ -59,6 +59,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointLimitLowTriggered[i] = false;
         _hardpointLimitHighTriggered[i] = false;
+        _hardpointFeViolations[i] = 0;
     }
 }
 
@@ -380,13 +381,13 @@ void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFl
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitLowError, true, conditionFlag,
-                            "Hardpoint #{} hit low limit", hp);
+                            "Hardpoint #{} hit low limit", hp + 1);
             _hardpointLimitLowTriggered[hp] = true;
         }
 
     } else {
         if (_hardpointLimitLowTriggered[hp] == true) {
-            SPDLOG_INFO("Hardpoint #{} low limit cleared", hp);
+            SPDLOG_INFO("Hardpoint #{} low limit cleared", hp + 1);
             _hardpointLimitLowTriggered[hp] = false;
         }
     }
@@ -396,16 +397,24 @@ void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionF
     if (conditionFlag) {
         if (_hardpointLimitHighTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitHighError, true, conditionFlag,
-                            "Hardpoint #{} hit high limit", hp);
+                            "Hardpoint #{} hit high limit", hp + 1);
             _hardpointLimitHighTriggered[hp] = true;
         }
 
     } else {
         if (_hardpointLimitHighTriggered[hp] == true) {
-            SPDLOG_INFO("Hardpoint #{} high limit cleared", hp);
+            SPDLOG_INFO("Hardpoint #{} high limit cleared", hp + 1);
             _hardpointLimitHighTriggered[hp] = false;
         }
     }
+}
+
+void SafetyController::positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder) {
+    _updateOverride(FaultCodes::HardpointUnstableError,
+                    _safetyControllerSettings->PositionController.FaultOnUnstableCount > 0,
+                    unstableCount >= _safetyControllerSettings->PositionController.FaultOnUnstableCount,
+                    "Hardpoint #{} unstable during fine positioning {} times, delta {}", hp + 1,
+                    unstableCount, deltaEncoder);
 }
 
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) {
@@ -548,6 +557,20 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, int c
                     absSum >= _safetyControllerSettings->ILC.AirPressureCountThreshold,
                     "Hardpoint Actuator #{} Air Pressure Oscillates {} absSum {} sum {}",
                     actuatorDataIndex + 1, airPressure, absSum, sum);
+}
+
+void SafetyController::hardpointActuatorFollowingError(int hp, double fePercent) {
+    double feRange = _safetyControllerSettings->PositionController.FollowingErrorPercentage;
+    int feCounts = _safetyControllerSettings->PositionController.FaultNumberOfFollowingErrors;
+    double feObserved = fabs(100 - fePercent);
+    _updateOverride(FaultCodes::HardpointActuatorFollowingError,
+                    (feCounts >= 0) && (_hardpointFeViolations[hp] > feCounts), feObserved > feRange,
+                    "Hardpoint {} following error out of range: {:.2f}", hp, fePercent);
+    if (feObserved > feRange) {
+        _hardpointFeViolations[hp]++;
+    } else {
+        _hardpointFeViolations[hp] = 0;
+    }
 }
 
 void SafetyController::tmaAzimuthTimeout(double currentTimeout) {

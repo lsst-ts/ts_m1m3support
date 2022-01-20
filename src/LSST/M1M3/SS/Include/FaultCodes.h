@@ -155,6 +155,17 @@ struct FaultCodes {
          */
         HardpointActuatorLimitHighError = _MASK_HARDPOINT | 0x08,
 
+        /**
+         * Triggered when encoder counts don't match queued steps. Most likely
+         * caused by loosed gears between hardpoint motor and actuator shaft.
+         */
+        HardpointActuatorFollowingError = _MASK_HARDPOINT | 0x09,
+
+        /**
+         * Triggered when hardpoint cannot reach given encoder position during FinePositioning.
+         */
+        HardpointUnstableError = _MASK_HARDPOINT | 0x0A,
+
         TMAAzimuthTimeout = _MASK_TMA | 0x01,
         TMAElevationTimeout = _MASK_TMA | 0x02,
         TMAInclinometerDeviation = _MASK_TMA | 0x04,

@@ -37,6 +37,7 @@ void SafetyControllerSettings::load(const std::string &filename) {
         Interlock.set(doc["InterlockSettings"]);
         ForceController.set(doc["ForceControllerSettings"]);
         CellLights.set(doc["CellLightSettings"]);
+        PositionController.set(doc["PositionControllerSettings"]);
         PowerController.set(doc["PowerControllerSettings"]);
         RaiseOperation.FaultOnTimeout = doc["RaiseOperationSettings"]["FaultOnTimeout"].as<bool>();
         LowerOperation.FaultOnTimeout = doc["LowerOperationSettings"]["FaultOnTimeout"].as<bool>();
