@@ -22,7 +22,7 @@ m1m3sscli: src/m1m3sscli.cpp.o src/libM1M3SS.a $(CRIOCPP)/lib/libcRIOcpp.a
 
 # Other Targets
 clean:
-	@$(foreach file,ts_M1M3Support src/ts_M1M3Support.cpp.o src/m1m3cli.cpp.o doc *.ipk ipk, echo '[RM ] ${file}'; $(RM) -r $(file);)
+	@$(foreach file,ts-M1M3Supportd doc *.ipk ipk, echo '[RM ] ${file}'; $(RM) -r $(file);)
 	@$(foreach dir,src tests,$(MAKE) -C ${dir} $@;)
 
 # file targets
