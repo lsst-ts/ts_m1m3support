@@ -125,7 +125,8 @@ void VelocityForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedVelocityForces->xForces[xIndex],
                                                   _appliedVelocityForces->xForces + xIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->velocityForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -135,7 +136,8 @@ void VelocityForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedVelocityForces->yForces[yIndex],
                                                   _appliedVelocityForces->yForces + yIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->velocityForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
@@ -144,8 +146,9 @@ void VelocityForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedVelocityForces->zForces[zIndex],
                                          _appliedVelocityForces->zForces + zIndex);
-        _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->velocityForceWarning[zIndex];
+        _forceSetpointWarning->velocityForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->velocityForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

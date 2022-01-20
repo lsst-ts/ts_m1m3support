@@ -126,7 +126,8 @@ void AccelerationForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedAccelerationForces->xForces[xIndex],
                                                   _appliedAccelerationForces->xForces + xIndex);
-            _forceSetpointWarning->accelerationForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->accelerationForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -136,7 +137,8 @@ void AccelerationForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedAccelerationForces->yForces[yIndex],
                                                   _appliedAccelerationForces->yForces + yIndex);
-            _forceSetpointWarning->accelerationForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->accelerationForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->AccelerationLimitZTable[zIndex].LowFault;
@@ -145,8 +147,9 @@ void AccelerationForceComponent::postUpdateActions() {
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
                                               _preclippedAccelerationForces->zForces[zIndex],
                                               _appliedAccelerationForces->zForces + zIndex);
-        _forceSetpointWarning->accelerationForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->accelerationForceWarning[zIndex];
+        _forceSetpointWarning->accelerationForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->accelerationForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
