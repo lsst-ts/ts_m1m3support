@@ -277,7 +277,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             case FPGAAddresses::AirSupplyValveControl: {
                 int state = data[i++];
                 this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.DigitalOutputStates & 0xEF) | (state ? 0x00 : 0x10);
+                        (this->supportFPGAData.DigitalOutputStates & 0xEF) | (state ? 0x10 : 0x00);
                 this->supportFPGAData.DigitalInputStates =
                         (this->supportFPGAData.DigitalInputStates & 0xFCFF) | (state ? 0x0200 : 0x0100);
                 break;
