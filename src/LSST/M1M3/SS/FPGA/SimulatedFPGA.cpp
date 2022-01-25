@@ -287,7 +287,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                 this->supportFPGAData.DigitalOutputStates =
                         (this->supportFPGAData.DigitalOutputStates & 0xDF) | (state ? 0x20 : 0x00);
                 this->supportFPGAData.DigitalInputStates =
-                        (this->supportFPGAData.DigitalInputStates & 0xFBFF) | (state ? 0x0400 : 0x0000);
+                        (this->supportFPGAData.DigitalInputStates & 0xFBFF) | (state ? 0x0000 : 0x0400);
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkAOn: {

@@ -69,10 +69,11 @@ void SafetyController::clearErrorCode() {
     M1M3SSPublisher::get().logErrorCode();
 }
 
-void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) {
+void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag, bool commanded,
+                                                                bool sensed) {
     _updateOverride(FaultCodes::AirControllerCommandOutputMismatch,
                     _safetyControllerSettings->AirController.FaultOnCommandOutputMismatch, conditionFlag,
-                    "Air controller command output mismatch");
+                    "Air controller command output mismatch - is {}, should be {}", sensed, commanded);
 }
 
 void SafetyController::airControllerNotifyCommandSensorMismatch(bool conditionFlag) {
@@ -417,16 +418,16 @@ void SafetyController::positionControllerNotifyUnstable(int hp, int32_t unstable
                     unstableCount, deltaEncoder);
 }
 
-void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) {
+void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag, bool commanded, bool sensed) {
     _updateOverride(FaultCodes::CellLightOutputMismatch,
                     _safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag,
-                    "Cell light output mismatch");
+                    "Cell light output mismatch - is {}, should be {}", sensed, commanded);
 }
 
-void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag) {
+void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag, bool commanded, bool sensed) {
     _updateOverride(FaultCodes::CellLightSensorMismatch,
                     _safetyControllerSettings->CellLights.FaultOnSensorMismatch, conditionFlag,
-                    "Cell light sensor mismatch");
+                    "Cell light sensor mismatch - is {}, should be {}", sensed, commanded);
 }
 
 void SafetyController::powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag) {
