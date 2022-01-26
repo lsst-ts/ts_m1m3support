@@ -213,7 +213,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
             appliedElevationForces->zForces[i] = -50000;
         }
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 2; i++) {
             Model::get().getForceController()->processAppliedForces();
             CHECK(Model::get().getSafetyController()->checkSafety(States::ActiveState) ==
                   States::ActiveState);
