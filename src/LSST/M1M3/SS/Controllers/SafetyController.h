@@ -51,7 +51,7 @@ public:
 
     void clearErrorCode();
 
-    void airControllerNotifyCommandOutputMismatch(bool conditionFlag);
+    void airControllerNotifyCommandOutputMismatch(bool conditionFlag, bool commanded, bool sensed);
     void airControllerNotifyCommandSensorMismatch(bool conditionFlag);
 
     void displacementNotifySensorReportsInvalidCommand(bool conditionFlag);
@@ -112,8 +112,8 @@ public:
     void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
     void positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder);
 
-    void cellLightNotifyOutputMismatch(bool conditionFlag);
-    void cellLightNotifySensorMismatch(bool conditionFlag);
+    void cellLightNotifyOutputMismatch(bool conditionFlag, bool commanded, bool sensed);
+    void cellLightNotifySensorMismatch(bool conditionFlag, bool commanded, bool sensed);
 
     void powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag);
     void powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag);
