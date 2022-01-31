@@ -97,42 +97,43 @@ Model& Model::get() {
 void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: loadSettings({})", settingsToApply);
 
-    SettingReader::get().configure(settingsToApply);
+    SettingReader::instance().configure(settingsToApply);
 
     M1M3SSPublisher::get().getOuterLoopData()->slewFlag = false;
 
     SPDLOG_INFO("Model: Loading ILC application settings");
-    ILCApplicationSettings* ilcApplicationSettings = SettingReader::get().loadILCApplicationSettings();
+    ILCApplicationSettings* ilcApplicationSettings = SettingReader::instance().loadILCApplicationSettings();
     SPDLOG_INFO("Model: Loading force actuator application settings");
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-            SettingReader::get().getForceActuatorApplicationSettings();
+            SettingReader::instance().getForceActuatorApplicationSettings();
     SPDLOG_INFO("Model: Loading force actuator settings");
-    ForceActuatorSettings* forceActuatorSettings = SettingReader::get().loadForceActuatorSettings();
+    ForceActuatorSettings* forceActuatorSettings = SettingReader::instance().loadForceActuatorSettings();
     SPDLOG_INFO("Model: Loading hardpoint actuator application settings");
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
-            SettingReader::get().loadHardpointActuatorApplicationSettings();
+            SettingReader::instance().loadHardpointActuatorApplicationSettings();
     SPDLOG_INFO("Model: Loading hardpoint actuator settings");
     HardpointActuatorSettings* hardpointActuatorSettings =
-            SettingReader::get().loadHardpointActuatorSettings();
+            SettingReader::instance().loadHardpointActuatorSettings();
     SPDLOG_INFO("Model: Loading safety controller settings");
-    SafetyControllerSettings* safetyControllerSettings = SettingReader::get().loadSafetyControllerSettings();
+    SafetyControllerSettings* safetyControllerSettings =
+            SettingReader::instance().loadSafetyControllerSettings();
     SPDLOG_INFO("Model: Loading position controller settings");
     PositionControllerSettings* positionControllerSettings =
-            SettingReader::get().loadPositionControllerSettings();
+            SettingReader::instance().loadPositionControllerSettings();
     SPDLOG_INFO("Model: Loading accelerometer settings");
-    AccelerometerSettings* accelerometerSettings = SettingReader::get().loadAccelerometerSettings();
+    AccelerometerSettings* accelerometerSettings = SettingReader::instance().loadAccelerometerSettings();
     SPDLOG_INFO("Model: Loading displacement settings");
     DisplacementSensorSettings* displacementSensorSettings =
-            SettingReader::get().loadDisplacementSensorSettings();
+            SettingReader::instance().loadDisplacementSensorSettings();
     SPDLOG_INFO("Model: Loading hardpoint monitor application settings");
     HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
-            SettingReader::get().loadHardpointMonitorApplicationSettings();
+            SettingReader::instance().loadHardpointMonitorApplicationSettings();
     SPDLOG_INFO("Model: Loading gyro settings");
-    GyroSettings* gyroSettings = SettingReader::get().loadGyroSettings();
+    GyroSettings* gyroSettings = SettingReader::instance().loadGyroSettings();
     SPDLOG_INFO("Model: Loading PID settings");
-    PIDSettings* pidSettings = SettingReader::get().loadPIDSettings();
+    PIDSettings* pidSettings = SettingReader::instance().loadPIDSettings();
     SPDLOG_INFO("Model: Loading inclinometer settings");
-    InclinometerSettings* inclinometerSettings = SettingReader::get().loadInclinometerSettings();
+    InclinometerSettings* inclinometerSettings = SettingReader::instance().loadInclinometerSettings();
 
     _populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
@@ -165,8 +166,8 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _forceController;
     SPDLOG_INFO("Model: Creating force controller");
-    _forceController = new ForceController(forceActuatorApplicationSettings, forceActuatorSettings,
-                                           pidSettings, _safetyController);
+    _forceController =
+            new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings);
 
     SPDLOG_INFO("Model: Updating digital input output");
     _digitalInputOutput.setSafetyController(_safetyController);
@@ -222,7 +223,7 @@ void Model::publishStateChange(States::Type newState) {
 void Model::publishRecommendedSettings() {
     SPDLOG_DEBUG("Model: publishRecommendedSettings()");
     RecommendedApplicationSettings* recommendedApplicationSettings =
-            SettingReader::get().loadRecommendedApplicationSettings();
+            SettingReader::instance().loadRecommendedApplicationSettings();
     MTM1M3_logevent_settingVersionsC* data = M1M3SSPublisher::get().getEventSettingVersions();
     data->recommendedSettingsVersion = "";
     for (uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
@@ -277,13 +278,8 @@ void Model::_populateHardpointActuatorInfo(
         hardpointInfo->xPosition[row.Index] = row.XPosition;
         hardpointInfo->yPosition[row.Index] = row.YPosition;
         hardpointInfo->zPosition[row.Index] = row.ZPosition;
+        hardpointInfo->referencePosition[i] = positionControllerSettings->referencePosition[i];
     }
-    hardpointInfo->referencePosition[0] = positionControllerSettings->ReferencePositionEncoder[0];
-    hardpointInfo->referencePosition[1] = positionControllerSettings->ReferencePositionEncoder[1];
-    hardpointInfo->referencePosition[2] = positionControllerSettings->ReferencePositionEncoder[2];
-    hardpointInfo->referencePosition[3] = positionControllerSettings->ReferencePositionEncoder[3];
-    hardpointInfo->referencePosition[4] = positionControllerSettings->ReferencePositionEncoder[4];
-    hardpointInfo->referencePosition[5] = positionControllerSettings->ReferencePositionEncoder[5];
 }
 
 void Model::_populateHardpointMonitorInfo(

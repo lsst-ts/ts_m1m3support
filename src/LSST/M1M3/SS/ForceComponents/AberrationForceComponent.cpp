@@ -23,7 +23,7 @@
 
 #include <AberrationForceComponent.h>
 #include <M1M3SSPublisher.h>
-#include <SafetyController.h>
+#include <Model.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <Range.h>
@@ -37,11 +37,10 @@ namespace M1M3 {
 namespace SS {
 
 AberrationForceComponent::AberrationForceComponent(
-        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Aberration", forceActuatorSettings->AberrationComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
@@ -90,8 +89,9 @@ void AberrationForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedAberrationForces->zForces[zIndex],
                                          _appliedAberrationForces->zForces + zIndex);
-        _forceSetpointWarning->aberrationForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->aberrationForceWarning[zIndex];
+        _forceSetpointWarning->aberrationForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->aberrationForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->aberrationForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

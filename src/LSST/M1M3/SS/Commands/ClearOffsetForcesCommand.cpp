@@ -29,22 +29,21 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearOffsetForcesCommand::ClearOffsetForcesCommand(int32_t commandID, MTM1M3_command_clearOffsetForcesC*) {
-    this->commandID = commandID;
-}
+ClearOffsetForcesCommand::ClearOffsetForcesCommand(int32_t commandID, MTM1M3_command_clearOffsetForcesC*)
+        : Command(commandID) {}
 
 void ClearOffsetForcesCommand::execute() { Context::get().clearOffsetForces(this); }
 
 void ClearOffsetForcesCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandclearOffsetForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandclearOffsetForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ClearOffsetForcesCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandclearOffsetForces(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandclearOffsetForces(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ClearOffsetForcesCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandclearOffsetForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandclearOffsetForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

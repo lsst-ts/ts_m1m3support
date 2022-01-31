@@ -28,6 +28,7 @@
 #include <thread>
 #include <mutex>
 #include <queue>
+#include <chrono>
 #include <ILCSubnetData.h>
 #include <HardpointActuatorSettings.h>
 
@@ -112,6 +113,9 @@ private:
     bool _exitThread = false;
 
     bool _sendResponse;
+
+    // simulates properly clock signal
+    std::chrono::time_point<std::chrono::steady_clock> _nextClock;
 };
 
 /**

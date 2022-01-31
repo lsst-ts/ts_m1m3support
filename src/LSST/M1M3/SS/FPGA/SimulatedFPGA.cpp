@@ -38,9 +38,7 @@
 #include "SAL_MTMount.h"
 #include "ccpp_sal_MTMount.h"
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 /**
  * Return data writen to modbus. The data are right shifted by 1 to allow for
@@ -48,7 +46,7 @@ namespace SS {
  */
 uint8_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
-double getRndPM1() { return static_cast<double>(rand()) / (RAND_MAX / 2.0) - 1.0; }
+double LSST::M1M3::SS::getRndPM1() { return static_cast<double>(rand()) / (RAND_MAX / 2.0) - 1.0; }
 
 SimulatedFPGA::SimulatedFPGA() {
     SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
@@ -69,6 +67,8 @@ SimulatedFPGA::SimulatedFPGA() {
     hardpointActuatorData->encoder[5] = 23546;
 
     _sendResponse = true;
+
+    _nextClock = std::chrono::steady_clock::now();
 }
 
 SimulatedFPGA::~SimulatedFPGA() {
@@ -108,7 +108,8 @@ void SimulatedFPGA::close() { SPDLOG_DEBUG("SimulatedFPGA: close()"); }
 void SimulatedFPGA::finalize() { SPDLOG_DEBUG("SimulatedFPGA: finalize()"); }
 
 void SimulatedFPGA::waitForOuterLoopClock(uint32_t timeout) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    std::this_thread::sleep_until(_nextClock);
+    _nextClock += std::chrono::milliseconds(20);
 }
 
 void SimulatedFPGA::ackOuterLoopClock() {}
@@ -276,7 +277,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             case FPGAAddresses::AirSupplyValveControl: {
                 int state = data[i++];
                 this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.DigitalOutputStates & 0xEF) | (state ? 0x00 : 0x10);
+                        (this->supportFPGAData.DigitalOutputStates & 0xEF) | (state ? 0x10 : 0x00);
                 this->supportFPGAData.DigitalInputStates =
                         (this->supportFPGAData.DigitalInputStates & 0xFCFF) | (state ? 0x0200 : 0x0100);
                 break;
@@ -286,7 +287,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                 this->supportFPGAData.DigitalOutputStates =
                         (this->supportFPGAData.DigitalOutputStates & 0xDF) | (state ? 0x20 : 0x00);
                 this->supportFPGAData.DigitalInputStates =
-                        (this->supportFPGAData.DigitalInputStates & 0xFBFF) | (state ? 0x0400 : 0x0000);
+                        (this->supportFPGAData.DigitalInputStates & 0xFBFF) | (state ? 0x0000 : 0x0400);
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkAOn: {
@@ -394,7 +395,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                     }
 
                     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-                            SettingReader::get().getForceActuatorApplicationSettings();
+                            SettingReader::instance().getForceActuatorApplicationSettings();
                     int zIndex = -1;
                     for (int j = 0; j < FA_COUNT; ++j) {
                         if (forceActuatorApplicationSettings->Table[j].Subnet == subnet &&
@@ -632,7 +633,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         }
                         int32_t encoder =
                                 -(M1M3SSPublisher::get().getHardpointActuatorData()->encoder[address - 1]) +
-                                SettingReader::get().getHardpointActuatorSettings()->getEncoderOffset(
+                                SettingReader::instance().getHardpointActuatorSettings()->getEncoderOffset(
                                         address - 1) -
                                 steps / 4;
                         _writeModbus(response, (encoder >> 24) & 0xFF);
@@ -970,7 +971,3 @@ void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint3
         data[i] = i;
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

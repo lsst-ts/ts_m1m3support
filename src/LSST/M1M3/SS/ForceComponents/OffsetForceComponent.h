@@ -39,8 +39,7 @@ namespace SS {
  */
 class OffsetForceComponent : public ForceComponent {
 public:
-    OffsetForceComponent(SafetyController* safetyController,
-                         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                          ForceActuatorSettings* forceActuatorSettings);
 
     void applyOffsetForces(float* x, float* y, float* z);

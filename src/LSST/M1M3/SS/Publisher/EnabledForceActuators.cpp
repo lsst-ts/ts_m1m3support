@@ -36,7 +36,7 @@ EnabledForceActuators::EnabledForceActuators() {
 
 void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
     int32_t actuatorIndex =
-            SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+            SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
     if (forceActuatorEnabled[actuatorIndex] == enabled) {
         return;
     }
@@ -47,19 +47,21 @@ void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
         faData->primaryCylinderForce[actuatorIndex] = 0;
         faData->zForce[actuatorIndex] = 0;
 
-        int secondaryIndex = SettingReader::get()
+        int secondaryIndex = SettingReader::instance()
                                      .getForceActuatorApplicationSettings()
                                      ->ZIndexToSecondaryCylinderIndex[actuatorIndex];
         if (secondaryIndex >= 0) {
             faData->secondaryCylinderForce[secondaryIndex] = 0;
-            int xIndex =
-                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToXIndex[actuatorIndex];
+            int xIndex = SettingReader::instance()
+                                 .getForceActuatorApplicationSettings()
+                                 ->ZIndexToXIndex[actuatorIndex];
             if (xIndex >= 0) {
                 faData->xForce[xIndex] = 0;
             }
 
-            int yIndex =
-                    SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToYIndex[actuatorIndex];
+            int yIndex = SettingReader::instance()
+                                 .getForceActuatorApplicationSettings()
+                                 ->ZIndexToYIndex[actuatorIndex];
             if (yIndex >= 0) {
                 faData->yForce[yIndex] = 0;
             }

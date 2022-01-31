@@ -31,7 +31,7 @@ void TableLoader::loadLimitTable(int rowsToSkip, int columnsToSkip, std::vector<
                                  const std::string& filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
 
-    std::string fullPath = SettingReader::get().getFilePath(filename);
+    std::string fullPath = SettingReader::instance().getFilePath(filename);
     std::ifstream inputStream(fullPath.c_str());
     if (!inputStream.is_open()) {
         throw std::runtime_error("Cannot open " + fullPath + ": " + strerror(errno));

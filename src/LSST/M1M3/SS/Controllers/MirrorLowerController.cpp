@@ -43,13 +43,19 @@ MirrorLowerController::MirrorLowerController(PositionController* positionControl
     _safetyController = safetyController;
     _powerController = powerController;
     _cachedTimestamp = 0;
+    _movedToLowerPosition = false;
 }
 
 void MirrorLowerController::start() {
     SPDLOG_INFO("MirrorLowerController: startLowerOperation()");
     _safetyController->lowerOperationTimeout(false);
     _positionController->stopMotion();
-    _positionController->enableChaseAll();
+
+    _movedToLowerPosition = false;
+    if (_positionController->moveToLowerPosition() == false) {
+        throw std::runtime_error("Cannot move to lower position before starting lowering the mirror");
+    }
+
     _forceController->zeroAberrationForces();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
@@ -61,17 +67,23 @@ void MirrorLowerController::start() {
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
     _forceController->fillSupportPercentage();
+
     setStartTimestamp();
 }
 
 void MirrorLowerController::runLoop() {
     SPDLOG_TRACE("MirrorLowerController: runLoop() {}",
                  M1M3SSPublisher::get().getEventForceActuatorState()->supportPercentage);
-    if (!_forceController->supportPercentageZeroed()) {
+    if (_movedToLowerPosition == false) {
+        _movedToLowerPosition = _positionController->motionComplete();
+        if (_movedToLowerPosition == true) {
+            _positionController->enableChaseAll();
+        }
+    } else if (_forceController->supportPercentageZeroed() == false) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
         // TODO: Does it matter if the following error is bad when we are trying to lower the mirror?
-        if (_positionController->forcesInTolerance()) {
+        if (_positionController->forcesInTolerance(false)) {
             // The forces on the hardpoints are within tolerance, we can continue to transfer the
             // support force from the static supports to the force actuators
             _forceController->decSupportPercentage();
@@ -103,7 +115,7 @@ void MirrorLowerController::complete() {
 
 bool MirrorLowerController::checkTimeout() {
     return M1M3SSPublisher::get().getTimestamp() >=
-           (_cachedTimestamp + _positionController->getRaiseLowerTimeout());
+           (_cachedTimestamp + _positionController->getLowerTimeout());
 }
 
 void MirrorLowerController::timeout() {
@@ -128,6 +140,9 @@ void MirrorLowerController::abortRaiseM1M3() {
     _forceController->zeroStaticForces();
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
+
+    _movedToLowerPosition = true;
+
     setStartTimestamp();
 }
 

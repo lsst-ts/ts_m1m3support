@@ -30,8 +30,8 @@ namespace M1M3 {
 namespace SS {
 
 ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(int32_t commandID,
-                                                           MTM1M3_command_applyAberrationForcesC* data) {
-    this->commandID = commandID;
+                                                           MTM1M3_command_applyAberrationForcesC* data)
+        : Command(commandID) {
     for (int i = 0; i < FA_COUNT; i++) {
         _data.zForces[i] = data->zForces[i];
     }
@@ -40,15 +40,15 @@ ApplyAberrationForcesCommand::ApplyAberrationForcesCommand(int32_t commandID,
 void ApplyAberrationForcesCommand::execute() { Context::get().applyAberrationForces(this); }
 
 void ApplyAberrationForcesCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandapplyAberrationForces(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandapplyAberrationForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ApplyAberrationForcesCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandapplyAberrationForces(this->commandID, ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::get().ackCommandapplyAberrationForces(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ApplyAberrationForcesCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandapplyAberrationForces(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandapplyAberrationForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

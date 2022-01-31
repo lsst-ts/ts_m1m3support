@@ -373,11 +373,11 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
             _hpExpectedResponses[i] = 0;
+            SPDLOG_WARN("ILCResponseParser: Hardpoint {} actuator response timeout", i + 1);
         }
     }
     if (warn) {
         anyTimeout = true;
-        SPDLOG_WARN("ILCResponseParser: Hardpoint actuator response timeout");
     }
     warn = false;
     for (int i = 0; i < HP_COUNT; ++i) {
@@ -385,11 +385,11 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
             _hmExpectedResponses[i] = 0;
+            SPDLOG_WARN("ILCResponseParser: Hardpoint {} monitor response timeout", i);
         }
     }
     if (warn) {
         anyTimeout = true;
-        SPDLOG_WARN("ILCResponseParser: Hardpoint monitor response timeout");
     }
 
     _safetyController->ilcCommunicationTimeout(anyTimeout);
@@ -943,7 +943,7 @@ void ILCResponseParser::_checkForceActuatorMeasuredForce(ILCMap map) {
                 secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit;
         bool previousSecondaryLimit = _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex];
         _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
-        anyChange |= secondaryLimitWarning != previousSecondaryLimit;
+        anyChange = (secondaryLimitWarning != previousSecondaryLimit) || anyChange;
     }
 
     if (anyChange) {

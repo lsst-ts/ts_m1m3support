@@ -31,19 +31,34 @@ void PositionControllerSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        ForceToStepsCoefficient = doc["ForceToStepsCoefficient"].as<double>();
-        EncoderToStepsCoefficient = doc["EncoderToStepsCoefficient"].as<double>();
-        MaxStepsPerLoop = doc["MaxStepsPerLoop"].as<int32_t>();
-        RaiseLowerForceLimitLow = doc["RaiseLowerForceLimitLow"].as<double>();
-        RaiseLowerForceLimitHigh = doc["RaiseLowerForceLimitHigh"].as<double>();
-        RaiseLowerTimeoutInSeconds = doc["RaiseLowerTimeoutInSeconds"].as<double>();
-        std::vector<int32_t> encoders = doc["ReferencePosition"].as<std::vector<int32_t>>();
+        forceToStepsCoefficient = doc["ForceToStepsCoefficient"].as<double>();
+        encoderToStepsCoefficient = doc["EncoderToStepsCoefficient"].as<double>();
+        maxStepsPerLoop = doc["MaxStepsPerLoop"].as<int32_t>();
+
+        auto raise = doc["Raise"];
+
+        raiseHPForceLimitLow = raise["HPForceLimitLow"].as<int>();
+        raiseHPForceLimitHigh = raise["HPForceLimitHigh"].as<int>();
+        raiseTimeout = raise["Timeout"].as<int>();
+
+        auto lower = doc["Lower"];
+
+        lowerHPForceLimitLow = lower["HPForceLimitLow"].as<int>();
+        lowerHPForceLimitHigh = lower["HPForceLimitHigh"].as<int>();
+        lowerTimeout = lower["Timeout"].as<int>();
+        lowerPositionOffset = lower["PositionOffset"].as<float>();
+
+        auto encoders = doc["ReferencePosition"].as<std::vector<int32_t>>();
         if (encoders.size() != HP_COUNT) {
             throw std::runtime_error(fmt::format("Expecting {} encoder's ReferencePosition, got {}", HP_COUNT,
                                                  encoders.size()));
         }
-        memcpy(ReferencePositionEncoder, encoders.data(), sizeof(int32_t) * HP_COUNT);
+        for (int i = 0; i < HP_COUNT; i++) {
+            referencePosition[i] = encoders[i];
+        }
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+
+    log();
 }

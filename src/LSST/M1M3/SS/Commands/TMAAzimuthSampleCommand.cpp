@@ -31,14 +31,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) {
-    this->commandID = -1;
+TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) : Command(-1) {
     memcpy(&_data, data, sizeof(MTMount_azimuthC));
 }
 
 void TMAAzimuthSampleCommand::execute() {
     double diff = _data.timestamp - M1M3SSPublisher::get().getTimestamp();
-    double limit = SettingReader::get().getSafetyControllerSettings()->TMA.AzimuthTimeout;
+    double limit = SettingReader::instance().getSafetyControllerSettings()->TMA.AzimuthTimeout;
     if (limit > 0 && fabs(diff) > limit) {
         using namespace std::chrono_literals;
         TG_LOG_ERROR(2s, "Received azimuth timestamp deviates by more than {0:.3f}s: {1:.3f}", limit, diff);

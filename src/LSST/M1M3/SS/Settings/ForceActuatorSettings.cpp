@@ -39,7 +39,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
         auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
         for (int i = 0; i < FA_COUNT; ++i) {
-            int faId = SettingReader::get().getForceActuatorApplicationSettings()->ZIndexToActuatorId(i);
+            int faId = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(i);
             enabledActuators[i] =
                     std::find(disabledIndices.begin(), disabledIndices.end(), faId) == disabledIndices.end();
         }
@@ -204,7 +204,7 @@ void ForceActuatorSettings::log() { M1M3SSPublisher::get().logForceActuatorSetti
 
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
-    std::string fullname = SettingReader::get().getFilePath(filename);
+    std::string fullname = SettingReader::instance().getFilePath(filename);
     std::ifstream inputStream(fullname.c_str());
     if (!inputStream.is_open()) {
         throw std::runtime_error("Cannot read " + fullname + ": " + strerror(errno));
@@ -237,7 +237,7 @@ void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename)
 
 void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
-    std::string fullname = SettingReader::get().getFilePath(filename);
+    std::string fullname = SettingReader::instance().getFilePath(filename);
     std::ifstream inputStream(fullname.c_str());
     if (!inputStream.is_open()) {
         throw std::runtime_error("Cannot read " + fullname + ": " + strerror(errno));

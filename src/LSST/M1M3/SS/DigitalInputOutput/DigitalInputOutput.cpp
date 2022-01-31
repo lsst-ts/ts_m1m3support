@@ -102,8 +102,11 @@ void DigitalInputOutput::processData() {
 
         if (_safetyController) {
             _safetyController->airControllerNotifyCommandOutputMismatch(
-                    _airSupplyWarning->commandOutputMismatch);
-            _safetyController->cellLightNotifyOutputMismatch(_cellLightWarning->cellLightsOutputMismatch);
+                    _airSupplyWarning->commandOutputMismatch, _airSupplyStatus->airCommandedOn,
+                    _airSupplyStatus->airCommandOutputOn);
+            _safetyController->cellLightNotifyOutputMismatch(_cellLightWarning->cellLightsOutputMismatch,
+                                                             _cellLightStatus->cellLightsCommandedOn,
+                                                             _cellLightStatus->cellLightsOutputOn);
             _safetyController->interlockNotifyHeartbeatStateOutputMismatch(
                     InterlockWarning::instance().heartbeatStateOutputMismatch);
         }
@@ -137,7 +140,9 @@ void DigitalInputOutput::processData() {
         if (_safetyController) {
             _safetyController->airControllerNotifyCommandSensorMismatch(
                     _airSupplyWarning->commandSensorMismatch);
-            _safetyController->cellLightNotifySensorMismatch(_cellLightWarning->cellLightsSensorMismatch);
+            _safetyController->cellLightNotifySensorMismatch(_cellLightWarning->cellLightsSensorMismatch,
+                                                             _cellLightStatus->cellLightsCommandedOn,
+                                                             _cellLightStatus->cellLightsOn);
             _safetyController->interlockNotifyAuxPowerNetworksOff(
                     InterlockWarning::instance().auxPowerNetworksOff);
             _safetyController->interlockNotifyThermalEquipmentOff(

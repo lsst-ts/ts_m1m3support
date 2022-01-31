@@ -24,6 +24,9 @@
 #ifndef POSITIONCONTROLLERSETTINGS_H_
 #define POSITIONCONTROLLERSETTINGS_H_
 
+#include <SAL_MTM1M3.h>
+#include <M1M3SSPublisher.h>
+
 #include <DataTypes.h>
 #include <string>
 
@@ -37,26 +40,11 @@ namespace SS {
  *
  * @see StartCommand
  */
-class PositionControllerSettings {
+class PositionControllerSettings : public MTM1M3_logevent_positionControllerSettingsC {
 public:
-    /**
-     * Linear coefficient between force sensed on HP and steps change. It's
-     * assumed that 4N force =~ 1 step, so 0.25 is expected value.
-     */
-    double ForceToStepsCoefficient;
-    double EncoderToStepsCoefficient;
-
-    /**
-     * Maximal steps per controller loop (~53Hz). Should be set to 60. Applies
-     * to all six HP actuators.
-     */
-    int32_t MaxStepsPerLoop;
-    double RaiseLowerForceLimitLow;
-    double RaiseLowerForceLimitHigh;
-    double RaiseLowerTimeoutInSeconds;
-    int32_t ReferencePositionEncoder[HP_COUNT];
-
     void load(const std::string &filename);
+
+    void log() { M1M3SSPublisher::get().logPositionControllerSettings(this); }
 };
 
 } /* namespace SS */

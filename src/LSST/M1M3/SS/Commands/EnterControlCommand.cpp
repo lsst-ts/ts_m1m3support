@@ -28,7 +28,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnterControlCommand::EnterControlCommand() { this->commandID = -1; }
+EnterControlCommand::EnterControlCommand() : Command(-1) {}
 
 void EnterControlCommand::execute() { Context::get().enterControl(this); }
 

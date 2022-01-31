@@ -37,8 +37,7 @@ namespace SS {
 
 class StaticForceComponent : public ForceComponent {
 public:
-    StaticForceComponent(SafetyController* safetyController,
-                         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                          ForceActuatorSettings* forceActuatorSettings);
 
     void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);

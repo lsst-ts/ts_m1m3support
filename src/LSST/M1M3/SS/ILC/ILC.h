@@ -96,7 +96,15 @@ public:
     void writeSetModeStandbyBuffer();
     void writeSetModeClearFaultsBuffer();
     void writeFreezeSensorListBuffer();
+
+    /**
+     * Called in enabled state (parked, raised,..).
+     */
     void writeRaisedListBuffer();
+
+    /**
+     * Called in enabled state (parked, raised,..).
+     */
     void writeActiveListBuffer();
 
     /**

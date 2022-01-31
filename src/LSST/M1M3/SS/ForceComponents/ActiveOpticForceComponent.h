@@ -36,8 +36,7 @@ namespace SS {
 
 class ActiveOpticForceComponent : public ForceComponent {
 public:
-    ActiveOpticForceComponent(SafetyController* safetyController,
-                              ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    ActiveOpticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                               ForceActuatorSettings* forceActuatorSettings);
 
     void applyActiveOpticForces(float* z);

@@ -1,80 +1,84 @@
 AirControllerSettings:
-  FaultOnCommandOutputMismatch: Off
-  FaultOnCommandSensorMismatch: Off
+  FaultOnCommandOutputMismatch: On
+  FaultOnCommandSensorMismatch: On
 DisplacementSettings:
-  FaultOnSensorReportsInvalidCommand: Off
-  FaultOnSensorReportsCommunicationTimeoutError: Off
-  FaultOnSensorReportsDataLengthError: Off
-  FaultOnSensorReportsNumberOfParametersError: Off
-  FaultOnSensorReportsParameterError: Off
-  FaultOnSensorReportsCommunicationError: Off
-  FaultOnSensorReportsIDNumberError: Off
-  FaultOnSensorReportsExpansionLineError: Off
-  FaultOnSensorReportsWriteControlError: Off
-  FaultOnResponseTimeoutError: Off
-  FaultOnInvalidLength: Off
-  FaultOnInvalidResponse: Off
-  FaultOnUnknownCommand: Off
-  FaultOnUnknownProblem: Off
+  FaultOnSensorReportsInvalidCommand: On
+  FaultOnSensorReportsCommunicationTimeoutError: On
+  FaultOnSensorReportsDataLengthError: On
+  FaultOnSensorReportsNumberOfParametersError: On
+  FaultOnSensorReportsParameterError: On
+  FaultOnSensorReportsCommunicationError: On
+  FaultOnSensorReportsIDNumberError: On
+  FaultOnSensorReportsExpansionLineError: On
+  FaultOnSensorReportsWriteControlError: On
+  FaultOnResponseTimeoutError: On
+  FaultOnInvalidLength: On
+  FaultOnInvalidResponse: On
+  FaultOnUnknownCommand: On
+  FaultOnUnknownProblem: On
 InclinometerSettings:
-  FaultOnResponseTimeout: Off
-  FaultOnInvalidCRC: Off
-  FaultOnUnknownAddress: Off
-  FaultOnUnknownFunction: Off
-  FaultOnInvalidLength: Off
-  FaultOnSensorReportsIllegalDataAddress: Off
-  FaultOnSensorReportsIllegalFunction: Off
-  FaultOnUnknownProblem: Off
+  FaultOnResponseTimeout: On
+  FaultOnInvalidCRC: On
+  FaultOnUnknownAddress: On
+  FaultOnUnknownFunction: On
+  FaultOnInvalidLength: On
+  FaultOnSensorReportsIllegalDataAddress: On
+  FaultOnSensorReportsIllegalFunction: On
+  FaultOnUnknownProblem: On
 InterlockSettings:
-  FaultOnHeartbeatStateOutputMismatch: Off
+  FaultOnHeartbeatStateOutputMismatch: On
   FaultOnAuxPowerNetworksOff: On
-  FaultOnThermalEquipmentOff: Off
-  FaultOnAirSupplyOff: Off
-  FaultOnCabinetDoorOpen: Off
-  FaultOnTMAMotionStop: Off
-  FaultOnGISHeartbeatLost: Off
+  FaultOnThermalEquipmentOff: On
+  FaultOnAirSupplyOff: On
+  FaultOnCabinetDoorOpen: On
+  FaultOnTMAMotionStop: On
+  FaultOnGISHeartbeatLost: On
 ForceControllerSettings:
-  FaultOnSafetyLimit: Off
-  FaultOnXMomentLimit: Off
-  FaultOnYMomentLimit: Off
-  FaultOnZMomentLimit: Off
+  FaultOnSafetyLimit: On
+  FaultOnXMomentLimit: On
+  FaultOnYMomentLimit: On
+  FaultOnZMomentLimit: On
   FaultOnNearNeighborCheck: On
-  FaultOnMagnitudeLimit: Off
-  FaultOnFarNeighborCheck: Off
-  FaultOnElevationForceClipping: Off
-  FaultOnAzimuthForceClipping: Off
-  FaultOnThermalForceClipping: Off
-  FaultOnBalanceForceClipping: Off
-  FaultOnAccelerationForceClipping: Off
-  FaultOnActiveOpticNetForceCheck: Off
-  FaultOnActiveOpticForceClipping: Off
-  FaultOnStaticForceClipping: Off
-  FaultOnAberrationNetForceCheck: Off
-  FaultOnAberrationForceClipping: Off
-  FaultOnOffsetForceClipping: Off
-  FaultOnVelocityForceClipping: Off
-  FaultOnForceClipping: Off
+  FaultOnMagnitudeLimit: On
+  FaultOnFarNeighborCheck: On
+  FaultOnElevationForceClipping: On
+  FaultOnAzimuthForceClipping: On
+  FaultOnThermalForceClipping: On
+  FaultOnBalanceForceClipping: On
+  FaultOnAccelerationForceClipping: On
+  FaultOnActiveOpticNetForceCheck: On
+  FaultOnActiveOpticForceClipping: On
+  FaultOnStaticForceClipping: On
+  FaultOnAberrationNetForceCheck: On
+  FaultOnAberrationForceClipping: On
+  FaultOnOffsetForceClipping: On
+  FaultOnVelocityForceClipping: On
+  FaultOnForceClipping: On
+PositionControllerSettings:
+  FollowingErrorPercentage: 50
+  FaultNumberOfFollowingErrors: 5
+  FaultOnUnstableCount: 100
 CellLightSettings:
-  FaultOnOutputMismatch: Off
-  FaultOnSensorMismatch: Off
+  FaultOnOutputMismatch: On
+  FaultOnSensorMismatch: On
 PowerControllerSettings:
-  FaultOnPowerNetworkAOutputMismatch: Off
-  FaultOnPowerNetworkBOutputMismatch: Off
-  FaultOnPowerNetworkCOutputMismatch: Off
-  FaultOnPowerNetworkDOutputMismatch: Off
-  FaultOnAuxPowerNetworkAOutputMismatch: Off
-  FaultOnAuxPowerNetworkBOutputMismatch: Off
-  FaultOnAuxPowerNetworkCOutputMismatch: Off
-  FaultOnAuxPowerNetworkDOutputMismatch: Off
+  FaultOnPowerNetworkAOutputMismatch: On
+  FaultOnPowerNetworkBOutputMismatch: On
+  FaultOnPowerNetworkCOutputMismatch: On
+  FaultOnPowerNetworkDOutputMismatch: On
+  FaultOnAuxPowerNetworkAOutputMismatch: On
+  FaultOnAuxPowerNetworkBOutputMismatch: On
+  FaultOnAuxPowerNetworkCOutputMismatch: On
+  FaultOnAuxPowerNetworkDOutputMismatch: On
 RaiseOperationSettings:
   FaultOnTimeout: On
 LowerOperationSettings:
   FaultOnTimeout: On
 AccelerometerSettings:
-  FaultOnSampleTimeout: Off
-  FaultOnAngularAccelerationX: Off
-  FaultOnAngularAccelerationY: Off
-  FaultOnAngularAccelerationZ: Off
+  FaultOnSampleTimeout: On
+  FaultOnAngularAccelerationX: On
+  FaultOnAngularAccelerationY: On
+  FaultOnAngularAccelerationZ: On
 ILCSettings:
   FaultOnCommunicationTimeout: On
   CommunicationTimeoutCountThreshold: 3

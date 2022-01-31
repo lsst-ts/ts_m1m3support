@@ -33,11 +33,6 @@
 
 using namespace LSST::M1M3::SS;
 
-SettingReader& SettingReader::get() {
-    static SettingReader instance;
-    return instance;
-}
-
 void SettingReader::setRootPath(std::string rootPath) {
     SPDLOG_DEBUG("SettingReader: setRootPath(\"{}\")", rootPath);
 

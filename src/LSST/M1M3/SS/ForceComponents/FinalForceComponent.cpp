@@ -23,6 +23,7 @@
 
 #include <FinalForceComponent.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -36,11 +37,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FinalForceComponent::FinalForceComponent(SafetyController* safetyController,
-                                         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                          ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _enabledForceActuators = M1M3SSPublisher::get().getEnabledForceActuators();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
@@ -132,7 +132,8 @@ void FinalForceComponent::postUpdateActions() {
             _preclippedForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedForces->xForces[xIndex],
                                                   _appliedForces->xForces + xIndex);
-            _forceSetpointWarning->forceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->forceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -141,7 +142,8 @@ void FinalForceComponent::postUpdateActions() {
             _preclippedForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedForces->yForces[yIndex],
                                                   _appliedForces->yForces + yIndex);
-            _forceSetpointWarning->forceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->forceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
@@ -149,8 +151,9 @@ void FinalForceComponent::postUpdateActions() {
         _preclippedForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedForces->zForces[zIndex],
                                               _appliedForces->zForces + zIndex);
-        _forceSetpointWarning->forceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->forceWarning[zIndex];
+        _forceSetpointWarning->forceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->forceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->forceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

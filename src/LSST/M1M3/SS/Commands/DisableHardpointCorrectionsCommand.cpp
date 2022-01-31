@@ -30,23 +30,22 @@ namespace M1M3 {
 namespace SS {
 
 DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(
-        int32_t commandID, MTM1M3_command_disableHardpointCorrectionsC*) {
-    this->commandID = commandID;
-}
+        int32_t commandID, MTM1M3_command_disableHardpointCorrectionsC*)
+        : Command(commandID) {}
 
 void DisableHardpointCorrectionsCommand::execute() { Context::get().disableHardpointCorrections(this); }
 
 void DisableHardpointCorrectionsCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(this->commandID, ACK_INPROGRESS,
+    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(getCommandID(), ACK_INPROGRESS,
                                                                  "In-Progress");
 }
 
 void DisableHardpointCorrectionsCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void DisableHardpointCorrectionsCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(this->commandID, ACK_FAILED,
+    M1M3SSPublisher::get().ackCommanddisableHardpointCorrections(getCommandID(), ACK_FAILED,
                                                                  "Failed: " + reason);
 }
 

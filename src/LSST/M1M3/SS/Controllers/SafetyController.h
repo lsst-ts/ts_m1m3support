@@ -51,7 +51,7 @@ public:
 
     void clearErrorCode();
 
-    void airControllerNotifyCommandOutputMismatch(bool conditionFlag);
+    void airControllerNotifyCommandOutputMismatch(bool conditionFlag, bool commanded, bool sensed);
     void airControllerNotifyCommandSensorMismatch(bool conditionFlag);
 
     void displacementNotifySensorReportsInvalidCommand(bool conditionFlag);
@@ -108,8 +108,12 @@ public:
     void forceControllerNotifyVelocityForceClipping(bool conditionFlag);
     void forceControllerNotifyForceClipping(bool conditionFlag);
 
-    void cellLightNotifyOutputMismatch(bool conditionFlag);
-    void cellLightNotifySensorMismatch(bool conditionFlag);
+    void positionControllerNotifyLimitLow(int hp, bool conditionFlag);
+    void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
+    void positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder);
+
+    void cellLightNotifyOutputMismatch(bool conditionFlag, bool commanded, bool sensed);
+    void cellLightNotifySensorMismatch(bool conditionFlag, bool commanded, bool sensed);
 
     void powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag);
     void powerControllerNotifyPowerNetworkBOutputMismatch(bool conditionFlag);
@@ -141,9 +145,13 @@ public:
      */
     void hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag, float airPressure);
 
+    void hardpointActuatorFollowingError(int hp, double fePercent);
+
     void tmaAzimuthTimeout(double currentTimeout);
     void tmaElevationTimeout(double currentTimeout);
     void tmaInclinometerDeviation(double currentDeviation);
+
+    void userPanic();
 
     /**
      * Check if mirror safety rules are fulfilled. When safety rules are not
@@ -177,6 +185,9 @@ private:
     std::list<int> _forceActuatorFollowingErrorData[FA_COUNT];
     std::list<int> _hardpointActuatorMeasuredForceData[HP_COUNT];
     std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
+    bool _hardpointLimitLowTriggered[HP_COUNT];
+    bool _hardpointLimitHighTriggered[HP_COUNT];
+    int _hardpointFeViolations[HP_COUNT];
 };
 
 } /* namespace SS */
