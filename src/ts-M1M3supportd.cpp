@@ -92,7 +92,7 @@ std::string daemonGroup("m1m3");
 
 void sigKill(int signal) {
     SPDLOG_DEBUG("Kill/int signal received");
-    ControllerThread::get().enqueue(new ExitControlCommand());
+    ControllerThread::get().enqueue(new ExitControlCommand(-1));
 }
 
 std::vector<spdlog::sink_ptr> sinks;
@@ -171,7 +171,7 @@ void initializeFPGAs(IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
 
     SPDLOG_INFO("Main: Load expansion FPGA application settings");
     ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings =
-            SettingReader::get().loadExpansionFPGAApplicationSettings();
+            SettingReader::instance().loadExpansionFPGAApplicationSettings();
     SPDLOG_INFO("Main: Create expansion FPGA");
     expansionFPGA->setExpansionFPGAApplicationSettings(expansionFPGAApplicationSettings);
     expansionFPGA->open();
@@ -350,7 +350,7 @@ int main(int argc, char* const argv[]) {
     }
 
     SPDLOG_INFO("Main: Creating setting reader, root {}", configRoot);
-    SettingReader::get().setRootPath(configRoot);
+    SettingReader::instance().setRootPath(configRoot);
     SPDLOG_INFO("Main: Initializing M1M3 SAL");
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     m1m3SAL->setDebugLevel(debugLevelSAL);

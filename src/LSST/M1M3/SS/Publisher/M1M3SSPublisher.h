@@ -230,6 +230,10 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
+    void logPositionControllerSettings(MTM1M3_logevent_positionControllerSettingsC* data) {
+        _m1m3SAL->logEvent_positionControllerSettings(data, 0);
+    }
+
     void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
         _m1m3SAL->logEvent_accelerometerSettings(data, 0);
     }
@@ -402,6 +406,7 @@ public:
     void ackCommanddisable(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandstandby(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandexitControl(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandpanic(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandturnAirOn(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandturnAirOff(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandapplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);

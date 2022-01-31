@@ -25,8 +25,10 @@
 #define POSITIONCONTROLLER_H_
 
 #include <DataTypes.h>
+#include <Units.h>
 #include <HardpointActuatorSettings.h>
 #include <PositionControllerSettings.h>
+#include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
 namespace LSST {
@@ -61,14 +63,15 @@ public:
     /**
      * Returns raise and lower timeout.
      *
-     * @return timeout for raise/lower in seconds
+     * @return timeout for raise in seconds
      */
-    double getRaiseLowerTimeout();
+    int getRaiseTimeout() { return _positionControllerSettings->raiseTimeout; }
+    int getLowerTimeout() { return _positionControllerSettings->lowerTimeout; }
 
     bool enableChaseAll();
     void disableChaseAll();
 
-    bool forcesInTolerance();
+    bool forcesInTolerance(bool raise);
     bool motionComplete();
 
     /**
@@ -96,12 +99,26 @@ public:
      */
     bool moveToAbsolute(double x, double y, double z, double rX, double rY, double rZ);
     bool moveToReferencePosition();
+
+    /**
+     * Moves mirror to position ideal for lowering. This position depends on
+     * telescope elevation. It is position defined in
+     * PositionControllerSettings/Lower/PositionOffset, multiplied by
+     * sin(elevation) for Z and cos(elevation) for Y. The multiplication tries
+     * to position mirror opposite to its gravity vectory. It is exactly what
+     * LBTO uses for off-zenith mirror lowering.
+     *
+     * @return false when move cannot be performed
+     */
+    bool moveToLowerPosition();
+
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
     void stopMotion();
 
     /**
-     * Should be run in a loop to command steps updates. Sets stepsCommanded
-     * and stepsQueued. What is happening with the actuators is governed by
+     * Called in any enabled state (raised, parked, ..). Sets stepsCommanded
+     * and stepsQueued. What is happening with the actuators is governed by its
+     * state.
      *
      * * **Standby**: both stepsCommanded and stepsQueued are set to 0.
      * * **Chasing**: MTM1M3_hardpointActuatorDataC measuredForce is multiplied
@@ -119,23 +136,40 @@ public:
      * _targetEncoderValues and encoder values > 2 are commanded. Transition to
      * Standby state if the difference remains <= ±2 for two loop runs.
      *
+     * This loop also monitors if encoder is following expected trajectory. If
+     * relative following error is outside prescribed range for configured loop,
+     * HardpointActuatorFollowingError is triggered.
+     *
      * @see PositionControllerSettings
      */
     void updateSteps();
 
+    /**
+     * Check the hardpoint doesn't try to move past limits.
+     */
+    void checkLimits(int hp);
+
 private:
     void _convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
+
+    void _checkFollowingError(int hp);
 
     PositionControllerSettings* _positionControllerSettings;
     HardpointActuatorSettings* _hardpointActuatorSettings;
 
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
+    MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 
-    int32_t _scaledMaxStepsPerLoop[6];
-    int32_t _targetEncoderValues[6];
-    int32_t _stableEncoderCount[6];
+    int32_t _scaledMaxStepsPerLoop[HP_COUNT];
+    int32_t _targetEncoderValues[HP_COUNT];
+    int32_t _stableEncoderCount[HP_COUNT];
+    int32_t _unstableEncoderCount[HP_COUNT];
+
+    int32_t _lastEncoderCount[HP_COUNT];
+
+    SafetyController* _safetyController;
 };
 
 } /* namespace SS */

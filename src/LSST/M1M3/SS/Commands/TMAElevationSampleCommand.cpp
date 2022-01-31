@@ -32,14 +32,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC* data) {
-    this->commandID = -1;
+TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC* data) : Command(-1) {
     memcpy(&_data, data, sizeof(MTMount_elevationC));
 }
 
 void TMAElevationSampleCommand::execute() {
     double diff = _data.timestamp - M1M3SSPublisher::get().getTimestamp();
-    double limit = SettingReader::get().getSafetyControllerSettings()->TMA.ElevationTimeout;
+    double limit = SettingReader::instance().getSafetyControllerSettings()->TMA.ElevationTimeout;
     if (limit > 0 && fabs(diff) > limit) {
         using namespace std::chrono_literals;
         TG_LOG_ERROR(2s, "Received elevation timestamp deviates by more than {0:.3f}s: {1:.3f}", limit, diff);

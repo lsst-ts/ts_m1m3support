@@ -23,6 +23,7 @@
 
 #include <OffsetForceComponent.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -36,11 +37,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OffsetForceComponent::OffsetForceComponent(SafetyController* safetyController,
-                                           ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                            ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Offset", forceActuatorSettings->OffsetComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
@@ -146,7 +146,8 @@ void OffsetForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedOffsetForces->xForces[xIndex],
                                              _appliedOffsetForces->xForces + xIndex);
-            _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->offsetForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -156,7 +157,8 @@ void OffsetForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedOffsetForces->yForces[yIndex],
                                              _appliedOffsetForces->yForces + yIndex);
-            _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->offsetForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
@@ -164,8 +166,9 @@ void OffsetForceComponent::postUpdateActions() {
         _preclippedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedOffsetForces->zForces[zIndex],
                                               _appliedOffsetForces->zForces + zIndex);
-        _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->offsetForceWarning[zIndex];
+        _forceSetpointWarning->offsetForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->offsetForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

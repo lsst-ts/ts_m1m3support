@@ -30,23 +30,21 @@ namespace M1M3 {
 namespace SS {
 
 KillForceActuatorBumpTestCommand::KillForceActuatorBumpTestCommand(
-        int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC* data) {
-    this->commandID = commandID;
-}
+        int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC* data)
+        : Command(commandID) {}
 
 void KillForceActuatorBumpTestCommand::execute() { Context::get().killForceActuatorBumpTest(this); }
 
 void KillForceActuatorBumpTestCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(this->commandID, ACK_INPROGRESS,
-                                                               "In-Progress");
+    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void KillForceActuatorBumpTestCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void KillForceActuatorBumpTestCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(this->commandID, ACK_FAILED,
+    M1M3SSPublisher::get().ackCommandkillForceActuatorBumpTest(getCommandID(), ACK_FAILED,
                                                                "Failed: " + reason);
 }
 

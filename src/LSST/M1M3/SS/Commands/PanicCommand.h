@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 SS test suite. Tests SafetyControllerSettings.
+ * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Telescope and Site Systems.
+ * Developed for the LSST Data Management System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,20 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define CATCH_CONFIG_MAIN
-#include <catch/catch.hpp>
+#ifndef PANICCOMMAND_H_
+#define PANICCOMMAND_H_
 
-#include <SafetyControllerSettings.h>
-#include <SafetyController.h>
+#include <Command.h>
+#include <DataTypes.h>
 
-using namespace LSST::M1M3::SS;
+namespace LSST {
+namespace M1M3 {
+namespace SS {
 
-TEST_CASE("SafetyControllerSettings load", "[SafetyControllerSettings]") {
-    SafetyControllerSettings safetyControllerSettings;
+/*!
+ * Commands mirror to fault. Requires safety controller - allowed only after
+ * configuration had been loaded.
+ */
+class PanicCommand : public Command {
+public:
+    PanicCommand(int32_t commandID);
 
-    REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xml"));
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+};
 
-    REQUIRE_THROWS(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.xm"));
-}
+} /* namespace SS */
+} /* namespace M1M3 */
+} /* namespace LSST */
+
+#endif /* PANICCOMMAND_H_ */

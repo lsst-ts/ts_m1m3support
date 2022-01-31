@@ -36,8 +36,7 @@ namespace SS {
 
 class ThermalForceComponent : public ForceComponent {
 public:
-    ThermalForceComponent(SafetyController* safetyController,
-                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    ThermalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                           ForceActuatorSettings* forceActuatorSettings);
 
     void applyThermalForces(float* x, float* y, float* z);

@@ -131,8 +131,7 @@ struct ForceActuatorIndicesNeighbors {
 class ForceController {
 public:
     ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                    ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings,
-                    SafetyController* safetyController);
+                    ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
 
     void reset();
 
@@ -283,11 +282,6 @@ private:
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_gyroDataC* _gyroData;
-
-    double _azimuth_Timestamp;
-
-    double _elevation_Timestamp;
-    double _elevation_Actual;
 
     std::vector<ForceActuatorIndicesNeighbors> _neighbors;
 

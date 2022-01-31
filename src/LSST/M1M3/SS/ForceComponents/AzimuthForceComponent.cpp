@@ -23,7 +23,7 @@
 
 #include <AzimuthForceComponent.h>
 #include <M1M3SSPublisher.h>
-#include <SafetyController.h>
+#include <Model.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <Range.h>
@@ -38,11 +38,10 @@ namespace M1M3 {
 namespace SS {
 
 AzimuthForceComponent::AzimuthForceComponent(
-        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Azimuth", forceActuatorSettings->AzimuthComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
@@ -124,7 +123,8 @@ void AzimuthForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedAzimuthForces->xForces[xIndex],
                                              _appliedAzimuthForces->xForces + xIndex);
-            _forceSetpointWarning->azimuthForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->azimuthForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->azimuthForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -134,7 +134,8 @@ void AzimuthForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedAzimuthForces->yForces[yIndex],
                                              _appliedAzimuthForces->yForces + yIndex);
-            _forceSetpointWarning->azimuthForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->azimuthForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->azimuthForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->AzimuthLimitZTable[zIndex].LowFault;
@@ -143,8 +144,9 @@ void AzimuthForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedAzimuthForces->zForces[zIndex],
                                          _appliedAzimuthForces->zForces + zIndex);
-        _forceSetpointWarning->azimuthForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->azimuthForceWarning[zIndex];
+        _forceSetpointWarning->azimuthForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->azimuthForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->azimuthForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

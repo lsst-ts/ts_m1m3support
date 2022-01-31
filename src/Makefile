@@ -5,7 +5,7 @@ all: libM1M3SS.a
 .PHONY: DEPS clean
 
 C_SRCS = $(shell find LSST NiFpga -name '*.c')
-CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
+CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp') $(shell ls *.cpp)
 
 OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(CPP_SRCS))
 

@@ -51,6 +51,7 @@
 #include <KillForceActuatorBumpTestCommand.h>
 #include <LowerM1M3Command.h>
 #include <MoveHardpointActuatorsCommand.h>
+#include <PanicCommand.h>
 #include <PositionM1M3Command.h>
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
@@ -93,6 +94,7 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disable");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_standby");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitControl");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_panic");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOn");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOff");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForces");
@@ -167,9 +169,10 @@ Command* M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
 
 #define COMMAND_NOPARS(name, cmd)                                         \
     Command* M1M3SSSubscriber::tryAcceptCommand##name() {                 \
+        MTM1M3_command_##cmd##C _##cmd##Data;                             \
         int32_t commandID = _m1m3SAL->acceptCommand_##cmd(&_##cmd##Data); \
         if (commandID > 0) {                                              \
-            return new name##Command();                                   \
+            return new name##Command(commandID);                          \
         }                                                                 \
         return 0;                                                         \
     }
@@ -179,6 +182,8 @@ COMMAND(Enable, enable)
 COMMAND(Disable, disable)
 COMMAND(Standby, standby)
 COMMAND_NOPARS(ExitControl, exitControl)
+
+COMMAND_NOPARS(Panic, panic)
 
 COMMAND(TurnAirOn, turnAirOn)
 COMMAND(TurnAirOff, turnAirOff)

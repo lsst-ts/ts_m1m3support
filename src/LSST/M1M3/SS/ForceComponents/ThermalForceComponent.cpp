@@ -23,6 +23,7 @@
 
 #include <ThermalForceComponent.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -37,11 +38,10 @@ namespace M1M3 {
 namespace SS {
 
 ThermalForceComponent::ThermalForceComponent(
-        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Thermal", forceActuatorSettings->ThermalComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
@@ -121,7 +121,8 @@ void ThermalForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedThermalForces->xForces[xIndex],
                                              _appliedThermalForces->xForces + xIndex);
-            _forceSetpointWarning->thermalForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->thermalForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -131,7 +132,8 @@ void ThermalForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedThermalForces->yForces[yIndex],
                                              _appliedThermalForces->yForces + yIndex);
-            _forceSetpointWarning->thermalForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->thermalForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
@@ -140,8 +142,9 @@ void ThermalForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedThermalForces->zForces[zIndex],
                                          _appliedThermalForces->zForces + zIndex);
-        _forceSetpointWarning->thermalForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->thermalForceWarning[zIndex];
+        _forceSetpointWarning->thermalForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->thermalForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

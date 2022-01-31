@@ -28,9 +28,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-UpdateCommand::UpdateCommand(std::mutex* updateMutex) {
+UpdateCommand::UpdateCommand(std::mutex* updateMutex) : Command(-1) {
     _updateMutex = updateMutex;
-    this->commandID = -1;
 
     // Lock the update mutex to prevent the outer loop clock
     // thread from executing.

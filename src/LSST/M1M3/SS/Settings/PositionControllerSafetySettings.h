@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 SS test suite. Tests ForceController.
+ * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Telescope and Site Systems.
+ * Developed for the LSST Data Management System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,24 +21,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define CATCH_CONFIG_MAIN
-#include <catch/catch.hpp>
+#ifndef POSITIONCONTROLLERSAFETYSETTINGS_H
+#define POSITIONCONTROLLERSAFETYSETTINGS_H
 
-#include <ForceActuatorApplicationSettings.h>
+#include <yaml-cpp/yaml.h>
 
-using namespace LSST::M1M3::SS;
+struct PositionControllerSafetySettings {
+    float FollowingErrorPercentage;
+    int FaultNumberOfFollowingErrors;
+    int FaultOnUnstableCount;
 
-TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
-    ForceActuatorApplicationSettings settings;
+    void set(YAML::Node node) {
+        FollowingErrorPercentage = node["FollowingErrorPercentage"].as<float>();
+        FaultNumberOfFollowingErrors = node["FaultNumberOfFollowingErrors"].as<int>();
+        FaultOnUnstableCount = node["FaultOnUnstableCount"].as<int>();
+    }
+};
 
-    REQUIRE(settings.ActuatorIdToZIndex(100) < 0);
-    REQUIRE(settings.ActuatorIdToZIndex(101) == 0);
-    REQUIRE(settings.ActuatorIdToZIndex(150) < 0);
-    REQUIRE(settings.ActuatorIdToZIndex(443) == 155);
-    REQUIRE(settings.ActuatorIdToZIndex(444) < 0);
-
-    REQUIRE(settings.ZIndexToActuatorId(0) == 101);
-    REQUIRE(settings.ZIndexToActuatorId(155) == 443);
-    REQUIRE(settings.ZIndexToActuatorId(156) < 0);
-    REQUIRE(settings.ZIndexToActuatorId(-2) < 0);
-}
+#endif /* POSITIONCONTROLLERSAFETYSETTINGS_H */

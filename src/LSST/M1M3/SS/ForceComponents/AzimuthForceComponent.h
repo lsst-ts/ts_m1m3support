@@ -36,8 +36,7 @@ namespace SS {
 
 class AzimuthForceComponent : public ForceComponent {
 public:
-    AzimuthForceComponent(SafetyController* safetyController,
-                          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+    AzimuthForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                           ForceActuatorSettings* forceActuatorSettings);
 
     void applyAzimuthForces(float* x, float* y, float* z);

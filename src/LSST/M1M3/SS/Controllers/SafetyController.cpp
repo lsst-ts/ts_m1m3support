@@ -56,6 +56,11 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
             _hardpointActuatorAirPressureData[j].push_back(0);
         }
     }
+    for (int i = 0; i < HP_COUNT; i++) {
+        _hardpointLimitLowTriggered[i] = false;
+        _hardpointLimitHighTriggered[i] = false;
+        _hardpointFeViolations[i] = 0;
+    }
 }
 
 void SafetyController::clearErrorCode() {
@@ -64,10 +69,11 @@ void SafetyController::clearErrorCode() {
     M1M3SSPublisher::get().logErrorCode();
 }
 
-void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag) {
+void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag, bool commanded,
+                                                                bool sensed) {
     _updateOverride(FaultCodes::AirControllerCommandOutputMismatch,
                     _safetyControllerSettings->AirController.FaultOnCommandOutputMismatch, conditionFlag,
-                    "Air controller command output mismatch");
+                    "Air controller command output mismatch - is {}, should be {}", sensed, commanded);
 }
 
 void SafetyController::airControllerNotifyCommandSensorMismatch(bool conditionFlag) {
@@ -372,16 +378,56 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
                     "Force controller force clipping");
 }
 
-void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag) {
-    _updateOverride(FaultCodes::CellLightOutputMismatch,
-                    _safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag,
-                    "Cell light output mismatch");
+void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
+    if (conditionFlag) {
+        if (_hardpointLimitLowTriggered[hp] == false) {
+            _updateOverride(FaultCodes::HardpointActuatorLimitLowError, true, conditionFlag,
+                            "Hardpoint #{} hit low limit", hp + 1);
+            _hardpointLimitLowTriggered[hp] = true;
+        }
+
+    } else {
+        if (_hardpointLimitLowTriggered[hp] == true) {
+            SPDLOG_INFO("Hardpoint #{} low limit cleared", hp + 1);
+            _hardpointLimitLowTriggered[hp] = false;
+        }
+    }
 }
 
-void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag) {
+void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionFlag) {
+    if (conditionFlag) {
+        if (_hardpointLimitHighTriggered[hp] == false) {
+            _updateOverride(FaultCodes::HardpointActuatorLimitHighError, true, conditionFlag,
+                            "Hardpoint #{} hit high limit", hp + 1);
+            _hardpointLimitHighTriggered[hp] = true;
+        }
+
+    } else {
+        if (_hardpointLimitHighTriggered[hp] == true) {
+            SPDLOG_INFO("Hardpoint #{} high limit cleared", hp + 1);
+            _hardpointLimitHighTriggered[hp] = false;
+        }
+    }
+}
+
+void SafetyController::positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder) {
+    _updateOverride(FaultCodes::HardpointUnstableError,
+                    _safetyControllerSettings->PositionController.FaultOnUnstableCount > 0,
+                    unstableCount >= _safetyControllerSettings->PositionController.FaultOnUnstableCount,
+                    "Hardpoint #{} unstable during fine positioning {} times, delta {}", hp + 1,
+                    unstableCount, deltaEncoder);
+}
+
+void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag, bool commanded, bool sensed) {
+    _updateOverride(FaultCodes::CellLightOutputMismatch,
+                    _safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag,
+                    "Cell light output mismatch - is {}, should be {}", sensed, commanded);
+}
+
+void SafetyController::cellLightNotifySensorMismatch(bool conditionFlag, bool commanded, bool sensed) {
     _updateOverride(FaultCodes::CellLightSensorMismatch,
                     _safetyControllerSettings->CellLights.FaultOnSensorMismatch, conditionFlag,
-                    "Cell light sensor mismatch");
+                    "Cell light sensor mismatch - is {}, should be {}", sensed, commanded);
 }
 
 void SafetyController::powerControllerNotifyPowerNetworkAOutputMismatch(bool conditionFlag) {
@@ -514,6 +560,20 @@ void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, int c
                     actuatorDataIndex + 1, airPressure, absSum, sum);
 }
 
+void SafetyController::hardpointActuatorFollowingError(int hp, double fePercent) {
+    double feRange = _safetyControllerSettings->PositionController.FollowingErrorPercentage;
+    int feCounts = _safetyControllerSettings->PositionController.FaultNumberOfFollowingErrors;
+    double feObserved = fabs(100 - fePercent);
+    _updateOverride(FaultCodes::HardpointActuatorFollowingError,
+                    (feCounts >= 0) && (_hardpointFeViolations[hp] > feCounts), feObserved > feRange,
+                    "Hardpoint {} following error out of range: {:.2f}", hp, fePercent);
+    if (feObserved > feRange) {
+        _hardpointFeViolations[hp]++;
+    } else {
+        _hardpointFeViolations[hp] = 0;
+    }
+}
+
 void SafetyController::tmaAzimuthTimeout(double currentTimeout) {
     _updateOverride(FaultCodes::TMAAzimuthTimeout, _safetyControllerSettings->TMA.AzimuthTimeout > 0,
                     fabs(currentTimeout) > _safetyControllerSettings->TMA.AzimuthTimeout,
@@ -531,6 +591,11 @@ void SafetyController::tmaInclinometerDeviation(double currentDeviation) {
                     _safetyControllerSettings->TMA.InclinometerDeviation > 0,
                     fabs(currentDeviation) > _safetyControllerSettings->TMA.InclinometerDeviation,
                     "TMA Elevation - inclinometer mismatch: {:.3f} deg", currentDeviation);
+}
+
+void SafetyController::userPanic() {
+    _updateOverride(FaultCodes::UserPanic, true, true,
+                    "User submitted Panic command (pushed panic button,..)");
 }
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {

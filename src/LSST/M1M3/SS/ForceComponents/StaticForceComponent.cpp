@@ -23,6 +23,7 @@
 
 #include <StaticForceComponent.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -36,11 +37,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StaticForceComponent::StaticForceComponent(SafetyController* safetyController,
-                                           ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
+StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                            ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Static", forceActuatorSettings->StaticComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
@@ -99,7 +99,8 @@ void StaticForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedStaticForces->xForces[xIndex],
                                              _appliedStaticForces->xForces + xIndex);
-            _forceSetpointWarning->staticForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->staticForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -109,7 +110,8 @@ void StaticForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedStaticForces->yForces[yIndex],
                                              _appliedStaticForces->yForces + yIndex);
-            _forceSetpointWarning->staticForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->staticForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->StaticLimitZTable[zIndex].LowFault;
@@ -117,8 +119,9 @@ void StaticForceComponent::postUpdateActions() {
         _preclippedStaticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedStaticForces->zForces[zIndex],
                                               _appliedStaticForces->zForces + zIndex);
-        _forceSetpointWarning->staticForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->staticForceWarning[zIndex];
+        _forceSetpointWarning->staticForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->staticForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

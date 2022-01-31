@@ -30,14 +30,14 @@ namespace M1M3 {
 namespace SS {
 
 ForceActuatorBumpTestCommand::ForceActuatorBumpTestCommand(int32_t commandID,
-                                                           MTM1M3_command_forceActuatorBumpTestC* data) {
-    this->commandID = commandID;
+                                                           MTM1M3_command_forceActuatorBumpTestC* data)
+        : Command(commandID) {
     memcpy(&_data, data, sizeof(MTM1M3_command_forceActuatorBumpTestC));
 }
 
 bool ForceActuatorBumpTestCommand::validate() {
-    if (SettingReader::get().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(_data.actuatorId) ==
-        -1) {
+    if (SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
+                _data.actuatorId) == -1) {
         M1M3SSPublisher::get().logCommandRejectionWarning("ForceActuatorBumpTest", "Invalid actuatorId.");
         return false;
     }
@@ -52,15 +52,15 @@ bool ForceActuatorBumpTestCommand::validate() {
 void ForceActuatorBumpTestCommand::execute() { Context::get().forceActuatorBumpTest(this); }
 
 void ForceActuatorBumpTestCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(this->commandID, ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ForceActuatorBumpTestCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(this->commandID, ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void ForceActuatorBumpTestCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(this->commandID, ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

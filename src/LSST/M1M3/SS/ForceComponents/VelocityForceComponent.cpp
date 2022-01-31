@@ -23,6 +23,7 @@
 
 #include <VelocityForceComponent.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
@@ -37,11 +38,10 @@ namespace M1M3 {
 namespace SS {
 
 VelocityForceComponent::VelocityForceComponent(
-        SafetyController* safetyController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Velocity", forceActuatorSettings->VelocityComponentSettings) {
-    _safetyController = safetyController;
+    _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
@@ -125,7 +125,8 @@ void VelocityForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedVelocityForces->xForces[xIndex],
                                                   _appliedVelocityForces->xForces + xIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->velocityForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -135,7 +136,8 @@ void VelocityForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedVelocityForces->yForces[yIndex],
                                                   _appliedVelocityForces->yForces + yIndex);
-            _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->velocityForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
@@ -144,8 +146,9 @@ void VelocityForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedVelocityForces->zForces[zIndex],
                                          _appliedVelocityForces->zForces + zIndex);
-        _forceSetpointWarning->velocityForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->velocityForceWarning[zIndex];
+        _forceSetpointWarning->velocityForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->velocityForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
