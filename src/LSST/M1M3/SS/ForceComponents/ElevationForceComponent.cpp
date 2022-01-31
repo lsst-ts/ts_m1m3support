@@ -125,7 +125,8 @@ void ElevationForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedElevationForces->xForces[xIndex],
                                                   _appliedElevationForces->xForces + xIndex);
-            _forceSetpointWarning->elevationForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->elevationForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -135,7 +136,8 @@ void ElevationForceComponent::postUpdateActions() {
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedElevationForces->yForces[yIndex],
                                                   _appliedElevationForces->yForces + yIndex);
-            _forceSetpointWarning->elevationForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->elevationForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].LowFault;
@@ -145,8 +147,9 @@ void ElevationForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedElevationForces->zForces[zIndex],
                                          _appliedElevationForces->zForces + zIndex);
-        _forceSetpointWarning->elevationForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->elevationForceWarning[zIndex];
+        _forceSetpointWarning->elevationForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->elevationForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

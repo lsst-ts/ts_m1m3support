@@ -505,11 +505,12 @@ void ForceController::_convertForcesToSetpoints() {
                             _toInt24(-_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
             }
-            _forceSetpointWarning->safetyLimitWarning[pIndex] =
-                    _forceSetpointWarning->safetyLimitWarning[pIndex] ||
+            bool notInRangeS =
                     !Range::InRangeAndCoerce((int)secondaryLowFault, (int)secondaryHighFault,
                                              _preclippedCylinderForces->secondaryCylinderForces[sIndex],
                                              _appliedCylinderForces->secondaryCylinderForces + sIndex);
+            _forceSetpointWarning->safetyLimitWarning[pIndex] =
+                    notInRangeS || _forceSetpointWarning->safetyLimitWarning[pIndex];
         }
 
         float primaryLowFault = _forceActuatorSettings->CylinderLimitPrimaryTable[pIndex].LowFault;
@@ -537,13 +538,13 @@ void ForceController::_convertForcesToSetpoints() {
                         _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->yForces[yIndex]);
                 break;
         }
+        bool notInRange = !Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault,
+                                                   _preclippedCylinderForces->primaryCylinderForces[pIndex],
+                                                   _appliedCylinderForces->primaryCylinderForces + pIndex);
         _forceSetpointWarning->safetyLimitWarning[pIndex] =
-                _forceSetpointWarning->safetyLimitWarning[pIndex] ||
-                !Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault,
-                                         _preclippedCylinderForces->primaryCylinderForces[pIndex],
-                                         _appliedCylinderForces->primaryCylinderForces + pIndex);
+                notInRange || _forceSetpointWarning->safetyLimitWarning[pIndex];
 
-        clippingRequired |= _forceSetpointWarning->safetyLimitWarning[pIndex];
+        clippingRequired = _forceSetpointWarning->safetyLimitWarning[pIndex] || clippingRequired;
     }
     _appliedCylinderForces->timestamp = M1M3SSPublisher::get().getTimestamp();
     _preclippedCylinderForces->timestamp = _appliedCylinderForces->timestamp;
@@ -613,8 +614,10 @@ bool ForceController::_checkNearNeighbors() {
         }
 
         bool previousWarning = _forceSetpointWarning->nearNeighborWarning[zIndex];
-        _forceSetpointWarning->anyNearNeighborWarning |= _forceSetpointWarning->nearNeighborWarning[zIndex];
-        warningChanged |= (_forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning);
+        _forceSetpointWarning->anyNearNeighborWarning = _forceSetpointWarning->nearNeighborWarning[zIndex] ||
+                                                        _forceSetpointWarning->anyNearNeighborWarning;
+        warningChanged =
+                (_forceSetpointWarning->nearNeighborWarning[zIndex] != previousWarning) || warningChanged;
     }
     _safetyController->forceControllerNotifyNearNeighborCheck(_forceSetpointWarning->anyNearNeighborWarning,
                                                               failed, nominalZ, nominalZWarning);
@@ -701,8 +704,10 @@ bool ForceController::_checkFarNeighbors() {
         bool previousWarning = _forceSetpointWarning->farNeighborWarning[zIndex];
         _forceSetpointWarning->farNeighborWarning[zIndex] =
                 !Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce);
-        _forceSetpointWarning->anyFarNeighborWarning |= _forceSetpointWarning->farNeighborWarning[zIndex];
-        warningChanged |= (_forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning);
+        _forceSetpointWarning->anyFarNeighborWarning = _forceSetpointWarning->farNeighborWarning[zIndex] ||
+                                                       _forceSetpointWarning->anyFarNeighborWarning;
+        warningChanged =
+                (_forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning) || warningChanged;
     }
     _safetyController->forceControllerNotifyFarNeighborCheck(_forceSetpointWarning->anyFarNeighborWarning);
     return warningChanged;

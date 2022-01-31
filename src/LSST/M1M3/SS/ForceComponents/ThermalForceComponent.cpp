@@ -121,7 +121,8 @@ void ThermalForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedThermalForces->xForces[xIndex],
                                              _appliedThermalForces->xForces + xIndex);
-            _forceSetpointWarning->thermalForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->thermalForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -131,7 +132,8 @@ void ThermalForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedThermalForces->yForces[yIndex],
                                              _appliedThermalForces->yForces + yIndex);
-            _forceSetpointWarning->thermalForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->thermalForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->ThermalLimitZTable[zIndex].LowFault;
@@ -140,8 +142,9 @@ void ThermalForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedThermalForces->zForces[zIndex],
                                          _appliedThermalForces->zForces + zIndex);
-        _forceSetpointWarning->thermalForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->thermalForceWarning[zIndex];
+        _forceSetpointWarning->thermalForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->thermalForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

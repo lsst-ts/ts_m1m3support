@@ -5,7 +5,7 @@ all: libM1M3SS.a
 .PHONY: DEPS clean
 
 C_SRCS = $(shell find LSST NiFpga -name '*.c')
-CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
+CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp') $(shell ls *.cpp)
 
 OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(CPP_SRCS))
 
@@ -52,7 +52,7 @@ libM1M3SS.a: $(OBJS)
 	${co}$(AR) rs $@ $^
 
 clean:
-	@$(foreach file,ts-M1M3supportd.cpp.o m1m3cli.cpp.o $(OBJS) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
+	@$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
 
 # file targets
 %.cpp.o: %.cpp.d
