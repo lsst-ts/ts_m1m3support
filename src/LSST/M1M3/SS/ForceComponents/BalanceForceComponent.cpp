@@ -170,7 +170,8 @@ void BalanceForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedBalanceForces->xForces[xIndex],
                                              _appliedBalanceForces->xForces + xIndex);
-            _forceSetpointWarning->balanceForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->balanceForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->balanceForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -180,7 +181,8 @@ void BalanceForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedBalanceForces->yForces[yIndex],
                                              _appliedBalanceForces->yForces + yIndex);
-            _forceSetpointWarning->balanceForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->balanceForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->balanceForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->BalanceLimitZTable[zIndex].LowFault;
@@ -189,8 +191,9 @@ void BalanceForceComponent::postUpdateActions() {
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedBalanceForces->zForces[zIndex],
                                          _appliedBalanceForces->zForces + zIndex);
-        _forceSetpointWarning->balanceForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->balanceForceWarning[zIndex];
+        _forceSetpointWarning->balanceForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->balanceForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->balanceForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(

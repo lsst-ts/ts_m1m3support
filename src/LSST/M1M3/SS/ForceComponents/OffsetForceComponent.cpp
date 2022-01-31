@@ -146,7 +146,8 @@ void OffsetForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedOffsetForces->xForces[xIndex],
                                              _appliedOffsetForces->xForces + xIndex);
-            _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->offsetForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         }
 
         if (yIndex != -1) {
@@ -156,7 +157,8 @@ void OffsetForceComponent::postUpdateActions() {
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedOffsetForces->yForces[yIndex],
                                              _appliedOffsetForces->yForces + yIndex);
-            _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
+            _forceSetpointWarning->offsetForceWarning[zIndex] =
+                    notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         }
 
         float zLowFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
@@ -164,8 +166,9 @@ void OffsetForceComponent::postUpdateActions() {
         _preclippedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedOffsetForces->zForces[zIndex],
                                               _appliedOffsetForces->zForces + zIndex);
-        _forceSetpointWarning->offsetForceWarning[zIndex] |= notInRange;
-        clippingRequired |= _forceSetpointWarning->offsetForceWarning[zIndex];
+        _forceSetpointWarning->offsetForceWarning[zIndex] =
+                notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
+        clippingRequired = _forceSetpointWarning->offsetForceWarning[zIndex] || clippingRequired;
     }
 
     ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
