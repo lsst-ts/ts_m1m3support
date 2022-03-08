@@ -29,7 +29,7 @@ namespace M1M3 {
 namespace SS {
 namespace FPGAAddresses {
 
-/*!
+/**
  * An enumeration match FPGA signals to port numbers.
  */
 enum Type {
@@ -113,6 +113,35 @@ enum Type {
     ModbusSoftwareTrigger = 252,
     Telemetry = 253,
     Timestamp = 254
+};
+
+/**
+ * Digital Input bytes.
+ */
+enum DigitalInputs {
+    AirValveOpened = 0x0100,
+    AirValveClosed = 0x0200,
+    CellLightsOn = 0x0400,
+};
+
+/**
+ * Digital Output bytes.
+ */
+enum DigitalOutputs {
+    HeartbeatOutputState = 0x01,
+    AirCommandOutputOn = 0x10,
+    CellLightsOutputOn = 0x20,
+};
+
+enum PowerSupply {
+    AuxA = 0x01,
+    AuxB = 0x02,
+    AuxC = 0x04,
+    AuxD = 0x08,
+    A = 0x10,
+    B = 0x20,
+    C = 0x40,
+    D = 0x80
 };
 
 /**
