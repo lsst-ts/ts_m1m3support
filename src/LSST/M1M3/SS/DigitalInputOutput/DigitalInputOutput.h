@@ -28,6 +28,8 @@
 #include <IFPGA.h>
 #include <SafetyController.h>
 
+#include <chrono>
+
 struct MTM1M3_logevent_airSupplyStatusC;
 struct MTM1M3_logevent_airSupplyWarningC;
 struct MTM1M3_logevent_cellLightStatusC;
@@ -98,6 +100,9 @@ private:
     uint64_t _lastDITimestamp;
 
     double _lastToggleTimestamp;
+
+    std::chrono::steady_clock::time_point _airToggledTime;
+    std::chrono::steady_clock::time_point _lightToggledTime;
 };
 
 } /* namespace SS */
