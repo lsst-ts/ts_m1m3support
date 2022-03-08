@@ -35,9 +35,8 @@
 #include <algorithm>
 #include <cstring>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
+using namespace LSST::M1M3::SS::FPGAAddresses;
 
 const float HEARTBEAT_PERIOD = 1.0;  //* Heartbeat period in seconds
 
@@ -79,7 +78,8 @@ void DigitalInputOutput::processData() {
         _lastDOTimestamp = fpgaData->DigitalOutputTimestamp;
 
         _airSupplyStatus->timestamp = timestamp;
-        _airSupplyStatus->airCommandOutputOn = (fpgaData->DigitalOutputStates & 0x10) != 0;
+        _airSupplyStatus->airCommandOutputOn =
+                (fpgaData->DigitalOutputStates & DigitalOutputs::AirCommandOutputOn) != 0;
 
         _airSupplyWarning->timestamp = timestamp;
         _airSupplyWarning->commandOutputMismatch =
@@ -87,14 +87,16 @@ void DigitalInputOutput::processData() {
 
         _cellLightStatus->timestamp = timestamp;
         // Polarity is swapped
-        _cellLightStatus->cellLightsOutputOn = (fpgaData->DigitalOutputStates & 0x20) == 0;
+        _cellLightStatus->cellLightsOutputOn =
+                (fpgaData->DigitalOutputStates & DigitalOutputs::CellLightsOutputOn) == 0;
 
         _cellLightWarning->timestamp = timestamp;
         _cellLightWarning->cellLightsOutputMismatch =
                 _cellLightStatus->cellLightsOutputOn != _cellLightStatus->cellLightsCommandedOn;
 
         _interlockStatus->timestamp = timestamp;
-        _interlockStatus->heartbeatOutputState = (fpgaData->DigitalOutputStates & 0x01) != 0;
+        _interlockStatus->heartbeatOutputState =
+                (fpgaData->DigitalOutputStates & DigitalOutputs::HeartbeatOutputState) != 0;
 
         InterlockWarning::instance().setHearbeatOutputMismatch(
                 timestamp,
@@ -117,9 +119,11 @@ void DigitalInputOutput::processData() {
 
         _airSupplyStatus->timestamp = timestamp;
         // Polarity is swapped
-        _airSupplyStatus->airValveOpened = (fpgaData->DigitalInputStates & 0x0100) == 0;
+        _airSupplyStatus->airValveOpened =
+                (fpgaData->DigitalInputStates & DigitalInputs::AirValveOpened) == 0;
         // Polarity is swapped
-        _airSupplyStatus->airValveClosed = (fpgaData->DigitalInputStates & 0x0200) == 0;
+        _airSupplyStatus->airValveClosed =
+                (fpgaData->DigitalInputStates & DigitalInputs::AirValveClosed) == 0;
 
         _airSupplyWarning->timestamp = timestamp;
         _airSupplyWarning->commandSensorMismatch =
@@ -129,7 +133,7 @@ void DigitalInputOutput::processData() {
                  (_airSupplyStatus->airValveOpened || !_airSupplyStatus->airValveClosed));
 
         _cellLightStatus->timestamp = timestamp;
-        _cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & 0x0400) != 0;
+        _cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & DigitalInputs::CellLightsOn) != 0;
 
         _cellLightWarning->timestamp = timestamp;
         _cellLightWarning->cellLightsSensorMismatch =
@@ -209,7 +213,3 @@ void DigitalInputOutput::turnCellLightsOff() {
                           (uint16_t)(!_cellLightStatus->cellLightsCommandedOn)};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
