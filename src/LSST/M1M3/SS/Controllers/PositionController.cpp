@@ -400,9 +400,9 @@ void PositionController::updateSteps() {
 void PositionController::checkLimits(int hp) {
     SPDLOG_TRACE("PositionController: checkLimits({})", hp);
     bool lowLimit = _hardpointActuatorData->stepsCommanded[hp] < 0 &&
-                    _hardpointActuatorWarning->limitSwitch1Operated[hp] == true;
+                    _hardpointActuatorWarning->limitSwitch2Operated[hp] == true;
     bool highLimit = _hardpointActuatorData->stepsCommanded[hp] > 0 &&
-                     _hardpointActuatorWarning->limitSwitch2Operated[hp] == true;
+                     _hardpointActuatorWarning->limitSwitch1Operated[hp] == true;
     if (lowLimit || highLimit) {
         _hardpointActuatorData->stepsCommanded[hp] = 0;
     }
