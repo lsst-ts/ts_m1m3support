@@ -39,6 +39,7 @@
 #include "ccpp_sal_MTMount.h"
 
 using namespace LSST::M1M3::SS;
+using namespace LSST::M1M3::SS::FPGAAddresses;
 
 /**
  * Return data writen to modbus. The data are right shifted by 1 to allow for
@@ -52,7 +53,8 @@ SimulatedFPGA::SimulatedFPGA() {
     SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
     _lastRequest = -1;
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
-    supportFPGAData.DigitalInputStates = 0x0001 | 0x0002 | 0x0008 | 0x0010 | 0x0040 | 0x0080;
+    supportFPGAData.DigitalInputStates =
+            0x0001 | 0x0002 | 0x0008 | DigitalOutputs::AirCommandOutputOn | 0x0040 | 0x0080;
     _mgrMTMount = SAL_MTMount();
     _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
 
@@ -125,84 +127,88 @@ void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
 void SimulatedFPGA::pullTelemetry() {
     SPDLOG_TRACE("SimulatedFPGA: pullTelemetry()");
     uint64_t timestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
-    this->supportFPGAData.Reserved = 0;
-    this->supportFPGAData.InclinometerTxBytes = 0;
-    this->supportFPGAData.InclinometerRxBytes = 0;
-    this->supportFPGAData.InclinometerTxFrames = 0;
-    this->supportFPGAData.InclinometerRxFrames = 0;
-    this->supportFPGAData.InclinometerErrorTimestamp = 0;
-    this->supportFPGAData.InclinometerErrorCode = 0;
-    this->supportFPGAData.InclinometerSampleTimestamp = timestamp;
+    supportFPGAData.Reserved = 0;
+    supportFPGAData.InclinometerTxBytes = 0;
+    supportFPGAData.InclinometerRxBytes = 0;
+    supportFPGAData.InclinometerTxFrames = 0;
+    supportFPGAData.InclinometerRxFrames = 0;
+    supportFPGAData.InclinometerErrorTimestamp = 0;
+    supportFPGAData.InclinometerErrorCode = 0;
+    supportFPGAData.InclinometerSampleTimestamp = timestamp;
 
     // Inclinometer raw value is measured as (negative) zenith angle (0 = zenith, -90 = horizon).
     // Converts elevation to zenith angle and adds random 1/200th deg (=18 arcsec) noise.
 
     {
         std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
-        this->supportFPGAData.InclinometerAngleRaw =
+        supportFPGAData.InclinometerAngleRaw =
                 (int32_t)((_mountElevation - 90.0) * 1000.0) + (getRndPM1() * 5.0);
     }
 
-    this->supportFPGAData.DisplacementTxBytes = 0;
-    this->supportFPGAData.DisplacementRxBytes = 0;
-    this->supportFPGAData.DisplacementTxFrames = 0;
-    this->supportFPGAData.DisplacementRxFrames = 0;
-    this->supportFPGAData.DisplacementErrorTimestamp = 0;
-    this->supportFPGAData.DisplacementErrorCode = 0;
-    this->supportFPGAData.DisplacementSampleTimestamp = timestamp;
-    this->supportFPGAData.DisplacementRaw1 = (int32_t)(getRndPM1() + 10) * 1000.0;
-    this->supportFPGAData.DisplacementRaw2 = (int32_t)(getRndPM1() + 20) * 1000.0;
-    this->supportFPGAData.DisplacementRaw3 = (int32_t)(getRndPM1() + 30) * 1000.0;
-    this->supportFPGAData.DisplacementRaw4 = (int32_t)(getRndPM1() + 40) * 1000.0;
-    this->supportFPGAData.DisplacementRaw5 = (int32_t)(getRndPM1() + 50) * 1000.0;
-    this->supportFPGAData.DisplacementRaw6 = (int32_t)(getRndPM1() + 60) * 1000.0;
-    this->supportFPGAData.DisplacementRaw7 = (int32_t)(getRndPM1() + 70) * 1000.0;
-    this->supportFPGAData.DisplacementRaw8 = (int32_t)(getRndPM1() + 80) * 1000.0;
-    this->supportFPGAData.AccelerometerSampleCount++;
-    this->supportFPGAData.AccelerometerSampleTimestamp = timestamp;
+    supportFPGAData.DisplacementTxBytes = 0;
+    supportFPGAData.DisplacementRxBytes = 0;
+    supportFPGAData.DisplacementTxFrames = 0;
+    supportFPGAData.DisplacementRxFrames = 0;
+    supportFPGAData.DisplacementErrorTimestamp = 0;
+    supportFPGAData.DisplacementErrorCode = 0;
+    supportFPGAData.DisplacementSampleTimestamp = timestamp;
+    supportFPGAData.DisplacementRaw1 = (int32_t)(getRndPM1() + 10) * 1000.0;
+    supportFPGAData.DisplacementRaw2 = (int32_t)(getRndPM1() + 20) * 1000.0;
+    supportFPGAData.DisplacementRaw3 = (int32_t)(getRndPM1() + 30) * 1000.0;
+    supportFPGAData.DisplacementRaw4 = (int32_t)(getRndPM1() + 40) * 1000.0;
+    supportFPGAData.DisplacementRaw5 = (int32_t)(getRndPM1() + 50) * 1000.0;
+    supportFPGAData.DisplacementRaw6 = (int32_t)(getRndPM1() + 60) * 1000.0;
+    supportFPGAData.DisplacementRaw7 = (int32_t)(getRndPM1() + 70) * 1000.0;
+    supportFPGAData.DisplacementRaw8 = (int32_t)(getRndPM1() + 80) * 1000.0;
+    supportFPGAData.AccelerometerSampleCount++;
+    supportFPGAData.AccelerometerSampleTimestamp = timestamp;
     for (int i = 0; i < 8; i++) {
         supportFPGAData.AccelerometerRaw[i] = getRndPM1() * 0.01;
     }
-    this->supportFPGAData.GyroTxBytes = 0;
-    this->supportFPGAData.GyroRxBytes = 0;
-    this->supportFPGAData.GyroTxFrames = 0;
-    this->supportFPGAData.GyroRxFrames = 0;
-    this->supportFPGAData.GyroErrorTimestamp = 0;
-    this->supportFPGAData.GyroErrorCode = 0;
-    this->supportFPGAData.GyroSampleTimestamp = timestamp;
-    this->supportFPGAData.GyroRawX = getRndPM1() * 0.01;
-    this->supportFPGAData.GyroRawY = getRndPM1() * 0.01;
-    this->supportFPGAData.GyroRawZ = getRndPM1() * 0.01;
-    this->supportFPGAData.GyroStatus = 0x7F;
-    this->supportFPGAData.GyroSequenceNumber++;
-    if (this->supportFPGAData.GyroSequenceNumber > 127) {
-        this->supportFPGAData.GyroSequenceNumber = 0;
+    supportFPGAData.GyroTxBytes = 0;
+    supportFPGAData.GyroRxBytes = 0;
+    supportFPGAData.GyroTxFrames = 0;
+    supportFPGAData.GyroRxFrames = 0;
+    supportFPGAData.GyroErrorTimestamp = 0;
+    supportFPGAData.GyroErrorCode = 0;
+    supportFPGAData.GyroSampleTimestamp = timestamp;
+    supportFPGAData.GyroRawX = getRndPM1() * 0.01;
+    supportFPGAData.GyroRawY = getRndPM1() * 0.01;
+    supportFPGAData.GyroRawZ = getRndPM1() * 0.01;
+    supportFPGAData.GyroStatus = 0x7F;
+    supportFPGAData.GyroSequenceNumber++;
+    if (supportFPGAData.GyroSequenceNumber > 127) {
+        supportFPGAData.GyroSequenceNumber = 0;
     }
-    this->supportFPGAData.GyroTemperature = 24 + int(getRndPM1() * 2);
-    this->supportFPGAData.GyroBITTimestamp = timestamp;
-    this->supportFPGAData.GyroBIT0 = 0x7F;
-    this->supportFPGAData.GyroBIT1 = 0x7F;
-    this->supportFPGAData.GyroBIT2 = 0x7F;
-    this->supportFPGAData.GyroBIT3 = 0x7F;
-    this->supportFPGAData.GyroBIT4 = 0x7F;
-    this->supportFPGAData.GyroBIT5 = 0x7F;
-    this->supportFPGAData.GyroBIT6 = 0x7F;
-    this->supportFPGAData.GyroBIT7 = 0x7F;
-    this->supportFPGAData.DigitalInputSampleCount++;
-    this->supportFPGAData.DigitalInputTimestamp = timestamp;
-    //	this->supportFPGAData.DigitalInputStates = 0;
-    this->supportFPGAData.DigitalOutputSampleCount++;
-    this->supportFPGAData.DigitalOutputTimestamp = timestamp;
-    //	this->supportFPGAData.DigitalOutputStates = 0;
-    this->supportFPGAData.PowerSupplySampleCount++;
-    this->supportFPGAData.PowerSupplyTimestamp = timestamp;
-    //	this->supportFPGAData.PowerSupplyStates = 0;
+    supportFPGAData.GyroTemperature = 24 + int(getRndPM1() * 2);
+    supportFPGAData.GyroBITTimestamp = timestamp;
+    supportFPGAData.GyroBIT0 = 0x7F;
+    supportFPGAData.GyroBIT1 = 0x7F;
+    supportFPGAData.GyroBIT2 = 0x7F;
+    supportFPGAData.GyroBIT3 = 0x7F;
+    supportFPGAData.GyroBIT4 = 0x7F;
+    supportFPGAData.GyroBIT5 = 0x7F;
+    supportFPGAData.GyroBIT6 = 0x7F;
+    supportFPGAData.GyroBIT7 = 0x7F;
+    supportFPGAData.DigitalInputSampleCount++;
+    supportFPGAData.DigitalInputTimestamp = timestamp;
+    supportFPGAData.DigitalOutputSampleCount++;
+    supportFPGAData.DigitalOutputTimestamp = timestamp;
+    //	supportFPGAData.DigitalOutputStates = 0;
+    supportFPGAData.PowerSupplySampleCount++;
+    supportFPGAData.PowerSupplyTimestamp = timestamp;
+    //	supportFPGAData.PowerSupplyStates = 0;
 }
 
 void SimulatedFPGA::pullHealthAndStatus() {}
 
 uint8_t _broadCastCounter() {
     return static_cast<uint8_t>(M1M3SSPublisher::get().getOuterLoopData()->broadcastCounter) << 4;
+}
+
+template <class t>
+void setBit(t& value, uint32_t bit, bool on) {
+    value = (value & ~bit) | (on ? bit : 0);
 }
 
 void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
@@ -270,79 +276,67 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             case FPGAAddresses::MirrorCellLightsOn:
             case FPGAAddresses::HeartbeatToSafetyController: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.DigitalOutputStates & 0xFE) | (state ? 0x01 : 0x00);
+                setBit(supportFPGAData.DigitalOutputStates, DigitalOutputs::HeartbeatOutputState, state);
                 break;
             }
             case FPGAAddresses::AirSupplyValveControl: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.DigitalOutputStates & 0xEF) | (state ? 0x10 : 0x00);
-                this->supportFPGAData.DigitalInputStates =
-                        (this->supportFPGAData.DigitalInputStates & 0xFCFF) | (state ? 0x0200 : 0x0100);
+                setBit(supportFPGAData.DigitalOutputStates, DigitalOutputs::AirCommandOutputOn, state);
+                setBit(supportFPGAData.DigitalInputStates, DigitalInputs::AirValveOpened, !state);
+                setBit(supportFPGAData.DigitalInputStates, DigitalInputs::AirValveClosed, state);
                 break;
             }
             case FPGAAddresses::MirrorCellLightControl: {
                 int state = data[i++];
-                this->supportFPGAData.DigitalOutputStates =
-                        (this->supportFPGAData.DigitalOutputStates & 0xDF) | (state ? 0x20 : 0x00);
-                this->supportFPGAData.DigitalInputStates =
-                        (this->supportFPGAData.DigitalInputStates & 0xFBFF) | (state ? 0x0000 : 0x0400);
+                setBit(supportFPGAData.DigitalOutputStates, DigitalOutputs::CellLightsOutputOn, state);
+                setBit(supportFPGAData.DigitalInputStates, DigitalInputs::CellLightsOn, !state);
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkAOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x01) | (state ? 0x01 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::AuxA, state);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkBOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x02) | (state ? 0x02 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::AuxB, state);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkCOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x04) | (state ? 0x04 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::AuxC, state);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCAuxPowerNetworkDOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x08) | (state ? 0x08 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::AuxD, state);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkAOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x10) | (state ? 0x10 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::A, state);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkBOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x20) | (state ? 0x20 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::B, state);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkCOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x40) | (state ? 0x40 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::C, state);
                 // TODO: Set Power Supply Currents
                 break;
             }
             case FPGAAddresses::DCPowerNetworkDOn: {
                 int state = data[i++];
-                this->supportFPGAData.PowerSupplyStates =
-                        (this->supportFPGAData.PowerSupplyStates & ~0x80) | (state ? 0x80 : 0x00);
+                setBit(supportFPGAData.PowerSupplyStates, PowerSupply::D, state);
                 // TODO: Set Power Supply Currents
                 break;
             }

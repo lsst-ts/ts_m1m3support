@@ -27,6 +27,7 @@
 #include <M1M3SSPublisher.h>
 #include <InterlockWarning.h>
 #include <SafetyController.h>
+#include <SettingReader.h>
 #include <Timestamp.h>
 #include <Range.h>
 #include <SAL_MTM1M3C.h>
@@ -34,10 +35,10 @@
 
 #include <algorithm>
 #include <cstring>
+#include <chrono>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
+using namespace LSST::M1M3::SS::FPGAAddresses;
 
 const float HEARTBEAT_PERIOD = 1.0;  //* Heartbeat period in seconds
 
@@ -54,6 +55,8 @@ DigitalInputOutput::DigitalInputOutput() {
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
     _lastToggleTimestamp = 0;
+
+    _lightToggledTime = _airToggledTime = std::chrono::steady_clock::now();
 
     memset(_airSupplyStatus, 0, sizeof(MTM1M3_logevent_airSupplyStatusC));
     memset(_airSupplyWarning, 0, sizeof(MTM1M3_logevent_airSupplyWarningC));
@@ -74,12 +77,15 @@ void DigitalInputOutput::processData() {
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     double timestamp =
             Timestamp::fromFPGA(std::max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));
+    std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+
     if (fpgaData->DigitalOutputTimestamp != _lastDOTimestamp) {
         tryPublish = true;
         _lastDOTimestamp = fpgaData->DigitalOutputTimestamp;
 
         _airSupplyStatus->timestamp = timestamp;
-        _airSupplyStatus->airCommandOutputOn = (fpgaData->DigitalOutputStates & 0x10) != 0;
+        _airSupplyStatus->airCommandOutputOn =
+                (fpgaData->DigitalOutputStates & DigitalOutputs::AirCommandOutputOn) != 0;
 
         _airSupplyWarning->timestamp = timestamp;
         _airSupplyWarning->commandOutputMismatch =
@@ -87,14 +93,16 @@ void DigitalInputOutput::processData() {
 
         _cellLightStatus->timestamp = timestamp;
         // Polarity is swapped
-        _cellLightStatus->cellLightsOutputOn = (fpgaData->DigitalOutputStates & 0x20) == 0;
+        _cellLightStatus->cellLightsOutputOn =
+                (fpgaData->DigitalOutputStates & DigitalOutputs::CellLightsOutputOn) == 0;
 
         _cellLightWarning->timestamp = timestamp;
         _cellLightWarning->cellLightsOutputMismatch =
                 _cellLightStatus->cellLightsOutputOn != _cellLightStatus->cellLightsCommandedOn;
 
         _interlockStatus->timestamp = timestamp;
-        _interlockStatus->heartbeatOutputState = (fpgaData->DigitalOutputStates & 0x01) != 0;
+        _interlockStatus->heartbeatOutputState =
+                (fpgaData->DigitalOutputStates & DigitalOutputs::HeartbeatOutputState) != 0;
 
         InterlockWarning::instance().setHearbeatOutputMismatch(
                 timestamp,
@@ -117,22 +125,29 @@ void DigitalInputOutput::processData() {
 
         _airSupplyStatus->timestamp = timestamp;
         // Polarity is swapped
-        _airSupplyStatus->airValveOpened = (fpgaData->DigitalInputStates & 0x0100) == 0;
+        _airSupplyStatus->airValveOpened =
+                (fpgaData->DigitalInputStates & DigitalInputs::AirValveOpened) == 0;
         // Polarity is swapped
-        _airSupplyStatus->airValveClosed = (fpgaData->DigitalInputStates & 0x0200) == 0;
+        _airSupplyStatus->airValveClosed =
+                (fpgaData->DigitalInputStates & DigitalInputs::AirValveClosed) == 0;
 
         _airSupplyWarning->timestamp = timestamp;
         _airSupplyWarning->commandSensorMismatch =
-                (_airSupplyStatus->airCommandedOn &&
-                 (!_airSupplyStatus->airValveOpened || _airSupplyStatus->airValveClosed)) ||
-                (!_airSupplyStatus->airCommandedOn &&
-                 (_airSupplyStatus->airValveOpened || !_airSupplyStatus->airValveClosed));
+                (now - _airToggledTime) >
+                        std::chrono::seconds(SettingReader::instance()
+                                                     .getSafetyControllerSettings()
+                                                     ->AirController.ValveTransitionTimeout) &&
+                ((_airSupplyStatus->airCommandedOn &&
+                  (!_airSupplyStatus->airValveOpened || _airSupplyStatus->airValveClosed)) ||
+                 (!_airSupplyStatus->airCommandedOn &&
+                  (_airSupplyStatus->airValveOpened || !_airSupplyStatus->airValveClosed)));
 
         _cellLightStatus->timestamp = timestamp;
-        _cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & 0x0400) != 0;
+        _cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & DigitalInputs::CellLightsOn) != 0;
 
         _cellLightWarning->timestamp = timestamp;
         _cellLightWarning->cellLightsSensorMismatch =
+                (now - _lightToggledTime) > std::chrono::milliseconds(100) &&
                 _cellLightStatus->cellLightsCommandedOn != _cellLightStatus->cellLightsOn;
 
         InterlockWarning::instance().setData(timestamp, fpgaData->DigitalInputStates);
@@ -183,6 +198,7 @@ void DigitalInputOutput::turnAirOn() {
     _airSupplyStatus->airCommandedOn = true;
     uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+    _airToggledTime = std::chrono::steady_clock::now();
 }
 
 void DigitalInputOutput::turnAirOff() {
@@ -190,6 +206,7 @@ void DigitalInputOutput::turnAirOff() {
     _airSupplyStatus->airCommandedOn = false;
     uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+    _airToggledTime = std::chrono::steady_clock::now();
 }
 
 void DigitalInputOutput::turnCellLightsOn() {
@@ -199,6 +216,7 @@ void DigitalInputOutput::turnCellLightsOn() {
     uint16_t buffer[2] = {FPGAAddresses::MirrorCellLightControl,
                           (uint16_t)(!_cellLightStatus->cellLightsCommandedOn)};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+    _lightToggledTime = std::chrono::steady_clock::now();
 }
 
 void DigitalInputOutput::turnCellLightsOff() {
@@ -208,8 +226,5 @@ void DigitalInputOutput::turnCellLightsOff() {
     uint16_t buffer[2] = {FPGAAddresses::MirrorCellLightControl,
                           (uint16_t)(!_cellLightStatus->cellLightsCommandedOn)};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+    _lightToggledTime = std::chrono::steady_clock::now();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
