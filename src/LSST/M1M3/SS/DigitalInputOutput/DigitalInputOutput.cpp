@@ -27,6 +27,7 @@
 #include <M1M3SSPublisher.h>
 #include <InterlockWarning.h>
 #include <SafetyController.h>
+#include <SettingReader.h>
 #include <Timestamp.h>
 #include <Range.h>
 #include <SAL_MTM1M3C.h>
@@ -88,8 +89,7 @@ void DigitalInputOutput::processData() {
 
         _airSupplyWarning->timestamp = timestamp;
         _airSupplyWarning->commandOutputMismatch =
-                _airSupplyStatus->airCommandOutputOn != _airSupplyStatus->airCommandedOn &&
-                (now - _airToggledTime) > std::chrono::milliseconds(100);
+                _airSupplyStatus->airCommandOutputOn != _airSupplyStatus->airCommandedOn;
 
         _cellLightStatus->timestamp = timestamp;
         // Polarity is swapped
@@ -98,8 +98,7 @@ void DigitalInputOutput::processData() {
 
         _cellLightWarning->timestamp = timestamp;
         _cellLightWarning->cellLightsOutputMismatch =
-                _cellLightStatus->cellLightsOutputOn != _cellLightStatus->cellLightsCommandedOn &&
-                (now - _lightToggledTime) > std::chrono::milliseconds(100);
+                _cellLightStatus->cellLightsOutputOn != _cellLightStatus->cellLightsCommandedOn;
 
         _interlockStatus->timestamp = timestamp;
         _interlockStatus->heartbeatOutputState =
@@ -134,16 +133,21 @@ void DigitalInputOutput::processData() {
 
         _airSupplyWarning->timestamp = timestamp;
         _airSupplyWarning->commandSensorMismatch =
-                (_airSupplyStatus->airCommandedOn &&
-                 (!_airSupplyStatus->airValveOpened || _airSupplyStatus->airValveClosed)) ||
-                (!_airSupplyStatus->airCommandedOn &&
-                 (_airSupplyStatus->airValveOpened || !_airSupplyStatus->airValveClosed));
+                (now - _airToggledTime) >
+                        std::chrono::seconds(SettingReader::instance()
+                                                     .getSafetyControllerSettings()
+                                                     ->AirController.ValveTransitionTimeout) &&
+                ((_airSupplyStatus->airCommandedOn &&
+                  (!_airSupplyStatus->airValveOpened || _airSupplyStatus->airValveClosed)) ||
+                 (!_airSupplyStatus->airCommandedOn &&
+                  (_airSupplyStatus->airValveOpened || !_airSupplyStatus->airValveClosed)));
 
         _cellLightStatus->timestamp = timestamp;
         _cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & DigitalInputs::CellLightsOn) != 0;
 
         _cellLightWarning->timestamp = timestamp;
         _cellLightWarning->cellLightsSensorMismatch =
+                (now - _lightToggledTime) > std::chrono::milliseconds(100) &&
                 _cellLightStatus->cellLightsCommandedOn != _cellLightStatus->cellLightsOn;
 
         InterlockWarning::instance().setData(timestamp, fpgaData->DigitalInputStates);

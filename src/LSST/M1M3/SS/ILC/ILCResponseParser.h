@@ -50,7 +50,6 @@ public:
     void verifyResponses();
 
 private:
-    bool _validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp);
     void _parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId);
     void _parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map);
