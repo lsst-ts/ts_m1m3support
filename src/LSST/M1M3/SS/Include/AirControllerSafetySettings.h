@@ -29,10 +29,12 @@
 struct AirControllerSafetySettings {
     bool FaultOnCommandOutputMismatch;
     bool FaultOnCommandSensorMismatch;
+    int ValveTransitionTimeout;
 
     void set(YAML::Node node) {
         FaultOnCommandOutputMismatch = node["FaultOnCommandOutputMismatch"].as<bool>();
         FaultOnCommandSensorMismatch = node["FaultOnCommandSensorMismatch"].as<bool>();
+        ValveTransitionTimeout = node["ValveTransitionTimeout"].as<int>();
     }
 };
 

@@ -28,6 +28,12 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
+// define that to printout bytes for CRC
+#ifdef DEBUG_CRC
+#include <iostream>
+#include <iomanip>
+#endif
+
 using namespace std;
 
 // masks for FPGA FIFO commands
@@ -109,7 +115,15 @@ uint16_t ModbusBuffer::calculateCRC(std::vector<uint8_t> data) {
     return crc;
 }
 
-uint16_t ModbusBuffer::calculateCRC(int32_t length) { return calculateCRC(getReadData(length)); }
+uint16_t ModbusBuffer::calculateCRC(int32_t length) {
+#ifdef DEBUG_CRC
+    for (int i = _index - length; i < _index; i++) {
+        std::cout << " " << std::hex << std::setfill('0') << std::setw(4) << _buffer[i];
+    }
+    std::cout << std::endl;
+#endif
+    return calculateCRC(getReadData(length));
+}
 
 uint16_t ModbusBuffer::readLength() { return _buffer[_index++]; }
 

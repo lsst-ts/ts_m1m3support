@@ -122,6 +122,27 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
     memset(_hmExpectedResponses, 0, sizeof(_hmExpectedResponses));
 }
 
+bool validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp, uint16_t& receivedCRC,
+                 uint16_t& calculatedCRC) {
+    int32_t addressIndex = buffer->getIndex();
+    while (!buffer->endOfFrame() && !buffer->endOfBuffer() && (buffer->readLength() & 0xF000) != 0xB000) {
+    }
+    int32_t crcIndex = buffer->getIndex() - 3;
+    buffer->setIndex(crcIndex);
+    calculatedCRC = buffer->calculateCRC(crcIndex - addressIndex);
+    receivedCRC = buffer->readCRC();
+    (*timestamp) = buffer->readTimestamp();
+    if (receivedCRC == calculatedCRC) {
+        (*length) = crcIndex - addressIndex;
+        buffer->setIndex(addressIndex);
+        return true;
+    } else {
+        buffer->readEndOfFrame();
+        (*length) = buffer->getIndex() - addressIndex;
+        return false;
+    }
+}
+
 void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     uint64_t a = buffer->readLength();
     uint64_t b = buffer->readLength();
@@ -141,7 +162,16 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     while (!buffer->endOfBuffer()) {
         uint16_t length = 0;
         double timestamp = 0;
-        if (_validateCRC(buffer, &length, &timestamp)) {
+        uint16_t calculatedCRC;
+        uint16_t receivedCRC;
+        if (validateCRC(buffer, &length, &timestamp, calculatedCRC, receivedCRC) == false) {
+            auto data = buffer->getReadData(length);
+            SPDLOG_WARN(
+                    "ILCResponseParser: Invalid CRC on subnet {:d} - received {:04X}, calculated {:04X}, "
+                    "address {:02X}, function {:02X}, {:02X}",
+                    subnet, receivedCRC, calculatedCRC, data[0], data[1], data[2]);
+            _warnInvalidCRC(timestamp);
+        } else {
             if (subnet >= 1 && subnet <= 5) {
                 uint8_t address = buffer->readU8();
                 uint8_t function = buffer->readU8();
@@ -320,9 +350,6 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                 SPDLOG_WARN("ILCResponseParser: Unknown subnet {:d}", subnet);
                 _warnUnknownSubnet(timestamp);
             }
-        } else {
-            SPDLOG_WARN("ILCResponseParser: Invalid CRC on subnet {:d}", subnet);
-            _warnInvalidCRC(timestamp);
         }
     }
     M1M3SSPublisher::getForceActuatorWarning()->log();
@@ -393,26 +420,6 @@ void ILCResponseParser::verifyResponses() {
     }
 
     _safetyController->ilcCommunicationTimeout(anyTimeout);
-}
-
-bool ILCResponseParser::_validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp) {
-    int32_t addressIndex = buffer->getIndex();
-    while (!buffer->endOfFrame() && !buffer->endOfBuffer() && (buffer->readLength() & 0xF000) != 0xB000) {
-    }
-    int32_t crcIndex = buffer->getIndex() - 3;
-    (*length) = crcIndex - addressIndex + 2;  // + 11; // This was +11 however it didn't seem to be used.
-                                              // Reusing this length as something helpful.
-    buffer->setIndex(crcIndex);
-    uint16_t calculatedCRC = buffer->calculateCRC(crcIndex - addressIndex);
-    uint16_t crc = buffer->readCRC();
-    (*timestamp) = buffer->readTimestamp();
-    if (crc == calculatedCRC) {
-        buffer->setIndex(addressIndex);
-        return true;
-    } else {
-        buffer->readEndOfFrame();
-        return false;
-    }
 }
 
 void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId) {
