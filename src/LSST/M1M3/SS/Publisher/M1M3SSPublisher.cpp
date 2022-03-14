@@ -31,7 +31,7 @@ namespace SS {
 
 M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) {
     SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()");
-    _eventSettingsApplied.otherSettingsEvents = "forceActuatorSettings";
+    _eventConfigurationApplied.otherInfo = "forceActuatorSettings";
 }
 
 M1M3SSPublisher& M1M3SSPublisher::get() {
@@ -68,7 +68,6 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedElevationForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedOffsetForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedSettingsMatchStart");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedStaticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedThermalForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedVelocityForces");
@@ -121,8 +120,8 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedStaticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedThermalForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingVersions");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_settingsApplied");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
@@ -391,18 +390,6 @@ void M1M3SSPublisher::tryLogAppliedOffsetForces() {
     }
     if (changeDetected) {
         this->logAppliedOffsetForces();
-    }
-}
-
-void M1M3SSPublisher::logAppliedSettingsMatchStart() {
-    _m1m3SAL->logEvent_appliedSettingsMatchStart(&_eventAppliedSettingsMatchStart, 0);
-    _previousEventAppliedSettingsMatchStart = _eventAppliedSettingsMatchStart;
-}
-
-void M1M3SSPublisher::tryLogAppliedSettingsMatchStart() {
-    if (_eventAppliedSettingsMatchStart.appliedSettingsMatchStartIsTrue !=
-        _previousEventAppliedSettingsMatchStart.appliedSettingsMatchStartIsTrue) {
-        this->logAppliedSettingsMatchStart();
     }
 }
 
@@ -1984,10 +1971,6 @@ void M1M3SSPublisher::tryLogPreclippedVelocityForces() {
         this->logPreclippedVelocityForces();
     }
 }
-
-void M1M3SSPublisher::logSettingVersions() { _m1m3SAL->logEvent_settingVersions(&_eventSettingVersions, 0); }
-
-void M1M3SSPublisher::logSettingsApplied() { _m1m3SAL->logEvent_settingsApplied(&_eventSettingsApplied, 0); }
 
 void M1M3SSPublisher::logSoftwareVersions() {
     MTM1M3_logevent_softwareVersionsC versions;

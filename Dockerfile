@@ -9,7 +9,7 @@ USER saluser
 ARG XML_BRANCH=main
 
 WORKDIR /home/saluser/repos/ts_xml
-RUN git fetch && git checkout $XML_BRANCH
+RUN git fetch && git checkout $XML_BRANCH && git pull
 
 WORKDIR /home/saluser
 
