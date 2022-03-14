@@ -1018,16 +1018,24 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
 
 void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float airPressure = _hardpointMonitorData->breakawayPressure[actuatorId];
-    float min = _hardpointActuatorSettings->airPressureWarningLow;
-    float max = _hardpointActuatorSettings->airPressureWarningHigh;
+    float min = _hardpointActuatorSettings->airPressureFaultLow;
+    float max = _hardpointActuatorSettings->airPressureFaultHigh;
     int loadCellError = 0;
-    if (airPressure > max) loadCellError = 1;
-    if (airPressure < min) loadCellError = -1;
-    if (_detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState ||
-        _detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveState) {
-        _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError, airPressure);
-    } else {
-        _safetyController->hardpointActuatorAirPressure(actuatorId, 0, airPressure);
+    switch (_detailedState->detailedState) {
+        case MTM1M3::MTM1M3_shared_DetailedStates_RaisingState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_RaisingEngineeringState:
+            min = _hardpointActuatorSettings->airPressureFaultLowRaising;
+        case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_LoweringState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_LoweringEngineeringState:
+            if (airPressure < min) loadCellError = -1;
+            if (airPressure > max) loadCellError = 1;
+            _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError, airPressure);
+            break;
+        default:
+            _safetyController->hardpointActuatorAirPressure(actuatorId, 0, airPressure);
+            break;
     }
 }
 
