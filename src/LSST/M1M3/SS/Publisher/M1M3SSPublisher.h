@@ -106,9 +106,6 @@ public:
     }
     MTM1M3_logevent_appliedForcesC* getEventAppliedForces() { return &_eventAppliedForces; }
     MTM1M3_logevent_appliedOffsetForcesC* getEventAppliedOffsetForces() { return &_eventAppliedOffsetForces; }
-    MTM1M3_logevent_appliedSettingsMatchStartC* getEventAppliedSettingsMatchStart() {
-        return &_eventAppliedSettingsMatchStart;
-    }
     MTM1M3_logevent_appliedStaticForcesC* getEventAppliedStaticForces() {
         return &this->eventAppliedStaticForces;
     }
@@ -204,8 +201,12 @@ public:
     MTM1M3_logevent_preclippedVelocityForcesC* getEventPreclippedVelocityForces() {
         return &_eventPreclippedVelocityForces;
     }
-    MTM1M3_logevent_settingVersionsC* getEventSettingVersions() { return &_eventSettingVersions; }
-    MTM1M3_logevent_settingsAppliedC* getEventSettingsApplied() { return &_eventSettingsApplied; }
+    MTM1M3_logevent_configurationsAvailableC* getEventConfigurationsAvailable() {
+        return &_eventConfigurationsAvailable;
+    }
+    MTM1M3_logevent_configurationAppliedC* getEventConfigurationApplied() {
+        return &_eventConfigurationApplied;
+    }
     MTM1M3_logevent_summaryStateC* getEventSummaryState() { return &_eventSummaryState; }
 
     /**
@@ -274,8 +275,6 @@ public:
     void tryLogAppliedForces();
     void logAppliedOffsetForces();
     void tryLogAppliedOffsetForces();
-    void logAppliedSettingsMatchStart();
-    void tryLogAppliedSettingsMatchStart();
     void logAppliedStaticForces();
     void tryLogAppliedStaticForces();
     void logAppliedThermalForces();
@@ -386,8 +385,12 @@ public:
     void tryLogPreclippedThermalForces();
     void logPreclippedVelocityForces();
     void tryLogPreclippedVelocityForces();
-    void logSettingVersions();
-    void logSettingsApplied();
+    void logConfigurationsAvailable() {
+        _m1m3SAL->logEvent_configurationsAvailable(&_eventConfigurationsAvailable, 0);
+    }
+    void logConfigurationApplied() {
+        _m1m3SAL->logEvent_configurationApplied(&_eventConfigurationApplied, 0);
+    }
     void logSoftwareVersions();
     void logSummaryState();
     void tryLogSummaryState();
@@ -475,7 +478,6 @@ private:
     MTM1M3_logevent_appliedElevationForcesC eventAppliedElevationForces;
     MTM1M3_logevent_appliedForcesC _eventAppliedForces;
     MTM1M3_logevent_appliedOffsetForcesC _eventAppliedOffsetForces;
-    MTM1M3_logevent_appliedSettingsMatchStartC _eventAppliedSettingsMatchStart;
     MTM1M3_logevent_appliedStaticForcesC eventAppliedStaticForces;
     MTM1M3_logevent_appliedThermalForcesC _eventAppliedThermalForces;
     MTM1M3_logevent_appliedVelocityForcesC _eventAppliedVelocityForces;
@@ -520,8 +522,8 @@ private:
     MTM1M3_logevent_preclippedStaticForcesC _eventPreclippedStaticForces;
     MTM1M3_logevent_preclippedThermalForcesC _eventPreclippedThermalForces;
     MTM1M3_logevent_preclippedVelocityForcesC _eventPreclippedVelocityForces;
-    MTM1M3_logevent_settingVersionsC _eventSettingVersions;
-    MTM1M3_logevent_settingsAppliedC _eventSettingsApplied;
+    MTM1M3_logevent_configurationsAvailableC _eventConfigurationsAvailable;
+    MTM1M3_logevent_configurationAppliedC _eventConfigurationApplied;
     MTM1M3_logevent_summaryStateC _eventSummaryState;
     MTM1M3_logevent_accelerometerWarningC _previousEventAccelerometerWarning;
     MTM1M3_logevent_airSupplyStatusC _previousEventAirSupplyStatus;
@@ -535,7 +537,6 @@ private:
     MTM1M3_logevent_appliedElevationForcesC _previousEventAppliedElevationForces;
     MTM1M3_logevent_appliedForcesC _previousEventAppliedForces;
     MTM1M3_logevent_appliedOffsetForcesC _previousEventAppliedOffsetForces;
-    MTM1M3_logevent_appliedSettingsMatchStartC _previousEventAppliedSettingsMatchStart;
     MTM1M3_logevent_appliedStaticForcesC _previousEventAppliedStaticForces;
     MTM1M3_logevent_appliedThermalForcesC _previousEventAppliedThermalForces;
     MTM1M3_logevent_appliedVelocityForcesC _previousEventAppliedVelocityForces;

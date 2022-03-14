@@ -49,11 +49,11 @@ States::Type StandbyState::update(UpdateCommand* command) {
 
 States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
-    Model::get().loadSettings(command->getData()->settingsToApply);
-    M1M3SSPublisher::get().getEventSettingsApplied()->settingsVersion =
+    Model::get().loadSettings(command->getData()->configurationOverride);
+    M1M3SSPublisher::get().getEventConfigurationApplied()->version =
             SettingReader::instance().getSettingsVersion();
-    M1M3SSPublisher::get().getEventSettingsApplied()->otherSettingsEvents = "";
-    M1M3SSPublisher::get().logSettingsApplied();
+    M1M3SSPublisher::get().getEventConfigurationApplied()->otherInfo = "";
+    M1M3SSPublisher::get().logConfigurationApplied();
 
     PowerController* powerController = Model::get().getPowerController();
     ILC* ilc = Model::get().getILC();
