@@ -54,8 +54,9 @@ void HardpointActuatorSettings::load(const std::string &filename) {
         hardpointMeasuredForceFSBWarningLow = doc["HardpointMeasuredForceFSBWarningLow"].as<float>();
         hardpointMeasuredForceWarningHigh = doc["HardpointMeasuredForceWarningHigh"].as<float>();
         hardpointMeasuredForceWarningLow = doc["HardpointMeasuredForceWarningLow"].as<float>();
-        airPressureWarningHigh = doc["AirPressureWarningHigh"].as<float>();
-        airPressureWarningLow = doc["AirPressureWarningLow"].as<float>();
+        airPressureFaultHigh = doc["AirPressureFaultHigh"].as<float>();
+        airPressureFaultLow = doc["AirPressureFaultLow"].as<float>();
+        airPressureFaultLowRaising = doc["AirPressureFaultLowRaising"].as<float>();
 
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));

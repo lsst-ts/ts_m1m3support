@@ -1003,13 +1003,13 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
 
     if (_detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState ||
         _detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveState) {
-        float max = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
-        float min = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
+        float maxForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
+        float minForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (_forceActuatorState->balanceForcesApplied) {
-            max = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
-            min = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
+            maxForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
+            minForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
         }
-        bool measuredForceError = measuredForce > max || measuredForce < min;
+        bool measuredForceError = measuredForce > maxForce || measuredForce < minForce;
         _safetyController->hardpointActuatorMeasuredForce(actuatorId, measuredForceError);
     } else {
         _safetyController->hardpointActuatorMeasuredForce(actuatorId, false);
@@ -1018,16 +1018,24 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
 
 void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float airPressure = _hardpointMonitorData->breakawayPressure[actuatorId];
-    float min = _hardpointActuatorSettings->airPressureWarningLow;
-    float max = _hardpointActuatorSettings->airPressureWarningHigh;
+    float minPressure = _hardpointActuatorSettings->airPressureFaultLow;
+    float maxPressure = _hardpointActuatorSettings->airPressureFaultHigh;
     int loadCellError = 0;
-    if (airPressure > max) loadCellError = 1;
-    if (airPressure < min) loadCellError = -1;
-    if (_detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState ||
-        _detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveState) {
-        _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError, airPressure);
-    } else {
-        _safetyController->hardpointActuatorAirPressure(actuatorId, 0, airPressure);
+    switch (_detailedState->detailedState) {
+        case MTM1M3::MTM1M3_shared_DetailedStates_RaisingState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_RaisingEngineeringState:
+            minPressure = _hardpointActuatorSettings->airPressureFaultLowRaising;
+        case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_LoweringState:
+        case MTM1M3::MTM1M3_shared_DetailedStates_LoweringEngineeringState:
+            if (airPressure < minPressure) loadCellError = -1;
+            if (airPressure > maxPressure) loadCellError = 1;
+            _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError, airPressure);
+            break;
+        default:
+            _safetyController->hardpointActuatorAirPressure(actuatorId, 0, airPressure);
+            break;
     }
 }
 
