@@ -99,13 +99,13 @@ TEST_CASE("Failure on low air pressure", "[SafetyController]") {
 
     for (int i = 0; i < safetyControllerSettings.ILC.AirPressureCountThreshold - 1; i++) {
         safetyController.hardpointActuatorAirPressure(0, -1,
-                                                      hardpointActuatorSettings.airPressureWarningLow - 1);
+                                                      hardpointActuatorSettings.airPressureFaultLow - 1);
         safetyController.checkSafety(States::ActiveState);
         REQUIRE(lowCount == 0);
         REQUIRE(highCount == 0);
     }
 
-    safetyController.hardpointActuatorAirPressure(0, -1, hardpointActuatorSettings.airPressureWarningLow - 1);
+    safetyController.hardpointActuatorAirPressure(0, -1, hardpointActuatorSettings.airPressureFaultLow - 1);
     safetyController.checkSafety(States::ActiveState);
     REQUIRE(lowCount == 1);
     REQUIRE(highCount == 0);
@@ -120,13 +120,13 @@ TEST_CASE("Failure on high air pressure", "[SafetyController]") {
 
     for (int i = 0; i < safetyControllerSettings.ILC.AirPressureCountThreshold - 1; i++) {
         safetyController.hardpointActuatorAirPressure(0, 1,
-                                                      hardpointActuatorSettings.airPressureWarningHigh + 1);
+                                                      hardpointActuatorSettings.airPressureFaultHigh + 1);
         safetyController.checkSafety(States::ActiveState);
         REQUIRE(lowCount == 0);
         REQUIRE(highCount == 0);
     }
 
-    safetyController.hardpointActuatorAirPressure(0, 1, hardpointActuatorSettings.airPressureWarningHigh + 1);
+    safetyController.hardpointActuatorAirPressure(0, 1, hardpointActuatorSettings.airPressureFaultHigh + 1);
     safetyController.checkSafety(States::ActiveState);
     REQUIRE(lowCount == 0);
     REQUIRE(highCount == 1);
