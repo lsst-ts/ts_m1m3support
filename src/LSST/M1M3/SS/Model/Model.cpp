@@ -224,12 +224,12 @@ void Model::publishRecommendedSettings() {
     SPDLOG_DEBUG("Model: publishRecommendedSettings()");
     RecommendedApplicationSettings* recommendedApplicationSettings =
             SettingReader::instance().loadRecommendedApplicationSettings();
-    MTM1M3_logevent_settingVersionsC* data = M1M3SSPublisher::get().getEventSettingVersions();
-    data->recommendedSettingsVersion = "";
+    MTM1M3_logevent_configurationsAvailableC* data = M1M3SSPublisher::get().getEventConfigurationsAvailable();
+    data->version = "";
     for (uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
-        data->recommendedSettingsVersion += recommendedApplicationSettings->RecommendedSettings[i] + ",";
+        data->version += recommendedApplicationSettings->RecommendedSettings[i] + ",";
     }
-    M1M3SSPublisher::get().logSettingVersions();
+    M1M3SSPublisher::get().logConfigurationsAvailable();
 }
 
 void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
