@@ -32,11 +32,11 @@ namespace M1M3 {
 namespace SS {
 
 StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) : Command(commandID) {
-    _data.settingsToApply = data->settingsToApply;
+    _data.configurationOverride = data->configurationOverride;
 }
 
 bool StartCommand::validate() {
-    if (_data.settingsToApply.empty()) {
+    if (_data.configurationOverride.empty()) {
         M1M3SSPublisher::get().logCommandRejectionWarning("StartCommand",
                                                           "Command is missing settings argument!");
         return false;

@@ -60,6 +60,9 @@ public:
     PrintElectromechanical(uint8_t bus) : ILC(bus), ElectromechanicalPneumaticILC(bus), PrintILC(bus) {}
 
 protected:
+    void processHardpointForceStatus(uint8_t address, uint8_t status, int32_t encoderPostion,
+                                     float loadCellForce) override;
+
     void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                 float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
                                 float backupSensitivity[4]) override;
@@ -98,6 +101,14 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
                 std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
             },
             "Read mezzanine pressure");
+
+    addILCCommand(
+            "hardpoint-force",
+            [](ILCUnit u) {
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportHardpointForceStatus(
+                        u.second);
+            },
+            "Read hardpoint info");
 
     addILC(std::make_shared<PrintElectromechanical>(1));
     addILC(std::make_shared<PrintElectromechanical>(2));
@@ -240,6 +251,21 @@ void print4(const char* name, t a[4]) {
         std::cout << " " << std::setw(15) << std::setprecision(10) << a[i];
     }
     std::cout << std::endl;
+}
+
+void PrintElectromechanical::processHardpointForceStatus(uint8_t address, uint8_t status,
+                                                         int32_t encoderPostion, float loadCellForce) {
+    _printSepline();
+
+    auto limitSwitch = [](bool sw) { return (sw ? "CLOSED" : "OPEN"); };
+
+    std::cout << "Status: 0x" << std::setfill('0') << std::setw(2) << std::hex << status << std::dec
+              << " (ILC: " << (status & 0x80 ? "FAULT" : "OK") << ", Limit Switch CW "
+              << limitSwitch(status & 0x20) << ", Limit Switch CCW " << limitSwitch(status & 0x10) << ")"
+              << std::endl;
+    std::cout << "Encoder Position: " << encoderPostion << std::endl;
+    std::cout << "Load Cell Force: " << std::setprecision(2) << std::fixed << loadCellForce << " N"
+              << std::endl;
 }
 
 void PrintElectromechanical::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],

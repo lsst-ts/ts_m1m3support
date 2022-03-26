@@ -1,6 +1,7 @@
 AirControllerSettings:
   FaultOnCommandOutputMismatch: On
   FaultOnCommandSensorMismatch: On
+  ValveTransitionTimeout: 40
 DisplacementSettings:
   FaultOnSensorReportsInvalidCommand: On
   FaultOnSensorReportsCommunicationTimeoutError: On
