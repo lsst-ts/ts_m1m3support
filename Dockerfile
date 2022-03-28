@@ -1,4 +1,4 @@
-FROM lsstts/develop-env:c0023.001 as crio-develop
+FROM lsstts/develop-env:c0024.007 as crio-develop
 
 ARG XML_BRANCH=develop
 
@@ -9,7 +9,7 @@ USER saluser
 ARG XML_BRANCH=main
 
 WORKDIR /home/saluser/repos/ts_xml
-RUN git fetch && git checkout $XML_BRANCH && git pull
+RUN git fetch && git checkout $XML_BRANCH
 
 WORKDIR /home/saluser
 
