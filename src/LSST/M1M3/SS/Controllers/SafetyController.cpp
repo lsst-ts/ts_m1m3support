@@ -294,10 +294,10 @@ void SafetyController::forceControllerNotifyMagnitudeLimit(bool conditionFlag, f
                     "Force controller Magnitude Limit crossed {}", globalForce);
 }
 
-void SafetyController::forceControllerNotifyFarNeighborCheck(bool conditionFlag) {
+void SafetyController::forceControllerNotifyFarNeighborCheck(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerFarNeighborCheck,
                     _safetyControllerSettings->ForceController.FaultOnFarNeighborCheck, conditionFlag,
-                    "Force controller Far Neighbor Check failed");
+                    "Force controller Far Neighbor Check failed:{}", failed);
 }
 
 void SafetyController::forceControllerNotifyElevationForceClipping(bool conditionFlag) {
