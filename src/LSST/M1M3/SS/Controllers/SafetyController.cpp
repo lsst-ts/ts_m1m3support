@@ -381,8 +381,10 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
 void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {
-            _updateOverride(FaultCodes::HardpointActuatorLimitLowError, true, conditionFlag,
-                            "Hardpoint #{} hit low limit", hp + 1);
+            _updateOverride(FaultCodes::HardpointActuatorLimitLowError,
+                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                                    MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
+                            conditionFlag, "Hardpoint #{} hit low limit", hp + 1);
             _hardpointLimitLowTriggered[hp] = true;
         }
 
@@ -397,8 +399,10 @@ void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFl
 void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionFlag) {
     if (conditionFlag) {
         if (_hardpointLimitHighTriggered[hp] == false) {
-            _updateOverride(FaultCodes::HardpointActuatorLimitHighError, true, conditionFlag,
-                            "Hardpoint #{} hit high limit", hp + 1);
+            _updateOverride(FaultCodes::HardpointActuatorLimitHighError,
+                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                                    MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
+                            conditionFlag, "Hardpoint #{} hit high limit", hp + 1);
             _hardpointLimitHighTriggered[hp] = true;
         }
 
