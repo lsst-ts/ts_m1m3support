@@ -659,6 +659,7 @@ bool ForceController::_checkFarNeighbors() {
         tolerance = 1;
     }
     bool warningChanged = false;
+    string failed;
     _forceSetpointWarning->anyFarNeighborWarning = false;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
@@ -702,13 +703,21 @@ bool ForceController::_checkFarNeighbors() {
         float magnitude = sqrt(x * x + y * y + z * z);
         float magnitudeAverage = magnitude / (farNeighbors + 1.0);
         bool previousWarning = _forceSetpointWarning->farNeighborWarning[zIndex];
-        _forceSetpointWarning->farNeighborWarning[zIndex] =
-                !Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce);
+        if (!Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce)) {
+            failed += fmt::format(" {}: magA {:.2f} globalA {:.2f} |{:.2f}| < {:.2f}",
+                                  _forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex),
+                                  magnitudeAverage, globalAverageForce, magnitudeAverage - globalAverageForce,
+                                  tolerance);
+            _forceSetpointWarning->farNeighborWarning[zIndex] = true;
+        } else {
+            _forceSetpointWarning->farNeighborWarning[zIndex] = false;
+        }
         _forceSetpointWarning->anyFarNeighborWarning = _forceSetpointWarning->farNeighborWarning[zIndex] ||
                                                        _forceSetpointWarning->anyFarNeighborWarning;
         warningChanged =
                 (_forceSetpointWarning->farNeighborWarning[zIndex] != previousWarning) || warningChanged;
     }
-    _safetyController->forceControllerNotifyFarNeighborCheck(_forceSetpointWarning->anyFarNeighborWarning);
+    _safetyController->forceControllerNotifyFarNeighborCheck(_forceSetpointWarning->anyFarNeighborWarning,
+                                                             failed);
     return warningChanged;
 }

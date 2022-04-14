@@ -93,7 +93,7 @@ public:
     void forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed, float nominalZ,
                                                 float nominalZWarning);
     void forceControllerNotifyMagnitudeLimit(bool conditionFlag, float globalForce);
-    void forceControllerNotifyFarNeighborCheck(bool conditionFlag);
+    void forceControllerNotifyFarNeighborCheck(bool conditionFlag, std::string failed);
     void forceControllerNotifyElevationForceClipping(bool conditionFlag);
     void forceControllerNotifyAzimuthForceClipping(bool conditionFlag);
     void forceControllerNotifyThermalForceClipping(bool conditionFlag);
