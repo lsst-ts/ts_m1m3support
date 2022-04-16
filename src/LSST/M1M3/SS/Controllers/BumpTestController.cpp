@@ -57,7 +57,7 @@ BumpTestController::BumpTestController() {
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 
-void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
+int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
     _zIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
     _xIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[_zIndex];
     _yIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[_zIndex];
@@ -78,6 +78,8 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
 
     _resetProgress();
 
+    SettingReader::instance().getSafetyControllerSettings()->ForceController.enterBumpTesting();
+
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
             M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
 
@@ -92,6 +94,7 @@ void BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, b
     }
 
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+    return 0;
 }
 
 void BumpTestController::runLoop() {
@@ -100,7 +103,16 @@ void BumpTestController::runLoop() {
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
             M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
 
-    if (forceActuatorBumpTestStatus->actuatorId < 0) return;
+    if (forceActuatorBumpTestStatus->actuatorId < 0) {
+        if (_sleepUntil != 0) {
+            double timestamp = M1M3SSPublisher::get().getTimestamp();
+            if (_sleepUntil <= timestamp) {
+                SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+                _sleepUntil = 0;
+            }
+        }
+        return;
+    }
 
     if (_testPrimary) {
         runCylinderReturn_t pRet =
@@ -148,17 +160,21 @@ void BumpTestController::runLoop() {
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 
-void BumpTestController::stopAll() {
+void BumpTestController::stopAll(bool forced) {
     M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
 
     _resetProgress();
+
+    if (forced) {
+        SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+    }
 
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 
 void BumpTestController::stopCylinder(char axis) {
     if ((axis == 'Z' && _testSecondary == false) || _testPrimary == false) {
-        stopAll();
+        stopAll(false);
         return;
     }
 
@@ -169,8 +185,6 @@ void BumpTestController::stopCylinder(char axis) {
     }
 
     _resetProgress();
-
-    _sleepUntil = M1M3SSPublisher::get().getTimestamp() + _testSettleTime;
 }
 
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
@@ -197,7 +211,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
             if (checkRet & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
                 SPDLOG_ERROR(
-                        "Failed FA ID {} ({}{}) bump test - measured parked force ({:.3f}) is too far from "
+                        "Failed FA ID {} ({}{}) bump test - measured parked force ({:.3f}) is too "
+                        "far from "
                         "0\xb1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, averages[index], _testedError);
                 stopCylinder(axis);
@@ -206,7 +221,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
             if (checkRet & 0x10) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
                 SPDLOG_ERROR(
-                        "Failed FA ID {} ({}{}) bump test - measured parked force on some actuator(s) is too "
+                        "Failed FA ID {} ({}{}) bump test - measured parked force on some "
+                        "actuator(s) is too "
                         "far from 0\xb1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, _nonTestedError);
                 stopCylinder(axis);
@@ -242,7 +258,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
             if (checkRet & 0x01) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
                 SPDLOG_ERROR(
-                        "Failed FA ID {} ({}{}) bump test - measured force {} ({:.3f}) is too far {}\xb1{}",
+                        "Failed FA ID {} ({}{}) bump test - measured force {} ({:.3f}) is too far "
+                        "{}\xb1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, positive ? "plus" : "negative",
                         averages[index], _testForce, _testedError);
                 stopCylinder(axis);
@@ -251,7 +268,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
             if (checkRet & 0x10) {
                 *stage = MTM1M3_shared_BumpTest_Failed;
                 SPDLOG_ERROR(
-                        "Failed FA ID {} ({}{}) bump test - measured force on some actuator(s) is too far "
+                        "Failed FA ID {} ({}{}) bump test - measured force on some actuator(s) is "
+                        "too far "
                         "from far from \xb1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, _nonTestedError);
                 stopCylinder(axis);
@@ -283,6 +301,12 @@ void BumpTestController::_resetProgress(bool zeroOffsets) {
     if (zeroOffsets) {
         Model::get().getForceController()->zeroOffsetForces();
         Model::get().getForceController()->processAppliedForces();
+
+        // make sure exitBumpTesting will be caled after FA gets back to ~proper values
+        //
+        // Drop of the measuredForce on top of FAs can take some time, as it isn't instantinous due to physics
+        // involved
+        _sleepUntil = M1M3SSPublisher::get().getTimestamp() + _testSettleTime;
     }
 }
 
