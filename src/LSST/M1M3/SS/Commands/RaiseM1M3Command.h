@@ -38,6 +38,7 @@ public:
 
     MTM1M3_command_raiseM1M3C* getData() { return &_data; }
 
+    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;

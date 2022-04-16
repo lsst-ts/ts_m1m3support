@@ -36,7 +36,7 @@ namespace SS {
  * mirror, and compare measured forces from force cell.
  *
  * Bump test is performed in the following stages (per actuator, so if both
- * primary and secondary shall be tested, repeat:
+ * primary and secondary shall be tested, repeat):
  *
  * 1. check that average of _testMeasurements measured forces roughly equal to 0 (in _tolerance)
  * 2. apply a small positive force
@@ -66,8 +66,10 @@ public:
      * @param actuatorId actuator ID (101-443)
      * @param testPrimary true if test primary (Z) actuator
      * @param testSecondary true if test secondary (X or Y) actuator
+     *
+     * @return 0 on success, 1 if another force actuator is being tested
      */
-    void setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
+    int setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
 
     /**
      * Run single loop. Shall be called from update command after telemetry
@@ -77,8 +79,10 @@ public:
 
     /**
      * Stops all running bump tests.
+     *
+     * @param forced if true, make sure Far Neighbor checks bypass is disabled
      */
-    void stopAll();
+    void stopAll(bool forced);
 
     /**
      * Stops bump test on given cylinder.
