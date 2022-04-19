@@ -25,12 +25,25 @@
 #include <ExitEngineeringCommand.h>
 #include <M1M3SSPublisher.h>
 
+#include <spdlog/spdlog.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID, MTM1M3_command_exitEngineeringC*)
         : Command(commandID) {}
+
+bool ExitEngineeringCommand::validate() {
+    if (M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+        M1M3SSPublisher::get().logCommandRejectionWarning(
+                "ExitEngineering",
+                fmt::format("Cannot exit engineering mode as bump test for actuator {} is in progress.",
+                            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId));
+        return false;
+    }
+    return Command::validate();
+}
 
 void ExitEngineeringCommand::execute() { Context::get().exitEngineering(this); }
 

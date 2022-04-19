@@ -28,7 +28,6 @@
 #include <SafetyController.h>
 #include <PowerController.h>
 #include <SettingReader.h>
-#include <StartCommand.h>
 #include <Gyro.h>
 
 #include <thread>
@@ -49,6 +48,8 @@ States::Type StandbyState::update(UpdateCommand* command) {
 
 States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
+    SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+
     Model::get().loadSettings(command->getData()->configurationOverride);
     M1M3SSPublisher::get().getEventConfigurationApplied()->version =
             SettingReader::instance().getSettingsVersion();
