@@ -24,6 +24,8 @@
 #ifndef STANDBYSTATE_H_
 #define STANDBYSTATE_H_
 
+#include <UpdateCommand.h>
+#include <StartCommand.h>
 #include <State.h>
 
 namespace LSST {

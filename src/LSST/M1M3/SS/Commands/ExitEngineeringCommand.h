@@ -36,6 +36,7 @@ class ExitEngineeringCommand : public Command {
 public:
     ExitEngineeringCommand(int32_t commandID, MTM1M3_command_exitEngineeringC*);
 
+    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
