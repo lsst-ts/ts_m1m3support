@@ -470,6 +470,7 @@ void PositionController::_checkFollowingError(int hp) {
     if (abs(_hardpointActuatorData->stepsCommanded[hp]) >
         _positionControllerSettings->encoderToStepsCoefficient) {
         double travelled = _hardpointActuatorData->encoder[hp] - _lastEncoderCount[hp];
+        // due to condition above divider is > 1 or < -1, division by 0 cannot occur
         double shouldTravell = _hardpointActuatorData->stepsCommanded[hp] /
                                _positionControllerSettings->encoderToStepsCoefficient;
 
