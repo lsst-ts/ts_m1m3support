@@ -570,7 +570,7 @@ void SafetyController::hardpointActuatorFollowingError(int hp, double fePercent)
     double feObserved = fabs(100 - fePercent);
     _updateOverride(FaultCodes::HardpointActuatorFollowingError,
                     (feCounts >= 0) && (_hardpointFeViolations[hp] > feCounts), feObserved > feRange,
-                    "Hardpoint {} following error out of range: {:.2f}", hp, fePercent);
+                    "Hardpoint {} following error out of range: {:.2f}", hp + 1, feObserved);
     if (feObserved > feRange) {
         _hardpointFeViolations[hp]++;
     } else {
