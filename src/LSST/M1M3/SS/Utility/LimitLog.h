@@ -25,7 +25,7 @@
 #define LIMITLOG_H_
 
 /**
- * Defines time guard log with counter. Log error every tg seconds.
+ * Defines time guard error log with counter. Log error every tg seconds.
  *
  * @param tg time guard, chrono literal how often logging shall be done
  * @param ... __VA_ARGS__ passed to SPDLOG_ERROR
@@ -36,6 +36,22 @@
                 std::chrono::steady_clock::now() - std::chrono::duration_cast<std::chrono::seconds>(tg * 2); \
         if ((std::chrono::steady_clock::now() - last_executed) > tg) {                                       \
             SPDLOG_ERROR(__VA_ARGS__);                                                                       \
+            last_executed = std::chrono::steady_clock::now();                                                \
+        }                                                                                                    \
+    }
+
+/**
+ * Defines time guard warning log with counter. Log warning every tg seconds.
+ *
+ * @param tg time guard, chrono literal how often logging shall be done
+ * @param ... __VA_ARGS__ passed to SPDLOG_ERROR
+ */
+#define TG_LOG_WARN(tg, ...)                                                                                 \
+    {                                                                                                        \
+        static auto last_executed =                                                                          \
+                std::chrono::steady_clock::now() - std::chrono::duration_cast<std::chrono::seconds>(tg * 2); \
+        if ((std::chrono::steady_clock::now() - last_executed) > tg) {                                       \
+            SPDLOG_WARN(__VA_ARGS__);                                                                        \
             last_executed = std::chrono::steady_clock::now();                                                \
         }                                                                                                    \
     }
