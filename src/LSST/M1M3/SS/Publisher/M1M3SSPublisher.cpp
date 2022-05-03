@@ -122,8 +122,17 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
+}
+
+void M1M3SSPublisher::setSimulationMode(int newMode) {
+    MTM1M3_logevent_simulationModeC* simulationMode = &(get()._simulationMode);
+    if (simulationMode->mode != newMode) {
+        simulationMode->mode = newMode;
+        get()._m1m3SAL->logEvent_simulationMode(simulationMode, 0);
+    }
 }
 
 void M1M3SSPublisher::putAccelerometerData() { _m1m3SAL->putSample_accelerometerData(&_accelerometerData); }
