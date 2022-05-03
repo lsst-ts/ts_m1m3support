@@ -208,6 +208,7 @@ public:
         return &_eventConfigurationApplied;
     }
     MTM1M3_logevent_summaryStateC* getEventSummaryState() { return &_eventSummaryState; }
+    static void setSimulationMode(int newMode);
 
     /**
      * Returns current timestamp.
@@ -524,7 +525,9 @@ private:
     MTM1M3_logevent_preclippedVelocityForcesC _eventPreclippedVelocityForces;
     MTM1M3_logevent_configurationsAvailableC _eventConfigurationsAvailable;
     MTM1M3_logevent_configurationAppliedC _eventConfigurationApplied;
+    MTM1M3_logevent_simulationModeC _simulationMode;
     MTM1M3_logevent_summaryStateC _eventSummaryState;
+
     MTM1M3_logevent_accelerometerWarningC _previousEventAccelerometerWarning;
     MTM1M3_logevent_airSupplyStatusC _previousEventAirSupplyStatus;
     MTM1M3_logevent_airSupplyWarningC _previousEventAirSupplyWarning;
