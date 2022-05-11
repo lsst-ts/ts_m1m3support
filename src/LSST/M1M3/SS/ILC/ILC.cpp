@@ -243,8 +243,8 @@ void ILC::waitForAllSubnets(int32_t timeout) {
 
 void ILC::read(uint8_t subnet) {
     SPDLOG_DEBUG("ILC: read({:d})", subnet);
-    _u16Buffer[0] = _subnetToRxAddress(subnet);
-    IFPGA::get().writeRequestFIFO(_u16Buffer, 1, 0);
+    uint16_t addr = _subnetToRxAddress(subnet);
+    IFPGA::get().writeRequestFIFO(&addr, 1, 0);
     _rxBuffer.setIndex(0);
     IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
     uint16_t reportedLength = _rxBuffer.readLength();
@@ -270,8 +270,8 @@ void ILC::readAll() {
 
 void ILC::flush(uint8_t subnet) {
     SPDLOG_DEBUG("ILC: flush({:d})", (int32_t)subnet);
-    _u16Buffer[0] = _subnetToRxAddress(subnet);
-    IFPGA::get().writeRequestFIFO(_u16Buffer, 1, 0);
+    uint16_t add = _subnetToRxAddress(subnet);
+    IFPGA::get().writeRequestFIFO(&add, 1, 0);
     _rxBuffer.setIndex(0);
     IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
     uint16_t reportedLength = _rxBuffer.readLength();
