@@ -413,7 +413,7 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
             _hmExpectedResponses[i] = 0;
-            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} monitor response timeout", i);
+            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} monitor response timeout", i + 1);
         }
     }
     if (warn) {
