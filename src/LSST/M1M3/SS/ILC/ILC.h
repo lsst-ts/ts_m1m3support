@@ -212,7 +212,6 @@ private:
     int8_t _hpStepCommand[6];
     int32_t _hpSteps[6];
 
-    uint16_t _u16Buffer[1];
     ModbusBuffer _rxBuffer;
 
     int32_t _controlListToggle;
