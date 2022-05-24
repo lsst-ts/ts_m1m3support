@@ -126,10 +126,10 @@ void FPGA::ackModbusIRQ(int32_t subnet) {
 void FPGA::pullTelemetry() {
     SPDLOG_TRACE("FPGA: pullTelemetry()");
     cRIO::FPGA::writeRequestFIFO(FPGAAddresses::Telemetry, 0);
-    uint16_t length[1];
-    readU16ResponseFIFO(length, 1, 20);
+    uint16_t length;
+    readU16ResponseFIFO(&length, 1, 20);
     uint8_t buffer[1024];
-    readU8ResponseFIFO(buffer, (int32_t)length[0], 20);
+    readU8ResponseFIFO(buffer, length, 20);
     supportFPGAData.Reserved = U8ArrayUtilities::U64(buffer, 0);
     supportFPGAData.InclinometerTxBytes = U8ArrayUtilities::U64(buffer, 8);
     supportFPGAData.InclinometerRxBytes = U8ArrayUtilities::U64(buffer, 16);
