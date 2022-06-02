@@ -1,4 +1,4 @@
-FROM lsstts/develop-env:c0023.001 as crio-develop
+FROM lsstts/develop-env:c0025.005 as crio-develop
 
 ARG XML_BRANCH=develop
 
@@ -14,14 +14,13 @@ RUN git fetch && git checkout $XML_BRANCH && git pull
 WORKDIR /home/saluser
 
 RUN source .setup.sh \
-    && conda install -y readline yaml-cpp boost-cpp catch2 \
+    && mamba install -y readline yaml-cpp boost-cpp catch2 \
     && echo > .crio_setup.sh -e \
 echo "Configuring cRIO development environment" \\n\
 source /home/saluser/.setup_salobj.sh \\n\
 export PATH=\$CONDA_PREFIX/bin:\$PATH \\n\
 export LIBS="-L\$CONDA_PREFIX/lib" \\n\
-export CPP_FLAGS="-I\$CONDA_PREFIX/include" \\n\
-export PKG_CONFIG_PATH="\$CONDA_PREFIX/lib/pkgconfig" \\n
+export CPP_FLAGS="-I\$CONDA_PREFIX/include" \\n
 
 RUN source .crio_setup.sh && cd repos/ts_xml/sal_interfaces \
     && git fetch && git checkout $XML_BRANCH \
