@@ -41,14 +41,12 @@ PowerController::PowerController(SafetyController* safetyController) {
 
     _powerSupplyData = M1M3SSPublisher::get().getPowerSupplyData();
     _powerStatus = M1M3SSPublisher::get().getEventPowerStatus();
-    _powerSupplyStatus = M1M3SSPublisher::get().getEventPowerSupplyStatus();
     _powerWarning = M1M3SSPublisher::get().getEventPowerWarning();
 
     _lastPowerTimestamp = 0;
 
     memset(_powerSupplyData, 0, sizeof(MTM1M3_powerSupplyDataC));
     memset(_powerStatus, 0, sizeof(MTM1M3_logevent_powerStatusC));
-    memset(_powerSupplyStatus, 0, sizeof(MTM1M3_logevent_powerSupplyStatusC));
     memset(_powerWarning, 0, sizeof(MTM1M3_logevent_powerWarningC));
 }
 
@@ -106,31 +104,7 @@ void PowerController::processData() {
 
     uint32_t powerStatus;
     IExpansionFPGA::get().readSlot2(&powerStatus);
-    _powerSupplyStatus->rcpMirrorCellUtility220VAC1Status = powerStatus & 0x000001;
-    _powerSupplyStatus->rcpMirrorCellUtility220VAC2Status = powerStatus & 0x000002;
-    _powerSupplyStatus->rcpMirrorCellUtility220VAC3Status = powerStatus & 0x000004;
-    _powerSupplyStatus->rcpCabinetUtility220VACStatus = powerStatus & 0x000008;
-    _powerSupplyStatus->rcpExternalEquipment220VACStatus = powerStatus & 0x000010;
-    _powerSupplyStatus->powerNetworkARedundancyControlStatus = powerStatus & 0x000020;
-    _powerSupplyStatus->powerNetworkBRedundancyControlStatus = powerStatus & 0x000040;
-    _powerSupplyStatus->powerNetworkCRedundancyControlStatus = powerStatus & 0x000080;
-    _powerSupplyStatus->powerNetworkDRedundancyControlStatus = powerStatus & 0x000100;
-    _powerSupplyStatus->controlsPowerNetworkRedundancyControlStatus = powerStatus & 0x000200;
-
-    _powerSupplyStatus->powerNetworkAStatus = powerStatus & 0x000800;
-    _powerSupplyStatus->powerNetworkARedundancyControlStatus = powerStatus & 0x001000;
-    _powerSupplyStatus->powerNetworkBStatus = powerStatus & 0x002000;
-    _powerSupplyStatus->powerNetworkBRedundancyControlStatus = powerStatus & 0x004000;
-    _powerSupplyStatus->powerNetworkCStatus = powerStatus & 0x008000;
-    _powerSupplyStatus->powerNetworkCRedundancyControlStatus = powerStatus & 0x010000;
-    _powerSupplyStatus->powerNetworkDStatus = powerStatus & 0x020000;
-    _powerSupplyStatus->powerNetworkDRedundancyControlStatus = powerStatus & 0x040000;
-    _powerSupplyStatus->controlsPowerNetworkStatus = powerStatus & 0x080000;
-    _powerSupplyStatus->controlsPowerNetworkRedundantStatus = powerStatus & 0x100000;
-    _powerSupplyStatus->lightPowerNetworkStatus = powerStatus & 0x200000;
-    _powerSupplyStatus->externalEquipmentPowerNetworkStatus = powerStatus & 0x400000;
-    _powerSupplyStatus->laserTrackerPowerNetworkStatus = powerStatus & 0x800000;
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::get().getPowerSupplyStatus()->setPowerSupplyStatus(powerStatus);
 }
 
 void PowerController::setBothPowerNetworks(bool on) {

@@ -118,7 +118,6 @@ private:
 
     MTM1M3_powerSupplyDataC* _powerSupplyData;
     MTM1M3_logevent_powerStatusC* _powerStatus;
-    MTM1M3_logevent_powerSupplyStatusC* _powerSupplyStatus;
     MTM1M3_logevent_powerWarningC* _powerWarning;
 
     uint64_t _lastPowerTimestamp;

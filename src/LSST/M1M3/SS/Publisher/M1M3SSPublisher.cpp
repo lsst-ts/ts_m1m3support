@@ -1604,58 +1604,6 @@ void M1M3SSPublisher::tryLogPowerStatus() {
     }
 }
 
-void M1M3SSPublisher::logPowerSupplyStatus() {
-    _m1m3SAL->logEvent_powerSupplyStatus(&_eventPowerSupplyStatus, 0);
-    _previousEventPowerSupplyStatus = _eventPowerSupplyStatus;
-}
-
-void M1M3SSPublisher::tryLogPowerSupplyStatus() {
-    if (_eventPowerSupplyStatus.rcpMirrorCellUtility220VAC1Status !=
-                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC1Status ||
-        _eventPowerSupplyStatus.rcpCabinetUtility220VACStatus !=
-                _previousEventPowerSupplyStatus.rcpCabinetUtility220VACStatus ||
-        _eventPowerSupplyStatus.rcpExternalEquipment220VACStatus !=
-                _previousEventPowerSupplyStatus.rcpExternalEquipment220VACStatus ||
-        _eventPowerSupplyStatus.rcpMirrorCellUtility220VAC2Status !=
-                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC2Status ||
-        _eventPowerSupplyStatus.rcpMirrorCellUtility220VAC3Status !=
-                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC3Status ||
-        _eventPowerSupplyStatus.powerNetworkARedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkARedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkBRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkBRedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkCRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkCRedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkDRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkDRedundancyControlStatus ||
-        _eventPowerSupplyStatus.controlsPowerNetworkRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.controlsPowerNetworkRedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkAStatus != _previousEventPowerSupplyStatus.powerNetworkAStatus ||
-        _eventPowerSupplyStatus.powerNetworkARedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkARedundantStatus ||
-        _eventPowerSupplyStatus.powerNetworkBStatus != _previousEventPowerSupplyStatus.powerNetworkBStatus ||
-        _eventPowerSupplyStatus.powerNetworkBRedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkBRedundantStatus ||
-        _eventPowerSupplyStatus.powerNetworkCStatus != _previousEventPowerSupplyStatus.powerNetworkCStatus ||
-        _eventPowerSupplyStatus.powerNetworkCRedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkCRedundantStatus ||
-        _eventPowerSupplyStatus.powerNetworkDStatus != _previousEventPowerSupplyStatus.powerNetworkDStatus ||
-        _eventPowerSupplyStatus.powerNetworkDRedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkDRedundantStatus ||
-        _eventPowerSupplyStatus.controlsPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.controlsPowerNetworkStatus ||
-        _eventPowerSupplyStatus.controlsPowerNetworkRedundantStatus !=
-                _previousEventPowerSupplyStatus.controlsPowerNetworkRedundantStatus ||
-        _eventPowerSupplyStatus.lightPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.lightPowerNetworkStatus ||
-        _eventPowerSupplyStatus.externalEquipmentPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.externalEquipmentPowerNetworkStatus ||
-        _eventPowerSupplyStatus.laserTrackerPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.laserTrackerPowerNetworkStatus) {
-        this->logPowerSupplyStatus();
-    }
-}
-
 void M1M3SSPublisher::logPowerWarning() {
     _eventPowerWarning.anyWarning = _eventPowerWarning.powerNetworkAOutputMismatch ||
                                     _eventPowerWarning.powerNetworkBOutputMismatch ||
