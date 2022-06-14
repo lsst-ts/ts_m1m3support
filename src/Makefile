@@ -54,7 +54,7 @@ libM1M3SS.a: $(LIB_OBJS)
 	${co}$(AR) rs $@ $^
 
 clean:
-	@$(foreach file,$(ALL_OBJS) $(shell ls *.cpp) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
+	@$(foreach file,$(ALL_OBJS) $(shell ls *.cpp.d *.cpp.o) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
 
 # file targets
 %.cpp.o: %.cpp.d
