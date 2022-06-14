@@ -31,6 +31,7 @@
 
 #include <EnabledForceActuators.h>
 #include <ForceActuatorWarning.h>
+#include <PowerSupplyStatus.h>
 
 #include <memory>
 #include <spdlog/spdlog.h>
@@ -165,7 +166,7 @@ public:
     MTM1M3_logevent_interlockWarningC* getEventInterlockWarning() { return &_eventInterlockWarning; }
     MTM1M3_logevent_pidInfoC* getEventPIDInfo() { return &_eventPIDInfo; }
     MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &_eventPowerStatus; }
-    MTM1M3_logevent_powerSupplyStatusC* getEventPowerSupplyStatus() { return &_eventPowerSupplyStatus; }
+    static PowerSupplyStatus* getPowerSupplyStatus() { return &(get()._powerSupplyStatus); }
     MTM1M3_logevent_powerWarningC* getEventPowerWarning() { return &_eventPowerWarning; }
     MTM1M3_logevent_preclippedAberrationForcesC* getEventPreclippedAberrationForces() {
         return &_eventPreclippedAberrationForces;
@@ -358,8 +359,9 @@ public:
     void logPIDSettings(MTM1M3_logevent_pidSettingsC* data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
     void logPowerStatus();
     void tryLogPowerStatus();
-    void logPowerSupplyStatus();
-    void tryLogPowerSupplyStatus();
+    void logPowerSupplyStatus(MTM1M3_logevent_powerSupplyStatusC* data) {
+        _m1m3SAL->logEvent_powerSupplyStatus(data, 0);
+    }
     void logPowerWarning();
     void tryLogPowerWarning();
     void logPreclippedAberrationForces();
@@ -509,7 +511,7 @@ private:
     MTM1M3_logevent_interlockWarningC _eventInterlockWarning;
     MTM1M3_logevent_pidInfoC _eventPIDInfo;
     MTM1M3_logevent_powerStatusC _eventPowerStatus;
-    MTM1M3_logevent_powerSupplyStatusC _eventPowerSupplyStatus;
+    PowerSupplyStatus _powerSupplyStatus;
     MTM1M3_logevent_powerWarningC _eventPowerWarning;
     MTM1M3_logevent_preclippedAberrationForcesC _eventPreclippedAberrationForces;
     MTM1M3_logevent_preclippedAccelerationForcesC _eventPreclippedAccelerationForces;
