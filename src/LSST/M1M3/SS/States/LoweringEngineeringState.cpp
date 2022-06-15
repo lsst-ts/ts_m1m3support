@@ -34,7 +34,7 @@ namespace SS {
 LoweringEngineeringState::LoweringEngineeringState() : EnabledState("LoweringEngineeringState") {}
 
 States::Type LoweringEngineeringState::update(UpdateCommand* command) {
-    ModelPublisher publishIt();
+    ModelPublisher publishIt{};
     SPDLOG_TRACE("LoweringEngineeringState: update()");
     Model::get().getMirrorLowerController()->runLoop();
     runLoop();

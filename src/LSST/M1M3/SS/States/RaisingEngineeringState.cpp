@@ -34,7 +34,7 @@ namespace SS {
 RaisingEngineeringState::RaisingEngineeringState() : EnabledState("RaisingEngineeringState") {}
 
 States::Type RaisingEngineeringState::update(UpdateCommand* command) {
-    ModelPublisher publishModel();
+    ModelPublisher publishModel{};
     SPDLOG_TRACE("RaisingEngineeringState: update()");
     Model::get().getMirrorRaiseController()->runLoop();
     runLoop();
