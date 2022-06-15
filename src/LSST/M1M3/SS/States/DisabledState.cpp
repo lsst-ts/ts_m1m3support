@@ -46,7 +46,7 @@ namespace SS {
 DisabledState::DisabledState() : State("DisabledState") {}
 
 States::Type DisabledState::update(UpdateCommand* command) {
-    ModelPublisher publishIt();
+    ModelPublisher publishIt{};
     SPDLOG_TRACE("DisabledState::update()");
     ILC* ilc = Model::get().getILC();
     ilc->writeFreezeSensorListBuffer();

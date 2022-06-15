@@ -107,7 +107,7 @@ void EnabledState::runLoop() {
 }
 
 void EnabledState::sendTelemetry() {
-    ModelPublisher publishIt(Model);
+    ModelPublisher publishIt{};
     runLoop();
 }
 

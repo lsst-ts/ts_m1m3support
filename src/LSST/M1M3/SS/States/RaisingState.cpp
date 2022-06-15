@@ -34,7 +34,7 @@ namespace SS {
 RaisingState::RaisingState() : EnabledState("RaisingState") {}
 
 States::Type RaisingState::update(UpdateCommand* command) {
-    ModelPublisher publishIt();
+    ModelPublisher publishIt{};
     SPDLOG_TRACE("RaisingState: update()");
     Model::get().getMirrorRaiseController()->runLoop();
     runLoop();
