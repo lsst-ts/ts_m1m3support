@@ -48,7 +48,7 @@ FaultState::FaultState() : State("FaultState") {}
 FaultState::FaultState(std::string name) : State(name) {}
 
 States::Type FaultState::update(UpdateCommand* command) {
-    ModelPublisher publishIt();
+    ModelPublisher publishIt{};
     SPDLOG_TRACE("FaultState: update()");
     ILC* ilc = Model::get().getILC();
     ilc->writeFreezeSensorListBuffer();
