@@ -34,7 +34,7 @@ namespace SS {
 LoweringState::LoweringState() : EnabledState("LoweringState") {}
 
 States::Type LoweringState::update(UpdateCommand* command) {
-    ModelPublisher publishIt();
+    ModelPublisher publishIt{};
     SPDLOG_TRACE("LoweringState: update()");
     Model::get().getMirrorLowerController()->runLoop();
     runLoop();
