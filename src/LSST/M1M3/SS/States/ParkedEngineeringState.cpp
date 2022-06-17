@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -60,7 +60,7 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command) {
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
     SPDLOG_INFO("ParkedEngineeringState: raiseM1M3()");
 
-    Model::get().getBumpTestController()->stopAll();
+    Model::get().getBumpTestController()->stopAll(true);
 
     Model::get().getMirrorRaiseController()->start(command->getData()->bypassReferencePosition);
     return Model::get().getSafetyController()->checkSafety(States::RaisingEngineeringState);
@@ -69,7 +69,7 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
 States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: exitEngineering()");
 
-    Model::get().getBumpTestController()->stopAll();
+    Model::get().getBumpTestController()->stopAll(true);
 
     Model::get().getDigitalInputOutput()->turnAirOn();
     Model::get().getPositionController()->stopMotion();
@@ -84,7 +84,7 @@ States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* com
 States::Type ParkedEngineeringState::disable(DisableCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: disable()");
 
-    Model::get().getBumpTestController()->stopAll();
+    Model::get().getBumpTestController()->stopAll(true);
 
     // Stop any existing motion (chase and move commands)
     Model::get().getPositionController()->stopMotion();
@@ -112,7 +112,7 @@ States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTest
 
 States::Type ParkedEngineeringState::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: killForceActuatorBumpTest()");
-    Model::get().getBumpTestController()->stopAll();
+    Model::get().getBumpTestController()->stopAll(false);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

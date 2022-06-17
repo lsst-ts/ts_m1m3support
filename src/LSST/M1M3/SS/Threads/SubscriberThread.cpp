@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -23,6 +23,7 @@
 
 #include <ControllerThread.h>
 #include <SubscriberThread.h>
+#include <M1M3SSPublisher.h>
 #include <M1M3SSSubscriber.h>
 #include <chrono>
 #include <thread>
@@ -103,7 +104,9 @@ void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
             if (command->validate()) {
                 ControllerThread::get().enqueue(command);
             } else {
-                command->ackFailed("Validation");
+                auto info = M1M3SSPublisher::get().getEventCommandRejectionWarning();
+                command->ackFailed(
+                        fmt::format("Command \"{}\" validation failed: {} ", info->command, info->reason));
                 delete command;
             }
         } catch (std::exception& ex) {

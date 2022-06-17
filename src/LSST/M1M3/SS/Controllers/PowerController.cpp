@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -41,14 +41,12 @@ PowerController::PowerController(SafetyController* safetyController) {
 
     _powerSupplyData = M1M3SSPublisher::get().getPowerSupplyData();
     _powerStatus = M1M3SSPublisher::get().getEventPowerStatus();
-    _powerSupplyStatus = M1M3SSPublisher::get().getEventPowerSupplyStatus();
     _powerWarning = M1M3SSPublisher::get().getEventPowerWarning();
 
     _lastPowerTimestamp = 0;
 
     memset(_powerSupplyData, 0, sizeof(MTM1M3_powerSupplyDataC));
     memset(_powerStatus, 0, sizeof(MTM1M3_logevent_powerStatusC));
-    memset(_powerSupplyStatus, 0, sizeof(MTM1M3_logevent_powerSupplyStatusC));
     memset(_powerWarning, 0, sizeof(MTM1M3_logevent_powerWarningC));
 }
 
@@ -93,6 +91,7 @@ void PowerController::processData() {
     double timestamp = M1M3SSPublisher::get().getTimestamp();
     IExpansionFPGA::get().sample();
     float sample[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
     IExpansionFPGA::get().readSlot1(sample);
     _powerSupplyData->timestamp = timestamp;
     _powerSupplyData->powerNetworkACurrent = sample[0];
@@ -102,6 +101,10 @@ void PowerController::processData() {
     _powerSupplyData->lightPowerNetworkCurrent = sample[4];
     _powerSupplyData->controlsPowerNetworkCurrent = sample[5];
     M1M3SSPublisher::get().putPowerSupplyData();
+
+    uint32_t powerStatus;
+    IExpansionFPGA::get().readSlot2(&powerStatus);
+    M1M3SSPublisher::get().getPowerSupplyStatus()->setPowerSupplyStatus(powerStatus);
 }
 
 void PowerController::setBothPowerNetworks(bool on) {

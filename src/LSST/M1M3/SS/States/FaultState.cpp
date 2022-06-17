@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -48,7 +48,7 @@ FaultState::FaultState() : State("FaultState") {}
 FaultState::FaultState(std::string name) : State(name) {}
 
 States::Type FaultState::update(UpdateCommand* command) {
-    ModelPublisher publishIt();
+    ModelPublisher publishIt{};
     SPDLOG_TRACE("FaultState: update()");
     ILC* ilc = Model::get().getILC();
     ilc->writeFreezeSensorListBuffer();

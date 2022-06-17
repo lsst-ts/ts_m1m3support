@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 #include <cmath>
 
 #include <ForceController.h>
@@ -33,6 +33,7 @@
 #include <SAL_MTM1M3.h>
 
 using namespace LSST::M1M3::SS;
+using Catch::Approx;
 
 void checkAppliedActuatorForcesZ(int zIndex, float zForce) {
     REQUIRE(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);

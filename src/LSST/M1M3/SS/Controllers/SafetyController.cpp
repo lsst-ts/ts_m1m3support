@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -294,10 +294,10 @@ void SafetyController::forceControllerNotifyMagnitudeLimit(bool conditionFlag, f
                     "Force controller Magnitude Limit crossed {}", globalForce);
 }
 
-void SafetyController::forceControllerNotifyFarNeighborCheck(bool conditionFlag) {
+void SafetyController::forceControllerNotifyFarNeighborCheck(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerFarNeighborCheck,
                     _safetyControllerSettings->ForceController.FaultOnFarNeighborCheck, conditionFlag,
-                    "Force controller Far Neighbor Check failed");
+                    "Force controller Far Neighbor Check failed:{}", failed);
 }
 
 void SafetyController::forceControllerNotifyElevationForceClipping(bool conditionFlag) {
@@ -381,8 +381,10 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
 void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {
-            _updateOverride(FaultCodes::HardpointActuatorLimitLowError, true, conditionFlag,
-                            "Hardpoint #{} hit low limit", hp + 1);
+            _updateOverride(FaultCodes::HardpointActuatorLimitLowError,
+                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                                    MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
+                            conditionFlag, "Hardpoint #{} hit low limit", hp + 1);
             _hardpointLimitLowTriggered[hp] = true;
         }
 
@@ -397,8 +399,10 @@ void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFl
 void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionFlag) {
     if (conditionFlag) {
         if (_hardpointLimitHighTriggered[hp] == false) {
-            _updateOverride(FaultCodes::HardpointActuatorLimitHighError, true, conditionFlag,
-                            "Hardpoint #{} hit high limit", hp + 1);
+            _updateOverride(FaultCodes::HardpointActuatorLimitHighError,
+                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                                    MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
+                            conditionFlag, "Hardpoint #{} hit high limit", hp + 1);
             _hardpointLimitHighTriggered[hp] = true;
         }
 
@@ -566,7 +570,7 @@ void SafetyController::hardpointActuatorFollowingError(int hp, double fePercent)
     double feObserved = fabs(100 - fePercent);
     _updateOverride(FaultCodes::HardpointActuatorFollowingError,
                     (feCounts >= 0) && (_hardpointFeViolations[hp] > feCounts), feObserved > feRange,
-                    "Hardpoint {} following error out of range: {:.2f}", hp, fePercent);
+                    "Hardpoint {} following error out of range: {:.2f}", hp + 1, feObserved);
     if (feObserved > feRange) {
         _hardpointFeViolations[hp]++;
     } else {

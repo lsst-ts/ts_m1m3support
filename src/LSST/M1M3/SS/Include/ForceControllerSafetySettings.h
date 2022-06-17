@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -24,9 +24,14 @@
 #ifndef FORCECONTROLLERSAFETYSETTINGS_H_
 #define FORCECONTROLLERSAFETYSETTINGS_H_
 
+#include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
-struct ForceControllerSafetySettings {
+/**
+ * Force Controller Safety settings - which force checks should be run.
+ */
+class ForceControllerSafetySettings {
+public:
     bool FaultOnSafetyLimit;
     bool FaultOnXMomentLimit;
     bool FaultOnYMomentLimit;
@@ -55,7 +60,8 @@ struct ForceControllerSafetySettings {
         FaultOnZMomentLimit = node["FaultOnZMomentLimit"].as<bool>();
         FaultOnNearNeighborCheck = node["FaultOnNearNeighborCheck"].as<bool>();
         FaultOnMagnitudeLimit = node["FaultOnMagnitudeLimit"].as<bool>();
-        FaultOnFarNeighborCheck = node["FaultOnFarNeighborCheck"].as<bool>();
+        configured_FaultOnFarNeighborCheck = FaultOnFarNeighborCheck =
+                node["FaultOnFarNeighborCheck"].as<bool>();
         FaultOnElevationForceClipping = node["FaultOnElevationForceClipping"].as<bool>();
         FaultOnAzimuthForceClipping = node["FaultOnAzimuthForceClipping"].as<bool>();
         FaultOnThermalForceClipping = node["FaultOnThermalForceClipping"].as<bool>();
@@ -70,6 +76,25 @@ struct ForceControllerSafetySettings {
         FaultOnVelocityForceClipping = node["FaultOnVelocityForceClipping"].as<bool>();
         FaultOnForceClipping = node["FaultOnForceClipping"].as<bool>();
     }
+
+    /**
+     * Sets safety settings for FA bump testing.
+     */
+    void enterBumpTesting() {
+        SPDLOG_TRACE("ForceControllerSafetySettings: enterBumpTesting()");
+        FaultOnFarNeighborCheck = false;
+    }
+
+    /**
+     * Retores settings for nominal, non-FA bump testing operation.
+     */
+    void exitBumpTesting() {
+        SPDLOG_TRACE("ForceControllerSafetySettings: exitBumpTesting()");
+        FaultOnFarNeighborCheck = configured_FaultOnFarNeighborCheck;
+    }
+
+private:
+    bool configured_FaultOnFarNeighborCheck;
 };
 
 #endif /* FORCECONTROLLERSAFETYSETTINGS_H_ */

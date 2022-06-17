@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -26,6 +26,7 @@
 #include <HardpointActuatorSettings.h>
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
+#include <LimitLog.h>
 #include <ForceConverter.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ILCDataTypes.h>
@@ -166,10 +167,10 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
         uint16_t receivedCRC;
         if (validateCRC(buffer, &length, &timestamp, calculatedCRC, receivedCRC) == false) {
             auto data = buffer->getReadData(length);
-            SPDLOG_WARN(
-                    "ILCResponseParser: Invalid CRC on subnet {:d} - received {:04X}, calculated {:04X}, "
-                    "address {:02X}, function {:02X}, {:02X}",
-                    subnet, receivedCRC, calculatedCRC, data[0], data[1], data[2]);
+            TG_LOG_WARN(60s,
+                        "ILCResponseParser: Invalid CRC on subnet {:d} - received {:04X}, calculated {:04X}, "
+                        "address {:02X}, function {:02X}, {:02X}",
+                        subnet, receivedCRC, calculatedCRC, data[0], data[1], data[2]);
             _warnInvalidCRC(timestamp);
         } else {
             if (subnet >= 1 && subnet <= 5) {
@@ -386,7 +387,7 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < FA_COUNT; i++) {
         if (_faExpectedResponses[i] != 0) {
             warn = true;
-            SPDLOG_WARN("ILCResponseParser: Force actuator #{} response timeout", i);
+            TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} response timeout", i);
             _warnResponseTimeout(timestamp, _forceActuatorInfo->referenceId[i]);
             _faExpectedResponses[i] = 0;
         }
@@ -400,7 +401,7 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
             _hpExpectedResponses[i] = 0;
-            SPDLOG_WARN("ILCResponseParser: Hardpoint {} actuator response timeout", i + 1);
+            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} actuator response timeout", i + 1);
         }
     }
     if (warn) {
@@ -412,7 +413,7 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
             _hmExpectedResponses[i] = 0;
-            SPDLOG_WARN("ILCResponseParser: Hardpoint {} monitor response timeout", i);
+            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} monitor response timeout", i + 1);
         }
     }
     if (warn) {
