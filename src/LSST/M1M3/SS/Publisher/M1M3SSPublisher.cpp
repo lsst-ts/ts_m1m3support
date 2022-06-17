@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -122,8 +122,17 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
+}
+
+void M1M3SSPublisher::setSimulationMode(int newMode) {
+    MTM1M3_logevent_simulationModeC* simulationMode = &(get()._simulationMode);
+    if (simulationMode->mode != newMode) {
+        simulationMode->mode = newMode;
+        get()._m1m3SAL->logEvent_simulationMode(simulationMode, 0);
+    }
 }
 
 void M1M3SSPublisher::putAccelerometerData() { _m1m3SAL->putSample_accelerometerData(&_accelerometerData); }
@@ -1592,58 +1601,6 @@ void M1M3SSPublisher::tryLogPowerStatus() {
                 _previousEventPowerStatus.auxPowerNetworkDCommandedOn ||
         _eventPowerStatus.auxPowerNetworkDOutputOn != _previousEventPowerStatus.auxPowerNetworkDOutputOn) {
         this->logPowerStatus();
-    }
-}
-
-void M1M3SSPublisher::logPowerSupplyStatus() {
-    _m1m3SAL->logEvent_powerSupplyStatus(&_eventPowerSupplyStatus, 0);
-    _previousEventPowerSupplyStatus = _eventPowerSupplyStatus;
-}
-
-void M1M3SSPublisher::tryLogPowerSupplyStatus() {
-    if (_eventPowerSupplyStatus.rcpMirrorCellUtility220VAC1Status !=
-                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC1Status ||
-        _eventPowerSupplyStatus.rcpCabinetUtility220VACStatus !=
-                _previousEventPowerSupplyStatus.rcpCabinetUtility220VACStatus ||
-        _eventPowerSupplyStatus.rcpExternalEquipment220VACStatus !=
-                _previousEventPowerSupplyStatus.rcpExternalEquipment220VACStatus ||
-        _eventPowerSupplyStatus.rcpMirrorCellUtility220VAC2Status !=
-                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC2Status ||
-        _eventPowerSupplyStatus.rcpMirrorCellUtility220VAC3Status !=
-                _previousEventPowerSupplyStatus.rcpMirrorCellUtility220VAC3Status ||
-        _eventPowerSupplyStatus.powerNetworkARedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkARedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkBRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkBRedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkCRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkCRedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkDRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkDRedundancyControlStatus ||
-        _eventPowerSupplyStatus.controlsPowerNetworkRedundancyControlStatus !=
-                _previousEventPowerSupplyStatus.controlsPowerNetworkRedundancyControlStatus ||
-        _eventPowerSupplyStatus.powerNetworkAStatus != _previousEventPowerSupplyStatus.powerNetworkAStatus ||
-        _eventPowerSupplyStatus.powerNetworkARedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkARedundantStatus ||
-        _eventPowerSupplyStatus.powerNetworkBStatus != _previousEventPowerSupplyStatus.powerNetworkBStatus ||
-        _eventPowerSupplyStatus.powerNetworkBRedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkBRedundantStatus ||
-        _eventPowerSupplyStatus.powerNetworkCStatus != _previousEventPowerSupplyStatus.powerNetworkCStatus ||
-        _eventPowerSupplyStatus.powerNetworkCRedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkCRedundantStatus ||
-        _eventPowerSupplyStatus.powerNetworkDStatus != _previousEventPowerSupplyStatus.powerNetworkDStatus ||
-        _eventPowerSupplyStatus.powerNetworkDRedundantStatus !=
-                _previousEventPowerSupplyStatus.powerNetworkDRedundantStatus ||
-        _eventPowerSupplyStatus.controlsPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.controlsPowerNetworkStatus ||
-        _eventPowerSupplyStatus.controlsPowerNetworkRedundantStatus !=
-                _previousEventPowerSupplyStatus.controlsPowerNetworkRedundantStatus ||
-        _eventPowerSupplyStatus.lightPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.lightPowerNetworkStatus ||
-        _eventPowerSupplyStatus.externalEquipmentPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.externalEquipmentPowerNetworkStatus ||
-        _eventPowerSupplyStatus.laserTrackerPowerNetworkStatus !=
-                _previousEventPowerSupplyStatus.laserTrackerPowerNetworkStatus) {
-        this->logPowerSupplyStatus();
     }
 }
 

@@ -21,33 +21,54 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIVESTATE_H_
-#define ACTIVESTATE_H_
+#ifndef LSST_POWERSUPPLYSTATUS_H
+#define LSST_POWERSUPPLYSTATUS_H
 
-#include <EnabledActiveState.h>
+#include <SAL_MTM1M3.h>
+
+#include <ILCDataTypes.h>
+#include <ModbusBuffer.h>
+
+#include <string.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Active State. Mirror is raised, supported by force actuators. Mirror can be
- * lowered with Lower M1M3 Command. The controller can be switched to
- * engineering mode with Enter Engineering command.
+ * Wrapper object for MTM1M3_logevent_powerSupplyStatusC. Keeps track of
+ * changes to parsed data, and sends updates only if data changed. Variables
+ * inherited from MTM1M3_logevent_powerSupplyStatusC are reset in first pass
+ * of various parse* methods.
  */
-class ActiveState : public EnabledActiveState {
+class PowerSupplyStatus : public MTM1M3_logevent_powerSupplyStatusC {
 public:
-    ActiveState();
+    /**
+     * Construct new PowerSupplyStatus, sets internal variables to 0xFF
+     * (actual ILC shall never send those responses).
+     */
+    PowerSupplyStatus();
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
+    /**
+     * Sets logEvent timestamp.
+     *
+     * @param globalTimestamp actual timestamp
+     */
+    void setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
 
-protected:
-    States::Type getLoweringState() override { return States::LoweringState; }
+    /**
+     * Parses powerSupply status, sends updates when updated.
+     *
+     * @param powerStatus Slot 2 value of the Expansion FPGA
+     */
+    void setPowerSupplyStatus(uint32_t powerStatus);
+
+private:
+    uint32_t lastStatus;
 };
 
 }  // namespace SS
 }  // namespace M1M3
 }  // namespace LSST
 
-#endif /* ACTIVESTATE_H_ */
+#endif  // LSST_POWERSUPPLYSTATUS_H

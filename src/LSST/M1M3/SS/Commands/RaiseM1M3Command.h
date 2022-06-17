@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -38,6 +38,7 @@ public:
 
     MTM1M3_command_raiseM1M3C* getData() { return &_data; }
 
+    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;

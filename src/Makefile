@@ -5,12 +5,14 @@ all: libM1M3SS.a
 .PHONY: DEPS clean
 
 C_SRCS = $(shell find LSST NiFpga -name '*.c')
-CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp') $(shell ls *.cpp)
+LIB_CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
+ALL_CPP_SRCS = $(LIB_CPP_SRCS) $(shell ls *.cpp)
 
-OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(CPP_SRCS))
+LIB_OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(LIB_CPP_SRCS))
+ALL_OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(ALL_CPP_SRCS))
 
 C_DEPS = $(patsubst %.c,%.c.d,$(C_SRCS))
-CPP_DEPS = $(patsubst %.cpp,%.cpp.d,$(CPP_SRCS))
+CPP_DEPS = $(patsubst %.cpp,%.cpp.d,$(ALL_CPP_SRCS))
 
 ifneq ($(MAKECMDGOALS),clean)
   -include ${C_DEPS} ${CPP_DEPS}
@@ -47,12 +49,12 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/Utility" \
 	-DVERSION="\"$(VERSION)\""
 
-libM1M3SS.a: $(OBJS)
+libM1M3SS.a: $(LIB_OBJS)
 	@echo '[AR ] $@'
 	${co}$(AR) rs $@ $^
 
 clean:
-	@$(foreach file,$(OBJS) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
+	@$(foreach file,$(ALL_OBJS) $(shell ls *.cpp.d *.cpp.o) $(C_DEPS) $(CPP_DEPS) libM1M3SS.a $(shell find -name '*.d'), echo '[RM ] ${file}'; $(RM) -r $(file);)
 
 # file targets
 %.cpp.o: %.cpp.d

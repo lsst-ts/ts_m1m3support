@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -470,6 +470,7 @@ void PositionController::_checkFollowingError(int hp) {
     if (abs(_hardpointActuatorData->stepsCommanded[hp]) >
         _positionControllerSettings->encoderToStepsCoefficient) {
         double travelled = _hardpointActuatorData->encoder[hp] - _lastEncoderCount[hp];
+        // due to condition above divider is > 1 or < -1, division by 0 cannot occur
         double shouldTravell = _hardpointActuatorData->stepsCommanded[hp] /
                                _positionControllerSettings->encoderToStepsCoefficient;
 

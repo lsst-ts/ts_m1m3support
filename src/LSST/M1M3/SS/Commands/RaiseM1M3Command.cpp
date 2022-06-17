@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -25,12 +25,25 @@
 #include <RaiseM1M3Command.h>
 #include <M1M3SSPublisher.h>
 
+#include <spdlog/spdlog.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data) : Command(commandID) {
     _data.bypassReferencePosition = data->bypassReferencePosition;
+}
+
+bool RaiseM1M3Command::validate() {
+    if (M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+        M1M3SSPublisher::get().logCommandRejectionWarning(
+                "RaiseM1M3",
+                fmt::format("Cannot raise M1M3 as bump test for actuator {} is in progress.",
+                            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId));
+        return false;
+    }
+    return Command::validate();
 }
 
 void RaiseM1M3Command::execute() { Context::get().raiseM1M3(this); }

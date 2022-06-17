@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the LSST Data Management System.
+ * Developed for the Vera C. Rubin Telescope and Site System.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -28,7 +28,6 @@
 #include <SafetyController.h>
 #include <PowerController.h>
 #include <SettingReader.h>
-#include <StartCommand.h>
 #include <Gyro.h>
 
 #include <thread>
@@ -49,6 +48,8 @@ States::Type StandbyState::update(UpdateCommand* command) {
 
 States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
+    SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+
     Model::get().loadSettings(command->getData()->configurationOverride);
     M1M3SSPublisher::get().getEventConfigurationApplied()->version =
             SettingReader::instance().getSettingsVersion();
