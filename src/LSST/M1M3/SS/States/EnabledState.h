@@ -39,9 +39,9 @@ class EnabledState : public State {
 public:
     EnabledState(std::string name);
 
-    virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) override;
-    virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command) override;
-    virtual States::Type setAirSlewFlag(SetAirSlewFlagCommand* command) override;
+    States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) override;
+    States::Type storeTMAElevationSample(TMAElevationSampleCommand* command) override;
+    States::Type setAirSlewFlag(SetAirSlewFlagCommand* command) override;
 
 protected:
     /**
@@ -68,6 +68,8 @@ protected:
      * @return true if mirror is lowered
      */
     bool lowerCompleted();
+
+    States::Type disableMirror();
 };
 
 } /* namespace SS */
