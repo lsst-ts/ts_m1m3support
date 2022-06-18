@@ -64,16 +64,7 @@ States::Type ParkedState::enterEngineering(EnterEngineeringCommand* command) {
 
 States::Type ParkedState::disable(DisableCommand* command) {
     SPDLOG_INFO("ParkedState: disable()");
-    Model::get().getILC()->writeSetModeDisableBuffer();
-    Model::get().getILC()->triggerModbus();
-    Model::get().getILC()->waitForAllSubnets(5000);
-    Model::get().getILC()->readAll();
-    Model::get().getILC()->verifyResponses();
-    Model::get().getForceController()->reset();
-    // TODO: Uncomment this when its not so hot outside
-    // Model::get().getDigitalInputOutput()->turnAirOff();
-    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
-    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
+    return EnabledState::disableMirror();
 }
 
 } /* namespace SS */
