@@ -38,12 +38,12 @@ class ParkedEngineeringState : public EngineeringState {
 public:
     ParkedEngineeringState();
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    virtual States::Type disable(DisableCommand* command) override;
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
-    virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type raiseM1M3(RaiseM1M3Command* command) override;
+    States::Type exitEngineering(ExitEngineeringCommand* command) override;
+    States::Type disable(DisableCommand* command) override;
+    States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
+    States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
 };
 
 } /* namespace SS */
