@@ -131,6 +131,18 @@ bool EnabledState::lowerCompleted() {
     return false;
 }
 
+States::Type EnabledState::disableMirror() {
+    Model::get().getILC()->writeSetModeDisableBuffer();
+    Model::get().getILC()->triggerModbus();
+    Model::get().getILC()->waitForAllSubnets(5000);
+    Model::get().getILC()->readAll();
+    Model::get().getILC()->verifyResponses();
+    Model::get().getForceController()->reset();
+    Model::get().getDigitalInputOutput()->turnAirOff();
+    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
+    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
