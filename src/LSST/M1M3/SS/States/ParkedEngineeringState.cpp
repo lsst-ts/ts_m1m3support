@@ -89,16 +89,8 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command) {
     // Stop any existing motion (chase and move commands)
     Model::get().getPositionController()->stopMotion();
     Model::get().getForceController()->reset();
-    // Perform ILC state transition
-    Model::get().getILC()->writeSetModeDisableBuffer();
-    Model::get().getILC()->triggerModbus();
-    Model::get().getILC()->waitForAllSubnets(5000);
-    Model::get().getILC()->readAll();
-    Model::get().getILC()->verifyResponses();
-    // TODO: Uncomment this later when its not so hot outside
-    // Model::get().getDigitalInputOutput()->turnAirOff();
-    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
-    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
+
+    return EnabledState::disableMirror();
 }
 
 States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
