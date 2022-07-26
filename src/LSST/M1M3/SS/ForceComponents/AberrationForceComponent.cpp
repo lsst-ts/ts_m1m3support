@@ -123,9 +123,9 @@ void AberrationForceComponent::postUpdateActions() {
 
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedAberrationForces();
+        M1M3SSPublisher::get().tryLogPreclippedAberrationForces();
     }
-    M1M3SSPublisher::get().logAppliedAberrationForces();
+    M1M3SSPublisher::get().tryLogAppliedAberrationForces();
 }
 
 } /* namespace SS */
