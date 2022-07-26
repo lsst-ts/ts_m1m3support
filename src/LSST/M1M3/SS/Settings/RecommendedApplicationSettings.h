@@ -32,7 +32,7 @@ namespace M1M3 {
 namespace SS {
 
 struct RecommendedApplicationSettings {
-    std::vector<std::string> RecommendedSettings;
+    std::string Configuration;
 
     void load(const std::string &filename);
 };

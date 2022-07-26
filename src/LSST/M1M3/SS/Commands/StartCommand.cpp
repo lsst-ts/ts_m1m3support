@@ -22,7 +22,9 @@
  */
 
 #include <Context.h>
+#include <RecommendedApplicationSettings.h>
 #include <StartCommand.h>
+#include <SettingReader.h>
 #include <M1M3SSPublisher.h>
 
 #include <SAL_defines.h>
@@ -37,9 +39,9 @@ StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) : Com
 
 bool StartCommand::validate() {
     if (_data.configurationOverride.empty()) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("StartCommand",
-                                                          "Command is missing settings argument!");
-        return false;
+        RecommendedApplicationSettings* recommendedApplicationSettings =
+                SettingReader::instance().loadRecommendedApplicationSettings();
+        _data.configurationOverride = recommendedApplicationSettings->Configuration;
     }
     return true;
 }
