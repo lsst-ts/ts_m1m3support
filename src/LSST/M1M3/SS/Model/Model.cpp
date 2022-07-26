@@ -37,7 +37,6 @@
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceController.h>
-#include <RecommendedApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <PositionController.h>
@@ -222,11 +221,11 @@ void Model::publishStateChange(States::Type newState) {
 
 void Model::publishRecommendedSettings() {
     SPDLOG_DEBUG("Model: publishRecommendedSettings()");
-    RecommendedApplicationSettings* recommendedApplicationSettings =
-            SettingReader::instance().loadRecommendedApplicationSettings();
     MTM1M3_logevent_configurationsAvailableC* data = M1M3SSPublisher::get().getEventConfigurationsAvailable();
     data->overrides = LSST::cRIO::join(SettingReader::instance().getAvailableConfigurations());
-    data->version = LSST::cRIO::join(recommendedApplicationSettings->RecommendedSettings);
+    data->version = GIT_HASH;
+    data->url = "https://github.com/lsst-ts/ts_m1m3support";
+    data->schemaVersion = "1";
     M1M3SSPublisher::get().logConfigurationsAvailable();
 }
 
