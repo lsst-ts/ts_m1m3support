@@ -225,7 +225,7 @@ void Model::publishRecommendedSettings() {
     data->overrides = LSST::cRIO::join(SettingReader::instance().getAvailableConfigurations());
     data->version = GIT_HASH;
     data->url = "https://github.com/lsst-ts/ts_m1m3support";
-    data->schemaVersion = "1";
+    data->schemaVersion = "v1";
     M1M3SSPublisher::get().logConfigurationsAvailable();
 }
 
