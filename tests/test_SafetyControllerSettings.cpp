@@ -31,8 +31,8 @@ TEST_CASE("SafetyControllerSettings load", "[SafetyControllerSettings]") {
     SafetyControllerSettings safetyControllerSettings;
 
     REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yaml"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yaml"));
 
     REQUIRE_THROWS(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yam"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yam"));
 }
