@@ -46,8 +46,7 @@ using namespace LSST::M1M3::SS;
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                  ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
-        : _aberrationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
-          _accelerationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+        : _accelerationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
           _activeOpticForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
           _azimuthForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
           _balanceForceComponent(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings),
@@ -136,7 +135,6 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 
 void ForceController::reset() {
     SPDLOG_INFO("ForceController: reset()");
-    _aberrationForceComponent.reset();
     _accelerationForceComponent.reset();
     _activeOpticForceComponent.reset();
     _azimuthForceComponent.reset();
@@ -208,9 +206,6 @@ bool ForceController::followingErrorInTolerance() {
 void ForceController::updateAppliedForces() {
     SPDLOG_TRACE("ForceController: updateAppliedForces()");
 
-    if (_aberrationForceComponent.isEnabled() || _aberrationForceComponent.isDisabling()) {
-        _aberrationForceComponent.update();
-    }
     if (_accelerationForceComponent.isEnabled() || _accelerationForceComponent.isDisabling()) {
         if (_accelerationForceComponent.isEnabled()) {
             _accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(
@@ -272,21 +267,6 @@ void ForceController::processAppliedForces() {
     TMA::instance().checkTimestamps(_azimuthForceComponent.isEnabled(), _elevationForceComponent.isEnabled());
 
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
-}
-
-void ForceController::applyAberrationForces(float* z) {
-    SPDLOG_INFO("ForceController: applyAberrationForces()");
-    if (!_aberrationForceComponent.isEnabled()) {
-        _aberrationForceComponent.enable();
-    }
-    _aberrationForceComponent.applyAberrationForces(z);
-}
-
-void ForceController::zeroAberrationForces() {
-    SPDLOG_INFO("ForceController: zeroAberrationForces()");
-    if (_aberrationForceComponent.isEnabled()) {
-        _aberrationForceComponent.disable();
-    }
 }
 
 void ForceController::applyAccelerationForces() {

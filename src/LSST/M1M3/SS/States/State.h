@@ -42,8 +42,6 @@
 #include <ClearOffsetForcesCommand.h>
 #include <RaiseM1M3Command.h>
 #include <LowerM1M3Command.h>
-#include <ApplyAberrationForcesCommand.h>
-#include <ClearAberrationForcesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
@@ -121,8 +119,6 @@ public:
     virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command);
     virtual States::Type raiseM1M3(RaiseM1M3Command* command);
     virtual States::Type lowerM1M3(LowerM1M3Command* command);
-    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command);
-    virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command);
     virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
     virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     virtual States::Type enterEngineering(EnterEngineeringCommand* command);

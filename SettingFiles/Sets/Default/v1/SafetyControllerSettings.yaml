@@ -50,8 +50,6 @@ ForceControllerSettings:
   FaultOnActiveOpticNetForceCheck: On
   FaultOnActiveOpticForceClipping: On
   FaultOnStaticForceClipping: On
-  FaultOnAberrationNetForceCheck: On
-  FaultOnAberrationForceClipping: On
   FaultOnOffsetForceClipping: On
   FaultOnVelocityForceClipping: On
   FaultOnForceClipping: On

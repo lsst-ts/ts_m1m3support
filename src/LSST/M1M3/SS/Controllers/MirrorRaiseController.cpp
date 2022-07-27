@@ -57,7 +57,6 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _safetyController->raiseOperationTimeout(false);
     _positionController->stopMotion();
     _positionController->enableChaseAll();
-    _forceController->zeroAberrationForces();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->zeroAzimuthForces();
@@ -118,7 +117,6 @@ void MirrorRaiseController::complete() {
     // Transition to the end state (active or active engineering) if all of the support force has been
     // transfered from the static supports to the force actuators and all hardpoints have completed their
     // commanded motions
-    _forceController->zeroAberrationForces();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->applyAzimuthForces();

@@ -36,20 +36,6 @@ States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command* command) {
     return Model::get().getSafetyController()->checkSafety(getLoweringState());
 }
 
-States::Type EnabledActiveState::applyAberrationForces(ApplyAberrationForcesCommand* command) {
-    SPDLOG_INFO("ActiveEngineeringState: applyAberrationForces()");
-    Model::get().getForceController()->applyAberrationForces(command->getData()->zForces);
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type EnabledActiveState::clearAberrationForces(ClearAberrationForcesCommand* command) {
-    SPDLOG_INFO("EnabledActiveState: clearAberrationForces()");
-    Model::get().getForceController()->zeroAberrationForces();
-    Model::get().getForceController()->processAppliedForces();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 States::Type EnabledActiveState::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
     SPDLOG_INFO("ActiveEngineeringState: applyActiveOpticForces()");
     Model::get().getForceController()->applyActiveOpticForces(command->getData()->zForces);

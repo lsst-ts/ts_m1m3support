@@ -36,7 +36,7 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * @brief FInal force produced as sum of components.
+ * @brief Final force produced as sum of components.
  *
  * Sum component forces stored in SAL events. Apply mirror safety checks.  Log
  * force emirror safety limits are violated.
@@ -72,7 +72,6 @@ private:
     MTM1M3_logevent_appliedForcesC* _appliedForces;
     MTM1M3_logevent_preclippedForcesC* _preclippedForces;
 
-    MTM1M3_logevent_appliedAberrationForcesC* _appliedAberrationForces;
     MTM1M3_logevent_appliedAccelerationForcesC* _appliedAccelerationForces;
     MTM1M3_logevent_appliedActiveOpticForcesC* _appliedActiveOpticForces;
     MTM1M3_logevent_appliedAzimuthForcesC* _appliedAzimuthForces;

@@ -41,8 +41,6 @@
 #include <ClearOffsetForcesCommand.h>
 #include <RaiseM1M3Command.h>
 #include <LowerM1M3Command.h>
-#include <ApplyAberrationForcesCommand.h>
-#include <ClearAberrationForcesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
@@ -117,8 +115,6 @@ public:
     void clearOffsetForces(ClearOffsetForcesCommand* command);
     void raiseM1M3(RaiseM1M3Command* command);
     void lowerM1M3(LowerM1M3Command* command);
-    void applyAberrationForces(ApplyAberrationForcesCommand* command);
-    void clearAberrationForces(ClearAberrationForcesCommand* command);
     void applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
     void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     void enterEngineering(EnterEngineeringCommand* command);

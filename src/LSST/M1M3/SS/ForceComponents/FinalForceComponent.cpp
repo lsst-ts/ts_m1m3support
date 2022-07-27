@@ -49,7 +49,6 @@ FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* force
     _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
     _preclippedForces = M1M3SSPublisher::get().getEventPreclippedForces();
 
-    _appliedAberrationForces = M1M3SSPublisher::get().getEventAppliedAberrationForces();
     _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
     _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
     _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
@@ -98,11 +97,11 @@ void FinalForceComponent::applyForcesByComponents() {
         }
 
         if (_enabledForceActuators->forceActuatorEnabled[i] == true) {
-            zTarget[i] = (_appliedAberrationForces->zForces[i] + _appliedAccelerationForces->zForces[i] +
-                          _appliedActiveOpticForces->zForces[i] + _appliedAzimuthForces->zForces[i] +
-                          _appliedBalanceForces->zForces[i] + _appliedElevationForces->zForces[i] +
-                          _appliedOffsetForces->zForces[i] + _appliedStaticForces->zForces[i] +
-                          _appliedThermalForces->zForces[i] + _appliedVelocityForces->zForces[i]);
+            zTarget[i] = (_appliedAccelerationForces->zForces[i] + _appliedActiveOpticForces->zForces[i] +
+                          _appliedAzimuthForces->zForces[i] + _appliedBalanceForces->zForces[i] +
+                          _appliedElevationForces->zForces[i] + _appliedOffsetForces->zForces[i] +
+                          _appliedStaticForces->zForces[i] + _appliedThermalForces->zForces[i] +
+                          _appliedVelocityForces->zForces[i]);
         } else {
             zTarget[i] = 0;
         }
