@@ -59,7 +59,6 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyWarning");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedAberrationForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedAccelerationForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedActiveOpticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedAzimuthForces");
@@ -108,7 +107,6 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerSupplyStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerWarning");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAberrationForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAccelerationForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedActiveOpticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAzimuthForces");
@@ -189,24 +187,6 @@ void M1M3SSPublisher::tryLogAirSupplyWarning() {
         _eventAirSupplyWarning.commandSensorMismatch !=
                 _previousEventAirSupplyWarning.commandSensorMismatch) {
         this->logAirSupplyWarning();
-    }
-}
-
-void M1M3SSPublisher::logAppliedAberrationForces() {
-    _m1m3SAL->logEvent_appliedAberrationForces(&_eventAppliedAberrationForces, 0);
-    _previousEventAppliedAberrationForces = _eventAppliedAberrationForces;
-}
-
-void M1M3SSPublisher::tryLogAppliedAberrationForces() {
-    bool changeDetected = _eventAppliedAberrationForces.fz != _previousEventAppliedAberrationForces.fz ||
-                          _eventAppliedAberrationForces.mx != _previousEventAppliedAberrationForces.mx ||
-                          _eventAppliedAberrationForces.my != _previousEventAppliedAberrationForces.my;
-    for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected = changeDetected || _eventAppliedAberrationForces.zForces[i] !=
-                                                   _previousEventAppliedAberrationForces.zForces[i];
-    }
-    if (changeDetected) {
-        this->logAppliedAberrationForces();
     }
 }
 
@@ -753,8 +733,6 @@ void M1M3SSPublisher::tryLogForceActuatorState() {
                     _previousEventForceActuatorState.velocityForcesApplied ||
             _eventForceActuatorState.activeOpticForcesApplied !=
                     _previousEventForceActuatorState.activeOpticForcesApplied ||
-            _eventForceActuatorState.aberrationForcesApplied !=
-                    _previousEventForceActuatorState.aberrationForcesApplied ||
             _eventForceActuatorState.balanceForcesApplied !=
                     _previousEventForceActuatorState.balanceForcesApplied ||
             _eventForceActuatorState.supportPercentage != _previousEventForceActuatorState.supportPercentage;
@@ -779,7 +757,6 @@ void M1M3SSPublisher::logForceSetpointWarning() {
     _eventForceSetpointWarning.anyVelocityForceWarning = false;
     _eventForceSetpointWarning.anyActiveOpticForceWarning = false;
     _eventForceSetpointWarning.anyStaticForceWarning = false;
-    _eventForceSetpointWarning.anyAberrationForceWarning = false;
     _eventForceSetpointWarning.anyOffsetForceWarning = false;
     _eventForceSetpointWarning.anyForceWarning = false;
     for (int i = 0; i < FA_COUNT; ++i) {
@@ -813,9 +790,6 @@ void M1M3SSPublisher::logForceSetpointWarning() {
                 _eventForceSetpointWarning.activeOpticForceWarning[i];
         _eventForceSetpointWarning.anyStaticForceWarning = _eventForceSetpointWarning.anyStaticForceWarning ||
                                                            _eventForceSetpointWarning.staticForceWarning[i];
-        _eventForceSetpointWarning.anyAberrationForceWarning =
-                _eventForceSetpointWarning.anyAberrationForceWarning ||
-                _eventForceSetpointWarning.aberrationForceWarning[i];
         _eventForceSetpointWarning.anyOffsetForceWarning = _eventForceSetpointWarning.anyOffsetForceWarning ||
                                                            _eventForceSetpointWarning.offsetForceWarning[i];
         _eventForceSetpointWarning.anyForceWarning =
@@ -835,8 +809,6 @@ void M1M3SSPublisher::logForceSetpointWarning() {
             _eventForceSetpointWarning.activeOpticNetForceWarning ||
             _eventForceSetpointWarning.anyActiveOpticForceWarning ||
             _eventForceSetpointWarning.anyStaticForceWarning ||
-            _eventForceSetpointWarning.aberrationNetForceWarning ||
-            _eventForceSetpointWarning.anyAberrationForceWarning ||
             _eventForceSetpointWarning.anyOffsetForceWarning || _eventForceSetpointWarning.anyForceWarning;
     _m1m3SAL->logEvent_forceSetpointWarning(&_eventForceSetpointWarning, 0);
     _previousEventForceSetpointWarning = _eventForceSetpointWarning;
@@ -850,9 +822,7 @@ void M1M3SSPublisher::tryLogForceSetpointWarning() {
             _eventForceSetpointWarning.magnitudeWarning !=
                     _previousEventForceSetpointWarning.magnitudeWarning ||
             _eventForceSetpointWarning.activeOpticNetForceWarning !=
-                    _previousEventForceSetpointWarning.activeOpticNetForceWarning ||
-            _eventForceSetpointWarning.aberrationNetForceWarning !=
-                    _previousEventForceSetpointWarning.aberrationNetForceWarning;
+                    _previousEventForceSetpointWarning.activeOpticNetForceWarning;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventForceSetpointWarning.safetyLimitWarning[i] !=
@@ -877,8 +847,6 @@ void M1M3SSPublisher::tryLogForceSetpointWarning() {
                                  _previousEventForceSetpointWarning.activeOpticForceWarning[i] ||
                          _eventForceSetpointWarning.staticForceWarning[i] !=
                                  _previousEventForceSetpointWarning.staticForceWarning[i] ||
-                         _eventForceSetpointWarning.aberrationForceWarning[i] !=
-                                 _previousEventForceSetpointWarning.aberrationForceWarning[i] ||
                          _eventForceSetpointWarning.offsetForceWarning[i] !=
                                  _previousEventForceSetpointWarning.offsetForceWarning[i] ||
                          _eventForceSetpointWarning.forceWarning[i] !=
@@ -1638,25 +1606,6 @@ void M1M3SSPublisher::tryLogPowerWarning() {
     }
 }
 
-void M1M3SSPublisher::logPreclippedAberrationForces() {
-    _m1m3SAL->logEvent_preclippedAberrationForces(&_eventPreclippedAberrationForces, 0);
-    _previousEventPreclippedAberrationForces = _eventPreclippedAberrationForces;
-}
-
-void M1M3SSPublisher::tryLogPreclippedAberrationForces() {
-    bool changeDetected =
-            _eventPreclippedAberrationForces.fz != _previousEventPreclippedAberrationForces.fz ||
-            _eventPreclippedAberrationForces.mx != _previousEventPreclippedAberrationForces.mx ||
-            _eventPreclippedAberrationForces.my != _previousEventPreclippedAberrationForces.my;
-    for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected = changeDetected || _eventPreclippedAberrationForces.zForces[i] !=
-                                                   _previousEventPreclippedAberrationForces.zForces[i];
-    }
-    if (changeDetected) {
-        this->logPreclippedAberrationForces();
-    }
-}
-
 void M1M3SSPublisher::logPreclippedAccelerationForces() {
     _m1m3SAL->logEvent_preclippedAccelerationForces(&_eventPreclippedAccelerationForces, 0);
     _previousEventPreclippedAccelerationForces = _eventPreclippedAccelerationForces;
@@ -1971,8 +1920,6 @@ ACK_COMMAND(raiseM1M3)
 ACK_COMMAND(lowerM1M3)
 ACK_COMMAND(applyActiveOpticForces)
 ACK_COMMAND(clearActiveOpticForces)
-ACK_COMMAND(applyAberrationForces)
-ACK_COMMAND(clearAberrationForces)
 ACK_COMMAND(enterEngineering)
 ACK_COMMAND(exitEngineering)
 ACK_COMMAND(setAirSlewFlag)

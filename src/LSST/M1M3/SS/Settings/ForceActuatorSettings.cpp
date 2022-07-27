@@ -79,9 +79,6 @@ void ForceActuatorSettings::load(const std::string &filename) {
         TableLoader::loadTable(1, 1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
         TableLoader::loadTable(1, 1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
 
-        TableLoader::loadLimitTable(1, 1, &AberrationLimitZTable,
-                                    doc["AberrationLimitZTablePath"].as<std::string>());
-        netAberrationForceTolerance = doc["NetAberrationForceTolerance"].as<float>();
         TableLoader::loadLimitTable(1, 1, &AccelerationLimitXTable,
                                     doc["AccelerationLimitXTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, 1, &AccelerationLimitYTable,
@@ -174,7 +171,6 @@ void ForceActuatorSettings::load(const std::string &filename) {
         lowerDecrementPercentage = doc["LowerDecrementPercentage"].as<double>();
         raiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
 
-        AberrationComponentSettings.set(doc["AberrationForceComponent"]);
         AccelerationComponentSettings.set(doc["AccelerationForceComponent"]);
         ActiveOpticComponentSettings.set(doc["ActiveOpticForceComponent"]);
         AzimuthComponentSettings.set(doc["AzimuthForceComponent"]);

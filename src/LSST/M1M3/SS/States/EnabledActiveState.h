@@ -37,8 +37,6 @@ namespace SS {
 class EnabledActiveState : public virtual EnabledState {
 public:
     virtual States::Type lowerM1M3(LowerM1M3Command* command) override;
-    virtual States::Type applyAberrationForces(ApplyAberrationForcesCommand* command) override;
-    virtual States::Type clearAberrationForces(ClearAberrationForcesCommand* command) override;
     virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
     virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
     virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;

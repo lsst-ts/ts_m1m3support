@@ -56,7 +56,6 @@ void MirrorLowerController::start() {
         throw std::runtime_error("Cannot move to lower position before starting lowering the mirror");
     }
 
-    _forceController->zeroAberrationForces();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->zeroAzimuthForces();
@@ -100,7 +99,6 @@ void MirrorLowerController::complete() {
     // Transition to the end state (parked or parked engineering) if all of the support
     // force has been transfered from the force actuators to the static supports
     _positionController->disableChaseAll();
-    _forceController->zeroAberrationForces();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->zeroAzimuthForces();
@@ -130,7 +128,6 @@ void MirrorLowerController::abortRaiseM1M3() {
     _safetyController->lowerOperationTimeout(false);
     _positionController->stopMotion();
     _positionController->enableChaseAll();
-    _forceController->zeroAberrationForces();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->zeroAzimuthForces();

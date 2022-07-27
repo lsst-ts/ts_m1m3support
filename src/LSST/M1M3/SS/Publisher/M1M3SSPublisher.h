@@ -84,9 +84,6 @@ public:
     }
     MTM1M3_logevent_airSupplyStatusC* getEventAirSupplyStatus() { return &_eventAirSupplyStatus; }
     MTM1M3_logevent_airSupplyWarningC* getEventAirSupplyWarning() { return &_eventAirSupplyWarning; }
-    MTM1M3_logevent_appliedAberrationForcesC* getEventAppliedAberrationForces() {
-        return &_eventAppliedAberrationForces;
-    }
     MTM1M3_logevent_appliedAccelerationForcesC* getEventAppliedAccelerationForces() {
         return &_eventAppliedAccelerationForces;
     }
@@ -168,9 +165,6 @@ public:
     MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &_eventPowerStatus; }
     static PowerSupplyStatus* getPowerSupplyStatus() { return &(get()._powerSupplyStatus); }
     MTM1M3_logevent_powerWarningC* getEventPowerWarning() { return &_eventPowerWarning; }
-    MTM1M3_logevent_preclippedAberrationForcesC* getEventPreclippedAberrationForces() {
-        return &_eventPreclippedAberrationForces;
-    }
     MTM1M3_logevent_preclippedAccelerationForcesC* getEventPreclippedAccelerationForces() {
         return &_eventPreclippedAccelerationForces;
     }
@@ -259,8 +253,6 @@ public:
     void tryLogAirSupplyStatus();
     void logAirSupplyWarning();
     void tryLogAirSupplyWarning();
-    void logAppliedAberrationForces();
-    void tryLogAppliedAberrationForces();
     void logAppliedAccelerationForces();
     void tryLogAppliedAccelerationForces();
     void logAppliedActiveOpticForces();
@@ -364,8 +356,6 @@ public:
     }
     void logPowerWarning();
     void tryLogPowerWarning();
-    void logPreclippedAberrationForces();
-    void tryLogPreclippedAberrationForces();
     void logPreclippedAccelerationForces();
     void tryLogPreclippedAccelerationForces();
     void logPreclippedActiveOpticForces();
@@ -421,8 +411,6 @@ public:
     void ackCommandlowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandapplyActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandclearActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandclearAberrationForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenterEngineering(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandsetAirSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
@@ -472,7 +460,6 @@ private:
     MTM1M3_logevent_accelerometerWarningC _eventAccelerometerWarning;
     MTM1M3_logevent_airSupplyStatusC _eventAirSupplyStatus;
     MTM1M3_logevent_airSupplyWarningC _eventAirSupplyWarning;
-    MTM1M3_logevent_appliedAberrationForcesC _eventAppliedAberrationForces;
     MTM1M3_logevent_appliedAccelerationForcesC _eventAppliedAccelerationForces;
     MTM1M3_logevent_appliedActiveOpticForcesC _eventAppliedActiveOpticForces;
     MTM1M3_logevent_appliedAzimuthForcesC _eventAppliedAzimuthForces;
@@ -513,7 +500,6 @@ private:
     MTM1M3_logevent_powerStatusC _eventPowerStatus;
     PowerSupplyStatus _powerSupplyStatus;
     MTM1M3_logevent_powerWarningC _eventPowerWarning;
-    MTM1M3_logevent_preclippedAberrationForcesC _eventPreclippedAberrationForces;
     MTM1M3_logevent_preclippedAccelerationForcesC _eventPreclippedAccelerationForces;
     MTM1M3_logevent_preclippedActiveOpticForcesC _eventPreclippedActiveOpticForces;
     MTM1M3_logevent_preclippedAzimuthForcesC _eventPreclippedAzimuthForces;
@@ -533,7 +519,6 @@ private:
     MTM1M3_logevent_accelerometerWarningC _previousEventAccelerometerWarning;
     MTM1M3_logevent_airSupplyStatusC _previousEventAirSupplyStatus;
     MTM1M3_logevent_airSupplyWarningC _previousEventAirSupplyWarning;
-    MTM1M3_logevent_appliedAberrationForcesC _previousEventAppliedAberrationForces;
     MTM1M3_logevent_appliedAccelerationForcesC _previousEventAppliedAccelerationForces;
     MTM1M3_logevent_appliedActiveOpticForcesC _previousEventAppliedActiveOpticForces;
     MTM1M3_logevent_appliedAzimuthForcesC _previousEventAppliedAzimuthForces;
@@ -571,7 +556,6 @@ private:
     MTM1M3_logevent_powerStatusC _previousEventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _previousEventPowerSupplyStatus;
     MTM1M3_logevent_powerWarningC _previousEventPowerWarning;
-    MTM1M3_logevent_preclippedAberrationForcesC _previousEventPreclippedAberrationForces;
     MTM1M3_logevent_preclippedAccelerationForcesC _previousEventPreclippedAccelerationForces;
     MTM1M3_logevent_preclippedActiveOpticForcesC _previousEventPreclippedActiveOpticForces;
     MTM1M3_logevent_preclippedAzimuthForcesC _previousEventPreclippedAzimuthForces;
