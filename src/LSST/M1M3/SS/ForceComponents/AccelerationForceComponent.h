@@ -40,6 +40,17 @@ public:
                                ForceActuatorSettings* forceActuatorSettings);
 
     void applyAccelerationForces(float* x, float* y, float* z);
+
+    /**
+     * Calculate forces from accelerations.
+     *
+     * Acceleration is measured by accelerometers placed inside mirror cell. It
+     * is converted from raw G readings into m^2/s.
+     *
+     * @param angularAccelerationX x acceleration [m^2/s]
+     * @param angularAccelerationY y acceleration [m^2/s]
+     * @param angularAccelerationZ z acceleration [m^2/s]
+     */
     void applyAccelerationForcesByAngularAccelerations(float angularAccelerationX, float angularAccelerationY,
                                                        float angularAccelerationZ);
 

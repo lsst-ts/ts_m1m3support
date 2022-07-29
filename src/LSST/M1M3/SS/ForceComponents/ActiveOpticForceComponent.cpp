@@ -123,9 +123,9 @@ void ActiveOpticForceComponent::postUpdateActions() {
 
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedActiveOpticForces();
+        M1M3SSPublisher::get().tryLogPreclippedActiveOpticForces();
     }
-    M1M3SSPublisher::get().logAppliedActiveOpticForces();
+    M1M3SSPublisher::get().tryLogAppliedActiveOpticForces();
 }
 
 } /* namespace SS */

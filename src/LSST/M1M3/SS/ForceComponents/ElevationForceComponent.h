@@ -40,6 +40,12 @@ public:
                             ForceActuatorSettings* forceActuatorSettings);
 
     void applyElevationForces(float* x, float* y, float* z);
+
+    /**
+     * Calculate offset forces from current telescope elevation.
+     *
+     * @param elevationAngle current elevation [deg]
+     */
     void applyElevationForcesByElevationAngle(float elevationAngle);
 
 protected:
