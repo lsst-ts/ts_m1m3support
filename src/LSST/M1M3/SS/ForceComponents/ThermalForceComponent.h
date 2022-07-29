@@ -34,6 +34,14 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Applies corrections for mirror cell temperature.
+ *
+ * Fifth degree polynomial fit is assumed between temperature and force offsets,
+ *
+ * TODO this is currently undefined, with all coefficients equal to 0. Needs to
+ * be refined once real glass and thermal systems are operational.
+ */
 class ThermalForceComponent : public ForceComponent {
 public:
     ThermalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,

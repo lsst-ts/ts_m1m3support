@@ -40,6 +40,12 @@ public:
                           ForceActuatorSettings* forceActuatorSettings);
 
     void applyAzimuthForces(float* x, float* y, float* z);
+
+    /**
+     * Calculate and apply azimuth forces.
+     *
+     * @param azimuthAngle current aziumth angle [deg)
+     */
     void applyAzimuthForcesByAzimuthAngle(float azimuthAngle);
 
 protected:
