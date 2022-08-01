@@ -59,7 +59,7 @@ private:
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_appliedAzimuthForcesC* _appliedAzimuthForces;
+    MTM1M3_appliedAzimuthForcesC* _appliedAzimuthForces;
     MTM1M3_logevent_preclippedAzimuthForcesC* _preclippedAzimuthForces;
 };
 

@@ -53,7 +53,7 @@ BalanceForceComponent::BalanceForceComponent(
     _pidSettings = pidSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedBalanceForces = M1M3SSPublisher::get().getEventAppliedBalanceForces();
+    _appliedBalanceForces = M1M3SSPublisher::get().getAppliedBalanceForces();
     _preclippedBalanceForces = M1M3SSPublisher::get().getEventPreclippedBalanceForces();
 }
 

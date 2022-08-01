@@ -62,8 +62,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _safetyController = Model::get().getSafetyController();
     _pidSettings = pidSettings;
 
-    _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
-    _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+    _appliedCylinderForces = M1M3SSPublisher::get().getAppliedCylinderForces();
+    _appliedForces = M1M3SSPublisher::get().getAppliedForces();
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _preclippedCylinderForces = M1M3SSPublisher::get().getEventPreclippedCylinderForces();
