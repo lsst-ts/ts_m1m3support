@@ -31,9 +31,7 @@ void RecommendedApplicationSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        for (auto recommendedSetings : doc["RecommendedSettings"].as<std::vector<std::string>>()) {
-            RecommendedSettings.push_back(recommendedSetings);
-        }
+        Configuration = doc["Configuration"].as<std::string>();
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }

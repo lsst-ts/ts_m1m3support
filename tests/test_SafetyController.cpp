@@ -83,10 +83,10 @@ void init_logger() {
     spdlog::set_level(spdlog::level::trace);
 
     REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yaml"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yaml"));
 
     REQUIRE_NOTHROW(
-            hardpointActuatorSettings.load("../SettingFiles/Sets/Default/1/HardpointActuatorSettings.yaml"));
+            hardpointActuatorSettings.load("../SettingFiles/Sets/Default/v1/HardpointActuatorSettings.yaml"));
 }
 
 TEST_CASE("Failure on low air pressure", "[SafetyController]") {

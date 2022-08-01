@@ -1,5 +1,5 @@
 /*
- * This file is part of LSST M1M3 SS test suite. Tests SafetyControllerSettings.
+ * This file is part of LSST M1M3 SS test suite. Tests SafetyController.
  *
  * Developed for the LSST Telescope and Site Systems.
  * This product includes software developed by the LSST Project
@@ -23,16 +23,13 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <SafetyControllerSettings.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 
-TEST_CASE("SafetyControllerSettings load", "[SafetyControllerSettings]") {
-    SafetyControllerSettings safetyControllerSettings;
-
-    REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yaml"));
-
-    REQUIRE_THROWS(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yam"));
+TEST_CASE("List available settingsi", "[SettingReader]") {
+    SettingReader::instance().setRootPath("../SettingFiles/");
+    auto configs = SettingReader::instance().getAvailableConfigurations();
+    REQUIRE(configs.front() == "Default");
+    REQUIRE(configs.size() == 1);
 }

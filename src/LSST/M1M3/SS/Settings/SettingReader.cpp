@@ -62,6 +62,19 @@ std::string SettingReader::getFilePath(std::string filename) {
     return _rootPath + "/" + filename;
 }
 
+std::list<std::string> SettingReader::getAvailableConfigurations() {
+    std::list<std::string> ret;
+    std::string setPath = _rootPath + "/Sets";
+    auto dirp = opendir(setPath.c_str());
+    dirent* de;
+    while ((de = readdir(dirp)) != NULL) {
+        if ((de->d_type & DT_DIR) == DT_DIR && de->d_name[0] != '.') {
+            ret.push_back(de->d_name);
+        }
+    }
+    return ret;
+}
+
 void SettingReader::configure(std::string settingsToApply) {
     SPDLOG_DEBUG("SettingReader: configure(\"{}\")", settingsToApply);
     _currentSet = "";
