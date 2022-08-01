@@ -262,8 +262,8 @@ private:
     VelocityForceComponent _velocityForceComponent;
     FinalForceComponent _finalForceComponent;
 
-    MTM1M3_logevent_appliedCylinderForcesC* _appliedCylinderForces;
-    MTM1M3_logevent_appliedForcesC* _appliedForces;
+    MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
+    MTM1M3_appliedForcesC* _appliedForces;
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_preclippedCylinderForcesC* _preclippedCylinderForces;

@@ -46,18 +46,18 @@ FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* force
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+    _appliedForces = M1M3SSPublisher::get().getAppliedForces();
     _preclippedForces = M1M3SSPublisher::get().getEventPreclippedForces();
 
-    _appliedAccelerationForces = M1M3SSPublisher::get().getEventAppliedAccelerationForces();
+    _appliedAccelerationForces = M1M3SSPublisher::get().getAppliedAccelerationForces();
     _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
-    _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
-    _appliedBalanceForces = M1M3SSPublisher::get().getEventAppliedBalanceForces();
-    _appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
+    _appliedAzimuthForces = M1M3SSPublisher::get().getAppliedAzimuthForces();
+    _appliedBalanceForces = M1M3SSPublisher::get().getAppliedBalanceForces();
+    _appliedElevationForces = M1M3SSPublisher::get().getAppliedElevationForces();
     _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
     _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
-    _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
-    _appliedVelocityForces = M1M3SSPublisher::get().getEventAppliedVelocityForces();
+    _appliedThermalForces = M1M3SSPublisher::get().getAppliedThermalForces();
+    _appliedVelocityForces = M1M3SSPublisher::get().getAppliedVelocityForces();
 
     enable();
 }

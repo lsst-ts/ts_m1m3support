@@ -65,7 +65,7 @@ private:
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_appliedAccelerationForcesC* _appliedAccelerationForces;
+    MTM1M3_appliedAccelerationForcesC* _appliedAccelerationForces;
     MTM1M3_logevent_preclippedAccelerationForcesC* _preclippedAccelerationForces;
 };
 

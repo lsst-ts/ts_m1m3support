@@ -37,7 +37,7 @@
 
 struct MTMount_AltC;
 struct MTMount_AzC;
-struct MTM1M3_logevent_appliedCylinderForcesC;
+struct MTM1M3_appliedCylinderForcesC;
 struct MTM1M3_logevent_appliedHardpointStepsC;
 struct MTM1M3_hardpointActuatorDataC;
 struct MTM1M3_outerLoopDataC;
