@@ -203,7 +203,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
         MTM1M3_appliedElevationForcesC *appliedElevationForces =
                 M1M3SSPublisher::get().getAppliedElevationForces();
-        MTM1M3_logevent_appliedForcesC *appliedForces = M1M3SSPublisher::get().getAppliedForces();
+        MTM1M3_appliedForcesC *appliedForces = M1M3SSPublisher::get().getAppliedForces();
         MTM1M3_logevent_errorCodeC *errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
 
         REQUIRE(errorCodeData->errorCode == 0);
