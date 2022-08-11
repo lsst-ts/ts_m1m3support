@@ -62,6 +62,11 @@ public:
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL);
 
     /**
+     * Called when new settigns are loaded to resend 0 events.
+     */
+    void reset();
+
+    /**
      * @brief Returns pointer to accelerometer data.
      *
      * @return pointer to the accelerometer data
