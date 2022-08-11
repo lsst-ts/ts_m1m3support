@@ -32,7 +32,6 @@
 #include <DistributedForces.h>
 #include <PID.h>
 #include <vector>
-#include <AberrationForceComponent.h>
 #include <AccelerationForceComponent.h>
 #include <ActiveOpticForceComponent.h>
 #include <AzimuthForceComponent.h>
@@ -192,16 +191,13 @@ public:
      * @brief Sums components and run mirror safety checks.
      *
      * Uses FinalForceComponent to sum mirror forces obtained from
-     * AberrationForceComponent, AccelerationForceComponent,
+     * AccelerationForceComponent,
      * ActiveOpticForceComponent, AzimuthForceComponent, BalanceForceComponent,
      * ElevationForceComponent, OffsetForceComponent, StaticForceComponent,
      * ThermalForceComponent and VelocityForceComponent. Run mirror safety
      * checks on summed forces, and log warning if forces are clipped.
      */
     void processAppliedForces();
-
-    void applyAberrationForces(float* z);
-    void zeroAberrationForces();
 
     void applyAccelerationForces();
     void zeroAccelerationForces();
@@ -255,7 +251,6 @@ private:
     PIDSettings* _pidSettings;
     SafetyController* _safetyController;
 
-    AberrationForceComponent _aberrationForceComponent;
     AccelerationForceComponent _accelerationForceComponent;
     ActiveOpticForceComponent _activeOpticForceComponent;
     AzimuthForceComponent _azimuthForceComponent;
@@ -267,8 +262,8 @@ private:
     VelocityForceComponent _velocityForceComponent;
     FinalForceComponent _finalForceComponent;
 
-    MTM1M3_logevent_appliedCylinderForcesC* _appliedCylinderForces;
-    MTM1M3_logevent_appliedForcesC* _appliedForces;
+    MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
+    MTM1M3_appliedForcesC* _appliedForces;
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_preclippedCylinderForcesC* _preclippedCylinderForces;

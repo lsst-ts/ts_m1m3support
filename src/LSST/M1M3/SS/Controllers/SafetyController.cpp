@@ -348,18 +348,6 @@ void SafetyController::forceControllerNotifyStaticForceClipping(bool conditionFl
                     "Force controller Static Force Clipping");
 }
 
-void SafetyController::forceControllerNotifyAberrationNetForceCheck(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerAberrationNetForceCheck,
-                    _safetyControllerSettings->ForceController.FaultOnAberrationNetForceCheck, conditionFlag,
-                    "Force controller Aberration Net Force Check failed");
-}
-
-void SafetyController::forceControllerNotifyAberrationForceClipping(bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerAberrationForceClipping,
-                    _safetyControllerSettings->ForceController.FaultOnAberrationForceClipping, conditionFlag,
-                    "Force controller Aberration Force Clipping");
-}
-
 void SafetyController::forceControllerNotifyOffsetForceClipping(bool conditionFlag) {
     _updateOverride(FaultCodes::ForceControllerOffsetForceClipping,
                     _safetyControllerSettings->ForceController.FaultOnOffsetForceClipping, conditionFlag,

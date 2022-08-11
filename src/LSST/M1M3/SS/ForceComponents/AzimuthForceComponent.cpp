@@ -46,7 +46,7 @@ AzimuthForceComponent::AzimuthForceComponent(
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedAzimuthForces = M1M3SSPublisher::get().getEventAppliedAzimuthForces();
+    _appliedAzimuthForces = M1M3SSPublisher::get().getAppliedAzimuthForces();
     _preclippedAzimuthForces = M1M3SSPublisher::get().getEventPreclippedAzimuthForces();
 }
 
@@ -74,7 +74,7 @@ void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
 }  // namespace SS
 
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
-    SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.1f})", azimuthAngle);
+    SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.4f})", azimuthAngle);
     DistributedForces forces =
             ForceConverter::calculateForceFromAzimuthAngle(_forceActuatorSettings, azimuthAngle);
     float xForces[FA_X_COUNT];

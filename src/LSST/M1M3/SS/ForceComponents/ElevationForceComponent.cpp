@@ -46,7 +46,7 @@ ElevationForceComponent::ElevationForceComponent(
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedElevationForces = M1M3SSPublisher::get().getEventAppliedElevationForces();
+    _appliedElevationForces = M1M3SSPublisher::get().getAppliedElevationForces();
     _preclippedElevationForces = M1M3SSPublisher::get().getEventPreclippedElevationForces();
 }
 

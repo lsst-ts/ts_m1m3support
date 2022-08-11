@@ -46,8 +46,7 @@ using namespace LSST::M1M3::SS;
 
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                  ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings)
-        : _aberrationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
-          _accelerationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
+        : _accelerationForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
           _activeOpticForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
           _azimuthForceComponent(forceActuatorApplicationSettings, forceActuatorSettings),
           _balanceForceComponent(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings),
@@ -63,8 +62,8 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _safetyController = Model::get().getSafetyController();
     _pidSettings = pidSettings;
 
-    _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
-    _appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+    _appliedCylinderForces = M1M3SSPublisher::get().getAppliedCylinderForces();
+    _appliedForces = M1M3SSPublisher::get().getAppliedForces();
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
     _preclippedCylinderForces = M1M3SSPublisher::get().getEventPreclippedCylinderForces();
@@ -136,7 +135,6 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
 
 void ForceController::reset() {
     SPDLOG_INFO("ForceController: reset()");
-    _aberrationForceComponent.reset();
     _accelerationForceComponent.reset();
     _activeOpticForceComponent.reset();
     _azimuthForceComponent.reset();
@@ -208,9 +206,6 @@ bool ForceController::followingErrorInTolerance() {
 void ForceController::updateAppliedForces() {
     SPDLOG_TRACE("ForceController: updateAppliedForces()");
 
-    if (_aberrationForceComponent.isEnabled() || _aberrationForceComponent.isDisabling()) {
-        _aberrationForceComponent.update();
-    }
     if (_accelerationForceComponent.isEnabled() || _accelerationForceComponent.isDisabling()) {
         if (_accelerationForceComponent.isEnabled()) {
             _accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(
@@ -274,21 +269,6 @@ void ForceController::processAppliedForces() {
     M1M3SSPublisher::get().tryLogForceSetpointWarning();
 }
 
-void ForceController::applyAberrationForces(float* z) {
-    SPDLOG_INFO("ForceController: applyAberrationForces()");
-    if (!_aberrationForceComponent.isEnabled()) {
-        _aberrationForceComponent.enable();
-    }
-    _aberrationForceComponent.applyAberrationForces(z);
-}
-
-void ForceController::zeroAberrationForces() {
-    SPDLOG_INFO("ForceController: zeroAberrationForces()");
-    if (_aberrationForceComponent.isEnabled()) {
-        _aberrationForceComponent.disable();
-    }
-}
-
 void ForceController::applyAccelerationForces() {
     SPDLOG_INFO("ForceController: applyAccelerationForces()");
     if (!_accelerationForceComponent.isEnabled()) {
@@ -326,7 +306,7 @@ void ForceController::applyAzimuthForces() {
 }
 
 void ForceController::updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
-    SPDLOG_TRACE("ForceController: updateTMAAzimuthForces()");
+    SPDLOG_TRACE("ForceController: updateTMAAzimuthForces() {:.4f}", tmaAzimuthData->actualPosition);
     if (_azimuthForceComponent.isEnabled()) {
         _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
     }

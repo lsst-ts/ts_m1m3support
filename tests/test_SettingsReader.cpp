@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 support system package.
+ * This file is part of LSST M1M3 SS test suite. Tests SafetyController.
  *
- * Developed for the Vera C. Rubin Telescope and Site System.
+ * Developed for the LSST Telescope and Site Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,29 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CLEARABERRATIONFORCESCOMMAND_H_
-#define CLEARABERRATIONFORCESCOMMAND_H_
+#include <catch2/catch_test_macros.hpp>
 
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <SettingReader.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-class ClearAberrationForcesCommand : public Command {
-public:
-    ClearAberrationForcesCommand(int32_t commandID, MTM1M3_command_clearAberrationForcesC*);
-
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
-};
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif /* CLEARABERRATIONFORCESCOMMAND_H_ */
+TEST_CASE("List available settingsi", "[SettingReader]") {
+    SettingReader::instance().setRootPath("../SettingFiles/");
+    auto configs = SettingReader::instance().getAvailableConfigurations();
+    REQUIRE(configs.front() == "Default");
+    REQUIRE(configs.size() == 1);
+}

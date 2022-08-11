@@ -76,8 +76,6 @@ public:
     Command* tryAcceptCommandClearOffsetForces();
     Command* tryAcceptCommandRaiseM1M3();
     Command* tryAcceptCommandLowerM1M3();
-    Command* tryAcceptCommandApplyAberrationForces();
-    Command* tryAcceptCommandClearAberrationForces();
     Command* tryAcceptCommandApplyActiveOpticForces();
     Command* tryAcceptCommandClearActiveOpticForces();
     Command* tryAcceptCommandEnterEngineering();
@@ -128,8 +126,6 @@ private:
     MTM1M3_command_clearOffsetForcesC _clearOffsetForcesData;
     MTM1M3_command_raiseM1M3C _raiseM1M3Data;
     MTM1M3_command_lowerM1M3C _lowerM1M3Data;
-    MTM1M3_command_applyAberrationForcesC _applyAberrationForcesData;
-    MTM1M3_command_clearAberrationForcesC _clearAberrationForcesData;
     MTM1M3_command_applyActiveOpticForcesC _applyActiveOpticForcesData;
     MTM1M3_command_clearActiveOpticForcesC _clearActiveOpticForcesData;
     MTM1M3_command_enterEngineeringC _enterEngineeringData;

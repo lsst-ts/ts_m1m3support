@@ -40,6 +40,12 @@ public:
                           ForceActuatorSettings* forceActuatorSettings);
 
     void applyAzimuthForces(float* x, float* y, float* z);
+
+    /**
+     * Calculate and apply azimuth forces.
+     *
+     * @param azimuthAngle current aziumth angle [deg)
+     */
     void applyAzimuthForcesByAzimuthAngle(float azimuthAngle);
 
 protected:
@@ -53,7 +59,7 @@ private:
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_appliedAzimuthForcesC* _appliedAzimuthForces;
+    MTM1M3_appliedAzimuthForcesC* _appliedAzimuthForces;
     MTM1M3_logevent_preclippedAzimuthForcesC* _preclippedAzimuthForces;
 };
 

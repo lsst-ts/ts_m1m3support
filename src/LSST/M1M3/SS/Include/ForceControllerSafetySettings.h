@@ -47,8 +47,6 @@ public:
     bool FaultOnActiveOpticNetForceCheck;
     bool FaultOnActiveOpticForceClipping;
     bool FaultOnStaticForceClipping;
-    bool FaultOnAberrationNetForceCheck;
-    bool FaultOnAberrationForceClipping;
     bool FaultOnOffsetForceClipping;
     bool FaultOnVelocityForceClipping;
     bool FaultOnForceClipping;
@@ -70,8 +68,6 @@ public:
         FaultOnActiveOpticNetForceCheck = node["FaultOnActiveOpticNetForceCheck"].as<bool>();
         FaultOnActiveOpticForceClipping = node["FaultOnActiveOpticForceClipping"].as<bool>();
         FaultOnStaticForceClipping = node["FaultOnStaticForceClipping"].as<bool>();
-        FaultOnAberrationNetForceCheck = node["FaultOnAberrationNetForceCheck"].as<bool>();
-        FaultOnAberrationForceClipping = node["FaultOnAberrationForceClipping"].as<bool>();
         FaultOnOffsetForceClipping = node["FaultOnOffsetForceClipping"].as<bool>();
         FaultOnVelocityForceClipping = node["FaultOnVelocityForceClipping"].as<bool>();
         FaultOnForceClipping = node["FaultOnForceClipping"].as<bool>();

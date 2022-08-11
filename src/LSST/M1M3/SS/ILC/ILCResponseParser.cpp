@@ -82,7 +82,7 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
     _forceActuatorInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceWarning = M1M3SSPublisher::get().getEventForceActuatorForceWarning();
-    _appliedCylinderForces = M1M3SSPublisher::get().getEventAppliedCylinderForces();
+    _appliedCylinderForces = M1M3SSPublisher::get().getAppliedCylinderForces();
     _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
     _hardpointMonitorInfo = M1M3SSPublisher::get().getEventHardpointMonitorInfo();
     _hardpointMonitorState = M1M3SSPublisher::get().getEventHardpointMonitorState();

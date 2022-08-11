@@ -38,7 +38,7 @@ using Catch::Approx;
 void checkAppliedActuatorForcesZ(int zIndex, float zForce) {
     REQUIRE(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);
     REQUIRE(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex] == -1);
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
@@ -46,8 +46,8 @@ void checkAppliedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
 
     int xIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex];
     REQUIRE_FALSE(xIndex < 0);
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->xForces[xIndex] == xForce);
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->xForces[xIndex] == xForce);
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
@@ -55,18 +55,18 @@ void checkAppliedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
 
     int yIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex];
     REQUIRE_FALSE(yIndex < 0);
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->yForces[yIndex] == yForce);
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->yForces[yIndex] == yForce);
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float mz) {
     constexpr float absl = 0.000005;
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->fx == Approx(fx).margin(absl));
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->fy == Approx(fy).margin(absl));
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->fz == Approx(fz).margin(absl));
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->mx == Approx(mx).margin(absl));
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->my == Approx(my).margin(absl));
-    CHECK(M1M3SSPublisher::get().getEventAppliedForces()->mz == Approx(mz).margin(absl));
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->fx == Approx(fx).margin(absl));
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->fy == Approx(fy).margin(absl));
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->fz == Approx(fz).margin(absl));
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->mx == Approx(mx).margin(absl));
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->my == Approx(my).margin(absl));
+    CHECK(M1M3SSPublisher::get().getAppliedForces()->mz == Approx(mz).margin(absl));
 }
 
 void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
@@ -123,7 +123,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     SafetyControllerSettings safetyControllerSettings;
     REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/1/SafetyControllerSettings.yaml"));
+            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yaml"));
 
     runAndCheck(Model::get().getForceController(), 0, 0, 0, 0, 0, 0);
 
@@ -201,9 +201,9 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         runAndCheck(Model::get().getForceController(), 0, 8148.78857, 8148.49805, 62.31575, -0.04463,
                     9.12726);
 
-        MTM1M3_logevent_appliedElevationForcesC *appliedElevationForces =
-                M1M3SSPublisher::get().getEventAppliedElevationForces();
-        MTM1M3_logevent_appliedForcesC *appliedForces = M1M3SSPublisher::get().getEventAppliedForces();
+        MTM1M3_appliedElevationForcesC *appliedElevationForces =
+                M1M3SSPublisher::get().getAppliedElevationForces();
+        MTM1M3_appliedForcesC *appliedForces = M1M3SSPublisher::get().getAppliedForces();
         MTM1M3_logevent_errorCodeC *errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
 
         REQUIRE(errorCodeData->errorCode == 0);

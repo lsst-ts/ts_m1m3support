@@ -46,7 +46,6 @@ enum ForceComponentState { DISABLED, ENABLED, DISABLING };
  * z axis). Individual actuators forces are summed in FinalForceComponent.
  * Considered forces and demands are:
  *
- * * AberrationForceComponent (Z direction only)
  * * AccelerationForceComponent
  * * ActiveOpticForceComponent (Z direction only)
  * * AzimuthForceComponent

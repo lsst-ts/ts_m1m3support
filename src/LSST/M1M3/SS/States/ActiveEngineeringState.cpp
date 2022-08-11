@@ -28,8 +28,6 @@
 #include <Inclinometer.h>
 #include <ForceController.h>
 #include <ApplyOffsetForcesCommand.h>
-#include <ApplyAberrationForcesCommand.h>
-#include <ClearAberrationForcesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <SafetyController.h>
@@ -69,7 +67,6 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     Model::get().getForceController()->resetPIDs();
     Model::get().getDigitalInputOutput()->turnAirOn();
     Model::get().getPositionController()->stopMotion();
-    Model::get().getForceController()->zeroAberrationForces();
     Model::get().getForceController()->applyBalanceForces();
     Model::get().getForceController()->zeroOffsetForces();
     Model::get().getForceController()->processAppliedForces();
