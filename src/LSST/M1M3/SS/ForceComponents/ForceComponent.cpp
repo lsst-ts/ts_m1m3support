@@ -34,17 +34,9 @@ ForceComponent::ForceComponent(const char *name, const ForceComponentSettings &f
         : _name(name),
           _maxRateOfChange(forceComponentSettings.MaxRateOfChange),
           _nearZeroValue(forceComponentSettings.NearZeroValue) {
-    _state = DISABLED;
+    _state = INITIALISING;
 
-    memset(xCurrent, 0, sizeof(xCurrent));
-    memset(yCurrent, 0, sizeof(yCurrent));
-    memset(zCurrent, 0, sizeof(zCurrent));
-    memset(xTarget, 0, sizeof(xTarget));
-    memset(yTarget, 0, sizeof(yTarget));
-    memset(zTarget, 0, sizeof(zTarget));
-    memset(xOffset, 0, sizeof(xOffset));
-    memset(yOffset, 0, sizeof(yOffset));
-    memset(zOffset, 0, sizeof(zOffset));
+    _zeroAll();
 }
 
 ForceComponent::~ForceComponent() {}
@@ -53,9 +45,7 @@ void ForceComponent::enable() {
     // Enable and set the target to 0N
     SPDLOG_DEBUG("{}ForceComponent: enable()", _name);
     _state = ENABLED;
-    memset(xTarget, 0, sizeof(xTarget));
-    memset(yTarget, 0, sizeof(yTarget));
-    memset(zTarget, 0, sizeof(zTarget));
+    _zeroTarget();
     postEnableDisableActions();
 }
 
@@ -63,9 +53,7 @@ void ForceComponent::disable() {
     // Start disabling and driving to 0N
     SPDLOG_DEBUG("{}ForceComponent: disable()", _name);
     _state = DISABLING;
-    memset(xTarget, 0, sizeof(xTarget));
-    memset(yTarget, 0, sizeof(yTarget));
-    memset(zTarget, 0, sizeof(zTarget));
+    _zeroTarget();
 }
 
 void ForceComponent::update() {
@@ -95,7 +83,10 @@ void ForceComponent::update() {
             postUpdateActions();
         }
     }
-    if (isEnabled() || isDisabling()) {
+    if (isInitialising()) {
+        postUpdateActions();
+        _state = DISABLED;
+    } else if (isEnabled() || isDisabling()) {
         // If this force component is enabled then we need to keep trying
         // to drive this force component to it's target value.
         // To do this we need to find the vector with the largest delta
@@ -167,17 +158,23 @@ void ForceComponent::update() {
 void ForceComponent::reset() {
     _state = DISABLED;
     postEnableDisableActions();
+    postUpdateActions();
+}
 
-    memset(xCurrent, 0, sizeof(xCurrent));
-    memset(yCurrent, 0, sizeof(yCurrent));
-    memset(zCurrent, 0, sizeof(zCurrent));
+void ForceComponent::_zeroTarget() {
     memset(xTarget, 0, sizeof(xTarget));
     memset(yTarget, 0, sizeof(yTarget));
     memset(zTarget, 0, sizeof(zTarget));
+}
+
+void ForceComponent::_zeroAll() {
+    memset(xCurrent, 0, sizeof(xCurrent));
+    memset(yCurrent, 0, sizeof(yCurrent));
+    memset(zCurrent, 0, sizeof(zCurrent));
+    _zeroTarget();
     memset(xOffset, 0, sizeof(xOffset));
     memset(yOffset, 0, sizeof(yOffset));
     memset(zOffset, 0, sizeof(zOffset));
-    postUpdateActions();
 }
 
 } /* namespace SS */

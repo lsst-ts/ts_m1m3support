@@ -125,6 +125,16 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
 
+void M1M3SSPublisher::reset() {
+    getOuterLoopData()->slewFlag = false;
+
+    // as all comparision uses != for change detection, this will make the expression true and so updates will
+    // be send
+    _previousEventAppliedActiveOpticForces.fz = NAN;
+    _previousEventAppliedOffsetForces.fx = NAN;
+    _previousEventAppliedStaticForces.fx = NAN;
+}
+
 void M1M3SSPublisher::setSimulationMode(int newMode) {
     MTM1M3_logevent_simulationModeC* simulationMode = &(get()._simulationMode);
     if (simulationMode->mode != newMode) {
@@ -156,7 +166,7 @@ void M1M3SSPublisher::logAccelerometerWarning() {
 
 void M1M3SSPublisher::tryLogAccelerometerWarning() {
     if (_eventAccelerometerWarning.responseTimeout != _previousEventAccelerometerWarning.responseTimeout) {
-        this->logAccelerometerWarning();
+        logAccelerometerWarning();
     }
 }
 
@@ -170,7 +180,7 @@ void M1M3SSPublisher::tryLogAirSupplyStatus() {
         _eventAirSupplyStatus.airCommandOutputOn != _previousEventAirSupplyStatus.airCommandOutputOn ||
         _eventAirSupplyStatus.airValveOpened != _previousEventAirSupplyStatus.airValveOpened ||
         _eventAirSupplyStatus.airValveClosed != _previousEventAirSupplyStatus.airValveClosed) {
-        this->logAirSupplyStatus();
+        logAirSupplyStatus();
     }
 }
 
@@ -265,8 +275,8 @@ void M1M3SSPublisher::logAppliedStaticForces() {
                 (eventAppliedStaticForces.zForces[i] != _previousEventAppliedStaticForces.zForces[i]);
     }
     if (changeDetected) {
-        _m1m3SAL->logEvent_appliedStaticForces(&this->eventAppliedStaticForces, 0);
-        _previousEventAppliedStaticForces = this->eventAppliedStaticForces;
+        _m1m3SAL->logEvent_appliedStaticForces(&eventAppliedStaticForces, 0);
+        _previousEventAppliedStaticForces = eventAppliedStaticForces;
     }
 }
 
@@ -287,7 +297,7 @@ void M1M3SSPublisher::tryLogCellLightStatus() {
     if (_eventCellLightStatus.cellLightsCommandedOn != _previousEventCellLightStatus.cellLightsCommandedOn ||
         _eventCellLightStatus.cellLightsOutputOn != _previousEventCellLightStatus.cellLightsOutputOn ||
         _eventCellLightStatus.cellLightsOn != _previousEventCellLightStatus.cellLightsOn) {
-        this->logCellLightStatus();
+        logCellLightStatus();
     }
 }
 
@@ -303,7 +313,7 @@ void M1M3SSPublisher::tryLogCellLightWarning() {
                 _previousEventCellLightWarning.cellLightsOutputMismatch ||
         _eventCellLightWarning.cellLightsSensorMismatch !=
                 _previousEventCellLightWarning.cellLightsSensorMismatch) {
-        this->logCellLightWarning();
+        logCellLightWarning();
     }
 }
 
@@ -313,10 +323,10 @@ void M1M3SSPublisher::logCommandRejectionWarning() {
 }
 
 void M1M3SSPublisher::logCommandRejectionWarning(std::string command, std::string reason) {
-    _eventCommandRejectionWarning.timestamp = this->getTimestamp();
+    _eventCommandRejectionWarning.timestamp = getTimestamp();
     _eventCommandRejectionWarning.command = command;
     _eventCommandRejectionWarning.reason = reason;
-    this->logCommandRejectionWarning();
+    logCommandRejectionWarning();
 }
 
 void M1M3SSPublisher::logDetailedState() {
@@ -326,7 +336,7 @@ void M1M3SSPublisher::logDetailedState() {
 
 void M1M3SSPublisher::tryLogDetailedState() {
     if (_eventDetailedState.detailedState != _previousEventDetailedState.detailedState) {
-        this->logDetailedState();
+        logDetailedState();
     }
 }
 
@@ -378,7 +388,7 @@ void M1M3SSPublisher::tryLogDisplacementSensorWarning() {
                 _previousEventDisplacementSensorWarning.unknownCommand ||
         _eventDisplacementSensorWarning.unknownProblem !=
                 _previousEventDisplacementSensorWarning.unknownProblem) {
-        this->logDisplacementSensorWarning();
+        logDisplacementSensorWarning();
     }
 }
 
@@ -389,7 +399,7 @@ void M1M3SSPublisher::logErrorCode() {
 
 void M1M3SSPublisher::tryLogErrorCode() {
     if (_eventErrorCode.errorCode != _previousEventErrorCode.errorCode) {
-        this->logErrorCode();
+        logErrorCode();
     }
 }
 
@@ -441,7 +451,7 @@ void M1M3SSPublisher::tryLogForceActuatorForceWarning() {
                         _previousEventForceActuatorForceWarning.secondaryAxisFollowingErrorWarning[i];
     }
     if (changeDetected) {
-        this->logForceActuatorForceWarning();
+        logForceActuatorForceWarning();
     }
 }
 
@@ -523,7 +533,7 @@ void M1M3SSPublisher::tryLogForceActuatorInfo() {
                         _previousEventForceActuatorInfo.mezzanineMinorRevision[i];
     }
     if (changeDetected) {
-        this->logForceActuatorInfo();
+        logForceActuatorInfo();
     }
 }
 
@@ -559,7 +569,7 @@ void M1M3SSPublisher::tryLogForceActuatorState() {
                          _eventForceActuatorState.ilcState[i] != _previousEventForceActuatorState.ilcState[i];
     }
     if (changeDetected) {
-        this->logForceActuatorState();
+        logForceActuatorState();
     }
 }
 
@@ -671,7 +681,7 @@ void M1M3SSPublisher::tryLogForceSetpointWarning() {
                                  _previousEventForceSetpointWarning.forceWarning[i];
     }
     if (changeDetected) {
-        this->logForceSetpointWarning();
+        logForceSetpointWarning();
     }
 }
 
@@ -765,7 +775,7 @@ void M1M3SSPublisher::tryLogGyroWarning() {
         _eventGyroWarning.gcbADCCommsWarning != _previousEventGyroWarning.gcbADCCommsWarning ||
         _eventGyroWarning.mSYNCExternalTimingWarning !=
                 _previousEventGyroWarning.mSYNCExternalTimingWarning) {
-        this->logGyroWarning();
+        logGyroWarning();
     }
 }
 
@@ -822,7 +832,7 @@ void M1M3SSPublisher::tryLogHardpointActuatorInfo() {
                                  _previousEventHardpointActuatorInfo.backupLoadCellSensitivity[i];
     }
     if (changeDetected) {
-        this->logHardpointActuatorInfo();
+        logHardpointActuatorInfo();
     }
 }
 
@@ -841,7 +851,7 @@ void M1M3SSPublisher::tryLogHardpointActuatorState() {
                                  _previousEventHardpointActuatorState.motionState[i];
     }
     if (changeDetected) {
-        this->logHardpointActuatorState();
+        logHardpointActuatorState();
     }
 }
 
@@ -1006,7 +1016,7 @@ void M1M3SSPublisher::tryLogHardpointActuatorWarning() {
                                  _previousEventHardpointActuatorWarning.broadcastCounterWarning[i];
     }
     if (changeDetected) {
-        this->logHardpointActuatorWarning();
+        logHardpointActuatorWarning();
     }
 }
 
@@ -1045,7 +1055,7 @@ void M1M3SSPublisher::tryLogHardpointMonitorInfo() {
                                  _previousEventHardpointMonitorInfo.mezzanineMinorRevision[i];
     }
     if (changeDetected) {
-        this->logHardpointMonitorInfo();
+        logHardpointMonitorInfo();
     }
 }
 
@@ -1061,7 +1071,7 @@ void M1M3SSPublisher::tryLogHardpointMonitorState() {
                                                    _previousEventHardpointMonitorState.ilcState[i];
     }
     if (changeDetected) {
-        this->logHardpointMonitorState();
+        logHardpointMonitorState();
     }
 }
 
@@ -1255,7 +1265,7 @@ void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
                                  _previousEventHardpointMonitorWarning.mezzanineApplicationCRCMismatch[i];
     }
     if (changeDetected) {
-        this->logHardpointMonitorWarning();
+        logHardpointMonitorWarning();
     }
 }
 
@@ -1282,7 +1292,7 @@ void M1M3SSPublisher::tryLogILCWarning() {
         _eventILCWarning.unknownAddress != _previousEventILCWarning.unknownAddress ||
         _eventILCWarning.unknownFunction != _previousEventILCWarning.unknownFunction ||
         _eventILCWarning.unknownProblem != _previousEventILCWarning.unknownProblem) {
-        this->logILCWarning();
+        logILCWarning();
     }
 }
 
@@ -1313,7 +1323,7 @@ void M1M3SSPublisher::tryLogInclinometerSensorWarning() {
                 _previousEventInclinometerSensorWarning.unknownFunction ||
         _eventInclinometerSensorWarning.unknownProblem !=
                 _previousEventInclinometerSensorWarning.unknownProblem) {
-        this->logInclinometerSensorWarning();
+        logInclinometerSensorWarning();
     }
 }
 
@@ -1326,7 +1336,7 @@ void M1M3SSPublisher::tryLogInterlockStatus() {
     if (_eventInterlockStatus.heartbeatCommandedState !=
                 _previousEventInterlockStatus.heartbeatCommandedState ||
         _eventInterlockStatus.heartbeatOutputState != _previousEventInterlockStatus.heartbeatOutputState) {
-        this->logInterlockStatus();
+        logInterlockStatus();
     }
 }
 
@@ -1356,7 +1366,7 @@ void M1M3SSPublisher::tryLogPIDInfo() {
                          _eventPIDInfo.calculatedE[i] != _previousEventPIDInfo.calculatedE[i];
     }
     if (changeDetected) {
-        this->logPIDInfo();
+        logPIDInfo();
     }
 }
 
@@ -1386,7 +1396,7 @@ void M1M3SSPublisher::tryLogPowerStatus() {
         _eventPowerStatus.auxPowerNetworkDCommandedOn !=
                 _previousEventPowerStatus.auxPowerNetworkDCommandedOn ||
         _eventPowerStatus.auxPowerNetworkDOutputOn != _previousEventPowerStatus.auxPowerNetworkDOutputOn) {
-        this->logPowerStatus();
+        logPowerStatus();
     }
 }
 
@@ -1420,7 +1430,7 @@ void M1M3SSPublisher::tryLogPowerWarning() {
                 _previousEventPowerWarning.auxPowerNetworkCOutputMismatch ||
         _eventPowerWarning.auxPowerNetworkDOutputMismatch !=
                 _previousEventPowerWarning.auxPowerNetworkDOutputMismatch) {
-        this->logPowerWarning();
+        logPowerWarning();
     }
 }
 
@@ -1669,7 +1679,7 @@ void M1M3SSPublisher::logSummaryState() {
 
 void M1M3SSPublisher::tryLogSummaryState() {
     if (_eventSummaryState.summaryState != _previousEventSummaryState.summaryState) {
-        this->logSummaryState();
+        logSummaryState();
     }
 }
 
