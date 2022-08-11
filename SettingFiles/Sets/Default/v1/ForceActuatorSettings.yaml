@@ -30,8 +30,6 @@ MeasuredPrimaryCylinderLimitTablePath: Tables/MeasuredPrimaryCylinderLimitTable.
 MeasuredSecondaryCylinderLimitTablePath: Tables/MeasuredSecondaryCylinderLimitTable.csv
 FollowingErrorPrimaryCylinderLimitTablePath: Tables/FollowingErrorPrimaryCylinderLimitTable.csv
 FollowingErrorSecondaryCylinderLimitTablePath: Tables/FollowingErrorSecondaryCylinderLimitTable.csv
-AberrationLimitZTablePath: Tables/AberrationLimitZTable.csv
-NetAberrationForceTolerance: 1
 AccelerationLimitXTablePath: Tables/AccelerationLimitXTable.csv
 AccelerationLimitYTablePath: Tables/AccelerationLimitYTable.csv
 AccelerationLimitZTablePath: Tables/AccelerationLimitZTable.csv
@@ -63,7 +61,6 @@ VelocityLimitYTablePath: Tables/VelocityLimitYTable.csv
 VelocityLimitZTablePath: Tables/VelocityLimitZTable.csv
 CylinderLimitPrimaryTablePath: Tables/CylinderLimitPrimaryTable.csv
 CylinderLimitSecondaryTablePath: Tables/CylinderLimitSecondaryTable.csv
-ForceActuatorLimitsTablePath: Tables/ForceActuatorLimitsTable.csv
 ForceActuatorNearZNeighborsTablePath: Tables/ForceActuatorNearNeighborZTable.csv
 ForceActuatorNeighborsTablePath: Tables/ForceActuatorNeighborsTable.csv
 UseInclinometer: True
@@ -85,9 +82,6 @@ MirrorCenterOfGravityZ: -1.7657086
 RaiseIncrementPercentage: 0.05
 LowerDecrementPercentage: 0.05
 RaiseLowerFollowingErrorLimit: 50
-AberrationForceComponent:
-  MaxRateOfChange: 10.0
-  NearZeroValue: 1.0
 AccelerationForceComponent:
   MaxRateOfChange: 105.0
   NearZeroValue: 1.0

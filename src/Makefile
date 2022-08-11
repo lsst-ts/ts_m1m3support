@@ -47,7 +47,8 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/Subscriber" \
 	-I"LSST/M1M3/SS/Threads" \
 	-I"LSST/M1M3/SS/Utility" \
-	-DVERSION="\"$(VERSION)\""
+	-DVERSION="\"$(VERSION)\"" \
+	-DGIT_HASH="\"${GIT_HASH}\""
 
 libM1M3SS.a: $(LIB_OBJS)
 	@echo '[AR ] $@'

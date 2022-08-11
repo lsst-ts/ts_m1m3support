@@ -34,6 +34,8 @@ GIT := $(shell command -v git 2> /dev/null)
 
 ifndef GIT
    VERSION := "v0.0.0-None"
+   GIT_HASH := "xxxx-NONE"
 else
    VERSION := $(shell git describe --tags --dirty)
+   GIT_HASH := $(shell git rev-parse HEAD)
 endif

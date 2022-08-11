@@ -36,7 +36,7 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * @brief FInal force produced as sum of components.
+ * @brief Final force produced as sum of components.
  *
  * Sum component forces stored in SAL events. Apply mirror safety checks.  Log
  * force emirror safety limits are violated.
@@ -69,19 +69,18 @@ private:
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_appliedForcesC* _appliedForces;
+    MTM1M3_appliedForcesC* _appliedForces;
     MTM1M3_logevent_preclippedForcesC* _preclippedForces;
 
-    MTM1M3_logevent_appliedAberrationForcesC* _appliedAberrationForces;
-    MTM1M3_logevent_appliedAccelerationForcesC* _appliedAccelerationForces;
+    MTM1M3_appliedAccelerationForcesC* _appliedAccelerationForces;
     MTM1M3_logevent_appliedActiveOpticForcesC* _appliedActiveOpticForces;
-    MTM1M3_logevent_appliedAzimuthForcesC* _appliedAzimuthForces;
-    MTM1M3_logevent_appliedBalanceForcesC* _appliedBalanceForces;
-    MTM1M3_logevent_appliedElevationForcesC* _appliedElevationForces;
+    MTM1M3_appliedAzimuthForcesC* _appliedAzimuthForces;
+    MTM1M3_appliedBalanceForcesC* _appliedBalanceForces;
+    MTM1M3_appliedElevationForcesC* _appliedElevationForces;
     MTM1M3_logevent_appliedOffsetForcesC* _appliedOffsetForces;
     MTM1M3_logevent_appliedStaticForcesC* _appliedStaticForces;
-    MTM1M3_logevent_appliedThermalForcesC* _appliedThermalForces;
-    MTM1M3_logevent_appliedVelocityForcesC* _appliedVelocityForces;
+    MTM1M3_appliedThermalForcesC* _appliedThermalForces;
+    MTM1M3_appliedVelocityForcesC* _appliedVelocityForces;
 };
 
 } /* namespace SS */

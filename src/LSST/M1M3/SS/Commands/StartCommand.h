@@ -44,7 +44,7 @@ class StartCommand : public Command {
 public:
     StartCommand(int32_t commandID, MTM1M3_command_startC* data);
 
-    MTM1M3_command_startC* getData() { return &_data; }
+    std::string getConfigurationOverride() { return _data.configurationOverride; }
 
     bool validate() override;
     void execute() override;

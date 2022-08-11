@@ -50,7 +50,7 @@ States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
     SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
 
-    Model::get().loadSettings(command->getData()->configurationOverride);
+    Model::get().loadSettings(command->getConfigurationOverride());
     M1M3SSPublisher::get().getEventConfigurationApplied()->version =
             SettingReader::instance().getSettingsVersion();
     M1M3SSPublisher::get().getEventConfigurationApplied()->otherInfo = "";

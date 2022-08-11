@@ -46,7 +46,7 @@ ThermalForceComponent::ThermalForceComponent(
     _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedThermalForces = M1M3SSPublisher::get().getEventAppliedThermalForces();
+    _appliedThermalForces = M1M3SSPublisher::get().getAppliedThermalForces();
     _preclippedThermalForces = M1M3SSPublisher::get().getEventPreclippedThermalForces();
 }
 

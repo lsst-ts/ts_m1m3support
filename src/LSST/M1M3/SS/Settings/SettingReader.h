@@ -24,6 +24,9 @@
 #ifndef SETTINGREADER_H_
 #define SETTINGREADER_H_
 
+#include <list>
+#include <string>
+
 #include <cRIO/Singleton.h>
 
 #include <SafetyControllerSettings.h>
@@ -42,7 +45,6 @@
 #include <ExpansionFPGAApplicationSettings.h>
 #include <PIDSettings.h>
 #include <InclinometerSettings.h>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {
@@ -68,6 +70,11 @@ public:
     std::string getFilePath(std::string filename);
 
     std::string getSettingsVersion() { return _currentSet + ":" + _currentVersion; }
+
+    /**
+     * Returns available configurations.
+     */
+    std::list<std::string> getAvailableConfigurations();
 
     /**
      * Select given configuration set.

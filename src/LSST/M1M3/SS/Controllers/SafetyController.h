@@ -102,8 +102,6 @@ public:
     void forceControllerNotifyActiveOpticNetForceCheck(bool conditionFlag);
     void forceControllerNotifyActiveOpticForceClipping(bool conditionFlag);
     void forceControllerNotifyStaticForceClipping(bool conditionFlag);
-    void forceControllerNotifyAberrationNetForceCheck(bool conditionFlag);
-    void forceControllerNotifyAberrationForceClipping(bool conditionFlag);
     void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
     void forceControllerNotifyVelocityForceClipping(bool conditionFlag);
     void forceControllerNotifyForceClipping(bool conditionFlag);

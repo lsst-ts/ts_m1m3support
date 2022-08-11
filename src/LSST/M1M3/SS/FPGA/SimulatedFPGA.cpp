@@ -505,7 +505,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, _broadCastCounter());  // Write ILC Status
                             uint8_t buffer[4];
                             float force = (((float)M1M3SSPublisher::get()
-                                                    .getEventAppliedCylinderForces()
+                                                    .getAppliedCylinderForces()
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
                                           (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
@@ -518,7 +518,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, buffer[0]);  // Write Primary Cylinder Force
                             if (address > 16) {
                                 force = (((float)M1M3SSPublisher::get()
-                                                  .getEventAppliedCylinderForces()
+                                                  .getAppliedCylinderForces()
                                                   ->secondaryCylinderForces[sIndex]) /
                                          1000.0) +
                                         (getRndPM1() * 0.5);  // Update to Secondary Cylinder Force

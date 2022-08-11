@@ -21,6 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/Join.h>
+
 #include <Model.h>
 #include <SettingReader.h>
 #include <M1M3SSPublisher.h>
@@ -35,7 +37,6 @@
 #include <IFPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceController.h>
-#include <RecommendedApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <PositionController.h>
@@ -52,9 +53,7 @@
 
 using namespace std;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 Model::Model() {
     SPDLOG_DEBUG("Model: Model()");
@@ -222,13 +221,11 @@ void Model::publishStateChange(States::Type newState) {
 
 void Model::publishRecommendedSettings() {
     SPDLOG_DEBUG("Model: publishRecommendedSettings()");
-    RecommendedApplicationSettings* recommendedApplicationSettings =
-            SettingReader::instance().loadRecommendedApplicationSettings();
     MTM1M3_logevent_configurationsAvailableC* data = M1M3SSPublisher::get().getEventConfigurationsAvailable();
-    data->version = "";
-    for (uint32_t i = 0; i < recommendedApplicationSettings->RecommendedSettings.size(); i++) {
-        data->version += recommendedApplicationSettings->RecommendedSettings[i] + ",";
-    }
+    data->overrides = LSST::cRIO::join(SettingReader::instance().getAvailableConfigurations());
+    data->version = GIT_HASH;
+    data->url = "https://github.com/lsst-ts/ts_m1m3support";
+    data->schemaVersion = "v1";
     M1M3SSPublisher::get().logConfigurationsAvailable();
 }
 
@@ -294,7 +291,3 @@ void Model::_populateHardpointMonitorInfo(
         hardpointMonitorInfo->modbusAddress[row.Index] = row.Address;
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

@@ -28,11 +28,9 @@
 
 #include <AbortProfileCommand.h>
 #include <AbortRaiseM1M3Command.h>
-#include <ApplyAberrationForcesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ApplyOffsetForcesCommand.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
-#include <ClearAberrationForcesCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <ClearOffsetForcesCommand.h>
 #include <DisableCommand.h>
@@ -101,8 +99,6 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearOffsetForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_raiseM1M3");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_lowerM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyAberrationForces");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearAberrationForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
@@ -193,9 +189,6 @@ COMMAND(ClearOffsetForces, clearOffsetForces)
 
 COMMAND(RaiseM1M3, raiseM1M3)
 COMMAND(LowerM1M3, lowerM1M3)
-
-COMMAND(ApplyAberrationForces, applyAberrationForces)
-COMMAND(ClearAberrationForces, clearAberrationForces)
 
 COMMAND(ApplyActiveOpticForces, applyActiveOpticForces)
 COMMAND(ClearActiveOpticForces, clearActiveOpticForces)

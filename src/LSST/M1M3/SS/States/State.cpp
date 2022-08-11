@@ -67,12 +67,6 @@ States::Type State::raiseM1M3(RaiseM1M3Command* command) {
 States::Type State::lowerM1M3(LowerM1M3Command* command) {
     return this->rejectCommandInvalidState(command, "LowerM1M3");
 }
-States::Type State::applyAberrationForces(ApplyAberrationForcesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ApplyAberrationForces");
-}
-States::Type State::clearAberrationForces(ClearAberrationForcesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ClearAberrationForces");
-}
 States::Type State::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
     return this->rejectCommandInvalidState(command, "ApplyActiveOpticForces");
 }
