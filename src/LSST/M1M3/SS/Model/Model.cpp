@@ -67,6 +67,7 @@ Model::Model() {
     _powerController = NULL;
     _mirrorRaiseController = NULL;
     _mirrorLowerController = NULL;
+    _hardpointTestController = NULL;
     _gyro = NULL;
     _cachedTimestamp = 0;
     _mutex.lock();
@@ -188,6 +189,10 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Creating mirror raise controller");
     _mirrorRaiseController = new MirrorRaiseController(_positionController, _forceController,
                                                        _safetyController, _powerController);
+
+    delete _hardpointTestController;
+    SPDLOG_INFO("Model: Creating hardpoint test controller");
+    _hardpointTestController = new HardpointTestController(_positionController);
 
     delete _gyro;
     SPDLOG_INFO("Model: Creating gyro");
