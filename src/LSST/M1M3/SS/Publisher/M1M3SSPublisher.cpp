@@ -70,6 +70,8 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedActiveOpticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedOffsetForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedStaticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_cellLightStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_cellLightWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_commandRejectionWarning");
@@ -118,11 +120,10 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedStaticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedThermalForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointTestStatus");
 }
 
 void M1M3SSPublisher::reset() {
@@ -1708,6 +1709,7 @@ ACK_COMMAND(enterEngineering)
 ACK_COMMAND(exitEngineering)
 ACK_COMMAND(setAirSlewFlag)
 ACK_COMMAND(testHardpoint)
+ACK_COMMAND(killHardpointTest)
 ACK_COMMAND(moveHardpointActuators)
 ACK_COMMAND(enableHardpointChase)
 ACK_COMMAND(disableHardpointChase)
