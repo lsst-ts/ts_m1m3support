@@ -300,13 +300,23 @@ bool PositionController::translate(double x, double y, double z, double rX, doub
     return this->moveToEncoder(encoderValues);
 }
 
-void PositionController::stopMotion() {
+void PositionController::stopMotion(int hpIndex) {
     SPDLOG_INFO("PositionController: stopMotion()");
     _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
-    for (int i = 0; i < HP_COUNT; i++) {
+
+    auto stop = [this](int i) {
         _hardpointActuatorData->stepsQueued[i] = 0;
         _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
+    };
+
+    if (hpIndex < 0) {
+        for (int i = 0; i < HP_COUNT; i++) {
+            stop(i);
+        }
+    } else {
+        stop(hpIndex);
     }
+
     M1M3SSPublisher::get().tryLogHardpointActuatorState();
 }
 

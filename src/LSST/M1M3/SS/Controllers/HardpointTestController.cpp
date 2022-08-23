@@ -95,7 +95,7 @@ bool HardpointTestController::_runHardpointLoop(int hardpointIndex) {
     int oldState = testState[hardpointIndex];
 
     auto moveHP_abs = [this, hardpointIndex](int32_t target) -> bool {
-        _positionController->stopMotion();
+        _positionController->stopMotion(hardpointIndex);
 
         int32_t steps[HP_COUNT];
         memset(steps, 0, sizeof(steps));

@@ -113,7 +113,13 @@ public:
     bool moveToLowerPosition();
 
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
-    void stopMotion();
+
+    /**
+     * Stops HP motion. If index is provided, only that given HP is stopped.
+     *
+     * @param hpIndex Index of HP controller to stop. If -1, applies to all HP.
+     */
+    void stopMotion(int hpIndex = -1);
 
     /**
      * Called in any enabled state (raised, parked, ..). Sets stepsCommanded
