@@ -47,7 +47,7 @@ void HardpointMonitorApplicationSettings::load(const std::string &filename) {
 
         std::string lineText;
         int32_t lineNumber = 0;
-        this->Table.clear();
+        Table.clear();
         while (std::getline(inputStream, lineText)) {
             boost::trim_right(lineText);
             if (lineNumber != 0) {
@@ -61,7 +61,7 @@ void HardpointMonitorApplicationSettings::load(const std::string &filename) {
                 row.Subnet = (uint8_t)boost::lexical_cast<int32_t>(*i);
                 ++i;
                 row.Address = (uint8_t)boost::lexical_cast<int32_t>(*i);
-                this->Table.push_back(row);
+                Table.push_back(row);
             }
             lineNumber++;
         }
