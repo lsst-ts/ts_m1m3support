@@ -36,10 +36,13 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-HardpointTestController::HardpointTestController(PositionController *positionController) {
+HardpointTestController::HardpointTestController(PositionController *positionController,
+                                                 HardpointActuatorSettings *hardpointActuatorSettings) {
     SPDLOG_DEBUG("HardpointTestController: HardpointTestController()");
 
     _positionController = positionController;
+    _hardpointActuatorSettings = hardpointActuatorSettings;
+
     _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
     _hardpointActuatorState = M1M3SSPublisher::get().getEventHardpointActuatorState();
     _hardpointActuatorWarning = M1M3SSPublisher::get().getEventHardpointActuatorWarning();
@@ -90,6 +93,22 @@ int HardpointTestController::killHardpointTest(int hardpointIndex) {
 
 bool HardpointTestController::_runHardpointLoop(int hardpointIndex) {
     int oldState = testState[hardpointIndex];
+
+    auto moveHP_abs = [this, hardpointIndex](int32_t target) -> bool {
+        _positionController->stopMotion();
+
+        int32_t steps[HP_COUNT];
+        memset(steps, 0, sizeof(steps));
+        steps[hardpointIndex] = target;
+        if (_positionController->move(steps) == false) {
+            testState[hardpointIndex] = MTM1M3_shared_HardpointTest_Failed;
+            return false;
+        }
+        return true;
+    };
+
+    auto moveHP = [moveHP_abs](bool positive) -> bool { return moveHP_abs((positive ? 1 : -1) * 999999999); };
+
     switch (oldState) {
         case MTM1M3_shared_HardpointTest_NotTested:
         case MTM1M3_shared_HardpointTest_Passed:
@@ -97,22 +116,42 @@ bool HardpointTestController::_runHardpointLoop(int hardpointIndex) {
             return false;
         case MTM1M3_shared_HardpointTest_MovingNegative:
             if (_hardpointActuatorWarning->limitSwitch2Operated[hardpointIndex]) {
-                testState[hardpointIndex] = MTM1M3_shared_HardpointTest_TestingPositive;
+                if (moveHP(true)) {
+                    testState[hardpointIndex] = MTM1M3_shared_HardpointTest_TestingPositive;
+                } else {
+                    SPDLOG_WARN("Cannot move HP #{} to positive limit while testing", hardpointIndex + 1);
+                }
             } else if (_hardpointActuatorState->motionState[hardpointIndex] !=
                        HardpointActuatorMotionStates::Stepping) {
-                int32_t steps[HP_COUNT];
-                memset(steps, 0, sizeof(steps));
-                steps[hardpointIndex] = -999999999;
-                if (_positionController->move(steps) == false) {
-                    testState[hardpointIndex] = MTM1M3_shared_HardpointTest_Failed;
+                if (moveHP(false) == false) {
+                    SPDLOG_WARN("Cannot move HP #{} to negative limit for reference", hardpointIndex + 1);
                 }
             }
             break;
         case MTM1M3_shared_HardpointTest_TestingPositive:
+            if (_hardpointActuatorWarning->limitSwitch1Operated[hardpointIndex]) {
+                if (moveHP(false)) {
+                    testState[hardpointIndex] = MTM1M3_shared_HardpointTest_TestingNegative;
+                } else {
+                    SPDLOG_WARN("Cannot move HP #{} to negative limit while testing", hardpointIndex + 1);
+                }
+            }
             break;
         case MTM1M3_shared_HardpointTest_TestingNegative:
+            if (_hardpointActuatorWarning->limitSwitch2Operated[hardpointIndex]) {
+                if (moveHP_abs(10001 * _hardpointActuatorSettings->micrometersPerEncoder /
+                               _hardpointActuatorSettings->micrometersPerStep)) {
+                    testState[hardpointIndex] = MTM1M3_shared_HardpointTest_MovingReference;
+                } else {
+                    SPDLOG_WARN("Cannot move HP #{} to reference position", hardpointIndex + 1);
+                }
+            }
             break;
         case MTM1M3_shared_HardpointTest_MovingReference:
+            if (_hardpointActuatorState->motionState[hardpointIndex] ==
+                HardpointActuatorMotionStates::Standby) {
+                testState[hardpointIndex] = MTM1M3_shared_HardpointTest_Passed;
+            }
             break;
         default:
             break;

@@ -47,6 +47,10 @@ using namespace LSST::M1M3::SS::FPGAAddresses;
  */
 uint8_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
+// HP encoder limits
+int32_t _HPEncoderLow[HP_COUNT] = {-10, -102, -43, -56, -78, 45};
+int32_t _HPEncoderHigh[HP_COUNT] = {65432, 66435, 60324, 67543, 61345, 63245};
+
 double LSST::M1M3::SS::getRndPM1() { return static_cast<double>(rand()) / (RAND_MAX / 2.0) - 1.0; }
 
 SimulatedFPGA::SimulatedFPGA() {
@@ -60,13 +64,13 @@ SimulatedFPGA::SimulatedFPGA() {
 
     _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
 
-    MTM1M3_hardpointActuatorDataC* hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
-    hardpointActuatorData->encoder[0] = 15137;
-    hardpointActuatorData->encoder[1] = 20079;
-    hardpointActuatorData->encoder[2] = 26384;
-    hardpointActuatorData->encoder[3] = 27424;
-    hardpointActuatorData->encoder[4] = 17560;
-    hardpointActuatorData->encoder[5] = 23546;
+    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
+    _hardpointActuatorData->encoder[0] = 15137;
+    _hardpointActuatorData->encoder[1] = 20079;
+    _hardpointActuatorData->encoder[2] = 26384;
+    _hardpointActuatorData->encoder[3] = 27424;
+    _hardpointActuatorData->encoder[4] = 17560;
+    _hardpointActuatorData->encoder[5] = 23546;
 
     _sendResponse = true;
 
@@ -610,8 +614,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 18:  // Report Server Status
                             _writeModbus(response, address);
                             _writeModbus(response, function);
-                            _writeModbus(response, 0);    // TODO: Write ILC State
-                            _writeModbus16(response, 0);  // TODO: Write ILC Status
+                            _writeModbus(response, 0);  // TODO: Write ILC State
+                            _writeHP_ILCStatus(response, address - 1);
                             _writeModbus16(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
@@ -812,6 +816,13 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
         rawTimestamp >>= 8;
     }
     response->push(0xA000);  // Write End of Frame
+}
+
+void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t>* response, int index) {
+    _writeModbus16(
+            response,
+            (_hardpointActuatorData->encoder[index] < _HPEncoderLow[index] ? 0x0200 : 0x0000) |
+                    (_hardpointActuatorData->encoder[index] > _HPEncoderHigh[index] ? 0x0100 : 0x0000));
 }
 
 void SimulatedFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
