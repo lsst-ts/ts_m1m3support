@@ -423,11 +423,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 18:  // Report Server Status
                             _writeModbus(response, address);
                             _writeModbus(response, function);
-                            _writeModbus(response, 0);  // TODO: Write IlC State
-                            _writeModbus(response, 0);
-                            _writeModbus(response, 0);  // TODO: Write ILC Status
-                            _writeModbus(response, 0);
-                            _writeModbus(response, 0);  // TODO: Write ILC Faults
+                            _writeModbus(response, 0);    // TODO: Write ILC State
+                            _writeModbus16(response, 0);  // TODO: Write ILC Status
+                            _writeModbus16(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
                         case 65: {                                     // Change ILC Mode
@@ -450,17 +448,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 74: {                             // Read Boost Valve DCA Gains
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
-                            uint8_t buffer[4];
-                            float gain = 1.0;
-                            memcpy(buffer, &gain, 4);
-                            _writeModbus(response, buffer[3]);
-                            _writeModbus(response, buffer[2]);
-                            _writeModbus(response, buffer[1]);
-                            _writeModbus(response, buffer[0]);  // Write Primary Cylinder DCA Gain
-                            _writeModbus(response, buffer[3]);
-                            _writeModbus(response, buffer[2]);
-                            _writeModbus(response, buffer[1]);
-                            _writeModbus(response, buffer[0]);  // Write Secondary Cylinder DCA Gain
+                            _writeModbusFloat(response, 1.0);  // Write Primary Cylinder DCA Gain
+                            _writeModbusFloat(response, 1.2);  // Write Secondary Cylinder DCA Gain
                             _writeModbusCRC(response);
                             break;
                         }
@@ -472,16 +461,11 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);              // Write Address
                             _writeModbus(response, function);             // Write Function
                             _writeModbus(response, _broadCastCounter());  // Write ILC Status
-                            uint8_t buffer[4];
                             float force = (((float)((static_cast<uint32_t>(word1) << 16) |
                                                     (static_cast<uint32_t>(word2) << 8) | word3)) /
                                            1000.0) +
                                           (getRndPM1() * 0.5);
-                            memcpy(buffer, &force, 4);
-                            _writeModbus(response, buffer[3]);
-                            _writeModbus(response, buffer[2]);
-                            _writeModbus(response, buffer[1]);
-                            _writeModbus(response, buffer[0]);  // Write Primary Cylinder Force
+                            _writeModbusFloat(response, force);  // Write Primary Cylinder Force
                             if (address > 16) {
                                 word1 = _readModbus(data[i++]);
                                 word2 = _readModbus(data[i++]);
@@ -490,11 +474,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                                   (static_cast<uint32_t>(word2) << 8) | word3)) /
                                          1000.0) +
                                         (getRndPM1() * 0.5);
-                                memcpy(buffer, &force, 4);
-                                _writeModbus(response, buffer[3]);
-                                _writeModbus(response, buffer[2]);
-                                _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write Secondary Cylinder Force
+                                _writeModbusFloat(response, force);  // Write Secondary Cylinder Force
                             }
                             _writeModbusCRC(response);
                             break;
@@ -503,7 +483,6 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);              // Write Address
                             _writeModbus(response, function);             // Write Function
                             _writeModbus(response, _broadCastCounter());  // Write ILC Status
-                            uint8_t buffer[4];
                             float force = (((float)M1M3SSPublisher::get()
                                                     .getAppliedCylinderForces()
                                                     ->primaryCylinderForces[pIndex]) /
@@ -511,23 +490,14 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                           (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
                             // uncomment to simulate follow up error
                             // if (subnet == 1 && address == 17 && force > 500) force = 200;
-                            memcpy(buffer, &force, 4);
-                            _writeModbus(response, buffer[3]);
-                            _writeModbus(response, buffer[2]);
-                            _writeModbus(response, buffer[1]);
-                            _writeModbus(response, buffer[0]);  // Write Primary Cylinder Force
+                            _writeModbusFloat(response, force);  // Write Primary Cylinder Force
                             if (address > 16) {
                                 force = (((float)M1M3SSPublisher::get()
                                                   .getAppliedCylinderForces()
                                                   ->secondaryCylinderForces[sIndex]) /
                                          1000.0) +
-                                        (getRndPM1() * 0.5);  // Update to Secondary Cylinder Force
-                                memcpy(buffer, &force, 4);
-                                _writeModbus(response, buffer[3]);
-                                _writeModbus(response, buffer[2]);
-                                _writeModbus(response, buffer[1]);
-                                _writeModbus(response,
-                                             buffer[0]);  // Write Secondary Cylinder Force
+                                        (getRndPM1() * 0.5);         // Update to Secondary Cylinder Force
+                                _writeModbusFloat(response, force);  // Write Secondary Cylinder Force
                             }
                             _writeModbusCRC(response);
                             break;
@@ -557,13 +527,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
-                                uint8_t buffer[4];
-                                float value = 0.0;
-                                memcpy(buffer, &value, 4);
-                                _writeModbus(response, buffer[3]);
-                                _writeModbus(response, buffer[2]);
-                                _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write Calibration Data
+                                _writeModbusFloat(response, 0.0);  // Write Calibration Data
                             }
                             _writeModbusCRC(response);
                             break;
@@ -572,13 +536,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
-                                uint8_t buffer[4];
-                                float value = 120.0;
-                                memcpy(buffer, &value, 4);
-                                _writeModbus(response, buffer[3]);
-                                _writeModbus(response, buffer[2]);
-                                _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write DCA Pressure
+                                _writeModbusFloat(response, 120 + getRndPM1() * 0.5);  // Write DCA Pressure
                             }
                             _writeModbusCRC(response);
                             break;
@@ -586,10 +544,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 120:                              // Read DCA Id
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x01);
+                            _writeModbus32(response, 0x01);
                             _writeModbus(response, signal);
                             _writeModbus(response, address);  // Write DCA Unique Id
                             _writeModbus(response, 0);        // TODO: Write DCA Firmware Type
@@ -630,17 +585,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                 SettingReader::instance().getHardpointActuatorSettings()->getEncoderOffset(
                                         address - 1) -
                                 steps / 4;
-                        _writeModbus(response, (encoder >> 24) & 0xFF);
-                        _writeModbus(response, (encoder >> 16) & 0xFF);
-                        _writeModbus(response, (encoder >> 8) & 0xFF);
-                        _writeModbus(response, encoder & 0xFF);  // Write Encoder
-                        uint8_t buffer[4];
-                        float force = getRndPM1() * 8.0;
-                        memcpy(buffer, &force, 4);
-                        _writeModbus(response, buffer[3]);
-                        _writeModbus(response, buffer[2]);
-                        _writeModbus(response, buffer[1]);
-                        _writeModbus(response, buffer[0]);  // Write Measured Force
+                        _writeModbus32(response, encoder);               // Write Encoder
+                        _writeModbusFloat(response, getRndPM1() * 8.0);  // Write Measured Force
                         _writeModbusCRC(response);
                     };
 
@@ -649,10 +595,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbus(response, 12);        // Write Message Length
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x00);
+                            _writeModbus32(response, 0x00);
                             _writeModbus(response, signal);
                             _writeModbus(response, address);  // Write ILC Unique Id
                             _writeModbus(response, 0);        // TODO: Write ILC Application Type
@@ -667,11 +610,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 18:  // Report Server Status
                             _writeModbus(response, address);
                             _writeModbus(response, function);
-                            _writeModbus(response, 0);  // TODO: Write IlC State
-                            _writeModbus(response, 0);
-                            _writeModbus(response, 0);  // TODO: Write ILC Status
-                            _writeModbus(response, 0);
-                            _writeModbus(response, 0);  // TODO: Write ILC Faults
+                            _writeModbus(response, 0);    // TODO: Write ILC State
+                            _writeModbus16(response, 0);  // TODO: Write ILC Status
+                            _writeModbus16(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
                         case 65: {                                     // Change ILC Mode
@@ -723,13 +664,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
-                                uint8_t buffer[4];
-                                float value = 0.0;
-                                memcpy(buffer, &value, 4);
-                                _writeModbus(response, buffer[3]);
-                                _writeModbus(response, buffer[2]);
-                                _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write Calibration Data
+                                _writeModbusFloat(response, 0.0);  // Write Calibration Data
                             }
                             _writeModbusCRC(response);
                             break;
@@ -761,11 +696,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 18:  // Report Server Status
                             _writeModbus(response, address);
                             _writeModbus(response, function);
-                            _writeModbus(response, 0);  // TODO: Write IlC State
-                            _writeModbus(response, 0);
-                            _writeModbus(response, 0);  // TODO: Write ILC Status
-                            _writeModbus(response, 0);
-                            _writeModbus(response, 0);  // TODO: Write ILC Faults
+                            _writeModbus(response, 0);    // TODO: Write ILC State
+                            _writeModbus16(response, 0);  // TODO: Write ILC Status
+                            _writeModbus16(response, 0);  // TODO: Write ILC Faults
                             _writeModbusCRC(response);
                             break;
                         case 65: {                                     // Change ILC Mode
@@ -787,13 +720,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
-                                uint8_t buffer[4];
-                                float value = 120.0;
-                                memcpy(buffer, &value, 4);
-                                _writeModbus(response, buffer[3]);
-                                _writeModbus(response, buffer[2]);
-                                _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write DCA Pressure
+                                _writeModbusFloat(response, 120 + getRndPM1() * 0.5);  // Write DCA Pressure
                             }
                             _writeModbusCRC(response);
                             break;
@@ -801,10 +728,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 120:                              // Read DCA Id
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x00);
-                            _writeModbus(response, 0x01);
+                            _writeModbus32(response, 0x01);
                             _writeModbus(response, signal);
                             _writeModbus(response, address);  // Write DCA Unique Id
                             _writeModbus(response, 0);        // TODO: Write DCA Firmware Type
@@ -823,13 +747,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 2; ++j) {
-                                uint8_t buffer[4];
-                                float value = 0.0;
-                                memcpy(buffer, &value, 4);
-                                _writeModbus(response, buffer[3]);
-                                _writeModbus(response, buffer[2]);
-                                _writeModbus(response, buffer[1]);
-                                _writeModbus(response, buffer[0]);  // Write LVDT
+                                _writeModbusFloat(response, 0.0);  // Write LVDT
                             }
                             _writeModbusCRC(response);
                             break;
@@ -852,6 +770,27 @@ void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) 
     }
     _crcVector.push(data);
     response->push((data << 1) | 0x9000);
+}
+
+void SimulatedFPGA::_writeModbus16(std::queue<uint16_t>* response, int16_t data) {
+    _writeModbus(response, (data >> 8) & 0xFF);
+    _writeModbus(response, data & 0xFF);
+}
+
+void SimulatedFPGA::_writeModbus32(std::queue<uint16_t>* response, int32_t data) {
+    _writeModbus(response, (data >> 24) & 0xFF);
+    _writeModbus(response, (data >> 16) & 0xFF);
+    _writeModbus(response, (data >> 8) & 0xFF);
+    _writeModbus(response, data & 0xFF);
+}
+
+void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t>* response, float data) {
+    uint8_t buffer[4];
+    memcpy(buffer, &data, 4);
+    _writeModbus(response, buffer[3]);
+    _writeModbus(response, buffer[2]);
+    _writeModbus(response, buffer[1]);
+    _writeModbus(response, buffer[0]);
 }
 
 void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
