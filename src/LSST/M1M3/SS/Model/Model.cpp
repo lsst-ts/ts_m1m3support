@@ -192,7 +192,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _hardpointTestController;
     SPDLOG_INFO("Model: Creating hardpoint test controller");
-    _hardpointTestController = new HardpointTestController(_positionController);
+    _hardpointTestController = new HardpointTestController(_positionController, hardpointActuatorSettings);
 
     delete _gyro;
     SPDLOG_INFO("Model: Creating gyro");

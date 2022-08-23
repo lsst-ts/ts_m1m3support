@@ -36,13 +36,13 @@ using namespace LSST::M1M3::SS;
 void SettingReader::setRootPath(std::string rootPath) {
     SPDLOG_DEBUG("SettingReader: setRootPath(\"{}\")", rootPath);
 
-    auto test_dir = [rootPath](std::string dir) {
+    auto test_dir = [](std::string dir) {
         struct stat dirstat;
         if (stat(dir.c_str(), &dirstat)) {
-            throw std::runtime_error("Directory " + rootPath + "doesn't exist: " + strerror(errno));
+            throw std::runtime_error("Directory " + dir + " doesn't exist: " + strerror(errno));
         }
         if (!(dirstat.st_mode & (S_IFLNK | S_IFDIR))) {
-            throw std::runtime_error(rootPath + " isn't directory or link");
+            throw std::runtime_error(dir + " isn't directory or link");
         }
     };
 
@@ -51,10 +51,11 @@ void SettingReader::setRootPath(std::string rootPath) {
     _rootPath = rootPath;
 
     test_dir(_getBasePath(""));
-    test_dir(_getSetPath(""));
 
     _currentSet = "";
     _currentVersion = "";
+
+    test_dir(_getSetPath(""));
 }
 
 std::string SettingReader::getFilePath(std::string filename) {

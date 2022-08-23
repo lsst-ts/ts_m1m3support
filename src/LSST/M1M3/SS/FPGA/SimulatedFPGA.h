@@ -32,6 +32,7 @@
 #include <ILCSubnetData.h>
 #include <HardpointActuatorSettings.h>
 
+#include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
 #include "SAL_MTMount.h"
 
@@ -93,6 +94,8 @@ private:
     std::mutex _elevationReadWriteLock;
     SAL_MTMount _mgrMTMount;
 
+    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+
     int _lastRequest;
     std::queue<uint16_t> _u8Response;
     std::queue<uint16_t> _u16Response;
@@ -108,6 +111,7 @@ private:
     void _writeModbus32(std::queue<uint16_t>* reponse, int32_t data);
     void _writeModbusFloat(std::queue<uint16_t>* response, float data);
     void _writeModbusCRC(std::queue<uint16_t>* response);
+    void _writeHP_ILCStatus(std::queue<uint16_t>* response, int index);
 
     void _monitorElevation(void);
 
