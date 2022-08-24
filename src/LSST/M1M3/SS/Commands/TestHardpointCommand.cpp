@@ -22,8 +22,9 @@
  */
 
 #include <Context.h>
-#include <TestHardpointCommand.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <TestHardpointCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -38,8 +39,13 @@ bool TestHardpointCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
         M1M3SSPublisher::get().logCommandRejectionWarning(
                 "TestHardpoint", "The field HardpointActuator must be in range [1, 6].");
+    } else if (Model::get().getHardpointTestController()->isTested(_data.hardpointActuator - 1)) {
+        M1M3SSPublisher::get().logCommandRejectionWarning("TestHardpoint",
+                                                          "Hardpoint is already being tested.");
+    } else {
+        return true;
     }
-    return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
+    return false;
 }
 
 void TestHardpointCommand::execute() { Context::get().testHardpoint(this); }

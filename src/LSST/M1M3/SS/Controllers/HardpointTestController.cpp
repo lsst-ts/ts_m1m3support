@@ -85,9 +85,27 @@ int HardpointTestController::killHardpointTest(int hardpointIndex) {
         case MTM1M3_shared_HardpointTest_Failed:
             return 1;
         default:
-            testState[hardpointIndex] = MTM1M3_shared_HardpointTest_NotTested;
+            if (hardpointIndex < 0) {
+                for (int i = 0; i < HP_COUNT; i++) {
+                    testState[i] = MTM1M3_shared_HardpointTest_NotTested;
+                }
+            } else {
+                testState[hardpointIndex] = MTM1M3_shared_HardpointTest_NotTested;
+            }
             M1M3SSPublisher::get().logHardpointTestStatus(this);
+            _positionController->stopMotion(hardpointIndex);
             return 0;
+    }
+}
+
+bool HardpointTestController::isTested(int hardpointIndex) {
+    switch (testState[hardpointIndex]) {
+        case MTM1M3_shared_HardpointTest_NotTested:
+        case MTM1M3_shared_HardpointTest_Passed:
+        case MTM1M3_shared_HardpointTest_Failed:
+            return false;
+        default:
+            return true;
     }
 }
 
@@ -95,12 +113,7 @@ bool HardpointTestController::_runHardpointLoop(int hardpointIndex) {
     int oldState = testState[hardpointIndex];
 
     auto moveHP_abs = [this, hardpointIndex](int32_t target) -> bool {
-        _positionController->stopMotion(hardpointIndex);
-
-        int32_t steps[HP_COUNT];
-        memset(steps, 0, sizeof(steps));
-        steps[hardpointIndex] = target;
-        if (_positionController->move(steps) == false) {
+        if (_positionController->moveHardpoint(target, hardpointIndex) == false) {
             testState[hardpointIndex] = MTM1M3_shared_HardpointTest_Failed;
             return false;
         }
