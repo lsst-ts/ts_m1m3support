@@ -60,11 +60,20 @@ public:
     /**
      * Stops hardpoint test in progress;
      *
-     * @param hardpointIndex hardpoint index (0-5)
+     * @param hardpoint_index hardpoint index (0-5), negative to stop all hardpoints
      *
      * @return 0 on success, 1 on error
      */
     int killHardpointTest(int hardpointIndex);
+
+    /**
+     * Returns true if given hardpoint is being tested.
+     *
+     * @param hardpointIndex hardpoint index (0-5)
+     *
+     * @return true if the hardpoint is being tested
+     */
+    bool isTested(int hardpointIndex);
 
 private:
     bool _runHardpointLoop(int hardpointIndex);

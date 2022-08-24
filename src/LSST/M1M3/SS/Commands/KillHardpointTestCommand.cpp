@@ -38,8 +38,13 @@ bool KillHardpointTestCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
         M1M3SSPublisher::get().logCommandRejectionWarning(
                 "KillHardpointTest", "The field HardpointActuator must be in range [1, 6].");
+    } else if (Model::get().getHardpointTestController()->isTested(_data.hardpointActuator - 1) == false) {
+        M1M3SSPublisher::get().logCommandRejectionWarning("KillHardpointTest",
+                                                          "Hardpoint is not being tested.");
+    } else {
+        return true;
     }
-    return _data.hardpointActuator >= 1 && _data.hardpointActuator <= 6;
+    return false;
 }
 
 void KillHardpointTestCommand::execute() { Context::get().killHardpointTest(this); }
