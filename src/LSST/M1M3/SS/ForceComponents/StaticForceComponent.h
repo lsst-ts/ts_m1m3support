@@ -40,6 +40,13 @@ public:
     StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                          ForceActuatorSettings* forceActuatorSettings);
 
+    /**
+     * Apply static forces. Enable static forces if those were disabled.
+     *
+     * @param x x static forces
+     * @param y y static forces
+     * @param z z static forces
+     */
     void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);
 
 protected:

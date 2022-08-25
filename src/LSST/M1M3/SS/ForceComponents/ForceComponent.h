@@ -36,7 +36,7 @@ namespace SS {
  * Force component states. Only transition from ENABLED to DISABLED requires
  * gradual removal of the component force.
  */
-enum ForceComponentState { DISABLED, ENABLED, DISABLING };
+enum ForceComponentState { INITIALISING, DISABLED, ENABLED, DISABLING };
 
 /**
  * Abstract parent class of all force components.
@@ -58,8 +58,8 @@ enum ForceComponentState { DISABLED, ENABLED, DISABLING };
  *
  * Force component can be enabled or disabled. When it is disabled, its
  * contribution is scaled linearly to zero to prevent overstressing the mirror.
- * Commanding of the enabled/disabled states is performed in ForceController
- * class.
+ * Commanding of the enabled/disabled states and checking if the forces are
+ * enabled before being applied is performed in the ForceController class.
  */
 class ForceComponent {
 public:
@@ -73,26 +73,41 @@ public:
     virtual ~ForceComponent();
 
     /**
-     * Returns true if force component is enabled.
+     * Returns true if the force component is being initialised.
+     *
+     * @return true if the force component is being initialised
+     */
+    bool isInitialising() { return _state == INITIALISING; }
+
+    /**
+     * Returns true if the force component is enabled.
      *
      * @return true if the force component is enabled
      */
     bool isEnabled() { return _state == ENABLED; }
 
     /**
-     * Force component is being disabled.
+     * Returns true if the force component is being disabled.
      *
-     * @return true if force component is being disabled
+     * @return true if the force component is being disabled
      */
     bool isDisabling() { return _state == DISABLING; }
 
     /**
-     * Enable force component.
+     * Returns true if the force compoment is active - shall be calculated.
+     *
+     * @return true if the force component is either enabled or disabling (scaling
+     * back to 0)
+     */
+    bool isActive() { return _state == INITIALISING || _state == ENABLED || _state == DISABLING; }
+
+    /**
+     * Enable the force component.
      */
     void enable();
 
     /**
-     * Disable force component. Starts to gradually scales force contribution to
+     * Disable the force component. Starts to gradually scales force contribution to
      */
     void disable();
 
@@ -144,6 +159,13 @@ private:
     float _nearZeroValue;
 
     ForceComponentState _state;
+
+    /**
+     * Zero target forces.
+     */
+    void _zeroTarget();
+
+    void _zeroAll();
 };
 
 } /* namespace SS */
