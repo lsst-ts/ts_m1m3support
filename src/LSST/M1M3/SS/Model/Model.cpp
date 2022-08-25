@@ -98,7 +98,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     SettingReader::instance().configure(settingsToApply);
 
-    M1M3SSPublisher::get().getOuterLoopData()->slewFlag = false;
+    M1M3SSPublisher::get().reset();
 
     SPDLOG_INFO("Model: Loading ILC application settings");
     ILCApplicationSettings* ilcApplicationSettings = SettingReader::instance().loadILCApplicationSettings();
