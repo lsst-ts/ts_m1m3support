@@ -51,7 +51,7 @@ void DisplacementSensorSettings::load(const std::string &filename) {
         throw std::runtime_error(fmt::format("Invalid NPorts length: {}, expected 8", NPorts.size()));
     }
     if (NOffsets.size() != 8) {
-        throw std::runtime_error(fmt::format("Invalid NPorts length: {}, expected 8", NOffsets.size()));
+        throw std::runtime_error(fmt::format("Invalid NOffsets length: {}, expected 8", NOffsets.size()));
     }
 
     log();

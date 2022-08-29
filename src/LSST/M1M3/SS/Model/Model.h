@@ -37,6 +37,7 @@
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointActuatorSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
+#include <HardpointTestController.h>
 #include <Inclinometer.h>
 #include <InclinometerSettings.h>
 #include <ILC.h>
@@ -87,6 +88,7 @@ public:
     inline Gyro* getGyro() { return _gyro; }
     inline ProfileController* getProfileController() { return &_profileController; }
     inline BumpTestController* getBumpTestController() { return &_bumpTestController; }
+    inline HardpointTestController* getHardpointTestController() { return _hardpointTestController; }
 
     void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
     double getCachedTimestamp() { return _cachedTimestamp; }
@@ -129,6 +131,7 @@ private:
     Gyro* _gyro;
     ProfileController _profileController;
     BumpTestController _bumpTestController;
+    HardpointTestController* _hardpointTestController;
 
     std::mutex _mutex;
 

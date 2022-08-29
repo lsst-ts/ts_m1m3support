@@ -22,44 +22,43 @@
  */
 
 #include <Context.h>
+#include <KillHardpointTestCommand.h>
 #include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <TestHardpointCommand.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TestHardpointCommand::TestHardpointCommand(int32_t commandID, MTM1M3_command_testHardpointC* data)
+KillHardpointTestCommand::KillHardpointTestCommand(int32_t commandID, MTM1M3_command_killHardpointTestC* data)
         : Command(commandID) {
     _data.hardpointActuator = data->hardpointActuator;
 }
 
-bool TestHardpointCommand::validate() {
+bool KillHardpointTestCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
         M1M3SSPublisher::get().logCommandRejectionWarning(
-                "TestHardpoint", "The field HardpointActuator must be in range [1, 6].");
-    } else if (Model::get().getHardpointTestController()->isTested(_data.hardpointActuator - 1)) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("TestHardpoint",
-                                                          "Hardpoint is already being tested.");
+                "KillHardpointTest", "The field HardpointActuator must be in range [1, 6].");
+    } else if (Model::get().getHardpointTestController()->isTested(_data.hardpointActuator - 1) == false) {
+        M1M3SSPublisher::get().logCommandRejectionWarning("KillHardpointTest",
+                                                          "Hardpoint is not being tested.");
     } else {
         return true;
     }
     return false;
 }
 
-void TestHardpointCommand::execute() { Context::get().testHardpoint(this); }
+void KillHardpointTestCommand::execute() { Context::get().killHardpointTest(this); }
 
-void TestHardpointCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandtestHardpoint(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void KillHardpointTestCommand::ackInProgress() {
+    M1M3SSPublisher::get().ackCommandkillHardpointTest(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
-void TestHardpointCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandtestHardpoint(getCommandID(), ACK_COMPLETE, "Completed");
+void KillHardpointTestCommand::ackComplete() {
+    M1M3SSPublisher::get().ackCommandkillHardpointTest(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
-void TestHardpointCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandtestHardpoint(getCommandID(), ACK_FAILED, "Failed: " + reason);
+void KillHardpointTestCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::get().ackCommandkillHardpointTest(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

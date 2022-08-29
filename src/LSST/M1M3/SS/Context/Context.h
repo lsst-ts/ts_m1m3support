@@ -47,6 +47,7 @@
 #include <ExitEngineeringCommand.h>
 #include <SetAirSlewFlagCommand.h>
 #include <TestHardpointCommand.h>
+#include <KillHardpointTestCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <EnableHardpointChaseCommand.h>
 #include <DisableHardpointChaseCommand.h>
@@ -121,6 +122,7 @@ public:
     void exitEngineering(ExitEngineeringCommand* command);
     void setAirSlewFlag(SetAirSlewFlagCommand* command);
     void testHardpoint(TestHardpointCommand* command);
+    void killHardpointTest(KillHardpointTestCommand* command);
     void moveHardpointActuators(MoveHardpointActuatorsCommand* command);
     void enableHardpointChase(EnableHardpointChaseCommand* command);
     void disableHardpointChase(DisableHardpointChaseCommand* command);
