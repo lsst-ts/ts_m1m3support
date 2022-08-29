@@ -21,35 +21,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PARKEDENGINEERINGSTATE_H_
-#define PARKEDENGINEERINGSTATE_H_
+#ifndef KILLHARDPOINTTESTCOMMAND_H_
+#define KILLHARDPOINTTESTCOMMAND_H_
 
-#include <EngineeringState.h>
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Parked Engineering State. Mirror can be raised, switched into Disabled State
- * or returned to Parked State with Exit Engineering command.
+ * Abort any hardpoint test in progress,
  */
-class ParkedEngineeringState : public EngineeringState {
+class KillHardpointTestCommand : public Command {
 public:
-    ParkedEngineeringState();
+    KillHardpointTestCommand(int32_t commandID, MTM1M3_command_killHardpointTestC* data);
 
-    States::Type update(UpdateCommand* command) override;
-    States::Type raiseM1M3(RaiseM1M3Command* command) override;
-    States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    States::Type disable(DisableCommand* command) override;
-    States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
-    States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
-    States::Type testHardpoint(TestHardpointCommand* command) override;
-    States::Type killHardpointTest(KillHardpointTestCommand* command) override;
+    MTM1M3_command_killHardpointTestC* getData() { return &_data; }
+
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+
+private:
+    MTM1M3_command_killHardpointTestC _data;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* PARKEDENGINEERINGSTATE_H_ */
+#endif /* KILLHARDPOINTTESTCOMMAND_H_ */

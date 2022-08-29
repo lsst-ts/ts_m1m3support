@@ -75,6 +75,16 @@ public:
     bool motionComplete();
 
     /**
+     * Move single hardpoint specified number of steps.
+     *
+     * @param steps step offset
+     * @param hpIndex index of the hardpoint to move
+     *
+     * @return
+     */
+    bool moveHardpoint(int32_t steps, int hpIndex);
+
+    /**
      * Move HPs by given steps. Switch HP that needs to move into Stepping
      * state. updateSteps then moves HP as needed.
      *
@@ -113,7 +123,14 @@ public:
     bool moveToLowerPosition();
 
     bool translate(double x, double y, double z, double rX, double rY, double rZ);
-    void stopMotion();
+
+    /**
+     * Stops HP motion. If index is negative, all hardpoints are stopped.
+     *
+     * @param hardpointIndex index of the hardpoint to stop, or negative value to stop all hardpoints,
+     * Defaults to -1.
+     */
+    void stopMotion(int hardpointIndex = -1);
 
     /**
      * Called in any enabled state (raised, parked, ..). Sets stepsCommanded

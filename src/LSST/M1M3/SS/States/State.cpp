@@ -85,6 +85,9 @@ States::Type State::setAirSlewFlag(SetAirSlewFlagCommand* command) {
 States::Type State::testHardpoint(TestHardpointCommand* command) {
     return this->rejectCommandInvalidState(command, "TestHardpoint");
 }
+States::Type State::killHardpointTest(KillHardpointTestCommand* command) {
+    return this->rejectCommandInvalidState(command, "KillHardpointTest");
+}
 States::Type State::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
     return this->rejectCommandInvalidState(command, "MoveHardpointActuators");
 }
