@@ -162,10 +162,12 @@ Please use lsstts/mtm1m3\_sim Docker container to run simulator.
 ```bash
 BASE=$(pwd)/M1M3SS
 mkdir -p $BASE
-git clone git@github.com:lsst-ts/ts_m1m3support
-git clone git@github.com:lsst-ts/ts_sal
-git clone git@github.com:lsst-ts/ts_opensplice
-git clone git@github.com:lsst-ts/ts_xml
+cd $BASE
+GBRANCH="develop"
+git clone git@github.com:lsst-ts/ts_m1m3support -b $GBRANCH
+git clone git@github.com:lsst-ts/ts_sal -b $GBRANCH
+git clone git@github.com:lsst-ts/ts_opensplice -b $GBRANCH
+git clone git@github.com:lsst-ts/ts_xml -b $GBRANCH
 source ts_sal/setup.env
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${BASE}/ts_sal/test/lib
 cd ts_sal/test
