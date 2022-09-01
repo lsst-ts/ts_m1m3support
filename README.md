@@ -168,6 +168,8 @@ git clone git@github.com:lsst-ts/ts_m1m3support -b $GBRANCH
 git clone git@github.com:lsst-ts/ts_sal -b $GBRANCH
 git clone git@github.com:lsst-ts/ts_opensplice -b $GBRANCH
 git clone git@github.com:lsst-ts/ts_xml -b $GBRANCH
+git clone git@github.com:lsst-ts/ts_ddsconfig -b $GBRANCH
+export OSPL_HOME=${PWD}/ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux
 source ts_sal/setup.env
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${BASE}/ts_sal/test/lib
 cd ts_sal/test
