@@ -169,6 +169,7 @@ git clone git@github.com:lsst-ts/ts_sal -b $GBRANCH
 git clone git@github.com:lsst-ts/ts_opensplice -b $GBRANCH
 git clone git@github.com:lsst-ts/ts_xml -b $GBRANCH
 git clone git@github.com:lsst-ts/ts_ddsconfig -b $GBRANCH
+git clone git@github.com:lsst-ts/ts_cRIOcpp -b $GBRANCH
 export OSPL_HOME=${PWD}/ts_opensplice/OpenSpliceDDS/V6.4.1/HDE/x86_64.linux
 source ts_sal/setup.env
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${BASE}/ts_sal/test/lib
@@ -176,10 +177,8 @@ cd ts_sal/test
 cp -v ../../ts_xml/sal_interfaces/*.xml .
 cp -v ../../ts_xml/sal_interfaces/MTM1M3/*.xml .
 cp -v ../../ts_xml/sal_interfaces/MTMount/*.xml .
-salgenerator MTM1M3 generate cpp
-salgenerator MTM1M3 generate python
-salgenerator MTMount generate cpp
-salgenerator MTMount generate python
+salgenerator generate cpp MTM1M3
+salgenerator generate cpp MTMount
 ```
 
 # Configuring NI cRIOs for deployment
