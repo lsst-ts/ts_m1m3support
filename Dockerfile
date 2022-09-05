@@ -6,8 +6,6 @@ USER root
 RUN chmod a+rwX -R /home/saluser/
 USER saluser
 
-ARG XML_BRANCH=main
-
 WORKDIR /home/saluser/repos/ts_xml
 RUN git fetch && git checkout $XML_BRANCH && git pull
 
@@ -31,7 +29,7 @@ RUN source .crio_setup.sh && cd repos/ts_xml/sal_interfaces \
 
 FROM crio-develop
 
-ARG cRIO_CPP=v1.1.0
+ARG cRIO_CPP=develop
 ARG M1M3_SUPPORT=develop
 ARG TARGET=simulator
 
