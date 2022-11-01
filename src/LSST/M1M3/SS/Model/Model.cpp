@@ -67,6 +67,7 @@ Model::Model() {
     _powerController = NULL;
     _mirrorRaiseController = NULL;
     _mirrorLowerController = NULL;
+    _hardpointTestController = NULL;
     _gyro = NULL;
     _cachedTimestamp = 0;
     _mutex.lock();
@@ -98,7 +99,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     SettingReader::instance().configure(settingsToApply);
 
-    M1M3SSPublisher::get().getOuterLoopData()->slewFlag = false;
+    M1M3SSPublisher::get().reset();
 
     SPDLOG_INFO("Model: Loading ILC application settings");
     ILCApplicationSettings* ilcApplicationSettings = SettingReader::instance().loadILCApplicationSettings();
@@ -188,6 +189,10 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Creating mirror raise controller");
     _mirrorRaiseController = new MirrorRaiseController(_positionController, _forceController,
                                                        _safetyController, _powerController);
+
+    delete _hardpointTestController;
+    SPDLOG_INFO("Model: Creating hardpoint test controller");
+    _hardpointTestController = new HardpointTestController(_positionController, hardpointActuatorSettings);
 
     delete _gyro;
     SPDLOG_INFO("Model: Creating gyro");

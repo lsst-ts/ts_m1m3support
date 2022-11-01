@@ -15,9 +15,8 @@ endif
 
 LIBS += $(shell pkg-config catch2-with-main --libs) -l history -l readline
 
-M1M3_CPPFLAGS := -I"/usr/include" \
+M1M3_CPPFLAGS := -I"../$(CRIOCPP)/include" \
 	$(shell pkg-config catch2-with-main --cflags) \
-	-I"../$(CRIOCPP)/include" \
 	-I"../src" \
 	-I"../src/LSST/M1M3/SS/DigitalInputOutput" \
 	-I"../src/LSST/M1M3/SS/FirmwareUpdate" \
