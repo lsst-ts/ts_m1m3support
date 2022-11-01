@@ -58,6 +58,7 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandExitEngineering());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandSetAirSlewFlag());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTestHardpoint());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandKillHardpointTest());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandMoveHardpointActuators());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableHardpointChase());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandDisableHardpointChase());

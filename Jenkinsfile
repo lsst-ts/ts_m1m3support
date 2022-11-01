@@ -22,7 +22,7 @@ node {
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
     // branches requiring changes in XML from default develop branch
-    def XML_BRANCH = BRANCH in ["main"] ? BRANCH : "develop"
+    def XML_BRANCH = BRANCH in ["main", "tickets/DM-35863"] ? BRANCH : "develop"
     def CRIO_BRANCH = BRANCH in ["main", "tickets/DM-33839"] ? BRANCH : "develop"
     stage('Cloning sources')
     {
@@ -72,7 +72,7 @@ node {
     {
          M1M3sim.inside("--entrypoint=''") {
              sh """
-                source $SALUSER_HOME/.setup_salobj.sh
+                source $SALUSER_HOME/.crio_setup.sh
                 cd $WORKSPACE/ts_m1m3support
                 make doc
              """
@@ -84,7 +84,7 @@ node {
         withEnv(["SALUSER_HOME=" + SALUSER_HOME]){
             M1M3sim.inside("--entrypoint=''") {
                 sh """
-                    source $SALUSER_HOME/.setup_salobj.sh
+                    source $SALUSER_HOME/.crio_setup.sh
 
                     export LSST_DDS_PARTITION_PREFIX=test
     
@@ -110,7 +110,7 @@ node {
             withCredentials([usernamePassword(credentialsId: 'lsst-io', usernameVariable: 'LTD_USERNAME', passwordVariable: 'LTD_PASSWORD')]) {
                 M1M3sim.inside("--entrypoint=''") {
                     sh """
-                        source $SALUSER_HOME/.setup_salobj.sh
+                        source $SALUSER_HOME/.crio_setup.sh
                         ltd upload --product ts-m1m3support --git-ref """ + BRANCH + """ --dir $WORKSPACE/ts_m1m3support/doc/html
                     """
                 }

@@ -53,7 +53,7 @@ BumpTestController::BumpTestController() {
         forceActuatorBumpTestStatus->secondaryTest[i] = MTM1M3_shared_BumpTest_NotTested;
     }
 
-    M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
+    forceActuatorBumpTestStatus->actuatorId = -1;
     M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
 }
 

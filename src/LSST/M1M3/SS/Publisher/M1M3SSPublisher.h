@@ -62,6 +62,11 @@ public:
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL);
 
     /**
+     * Called when new settigns are loaded to resend 0 events.
+     */
+    void reset();
+
+    /**
      * @brief Returns pointer to accelerometer data.
      *
      * @return pointer to the accelerometer data
@@ -305,6 +310,9 @@ public:
     void tryLogHardpointMonitorState();
     void logHardpointMonitorWarning();
     void tryLogHardpointMonitorWarning();
+    void logHardpointTestStatus(MTM1M3_logevent_hardpointTestStatusC* data) {
+        _m1m3SAL->logEvent_hardpointTestStatus(data, 0);
+    }
     void logHeartbeat();
     void logILCWarning();
     void tryLogILCWarning();
@@ -377,6 +385,7 @@ public:
     void ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandsetAirSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandtestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandkillHardpointTest(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandmoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommanddisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);

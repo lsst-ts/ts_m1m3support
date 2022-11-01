@@ -206,7 +206,7 @@ bool ForceController::followingErrorInTolerance() {
 void ForceController::updateAppliedForces() {
     SPDLOG_TRACE("ForceController: updateAppliedForces()");
 
-    if (_accelerationForceComponent.isEnabled() || _accelerationForceComponent.isDisabling()) {
+    if (_accelerationForceComponent.isActive()) {
         if (_accelerationForceComponent.isEnabled()) {
             _accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(
                     _accelerometerData->angularAccelerationX, _accelerometerData->angularAccelerationY,
@@ -214,13 +214,13 @@ void ForceController::updateAppliedForces() {
         }
         _accelerationForceComponent.update();
     }
-    if (_activeOpticForceComponent.isEnabled() || _activeOpticForceComponent.isDisabling()) {
+    if (_activeOpticForceComponent.isActive()) {
         _activeOpticForceComponent.update();
     }
-    if (_azimuthForceComponent.isEnabled() || _azimuthForceComponent.isDisabling()) {
+    if (_azimuthForceComponent.isActive()) {
         _azimuthForceComponent.update();
     }
-    if (_balanceForceComponent.isEnabled() || _balanceForceComponent.isDisabling()) {
+    if (_balanceForceComponent.isActive()) {
         if (_balanceForceComponent.isEnabled()) {
             _balanceForceComponent.applyBalanceForcesByMirrorForces(
                     _hardpointActuatorData->fx, _hardpointActuatorData->fy, _hardpointActuatorData->fz,
@@ -228,7 +228,7 @@ void ForceController::updateAppliedForces() {
         }
         _balanceForceComponent.update();
     }
-    if (_elevationForceComponent.isEnabled() || _elevationForceComponent.isDisabling()) {
+    if (_elevationForceComponent.isActive()) {
         if (_elevationForceComponent.isEnabled()) {
             double elevationAngle = TMA::instance().getElevation();
 
@@ -237,16 +237,16 @@ void ForceController::updateAppliedForces() {
         }
         _elevationForceComponent.update();
     }
-    if (_offsetForceComponent.isEnabled() || _offsetForceComponent.isDisabling()) {
+    if (_offsetForceComponent.isActive()) {
         _offsetForceComponent.update();
     }
-    if (_staticForceComponent.isEnabled() || _staticForceComponent.isDisabling()) {
+    if (_staticForceComponent.isActive()) {
         _staticForceComponent.update();
     }
-    if (_thermalForceComponent.isEnabled() || _thermalForceComponent.isDisabling()) {
+    if (_thermalForceComponent.isActive()) {
         _thermalForceComponent.update();
     }
-    if (_velocityForceComponent.isEnabled() || _velocityForceComponent.isDisabling()) {
+    if (_velocityForceComponent.isActive()) {
         if (_velocityForceComponent.isEnabled()) {
             _velocityForceComponent.applyVelocityForcesByAngularVelocity(
                     _gyroData->angularVelocityX, _gyroData->angularVelocityY, _gyroData->angularVelocityZ);

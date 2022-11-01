@@ -155,6 +155,12 @@ void Context::testHardpoint(TestHardpointCommand* command) {
     _updateCurrentStateIfRequired(state->testHardpoint(command));
 }
 
+void Context::killHardpointTest(KillHardpointTestCommand* command) {
+    SPDLOG_DEBUG("Context: killHardpointTest()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->killHardpointTest(command));
+}
+
 void Context::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
     SPDLOG_DEBUG("Context: moveHardpointActuators()");
     State* state = StaticStateFactory::get().create(_currentState);
