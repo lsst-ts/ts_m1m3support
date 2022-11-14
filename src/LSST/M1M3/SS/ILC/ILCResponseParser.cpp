@@ -1002,7 +1002,7 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
     bool loadCellError = measuredForce > loadCellMax || measuredForce < loadCellMin;
     _safetyController->hardpointActuatorLoadCellError(loadCellError);
 
-    // as soon as mirror is raised, tests shall be performed
+    // As soon as mirror is at least a bit raised, tests shall be performed
     // this is software line of defense for excessive forces. Hardpoints shall
     // break if excess force is applied (either compression or tension),
     // protecting the mirror from damage.
