@@ -131,6 +131,14 @@ public:
     void forceActuatorFollowingError(int actuatorDataIndex, bool conditionFlag);
 
     void hardpointActuatorLoadCellError(bool conditionFlag);
+
+    /**
+     * Triggers hardpoint measured force warning and faults.
+     *
+     * @param actuatorDataIndex hardpoint actuator index (0 based)
+     * @param warningFlag if true, warning was detected
+     * @param faultFlag if true, fault was detected
+     */
     void hardpointActuatorMeasuredForce(int actuatorDataIndex, bool warningFlag, bool faultFlag);
 
     /** Checks hardpoint breakway air pressure. Triggers fault if pressure is

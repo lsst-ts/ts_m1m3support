@@ -54,9 +54,66 @@ void HardpointActuatorSettings::load(const std::string &filename) {
         hardpointMeasuredForceFSBWarningLow = doc["HardpointMeasuredForceFSBWarningLow"].as<float>();
         hardpointMeasuredForceWarningHigh = doc["HardpointMeasuredForceWarningHigh"].as<float>();
         hardpointMeasuredForceWarningLow = doc["HardpointMeasuredForceWarningLow"].as<float>();
+
+        if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFaultLow) {
+            throw std::runtime_error(
+                    fmt::format("{} HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
+                                "HardpointMeasuredForceFaultLow ({:.2f})",
+                                filename, hardpointMeasuredForceFaultHigh, hardpointMeasuredForceFaultLow));
+        }
+        if (hardpointMeasuredForceWarningHigh <= hardpointMeasuredForceWarningLow) {
+            throw std::runtime_error(fmt::format(
+                    "{} HardpointMeasuredForceWarningHigh ({:.2f}) is lower or equal "
+                    "HardpointMeasuredForceWarningLow ({:.2f})",
+                    filename, hardpointMeasuredForceWarningHigh, hardpointMeasuredForceWarningLow));
+        }
+        if (hardpointMeasuredForceFSBWarningHigh <= hardpointMeasuredForceFSBWarningLow) {
+            throw std::runtime_error(fmt::format(
+                    "{} HardpointMeasuredForceFSBWarningHigh ({:.2f}) is lower or equal "
+                    "HardpointMeasuredForceFSBWarningLow ({:.2f})",
+                    filename, hardpointMeasuredForceFSBWarningHigh, hardpointMeasuredForceFSBWarningLow));
+        }
+
+        if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceWarningHigh) {
+            throw std::runtime_error(fmt::format(
+                    "{} HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
+                    "HardpointMeasuredForceWarningHigh ({:.2f})",
+                    filename, hardpointMeasuredForceFaultHigh, hardpointMeasuredForceWarningHigh));
+        }
+        if (hardpointMeasuredForceFaultLow >= hardpointMeasuredForceWarningLow) {
+            throw std::runtime_error(
+                    fmt::format("{} HardpointMeasuredForceFaultLow ({:.2f}) is lower or equal "
+                                "HardpointMeasuredForceWarningLow ({:.2f})",
+                                filename, hardpointMeasuredForceFaultLow, hardpointMeasuredForceWarningLow));
+        }
+
+        if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFSBWarningHigh) {
+            throw std::runtime_error(fmt::format(
+                    "{} HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
+                    "HardpointMeasuredForceFSBWarningHigh ({:.2f})",
+                    filename, hardpointMeasuredForceFaultHigh, hardpointMeasuredForceFSBWarningHigh));
+        }
+        if (hardpointMeasuredForceFaultLow >= hardpointMeasuredForceFSBWarningLow) {
+            throw std::runtime_error(fmt::format(
+                    "{} HardpointMeasuredForceFaultLow ({:.2f}) is lower or equal "
+                    "HardpointMeasuredForceFSBWarningLow ({:.2f})",
+                    filename, hardpointMeasuredForceFaultLow, hardpointMeasuredForceFSBWarningLow));
+        }
+
         airPressureFaultHigh = doc["AirPressureFaultHigh"].as<float>();
         airPressureFaultLow = doc["AirPressureFaultLow"].as<float>();
         airPressureFaultLowRaising = doc["AirPressureFaultLowRaising"].as<float>();
+
+        if (airPressureFaultHigh <= airPressureFaultLow) {
+            throw std::runtime_error(fmt::format(
+                    "{} AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLow ({:.2f})",
+                    filename, airPressureFaultHigh, airPressureFaultLow));
+        }
+        if (airPressureFaultHigh <= airPressureFaultLowRaising) {
+            throw std::runtime_error(fmt::format(
+                    "{} AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLowRaising ({:.2f})",
+                    filename, airPressureFaultHigh, airPressureFaultLowRaising));
+        }
 
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
