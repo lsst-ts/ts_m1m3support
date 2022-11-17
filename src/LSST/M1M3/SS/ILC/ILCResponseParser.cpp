@@ -1002,18 +1002,27 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
     bool loadCellError = measuredForce > loadCellMax || measuredForce < loadCellMin;
     _safetyController->hardpointActuatorLoadCellError(loadCellError);
 
-    if (_detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState ||
-        _detailedState->detailedState == MTM1M3::MTM1M3_shared_DetailedStates_ActiveState) {
-        float maxForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
-        float minForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
+    // As soon as mirror is at least a bit raised, tests shall be performed
+    // this is software line of defense for excessive forces. Hardpoints shall
+    // break if excess force is applied (either compression or tension),
+    // protecting the mirror from damage.
+    if (_forceActuatorState->supportPercentage > 0) {
+        float maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
+        float minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (_forceActuatorState->balanceForcesApplied) {
-            maxForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
-            minForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
+            maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
+            minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
         }
-        bool measuredForceError = measuredForce > maxForce || measuredForce < minForce;
-        _safetyController->hardpointActuatorMeasuredForce(actuatorId, measuredForceError);
+        bool measuredForceWarning = measuredForce > maxWarningForce || measuredForce < minWarningForce;
+
+        float maxFaultForce = _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh;
+        float minFaultForce = _hardpointActuatorSettings->hardpointMeasuredForceFaultLow;
+        bool measuredForceFault = measuredForce > maxFaultForce || measuredForce < minFaultForce;
+
+        _safetyController->hardpointActuatorMeasuredForce(actuatorId, measuredForceWarning,
+                                                          measuredForceFault);
     } else {
-        _safetyController->hardpointActuatorMeasuredForce(actuatorId, false);
+        _safetyController->hardpointActuatorMeasuredForce(actuatorId, false, false);
     }
 }
 
