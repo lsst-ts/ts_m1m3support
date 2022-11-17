@@ -59,6 +59,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointLimitLowTriggered[i] = false;
         _hardpointLimitHighTriggered[i] = false;
+        _hardpointMeasuredForceWarning[i] = false;
         _hardpointFeViolations[i] = 0;
     }
 }
@@ -514,9 +515,22 @@ void SafetyController::hardpointActuatorLoadCellError(bool conditionFlag) {
                     "Hardpoint Actuator Load Cell Error");
 }
 
-void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, bool conditionFlag) {
+void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, bool warningFlag,
+                                                      bool faultFlag) {
+    if (warningFlag) {
+        if (_hardpointMeasuredForceWarning[actuatorDataIndex] == false) {
+            SPDLOG_WARN("Excessive measured force warning triggered for hardpoint {}", actuatorDataIndex + 1);
+            _hardpointMeasuredForceWarning[actuatorDataIndex] = true;
+        }
+    } else {
+        if (_hardpointMeasuredForceWarning[actuatorDataIndex] == true) {
+            SPDLOG_INFO("Excessive measured force warning cleared for hardpoint {}", actuatorDataIndex + 1);
+            _hardpointMeasuredForceWarning[actuatorDataIndex] = false;
+        }
+    }
+
     _hardpointActuatorMeasuredForceData[actuatorDataIndex].pop_front();
-    _hardpointActuatorMeasuredForceData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
+    _hardpointActuatorMeasuredForceData[actuatorDataIndex].push_back(faultFlag ? 1 : 0);
     int sum = 0;
     for (auto i : _hardpointActuatorMeasuredForceData[actuatorDataIndex]) {
         sum += i;
@@ -524,7 +538,8 @@ void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, boo
     _updateOverride(FaultCodes::HardpointActuatorMeasuredForceError,
                     _safetyControllerSettings->ILC.FaultOnHardpointActuatorMeasuredForce,
                     sum >= _safetyControllerSettings->ILC.HardpointActuatorMeasuredForceCountThreshold,
-                    "Hardpoint Actuator #{} Measured Forces {}", actuatorDataIndex + 1, sum);
+                    "Hardpoint Actuator #{} Measured Forces {}  - mirror faulted", actuatorDataIndex + 1,
+                    sum);
 }
 
 void SafetyController::hardpointActuatorAirPressure(int actuatorDataIndex, int conditionFlag,
