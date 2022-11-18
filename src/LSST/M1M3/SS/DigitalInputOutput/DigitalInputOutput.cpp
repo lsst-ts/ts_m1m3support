@@ -190,6 +190,7 @@ void DigitalInputOutput::tryToggleHeartbeat() {
 
         // sends software heartbeat
         M1M3SSPublisher::get().logHeartbeat();
+        M1M3SSPublisher::get().logInterlockStatus();
     }
 }
 
