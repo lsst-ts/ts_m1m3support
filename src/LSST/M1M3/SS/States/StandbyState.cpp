@@ -61,12 +61,15 @@ States::Type StandbyState::start(StartCommand* command) {
     DigitalInputOutput* digitalInputOutput = Model::get().getDigitalInputOutput();
     Gyro* gyro = Model::get().getGyro();
 
+    digitalInputOutput->tryToggleHeartbeat();
+    std::this_thread::sleep_for(1ms);  // wait for GIS to sense heartbeat
+
+    IFPGA::get().pullTelemetry();
+    digitalInputOutput->processData();
+    powerController->processData();
+
     powerController->setAllAuxPowerNetworks(false);
     powerController->setAllPowerNetworks(true);
-    for (int i = 0; i < 2; ++i) {
-        digitalInputOutput->tryToggleHeartbeat();
-        std::this_thread::sleep_for(500ms);
-    }
 
     ilc->flushAll();
     ilc->writeSetModeClearFaultsBuffer();
