@@ -21,6 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
+#include <cstring>
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
+#include <cRIO/CliApp.h>
+
 #include <ILCResponseParser.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
@@ -33,11 +41,7 @@
 #include <SafetyController.h>
 #include <Timestamp.h>
 #include <ILCSubnetData.h>
-#include <SAL_MTM1M3C.h>
-#include <cmath>
-#include <cstring>
-#include <spdlog/spdlog.h>
-#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
+//#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
 
 namespace LSST {
 namespace M1M3 {
@@ -167,10 +171,12 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
         uint16_t receivedCRC;
         if (validateCRC(buffer, &length, &timestamp, calculatedCRC, receivedCRC) == false) {
             auto data = buffer->getReadData(length);
+            std::ostringstream data_buf;
+            LSST::cRIO::CliApp::printHexBuffer(data.data(), length, data_buf);
             TG_LOG_WARN(60s,
                         "ILCResponseParser: Invalid CRC on subnet {:d} - received {:04X}, calculated {:04X}, "
-                        "address {:02X}, function {:02X}, {:02X}",
-                        subnet, receivedCRC, calculatedCRC, data[0], data[1], data[2]);
+                        "address {:02X}, function {:02X} data [{}]",
+                        subnet, receivedCRC, calculatedCRC, data[0], data[1], data_buf.str());
             _warnInvalidCRC(timestamp);
         } else {
             if (subnet >= 1 && subnet <= 5) {
