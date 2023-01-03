@@ -387,7 +387,8 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < FA_COUNT; i++) {
         if (_faExpectedResponses[i] != 0) {
             warn = true;
-            TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} response timeout", i);
+            TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
+                        _forceActuatorInfo->referenceId[i]);
             _warnResponseTimeout(timestamp, _forceActuatorInfo->referenceId[i]);
             _faExpectedResponses[i] = 0;
         }
@@ -401,7 +402,8 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
             _hpExpectedResponses[i] = 0;
-            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} actuator response timeout", i + 1);
+            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) actuator response timeout", i + 1,
+                        _hardpointActuatorInfo->referenceId[i]);
         }
     }
     if (warn) {
@@ -413,7 +415,8 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
             _hmExpectedResponses[i] = 0;
-            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} monitor response timeout", i + 1);
+            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) monitor response timeout", i + 1,
+                        _hardpointMonitorInfo->referenceId[i]);
         }
     }
     if (warn) {
