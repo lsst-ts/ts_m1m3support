@@ -153,6 +153,9 @@ void DigitalInputOutput::processData() {
         InterlockWarning::instance().setData(timestamp, fpgaData->DigitalInputStates);
 
         if (_safetyController) {
+            // report heartbeat lost first. GIS cuts power if heartbeats aren't comming.
+            _safetyController->interlockNotifyGISHeartbeatLost(InterlockWarning::instance().gisHeartbeatLost);
+
             _safetyController->airControllerNotifyCommandSensorMismatch(
                     _airSupplyWarning->commandSensorMismatch);
             _safetyController->cellLightNotifySensorMismatch(_cellLightWarning->cellLightsSensorMismatch,
@@ -165,7 +168,6 @@ void DigitalInputOutput::processData() {
             _safetyController->interlockNotifyAirSupplyOff(InterlockWarning::instance().airSupplyOff);
             _safetyController->interlockNotifyCabinetDoorOpen(InterlockWarning::instance().cabinetDoorOpen);
             _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
-            _safetyController->interlockNotifyGISHeartbeatLost(InterlockWarning::instance().gisHeartbeatLost);
         }
     }
     if (tryPublish) {
