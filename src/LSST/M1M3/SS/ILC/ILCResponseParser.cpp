@@ -41,7 +41,6 @@
 #include <SafetyController.h>
 #include <Timestamp.h>
 #include <ILCSubnetData.h>
-//#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
 
 namespace LSST {
 namespace M1M3 {
@@ -169,13 +168,14 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
         double timestamp = 0;
         uint16_t calculatedCRC;
         uint16_t receivedCRC;
-        if (validateCRC(buffer, &length, &timestamp, calculatedCRC, receivedCRC) == false) {
+        if (validateCRC(buffer, &length, &timestamp, receivedCRC, calculatedCRC) == false) {
             auto data = buffer->getReadData(length);
             std::ostringstream data_buf;
             LSST::cRIO::CliApp::printHexBuffer(data.data(), length, data_buf);
             TG_LOG_WARN(60s,
-                        "ILCResponseParser: Invalid CRC on subnet {:d} - received {:04X}, calculated {:04X}, "
-                        "address {:02X}, function {:02X} data [{}]",
+                        "ILCResponseParser: Invalid CRC (or extra byte) on subnet {:d} - received {:04X}, "
+                        "calculated {:04X}, "
+                        "address {:02X}, function {:02X}, data [{}]",
                         subnet, receivedCRC, calculatedCRC, data[0], data[1], data_buf.str());
             _warnInvalidCRC(timestamp);
         } else {
