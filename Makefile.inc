@@ -30,12 +30,5 @@ LIBS := $(shell pkg-config yaml-cpp --libs) -ldl -ldcpssacpp -ldcpsgapi -lddsuse
 
 LIBS_FLAGS += -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib"
 
-GIT := $(shell command -v git 2> /dev/null)
-
-ifndef GIT
-   VERSION := "v0.0.0-None"
-   GIT_HASH := "xxxx-NONE"
-else
-   VERSION := $(shell git describe --tags --dirty)
-   GIT_HASH := $(shell git rev-parse HEAD)
-endif
+VERSION := $(shell git describe --tags --dirty 2>/dev/null || echo "unknown:non-git")
+GIT_HASH := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown-non-git")
