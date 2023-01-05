@@ -52,8 +52,9 @@
 #include <DigitalInputOutput.h>
 
 using namespace std;
-
 using namespace LSST::M1M3::SS;
+
+extern const char* GIT_HASH;
 
 Model::Model() {
     SPDLOG_DEBUG("Model: Model()");

@@ -20,22 +20,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-#include <EnterControlCommand.h>
-#include <ExitControlCommand.h>
-#include <Context.h>
-#include <ControllerThread.h>
-#include <IExpansionFPGA.h>
-#include <M1M3SSPublisher.h>
-#include <M1M3SSSubscriber.h>
-#include <Model.h>
-#include <OuterLoopClockThread.h>
-#include <PPSThread.h>
-#include <SAL_MTM1M3.h>
-#include <SAL_MTMount.h>
-#include <SettingReader.h>
-#include <SubscriberThread.h>
-
 #include <getopt.h>
 #include <cstring>
 #include <iostream>
@@ -53,6 +37,21 @@
 #include <spdlog/sinks/syslog_sink.h>
 #include <SALSink.h>
 
+#include <EnterControlCommand.h>
+#include <ExitControlCommand.h>
+#include <Context.h>
+#include <ControllerThread.h>
+#include <IExpansionFPGA.h>
+#include <M1M3SSPublisher.h>
+#include <M1M3SSSubscriber.h>
+#include <Model.h>
+#include <OuterLoopClockThread.h>
+#include <PPSThread.h>
+#include <SAL_MTM1M3.h>
+#include <SAL_MTMount.h>
+#include <SettingReader.h>
+#include <SubscriberThread.h>
+
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
 #else
@@ -62,6 +61,8 @@
 
 using namespace std::chrono;
 using namespace LSST::M1M3::SS;
+
+extern const char* VERSION;
 
 void printHelp() {
     std::cout << "M1M3 Static Support controller. Runs either as simulator or as simulator or as "
