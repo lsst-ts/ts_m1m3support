@@ -66,7 +66,7 @@ extern const char* VERSION;
 
 void printHelp() {
     std::cout << "M1M3 Static Support controller. Runs either as simulator or as simulator or as "
-                 "the real think on cRIO."
+                 "the real thing on cRIO."
               << std::endl
               << "Version: " << VERSION << std::endl
               << "Options:" << std::endl
