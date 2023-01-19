@@ -21,6 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
+#include <cstring>
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
+#include <cRIO/CliApp.h>
+
 #include <ILCResponseParser.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
@@ -33,11 +41,6 @@
 #include <SafetyController.h>
 #include <Timestamp.h>
 #include <ILCSubnetData.h>
-#include <SAL_MTM1M3C.h>
-#include <cmath>
-#include <cstring>
-#include <spdlog/spdlog.h>
-#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
 
 namespace LSST {
 namespace M1M3 {
@@ -165,12 +168,15 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
         double timestamp = 0;
         uint16_t calculatedCRC;
         uint16_t receivedCRC;
-        if (validateCRC(buffer, &length, &timestamp, calculatedCRC, receivedCRC) == false) {
+        if (validateCRC(buffer, &length, &timestamp, receivedCRC, calculatedCRC) == false) {
             auto data = buffer->getReadData(length);
+            std::ostringstream data_buf;
+            LSST::cRIO::CliApp::printHexBuffer(data.data(), length, data_buf);
             TG_LOG_WARN(60s,
-                        "ILCResponseParser: Invalid CRC on subnet {:d} - received {:04X}, calculated {:04X}, "
-                        "address {:02X}, function {:02X}, {:02X}",
-                        subnet, receivedCRC, calculatedCRC, data[0], data[1], data[2]);
+                        "ILCResponseParser: Invalid CRC (or extra byte) on subnet {:d} - received {:04X}, "
+                        "calculated {:04X}, "
+                        "address {:02X}, function {:02X}, data [{}]",
+                        subnet, receivedCRC, calculatedCRC, data[0], data[1], data_buf.str());
             _warnInvalidCRC(timestamp);
         } else {
             if (subnet >= 1 && subnet <= 5) {
@@ -387,7 +393,8 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < FA_COUNT; i++) {
         if (_faExpectedResponses[i] != 0) {
             warn = true;
-            TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} response timeout", i);
+            TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
+                        _forceActuatorInfo->referenceId[i]);
             _warnResponseTimeout(timestamp, _forceActuatorInfo->referenceId[i]);
             _faExpectedResponses[i] = 0;
         }
@@ -401,7 +408,8 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
             _hpExpectedResponses[i] = 0;
-            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} actuator response timeout", i + 1);
+            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) actuator response timeout", i + 1,
+                        _hardpointActuatorInfo->referenceId[i]);
         }
     }
     if (warn) {
@@ -413,7 +421,8 @@ void ILCResponseParser::verifyResponses() {
             warn = true;
             _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
             _hmExpectedResponses[i] = 0;
-            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} monitor response timeout", i + 1);
+            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) monitor response timeout", i + 1,
+                        _hardpointMonitorInfo->referenceId[i]);
         }
     }
     if (warn) {
