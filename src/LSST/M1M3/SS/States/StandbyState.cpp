@@ -73,7 +73,7 @@ States::Type StandbyState::start(StartCommand* command) {
 
     for (int i = 0; i < 2; i++) {
         digitalInputOutput->tryToggleHeartbeat();
-        std::this_thread::sleep_for(500ms);  // wait 1 second for ILCs to power on
+        std::this_thread::sleep_for(500ms);  // wait 2*0.5=1 second for ILCs to power on
     }
     digitalInputOutput->tryToggleHeartbeat();
 
