@@ -257,6 +257,7 @@ void ForceController::updateAppliedForces() {
 
 void ForceController::processAppliedForces() {
     SPDLOG_TRACE("ForceController: processAppliedForces()");
+    _forceSetpointWarning->timestamp = _appliedForces->timestamp;
     _sumAllForces();
     _convertForcesToSetpoints();
     _checkMirrorMoments();
