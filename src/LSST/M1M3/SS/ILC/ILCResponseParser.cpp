@@ -582,7 +582,7 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
     HardpointActuatorWarning::instance().setStatus(dataIndex, timestamp, status,
                                                    _outerLoopData->broadcastCounter);
     // Encoder value needs to be swapped to keep with the theme of extension is positive
-    // retaction is negative
+    // retraction is negative
     _hardpointActuatorData->encoder[dataIndex] =
             -buffer->readI32() + _hardpointActuatorSettings->getEncoderOffset(dataIndex);
     HardpointActuatorWarning::instance().setProximityWarning(
