@@ -278,22 +278,19 @@ void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) {
                     "Force controller safety limit");
 }
 
-void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) {
+void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerXMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag,
-                    "Force controller X Moment Limit");
+                    _safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag, failed);
 }
 
-void SafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag) {
+void SafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerYMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag,
-                    "Force controller Y Moment Limit");
+                    _safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag, failed);
 }
 
-void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag) {
+void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerZMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag,
-                    "Force controller Z Moment Limit");
+                    _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag, failed);
 }
 
 void SafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed,
