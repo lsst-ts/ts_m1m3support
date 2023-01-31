@@ -52,10 +52,7 @@ public:
      *
      * @return hardpoint zero offset (HP<HP>EncoderOffset value)
      */
-    int32_t getEncoderOffset(int hp) { return _encoderOffset[hp]; }
-
-private:
-    int32_t _encoderOffset[HP_COUNT];
+    int32_t getEncoderOffset(int hp) { return encoderOffset[hp]; }
 };
 
 } /* namespace SS */
