@@ -38,7 +38,7 @@ using Catch::Approx;
 void checkAppliedActuatorForcesZ(int zIndex, float zForce) {
     REQUIRE(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);
     REQUIRE(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex] == -1);
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
@@ -46,8 +46,8 @@ void checkAppliedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
 
     int xIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex];
     REQUIRE_FALSE(xIndex < 0);
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->xForces[xIndex] == xForce);
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->xForces[xIndex] == xForce);
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
@@ -55,24 +55,24 @@ void checkAppliedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
 
     int yIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex];
     REQUIRE_FALSE(yIndex < 0);
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->yForces[yIndex] == yForce);
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->yForces[yIndex] == yForce);
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float mz) {
     constexpr float absl = 0.000005;
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->fx == Approx(fx).margin(absl));
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->fy == Approx(fy).margin(absl));
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->fz == Approx(fz).margin(absl));
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->mx == Approx(mx).margin(absl));
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->my == Approx(my).margin(absl));
-    CHECK(M1M3SSPublisher::get().getAppliedForces()->mz == Approx(mz).margin(absl));
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->fx == Approx(fx).margin(absl));
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->fy == Approx(fy).margin(absl));
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->fz == Approx(fz).margin(absl));
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->mx == Approx(mx).margin(absl));
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->my == Approx(my).margin(absl));
+    CHECK(M1M3SSPublisher::instance().getAppliedForces()->mz == Approx(mz).margin(absl));
 }
 
 void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
     REQUIRE(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);
     REQUIRE(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex] == -1);
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
@@ -80,8 +80,8 @@ void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
 
     int xIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex];
     REQUIRE_FALSE(xIndex < 0);
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->xForces[xIndex] == xForce);
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->xForces[xIndex] == xForce);
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
@@ -89,17 +89,17 @@ void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
 
     int yIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex];
     REQUIRE_FALSE(yIndex < 0);
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->yForces[yIndex] == yForce);
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->zForces[zIndex] == zForce);
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->yForces[yIndex] == yForce);
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedForces(float fx, float fy, float fz, float mx, float my, float mz) {
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->fx == Approx(fx));
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->fy == Approx(fy));
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->fz == Approx(fz));
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->mx == Approx(mx));
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->my == Approx(my));
-    CHECK(M1M3SSPublisher::get().getEventPreclippedForces()->mz == Approx(mz));
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->fx == Approx(fx));
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->fy == Approx(fy));
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->fz == Approx(fz));
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->mx == Approx(mx));
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->my == Approx(my));
+    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->mz == Approx(mz));
 }
 
 void runAndCheck(ForceController *forceController, float fx, float fy, float fz, float mx, float my, float mz,
@@ -114,7 +114,7 @@ void runAndCheck(ForceController *forceController, float fx, float fy, float fz,
 
 TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
-    M1M3SSPublisher::get().setSAL(m1m3SAL);
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
     SettingReader::instance().setRootPath("../SettingFiles");
 
     REQUIRE_NOTHROW(Model::get().loadSettings("Default"));
@@ -143,7 +143,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         Model::get().getForceController()->applyElevationForces();
         Model::get().getForceController()->fillSupportPercentage();
 
-        M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle = 45.0;
+        M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
         runAndCheck(Model::get().getForceController(), 0, 8148.78857, 8148.49805, 62.31575, -0.04463,
                     9.12726);
@@ -168,7 +168,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         Model::get().getForceController()->applyElevationForces();
         Model::get().getForceController()->fillSupportPercentage();
 
-        M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle = 90.0;
+        M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 90.0;
 
         runAndCheck(Model::get().getForceController(), 0, 0.06511, 11065.59961, -3.54472, -0.10448, 0.00007);
     }
@@ -177,7 +177,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         Model::get().getForceController()->applyElevationForces();
         Model::get().getForceController()->fillSupportPercentage();
 
-        M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle = 45.0;
+        M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
         runAndCheck(Model::get().getForceController(), 0, 8148.78857, 8148.49805, 62.31575, -0.04463,
                     9.12726);
@@ -196,15 +196,15 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         Model::get().getForceController()->applyElevationForces();
         Model::get().getForceController()->fillSupportPercentage();
 
-        M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle = 45.0;
+        M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
         runAndCheck(Model::get().getForceController(), 0, 8148.78857, 8148.49805, 62.31575, -0.04463,
                     9.12726);
 
         MTM1M3_appliedElevationForcesC *appliedElevationForces =
-                M1M3SSPublisher::get().getAppliedElevationForces();
-        MTM1M3_appliedForcesC *appliedForces = M1M3SSPublisher::get().getAppliedForces();
-        MTM1M3_logevent_errorCodeC *errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
+                M1M3SSPublisher::instance().getAppliedElevationForces();
+        MTM1M3_appliedForcesC *appliedForces = M1M3SSPublisher::instance().getAppliedForces();
+        MTM1M3_logevent_errorCodeC *errorCodeData = M1M3SSPublisher::instance().getEventErrorCode();
 
         REQUIRE(errorCodeData->errorCode == 0);
 
