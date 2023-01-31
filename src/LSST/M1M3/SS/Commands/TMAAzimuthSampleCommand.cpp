@@ -36,7 +36,7 @@ TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) : Comma
 }
 
 void TMAAzimuthSampleCommand::execute() {
-    double diff = _data.timestamp - M1M3SSPublisher::get().getTimestamp();
+    double diff = _data.timestamp - M1M3SSPublisher::instance().getTimestamp();
     double limit = SettingReader::instance().getSafetyControllerSettings()->TMA.AzimuthTimeout;
     if (limit > 0 && fabs(diff) > limit) {
         using namespace std::chrono_literals;

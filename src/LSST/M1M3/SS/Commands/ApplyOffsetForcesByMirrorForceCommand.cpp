@@ -43,17 +43,18 @@ ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
 void ApplyOffsetForcesByMirrorForceCommand::execute() { Context::get().applyOffsetForcesByMirrorForce(this); }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_INPROGRESS,
-                                                                    "In-Progress");
+    M1M3SSPublisher::instance().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_INPROGRESS,
+                                                                         "In-Progress");
 }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_COMPLETE,
+                                                                         "Complete");
 }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_FAILED,
-                                                                    "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_FAILED,
+                                                                         "Failed: " + reason);
 }
 
 } /* namespace SS */

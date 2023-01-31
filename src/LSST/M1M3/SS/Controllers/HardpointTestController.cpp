@@ -24,6 +24,7 @@
 #include <spdlog/spdlog.h>
 
 #include <HardpointActuatorMotionStates.h>
+#include <HardpointActuatorWarning.h>
 #include <HardpointTestController.h>
 #include <ForceController.h>
 #include <Model.h>
@@ -43,15 +44,14 @@ HardpointTestController::HardpointTestController(PositionController *positionCon
     _positionController = positionController;
     _hardpointActuatorSettings = hardpointActuatorSettings;
 
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
-    _hardpointActuatorState = M1M3SSPublisher::get().getEventHardpointActuatorState();
-    _hardpointActuatorWarning = M1M3SSPublisher::get().getEventHardpointActuatorWarning();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
+    _hardpointActuatorState = M1M3SSPublisher::instance().getEventHardpointActuatorState();
 
     for (int i = 0; i < HP_COUNT; i++) {
         testState[i] = MTM1M3_shared_HardpointTest_NotTested;
     }
 
-    M1M3SSPublisher::get().logHardpointTestStatus(this);
+    M1M3SSPublisher::instance().logHardpointTestStatus(this);
 }
 
 int HardpointTestController::startHardpointTest(int hardpointIndex) {
@@ -60,7 +60,7 @@ int HardpointTestController::startHardpointTest(int hardpointIndex) {
         case MTM1M3_shared_HardpointTest_Passed:
         case MTM1M3_shared_HardpointTest_Failed:
             testState[hardpointIndex] = MTM1M3_shared_HardpointTest_MovingNegative;
-            M1M3SSPublisher::get().logHardpointTestStatus(this);
+            M1M3SSPublisher::instance().logHardpointTestStatus(this);
             return 0;
         default:
             return 1;
@@ -74,7 +74,7 @@ void HardpointTestController::runLoop() {
     }
 
     if (changed) {
-        M1M3SSPublisher::get().logHardpointTestStatus(this);
+        M1M3SSPublisher::instance().logHardpointTestStatus(this);
     }
 }
 
@@ -92,7 +92,7 @@ int HardpointTestController::killHardpointTest(int hardpointIndex) {
             } else {
                 testState[hardpointIndex] = MTM1M3_shared_HardpointTest_NotTested;
             }
-            M1M3SSPublisher::get().logHardpointTestStatus(this);
+            M1M3SSPublisher::instance().logHardpointTestStatus(this);
             _positionController->stopMotion(hardpointIndex);
             return 0;
     }
@@ -128,7 +128,7 @@ bool HardpointTestController::_runHardpointLoop(int hardpointIndex) {
         case MTM1M3_shared_HardpointTest_Failed:
             return false;
         case MTM1M3_shared_HardpointTest_MovingNegative:
-            if (_hardpointActuatorWarning->limitSwitch2Operated[hardpointIndex]) {
+            if (HardpointActuatorWarning::instance().limitSwitch2Operated[hardpointIndex]) {
                 if (moveHP(true)) {
                     testState[hardpointIndex] = MTM1M3_shared_HardpointTest_TestingPositive;
                 } else {
@@ -142,7 +142,7 @@ bool HardpointTestController::_runHardpointLoop(int hardpointIndex) {
             }
             break;
         case MTM1M3_shared_HardpointTest_TestingPositive:
-            if (_hardpointActuatorWarning->limitSwitch1Operated[hardpointIndex]) {
+            if (HardpointActuatorWarning::instance().limitSwitch1Operated[hardpointIndex]) {
                 if (moveHP(false)) {
                     testState[hardpointIndex] = MTM1M3_shared_HardpointTest_TestingNegative;
                 } else {
@@ -151,7 +151,7 @@ bool HardpointTestController::_runHardpointLoop(int hardpointIndex) {
             }
             break;
         case MTM1M3_shared_HardpointTest_TestingNegative:
-            if (_hardpointActuatorWarning->limitSwitch2Operated[hardpointIndex]) {
+            if (HardpointActuatorWarning::instance().limitSwitch2Operated[hardpointIndex]) {
                 if (moveHP_abs(10001 * _hardpointActuatorSettings->micrometersPerEncoder /
                                _hardpointActuatorSettings->micrometersPerStep)) {
                     testState[hardpointIndex] = MTM1M3_shared_HardpointTest_MovingReference;

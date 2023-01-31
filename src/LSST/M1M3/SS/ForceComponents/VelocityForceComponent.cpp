@@ -44,10 +44,10 @@ VelocityForceComponent::VelocityForceComponent(
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedVelocityForces = M1M3SSPublisher::get().getAppliedVelocityForces();
-    _preclippedVelocityForces = M1M3SSPublisher::get().getEventPreclippedVelocityForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();
+    _preclippedVelocityForces = M1M3SSPublisher::instance().getEventPreclippedVelocityForces();
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
@@ -100,9 +100,9 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
 void VelocityForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("VelocityForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->velocityForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void VelocityForceComponent::postUpdateActions() {
@@ -110,7 +110,7 @@ void VelocityForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedVelocityForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedVelocityForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -175,11 +175,11 @@ void VelocityForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyVelocityForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedVelocityForces();
+        M1M3SSPublisher::instance().logPreclippedVelocityForces();
     }
-    M1M3SSPublisher::get().logAppliedVelocityForces();
+    M1M3SSPublisher::instance().logAppliedVelocityForces();
 }
 
 } /* namespace SS */

@@ -41,23 +41,23 @@ FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* force
                                          ForceActuatorSettings* forceActuatorSettings)
         : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
     _safetyController = Model::get().getSafetyController();
-    _enabledForceActuators = M1M3SSPublisher::get().getEnabledForceActuators();
+    _enabledForceActuators = M1M3SSPublisher::instance().getEnabledForceActuators();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedForces = M1M3SSPublisher::get().getAppliedForces();
-    _preclippedForces = M1M3SSPublisher::get().getEventPreclippedForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
+    _preclippedForces = M1M3SSPublisher::instance().getEventPreclippedForces();
 
-    _appliedAccelerationForces = M1M3SSPublisher::get().getAppliedAccelerationForces();
-    _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
-    _appliedAzimuthForces = M1M3SSPublisher::get().getAppliedAzimuthForces();
-    _appliedBalanceForces = M1M3SSPublisher::get().getAppliedBalanceForces();
-    _appliedElevationForces = M1M3SSPublisher::get().getAppliedElevationForces();
-    _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
-    _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
-    _appliedThermalForces = M1M3SSPublisher::get().getAppliedThermalForces();
-    _appliedVelocityForces = M1M3SSPublisher::get().getAppliedVelocityForces();
+    _appliedAccelerationForces = M1M3SSPublisher::instance().getAppliedAccelerationForces();
+    _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
+    _appliedAzimuthForces = M1M3SSPublisher::instance().getAppliedAzimuthForces();
+    _appliedBalanceForces = M1M3SSPublisher::instance().getAppliedBalanceForces();
+    _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
+    _appliedOffsetForces = M1M3SSPublisher::instance().getEventAppliedOffsetForces();
+    _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();
+    _appliedThermalForces = M1M3SSPublisher::instance().getAppliedThermalForces();
+    _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();
 
     enable();
 }
@@ -117,7 +117,7 @@ void FinalForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedForces->timestamp = _appliedForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -179,11 +179,11 @@ void FinalForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedForces();
+        M1M3SSPublisher::instance().logPreclippedForces();
     }
-    M1M3SSPublisher::get().logAppliedForces();
+    M1M3SSPublisher::instance().logAppliedForces();
 }
 
 } /* namespace SS */

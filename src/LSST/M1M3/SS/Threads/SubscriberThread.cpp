@@ -103,7 +103,7 @@ void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
             if (command->validate()) {
                 ControllerThread::get().enqueue(command);
             } else {
-                auto info = M1M3SSPublisher::get().getEventCommandRejectionWarning();
+                auto info = M1M3SSPublisher::instance().getEventCommandRejectionWarning();
                 command->ackFailed(
                         fmt::format("Command \"{}\" validation failed: {} ", info->command, info->reason));
                 delete command;

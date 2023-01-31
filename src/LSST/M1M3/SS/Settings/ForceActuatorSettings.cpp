@@ -196,7 +196,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
     log();
 }
 
-void ForceActuatorSettings::log() { M1M3SSPublisher::get().logForceActuatorSettings(this); }
+void ForceActuatorSettings::log() { M1M3SSPublisher::instance().logForceActuatorSettings(this); }
 
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
     typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;

@@ -36,15 +36,16 @@ StopHardpointMotionCommand::StopHardpointMotionCommand(int32_t commandID,
 void StopHardpointMotionCommand::execute() { Context::get().stopHardpointMotion(this); }
 
 void StopHardpointMotionCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandstopHardpointMotion(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandstopHardpointMotion(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void StopHardpointMotionCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandstopHardpointMotion(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandstopHardpointMotion(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void StopHardpointMotionCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandstopHardpointMotion(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandstopHardpointMotion(getCommandID(), ACK_FAILED,
+                                                              "Failed: " + reason);
 }
 
 } /* namespace SS */

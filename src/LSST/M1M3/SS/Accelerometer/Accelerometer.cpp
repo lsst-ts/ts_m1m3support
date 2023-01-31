@@ -41,8 +41,8 @@ Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings) {
     SPDLOG_DEBUG("Accelerometer: Accelerometer()");
     _accelerometerSettings = accelerometerSettings;
 
-    _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
-    _accelerometerWarning = M1M3SSPublisher::get().getEventAccelerometerWarning();
+    _accelerometerData = M1M3SSPublisher::instance().getAccelerometerData();
+    _accelerometerWarning = M1M3SSPublisher::instance().getEventAccelerometerWarning();
 
     memset(_accelerometerData, 0, sizeof(MTM1M3_accelerometerDataC));
     memset(_accelerometerWarning, 0, sizeof(MTM1M3_logevent_accelerometerWarningC));
@@ -72,7 +72,7 @@ void Accelerometer::processData() {
             (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
              _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
             (_accelerometerSettings->angularAccelerationDistance[2] * 2);
-    M1M3SSPublisher::get().putAccelerometerData();
+    M1M3SSPublisher::instance().putAccelerometerData();
 }
 
 } /* namespace SS */

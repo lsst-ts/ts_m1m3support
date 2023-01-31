@@ -82,7 +82,6 @@ private:
     HardpointActuatorSettings* _hardpointActuatorSettings;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
-    MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
 };
 
 }  // namespace SS

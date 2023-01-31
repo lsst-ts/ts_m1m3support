@@ -36,7 +36,7 @@ TMA::TMA(token) {
 
 void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
     if (SettingReader::instance().getForceActuatorSettings()->useInclinometer == false) {
-        double timestamp = M1M3SSPublisher::get().getTimestamp();
+        double timestamp = M1M3SSPublisher::instance().getTimestamp();
         if (checkAzimuth) {
             Model::get().getSafetyController()->tmaAzimuthTimeout(_azimuth_Timestamp - timestamp);
         }
@@ -60,12 +60,12 @@ void TMA::updateTMAElevation(MTMount_elevationC* data) {
     _elevation_Timestamp = data->timestamp;
 
     Model::get().getSafetyController()->tmaInclinometerDeviation(
-            _elevation_Actual - M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle);
+            _elevation_Actual - M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle);
 }
 
 double TMA::getElevation() {
     if (SettingReader::instance().getForceActuatorSettings()->useInclinometer) {
-        return M1M3SSPublisher::get().getInclinometerData()->inclinometerAngle;
+        return M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle;
     } else {
         return _elevation_Actual;
     }

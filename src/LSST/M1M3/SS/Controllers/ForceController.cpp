@@ -62,30 +62,30 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _safetyController = Model::get().getSafetyController();
     _pidSettings = pidSettings;
 
-    _appliedCylinderForces = M1M3SSPublisher::get().getAppliedCylinderForces();
-    _appliedForces = M1M3SSPublisher::get().getAppliedForces();
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _preclippedCylinderForces = M1M3SSPublisher::get().getEventPreclippedCylinderForces();
+    _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
+    _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _preclippedCylinderForces = M1M3SSPublisher::instance().getEventPreclippedCylinderForces();
 
-    _forceActuatorInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
-    _inclinometerData = M1M3SSPublisher::get().getInclinometerData();
-    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
+    _forceActuatorInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
+    _inclinometerData = M1M3SSPublisher::instance().getInclinometerData();
+    _forceActuatorData = M1M3SSPublisher::instance().getForceActuatorData();
 
-    _pidData = M1M3SSPublisher::get().getPIDData();
-    _pidInfo = M1M3SSPublisher::get().getEventPIDInfo();
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
-    _accelerometerData = M1M3SSPublisher::get().getAccelerometerData();
-    _gyroData = M1M3SSPublisher::get().getGyroData();
+    _pidData = M1M3SSPublisher::instance().getPIDData();
+    _pidInfo = M1M3SSPublisher::instance().getEventPIDInfo();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
+    _accelerometerData = M1M3SSPublisher::instance().getAccelerometerData();
+    _gyroData = M1M3SSPublisher::instance().getGyroData();
 
     reset();
 
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->timestamp = timestamp;
     _forceSetpointWarning->timestamp = timestamp;
 
-    M1M3SSPublisher::get().logForceActuatorState();
-    M1M3SSPublisher::get().logForceSetpointWarning();
+    M1M3SSPublisher::instance().logForceActuatorState();
+    M1M3SSPublisher::instance().logForceSetpointWarning();
 
     _mirrorWeight = 0.0;
     DistributedForces df = ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, 0.0);
@@ -153,7 +153,7 @@ void ForceController::incSupportPercentage() {
     if (supportPercentageFilled()) {
         _forceActuatorState->supportPercentage = 100.0;
     }
-    M1M3SSPublisher::get().logForceActuatorState();
+    M1M3SSPublisher::instance().logForceActuatorState();
 }
 
 void ForceController::decSupportPercentage() {
@@ -162,19 +162,19 @@ void ForceController::decSupportPercentage() {
     if (supportPercentageZeroed()) {
         _forceActuatorState->supportPercentage = 0.0;
     }
-    M1M3SSPublisher::get().logForceActuatorState();
+    M1M3SSPublisher::instance().logForceActuatorState();
 }
 
 void ForceController::zeroSupportPercentage() {
     SPDLOG_INFO("ForceController: zeroSupportPercentage()");
     _forceActuatorState->supportPercentage = 0.0;
-    M1M3SSPublisher::get().logForceActuatorState();
+    M1M3SSPublisher::instance().logForceActuatorState();
 }
 
 void ForceController::fillSupportPercentage() {
     SPDLOG_INFO("ForceController: fillSupportPercentage()");
     _forceActuatorState->supportPercentage = 100.0;
-    M1M3SSPublisher::get().logForceActuatorState();
+    M1M3SSPublisher::instance().logForceActuatorState();
 }
 
 bool ForceController::supportPercentageFilled() { return _forceActuatorState->supportPercentage >= 100.0; }
@@ -266,7 +266,7 @@ void ForceController::processAppliedForces() {
 
     TMA::instance().checkTimestamps(_azimuthForceComponent.isEnabled(), _elevationForceComponent.isEnabled());
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
 }
 
 void ForceController::applyAccelerationForces() {
@@ -526,13 +526,13 @@ void ForceController::_convertForcesToSetpoints() {
 
         clippingRequired = _forceSetpointWarning->safetyLimitWarning[pIndex] || clippingRequired;
     }
-    _appliedCylinderForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedCylinderForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedCylinderForces->timestamp = _appliedCylinderForces->timestamp;
     _safetyController->forceControllerNotifySafetyLimit(clippingRequired);
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedCylinderForces();
+        M1M3SSPublisher::instance().logPreclippedCylinderForces();
     }
-    M1M3SSPublisher::get().logAppliedCylinderForces();
+    M1M3SSPublisher::instance().logAppliedCylinderForces();
 }
 
 bool ForceController::_checkMirrorMoments() {

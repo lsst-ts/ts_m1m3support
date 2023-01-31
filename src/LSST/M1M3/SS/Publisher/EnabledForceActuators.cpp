@@ -43,7 +43,7 @@ void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
     forceActuatorEnabled[actuatorIndex] = enabled;
     if (enabled == false) {
         // if disabling an FA, makes sure its reported force is 0
-        MTM1M3_forceActuatorDataC* faData = M1M3SSPublisher::get().getForceActuatorData();
+        MTM1M3_forceActuatorDataC* faData = M1M3SSPublisher::instance().getForceActuatorData();
         faData->primaryCylinderForce[actuatorIndex] = 0;
         faData->zForce[actuatorIndex] = 0;
 
@@ -83,6 +83,6 @@ void EnabledForceActuators::log() {
     if (_shouldSend == false) {
         return;
     }
-    M1M3SSPublisher::get().logEnabledForceActuators(this);
+    M1M3SSPublisher::instance().logEnabledForceActuators(this);
     _shouldSend = false;
 }

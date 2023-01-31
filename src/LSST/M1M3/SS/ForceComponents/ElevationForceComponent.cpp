@@ -44,10 +44,10 @@ ElevationForceComponent::ElevationForceComponent(
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedElevationForces = M1M3SSPublisher::get().getAppliedElevationForces();
-    _preclippedElevationForces = M1M3SSPublisher::get().getEventPreclippedElevationForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
+    _preclippedElevationForces = M1M3SSPublisher::instance().getEventPreclippedElevationForces();
 }
 
 void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z) {
@@ -100,9 +100,9 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
 void ElevationForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("ElevationForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->elevationForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void ElevationForceComponent::postUpdateActions() {
@@ -110,7 +110,7 @@ void ElevationForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedElevationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedElevationForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedElevationForces->timestamp = _appliedElevationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -176,11 +176,11 @@ void ElevationForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyElevationForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedElevationForces();
+        M1M3SSPublisher::instance().logPreclippedElevationForces();
     }
-    M1M3SSPublisher::get().logAppliedElevationForces();
+    M1M3SSPublisher::instance().logAppliedElevationForces();
 }
 
 } /* namespace SS */

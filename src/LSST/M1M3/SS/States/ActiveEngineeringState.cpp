@@ -82,7 +82,7 @@ States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command
                 command->getData()->xTranslation, command->getData()->yTranslation,
                 command->getData()->zTranslation, command->getData()->xRotation,
                 command->getData()->yRotation, command->getData()->zRotation)) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "TranslateM1M3",
                 "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
     }
@@ -95,7 +95,7 @@ States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command) 
                 command->getData()->xPosition, command->getData()->yPosition, command->getData()->zPosition,
                 command->getData()->xRotation, command->getData()->yRotation,
                 command->getData()->zRotation)) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "PositionM1M3",
                 "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
     }

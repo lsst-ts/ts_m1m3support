@@ -64,7 +64,7 @@ void PowerSupplyStatus::setPowerSupplyStatus(uint32_t powerStatus) {
     externalEquipmentPowerNetworkStatus = powerStatus & 0x400000;
     laserTrackerPowerNetworkStatus = powerStatus & 0x800000;
 
-    M1M3SSPublisher::get().logPowerSupplyStatus(this);
+    M1M3SSPublisher::instance().logPowerSupplyStatus(this);
     lastStatus = powerStatus;
 }
 
