@@ -143,4 +143,4 @@ void HardpointActuatorSettings::load(const std::string &filename) {
     log();
 }
 
-void HardpointActuatorSettings::log() { M1M3SSPublisher::get().logHardpointActuatorSettings(this); }
+void HardpointActuatorSettings::log() { M1M3SSPublisher::instance().logHardpointActuatorSettings(this); }

@@ -39,7 +39,7 @@ bool EnableForceActuatorCommand::validate() {
     actuatorIndex =
             SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
     if (actuatorIndex < 0) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("EnableForceActuator", "Invalid actuatorId.");
+        M1M3SSPublisher::instance().logCommandRejectionWarning("EnableForceActuator", "Invalid actuatorId.");
         return false;
     }
     return true;
@@ -48,13 +48,14 @@ bool EnableForceActuatorCommand::validate() {
 void EnableForceActuatorCommand::execute() { Context::get().enableForceActuator(this); }
 
 void EnableForceActuatorCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenableForceActuator(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandenableForceActuator(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableForceActuatorCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenableForceActuator(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandenableForceActuator(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void EnableForceActuatorCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenableForceActuator(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandenableForceActuator(getCommandID(), ACK_FAILED,
+                                                              "Failed: " + reason);
 }

@@ -35,8 +35,8 @@ ResetPIDCommand::ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* da
 
 bool ResetPIDCommand::validate() {
     if (_data.pid < 1 || _data.pid > 6) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("ResetPID",
-                                                          "The field PID must be in range [1, 6].");
+        M1M3SSPublisher::instance().logCommandRejectionWarning("ResetPID",
+                                                               "The field PID must be in range [1, 6].");
     }
     return _data.pid >= 1 && _data.pid <= 6;
 }
@@ -44,15 +44,15 @@ bool ResetPIDCommand::validate() {
 void ResetPIDCommand::execute() { Context::get().resetPID(this); }
 
 void ResetPIDCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandresetPID(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ResetPIDCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandresetPID(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ResetPIDCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandresetPID(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

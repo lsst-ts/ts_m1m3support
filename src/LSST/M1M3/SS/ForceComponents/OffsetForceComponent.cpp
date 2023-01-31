@@ -43,10 +43,10 @@ OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* for
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
-    _preclippedOffsetForces = M1M3SSPublisher::get().getEventPreclippedOffsetForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedOffsetForces = M1M3SSPublisher::instance().getEventAppliedOffsetForces();
+    _preclippedOffsetForces = M1M3SSPublisher::instance().getEventPreclippedOffsetForces();
     zeroOffsetForces();
 }
 
@@ -121,9 +121,9 @@ void OffsetForceComponent::zeroOffsetForces() {
 void OffsetForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("OffsetForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->offsetForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void OffsetForceComponent::postUpdateActions() {
@@ -131,7 +131,7 @@ void OffsetForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedOffsetForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedOffsetForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedOffsetForces->timestamp = _appliedOffsetForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -195,11 +195,11 @@ void OffsetForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyOffsetForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedOffsetForces();
+        M1M3SSPublisher::instance().logPreclippedOffsetForces();
     }
-    M1M3SSPublisher::get().logAppliedOffsetForces();
+    M1M3SSPublisher::instance().logAppliedOffsetForces();
 }
 
 } /* namespace SS */

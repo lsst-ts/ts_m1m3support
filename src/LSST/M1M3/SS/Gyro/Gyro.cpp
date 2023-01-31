@@ -43,8 +43,8 @@ Gyro::Gyro(GyroSettings* gyroSettings) {
     SPDLOG_DEBUG("Gyro: Gyro()");
     _gyroSettings = gyroSettings;
 
-    _gyroData = M1M3SSPublisher::get().getGyroData();
-    _gyroWarning = M1M3SSPublisher::get().getEventGyroWarning();
+    _gyroData = M1M3SSPublisher::instance().getGyroData();
+    _gyroWarning = M1M3SSPublisher::instance().getEventGyroWarning();
 
     _lastBITTimestamp = 0;
     _lastErrorTimestamp = 0;
@@ -198,7 +198,7 @@ void Gyro::processData() {
         _gyroWarning->gyroXStatusWarning = (status & 0x01) == 0;
         _gyroWarning->gyroYStatusWarning = (status & 0x02) == 0;
         _gyroWarning->gyroZStatusWarning = (status & 0x04) == 0;
-        M1M3SSPublisher::get().putGyroData();
+        M1M3SSPublisher::instance().putGyroData();
         tryLogWarning = true;
         if (!_errorCleared && fpgaData->GyroSampleTimestamp > _lastErrorTimestamp) {
             _lastErrorTimestamp = fpgaData->GyroErrorTimestamp;
@@ -212,7 +212,7 @@ void Gyro::processData() {
         }
     }
     if (tryLogWarning) {
-        M1M3SSPublisher::get().tryLogGyroWarning();
+        M1M3SSPublisher::instance().tryLogGyroWarning();
     }
 }
 

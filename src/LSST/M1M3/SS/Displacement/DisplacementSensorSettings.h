@@ -45,7 +45,7 @@ public:
 
     void load(const std::string &filename);
 
-    void log() { M1M3SSPublisher::get().logDisplacementSensorSettings(this); }
+    void log() { M1M3SSPublisher::instance().logDisplacementSensorSettings(this); }
 };
 
 } /* namespace SS */

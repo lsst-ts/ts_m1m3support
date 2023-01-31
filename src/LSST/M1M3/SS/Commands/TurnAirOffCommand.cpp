@@ -34,15 +34,15 @@ TurnAirOffCommand::TurnAirOffCommand(int32_t commandID, MTM1M3_command_turnAirOf
 void TurnAirOffCommand::execute() { Context::get().turnAirOff(this); }
 
 void TurnAirOffCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandturnAirOff(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandturnAirOff(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnAirOffCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandturnAirOff(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandturnAirOff(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void TurnAirOffCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandturnAirOff(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandturnAirOff(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

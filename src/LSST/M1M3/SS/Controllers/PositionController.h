@@ -176,7 +176,6 @@ private:
 
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
-    MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 
     int32_t _scaledMaxStepsPerLoop[HP_COUNT];

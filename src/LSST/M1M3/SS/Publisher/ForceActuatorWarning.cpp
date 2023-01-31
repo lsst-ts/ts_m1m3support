@@ -201,7 +201,7 @@ void ForceActuatorWarning::log() {
                  anyMezzanineBackupCalibrationError || anyMezzanineEventTrapReset ||
                  anyMezzanineApplicationMissing || anyMezzanineApplicationCRCMismatch || anyILCFault ||
                  anyBroadcastCounterWarning;
-    M1M3SSPublisher::get().logForceActuatorWarning(this);
+    M1M3SSPublisher::instance().logForceActuatorWarning(this);
     _shouldSend = false;
 }
 

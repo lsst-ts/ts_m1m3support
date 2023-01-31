@@ -40,11 +40,11 @@ States::Type OfflineState::update(UpdateCommand* command) {
 States::Type OfflineState::enterControl(EnterControlCommand* command) {
     SPDLOG_INFO("OfflineState: enterControl()");
 
-    M1M3SSPublisher::get().logSoftwareVersions();
+    M1M3SSPublisher::instance().logSoftwareVersions();
 #ifdef SIMULATOR
-    M1M3SSPublisher::get().setSimulationMode(1);
+    M1M3SSPublisher::instance().setSimulationMode(1);
 #else
-    M1M3SSPublisher::get().setSimulationMode(0);
+    M1M3SSPublisher::instance().setSimulationMode(0);
 #endif
     Model::get().publishRecommendedSettings();
     // Model::get().getDigitalInputOutput()->turnAirOff();
