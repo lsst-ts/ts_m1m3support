@@ -21,12 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+#include <spdlog/spdlog.h>
+
 #include <LoweringFaultState.h>
 #include <SafetyController.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyControllerSettings.h>
 #include <SAL_MTM1M3C.h>
-#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -36,8 +38,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
     SPDLOG_DEBUG("SafetyController: SafetyController()");
     _safetyControllerSettings = safetyControllerSettings;
     _errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
-    _clearError();
-    M1M3SSPublisher::get().logErrorCode();
+
     for (int i = 0; i < _safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
         _ilcCommunicationTimeoutData.push_back(0);
     }
@@ -56,16 +57,30 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
             _hardpointActuatorAirPressureData[j].push_back(0);
         }
     }
-    for (int i = 0; i < HP_COUNT; i++) {
-        _hardpointLimitLowTriggered[i] = false;
-        _hardpointLimitHighTriggered[i] = false;
-        _hardpointMeasuredForceWarning[i] = false;
-        _hardpointFeViolations[i] = 0;
-    }
+
+    _clearError();
+    M1M3SSPublisher::get().logErrorCode();
 }
 
 void SafetyController::clearErrorCode() {
     SPDLOG_INFO("SafetyController: clearErrorCode()");
+
+    for (int faId = 0; faId < FA_COUNT; faId++) {
+        std::fill(_forceActuatorFollowingErrorData[faId].begin(),
+                  _forceActuatorFollowingErrorData[faId].end(), 0);
+    }
+    for (int hpId = 0; hpId < HP_COUNT; hpId++) {
+        std::fill(_hardpointActuatorMeasuredForceData[hpId].begin(),
+                  _hardpointActuatorMeasuredForceData[hpId].end(), 0);
+        std::fill(_hardpointActuatorAirPressureData[hpId].begin(),
+                  _hardpointActuatorAirPressureData[hpId].end(), 0);
+    }
+
+    memset(_hardpointLimitLowTriggered, false, HP_COUNT * sizeof(bool));
+    memset(_hardpointLimitHighTriggered, false, HP_COUNT * sizeof(bool));
+    memset(_hardpointMeasuredForceWarning, false, HP_COUNT * sizeof(bool));
+    memset(_hardpointFeViolations, 0, HP_COUNT * sizeof(int));
+
     _clearError();
     M1M3SSPublisher::get().logErrorCode();
 }
