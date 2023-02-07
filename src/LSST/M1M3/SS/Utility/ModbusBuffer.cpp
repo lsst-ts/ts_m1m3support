@@ -21,18 +21,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ModbusBuffer.h>
-#include <IFPGA.h>
-#include <Timestamp.h>
-#include <string.h>
-#include <spdlog/spdlog.h>
-#include <stdexcept>
-
 // define that to printout bytes for CRC
+#include <stdexcept>
+#include <string.h>
+
 #ifdef DEBUG_CRC
 #include <iostream>
 #include <iomanip>
+#include <cRIO/CliApp.h>
 #endif
+
+#include <spdlog/spdlog.h>
+
+#include <ModbusBuffer.h>
+#include <IFPGA.h>
+#include <Timestamp.h>
 
 using namespace std;
 
@@ -101,8 +104,8 @@ std::vector<uint8_t> ModbusBuffer::getReadData(int32_t length) {
 
 uint16_t ModbusBuffer::calculateCRC(std::vector<uint8_t> data) {
     uint16_t crc = 0xFFFF;
-    for (auto i : data) {
-        crc = crc ^ (uint16_t(i));
+    for (std::vector<uint8_t>::iterator i = data.begin(); i < data.end(); i++) {
+        crc = crc ^ static_cast<uint16_t>(*i);
         for (int j = 0; j < 8; j++) {
             if (crc & 0x0001) {
                 crc = crc >> 1;
@@ -117,9 +120,8 @@ uint16_t ModbusBuffer::calculateCRC(std::vector<uint8_t> data) {
 
 uint16_t ModbusBuffer::calculateCRC(int32_t length) {
 #ifdef DEBUG_CRC
-    for (int i = _index - length; i < _index; i++) {
-        std::cout << " " << std::hex << std::setfill('0') << std::setw(4) << _buffer[i];
-    }
+    std::cout << "Data in ";
+    LSST::cRIO::CliApp::printHexBuffer(_buffer + _index - length, length);
     std::cout << std::endl;
 #endif
     return calculateCRC(getReadData(length));
@@ -184,8 +186,8 @@ std::string ModbusBuffer::readString(int32_t length) {
 
 uint16_t ModbusBuffer::readCRC() {
     _index += 2;
-    return ((uint16_t)this->readInstructionByte(_buffer[_index - 2])) |
-           ((uint16_t)this->readInstructionByte(_buffer[_index - 1]) << 8);
+    return static_cast<uint16_t>(readInstructionByte(_buffer[_index - 2])) |
+           static_cast<uint16_t>(readInstructionByte(_buffer[_index - 1])) << 8;
 }
 
 double ModbusBuffer::readTimestamp() {
