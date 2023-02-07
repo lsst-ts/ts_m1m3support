@@ -21,14 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+#include <algorithm>
+
+#include <yaml-cpp/yaml.h>
+
+#include "rapidcsv.h"
+
 #include <ForceActuatorSettings.h>
 #include <SettingReader.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
-#include <yaml-cpp/yaml.h>
 #include <TableLoader.h>
-#include <spdlog/spdlog.h>
-#include <algorithm>
 
 using namespace LSST::M1M3::SS;
 
@@ -136,10 +140,8 @@ void ForceActuatorSettings::load(const std::string &filename) {
                                     doc["MeasuredPrimaryCylinderLimitTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, 1, &MeasuredSecondaryCylinderLimitTable,
                                     doc["MeasuredSecondaryCylinderLimitTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &FollowingErrorPrimaryCylinderLimitTable,
-                                    doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &FollowingErrorSecondaryCylinderLimitTable,
-                                    doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
+        _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
+                                  doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
 
         Neighbors.clear();
         for (int i = 0; i < FA_COUNT; ++i) {
@@ -260,4 +262,10 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
         lineNumber++;
     }
     inputStream.close();
+}
+
+void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primaryFilename,
+                                                      const std::string &secondaryFilename) {
+    rapidcsv::Document primary(primaryFilename, rapidcsv::LabelParams(0, 0));
+    rapidcsv::Document secondary(secondaryFilename, rapidcsv::LabelParams(0, 0));
 }

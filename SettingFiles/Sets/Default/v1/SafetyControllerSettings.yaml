@@ -92,6 +92,11 @@ ILCSettings:
   FaultOnAirPressure: On
   AirPressureCountThreshold: 50
   AirPressurePeriod: 50
+ForceActuatorFollowingError:
+  FaultOnCounting: On
+  FaultCount: 45
+  FaultCountPeriod: 50
+  FaultOnImmediate: On
 TMASettings:
   AzimuthTimeout: 0.5
   ElevationTimeout: 0.5
