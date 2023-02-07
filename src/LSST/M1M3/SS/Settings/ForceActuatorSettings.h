@@ -27,6 +27,7 @@
 #include <SAL_MTM1M3.h>
 
 #include <DataTypes.h>
+#include <FollowingErrorThreshold.h>
 #include <ForceActuatorLimits.h>
 #include <ForceComponentSettings.h>
 #include <ForceActuatorBumpTestSettings.h>
@@ -123,11 +124,11 @@ public:
     std::vector<Limit> VelocityLimitZTable;
     std::vector<Limit> CylinderLimitPrimaryTable;
     std::vector<Limit> CylinderLimitSecondaryTable;
-
     std::vector<Limit> MeasuredPrimaryCylinderLimitTable;
     std::vector<Limit> MeasuredSecondaryCylinderLimitTable;
-    std::vector<Limit> FollowingErrorPrimaryCylinderLimitTable;
-    std::vector<Limit> FollowingErrorSecondaryCylinderLimitTable;
+
+    std::vector<FollowingErrorThreshold> FollowingErrorPrimaryCylinderLimitTable;
+    std::vector<FollowingErrorThreshold> FollowingErrorSecondaryCylinderLimitTable;
 
     std::vector<ForceActuatorNeighbors> Neighbors;
 
@@ -156,6 +157,7 @@ public:
 private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
+    void _loadFollowingErrorTables(const std::string &primaryFilename, const std::string &secondaryFilename);
 };
 
 }  // namespace SS
