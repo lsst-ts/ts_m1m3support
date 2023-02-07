@@ -71,6 +71,8 @@ States::Type EnabledState::setAirSlewFlag(SetAirSlewFlagCommand* command) {
     forceActuatorState->slewFlag = command->slewFlag;
     outerLoop->slewFlag = command->slewFlag;
 
+    M1M3SSPublisher::get().tryLogForceActuatorState();
+
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

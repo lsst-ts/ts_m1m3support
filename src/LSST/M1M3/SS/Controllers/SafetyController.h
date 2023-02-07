@@ -131,7 +131,15 @@ public:
     void forceActuatorFollowingError(int actuatorDataIndex, bool conditionFlag);
 
     void hardpointActuatorLoadCellError(bool conditionFlag);
-    void hardpointActuatorMeasuredForce(int actuatorDataIndex, bool conditionFlag);
+
+    /**
+     * Triggers hardpoint measured force warning and faults.
+     *
+     * @param actuatorDataIndex hardpoint actuator index (0 based)
+     * @param warningFlag if true, warning was detected
+     * @param faultFlag if true, fault was detected
+     */
+    void hardpointActuatorMeasuredForce(int actuatorDataIndex, bool warningFlag, bool faultFlag);
 
     /** Checks hardpoint breakway air pressure. Triggers fault if pressure is
      * outside of bounds for more than
@@ -185,6 +193,7 @@ private:
     std::list<int> _hardpointActuatorAirPressureData[HP_COUNT];
     bool _hardpointLimitLowTriggered[HP_COUNT];
     bool _hardpointLimitHighTriggered[HP_COUNT];
+    bool _hardpointMeasuredForceWarning[HP_COUNT];
     int _hardpointFeViolations[HP_COUNT];
 };
 
