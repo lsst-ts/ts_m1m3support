@@ -51,10 +51,10 @@ BalanceForceComponent::BalanceForceComponent(
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
     _pidSettings = pidSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedBalanceForces = M1M3SSPublisher::get().getAppliedBalanceForces();
-    _preclippedBalanceForces = M1M3SSPublisher::get().getEventPreclippedBalanceForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedBalanceForces = M1M3SSPublisher::instance().getAppliedBalanceForces();
+    _preclippedBalanceForces = M1M3SSPublisher::instance().getEventPreclippedBalanceForces();
 }
 
 void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
@@ -145,9 +145,9 @@ void BalanceForceComponent::postEnableDisableActions() {
         resetPIDs();
     }
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->balanceForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void BalanceForceComponent::postUpdateActions() {
@@ -155,7 +155,7 @@ void BalanceForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedBalanceForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedBalanceForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedBalanceForces->timestamp = _appliedBalanceForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -220,11 +220,11 @@ void BalanceForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyBalanceForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedBalanceForces();
+        M1M3SSPublisher::instance().logPreclippedBalanceForces();
     }
-    M1M3SSPublisher::get().logAppliedBalanceForces();
+    M1M3SSPublisher::instance().logAppliedBalanceForces();
 }
 
 PID* BalanceForceComponent::_idToPID(int id) {

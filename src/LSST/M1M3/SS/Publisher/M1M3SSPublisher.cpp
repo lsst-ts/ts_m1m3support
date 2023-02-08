@@ -30,14 +30,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-M1M3SSPublisher::M1M3SSPublisher() : _m1m3SAL(NULL) {
+M1M3SSPublisher::M1M3SSPublisher(token) : _m1m3SAL(NULL) {
     SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()");
     _eventConfigurationApplied.otherInfo = "forceActuatorSettings";
-}
-
-M1M3SSPublisher& M1M3SSPublisher::get() {
-    static M1M3SSPublisher publisher;
-    return publisher;
 }
 
 void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
@@ -138,10 +133,10 @@ void M1M3SSPublisher::reset() {
 }
 
 void M1M3SSPublisher::setSimulationMode(int newMode) {
-    MTM1M3_logevent_simulationModeC* simulationMode = &(get()._simulationMode);
+    MTM1M3_logevent_simulationModeC* simulationMode = &(instance()._simulationMode);
     if (simulationMode->mode != newMode) {
         simulationMode->mode = newMode;
-        get()._m1m3SAL->logEvent_simulationMode(simulationMode, 0);
+        instance()._m1m3SAL->logEvent_simulationMode(simulationMode, 0);
     }
 }
 
@@ -854,171 +849,6 @@ void M1M3SSPublisher::tryLogHardpointActuatorState() {
     }
     if (changeDetected) {
         logHardpointActuatorState();
-    }
-}
-
-void M1M3SSPublisher::logHardpointActuatorWarning() {
-    _eventHardpointActuatorWarning.anyMajorFault = false;
-    _eventHardpointActuatorWarning.anyMinorFault = false;
-    _eventHardpointActuatorWarning.anyFaultOverride = false;
-    _eventHardpointActuatorWarning.anyMainCalibrationError = false;
-    _eventHardpointActuatorWarning.anyBackupCalibrationError = false;
-    _eventHardpointActuatorWarning.anyLimitSwitch1Operated = false;
-    _eventHardpointActuatorWarning.anyLimitSwitch2Operated = false;
-    _eventHardpointActuatorWarning.anyUniqueIdCRCError = false;
-    _eventHardpointActuatorWarning.anyApplicationTypeMismatch = false;
-    _eventHardpointActuatorWarning.anyApplicationMissing = false;
-    _eventHardpointActuatorWarning.anyApplicationCRCMismatch = false;
-    _eventHardpointActuatorWarning.anyOneWireMissing = false;
-    _eventHardpointActuatorWarning.anyOneWire1Mismatch = false;
-    _eventHardpointActuatorWarning.anyOneWire2Mismatch = false;
-    _eventHardpointActuatorWarning.anyWatchdogReset = false;
-    _eventHardpointActuatorWarning.anyBrownOut = false;
-    _eventHardpointActuatorWarning.anyEventTrapReset = false;
-    _eventHardpointActuatorWarning.anyMotorDriverFault = false;
-    _eventHardpointActuatorWarning.anySSRPowerFault = false;
-    _eventHardpointActuatorWarning.anyAuxPowerFault = false;
-    _eventHardpointActuatorWarning.anySMCPowerFault = false;
-    _eventHardpointActuatorWarning.anyILCFault = false;
-    _eventHardpointActuatorWarning.anyBroadcastCounterWarning = false;
-    for (int i = 0; i < HP_COUNT; ++i) {
-        _eventHardpointActuatorWarning.anyMajorFault =
-                _eventHardpointActuatorWarning.anyMajorFault || _eventHardpointActuatorWarning.majorFault[i];
-        _eventHardpointActuatorWarning.anyMinorFault =
-                _eventHardpointActuatorWarning.anyMinorFault || _eventHardpointActuatorWarning.minorFault[i];
-        _eventHardpointActuatorWarning.anyFaultOverride = _eventHardpointActuatorWarning.anyFaultOverride ||
-                                                          _eventHardpointActuatorWarning.faultOverride[i];
-        _eventHardpointActuatorWarning.anyMainCalibrationError =
-                _eventHardpointActuatorWarning.anyMainCalibrationError ||
-                _eventHardpointActuatorWarning.mainCalibrationError[i];
-        _eventHardpointActuatorWarning.anyBackupCalibrationError =
-                _eventHardpointActuatorWarning.anyBackupCalibrationError ||
-                _eventHardpointActuatorWarning.backupCalibrationError[i];
-        _eventHardpointActuatorWarning.anyLimitSwitch1Operated =
-                _eventHardpointActuatorWarning.anyLimitSwitch1Operated ||
-                _eventHardpointActuatorWarning.limitSwitch1Operated[i];
-        _eventHardpointActuatorWarning.anyLimitSwitch2Operated =
-                _eventHardpointActuatorWarning.anyLimitSwitch2Operated ||
-                _eventHardpointActuatorWarning.limitSwitch2Operated[i];
-        _eventHardpointActuatorWarning.anyUniqueIdCRCError =
-                _eventHardpointActuatorWarning.anyUniqueIdCRCError ||
-                _eventHardpointActuatorWarning.uniqueIdCRCError[i];
-        _eventHardpointActuatorWarning.anyApplicationTypeMismatch =
-                _eventHardpointActuatorWarning.anyApplicationTypeMismatch ||
-                _eventHardpointActuatorWarning.applicationTypeMismatch[i];
-        _eventHardpointActuatorWarning.anyApplicationMissing =
-                _eventHardpointActuatorWarning.anyApplicationMissing ||
-                _eventHardpointActuatorWarning.applicationMissing[i];
-        _eventHardpointActuatorWarning.anyApplicationCRCMismatch =
-                _eventHardpointActuatorWarning.anyApplicationCRCMismatch ||
-                _eventHardpointActuatorWarning.applicationCRCMismatch[i];
-        _eventHardpointActuatorWarning.anyOneWireMissing = _eventHardpointActuatorWarning.anyOneWireMissing ||
-                                                           _eventHardpointActuatorWarning.oneWireMissing[i];
-        _eventHardpointActuatorWarning.anyOneWire1Mismatch =
-                _eventHardpointActuatorWarning.anyOneWire1Mismatch ||
-                _eventHardpointActuatorWarning.oneWire1Mismatch[i];
-        _eventHardpointActuatorWarning.anyOneWire2Mismatch =
-                _eventHardpointActuatorWarning.anyOneWire2Mismatch ||
-                _eventHardpointActuatorWarning.oneWire2Mismatch[i];
-        _eventHardpointActuatorWarning.anyWatchdogReset = _eventHardpointActuatorWarning.anyWatchdogReset ||
-                                                          _eventHardpointActuatorWarning.watchdogReset[i];
-        _eventHardpointActuatorWarning.anyBrownOut =
-                _eventHardpointActuatorWarning.anyBrownOut || _eventHardpointActuatorWarning.brownOut[i];
-        _eventHardpointActuatorWarning.anyEventTrapReset = _eventHardpointActuatorWarning.anyEventTrapReset ||
-                                                           _eventHardpointActuatorWarning.eventTrapReset[i];
-        _eventHardpointActuatorWarning.anyMotorDriverFault =
-                _eventHardpointActuatorWarning.anyMotorDriverFault ||
-                _eventHardpointActuatorWarning.motorDriverFault[i];
-        _eventHardpointActuatorWarning.anySSRPowerFault = _eventHardpointActuatorWarning.anySSRPowerFault ||
-                                                          _eventHardpointActuatorWarning.ssrPowerFault[i];
-        _eventHardpointActuatorWarning.anyAuxPowerFault = _eventHardpointActuatorWarning.anyAuxPowerFault ||
-                                                          _eventHardpointActuatorWarning.auxPowerFault[i];
-        _eventHardpointActuatorWarning.anySMCPowerFault = _eventHardpointActuatorWarning.anySMCPowerFault ||
-                                                          _eventHardpointActuatorWarning.smcPowerFault[i];
-        _eventHardpointActuatorWarning.anyILCFault =
-                _eventHardpointActuatorWarning.anyILCFault || _eventHardpointActuatorWarning.ilcFault[i];
-        _eventHardpointActuatorWarning.anyBroadcastCounterWarning =
-                _eventHardpointActuatorWarning.anyBroadcastCounterWarning ||
-                _eventHardpointActuatorWarning.broadcastCounterWarning[i];
-    }
-    _eventHardpointActuatorWarning.anyWarning =
-            _eventHardpointActuatorWarning.anyMajorFault || _eventHardpointActuatorWarning.anyMinorFault ||
-            _eventHardpointActuatorWarning.anyFaultOverride ||
-            _eventHardpointActuatorWarning.anyMainCalibrationError ||
-            _eventHardpointActuatorWarning.anyBackupCalibrationError ||
-            _eventHardpointActuatorWarning.anyLimitSwitch1Operated ||
-            _eventHardpointActuatorWarning.anyLimitSwitch2Operated ||
-            _eventHardpointActuatorWarning.anyUniqueIdCRCError ||
-            _eventHardpointActuatorWarning.anyApplicationTypeMismatch ||
-            _eventHardpointActuatorWarning.anyApplicationMissing ||
-            _eventHardpointActuatorWarning.anyApplicationCRCMismatch ||
-            _eventHardpointActuatorWarning.anyOneWireMissing ||
-            _eventHardpointActuatorWarning.anyOneWire1Mismatch ||
-            _eventHardpointActuatorWarning.anyOneWire2Mismatch ||
-            _eventHardpointActuatorWarning.anyWatchdogReset || _eventHardpointActuatorWarning.anyBrownOut ||
-            _eventHardpointActuatorWarning.anyEventTrapReset ||
-            _eventHardpointActuatorWarning.anyMotorDriverFault ||
-            _eventHardpointActuatorWarning.anySSRPowerFault ||
-            _eventHardpointActuatorWarning.anyAuxPowerFault ||
-            _eventHardpointActuatorWarning.anySMCPowerFault || _eventHardpointActuatorWarning.anyILCFault ||
-            _eventHardpointActuatorWarning.anyBroadcastCounterWarning;
-    _m1m3SAL->logEvent_hardpointActuatorWarning(&_eventHardpointActuatorWarning, 0);
-    _previousEventHardpointActuatorWarning = _eventHardpointActuatorWarning;
-}
-
-void M1M3SSPublisher::tryLogHardpointActuatorWarning() {
-    bool changeDetected = false;
-    for (int i = 0; i < HP_COUNT && !changeDetected; ++i) {
-        changeDetected = changeDetected ||
-                         _eventHardpointActuatorWarning.majorFault[i] !=
-                                 _previousEventHardpointActuatorWarning.majorFault[i] ||
-                         _eventHardpointActuatorWarning.minorFault[i] !=
-                                 _previousEventHardpointActuatorWarning.minorFault[i] ||
-                         _eventHardpointActuatorWarning.faultOverride[i] !=
-                                 _previousEventHardpointActuatorWarning.faultOverride[i] ||
-                         _eventHardpointActuatorWarning.mainCalibrationError[i] !=
-                                 _previousEventHardpointActuatorWarning.mainCalibrationError[i] ||
-                         _eventHardpointActuatorWarning.backupCalibrationError[i] !=
-                                 _previousEventHardpointActuatorWarning.backupCalibrationError[i] ||
-                         _eventHardpointActuatorWarning.limitSwitch1Operated[i] !=
-                                 _previousEventHardpointActuatorWarning.limitSwitch1Operated[i] ||
-                         _eventHardpointActuatorWarning.limitSwitch2Operated[i] !=
-                                 _previousEventHardpointActuatorWarning.limitSwitch2Operated[i] ||
-                         _eventHardpointActuatorWarning.uniqueIdCRCError[i] !=
-                                 _previousEventHardpointActuatorWarning.uniqueIdCRCError[i] ||
-                         _eventHardpointActuatorWarning.applicationTypeMismatch[i] !=
-                                 _previousEventHardpointActuatorWarning.applicationTypeMismatch[i] ||
-                         _eventHardpointActuatorWarning.applicationMissing[i] !=
-                                 _previousEventHardpointActuatorWarning.applicationMissing[i] ||
-                         _eventHardpointActuatorWarning.applicationCRCMismatch[i] !=
-                                 _previousEventHardpointActuatorWarning.applicationCRCMismatch[i] ||
-                         _eventHardpointActuatorWarning.oneWireMissing[i] !=
-                                 _previousEventHardpointActuatorWarning.oneWireMissing[i] ||
-                         _eventHardpointActuatorWarning.oneWire1Mismatch[i] !=
-                                 _previousEventHardpointActuatorWarning.oneWire1Mismatch[i] ||
-                         _eventHardpointActuatorWarning.oneWire2Mismatch[i] !=
-                                 _previousEventHardpointActuatorWarning.oneWire2Mismatch[i] ||
-                         _eventHardpointActuatorWarning.watchdogReset[i] !=
-                                 _previousEventHardpointActuatorWarning.watchdogReset[i] ||
-                         _eventHardpointActuatorWarning.brownOut[i] !=
-                                 _previousEventHardpointActuatorWarning.brownOut[i] ||
-                         _eventHardpointActuatorWarning.eventTrapReset[i] !=
-                                 _previousEventHardpointActuatorWarning.eventTrapReset[i] ||
-                         _eventHardpointActuatorWarning.motorDriverFault[i] !=
-                                 _previousEventHardpointActuatorWarning.motorDriverFault[i] ||
-                         _eventHardpointActuatorWarning.ssrPowerFault[i] !=
-                                 _previousEventHardpointActuatorWarning.ssrPowerFault[i] ||
-                         _eventHardpointActuatorWarning.auxPowerFault[i] !=
-                                 _previousEventHardpointActuatorWarning.auxPowerFault[i] ||
-                         _eventHardpointActuatorWarning.smcPowerFault[i] !=
-                                 _previousEventHardpointActuatorWarning.smcPowerFault[i] ||
-                         _eventHardpointActuatorWarning.ilcFault[i] !=
-                                 _previousEventHardpointActuatorWarning.ilcFault[i] ||
-                         _eventHardpointActuatorWarning.broadcastCounterWarning[i] !=
-                                 _previousEventHardpointActuatorWarning.broadcastCounterWarning[i];
-    }
-    if (changeDetected) {
-        logHardpointActuatorWarning();
     }
 }
 

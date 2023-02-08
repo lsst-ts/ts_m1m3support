@@ -38,12 +38,13 @@ ForceActuatorBumpTestCommand::ForceActuatorBumpTestCommand(int32_t commandID,
 bool ForceActuatorBumpTestCommand::validate() {
     if (SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
                 _data.actuatorId) == -1) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("ForceActuatorBumpTest", "Invalid actuatorId.");
+        M1M3SSPublisher::instance().logCommandRejectionWarning("ForceActuatorBumpTest",
+                                                               "Invalid actuatorId.");
         return false;
     }
-    if (M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("ForceActuatorBumpTest",
-                                                          "Test already in progress.");
+    if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+        M1M3SSPublisher::instance().logCommandRejectionWarning("ForceActuatorBumpTest",
+                                                               "Test already in progress.");
         return false;
     }
     return true;
@@ -52,15 +53,17 @@ bool ForceActuatorBumpTestCommand::validate() {
 void ForceActuatorBumpTestCommand::execute() { Context::get().forceActuatorBumpTest(this); }
 
 void ForceActuatorBumpTestCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandforceActuatorBumpTest(getCommandID(), ACK_INPROGRESS,
+                                                                "In-Progress");
 }
 
 void ForceActuatorBumpTestCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandforceActuatorBumpTest(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void ForceActuatorBumpTestCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandforceActuatorBumpTest(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandforceActuatorBumpTest(getCommandID(), ACK_FAILED,
+                                                                "Failed: " + reason);
 }
 
 } /* namespace SS */

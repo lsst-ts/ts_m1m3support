@@ -32,6 +32,7 @@
 #include <ILCResponseParser.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
+#include <HardpointActuatorWarning.h>
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
 #include <LimitLog.h>
@@ -53,7 +54,6 @@ ILCResponseParser::ILCResponseParser() {
     _safetyController = 0;
     _hardpointActuatorInfo = 0;
     _hardpointActuatorState = 0;
-    _hardpointActuatorWarning = 0;
     _hardpointActuatorData = 0;
     _forceActuatorInfo = 0;
     _forceActuatorState = 0;
@@ -78,23 +78,22 @@ ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSetting
     _hardpointActuatorSettings = hardpointActuatorSettings;
     _subnetData = subnetData;
     _safetyController = safetyController;
-    _hardpointActuatorInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
-    _hardpointActuatorState = M1M3SSPublisher::get().getEventHardpointActuatorState();
-    _hardpointActuatorWarning = M1M3SSPublisher::get().getEventHardpointActuatorWarning();
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
-    _forceActuatorInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceWarning = M1M3SSPublisher::get().getEventForceActuatorForceWarning();
-    _appliedCylinderForces = M1M3SSPublisher::get().getAppliedCylinderForces();
-    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
-    _hardpointMonitorInfo = M1M3SSPublisher::get().getEventHardpointMonitorInfo();
-    _hardpointMonitorState = M1M3SSPublisher::get().getEventHardpointMonitorState();
-    _hardpointMonitorWarning = M1M3SSPublisher::get().getEventHardpointMonitorWarning();
-    _hardpointMonitorData = M1M3SSPublisher::get().getHardpointMonitorData();
-    _ilcWarning = M1M3SSPublisher::get().getEventILCWarning();
-    _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
-    _detailedState = M1M3SSPublisher::get().getEventDetailedState();
-    _summaryState = M1M3SSPublisher::get().getEventSummaryState();
+    _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
+    _hardpointActuatorState = M1M3SSPublisher::instance().getEventHardpointActuatorState();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
+    _forceActuatorInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceWarning = M1M3SSPublisher::instance().getEventForceActuatorForceWarning();
+    _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
+    _forceActuatorData = M1M3SSPublisher::instance().getForceActuatorData();
+    _hardpointMonitorInfo = M1M3SSPublisher::instance().getEventHardpointMonitorInfo();
+    _hardpointMonitorState = M1M3SSPublisher::instance().getEventHardpointMonitorState();
+    _hardpointMonitorWarning = M1M3SSPublisher::instance().getEventHardpointMonitorWarning();
+    _hardpointMonitorData = M1M3SSPublisher::instance().getHardpointMonitorData();
+    _ilcWarning = M1M3SSPublisher::instance().getEventILCWarning();
+    _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
+    _detailedState = M1M3SSPublisher::instance().getEventDetailedState();
+    _summaryState = M1M3SSPublisher::instance().getEventSummaryState();
 
     _forceWarning->timestamp = 0;
     _forceWarning->anyWarning = false;
@@ -158,7 +157,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     _forceWarning->timestamp = globalTimestamp;
     _forceActuatorData->timestamp = globalTimestamp;
     _hardpointActuatorState->timestamp = globalTimestamp;
-    _hardpointActuatorWarning->timestamp = globalTimestamp;
+    HardpointActuatorWarning::instance().timestamp = globalTimestamp;
     _hardpointActuatorData->timestamp = globalTimestamp;
     _hardpointMonitorState->timestamp = globalTimestamp;
     _hardpointMonitorWarning->timestamp = globalTimestamp;
@@ -387,7 +386,7 @@ void ILCResponseParser::clearResponses() {
 }
 
 void ILCResponseParser::verifyResponses() {
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
     bool warn = false;
     bool anyTimeout = false;
     for (int i = 0; i < FA_COUNT; i++) {
@@ -503,40 +502,7 @@ void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer* buffer, ILC
 void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointActuatorState->ilcState[dataIndex] = buffer->readU8();
-    uint16_t ilcStatus = buffer->readU16();
-    _hardpointActuatorWarning->majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
-    _hardpointActuatorWarning->minorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
-    // 0x0004 is reserved
-    _hardpointActuatorWarning->faultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
-    _hardpointActuatorWarning->mainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
-    _hardpointActuatorWarning->backupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
-    // 0x0040 is reserved
-    // 0x0080 is reserved
-    _hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (ilcStatus & 0x0100) != 0;
-    _hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (ilcStatus & 0x0200) != 0;
-    // 0x0400 is reserved
-    // 0x0800 is reserved
-    // 0x1000 is reserved
-    // 0x2000 is DCA (FA only)
-    // 0x4000 is DCA (FA only)
-    // 0x8000 is reserved
-    uint16_t ilcFaults = buffer->readU16();
-    _hardpointActuatorWarning->uniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
-    _hardpointActuatorWarning->applicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
-    _hardpointActuatorWarning->applicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
-    _hardpointActuatorWarning->applicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
-    _hardpointActuatorWarning->oneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
-    _hardpointActuatorWarning->oneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
-    _hardpointActuatorWarning->oneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
-    // 0x0080 is reserved
-    _hardpointActuatorWarning->watchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
-    _hardpointActuatorWarning->brownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
-    _hardpointActuatorWarning->eventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
-    _hardpointActuatorWarning->motorDriverFault[dataIndex] = (ilcFaults & 0x0800) != 0;
-    _hardpointActuatorWarning->ssrPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
-    _hardpointActuatorWarning->auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
-    _hardpointActuatorWarning->smcPowerFault[dataIndex] = (ilcFaults & 0x4000) != 0;
-    // 0x8000 is reserved
+    HardpointActuatorWarning::instance().setIlcStatus(dataIndex, buffer->readU16(), buffer->readU16());
     buffer->skipToNextFrame();
 }
 
@@ -613,17 +579,18 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
     int32_t dataIndex = map.DataIndex;
     uint8_t status = buffer->readU8();
     _hardpointActuatorData->timestamp = timestamp;
-    _hardpointActuatorWarning->timestamp = timestamp;
-    _hardpointActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
-    // 0x02 is reserved
-    _hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
-    _hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
-    _hardpointActuatorWarning->broadcastCounterWarning[dataIndex] =
-            _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+    HardpointActuatorWarning::instance().setStatus(dataIndex, timestamp, status,
+                                                   _outerLoopData->broadcastCounter);
     // Encoder value needs to be swapped to keep with the theme of extension is positive
     // retaction is negative
     _hardpointActuatorData->encoder[dataIndex] =
             -buffer->readI32() + _hardpointActuatorSettings->getEncoderOffset(dataIndex);
+    HardpointActuatorWarning::instance().setProximityWarning(
+            dataIndex,
+            _hardpointActuatorData
+                    ->encoder[dataIndex]<_hardpointActuatorSettings->lowProximityEncoder[dataIndex],
+                                         _hardpointActuatorData->encoder[dataIndex]>
+                            _hardpointActuatorSettings->highProximityEncoder[dataIndex]);
     // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
@@ -1063,7 +1030,7 @@ void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
 }
 
 void ILCResponseParser::_publishForceActuatorForceWarning() {
-    _forceWarning->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceWarning->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceWarning->anyPrimaryAxisMeasuredForceWarning = false;
     _forceWarning->anySecondaryAxisMeasuredForceWarning = false;
     _forceWarning->anyPrimaryAxisFollowingErrorWarning = false;
@@ -1086,7 +1053,7 @@ void ILCResponseParser::_publishForceActuatorForceWarning() {
                                 _forceWarning->anySecondaryAxisMeasuredForceWarning ||
                                 _forceWarning->anyPrimaryAxisFollowingErrorWarning ||
                                 _forceWarning->anySecondaryAxisFollowingErrorWarning;
-    M1M3SSPublisher::get().logForceActuatorForceWarning();
+    M1M3SSPublisher::instance().logForceActuatorForceWarning();
 }
 
 void ILCResponseParser::_warnResponseTimeout(double timestamp, int32_t actuatorId) {
@@ -1101,7 +1068,7 @@ void ILCResponseParser::_warnResponseTimeout(double timestamp, int32_t actuatorI
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnInvalidCRC(double timestamp) {
@@ -1116,7 +1083,7 @@ void ILCResponseParser::_warnInvalidCRC(double timestamp) {
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnIllegalFunction(double timestamp, int32_t actuatorId) {
@@ -1131,7 +1098,7 @@ void ILCResponseParser::_warnIllegalFunction(double timestamp, int32_t actuatorI
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnIllegalDataValue(double timestamp, int32_t actuatorId) {
@@ -1146,7 +1113,7 @@ void ILCResponseParser::_warnIllegalDataValue(double timestamp, int32_t actuator
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnInvalidLength(double timestamp, int32_t actuatorId) {
@@ -1161,7 +1128,7 @@ void ILCResponseParser::_warnInvalidLength(double timestamp, int32_t actuatorId)
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownSubnet(double timestamp) {
@@ -1176,7 +1143,7 @@ void ILCResponseParser::_warnUnknownSubnet(double timestamp) {
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownAddress(double timestamp, int32_t actuatorId) {
@@ -1191,7 +1158,7 @@ void ILCResponseParser::_warnUnknownAddress(double timestamp, int32_t actuatorId
     _ilcWarning->unknownAddress = true;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownFunction(double timestamp, int32_t actuatorId) {
@@ -1206,7 +1173,7 @@ void ILCResponseParser::_warnUnknownFunction(double timestamp, int32_t actuatorI
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = true;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownProblem(double timestamp, int32_t actuatorId) {
@@ -1221,7 +1188,7 @@ void ILCResponseParser::_warnUnknownProblem(double timestamp, int32_t actuatorId
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = true;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 } /* namespace SS */

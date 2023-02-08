@@ -35,15 +35,15 @@ EnterEngineeringCommand::EnterEngineeringCommand(int32_t commandID, MTM1M3_comma
 void EnterEngineeringCommand::execute() { Context::get().enterEngineering(this); }
 
 void EnterEngineeringCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenterEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandenterEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void EnterEngineeringCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenterEngineering(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandenterEngineering(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void EnterEngineeringCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenterEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandenterEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

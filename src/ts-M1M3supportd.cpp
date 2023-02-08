@@ -379,8 +379,8 @@ int main(int argc, char* const argv[]) {
     std::shared_ptr<SAL_MTMount> mtMountSAL = std::make_shared<SAL_MTMount>();
     mtMountSAL->setDebugLevel(debugLevelSAL);
     SPDLOG_INFO("Main: Creating publisher");
-    M1M3SSPublisher::get().setSAL(m1m3SAL);
-    M1M3SSPublisher::get().newLogLevel(getSpdLogLogLevel() * 10);
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
+    M1M3SSPublisher::instance().newLogLevel(getSpdLogLogLevel() * 10);
 
     IFPGA* fpga = &IFPGA::get();
     IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();

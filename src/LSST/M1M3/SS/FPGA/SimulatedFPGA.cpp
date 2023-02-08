@@ -64,7 +64,7 @@ SimulatedFPGA::SimulatedFPGA() {
 
     _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
 
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _hardpointActuatorData->encoder[0] = 15137;
     _hardpointActuatorData->encoder[1] = 20079;
     _hardpointActuatorData->encoder[2] = 26384;
@@ -130,7 +130,7 @@ void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
 
 void SimulatedFPGA::pullTelemetry() {
     SPDLOG_TRACE("SimulatedFPGA: pullTelemetry()");
-    uint64_t timestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
+    uint64_t timestamp = Timestamp::toRaw(M1M3SSPublisher::instance().getTimestamp());
     supportFPGAData.Reserved = 0;
     supportFPGAData.InclinometerTxBytes = 0;
     supportFPGAData.InclinometerRxBytes = 0;
@@ -207,7 +207,7 @@ void SimulatedFPGA::pullTelemetry() {
 void SimulatedFPGA::pullHealthAndStatus() {}
 
 uint8_t _broadCastCounter() {
-    return static_cast<uint8_t>(M1M3SSPublisher::get().getOuterLoopData()->broadcastCounter) << 4;
+    return static_cast<uint8_t>(M1M3SSPublisher::instance().getOuterLoopData()->broadcastCounter) << 4;
 }
 
 template <class t>
@@ -357,7 +357,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             bool stepMotorBroadcast = false;
             ++i;  // Read Software Trigger
             // Response length is prepended at request
-            uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
+            uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::instance().getTimestamp());
             response->push((uint16_t)(rawTimestamp));
             response->push((uint16_t)(rawTimestamp >> 16));
             response->push((uint16_t)(rawTimestamp >> 32));
@@ -487,7 +487,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);              // Write Address
                             _writeModbus(response, function);             // Write Function
                             _writeModbus(response, _broadCastCounter());  // Write ILC Status
-                            float force = (((float)M1M3SSPublisher::get()
+                            float force = (((float)M1M3SSPublisher::instance()
                                                     .getAppliedCylinderForces()
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
@@ -496,7 +496,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             // if (subnet == 1 && address == 17 && force > 500) force = 200;
                             _writeModbusFloat(response, force);  // Write Primary Cylinder Force
                             if (address > 16) {
-                                force = (((float)M1M3SSPublisher::get()
+                                force = (((float)M1M3SSPublisher::instance()
                                                   .getAppliedCylinderForces()
                                                   ->secondaryCylinderForces[sIndex]) /
                                          1000.0) +
@@ -585,7 +585,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             steps = -4;
                         }
                         int32_t encoder =
-                                -(M1M3SSPublisher::get().getHardpointActuatorData()->encoder[address - 1]) +
+                                -(M1M3SSPublisher::instance().getHardpointActuatorData()->encoder[address -
+                                                                                                  1]) +
                                 SettingReader::instance().getHardpointActuatorSettings()->getEncoderOffset(
                                         address - 1) -
                                 steps / 4;
@@ -636,7 +637,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 67: {  // Force And Status
                             int steps = 0;
                             if (stepMotorBroadcast) {
-                                steps = M1M3SSPublisher::get()
+                                steps = M1M3SSPublisher::instance()
                                                 .getHardpointActuatorData()
                                                 ->stepsCommanded[address - 1];
                             }
@@ -809,7 +810,7 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     response->push((((crc >> 0) & 0xFF) << 1) | 0x9000);
     response->push((((crc >> 8) & 0xFF) << 1) | 0x9000);  // Write CRC
 
-    uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::get().getTimestamp());
+    uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::instance().getTimestamp());
 
     for (int i = 0; i < 8; ++i) {
         response->push(0xB000 | (rawTimestamp & 0xFF));  // Write Timestamp

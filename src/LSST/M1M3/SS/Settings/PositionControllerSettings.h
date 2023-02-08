@@ -44,7 +44,7 @@ class PositionControllerSettings : public MTM1M3_logevent_positionControllerSett
 public:
     void load(const std::string &filename);
 
-    void log() { M1M3SSPublisher::get().logPositionControllerSettings(this); }
+    void log() { M1M3SSPublisher::instance().logPositionControllerSettings(this); }
 };
 
 } /* namespace SS */

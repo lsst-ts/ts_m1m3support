@@ -40,7 +40,7 @@ void SetBoostValveDCAGainBusList::buildBuffer() {
     BusList::buildBuffer();
     SPDLOG_DEBUG("SetBoostValveDCAGainBusList: buildBuffer()");
 
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {

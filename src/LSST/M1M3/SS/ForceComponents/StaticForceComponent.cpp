@@ -43,10 +43,10 @@ StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings* for
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
-    _preclippedStaticForces = M1M3SSPublisher::get().getEventPreclippedStaticForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();
+    _preclippedStaticForces = M1M3SSPublisher::instance().getEventPreclippedStaticForces();
 }
 
 void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y,
@@ -74,9 +74,9 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
 void StaticForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("StaticForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->staticForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void StaticForceComponent::postUpdateActions() {
@@ -84,7 +84,7 @@ void StaticForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedStaticForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedStaticForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedStaticForces->timestamp = _appliedStaticForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -148,11 +148,11 @@ void StaticForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyStaticForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedStaticForces();
+        M1M3SSPublisher::instance().logPreclippedStaticForces();
     }
-    M1M3SSPublisher::get().logAppliedStaticForces();
+    M1M3SSPublisher::instance().logAppliedStaticForces();
 }
 
 }  // namespace SS

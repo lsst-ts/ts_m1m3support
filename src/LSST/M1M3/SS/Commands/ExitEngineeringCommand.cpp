@@ -35,11 +35,11 @@ ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID, MTM1M3_command
         : Command(commandID) {}
 
 bool ExitEngineeringCommand::validate() {
-    if (M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+    if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "ExitEngineering",
                 fmt::format("Cannot exit engineering mode as bump test for actuator {} is in progress.",
-                            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId));
+                            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId));
         return false;
     }
     return Command::validate();
@@ -48,15 +48,15 @@ bool ExitEngineeringCommand::validate() {
 void ExitEngineeringCommand::execute() { Context::get().exitEngineering(this); }
 
 void ExitEngineeringCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandexitEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ExitEngineeringCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandexitEngineering(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void ExitEngineeringCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandexitEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandexitEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

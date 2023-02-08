@@ -49,15 +49,15 @@ bool StartCommand::validate() {
 void StartCommand::execute() { Context::get().start(this); }
 
 void StartCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandstart(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void StartCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandstart(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void StartCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandstart(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

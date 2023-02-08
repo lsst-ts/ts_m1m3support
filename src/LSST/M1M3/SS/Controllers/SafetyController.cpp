@@ -37,7 +37,7 @@ namespace SS {
 SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSettings) {
     SPDLOG_DEBUG("SafetyController: SafetyController()");
     _safetyControllerSettings = safetyControllerSettings;
-    _errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
+    _errorCodeData = M1M3SSPublisher::instance().getEventErrorCode();
 
     for (int i = 0; i < _safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
         _ilcCommunicationTimeoutData.push_back(0);
@@ -59,7 +59,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
     }
 
     _clearError();
-    M1M3SSPublisher::get().logErrorCode();
+    M1M3SSPublisher::instance().logErrorCode();
 }
 
 void SafetyController::clearErrorCode() {
@@ -82,7 +82,7 @@ void SafetyController::clearErrorCode() {
     memset(_hardpointFeViolations, 0, HP_COUNT * sizeof(int));
 
     _clearError();
-    M1M3SSPublisher::get().logErrorCode();
+    M1M3SSPublisher::instance().logErrorCode();
 }
 
 void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag, bool commanded,
@@ -386,7 +386,7 @@ void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFl
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitLowError,
-                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                            M1M3SSPublisher::instance().getEventDetailedState()->detailedState !=
                                     MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
                             conditionFlag, "Hardpoint #{} hit low limit", hp + 1);
             _hardpointLimitLowTriggered[hp] = true;
@@ -404,7 +404,7 @@ void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionF
     if (conditionFlag) {
         if (_hardpointLimitHighTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitHighError,
-                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                            M1M3SSPublisher::instance().getEventDetailedState()->detailedState !=
                                     MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
                             conditionFlag, "Hardpoint #{} hit high limit", hp + 1);
             _hardpointLimitHighTriggered[hp] = true;
@@ -624,7 +624,7 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
         // shall first make sure mirror is faulted, before performing anything else (logging,..)
         LoweringFaultState::ensureFaulted();
-        M1M3SSPublisher::get().logErrorCode();
+        M1M3SSPublisher::instance().logErrorCode();
         SPDLOG_ERROR("Faulted ({}): {}", _errorCodeData->errorCode, _errorCodeData->errorReport);
         _clearError();
         return States::LoweringFaultState;

@@ -24,6 +24,7 @@
 #include <PositionController.h>
 #include <PositionControllerSettings.h>
 #include <HardpointActuatorSettings.h>
+#include <HardpointActuatorWarning.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <HardpointActuatorMotionStates.h>
@@ -42,11 +43,10 @@ PositionController::PositionController(PositionControllerSettings* positionContr
     _safetyController = Model::get().getSafetyController();
     _positionControllerSettings = positionControllerSettings;
     _hardpointActuatorSettings = hardpointActuatorSettings;
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
-    _hardpointActuatorState = M1M3SSPublisher::get().getEventHardpointActuatorState();
-    _hardpointActuatorWarning = M1M3SSPublisher::get().getEventHardpointActuatorWarning();
-    _hardpointInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
+    _hardpointActuatorState = M1M3SSPublisher::instance().getEventHardpointActuatorState();
+    _hardpointInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
+    _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
         _hardpointActuatorData->stepsQueued[i] = 0;
@@ -56,7 +56,7 @@ PositionController::PositionController(PositionControllerSettings* positionContr
         _stableEncoderCount[i] = 0;
         _unstableEncoderCount[i] = 0;
     }
-    M1M3SSPublisher::get().logHardpointActuatorState();
+    M1M3SSPublisher::instance().logHardpointActuatorState();
 }
 
 bool PositionController::enableChaseAll() {
@@ -69,22 +69,22 @@ bool PositionController::enableChaseAll() {
         _hardpointActuatorState->motionState[5] != HardpointActuatorMotionStates::Standby) {
         return false;
     }
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Chasing;
         _lastEncoderCount[i] = _hardpointActuatorData->encoder[i];
     }
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
+    M1M3SSPublisher::instance().tryLogHardpointActuatorState();
     return true;
 }
 
 void PositionController::disableChaseAll() {
     SPDLOG_INFO("PositionController: disableChaseAll()");
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
     }
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
+    M1M3SSPublisher::instance().tryLogHardpointActuatorState();
 }
 
 bool PositionController::forcesInTolerance(bool raise) {
@@ -183,7 +183,7 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
             _scaledMaxStepsPerLoop[i] = 1;
         }
     }
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
+    M1M3SSPublisher::instance().tryLogHardpointActuatorState();
     return true;
 }
 
@@ -204,7 +204,7 @@ bool PositionController::move(int32_t* steps) {
          steps[5] != 0)) {
         return false;
     }
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     double loopCycles[6];
     double maxLoopCycles = 0;
     for (int i = 0; i < HP_COUNT; i++) {
@@ -223,7 +223,7 @@ bool PositionController::move(int32_t* steps) {
             _scaledMaxStepsPerLoop[i] = 1;
         }
     }
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
+    M1M3SSPublisher::instance().tryLogHardpointActuatorState();
     return true;
 }
 
@@ -244,7 +244,7 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
          encoderValues[5] != _hardpointActuatorData->encoder[5])) {
         return false;
     }
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     double loopCycles[6];
     double maxLoopCycles = 0;
     for (int i = 0; i < HP_COUNT; i++) {
@@ -286,7 +286,7 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
             _scaledMaxStepsPerLoop[i] = 1;
         }
     }
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
+    M1M3SSPublisher::instance().tryLogHardpointActuatorState();
     return true;
 }
 
@@ -330,7 +330,7 @@ bool PositionController::translate(double x, double y, double z, double rX, doub
 
 void PositionController::stopMotion(int hardpointIndex) {
     SPDLOG_INFO("PositionController: stopMotion()");
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     if (hardpointIndex < 0) {
         for (int i = 0; i < HP_COUNT; i++) {
             _hardpointActuatorData->stepsQueued[i] = 0;
@@ -341,12 +341,12 @@ void PositionController::stopMotion(int hardpointIndex) {
         _hardpointActuatorState->motionState[hardpointIndex] = HardpointActuatorMotionStates::Standby;
     }
 
-    M1M3SSPublisher::get().tryLogHardpointActuatorState();
+    M1M3SSPublisher::instance().tryLogHardpointActuatorState();
 }
 
 void PositionController::updateSteps() {
     SPDLOG_TRACE("PositionController: updateSteps()");
-    _hardpointActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     bool publishState = false;
     for (int i = 0; i < HP_COUNT; i++) {
         switch (_hardpointActuatorState->motionState[i]) {
@@ -427,16 +427,16 @@ void PositionController::updateSteps() {
         checkLimits(i);
     }
     if (publishState) {
-        M1M3SSPublisher::get().tryLogHardpointActuatorState();
+        M1M3SSPublisher::instance().tryLogHardpointActuatorState();
     }
 }
 
 void PositionController::checkLimits(int hp) {
     SPDLOG_TRACE("PositionController: checkLimits({})", hp);
     bool lowLimit = _hardpointActuatorData->stepsCommanded[hp] < 0 &&
-                    _hardpointActuatorWarning->limitSwitch2Operated[hp] == true;
+                    HardpointActuatorWarning::instance().limitSwitch2Operated[hp] == true;
     bool highLimit = _hardpointActuatorData->stepsCommanded[hp] > 0 &&
-                     _hardpointActuatorWarning->limitSwitch1Operated[hp] == true;
+                     HardpointActuatorWarning::instance().limitSwitch1Operated[hp] == true;
     if (lowLimit || highLimit) {
         _hardpointActuatorData->stepsCommanded[hp] = 0;
     }

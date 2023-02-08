@@ -36,11 +36,11 @@ KillHardpointTestCommand::KillHardpointTestCommand(int32_t commandID, MTM1M3_com
 
 bool KillHardpointTestCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "KillHardpointTest", "The field HardpointActuator must be in range [1, 6].");
     } else if (Model::get().getHardpointTestController()->isTested(_data.hardpointActuator - 1) == false) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("KillHardpointTest",
-                                                          "Hardpoint is not being tested.");
+        M1M3SSPublisher::instance().logCommandRejectionWarning("KillHardpointTest",
+                                                               "Hardpoint is not being tested.");
     } else {
         return true;
     }
@@ -50,15 +50,15 @@ bool KillHardpointTestCommand::validate() {
 void KillHardpointTestCommand::execute() { Context::get().killHardpointTest(this); }
 
 void KillHardpointTestCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandkillHardpointTest(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandkillHardpointTest(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void KillHardpointTestCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandkillHardpointTest(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandkillHardpointTest(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void KillHardpointTestCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandkillHardpointTest(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandkillHardpointTest(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

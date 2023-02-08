@@ -44,10 +44,10 @@ ThermalForceComponent::ThermalForceComponent(
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedThermalForces = M1M3SSPublisher::get().getAppliedThermalForces();
-    _preclippedThermalForces = M1M3SSPublisher::get().getEventPreclippedThermalForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedThermalForces = M1M3SSPublisher::instance().getAppliedThermalForces();
+    _preclippedThermalForces = M1M3SSPublisher::instance().getEventPreclippedThermalForces();
 }
 
 void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
@@ -96,9 +96,9 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
 void ThermalForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("ThermalForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->thermalForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void ThermalForceComponent::postUpdateActions() {
@@ -106,7 +106,7 @@ void ThermalForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedThermalForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedThermalForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedThermalForces->timestamp = _appliedThermalForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -171,11 +171,11 @@ void ThermalForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyThermalForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedThermalForces();
+        M1M3SSPublisher::instance().logPreclippedThermalForces();
     }
-    M1M3SSPublisher::get().logAppliedThermalForces();
+    M1M3SSPublisher::instance().logAppliedThermalForces();
 }
 
 }  // namespace SS

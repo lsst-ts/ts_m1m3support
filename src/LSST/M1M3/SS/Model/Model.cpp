@@ -100,7 +100,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     SettingReader::instance().configure(settingsToApply);
 
-    M1M3SSPublisher::get().reset();
+    M1M3SSPublisher::instance().reset();
 
     SPDLOG_INFO("Model: Loading ILC application settings");
     ILCApplicationSettings* ilcApplicationSettings = SettingReader::instance().loadILCApplicationSettings();
@@ -214,32 +214,33 @@ void Model::queryFPGAData() {}
 void Model::publishStateChange(States::Type newState) {
     SPDLOG_DEBUG("Model: publishStateChange({:d})", newState);
     uint64_t state = (uint64_t)newState;
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
-    MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::get().getEventSummaryState();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
+    MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::instance().getEventSummaryState();
     // summaryStateData->timestamp = timestamp;
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
-    M1M3SSPublisher::get().logSummaryState();
-    MTM1M3_logevent_detailedStateC* detailedStateData = M1M3SSPublisher::get().getEventDetailedState();
+    M1M3SSPublisher::instance().logSummaryState();
+    MTM1M3_logevent_detailedStateC* detailedStateData = M1M3SSPublisher::instance().getEventDetailedState();
     detailedStateData->timestamp = timestamp;
     detailedStateData->detailedState = (int32_t)(state & 0x00000000FFFFFFFF);
-    M1M3SSPublisher::get().logDetailedState();
+    M1M3SSPublisher::instance().logDetailedState();
 }
 
 void Model::publishRecommendedSettings() {
     SPDLOG_DEBUG("Model: publishRecommendedSettings()");
-    MTM1M3_logevent_configurationsAvailableC* data = M1M3SSPublisher::get().getEventConfigurationsAvailable();
+    MTM1M3_logevent_configurationsAvailableC* data =
+            M1M3SSPublisher::instance().getEventConfigurationsAvailable();
     data->overrides = LSST::cRIO::join(SettingReader::instance().getAvailableConfigurations());
     data->version = GIT_HASH;
     data->url = "https://github.com/lsst-ts/ts_m1m3support";
     data->schemaVersion = "v1";
-    M1M3SSPublisher::get().logConfigurationsAvailable();
+    M1M3SSPublisher::instance().logConfigurationsAvailable();
 }
 
 void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
     SPDLOG_TRACE("Model: publishOuterLoop()");
-    MTM1M3_outerLoopDataC* data = M1M3SSPublisher::get().getOuterLoopData();
+    MTM1M3_outerLoopDataC* data = M1M3SSPublisher::instance().getOuterLoopData();
     data->executionTime = executionTime.count() / 1000000000.0;
-    M1M3SSPublisher::get().putOuterLoopData();
+    M1M3SSPublisher::instance().putOuterLoopData();
 }
 
 void Model::exitControl() { _mutex.unlock(); }
@@ -252,7 +253,7 @@ void Model::waitForExitControl() {
 void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                        ForceActuatorSettings* forceActuatorSettings) {
     SPDLOG_DEBUG("Model: populateForceActuatorInfo()");
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
     for (int i = 0; i < FA_COUNT; i++) {
         ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
         forceInfo->referenceId[i] = row.ActuatorID;
@@ -272,7 +273,7 @@ void Model::_populateHardpointActuatorInfo(
         PositionControllerSettings* positionControllerSettings) {
     SPDLOG_DEBUG("Model: populateHardpointActuatorInfo()");
     MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
-            M1M3SSPublisher::get().getEventHardpointActuatorInfo();
+            M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
         hardpointInfo->referenceId[row.Index] = row.ActuatorID;
@@ -289,7 +290,7 @@ void Model::_populateHardpointMonitorInfo(
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
     SPDLOG_DEBUG("Model: populateHardpointMonitorInfo()");
     MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo =
-            M1M3SSPublisher::get().getEventHardpointMonitorInfo();
+            M1M3SSPublisher::instance().getEventHardpointMonitorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
         hardpointMonitorInfo->referenceId[row.Index] = row.ActuatorID;
