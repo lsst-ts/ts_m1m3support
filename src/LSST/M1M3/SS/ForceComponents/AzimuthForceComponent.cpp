@@ -44,10 +44,10 @@ AzimuthForceComponent::AzimuthForceComponent(
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedAzimuthForces = M1M3SSPublisher::get().getAppliedAzimuthForces();
-    _preclippedAzimuthForces = M1M3SSPublisher::get().getEventPreclippedAzimuthForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedAzimuthForces = M1M3SSPublisher::instance().getAppliedAzimuthForces();
+    _preclippedAzimuthForces = M1M3SSPublisher::instance().getEventPreclippedAzimuthForces();
 }
 
 void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
@@ -98,9 +98,9 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
 void AzimuthForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("AzimuthForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->azimuthForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void AzimuthForceComponent::postUpdateActions() {
@@ -108,7 +108,7 @@ void AzimuthForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedAzimuthForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedAzimuthForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -173,11 +173,11 @@ void AzimuthForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyAzimuthForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedAzimuthForces();
+        M1M3SSPublisher::instance().logPreclippedAzimuthForces();
     }
-    M1M3SSPublisher::get().logAppliedAzimuthForces();
+    M1M3SSPublisher::instance().logAppliedAzimuthForces();
 }
 
 }  // namespace SS

@@ -46,11 +46,11 @@ DigitalInputOutput::DigitalInputOutput() {
     SPDLOG_DEBUG("DigitalInputOutput: DigitalInputOutput()");
     _safetyController = 0;
 
-    _airSupplyStatus = M1M3SSPublisher::get().getEventAirSupplyStatus();
-    _airSupplyWarning = M1M3SSPublisher::get().getEventAirSupplyWarning();
-    _cellLightStatus = M1M3SSPublisher::get().getEventCellLightStatus();
-    _cellLightWarning = M1M3SSPublisher::get().getEventCellLightWarning();
-    _interlockStatus = M1M3SSPublisher::get().getEventInterlockStatus();
+    _airSupplyStatus = M1M3SSPublisher::instance().getEventAirSupplyStatus();
+    _airSupplyWarning = M1M3SSPublisher::instance().getEventAirSupplyWarning();
+    _cellLightStatus = M1M3SSPublisher::instance().getEventCellLightStatus();
+    _cellLightWarning = M1M3SSPublisher::instance().getEventCellLightWarning();
+    _interlockStatus = M1M3SSPublisher::instance().getEventInterlockStatus();
 
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
@@ -171,17 +171,17 @@ void DigitalInputOutput::processData() {
         }
     }
     if (tryPublish) {
-        M1M3SSPublisher::get().tryLogAirSupplyStatus();
-        M1M3SSPublisher::get().tryLogAirSupplyWarning();
-        M1M3SSPublisher::get().tryLogCellLightStatus();
-        M1M3SSPublisher::get().tryLogCellLightWarning();
-        M1M3SSPublisher::get().tryLogInterlockStatus();
+        M1M3SSPublisher::instance().tryLogAirSupplyStatus();
+        M1M3SSPublisher::instance().tryLogAirSupplyWarning();
+        M1M3SSPublisher::instance().tryLogCellLightStatus();
+        M1M3SSPublisher::instance().tryLogCellLightWarning();
+        M1M3SSPublisher::instance().tryLogInterlockStatus();
     }
 }
 
 void DigitalInputOutput::tryToggleHeartbeat() {
     SPDLOG_TRACE("DigitalInputOutput: tryToggleHeartbeat()");
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
     if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
         SPDLOG_DEBUG("DigitalInputOutput: toggleHeartbeat()");
         _lastToggleTimestamp = timestamp;
@@ -191,8 +191,8 @@ void DigitalInputOutput::tryToggleHeartbeat() {
         IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 
         // sends software heartbeat
-        M1M3SSPublisher::get().logHeartbeat();
-        M1M3SSPublisher::get().logInterlockStatus();
+        M1M3SSPublisher::instance().logHeartbeat();
+        M1M3SSPublisher::instance().logInterlockStatus();
     }
 }
 

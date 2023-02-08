@@ -34,15 +34,15 @@ LowerM1M3Command::LowerM1M3Command(int32_t commandID, MTM1M3_command_lowerM1M3C*
 void LowerM1M3Command::execute() { Context::get().lowerM1M3(this); }
 
 void LowerM1M3Command::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandlowerM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandlowerM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void LowerM1M3Command::ackComplete() {
-    M1M3SSPublisher::get().ackCommandlowerM1M3(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandlowerM1M3(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void LowerM1M3Command::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandlowerM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandlowerM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -43,10 +43,10 @@ AccelerationForceComponent::AccelerationForceComponent(
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedAccelerationForces = M1M3SSPublisher::get().getAppliedAccelerationForces();
-    _preclippedAccelerationForces = M1M3SSPublisher::get().getEventPreclippedAccelerationForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedAccelerationForces = M1M3SSPublisher::instance().getAppliedAccelerationForces();
+    _preclippedAccelerationForces = M1M3SSPublisher::instance().getEventPreclippedAccelerationForces();
 }
 
 void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, float* z) {
@@ -101,9 +101,9 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
 void AccelerationForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("AccelerationForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->accelerationForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void AccelerationForceComponent::postUpdateActions() {
@@ -111,7 +111,7 @@ void AccelerationForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedAccelerationForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedAccelerationForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedAccelerationForces->timestamp = _appliedAccelerationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -176,11 +176,11 @@ void AccelerationForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyAccelerationForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedAccelerationForces();
+        M1M3SSPublisher::instance().logPreclippedAccelerationForces();
     }
-    M1M3SSPublisher::get().logAppliedAccelerationForces();
+    M1M3SSPublisher::instance().logAppliedAccelerationForces();
 }
 
 } /* namespace SS */

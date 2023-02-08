@@ -40,17 +40,17 @@ bool DisableForceActuatorCommand::validate() {
     actuatorIndex =
             SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
     if (actuatorIndex < 0) {
-        M1M3SSPublisher::get().commandFailed("DisableForceActuator", "Invalid actuatorId for FA ID {}",
-                                             actuatorId);
+        M1M3SSPublisher::instance().commandFailed("DisableForceActuator", "Invalid actuatorId for FA ID {}",
+                                                  actuatorId);
         return false;
     }
 
     // neighbor check
     uint32_t farID = Model::get().getILC()->hasDisabledFarNeighbor(actuatorIndex);
     if (farID > 0) {
-        M1M3SSPublisher::get().commandFailed("DisableForceActuatorCommand",
-                                             "Actuator ID {} is far neighbor of already disabled FA ID {}",
-                                             actuatorId, farID);
+        M1M3SSPublisher::instance().commandFailed(
+                "DisableForceActuatorCommand", "Actuator ID {} is far neighbor of already disabled FA ID {}",
+                actuatorId, farID);
         return false;
     }
 
@@ -60,13 +60,14 @@ bool DisableForceActuatorCommand::validate() {
 void DisableForceActuatorCommand::execute() { Context::get().disableForceActuator(this); }
 
 void DisableForceActuatorCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommanddisableForceActuator(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommanddisableForceActuator(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableForceActuatorCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommanddisableForceActuator(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommanddisableForceActuator(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void DisableForceActuatorCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommanddisableForceActuator(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommanddisableForceActuator(getCommandID(), ACK_FAILED,
+                                                               "Failed: " + reason);
 }

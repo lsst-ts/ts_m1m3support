@@ -67,12 +67,12 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
     _forceController->zeroSupportPercentage();
-    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
+    _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp();
 }
 
 void MirrorRaiseController::runLoop() {
     SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
-                 M1M3SSPublisher::get().getEventForceActuatorState()->supportPercentage);
+                 M1M3SSPublisher::instance().getEventForceActuatorState()->supportPercentage);
     if (!_forceController->supportPercentageFilled()) {
         // We are still in the process of transferring the support force from the static supports
         // to the force actuators
@@ -130,7 +130,7 @@ void MirrorRaiseController::complete() {
 }
 
 bool MirrorRaiseController::checkTimeout() {
-    return M1M3SSPublisher::get().getTimestamp() >=
+    return M1M3SSPublisher::instance().getTimestamp() >=
            (_cachedTimestamp + _positionController->getRaiseTimeout());
 }
 

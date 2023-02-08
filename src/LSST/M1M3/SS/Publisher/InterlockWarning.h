@@ -64,7 +64,7 @@ public:
             tmaMotionStop = (inputStates & 0x0040) == 0;
             gisHeartbeatLost = (inputStates & 0x0080) == 0;
             _currentInput = inputStates;
-            M1M3SSPublisher::get().logInterlockWarning(this);
+            M1M3SSPublisher::instance().logInterlockWarning(this);
         }
     }
 
@@ -79,7 +79,7 @@ public:
             timestamp = globalTimestamp;
             _heartbeatMismatch = mismatched;
             heartbeatStateOutputMismatch = mismatched;
-            M1M3SSPublisher::get().logInterlockWarning(this);
+            M1M3SSPublisher::instance().logInterlockWarning(this);
         }
     }
 

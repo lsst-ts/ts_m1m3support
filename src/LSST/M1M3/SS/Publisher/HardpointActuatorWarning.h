@@ -21,40 +21,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PPSThread.h>
-#include <FPGA.h>
+#ifndef LSST_HARDPOINTACTUATORSETTINGS_H
+#define LSST_HARDPOINTACTUATORSETTINGS_H
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
 #include <M1M3SSPublisher.h>
-#include <spdlog/spdlog.h>
-#include <Timestamp.h>
-#include <FPGAAddresses.h>
-#include <NiError.h>
+
+#include "DataTypes.h"
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-PPSThread::PPSThread() { _keepRunning = true; }
+class HardpointActuatorWarning : public MTM1M3_logevent_hardpointActuatorWarningC,
+                                 public cRIO::Singleton<HardpointActuatorWarning> {
+public:
+    HardpointActuatorWarning(token);
 
-void PPSThread::run() {
-    SPDLOG_INFO("PPSThread: Start");
-    while (_keepRunning) {
-        try {
-            IFPGA::get().waitForPPS(2500);
-        } catch (NiError& er) {
-            SPDLOG_WARN("PPSThread: Failed to receive pps");
-            continue;
-        }
-        IFPGA::get().ackPPS();
-        uint64_t timestamp = Timestamp::toFPGA(M1M3SSPublisher::instance().getTimestamp());
-        if (_keepRunning) {
-            IFPGA::get().writeTimestampFIFO(timestamp);
-        }
-    }
-    SPDLOG_INFO("PPSThread: Completed");
-}
+    void send();
 
-void PPSThread::stop() { _keepRunning = false; }
+    void setStatus(int32_t hpIndex, double _timestamp, uint8_t status, int broadcastCounter);
+    void setIlcStatus(int32_t hpIndex, uint16_t ilcStatus, uint16_t ilcFaults);
+    void setProximityWarning(int32_t hpIndex, bool lowWarning, bool highWarning);
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+private:
+    bool _updated;
+
+    uint16_t _ilcOldStatus[HP_COUNT];
+    uint16_t _ilcOldFaults[HP_COUNT];
+};
+
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
+
+#endif  // LSST_HARDPOINTACTUATORSETTINGS_H

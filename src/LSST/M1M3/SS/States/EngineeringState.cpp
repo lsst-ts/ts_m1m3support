@@ -64,7 +64,7 @@ States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand* c
 States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
     SPDLOG_INFO("{}: moveHardpointActuators()", this->name);
     if (!Model::get().getPositionController()->move(command->getData()->steps)) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "MoveHardpointActuators",
                 "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
     }
@@ -74,7 +74,7 @@ States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsComm
 States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command) {
     SPDLOG_INFO("{}: enableHardpointChase()", this->name);
     if (!Model::get().getPositionController()->enableChaseAll()) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "EnableHardpointChase",
                 "At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
     }

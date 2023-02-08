@@ -83,11 +83,11 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
     SPDLOG_DEBUG("ILC: ILC()");
     _safetyController = safetyController;
     _hardpointActuatorSettings = hardpointActuatorSettings;
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
-    _hardpointActuatorInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
+    _forceActuatorData = M1M3SSPublisher::instance().getForceActuatorData();
+    _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     _controlListToggle = 0;
     _positionController = positionController;
 
@@ -400,37 +400,40 @@ void ILC::verifyResponses() {
 }
 
 void ILC::publishForceActuatorInfo() {
-    M1M3SSPublisher::get().getEventForceActuatorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().logForceActuatorInfo();
+    M1M3SSPublisher::instance().getEventForceActuatorInfo()->timestamp =
+            M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().logForceActuatorInfo();
 }
 
 void ILC::publishForceActuatorStatus() {
-    // M1M3SSPublisher::get().putForceActuatorStatus();
+    // M1M3SSPublisher::instance().putForceActuatorStatus();
 }
 
-void ILC::publishForceActuatorData() { M1M3SSPublisher::get().putForceActuatorData(); }
+void ILC::publishForceActuatorData() { M1M3SSPublisher::instance().putForceActuatorData(); }
 
 void ILC::publishHardpointActuatorInfo() {
-    M1M3SSPublisher::get().getEventHardpointActuatorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().logHardpointActuatorInfo();
+    M1M3SSPublisher::instance().getEventHardpointActuatorInfo()->timestamp =
+            M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().logHardpointActuatorInfo();
 }
 
 void ILC::publishHardpointStatus() {
-    // M1M3SSPublisher::get().putHardpointStatus();
+    // M1M3SSPublisher::instance().putHardpointStatus();
 }
 
-void ILC::publishHardpointData() { M1M3SSPublisher::get().putHardpointActuatorData(); }
+void ILC::publishHardpointData() { M1M3SSPublisher::instance().putHardpointActuatorData(); }
 
 void ILC::publishHardpointMonitorInfo() {
-    M1M3SSPublisher::get().getEventHardpointMonitorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().logHardpointMonitorInfo();
+    M1M3SSPublisher::instance().getEventHardpointMonitorInfo()->timestamp =
+            M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().logHardpointMonitorInfo();
 }
 
 void ILC::publishHardpointMonitorStatus() {
-    // M1M3SSPublisher::get().putHardpointMonitorStatus();
+    // M1M3SSPublisher::instance().putHardpointMonitorStatus();
 }
 
-void ILC::publishHardpointMonitorData() { M1M3SSPublisher::get().putHardpointMonitorData(); }
+void ILC::publishHardpointMonitorData() { M1M3SSPublisher::instance().putHardpointMonitorData(); }
 
 void ILC::disableFA(uint32_t actuatorId) {
     if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
@@ -438,19 +441,19 @@ void ILC::disableFA(uint32_t actuatorId) {
         return;
     }
     _subnetData.disableFA(actuatorId);
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, false);
+    M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabled(actuatorId, false);
     buildBusLists();
 }
 
 void ILC::enableFA(uint32_t actuatorId) {
     _subnetData.enableFA(actuatorId);
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, true);
+    M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabled(actuatorId, true);
     buildBusLists();
 }
 
 void ILC::enableAllFA() {
     _subnetData.enableAllFA();
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabledAll();
+    M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabledAll();
     buildBusLists();
 }
 

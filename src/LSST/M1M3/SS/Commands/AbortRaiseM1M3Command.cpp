@@ -35,15 +35,15 @@ AbortRaiseM1M3Command::AbortRaiseM1M3Command(int32_t commandID, MTM1M3_command_a
 void AbortRaiseM1M3Command::execute() { Context::get().abortRaiseM1M3(this); }
 
 void AbortRaiseM1M3Command::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandabortRaiseM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandabortRaiseM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void AbortRaiseM1M3Command::ackComplete() {
-    M1M3SSPublisher::get().ackCommandabortRaiseM1M3(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandabortRaiseM1M3(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void AbortRaiseM1M3Command::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandabortRaiseM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandabortRaiseM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

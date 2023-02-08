@@ -67,7 +67,7 @@ protected:
     /**
      * Sets operation start timestamp to current time.
      */
-    void setStartTimestamp() { _cachedTimestamp = M1M3SSPublisher::get().getTimestamp(); }
+    void setStartTimestamp() { _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp(); }
 
 private:
     PositionController* _positionController;

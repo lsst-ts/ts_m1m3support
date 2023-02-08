@@ -39,9 +39,9 @@ PowerController::PowerController(SafetyController* safetyController) {
     SPDLOG_DEBUG("PowerController: PowerController()");
     _safetyController = safetyController;
 
-    _powerSupplyData = M1M3SSPublisher::get().getPowerSupplyData();
-    _powerStatus = M1M3SSPublisher::get().getEventPowerStatus();
-    _powerWarning = M1M3SSPublisher::get().getEventPowerWarning();
+    _powerSupplyData = M1M3SSPublisher::instance().getPowerSupplyData();
+    _powerStatus = M1M3SSPublisher::instance().getEventPowerStatus();
+    _powerWarning = M1M3SSPublisher::instance().getEventPowerWarning();
 
     _lastPowerTimestamp = 0;
 
@@ -68,7 +68,7 @@ void PowerController::processData() {
         _powerStatus->powerNetworkBOutputOn = (fpgaData->PowerSupplyStates & PowerSupply::B) != 0;
         _powerStatus->powerNetworkCOutputOn = (fpgaData->PowerSupplyStates & PowerSupply::C) != 0;
         _powerStatus->powerNetworkDOutputOn = (fpgaData->PowerSupplyStates & PowerSupply::D) != 0;
-        M1M3SSPublisher::get().tryLogPowerStatus();
+        M1M3SSPublisher::instance().tryLogPowerStatus();
         _powerWarning->timestamp = timestamp;
         _powerWarning->auxPowerNetworkAOutputMismatch =
                 _powerStatus->auxPowerNetworkACommandedOn != _powerStatus->auxPowerNetworkAOutputOn;
@@ -86,9 +86,9 @@ void PowerController::processData() {
                 _powerStatus->powerNetworkCCommandedOn != _powerStatus->powerNetworkCOutputOn;
         _powerWarning->powerNetworkDOutputMismatch =
                 _powerStatus->powerNetworkDCommandedOn != _powerStatus->powerNetworkDOutputOn;
-        M1M3SSPublisher::get().tryLogPowerWarning();
+        M1M3SSPublisher::instance().tryLogPowerWarning();
     }
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
     IExpansionFPGA::get().sample();
     float sample[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
@@ -100,11 +100,11 @@ void PowerController::processData() {
     _powerSupplyData->powerNetworkDCurrent = sample[3];
     _powerSupplyData->lightPowerNetworkCurrent = sample[4];
     _powerSupplyData->controlsPowerNetworkCurrent = sample[5];
-    M1M3SSPublisher::get().putPowerSupplyData();
+    M1M3SSPublisher::instance().putPowerSupplyData();
 
     uint32_t powerStatus;
     IExpansionFPGA::get().readSlot2(&powerStatus);
-    M1M3SSPublisher::get().getPowerSupplyStatus()->setPowerSupplyStatus(powerStatus);
+    M1M3SSPublisher::instance().getPowerSupplyStatus()->setPowerSupplyStatus(powerStatus);
 }
 
 void PowerController::setBothPowerNetworks(bool on) {
@@ -126,7 +126,7 @@ void PowerController::setBothPowerNetworks(bool on) {
                            DCAuxPowerNetworkCOn, (uint16_t)_powerStatus->auxPowerNetworkCCommandedOn,
                            DCAuxPowerNetworkDOn, (uint16_t)_powerStatus->auxPowerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 16, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setAllPowerNetworks(bool on) {
@@ -140,7 +140,7 @@ void PowerController::setAllPowerNetworks(bool on) {
                           DCPowerNetworkCOn, (uint16_t)_powerStatus->powerNetworkCCommandedOn,
                           DCPowerNetworkDOn, (uint16_t)_powerStatus->powerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 8, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkA(bool on) {
@@ -148,7 +148,7 @@ void PowerController::setPowerNetworkA(bool on) {
     _powerStatus->powerNetworkACommandedOn = on;
     uint16_t buffer[2] = {DCPowerNetworkAOn, (uint16_t)_powerStatus->powerNetworkACommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkB(bool on) {
@@ -156,7 +156,7 @@ void PowerController::setPowerNetworkB(bool on) {
     _powerStatus->powerNetworkBCommandedOn = on;
     uint16_t buffer[2] = {DCPowerNetworkBOn, (uint16_t)_powerStatus->powerNetworkBCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkC(bool on) {
@@ -164,7 +164,7 @@ void PowerController::setPowerNetworkC(bool on) {
     _powerStatus->powerNetworkCCommandedOn = on;
     uint16_t buffer[2] = {DCPowerNetworkCOn, (uint16_t)_powerStatus->powerNetworkCCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setPowerNetworkD(bool on) {
@@ -172,7 +172,7 @@ void PowerController::setPowerNetworkD(bool on) {
     _powerStatus->powerNetworkDCommandedOn = on;
     uint16_t buffer[2] = {DCPowerNetworkDOn, (uint16_t)_powerStatus->powerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setAllAuxPowerNetworks(bool on) {
@@ -186,7 +186,7 @@ void PowerController::setAllAuxPowerNetworks(bool on) {
                           DCAuxPowerNetworkCOn, (uint16_t)_powerStatus->auxPowerNetworkCCommandedOn,
                           DCAuxPowerNetworkDOn, (uint16_t)_powerStatus->auxPowerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 8, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkA(bool on) {
@@ -194,7 +194,7 @@ void PowerController::setAuxPowerNetworkA(bool on) {
     _powerStatus->auxPowerNetworkACommandedOn = on;
     uint16_t buffer[2] = {DCAuxPowerNetworkAOn, (uint16_t)_powerStatus->auxPowerNetworkACommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkB(bool on) {
@@ -202,7 +202,7 @@ void PowerController::setAuxPowerNetworkB(bool on) {
     _powerStatus->auxPowerNetworkBCommandedOn = on;
     uint16_t buffer[2] = {DCAuxPowerNetworkBOn, (uint16_t)_powerStatus->auxPowerNetworkBCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkC(bool on) {
@@ -210,7 +210,7 @@ void PowerController::setAuxPowerNetworkC(bool on) {
     _powerStatus->auxPowerNetworkCCommandedOn = on;
     uint16_t buffer[2] = {DCAuxPowerNetworkCOn, (uint16_t)_powerStatus->auxPowerNetworkCCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }
 
 void PowerController::setAuxPowerNetworkD(bool on) {
@@ -218,5 +218,5 @@ void PowerController::setAuxPowerNetworkD(bool on) {
     _powerStatus->auxPowerNetworkDCommandedOn = on;
     uint16_t buffer[2] = {DCAuxPowerNetworkDOn, (uint16_t)_powerStatus->auxPowerNetworkDCommandedOn};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    M1M3SSPublisher::get().tryLogPowerStatus();
+    M1M3SSPublisher::instance().tryLogPowerStatus();
 }

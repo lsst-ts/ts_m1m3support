@@ -37,7 +37,7 @@ using namespace LSST::M1M3::SS;
 TEST_CASE("Constant_PID", "[PID]") {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     m1m3SAL->setDebugLevel(0);
-    M1M3SSPublisher::get().setSAL(m1m3SAL);
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
     PID *pids[6];
     PIDParameters pparams;
@@ -69,7 +69,7 @@ TEST_CASE("Constant_PID", "[PID]") {
 TEST_CASE("PID_convergence", "[PID]") {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     m1m3SAL->setDebugLevel(0);
-    M1M3SSPublisher::get().setSAL(m1m3SAL);
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
     PID *pids[6];
     PIDParameters pparams;

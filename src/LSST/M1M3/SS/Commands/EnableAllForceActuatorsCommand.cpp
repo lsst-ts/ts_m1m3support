@@ -34,13 +34,15 @@ EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(int32_t commandID
 void EnableAllForceActuatorsCommand::execute() { Context::get().enableAllForceActuators(this); }
 
 void EnableAllForceActuatorsCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenableAllForceActuators(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandenableAllForceActuators(getCommandID(), ACK_INPROGRESS,
+                                                                  "In-Progress");
 }
 
 void EnableAllForceActuatorsCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenableAllForceActuators(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandenableAllForceActuators(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void EnableAllForceActuatorsCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenableAllForceActuators(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandenableAllForceActuators(getCommandID(), ACK_FAILED,
+                                                                  "Failed: " + reason);
 }

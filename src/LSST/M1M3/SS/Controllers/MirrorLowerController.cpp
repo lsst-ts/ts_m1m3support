@@ -72,7 +72,7 @@ void MirrorLowerController::start() {
 
 void MirrorLowerController::runLoop() {
     SPDLOG_TRACE("MirrorLowerController: runLoop() {}",
-                 M1M3SSPublisher::get().getEventForceActuatorState()->supportPercentage);
+                 M1M3SSPublisher::instance().getEventForceActuatorState()->supportPercentage);
     if (_movedToLowerPosition == false) {
         _movedToLowerPosition = _positionController->motionComplete();
         if (_movedToLowerPosition == true) {
@@ -112,7 +112,7 @@ void MirrorLowerController::complete() {
 }
 
 bool MirrorLowerController::checkTimeout() {
-    return M1M3SSPublisher::get().getTimestamp() >=
+    return M1M3SSPublisher::instance().getTimestamp() >=
            (_cachedTimestamp + _positionController->getLowerTimeout());
 }
 

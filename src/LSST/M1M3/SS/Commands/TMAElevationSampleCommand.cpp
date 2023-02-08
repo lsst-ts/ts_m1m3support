@@ -37,7 +37,7 @@ TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC* data) :
 }
 
 void TMAElevationSampleCommand::execute() {
-    double diff = _data.timestamp - M1M3SSPublisher::get().getTimestamp();
+    double diff = _data.timestamp - M1M3SSPublisher::instance().getTimestamp();
     double limit = SettingReader::instance().getSafetyControllerSettings()->TMA.ElevationTimeout;
     if (limit > 0 && fabs(diff) > limit) {
         using namespace std::chrono_literals;

@@ -47,15 +47,17 @@ bool RunMirrorForceProfileCommand::validate() { return true; }
 void RunMirrorForceProfileCommand::execute() { Context::get().runMirrorForceProfile(this); }
 
 void RunMirrorForceProfileCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandrunMirrorForceProfile(getCommandID(), ACK_INPROGRESS,
+                                                                "In-Progress");
 }
 
 void RunMirrorForceProfileCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandrunMirrorForceProfile(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void RunMirrorForceProfileCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandrunMirrorForceProfile(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandrunMirrorForceProfile(getCommandID(), ACK_FAILED,
+                                                                "Failed: " + reason);
 }
 
 } /* namespace SS */

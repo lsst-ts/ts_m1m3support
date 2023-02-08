@@ -27,6 +27,7 @@
 #include <ILC.h>
 #include <Inclinometer.h>
 #include <DigitalInputOutput.h>
+#include <HardpointActuatorWarning.h>
 #include <Model.h>
 #include <SafetyController.h>
 #include <PowerController.h>
@@ -72,7 +73,7 @@ States::Type DisabledState::update(UpdateCommand* command) {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
-    M1M3SSPublisher::get().tryLogHardpointActuatorWarning();
+    HardpointActuatorWarning::instance().send();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -95,7 +96,7 @@ States::Type DisabledState::standby(StandbyCommand* command) {
     Model::get().getILC()->waitForAllSubnets(5000);
     Model::get().getILC()->readAll();
     Model::get().getILC()->verifyResponses();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
     Model::get().getPowerController()->setBothPowerNetworks(false);
     return Model::get().getSafetyController()->checkSafety(States::StandbyState);
 }

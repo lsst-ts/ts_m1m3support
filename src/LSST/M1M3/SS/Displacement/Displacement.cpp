@@ -43,8 +43,8 @@ Displacement::Displacement(DisplacementSensorSettings* displacementSensorSetting
     _fpgaData = fpgaData;
     _safetyController = safetyController;
 
-    _imsData = M1M3SSPublisher::get().getIMSData();
-    _displacementWarning = M1M3SSPublisher::get().getEventDisplacementSensorWarning();
+    _imsData = M1M3SSPublisher::instance().getIMSData();
+    _displacementWarning = M1M3SSPublisher::instance().getEventDisplacementSensorWarning();
 
     _lastSampleTimestamp = 0;
     _lastErrorTimestamp = 0;
@@ -96,7 +96,7 @@ void Displacement::processData() {
                 _displacementWarning->sensorReportsExpansionLineError);
         _safetyController->displacementNotifySensorReportsWriteControlError(
                 _displacementWarning->sensorReportsWriteControlError);
-        M1M3SSPublisher::get().tryLogDisplacementSensorWarning();
+        M1M3SSPublisher::instance().tryLogDisplacementSensorWarning();
     }
     if (_fpgaData->DisplacementSampleTimestamp > _lastSampleTimestamp) {
         _lastSampleTimestamp = _fpgaData->DisplacementSampleTimestamp;
@@ -180,7 +180,7 @@ void Displacement::processData() {
                  _displacementSensorSettings->ConverterMatrix[47] * _imsData->rawSensorData[ports[7]]) /
                         MILLIMETERS_PER_METER +
                 _displacementSensorSettings->zRotationOffset;
-        M1M3SSPublisher::get().putIMSData();
+        M1M3SSPublisher::instance().putIMSData();
         if (!_errorCleared &&
             _fpgaData->DisplacementSampleTimestamp > _fpgaData->DisplacementErrorTimestamp) {
             _errorCleared = true;
@@ -218,7 +218,7 @@ void Displacement::processData() {
                     _displacementWarning->sensorReportsExpansionLineError);
             _safetyController->displacementNotifySensorReportsWriteControlError(
                     _displacementWarning->sensorReportsWriteControlError);
-            M1M3SSPublisher::get().tryLogDisplacementSensorWarning();
+            M1M3SSPublisher::instance().tryLogDisplacementSensorWarning();
         }
     }
 }

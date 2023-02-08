@@ -37,7 +37,7 @@ class InclinometerSettings : public MTM1M3_logevent_inclinometerSettingsC {
 public:
     void load(const std::string &filename);
 
-    void log() { M1M3SSPublisher::get().logInclinometerSettings(this); }
+    void log() { M1M3SSPublisher::instance().logInclinometerSettings(this); }
 };
 
 } /* namespace SS */

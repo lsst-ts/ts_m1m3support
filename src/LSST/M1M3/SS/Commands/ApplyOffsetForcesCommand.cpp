@@ -47,15 +47,15 @@ bool ApplyOffsetForcesCommand::validate() { return true; }
 void ApplyOffsetForcesCommand::execute() { Context::get().applyOffsetForces(this); }
 
 void ApplyOffsetForcesCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandapplyOffsetForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ApplyOffsetForcesCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForces(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandapplyOffsetForces(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ApplyOffsetForcesCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandapplyOffsetForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandapplyOffsetForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */
