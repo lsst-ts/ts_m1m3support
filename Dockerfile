@@ -1,4 +1,4 @@
-FROM lsstts/develop-env:c0026.010 as crio-develop
+FROM lsstts/develop-env:c0028.002 as crio-develop
 
 ARG XML_BRANCH=develop
 
