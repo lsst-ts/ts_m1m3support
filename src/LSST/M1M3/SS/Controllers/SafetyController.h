@@ -87,9 +87,9 @@ public:
     void interlockNotifyGISHeartbeatLost(bool conditionFlag);
 
     void forceControllerNotifySafetyLimit(bool conditionFlag);
-    void forceControllerNotifyXMomentLimit(bool conditionFlag);
-    void forceControllerNotifyYMomentLimit(bool conditionFlag);
-    void forceControllerNotifyZMomentLimit(bool conditionFlag);
+    void forceControllerNotifyXMomentLimit(bool conditionFlag, std::string failed);
+    void forceControllerNotifyYMomentLimit(bool conditionFlag, std::string failed);
+    void forceControllerNotifyZMomentLimit(bool conditionFlag, std::string failed);
     void forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed, float nominalZ,
                                                 float nominalZWarning);
     void forceControllerNotifyMagnitudeLimit(bool conditionFlag, float globalForce);

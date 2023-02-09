@@ -27,6 +27,7 @@
 #include <LimitTrigger.h>
 
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/fmt.h>
 
 namespace LSST {
 namespace M1M3 {

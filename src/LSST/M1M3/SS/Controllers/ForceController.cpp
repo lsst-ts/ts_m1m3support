@@ -257,6 +257,7 @@ void ForceController::updateAppliedForces() {
 
 void ForceController::processAppliedForces() {
     SPDLOG_TRACE("ForceController: processAppliedForces()");
+    _forceSetpointWarning->timestamp = _appliedForces->timestamp;
     _sumAllForces();
     _convertForcesToSetpoints();
     _checkMirrorMoments();
@@ -540,21 +541,40 @@ bool ForceController::_checkMirrorMoments() {
     float xMoment = _appliedForces->mx;
     float yMoment = _appliedForces->my;
     float zMoment = _appliedForces->mz;
-    _forceSetpointWarning->xMomentWarning = !Range::InRange(
-            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentHighLimitFactor,
-            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentLowLimitFactor,
-            xMoment);
-    _forceSetpointWarning->yMomentWarning = !Range::InRange(
-            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentHighLimitFactor,
-            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentLowLimitFactor,
-            yMoment);
-    _forceSetpointWarning->zMomentWarning = !Range::InRange(
-            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentHighLimitFactor,
-            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentLowLimitFactor,
-            zMoment);
-    _safetyController->forceControllerNotifyXMomentLimit(_forceSetpointWarning->xMomentWarning);
-    _safetyController->forceControllerNotifyYMomentLimit(_forceSetpointWarning->yMomentWarning);
-    _safetyController->forceControllerNotifyZMomentLimit(_forceSetpointWarning->zMomentWarning);
+
+    float xMomentMin =
+            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentHighLimitFactor;
+    float xMomentMax =
+            _forceActuatorSettings->mirrorXMoment * _forceActuatorSettings->setpointXMomentLowLimitFactor;
+
+    float yMomentMin =
+            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentHighLimitFactor;
+    float yMomentMax =
+            _forceActuatorSettings->mirrorYMoment * _forceActuatorSettings->setpointYMomentLowLimitFactor;
+
+    float zMomentMin =
+            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentHighLimitFactor;
+    float zMomentMax =
+            _forceActuatorSettings->mirrorZMoment * _forceActuatorSettings->setpointZMomentLowLimitFactor;
+
+    _forceSetpointWarning->xMomentWarning = !Range::InRange(xMomentMin, xMomentMax, xMoment);
+    _forceSetpointWarning->yMomentWarning = !Range::InRange(yMomentMin, yMomentMax, yMoment);
+    _forceSetpointWarning->zMomentWarning = !Range::InRange(zMomentMin, zMomentMax, zMoment);
+    _safetyController->forceControllerNotifyXMomentLimit(
+            _forceSetpointWarning->xMomentWarning,
+            fmt::format(
+                    "Force controller X Moment Limit - applied {:.02f} N, expected {:.02f} N to {:.02f} N",
+                    xMoment, xMomentMin, xMomentMax));
+    _safetyController->forceControllerNotifyYMomentLimit(
+            _forceSetpointWarning->yMomentWarning,
+            fmt::format(
+                    "Force controller Y Moment Limit - applied {:.02f} N, expected {:.02f} N to {:.02f} N",
+                    yMoment, yMomentMin, yMomentMax));
+    _safetyController->forceControllerNotifyZMomentLimit(
+            _forceSetpointWarning->zMomentWarning,
+            fmt::format(
+                    "Force controller Z Moment Limit - applied {:.02f} N, expected {:.02f} N to {:.02f} N",
+                    zMoment, zMomentMin, zMomentMax));
     return _forceSetpointWarning->xMomentWarning || _forceSetpointWarning->yMomentWarning ||
            _forceSetpointWarning->zMomentWarning;
 }

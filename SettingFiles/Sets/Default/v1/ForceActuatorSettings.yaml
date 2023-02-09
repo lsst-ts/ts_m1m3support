@@ -34,7 +34,7 @@ AccelerationLimitXTablePath: Tables/AccelerationLimitXTable.csv
 AccelerationLimitYTablePath: Tables/AccelerationLimitYTable.csv
 AccelerationLimitZTablePath: Tables/AccelerationLimitZTable.csv
 ActiveOpticLimitZTablePath: Tables/ActiveOpticLimitZTable.csv
-NetActiveOpticForceTolerance: 1
+NetActiveOpticForceTolerance: 1000
 AzimuthLimitXTablePath: Tables/AzimuthLimitXTable.csv
 AzimuthLimitYTablePath: Tables/AzimuthLimitYTable.csv
 AzimuthLimitZTablePath: Tables/AzimuthLimitZTable.csv
