@@ -26,10 +26,10 @@ endif
 CRIOCPP := ../ts_cRIOcpp/
 
 BOOST_CPPFLAGS += -I/usr/include/boost169
-PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog --cflags $(silence))
+PKG_CPPFLAGS := $(shell pkg-config yaml-cpp --cflags $(silence)) $(shell pkg-config spdlog --cflags $(silence))
 SAL_CPPFLAGS += $(PKG_CPPFLAGS) -I${OSPL_HOME}/include -I${OSPL_HOME}/include/sys -I${OSPL_HOME}/include/dcps/C++/SACPP -I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src -I${SAL_WORK_DIR}/include -I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include
 
-PKG_LIBS := $(shell pkg-config yaml-cpp spdlog --libs $(silence))
+PKG_LIBS := $(shell pkg-config yaml-cpp --libs $(silence)) $(shell pkg-config spdlog --libs $(silence))
 LIBS += $(PKG_LIBS) -ldl -ldcpssacpp -ldcpsgapi -lddsuser -lddskernel -lpthread -lddsserialization -lddsconfparser -lddsconf -lddsdatabase -lddsutil -lddsos ${SAL_WORK_DIR}/lib/libSAL_MTM1M3.a ${SAL_WORK_DIR}/lib/libSAL_MTMount.a
 
 LIBS_FLAGS += -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib"
