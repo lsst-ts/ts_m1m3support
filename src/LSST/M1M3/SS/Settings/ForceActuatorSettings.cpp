@@ -268,4 +268,18 @@ void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primary
                                                       const std::string &secondaryFilename) {
     rapidcsv::Document primary(primaryFilename, rapidcsv::LabelParams(0, 0));
     rapidcsv::Document secondary(secondaryFilename, rapidcsv::LabelParams(0, 0));
+
+    auto primaryId = primary.GetColumn<int>(0);
+    if (primaryId.size() != FA_COUNT) {
+        throw std::runtime_error(
+                fmt::format("PrimaryFollowingErrorTable {} doesn't contain all {} rows - {} read",
+                            primaryFilename, FA_COUNT, primaryId.size()));
+    }
+
+    auto secondaryId = secondary.GetColumn<int>(0);
+    if (secondaryId.size() != FA_Y_COUNT + FA_X_COUNT) {
+        throw std::runtime_error(
+                fmt::format("SecondaryFollowingErrorTable {} doesn't contain all {} rows - {} read",
+                            secondaryFilename, FA_Y_COUNT + FA_X_COUNT, primaryId.size()));
+    }
 }

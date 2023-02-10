@@ -942,7 +942,7 @@ void ILCResponseParser::_checkForceActuatorFollowingError(ILCMap map) {
 
     float primaryForce = _forceActuatorData->primaryCylinderForce[dataIndex];
     float primarySetpoint = _appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0;
-    float primaryLimit = _forceActuatorSettings->FollowingErrorPrimaryCylinderLimitTable[dataIndex].HighFault;
+    float primaryLimit = _forceActuatorSettings->primaryFollowingErrorCountingFaultThreshold[dataIndex];
     _forceActuatorData->primaryCylinderFollowingError[dataIndex] = primaryForce - primarySetpoint;
     bool primaryLimitWarning =
             std::abs(_forceActuatorData->primaryCylinderFollowingError[dataIndex]) > primaryLimit;
@@ -956,8 +956,7 @@ void ILCResponseParser::_checkForceActuatorFollowingError(ILCMap map) {
         float secondarySetpoint =
                 _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0;
         float secondaryLimit =
-                _forceActuatorSettings->FollowingErrorSecondaryCylinderLimitTable[secondaryDataIndex]
-                        .HighFault;
+                _forceActuatorSettings->secondaryFollowingErrorCountingFaultThreshold[secondaryDataIndex];
         _forceActuatorData->secondaryCylinderFollowingError[secondaryDataIndex] =
                 secondaryForce - secondarySetpoint;
         secondaryLimitWarning =
