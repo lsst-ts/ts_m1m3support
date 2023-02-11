@@ -21,15 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SettingReader.h>
-#include <boost/tokenizer.hpp>
-#include <yaml-cpp/yaml.h>
-#include <spdlog/spdlog.h>
-
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <ForceActuatorSettings.h>
+#include <SettingReader.h>
+#include <boost/tokenizer.hpp>
+#include <yaml-cpp/yaml.h>
+#include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -113,10 +114,9 @@ AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
     return &_aliasApplicationSettings;
 }
 
-ForceActuatorSettings* SettingReader::loadForceActuatorSettings() {
+void SettingReader::loadForceActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadForceActuatorSettings()");
-    _forceActuatorSettings.load(_getSetPath("ForceActuatorSettings.yaml"));
-    return &_forceActuatorSettings;
+    ForceActuatorSettings::instance().load(_getSetPath("ForceActuatorSettings.yaml"));
 }
 
 HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {

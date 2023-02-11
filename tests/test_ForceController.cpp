@@ -25,6 +25,7 @@
 #include <catch2/catch_approx.hpp>
 #include <cmath>
 
+#include <ForceActuatorSettings.h>
 #include <ForceController.h>
 #include <Model.h>
 #include <SettingReader.h>
@@ -119,7 +120,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     REQUIRE_NOTHROW(Model::get().loadSettings("Default"));
 
-    REQUIRE(SettingReader::instance().getForceActuatorSettings()->useInclinometer == true);
+    REQUIRE(ForceActuatorSettings::instance().useInclinometer == true);
 
     SafetyControllerSettings safetyControllerSettings;
     REQUIRE_NOTHROW(

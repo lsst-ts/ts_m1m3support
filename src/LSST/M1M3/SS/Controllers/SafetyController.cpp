@@ -24,9 +24,10 @@
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
+#include <ForceActuatorForceWarning.h>
 #include <LoweringFaultState.h>
-#include <SafetyController.h>
 #include <M1M3SSPublisher.h>
+#include <SafetyController.h>
 #include <SafetyControllerSettings.h>
 #include <SAL_MTM1M3C.h>
 
@@ -69,6 +70,9 @@ void SafetyController::clearErrorCode() {
         std::fill(_forceActuatorFollowingErrorData[faId].begin(),
                   _forceActuatorFollowingErrorData[faId].end(), 0);
     }
+
+    ForceActuatorForceWarning::instance().reset();
+
     for (int hpId = 0; hpId < HP_COUNT; hpId++) {
         std::fill(_hardpointActuatorMeasuredForceData[hpId].begin(),
                   _hardpointActuatorMeasuredForceData[hpId].end(), 0);

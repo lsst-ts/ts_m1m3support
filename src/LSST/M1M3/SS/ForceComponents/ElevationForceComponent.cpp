@@ -29,7 +29,6 @@
 #include <ForceActuatorSettings.h>
 #include <Range.h>
 #include <ForcesAndMoments.h>
-#include <ForceConverter.h>
 #include <DistributedForces.h>
 #include <spdlog/spdlog.h>
 
@@ -38,12 +37,10 @@ namespace M1M3 {
 namespace SS {
 
 ElevationForceComponent::ElevationForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Elevation", forceActuatorSettings->ElevationComponentSettings) {
+        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        : ForceComponent("Elevation", ForceActuatorSettings::instance().ElevationComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
@@ -78,7 +75,7 @@ void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z)
 void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevationAngle) {
     SPDLOG_TRACE("ElevationForceComponent: applyElevationForcesByMirrorForces({:.1f})", elevationAngle);
     DistributedForces forces =
-            ForceConverter::calculateForceFromElevationAngle(_forceActuatorSettings, elevationAngle);
+            ForceActuatorSettings::instance().calculateForceFromElevationAngle(elevationAngle);
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
@@ -119,8 +116,8 @@ void ElevationForceComponent::postUpdateActions() {
         _forceSetpointWarning->elevationForceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].LowFault;
-            float xHighFault = _forceActuatorSettings->ElevationLimitXTable[xIndex].HighFault;
+            float xLowFault = ForceActuatorSettings::instance().ElevationLimitXTable[xIndex].LowFault;
+            float xHighFault = ForceActuatorSettings::instance().ElevationLimitXTable[xIndex].HighFault;
             _preclippedElevationForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedElevationForces->xForces[xIndex],
@@ -130,8 +127,8 @@ void ElevationForceComponent::postUpdateActions() {
         }
 
         if (yIndex != -1) {
-            float yLowFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].LowFault;
-            float yHighFault = _forceActuatorSettings->ElevationLimitYTable[yIndex].HighFault;
+            float yLowFault = ForceActuatorSettings::instance().ElevationLimitYTable[yIndex].LowFault;
+            float yHighFault = ForceActuatorSettings::instance().ElevationLimitYTable[yIndex].HighFault;
             _preclippedElevationForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedElevationForces->yForces[yIndex],
@@ -140,8 +137,8 @@ void ElevationForceComponent::postUpdateActions() {
                     notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
         }
 
-        float zLowFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].LowFault;
-        float zHighFault = _forceActuatorSettings->ElevationLimitZTable[zIndex].HighFault;
+        float zLowFault = ForceActuatorSettings::instance().ElevationLimitZTable[zIndex].LowFault;
+        float zHighFault = ForceActuatorSettings::instance().ElevationLimitZTable[zIndex].HighFault;
         _preclippedElevationForces->zForces[zIndex] = zCurrent[zIndex];
 
         notInRange =
@@ -152,8 +149,8 @@ void ElevationForceComponent::postUpdateActions() {
         clippingRequired = _forceSetpointWarning->elevationForceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedElevationForces->xForces,
+    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _appliedElevationForces->xForces,
             _appliedElevationForces->yForces, _appliedElevationForces->zForces);
     _appliedElevationForces->fx = fm.Fx;
     _appliedElevationForces->fy = fm.Fy;
@@ -163,8 +160,8 @@ void ElevationForceComponent::postUpdateActions() {
     _appliedElevationForces->mz = fm.Mz;
     _appliedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedElevationForces->xForces,
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _preclippedElevationForces->xForces,
             _preclippedElevationForces->yForces, _preclippedElevationForces->zForces);
     _preclippedElevationForces->fx = fm.Fx;
     _preclippedElevationForces->fy = fm.Fy;

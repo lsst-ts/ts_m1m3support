@@ -21,12 +21,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <DisabledState.h>
 #include <Accelerometer.h>
+#include <DigitalInputOutput.h>
+#include <DisabledState.h>
 #include <Displacement.h>
+#include <ForceActuatorData.h>
 #include <ILC.h>
 #include <Inclinometer.h>
-#include <DigitalInputOutput.h>
 #include <HardpointActuatorWarning.h>
 #include <Model.h>
 #include <SafetyController.h>
@@ -68,7 +69,7 @@ States::Type DisabledState::update(UpdateCommand* command) {
     ilc->calculateFAMirrorForces();
     ilc->verifyResponses();
     ilc->publishForceActuatorStatus();
-    ilc->publishForceActuatorData();
+    ForceActuatorData::instance().send();
     ilc->publishHardpointStatus();
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();

@@ -68,7 +68,6 @@ class ILC {
 public:
     ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings,
         HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
         HardpointActuatorSettings* hardpointActuatorSettings,
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
@@ -131,7 +130,6 @@ public:
 
     void publishForceActuatorInfo();
     void publishForceActuatorStatus();
-    void publishForceActuatorData();
     void publishHardpointActuatorInfo();
     void publishHardpointStatus();
     void publishHardpointData();
@@ -204,8 +202,6 @@ private:
     HardpointActuatorSettings* _hardpointActuatorSettings;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
-    MTM1M3_forceActuatorDataC* _forceActuatorData;
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointActuatorInfo;
     PositionController* _positionController;
 
