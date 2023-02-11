@@ -26,7 +26,6 @@
 
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
@@ -36,8 +35,7 @@ namespace SS {
 
 class VelocityForceComponent : public ForceComponent {
 public:
-    VelocityForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                           ForceActuatorSettings* forceActuatorSettings);
+    VelocityForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     void applyVelocityForces(float* x, float* y, float* z);
     void applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY,
@@ -50,7 +48,6 @@ protected:
 private:
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;

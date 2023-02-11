@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <ForceActuatorData.h>
 #include <EnabledForceActuators.h>
 #include <M1M3SSPublisher.h>
 #include <SettingReader.h>
@@ -43,27 +44,26 @@ void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
     forceActuatorEnabled[actuatorIndex] = enabled;
     if (enabled == false) {
         // if disabling an FA, makes sure its reported force is 0
-        MTM1M3_forceActuatorDataC* faData = M1M3SSPublisher::instance().getForceActuatorData();
-        faData->primaryCylinderForce[actuatorIndex] = 0;
-        faData->zForce[actuatorIndex] = 0;
+        ForceActuatorData::instance().primaryCylinderForce[actuatorIndex] = 0;
+        ForceActuatorData::instance().zForce[actuatorIndex] = 0;
 
         int secondaryIndex = SettingReader::instance()
                                      .getForceActuatorApplicationSettings()
                                      ->ZIndexToSecondaryCylinderIndex[actuatorIndex];
         if (secondaryIndex >= 0) {
-            faData->secondaryCylinderForce[secondaryIndex] = 0;
+            ForceActuatorData::instance().secondaryCylinderForce[secondaryIndex] = 0;
             int xIndex = SettingReader::instance()
                                  .getForceActuatorApplicationSettings()
                                  ->ZIndexToXIndex[actuatorIndex];
             if (xIndex >= 0) {
-                faData->xForce[xIndex] = 0;
+                ForceActuatorData::instance().xForce[xIndex] = 0;
             }
 
             int yIndex = SettingReader::instance()
                                  .getForceActuatorApplicationSettings()
                                  ->ZIndexToYIndex[actuatorIndex];
             if (yIndex >= 0) {
-                faData->yForce[yIndex] = 0;
+                ForceActuatorData::instance().yForce[yIndex] = 0;
             }
         }
     }

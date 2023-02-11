@@ -28,7 +28,6 @@
 #include <ForceActuatorSettings.h>
 #include <Range.h>
 #include <ForcesAndMoments.h>
-#include <ForceConverter.h>
 #include <DistributedForces.h>
 #include <spdlog/spdlog.h>
 
@@ -37,12 +36,10 @@ namespace M1M3 {
 namespace SS {
 
 ActiveOpticForceComponent::ActiveOpticForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("ActiveOptic", forceActuatorSettings->ActiveOpticComponentSettings) {
+        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        : ForceComponent("ActiveOptic", ForceActuatorSettings::instance().ActiveOpticComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
@@ -80,8 +77,8 @@ void ActiveOpticForceComponent::postUpdateActions() {
     _appliedActiveOpticForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedActiveOpticForces->timestamp = _appliedActiveOpticForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
-        float zLowFault = _forceActuatorSettings->ActiveOpticLimitZTable[zIndex].LowFault;
-        float zHighFault = _forceActuatorSettings->ActiveOpticLimitZTable[zIndex].HighFault;
+        float zLowFault = ForceActuatorSettings::instance().ActiveOpticLimitZTable[zIndex].LowFault;
+        float zHighFault = ForceActuatorSettings::instance().ActiveOpticLimitZTable[zIndex].HighFault;
 
         _forceSetpointWarning->activeOpticForceWarning[zIndex] = false;
 
@@ -94,27 +91,27 @@ void ActiveOpticForceComponent::postUpdateActions() {
         clippingRequired = _forceSetpointWarning->activeOpticForceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedActiveOpticForces->zForces);
+    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _appliedActiveOpticForces->zForces);
     _appliedActiveOpticForces->fz = fm.Fz;
     _appliedActiveOpticForces->mx = fm.Mx;
     _appliedActiveOpticForces->my = fm.My;
 
-    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
-                                                   _preclippedActiveOpticForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_forceActuatorApplicationSettings,
+                                                                     _preclippedActiveOpticForces->zForces);
     _preclippedActiveOpticForces->fz = fm.Fz;
     _preclippedActiveOpticForces->mx = fm.Mx;
     _preclippedActiveOpticForces->my = fm.My;
 
     _forceSetpointWarning->activeOpticNetForceWarning =
-            !Range::InRange(-_forceActuatorSettings->netActiveOpticForceTolerance,
-                            _forceActuatorSettings->netActiveOpticForceTolerance,
+            !Range::InRange(-ForceActuatorSettings::instance().netActiveOpticForceTolerance,
+                            ForceActuatorSettings::instance().netActiveOpticForceTolerance,
                             _appliedActiveOpticForces->fz) ||
-            !Range::InRange(-_forceActuatorSettings->netActiveOpticForceTolerance,
-                            _forceActuatorSettings->netActiveOpticForceTolerance,
+            !Range::InRange(-ForceActuatorSettings::instance().netActiveOpticForceTolerance,
+                            ForceActuatorSettings::instance().netActiveOpticForceTolerance,
                             _appliedActiveOpticForces->mx) ||
-            !Range::InRange(-_forceActuatorSettings->netActiveOpticForceTolerance,
-                            _forceActuatorSettings->netActiveOpticForceTolerance,
+            !Range::InRange(-ForceActuatorSettings::instance().netActiveOpticForceTolerance,
+                            ForceActuatorSettings::instance().netActiveOpticForceTolerance,
                             _appliedActiveOpticForces->my);
 
     _safetyController->forceControllerNotifyActiveOpticForceClipping(clippingRequired);

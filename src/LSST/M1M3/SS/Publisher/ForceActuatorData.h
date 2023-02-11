@@ -21,39 +21,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RAISEDBUSLIST_H_
-#define RAISEDBUSLIST_H_
+#ifndef LSST_FORCEACTUATORDATA_H
+#define LSST_FORCEACTUATORDATA_H
 
-#include <BusList.h>
-#include <SAL_MTM1M3C.h>
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class RaisedBusList : public BusList {
+/**
+ * Wrapper object for MTM1M3_forceActuatorData telemetry.
+ */
+class ForceActuatorData : public MTM1M3_forceActuatorDataC, public cRIO::Singleton<ForceActuatorData> {
 public:
-    RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+    ForceActuatorData(token) {}
 
-    void buildBuffer() override;
-    void update() override;
-
-private:
-    MTM1M3_outerLoopDataC* _outerLoopData;
-    MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
-    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    MTM1M3_logevent_forceActuatorInfoC* _forceInfo;
-
-    int32_t _setForceCommandIndex[5];
-    int32_t _moveStepCommandIndex[5];
-    int32_t _faStatusCommandIndex[5];
-    int32_t _roundRobinFAReportServerStatusIndex[5];
-    int32_t _hmLVDTCommandIndex[5];
-    int32_t _lvdtSampleClock;
+    void send() { M1M3SSPublisher::instance().putForceActuatorData(this); }
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* RAISEDBUSLIST_H_ */
+#endif  // !LSST_FORCEACTUATORDATA_H

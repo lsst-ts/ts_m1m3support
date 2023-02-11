@@ -26,7 +26,6 @@
 #include <ILCMessageFactory.h>
 #include <M1M3SSPublisher.h>
 #include <RoundRobin.h>
-#include <ForceConverter.h>
 #include <SAL_MTM1M3C.h>
 #include <cstring>
 #include <spdlog/spdlog.h>
@@ -37,7 +36,6 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("RaisedBusList: RaisedBusList()");
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
-    _forceActuatorData = M1M3SSPublisher::instance().getForceActuatorData();
     _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();

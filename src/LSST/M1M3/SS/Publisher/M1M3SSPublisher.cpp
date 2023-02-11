@@ -133,7 +133,6 @@ void M1M3SSPublisher::reset() {
 }
 
 void M1M3SSPublisher::putAccelerometerData() { _m1m3SAL->putSample_accelerometerData(&_accelerometerData); }
-void M1M3SSPublisher::putForceActuatorData() { _m1m3SAL->putSample_forceActuatorData(&_forceActuatorData); }
 void M1M3SSPublisher::putGyroData() { _m1m3SAL->putSample_gyroData(&_gyroData); }
 void M1M3SSPublisher::putHardpointActuatorData() {
     _m1m3SAL->putSample_hardpointActuatorData(&_hardpointActuatorData);
@@ -395,53 +394,6 @@ void M1M3SSPublisher::tryLogErrorCode() {
 void M1M3SSPublisher::logForceActuatorBumpTestStatus() {
     _m1m3SAL->logEvent_forceActuatorBumpTestStatus(&_eventForceActuatorBumpTestStatus, 0);
     _previousEventForceActuatorBumpTestStatus = _eventForceActuatorBumpTestStatus;
-}
-
-void M1M3SSPublisher::logForceActuatorForceWarning() {
-    _eventForceActuatorForceWarning.anyPrimaryAxisMeasuredForceWarning = false;
-    _eventForceActuatorForceWarning.anySecondaryAxisMeasuredForceWarning = false;
-    _eventForceActuatorForceWarning.anyPrimaryAxisFollowingErrorWarning = false;
-    _eventForceActuatorForceWarning.anySecondaryAxisFollowingErrorWarning = false;
-    for (int i = 0; i < FA_COUNT; ++i) {
-        _eventForceActuatorForceWarning.anyPrimaryAxisMeasuredForceWarning =
-                _eventForceActuatorForceWarning.anyPrimaryAxisMeasuredForceWarning ||
-                _eventForceActuatorForceWarning.primaryAxisMeasuredForceWarning[i];
-        _eventForceActuatorForceWarning.anySecondaryAxisMeasuredForceWarning =
-                _eventForceActuatorForceWarning.anySecondaryAxisMeasuredForceWarning ||
-                _eventForceActuatorForceWarning.secondaryAxisMeasuredForceWarning[i];
-        _eventForceActuatorForceWarning.anyPrimaryAxisFollowingErrorWarning =
-                _eventForceActuatorForceWarning.anyPrimaryAxisFollowingErrorWarning ||
-                _eventForceActuatorForceWarning.primaryAxisFollowingErrorWarning[i];
-        _eventForceActuatorForceWarning.anySecondaryAxisFollowingErrorWarning =
-                _eventForceActuatorForceWarning.anySecondaryAxisFollowingErrorWarning ||
-                _eventForceActuatorForceWarning.secondaryAxisFollowingErrorWarning[i];
-    }
-    _eventForceActuatorForceWarning.anyWarning =
-            _eventForceActuatorForceWarning.anyPrimaryAxisMeasuredForceWarning ||
-            _eventForceActuatorForceWarning.anySecondaryAxisMeasuredForceWarning ||
-            _eventForceActuatorForceWarning.anyPrimaryAxisFollowingErrorWarning ||
-            _eventForceActuatorForceWarning.anySecondaryAxisFollowingErrorWarning;
-    _m1m3SAL->logEvent_forceActuatorForceWarning(&_eventForceActuatorForceWarning, 0);
-    _previousEventForceActuatorForceWarning = _eventForceActuatorForceWarning;
-}
-
-void M1M3SSPublisher::tryLogForceActuatorForceWarning() {
-    bool changeDetected = false;
-    for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                _eventForceActuatorForceWarning.primaryAxisMeasuredForceWarning[i] !=
-                        _previousEventForceActuatorForceWarning.primaryAxisMeasuredForceWarning[i] ||
-                _eventForceActuatorForceWarning.secondaryAxisMeasuredForceWarning[i] !=
-                        _previousEventForceActuatorForceWarning.secondaryAxisMeasuredForceWarning[i] ||
-                _eventForceActuatorForceWarning.primaryAxisFollowingErrorWarning[i] !=
-                        _previousEventForceActuatorForceWarning.primaryAxisFollowingErrorWarning[i] ||
-                _eventForceActuatorForceWarning.secondaryAxisFollowingErrorWarning[i] !=
-                        _previousEventForceActuatorForceWarning.secondaryAxisFollowingErrorWarning[i];
-    }
-    if (changeDetected) {
-        logForceActuatorForceWarning();
-    }
 }
 
 void M1M3SSPublisher::logForceActuatorInfo() {

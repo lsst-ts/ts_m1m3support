@@ -108,7 +108,7 @@ void Model::loadSettings(std::string settingsToApply) {
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
             SettingReader::instance().getForceActuatorApplicationSettings();
     SPDLOG_INFO("Model: Loading force actuator settings");
-    ForceActuatorSettings* forceActuatorSettings = SettingReader::instance().loadForceActuatorSettings();
+    SettingReader::instance().loadForceActuatorSettings();
     SPDLOG_INFO("Model: Loading hardpoint actuator application settings");
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
             SettingReader::instance().loadHardpointActuatorApplicationSettings();
@@ -136,7 +136,7 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Loading inclinometer settings");
     InclinometerSettings* inclinometerSettings = SettingReader::instance().loadInclinometerSettings();
 
-    _populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
+    _populateForceActuatorInfo(forceActuatorApplicationSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
                                    positionControllerSettings);
     _populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
@@ -162,13 +162,12 @@ void Model::loadSettings(std::string settingsToApply) {
     delete _ilc;
     SPDLOG_INFO("Model: Creating ILC");
     _ilc = new ILC(_positionController, ilcApplicationSettings, forceActuatorApplicationSettings,
-                   forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings,
+                   hardpointActuatorApplicationSettings, hardpointActuatorSettings,
                    hardpointMonitorApplicationSettings, _safetyController);
 
     delete _forceController;
     SPDLOG_INFO("Model: Creating force controller");
-    _forceController =
-            new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings);
+    _forceController = new ForceController(forceActuatorApplicationSettings, pidSettings);
 
     SPDLOG_INFO("Model: Updating digital input output");
     _digitalInputOutput.setSafetyController(_safetyController);
@@ -201,7 +200,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     // apply disabled FA from setting
     for (int i = 0; i < FA_COUNT; i++) {
-        if (forceActuatorSettings->isActuatorDisabled(i)) {
+        if (ForceActuatorSettings::instance().isActuatorDisabled(i)) {
             _ilc->disableFA(forceActuatorApplicationSettings->ZIndexToActuatorId(i));
         }
     }
@@ -250,8 +249,7 @@ void Model::waitForExitControl() {
     _mutex.unlock();
 }
 
-void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                       ForceActuatorSettings* forceActuatorSettings) {
+void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings) {
     SPDLOG_DEBUG("Model: populateForceActuatorInfo()");
     MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
     for (int i = 0; i < FA_COUNT; i++) {

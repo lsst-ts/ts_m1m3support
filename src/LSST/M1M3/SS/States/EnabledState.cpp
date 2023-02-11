@@ -21,14 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <EnabledState.h>
 #include <Accelerometer.h>
 #include <Displacement.h>
+#include <DigitalInputOutput.h>
+#include <EnabledState.h>
+#include <ForceActuatorData.h>
 #include <ForceController.h>
 #include <HardpointActuatorWarning.h>
 #include <ILC.h>
 #include <Inclinometer.h>
-#include <DigitalInputOutput.h>
 #include <Model.h>
 #include <PositionController.h>
 #include <SafetyController.h>
@@ -100,7 +101,7 @@ void EnabledState::runLoop() {
     ilc->calculateFAMirrorForces();
     ilc->verifyResponses();
     ilc->publishForceActuatorStatus();
-    ilc->publishForceActuatorData();
+    ForceActuatorData::instance().send();
     ilc->publishHardpointStatus();
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();

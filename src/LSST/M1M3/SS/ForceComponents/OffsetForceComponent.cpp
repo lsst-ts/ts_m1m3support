@@ -29,7 +29,6 @@
 #include <ForceActuatorSettings.h>
 #include <Range.h>
 #include <ForcesAndMoments.h>
-#include <ForceConverter.h>
 #include <DistributedForces.h>
 #include <spdlog/spdlog.h>
 
@@ -37,12 +36,10 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                           ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Offset", forceActuatorSettings->OffsetComponentSettings) {
+OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        : ForceComponent("Offset", ForceActuatorSettings::instance().OffsetComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::instance().getEventAppliedOffsetForces();
@@ -77,8 +74,8 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
             "OffsetForceComponent: applyOffsetForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
-    DistributedForces forces = ForceConverter::calculateForceDistribution(
-            _forceActuatorSettings, xForce, yForce, zForce, xMoment, yMoment, zMoment);
+    DistributedForces forces = ForceActuatorSettings::instance().calculateForceDistribution(
+            xForce, yForce, zForce, xMoment, yMoment, zMoment);
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
@@ -140,8 +137,8 @@ void OffsetForceComponent::postUpdateActions() {
         _forceSetpointWarning->offsetForceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].LowFault;
-            float xHighFault = _forceActuatorSettings->OffsetLimitXTable[xIndex].HighFault;
+            float xLowFault = ForceActuatorSettings::instance().OffsetLimitXTable[xIndex].LowFault;
+            float xHighFault = ForceActuatorSettings::instance().OffsetLimitXTable[xIndex].HighFault;
             _preclippedOffsetForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedOffsetForces->xForces[xIndex],
@@ -151,8 +148,8 @@ void OffsetForceComponent::postUpdateActions() {
         }
 
         if (yIndex != -1) {
-            float yLowFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].LowFault;
-            float yHighFault = _forceActuatorSettings->OffsetLimitYTable[yIndex].HighFault;
+            float yLowFault = ForceActuatorSettings::instance().OffsetLimitYTable[yIndex].LowFault;
+            float yHighFault = ForceActuatorSettings::instance().OffsetLimitYTable[yIndex].HighFault;
             _preclippedOffsetForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedOffsetForces->yForces[yIndex],
@@ -161,8 +158,8 @@ void OffsetForceComponent::postUpdateActions() {
                     notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         }
 
-        float zLowFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].LowFault;
-        float zHighFault = _forceActuatorSettings->OffsetLimitZTable[zIndex].HighFault;
+        float zLowFault = ForceActuatorSettings::instance().OffsetLimitZTable[zIndex].LowFault;
+        float zHighFault = ForceActuatorSettings::instance().OffsetLimitZTable[zIndex].HighFault;
         _preclippedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedOffsetForces->zForces[zIndex],
                                               _appliedOffsetForces->zForces + zIndex);
@@ -171,9 +168,9 @@ void OffsetForceComponent::postUpdateActions() {
         clippingRequired = _forceSetpointWarning->offsetForceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedOffsetForces->xForces,
-            _appliedOffsetForces->yForces, _appliedOffsetForces->zForces);
+    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _appliedOffsetForces->xForces, _appliedOffsetForces->yForces,
+            _appliedOffsetForces->zForces);
     _appliedOffsetForces->fx = fm.Fx;
     _appliedOffsetForces->fy = fm.Fy;
     _appliedOffsetForces->fz = fm.Fz;
@@ -182,8 +179,8 @@ void OffsetForceComponent::postUpdateActions() {
     _appliedOffsetForces->mz = fm.Mz;
     _appliedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedOffsetForces->xForces,
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _preclippedOffsetForces->xForces,
             _preclippedOffsetForces->yForces, _preclippedOffsetForces->zForces);
     _preclippedOffsetForces->fx = fm.Fx;
     _preclippedOffsetForces->fy = fm.Fy;

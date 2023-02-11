@@ -31,7 +31,6 @@
 #include <DigitalInputOutput.h>
 #include <Displacement.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <ForceController.h>
 #include <Gyro.h>
 #include <HardpointActuatorApplicationSettings.h>
@@ -108,8 +107,7 @@ private:
     Model& operator=(const Model&) = delete;
     Model(const Model&) = delete;
 
-    void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                    ForceActuatorSettings* forceActuatorSettings);
+    void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
     void _populateHardpointActuatorInfo(
             HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
             HardpointActuatorSettings* hardpointActuatorSettings,
