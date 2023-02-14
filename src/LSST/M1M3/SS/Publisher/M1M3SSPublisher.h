@@ -273,6 +273,9 @@ public:
     void logForceActuatorForceWarning(MTM1M3_logevent_forceActuatorForceWarningC* data) {
         _m1m3SAL->logEvent_forceActuatorForceWarning(data, 0);
     }
+    void logForceActuatorFollowingErrorCounter(MTM1M3_logevent_forceActuatorFollowingErrorCounterC* data) {
+        _m1m3SAL->logEvent_forceActuatorFollowingErrorCounter(data, 0);
+    }
     void tryLogForceActuatorForceWarning();
     void logForceActuatorInfo();
     void tryLogForceActuatorInfo();
@@ -493,7 +496,6 @@ private:
     MTM1M3_logevent_displacementSensorWarningC _previousEventDisplacementSensorWarning;
     MTM1M3_logevent_errorCodeC _previousEventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _previousEventForceActuatorBumpTestStatus;
-    MTM1M3_logevent_forceActuatorForceWarningC _previousEventForceActuatorForceWarning;
     MTM1M3_logevent_forceActuatorInfoC _previousEventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _previousEventForceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC _previousEventForceSetpointWarning;

@@ -22,6 +22,7 @@
  */
 
 #include <ForceActuatorData.h>
+#include <ForceActuatorFollowingErrorCounter.h>
 #include <ForceActuatorForceWarning.h>
 #include <ForceActuatorSettings.h>
 #include <M1M3SSPublisher.h>
@@ -143,6 +144,9 @@ void ForceActuatorForceWarning::_checkPrimaryFollowingError(int dataIndex, float
         primaryAxisFollowingErrorImmediateFault[dataIndex] = immediateTriggered;
         _shouldSend = true;
     }
+
+    ForceActuatorFollowingErrorCounter::instance().updatePrimaryCounts(dataIndex, warningTriggered,
+                                                                       countingTriggered);
 }
 
 void ForceActuatorForceWarning::_checkSecondaryMeasuredForce(int dataIndex, float secondaryForce) {
@@ -205,6 +209,9 @@ void ForceActuatorForceWarning::_checkSecondaryFollowingError(int dataIndex, flo
         secondaryAxisFollowingErrorImmediateFault[dataIndex] = immediateTriggered;
         _shouldSend = true;
     }
+
+    ForceActuatorFollowingErrorCounter::instance().updateSecondaryCounts(dataIndex, warningTriggered,
+                                                                         countingTriggered);
 }
 
 void ForceActuatorForceWarning::send() {
