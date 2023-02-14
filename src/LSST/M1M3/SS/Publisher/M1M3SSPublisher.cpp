@@ -132,14 +132,6 @@ void M1M3SSPublisher::reset() {
     _previousEventAppliedStaticForces.fx = NAN;
 }
 
-void M1M3SSPublisher::setSimulationMode(int newMode) {
-    MTM1M3_logevent_simulationModeC* simulationMode = &(instance()._simulationMode);
-    if (simulationMode->mode != newMode) {
-        simulationMode->mode = newMode;
-        instance()._m1m3SAL->logEvent_simulationMode(simulationMode, 0);
-    }
-}
-
 void M1M3SSPublisher::putAccelerometerData() { _m1m3SAL->putSample_accelerometerData(&_accelerometerData); }
 void M1M3SSPublisher::putForceActuatorData() { _m1m3SAL->putSample_forceActuatorData(&_forceActuatorData); }
 void M1M3SSPublisher::putGyroData() { _m1m3SAL->putSample_gyroData(&_gyroData); }
