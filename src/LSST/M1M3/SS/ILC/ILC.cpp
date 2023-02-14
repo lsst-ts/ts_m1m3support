@@ -29,6 +29,7 @@
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
+#include <ForceActuatorFollowingErrorCounter.h>
 #include <ForceActuatorForceWarning.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <iostream>
@@ -265,6 +266,7 @@ void ILC::readAll() {
     read(4);
     read(5);
     ForceActuatorForceWarning::instance().send();
+    ForceActuatorFollowingErrorCounter::instance().send();
 }
 
 void ILC::flush(uint8_t subnet) {
