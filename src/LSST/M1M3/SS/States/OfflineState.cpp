@@ -25,6 +25,8 @@
 #include <Model.h>
 #include <DigitalInputOutput.h>
 #include <PowerController.h>
+#include <SimulationMode.h>
+
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -42,9 +44,9 @@ States::Type OfflineState::enterControl(EnterControlCommand* command) {
 
     M1M3SSPublisher::instance().logSoftwareVersions();
 #ifdef SIMULATOR
-    M1M3SSPublisher::instance().setSimulationMode(1);
+    SimulationMode::instance().setSimulationMode(1);
 #else
-    M1M3SSPublisher::instance().setSimulationMode(0);
+    SimulationMode::instance().setSimulationMode(0);
 #endif
     Model::get().publishRecommendedSettings();
     // Model::get().getDigitalInputOutput()->turnAirOff();
