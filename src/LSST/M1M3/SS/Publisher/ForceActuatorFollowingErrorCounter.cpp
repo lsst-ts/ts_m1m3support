@@ -32,7 +32,6 @@ using namespace LSST::M1M3::SS;
 
 ForceActuatorFollowingErrorCounter::ForceActuatorFollowingErrorCounter(token) {
     _shouldSend = true;
-    _wasSend = false;
     _lastSendCounter = 0;
 
     counter = 0;
@@ -70,7 +69,7 @@ void ForceActuatorFollowingErrorCounter::updateSecondaryCounts(int dataIndex, bo
 void ForceActuatorFollowingErrorCounter::send() {
     increaseCounter();
 
-    if (_shouldSend == false && _wasSend == true) {
+    if (_shouldSend == false) {
         return;
     }
 
@@ -82,5 +81,4 @@ void ForceActuatorFollowingErrorCounter::send() {
 
     _lastSendCounter = counter + 50;
     _shouldSend = false;
-    _wasSend = true;
 }
