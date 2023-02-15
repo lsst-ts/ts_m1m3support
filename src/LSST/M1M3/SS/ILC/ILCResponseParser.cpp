@@ -893,25 +893,29 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
     float primaryForce = ForceActuatorData::instance().primaryCylinderForce[dataIndex];
     float primarySetpoint = _appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0f;
 
-    ForceActuatorForceWarning::instance().checkPrimary(dataIndex, primaryForce, primarySetpoint);
+    auto& fafWarning = ForceActuatorForceWarning::instance();
+
+    fafWarning.checkPrimary(dataIndex, primaryForce, primarySetpoint);
 
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
+
+    bool countingWarning = fafWarning.primaryAxisFollowingErrorCountingFault[dataIndex];
+    bool immediateFault = fafWarning.primaryAxisFollowingErrorImmediateFault[dataIndex];
+
     if (secondaryDataIndex != -1) {
         float secondaryForce = ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex];
         float secondarySetpoint =
                 _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0f;
         ForceActuatorForceWarning::instance().checkSecondary(secondaryDataIndex, secondaryForce,
                                                              secondarySetpoint);
-        _safetyController->forceActuatorFollowingError(
-                dataIndex,
-                ForceActuatorForceWarning::instance().primaryAxisFollowingErrorCountingFault[dataIndex] ||
-                        ForceActuatorForceWarning::instance()
-                                .secondaryAxisFollowingErrorCountingFault[dataIndex]);
-    } else {
-        _safetyController->forceActuatorFollowingError(
-                dataIndex,
-                ForceActuatorForceWarning::instance().primaryAxisFollowingErrorCountingFault[dataIndex]);
+
+        countingWarning =
+                countingWarning || fafWarning.secondaryAxisFollowingErrorCountingFault[secondaryDataIndex];
+        immediateFault =
+                immediateFault || fafWarning.secondaryAxisFollowingErrorImmediateFault[secondaryDataIndex];
     }
+
+    _safetyController->forceActuatorFollowingError(dataIndex, countingWarning, immediateFault);
 }
 
 void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId) {
