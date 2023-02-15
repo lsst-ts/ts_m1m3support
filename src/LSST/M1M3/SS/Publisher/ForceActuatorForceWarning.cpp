@@ -31,12 +31,12 @@
 
 using namespace LSST::M1M3::SS;
 
-ForceActuatorForceWarning::ForceActuatorForceWarning(token) { reset(); }
+ForceActuatorForceWarning::ForceActuatorForceWarning(token) {
+    reset();
+    _shouldSend = true;
+}
 
 void ForceActuatorForceWarning::reset() {
-    _shouldSend = false;
-    _wasSend = false;
-
     timestamp = 0;
     anyWarning = false;
     anyFault = false;
@@ -215,7 +215,7 @@ void ForceActuatorForceWarning::_checkSecondaryFollowingError(int dataIndex, flo
 }
 
 void ForceActuatorForceWarning::send() {
-    if (_shouldSend == false && _wasSend == true) {
+    if (_shouldSend == false) {
         return;
     }
     anyWarning = anyPrimaryAxisMeasuredForceWarning || anySecondaryAxisMeasuredForceWarning ||
@@ -226,5 +226,4 @@ void ForceActuatorForceWarning::send() {
     M1M3SSPublisher::instance().logForceActuatorForceWarning(this);
 
     _shouldSend = false;
-    _wasSend = true;
 }

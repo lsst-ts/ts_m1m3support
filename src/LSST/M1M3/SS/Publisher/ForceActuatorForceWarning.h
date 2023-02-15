@@ -66,7 +66,6 @@ private:
     void _checkSecondaryFollowingError(int dataIndex, float secondaryForce, float secondarySetpoint);
 
     bool _shouldSend;
-    bool _wasSend;
 };
 
 }  // namespace SS

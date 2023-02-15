@@ -53,7 +53,6 @@ public:
     void send();
 
     long long _lastSendCounter;
-    bool _wasSend;
     bool _shouldSend;
 };
 
