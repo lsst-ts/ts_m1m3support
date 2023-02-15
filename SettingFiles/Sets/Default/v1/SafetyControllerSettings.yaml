@@ -82,9 +82,10 @@ ILCSettings:
   FaultOnCommunicationTimeout: On
   CommunicationTimeoutCountThreshold: 3
   CommunicationTimeoutPeriod: 5
-  FaultOnForceActuatorFollowingError: On
+  FaultOnForceActuatorFollowingErrorCounting: On
   ForceActuatorFollowingErrorCountThreshold: 50
   ForceActuatorFollowingErrorPeriod: 50
+  FaultOnForceActuatorFollowingErrorImmediate: On
   FaultOnHardpointActuatorLoadCellError: On
   FaultOnHardpointActuatorMeasuredForce: On
   HardpointActuatorMeasuredForceCountThreshold: 50
