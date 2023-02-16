@@ -26,7 +26,6 @@
 
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <PIDSettings.h>
 #include <PID.h>
 #include <SafetyController.h>
@@ -55,7 +54,7 @@ namespace SS {
 class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                          ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
+                          PIDSettings* pidSettings);
 
     void applyBalanceForces(float* x, float* y, float* z);
 
@@ -87,7 +86,6 @@ private:
 
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
     PIDSettings* _pidSettings;
 
     PID _fx;

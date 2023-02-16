@@ -21,14 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <sal_MTM1M3.h>
+#include <spdlog/spdlog.h>
+
 #include <BumpTestController.h>
+#include <ForceActuatorData.h>
+#include <ForceActuatorSettings.h>
 #include <ForceController.h>
 #include <Model.h>
 #include <Publisher.h>
 #include <SettingReader.h>
-
-#include <sal_MTM1M3.h>
-#include <spdlog/spdlog.h>
 
 using namespace MTM1M3;
 
@@ -65,13 +67,13 @@ int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bo
                               .getForceActuatorApplicationSettings()
                               ->ZIndexToSecondaryCylinderIndex[_zIndex];
 
-    _testedWarning = SettingReader::instance().getForceActuatorSettings()->TestedTolerances.warning;
-    _testedError = SettingReader::instance().getForceActuatorSettings()->TestedTolerances.error;
-    _nonTestedWarning = SettingReader::instance().getForceActuatorSettings()->NonTestedTolerances.warning;
-    _nonTestedError = SettingReader::instance().getForceActuatorSettings()->NonTestedTolerances.error;
+    _testedWarning = ForceActuatorSettings::instance().TestedTolerances.warning;
+    _testedError = ForceActuatorSettings::instance().TestedTolerances.error;
+    _nonTestedWarning = ForceActuatorSettings::instance().NonTestedTolerances.warning;
+    _nonTestedError = ForceActuatorSettings::instance().NonTestedTolerances.error;
 
-    _testSettleTime = SettingReader::instance().getForceActuatorSettings()->bumpTestSettleTime;
-    _testMeasurements = SettingReader::instance().getForceActuatorSettings()->bumpTestMeasurements;
+    _testSettleTime = ForceActuatorSettings::instance().bumpTestSettleTime;
+    _testMeasurements = ForceActuatorSettings::instance().bumpTestMeasurements;
 
     _testPrimary = testPrimary;
     _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
@@ -322,12 +324,9 @@ bool BumpTestController::_collectAverages() {
 
     _testProgress++;
 
-    for (int i = 0; i < FA_X_COUNT; ++i)
-        _xAverages[i] += M1M3SSPublisher::instance().getForceActuatorData()->xForce[i];
-    for (int i = 0; i < FA_Y_COUNT; ++i)
-        _yAverages[i] += M1M3SSPublisher::instance().getForceActuatorData()->yForce[i];
-    for (int i = 0; i < FA_Z_COUNT; ++i)
-        _zAverages[i] += M1M3SSPublisher::instance().getForceActuatorData()->zForce[i];
+    for (int i = 0; i < FA_X_COUNT; ++i) _xAverages[i] += ForceActuatorData::instance().xForce[i];
+    for (int i = 0; i < FA_Y_COUNT; ++i) _yAverages[i] += ForceActuatorData::instance().yForce[i];
+    for (int i = 0; i < FA_Z_COUNT; ++i) _zAverages[i] += ForceActuatorData::instance().zForce[i];
 
     if (_testProgress >= _testMeasurements) {
         for (int i = 0; i < FA_X_COUNT; ++i) _xAverages[i] /= _testProgress;

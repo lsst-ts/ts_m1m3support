@@ -21,39 +21,43 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef RAISEDBUSLIST_H_
-#define RAISEDBUSLIST_H_
+#ifndef LSST_FORCEACTUATORFOLLOWINGERRORCOUNTER_H
+#define LSST_FORCEACTUATORFOLLOWINGERRORCOUNTER_H
 
-#include <BusList.h>
-#include <SAL_MTM1M3C.h>
+#include <string.h>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class RaisedBusList : public BusList {
+/**
+ * Wrapper object for MTM1M3_logevent_forceActuatorForceWarningC.
+ */
+class ForceActuatorFollowingErrorCounter : public MTM1M3_logevent_forceActuatorFollowingErrorCounterC,
+                                           public cRIO::Singleton<ForceActuatorFollowingErrorCounter> {
 public:
-    RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+    ForceActuatorFollowingErrorCounter(token);
 
-    void buildBuffer() override;
-    void update() override;
+    void increaseCounter() { counter++; }
 
-private:
-    MTM1M3_outerLoopDataC* _outerLoopData;
-    MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
-    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    MTM1M3_logevent_forceActuatorInfoC* _forceInfo;
+    void updatePrimaryCounts(int dataIndex, bool warningTriggered, bool countingTriggered);
+    void updateSecondaryCounts(int dataIndex, bool warningTriggered, bool countingTriggered);
 
-    int32_t _setForceCommandIndex[5];
-    int32_t _moveStepCommandIndex[5];
-    int32_t _faStatusCommandIndex[5];
-    int32_t _roundRobinFAReportServerStatusIndex[5];
-    int32_t _hmLVDTCommandIndex[5];
-    int32_t _lvdtSampleClock;
+    /**
+     * Sends updates through SAL/DDS.
+     */
+    void send();
+
+    long long _lastSendCounter;
+    bool _shouldSend;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* RAISEDBUSLIST_H_ */
+#endif  // LSST_FORCEACTUATORFOLLOWINGERRORCOUNTER_H

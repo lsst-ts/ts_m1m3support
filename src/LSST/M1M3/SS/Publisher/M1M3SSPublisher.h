@@ -69,7 +69,6 @@ public:
      * @see putAccelerometerData
      */
     MTM1M3_accelerometerDataC* getAccelerometerData() { return &_accelerometerData; }
-    MTM1M3_forceActuatorDataC* getForceActuatorData() { return &_forceActuatorData; }
     MTM1M3_gyroDataC* getGyroData() { return &_gyroData; }
     MTM1M3_hardpointActuatorDataC* getHardpointActuatorData() { return &_hardpointActuatorData; }
     MTM1M3_hardpointMonitorDataC* getHardpointMonitorData() { return &_hardpointMonitorData; }
@@ -110,9 +109,6 @@ public:
     MTM1M3_logevent_errorCodeC* getEventErrorCode() { return &_eventErrorCode; }
     MTM1M3_logevent_forceActuatorBumpTestStatusC* getEventForceActuatorBumpTestStatus() {
         return &_eventForceActuatorBumpTestStatus;
-    }
-    MTM1M3_logevent_forceActuatorForceWarningC* getEventForceActuatorForceWarning() {
-        return &_eventForceActuatorForceWarning;
     }
     MTM1M3_logevent_forceActuatorInfoC* getEventForceActuatorInfo() { return &_eventForceActuatorInfo; }
     MTM1M3_logevent_forceActuatorStateC* getEventForceActuatorState() { return &_eventForceActuatorState; }
@@ -197,7 +193,9 @@ public:
      * getAccelerometerData().
      */
     void putAccelerometerData();
-    void putForceActuatorData();
+    void putForceActuatorData(MTM1M3_forceActuatorDataC* data) {
+        _m1m3SAL->putSample_forceActuatorData(data);
+    }
     void putGyroData();
     void putHardpointActuatorData();
     void putHardpointMonitorData();
@@ -272,7 +270,12 @@ public:
         _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
     }
     void logForceActuatorBumpTestStatus();
-    void logForceActuatorForceWarning();
+    void logForceActuatorForceWarning(MTM1M3_logevent_forceActuatorForceWarningC* data) {
+        _m1m3SAL->logEvent_forceActuatorForceWarning(data, 0);
+    }
+    void logForceActuatorFollowingErrorCounter(MTM1M3_logevent_forceActuatorFollowingErrorCounterC* data) {
+        _m1m3SAL->logEvent_forceActuatorFollowingErrorCounter(data, 0);
+    }
     void tryLogForceActuatorForceWarning();
     void logForceActuatorInfo();
     void tryLogForceActuatorInfo();
@@ -413,7 +416,6 @@ private:
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
 
     MTM1M3_accelerometerDataC _accelerometerData;
-    MTM1M3_forceActuatorDataC _forceActuatorData;
     MTM1M3_gyroDataC _gyroData;
     MTM1M3_hardpointActuatorDataC _hardpointActuatorData;
     MTM1M3_hardpointMonitorDataC _hardpointMonitorData;
@@ -447,7 +449,6 @@ private:
     EnabledForceActuators _enabledForceActuators;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _eventForceActuatorBumpTestStatus;
-    MTM1M3_logevent_forceActuatorForceWarningC _eventForceActuatorForceWarning;
     MTM1M3_logevent_forceActuatorInfoC _eventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _eventForceActuatorState;
     ForceActuatorWarning _forceActuatorWarning;
@@ -495,7 +496,6 @@ private:
     MTM1M3_logevent_displacementSensorWarningC _previousEventDisplacementSensorWarning;
     MTM1M3_logevent_errorCodeC _previousEventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _previousEventForceActuatorBumpTestStatus;
-    MTM1M3_logevent_forceActuatorForceWarningC _previousEventForceActuatorForceWarning;
     MTM1M3_logevent_forceActuatorInfoC _previousEventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _previousEventForceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC _previousEventForceSetpointWarning;

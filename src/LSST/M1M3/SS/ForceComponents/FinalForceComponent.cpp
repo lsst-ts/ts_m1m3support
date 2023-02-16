@@ -29,7 +29,6 @@
 #include <ForceActuatorSettings.h>
 #include <Range.h>
 #include <ForcesAndMoments.h>
-#include <ForceConverter.h>
 #include <DistributedForces.h>
 #include <spdlog/spdlog.h>
 
@@ -37,13 +36,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
+FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        : ForceComponent("Final", ForceActuatorSettings::instance().FinalComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _enabledForceActuators = M1M3SSPublisher::instance().getEnabledForceActuators();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorSettings = forceActuatorSettings;
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
@@ -126,8 +123,8 @@ void FinalForceComponent::postUpdateActions() {
         _forceSetpointWarning->forceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = _forceActuatorSettings->ForceLimitXTable[xIndex].LowFault;
-            float xHighFault = _forceActuatorSettings->ForceLimitXTable[xIndex].HighFault;
+            float xLowFault = ForceActuatorSettings::instance().ForceLimitXTable[xIndex].LowFault;
+            float xHighFault = ForceActuatorSettings::instance().ForceLimitXTable[xIndex].HighFault;
             _preclippedForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedForces->xForces[xIndex],
                                                   _appliedForces->xForces + xIndex);
@@ -136,8 +133,8 @@ void FinalForceComponent::postUpdateActions() {
         }
 
         if (yIndex != -1) {
-            float yLowFault = _forceActuatorSettings->ForceLimitYTable[yIndex].LowFault;
-            float yHighFault = _forceActuatorSettings->ForceLimitYTable[yIndex].HighFault;
+            float yLowFault = ForceActuatorSettings::instance().ForceLimitYTable[yIndex].LowFault;
+            float yHighFault = ForceActuatorSettings::instance().ForceLimitYTable[yIndex].HighFault;
             _preclippedForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedForces->yForces[yIndex],
                                                   _appliedForces->yForces + yIndex);
@@ -145,8 +142,8 @@ void FinalForceComponent::postUpdateActions() {
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
 
-        float zLowFault = _forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
-        float zHighFault = _forceActuatorSettings->ForceLimitZTable[zIndex].HighFault;
+        float zLowFault = ForceActuatorSettings::instance().ForceLimitZTable[zIndex].LowFault;
+        float zHighFault = ForceActuatorSettings::instance().ForceLimitZTable[zIndex].HighFault;
         _preclippedForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedForces->zForces[zIndex],
                                               _appliedForces->zForces + zIndex);
@@ -155,9 +152,9 @@ void FinalForceComponent::postUpdateActions() {
         clippingRequired = _forceSetpointWarning->forceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedForces->xForces,
-            _appliedForces->yForces, _appliedForces->zForces);
+    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _appliedForces->xForces, _appliedForces->yForces,
+            _appliedForces->zForces);
     _appliedForces->fx = fm.Fx;
     _appliedForces->fy = fm.Fy;
     _appliedForces->fz = fm.Fz;
@@ -166,9 +163,9 @@ void FinalForceComponent::postUpdateActions() {
     _appliedForces->mz = fm.Mz;
     _appliedForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
-                                                   _preclippedForces->xForces, _preclippedForces->yForces,
-                                                   _preclippedForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _preclippedForces->xForces, _preclippedForces->yForces,
+            _preclippedForces->zForces);
     _preclippedForces->fx = fm.Fx;
     _preclippedForces->fy = fm.Fy;
     _preclippedForces->fz = fm.Fz;

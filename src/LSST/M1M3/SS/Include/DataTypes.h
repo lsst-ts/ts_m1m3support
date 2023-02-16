@@ -48,6 +48,9 @@
 /// Number of actuators in Z axis - shall equal to total number of actuators.
 #define FA_Z_COUNT 156
 
+/// Number of secondary (X or Y) actuators.
+#define FA_S_COUNT (FA_X_COUNT + FA_Y_COUNT)
+
 /// Number of hardpoints.
 #define HP_COUNT 6
 

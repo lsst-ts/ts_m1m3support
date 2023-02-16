@@ -22,6 +22,7 @@
  */
 
 #include <FaultState.h>
+#include <ForceActuatorData.h>
 #include <DigitalInputOutput.h>
 #include <Model.h>
 #include <ILC.h>
@@ -69,7 +70,7 @@ States::Type FaultState::update(UpdateCommand* command) {
     ilc->calculateFAMirrorForces();
     ilc->verifyResponses();
     ilc->publishForceActuatorStatus();
-    ilc->publishForceActuatorData();
+    ForceActuatorData::instance().send();
     ilc->publishHardpointStatus();
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();

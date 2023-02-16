@@ -26,7 +26,6 @@
 
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
@@ -36,8 +35,7 @@ namespace SS {
 
 class ElevationForceComponent : public ForceComponent {
 public:
-    ElevationForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                            ForceActuatorSettings* forceActuatorSettings);
+    ElevationForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     void applyElevationForces(float* x, float* y, float* z);
 
@@ -55,7 +53,6 @@ protected:
 private:
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
