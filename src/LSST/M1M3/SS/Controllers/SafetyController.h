@@ -128,7 +128,7 @@ public:
 
     void ilcCommunicationTimeout(bool conditionFlag);
 
-    void forceActuatorFollowingError(int actuatorDataIndex, bool conditionFlag);
+    void forceActuatorFollowingError(int actuatorDataIndex, bool countingWarning, bool immediateFault);
 
     void hardpointActuatorLoadCellError(bool conditionFlag);
 

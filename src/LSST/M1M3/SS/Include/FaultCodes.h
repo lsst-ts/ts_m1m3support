@@ -110,11 +110,12 @@ struct FaultCodes {
         PowerControllerAuxPowerNetworkBOutputMismatch = _MASK_POWER_CONTROLLER | 0x06,
         PowerControllerAuxPowerNetworkCOutputMismatch = _MASK_POWER_CONTROLLER | 0x07,
         PowerControllerAuxPowerNetworkDOutputMismatch = _MASK_POWER_CONTROLLER | 0x08,
-        RaiseOperationTimeout = _MASK_TIMEOUTS | 0x01,              // 6108
-        LowerOperationTimeout = _MASK_TIMEOUTS | 0x02,              // 6109
-        ILCCommunicationTimeout = _MASK_TIMEOUTS | 0x03,            // 6110
-        ForceActuatorFollowingError = _MASK_FORCE_ACTUATOR | 0x01,  // 6111
-        HardpointActuator = _MASK_HARDPOINT | 0x01,                 // 6112
+        RaiseOperationTimeout = _MASK_TIMEOUTS | 0x01,                       // 6108
+        LowerOperationTimeout = _MASK_TIMEOUTS | 0x02,                       // 6109
+        ILCCommunicationTimeout = _MASK_TIMEOUTS | 0x03,                     // 6110
+        ForceActuatorFollowingErrorCounting = _MASK_FORCE_ACTUATOR | 0x01,   // 6111
+        ForceActuatorFollowingErrorImmediate = _MASK_FORCE_ACTUATOR | 0x02,  // 0112
+        HardpointActuator = _MASK_HARDPOINT | 0x01,                          // 6112
         HardpointActuatorLoadCellError = _MASK_HARDPOINT | 0x02,
         HardpointActuatorMeasuredForceError = _MASK_HARDPOINT | 0x03,
 

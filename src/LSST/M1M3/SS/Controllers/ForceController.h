@@ -130,7 +130,7 @@ struct ForceActuatorIndicesNeighbors {
 class ForceController {
 public:
     ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                    ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
+                    PIDSettings* pidSettings);
 
     void reset();
 
@@ -247,7 +247,6 @@ private:
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
     PIDSettings* _pidSettings;
     SafetyController* _safetyController;
 
@@ -269,7 +268,6 @@ private:
     MTM1M3_logevent_preclippedCylinderForcesC* _preclippedCylinderForces;
 
     MTM1M3_logevent_forceActuatorInfoC* _forceActuatorInfo;
-    MTM1M3_forceActuatorDataC* _forceActuatorData;
 
     MTM1M3_inclinometerDataC* _inclinometerData;
     MTM1M3_pidDataC* _pidData;
