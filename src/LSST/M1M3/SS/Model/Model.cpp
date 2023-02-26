@@ -111,7 +111,7 @@ void Model::loadSettings(std::string settingsToApply) {
     SettingReader::instance().loadForceActuatorSettings();
     SPDLOG_INFO("Model: Loading hardpoint actuator application settings");
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
-            SettingReader::instance().loadHardpointActuatorApplicationSettings();
+            SettingReader::instance().getHardpointActuatorApplicationSettings();
     SPDLOG_INFO("Model: Loading hardpoint actuator settings");
     HardpointActuatorSettings* hardpointActuatorSettings =
             SettingReader::instance().loadHardpointActuatorSettings();
@@ -128,7 +128,7 @@ void Model::loadSettings(std::string settingsToApply) {
             SettingReader::instance().loadDisplacementSensorSettings();
     SPDLOG_INFO("Model: Loading hardpoint monitor application settings");
     HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
-            SettingReader::instance().loadHardpointMonitorApplicationSettings();
+            SettingReader::instance().getHardpointMonitorApplicationSettings();
     SPDLOG_INFO("Model: Loading gyro settings");
     GyroSettings* gyroSettings = SettingReader::instance().loadGyroSettings();
     SPDLOG_INFO("Model: Loading PID settings");

@@ -88,9 +88,14 @@ public:
     }
 
     void loadForceActuatorSettings();
-    HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
 
     HardpointActuatorSettings* getHardpointActuatorSettings() { return &_hardpointActuatorSettings; }
+    HardpointActuatorApplicationSettings* getHardpointActuatorApplicationSettings() {
+        return &_hardpointActuatorApplicationSettings;
+    }
+    HardpointMonitorApplicationSettings* getHardpointMonitorApplicationSettings() {
+        return &_hardpointMonitorApplicationSettings;
+    }
 
     HardpointActuatorSettings* loadHardpointActuatorSettings();
     ILCApplicationSettings* loadILCApplicationSettings();
@@ -100,7 +105,6 @@ public:
     PositionControllerSettings* loadPositionControllerSettings();
     AccelerometerSettings* loadAccelerometerSettings();
     DisplacementSensorSettings* loadDisplacementSensorSettings();
-    HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
     GyroSettings* loadGyroSettings();
     ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
     PIDSettings* loadPIDSettings();
