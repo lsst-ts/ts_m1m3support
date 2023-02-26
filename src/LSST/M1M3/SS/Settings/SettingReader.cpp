@@ -119,12 +119,6 @@ void SettingReader::loadForceActuatorSettings() {
     ForceActuatorSettings::instance().load(_getSetPath("ForceActuatorSettings.yaml"));
 }
 
-HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadHardpointActuatorApplicationSettings()");
-    _hardpointActuatorApplicationSettings.load(_getBasePath("HardpointActuatorApplicationSettings.yaml"));
-    return &_hardpointActuatorApplicationSettings;
-}
-
 HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadHardpointActuatorSettings()");
     _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.yaml"));
@@ -165,12 +159,6 @@ DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
     SPDLOG_DEBUG("SettingReader: loadDisplacementSensorSettings()");
     _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.yaml"));
     return &_displacementSensorSettings;
-}
-
-HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadHardpointMonitorApplicationSettings()");
-    _hardpointMonitorApplicationSettings.load(_getBasePath("HardpointMonitorApplicationSettings.yaml"));
-    return &_hardpointMonitorApplicationSettings;
 }
 
 GyroSettings* SettingReader::loadGyroSettings() {
