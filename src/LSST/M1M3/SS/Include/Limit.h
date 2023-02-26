@@ -29,6 +29,11 @@ namespace M1M3 {
 namespace SS {
 
 struct Limit {
+    Limit(float _lowFault, float _lowWarning, float _highWarning, float _highFault)
+            : LowFault(_lowFault),
+              LowWarning(_lowWarning),
+              HighWarning(_highWarning),
+              HighFault(_highFault) {}
     float LowFault;
     float LowWarning;
     float HighWarning;
