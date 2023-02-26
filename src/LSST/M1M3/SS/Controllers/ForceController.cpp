@@ -45,6 +45,12 @@ using namespace std;
 
 using namespace LSST::M1M3::SS;
 
+ForceActuatorIndicesNeighbors::ForceActuatorIndicesNeighbors() {
+    nearCount = 0;
+    memset(NearZIndices, 0, sizeof(NearZIndices));
+    memset(FarIndices, 0, sizeof(FarIndices));
+}
+
 ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
                                  PIDSettings* pidSettings)
         : _accelerationForceComponent(forceActuatorApplicationSettings),
@@ -91,8 +97,12 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     for (int i = 0; i < FA_COUNT; i++) {
         _mirrorWeight += df.ZForces[i];
         _zero[i] = 0;
-        ForceActuatorIndicesNeighbors neighbors;
-        for (unsigned int j = 0; j < ForceActuatorSettings::instance().Neighbors[i].NearZIDs.size(); ++j) {
+        ForceActuatorIndicesNeighbors* currentNeighbors = _neighbors + i;
+        currentNeighbors->nearCount = 0;
+        for (size_t j = 0; j < FA_MAX_NEAR_COUNT; ++j) {
+            if (ForceActuatorSettings::instance().Neighbors[i].NearZIDs[j] == 0) {
+                break;
+            }
             int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
                     ForceActuatorSettings::instance().Neighbors[i].NearZIDs[j]);
             if (index < 0) {
@@ -101,20 +111,26 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
                                 _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
                 exit(EXIT_FAILURE);
             }
-            neighbors.NearZIndices.push_back(index);
+            currentNeighbors->nearCount++;
+            currentNeighbors->NearZIndices[j] = index;
         }
-        for (unsigned int j = 0; j < ForceActuatorSettings::instance().Neighbors[i].FarIDs.size(); ++j) {
+        if (currentNeighbors->nearCount < 3) {
+            SPDLOG_CRITICAL("Invalid number of near neighbors for FA index {}: expected 3+, found {}", i,
+                            currentNeighbors->nearCount);
+            exit(EXIT_FAILURE);
+        }
+        for (size_t j = 0; j < FA_FAR_COUNT; ++j) {
             int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
                     ForceActuatorSettings::instance().Neighbors[i].FarIDs[j]);
             if (index < 0) {
-                SPDLOG_CRITICAL("Invalid far neighbor ID: {} FA index {} ID {}",
-                                ForceActuatorSettings::instance().Neighbors[i].FarIDs[j], i,
-                                _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+                SPDLOG_CRITICAL("Invalid far neighbor ID: {} FA index {} Neighbor {} ID {}",
+                                ForceActuatorSettings::instance().Neighbors[i].FarIDs[j], i, j,
+                                _forceActuatorApplicationSettings->ZIndexToActuatorId(
+                                        ForceActuatorSettings::instance().Neighbors[i].FarIDs[j]));
                 exit(EXIT_FAILURE);
             }
-            neighbors.FarIndices.push_back(index);
+            currentNeighbors->FarIndices[j] = index;
         }
-        _neighbors.push_back(neighbors);
     }
 
     SPDLOG_INFO("ForceController mirror weight/all Z forces {}N", _mirrorWeight);
@@ -597,14 +613,13 @@ bool ForceController::_checkNearNeighbors() {
         }
 
         float nearZ = 0;
-        int nearNeighbors = _neighbors[zIndex].NearZIndices.size();
-        for (int j = 0; j < nearNeighbors; ++j) {
+        for (int j = 0; j < _neighbors[zIndex].nearCount; ++j) {
             int neighborZIndex = _neighbors[zIndex].NearZIndices[j];
 
             nearZ += _appliedForces->zForces[neighborZIndex];
         }
 
-        nearZ /= nearNeighbors;
+        nearZ /= _neighbors[zIndex].nearCount;
         float deltaZ = abs(_appliedForces->zForces[zIndex] - nearZ);
 
         if (deltaZ > nominalZWarning) {
@@ -686,8 +701,7 @@ bool ForceController::_checkFarNeighbors() {
         }
 
         z = _appliedForces->zForces[zIndex];
-        int farNeighbors = _neighbors[zIndex].FarIndices.size();
-        for (int j = 0; j < farNeighbors; ++j) {
+        for (int j = 0; j < FA_FAR_COUNT; ++j) {
             int neighborZIndex = _neighbors[zIndex].FarIndices[j];
             int neighborXIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[neighborZIndex];
             int neighborYIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[neighborZIndex];
@@ -703,7 +717,7 @@ bool ForceController::_checkFarNeighbors() {
             z += _appliedForces->zForces[neighborZIndex];
         }
         float magnitude = sqrt(x * x + y * y + z * z);
-        float magnitudeAverage = magnitude / (farNeighbors + 1.0);
+        float magnitudeAverage = magnitude / (FA_FAR_COUNT + 1.0);
         bool previousWarning = _forceSetpointWarning->farNeighborWarning[zIndex];
         if (!Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce)) {
             failed += fmt::format(" {}: magA {:.2f} globalA {:.2f} |{:.2f}| < {:.2f}",

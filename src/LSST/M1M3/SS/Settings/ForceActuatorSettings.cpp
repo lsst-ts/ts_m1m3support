@@ -22,11 +22,8 @@
  */
 
 #include <spdlog/spdlog.h>
-#include <algorithm>
 
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+#include <rapidcsv.h>
 
 #include <yaml-cpp/yaml.h>
 
@@ -39,6 +36,11 @@
 #include <TableLoader.h>
 
 using namespace LSST::M1M3::SS;
+
+ForceActuatorNeighbors::ForceActuatorNeighbors() {
+    memset(NearZIDs, 0, sizeof(NearZIDs));
+    memset(FarIDs, 0, sizeof(FarIDs));
+}
 
 ForceActuatorSettings::ForceActuatorSettings(token) {
     memset(primaryFollowingErrorWarningThreshold, 0, sizeof(primaryFollowingErrorWarningThreshold));
@@ -152,11 +154,6 @@ void ForceActuatorSettings::load(const std::string &filename) {
         _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
                                   doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
 
-        Neighbors.clear();
-        for (int i = 0; i < FA_COUNT; ++i) {
-            ForceActuatorNeighbors neighbors;
-            Neighbors.push_back(neighbors);
-        }
         _loadNearNeighborZTable(doc["ForceActuatorNearZNeighborsTablePath"].as<std::string>());
         _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
 
@@ -462,67 +459,78 @@ DistributedForces ForceActuatorSettings::calculateForceDistribution(float xForce
 void ForceActuatorSettings::log() { M1M3SSPublisher::instance().logForceActuatorSettings(this); }
 
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
-    std::string fullname = SettingReader::instance().getFilePath(filename);
-    std::ifstream inputStream(fullname.c_str());
-    if (!inputStream.is_open()) {
-        throw std::runtime_error("Cannot read " + fullname + ": " + strerror(errno));
-    }
-
-    std::string lineText;
-    int32_t lineNumber = 0;
-    while (std::getline(inputStream, lineText)) {
-        boost::trim_right(lineText);
-        // Skip the first ROW (Header)
-        if (lineNumber >= 1 && !lineText.empty()) {
-            // Line Format:
-            //     ActuatorID,Neighbor1,...,Neighbor7
-            tokenizer tok(lineText);
-            ForceActuatorNeighbors neighbors;
-            tokenizer::iterator i = tok.begin();
-            // Skip the first COLUMN (Row ID)
-            ++i;
-            for (; i != tok.end(); ++i) {
-                int32_t id = boost::lexical_cast<int32_t>(*i);
-                if (id != 0) {
-                    Neighbors[lineNumber - 1].NearZIDs.push_back(id);
+    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    try {
+        rapidcsv::Document nearTable(fullPath);
+        if (nearTable.GetColumnCount() != FA_MAX_NEAR_COUNT + 1) {
+            throw std::runtime_error(fmt::format("Near neighbors CSV {} has {} columns, expected {}",
+                                                 fullPath, nearTable.GetColumnCount(),
+                                                 FA_MAX_NEAR_COUNT + 1));
+        }
+        if (nearTable.GetRowCount() != FA_COUNT) {
+            throw std::runtime_error(fmt::format("Near neighbors CSV {} has {} rows, expected {}", fullPath,
+                                                 nearTable.GetRowCount(), FA_COUNT));
+        }
+        for (size_t row = 0; row < FA_COUNT; row++) {
+            size_t neighIdx = 0;
+            try {
+                auto tableID = nearTable.GetCell<unsigned>(0, row);
+                unsigned expectedID =
+                        SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
+                                row);
+                if (tableID != expectedID) {
+                    throw std::runtime_error(
+                            fmt::format("{}:{} expected ID {}, read {}", fullPath, row, expectedID, tableID));
                 }
+                for (neighIdx = 0; neighIdx < FA_MAX_NEAR_COUNT; neighIdx++) {
+                    Neighbors[row].NearZIDs[neighIdx] = nearTable.GetCell<unsigned>(neighIdx + 1, row);
+                }
+            } catch (std::logic_error &er) {
+                throw std::runtime_error(
+                        fmt::format("{}:{}: cannot parse row (\"{}\") (column {}): {}", fullPath, row,
+                                    rowToStr(nearTable.GetRow<std::string>(row)), neighIdx, er.what()));
             }
         }
-        lineNumber++;
+    } catch (std::ios_base::failure &er) {
+        throw std::runtime_error(fmt::format("Cannot read near neighbors CSV {}: {}", fullPath, er.what()));
     }
-    inputStream.close();
 }
 
 void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
-    std::string fullname = SettingReader::instance().getFilePath(filename);
-    std::ifstream inputStream(fullname.c_str());
-    if (!inputStream.is_open()) {
-        throw std::runtime_error("Cannot read " + fullname + ": " + strerror(errno));
-    }
-
-    std::string lineText;
-    int32_t lineNumber = 0;
-    while (std::getline(inputStream, lineText)) {
-        boost::trim_right(lineText);
-        if (lineNumber >= 1 && !lineText.empty()) {
-            // Line Format:
-            //     ActuatorID,Neighbor1,...,Neighbor12
-            tokenizer tok(lineText);
-            tokenizer::iterator i = tok.begin();
-            ForceActuatorNeighbors neighbors;
-            for (int j = 0; j < 12; j++) {
-                ++i;
-                int32_t id = boost::lexical_cast<int32_t>(*i);
-                if (id != 0) {
-                    Neighbors[lineNumber - 1].FarIDs.push_back(id);
+    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    try {
+        rapidcsv::Document farTable(fullPath);
+        if (farTable.GetColumnCount() != FA_FAR_COUNT + 1) {
+            throw std::runtime_error(fmt::format("Far neighbor CSV {} has {} columns, expected {}", fullPath,
+                                                 farTable.GetColumnCount(), FA_FAR_COUNT + 1));
+        }
+        if (farTable.GetRowCount() != FA_COUNT) {
+            throw std::runtime_error(fmt::format("Far neighbor CSV {} has {} rows, expected {}", fullPath,
+                                                 farTable.GetRowCount(), FA_COUNT));
+        }
+        for (size_t row = 0; row < FA_COUNT; row++) {
+            size_t neighIdx = 0;
+            try {
+                auto tableID = farTable.GetCell<unsigned>(0, row);
+                unsigned expectedID =
+                        SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
+                                row);
+                if (tableID != expectedID) {
+                    throw std::runtime_error(
+                            fmt::format("{}:{} expected ID {}, read {}", fullPath, row, expectedID, tableID));
                 }
+                for (neighIdx = 0; neighIdx < FA_FAR_COUNT; neighIdx++) {
+                    Neighbors[row].FarIDs[neighIdx] = farTable.GetCell<unsigned>(neighIdx + 1, row);
+                }
+            } catch (std::logic_error &er) {
+                throw std::runtime_error(
+                        fmt::format("{}:{}: cannot parse row (\"{}\") (column {}): {}", fullPath, row,
+                                    rowToStr(farTable.GetRow<std::string>(row)), neighIdx, er.what()));
             }
         }
-        lineNumber++;
+    } catch (std::ios_base::failure &er) {
+        throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
-    inputStream.close();
 }
 
 void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primaryFilename,
