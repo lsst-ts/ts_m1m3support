@@ -21,22 +21,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SimulatedFPGA.h>
-#include <SAL_MTM1M3C.h>
-#include <SAL_MTMountC.h>
-#include <M1M3SSPublisher.h>
-#include <FPGAAddresses.h>
+#include <cstdlib>
 #include <cstring>
-#include <Timestamp.h>
-#include <CRC.h>
-#include <SettingReader.h>
-
 #include <thread>
 #include <unistd.h>
-#include <cstdlib>
+
 #include <spdlog/spdlog.h>
-#include "SAL_MTMount.h"
-#include "ccpp_sal_MTMount.h"
+
+#include <SAL_MTM1M3C.h>
+#include <SAL_MTMountC.h>
+
+#include <AirSupplyStatus.h>
+#include <CRC.h>
+#include <FPGAAddresses.h>
+#include <M1M3SSPublisher.h>
+#include <SettingReader.h>
+#include <SimulatedFPGA.h>
+#include <Timestamp.h>
 
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
@@ -250,14 +251,13 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             case FPGAAddresses::ModbusSubnetERx:
             case FPGAAddresses::GyroRx:
                 break;
-            case FPGAAddresses::AirSupplyValveOpen:
-                _lastAirOpen = std::chrono::steady_clock::now();
             case FPGAAddresses::ILCPowerInterlockStatus:
             case FPGAAddresses::FanCoilerHeaterInterlockStatus:
             case FPGAAddresses::AirSupplyInterlockStatus:
             case FPGAAddresses::CabinetDoorInterlockStatus:
             case FPGAAddresses::TMAMotionStopInterlockStatus:
             case FPGAAddresses::GISHeartbeatInterlockStatus:
+            case FPGAAddresses::AirSupplyValveOpen:
             case FPGAAddresses::AirSupplyValveClosed:
             case FPGAAddresses::MirrorCellLightsOn:
             case FPGAAddresses::HeartbeatToSafetyController: {
@@ -270,7 +270,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                 setBit(supportFPGAData.DigitalOutputStates, DigitalOutputs::AirCommandOutputOn, state);
                 setBit(supportFPGAData.DigitalInputStates, DigitalInputs::AirValveOpened, !state);
                 setBit(supportFPGAData.DigitalInputStates, DigitalInputs::AirValveClosed, state);
-                if (state == false) {
+                if (state == true) {
                     _lastAirOpen = std::chrono::steady_clock::now();
                 }
                 break;
@@ -926,7 +926,7 @@ float SimulatedFPGA::_getAirPressure() {
     float baseValue = 120;
     auto now = std::chrono::steady_clock::now();
 #define WAIT_SECONDS 60
-    if (M1M3SSPublisher::instance().getEventAirSupplyStatus()->airValveClosed == true) {
+    if (AirSupplyStatus::instance().airValveClosed == true) {
         baseValue = 0;
 
     } else if (now < (_lastAirOpen + std::chrono::seconds(WAIT_SECONDS))) {

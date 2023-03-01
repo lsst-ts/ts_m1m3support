@@ -81,7 +81,6 @@ public:
     MTM1M3_logevent_accelerometerWarningC* getEventAccelerometerWarning() {
         return &_eventAccelerometerWarning;
     }
-    MTM1M3_logevent_airSupplyStatusC* getEventAirSupplyStatus() { return &_eventAirSupplyStatus; }
     MTM1M3_logevent_airSupplyWarningC* getEventAirSupplyWarning() { return &_eventAirSupplyWarning; }
     MTM1M3_appliedAccelerationForcesC* getAppliedAccelerationForces() { return &_appliedAccelerationForces; }
     MTM1M3_logevent_appliedActiveOpticForcesC* getEventAppliedActiveOpticForces() {
@@ -227,8 +226,9 @@ public:
      * Calls logAccelerometerWarning().
      */
     void tryLogAccelerometerWarning();
-    void logAirSupplyStatus();
-    void tryLogAirSupplyStatus();
+    void logAirSupplyStatus(MTM1M3_logevent_airSupplyStatusC* data) {
+        _m1m3SAL->logEvent_airSupplyStatus(data, 0);
+    }
     void logAirSupplyWarning();
     void tryLogAirSupplyWarning();
     void logAppliedAccelerationForces();
@@ -426,7 +426,6 @@ private:
     MTM1M3_powerSupplyDataC _powerSupplyData;
 
     MTM1M3_logevent_accelerometerWarningC _eventAccelerometerWarning;
-    MTM1M3_logevent_airSupplyStatusC _eventAirSupplyStatus;
     MTM1M3_logevent_airSupplyWarningC _eventAirSupplyWarning;
 
     MTM1M3_appliedAccelerationForcesC _appliedAccelerationForces;
@@ -484,7 +483,6 @@ private:
     MTM1M3_logevent_summaryStateC _eventSummaryState;
 
     MTM1M3_logevent_accelerometerWarningC _previousEventAccelerometerWarning;
-    MTM1M3_logevent_airSupplyStatusC _previousEventAirSupplyStatus;
     MTM1M3_logevent_airSupplyWarningC _previousEventAirSupplyWarning;
     MTM1M3_logevent_appliedActiveOpticForcesC _previousEventAppliedActiveOpticForces;
     MTM1M3_logevent_appliedOffsetForcesC _previousEventAppliedOffsetForces;

@@ -159,20 +159,6 @@ void M1M3SSPublisher::tryLogAccelerometerWarning() {
     }
 }
 
-void M1M3SSPublisher::logAirSupplyStatus() {
-    _m1m3SAL->logEvent_airSupplyStatus(&_eventAirSupplyStatus, 0);
-    _previousEventAirSupplyStatus = _eventAirSupplyStatus;
-}
-
-void M1M3SSPublisher::tryLogAirSupplyStatus() {
-    if (_eventAirSupplyStatus.airCommandedOn != _previousEventAirSupplyStatus.airCommandedOn ||
-        _eventAirSupplyStatus.airCommandOutputOn != _previousEventAirSupplyStatus.airCommandOutputOn ||
-        _eventAirSupplyStatus.airValveOpened != _previousEventAirSupplyStatus.airValveOpened ||
-        _eventAirSupplyStatus.airValveClosed != _previousEventAirSupplyStatus.airValveClosed) {
-        logAirSupplyStatus();
-    }
-}
-
 void M1M3SSPublisher::logAirSupplyWarning() {
     _eventAirSupplyWarning.anyWarning =
             _eventAirSupplyWarning.commandOutputMismatch || _eventAirSupplyWarning.commandSensorMismatch;
