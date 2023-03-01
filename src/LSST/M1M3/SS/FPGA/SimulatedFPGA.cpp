@@ -75,6 +75,7 @@ SimulatedFPGA::SimulatedFPGA() {
     _sendResponse = true;
 
     _nextClock = std::chrono::steady_clock::now();
+    _lastAirOpen = _nextClock;
 }
 
 SimulatedFPGA::~SimulatedFPGA() {
@@ -83,26 +84,6 @@ SimulatedFPGA::~SimulatedFPGA() {
     _monitorMountElevationThread.join();
 
     _mgrMTMount.salShutdown();
-}
-
-void SimulatedFPGA::_monitorElevation(void) {
-    MTMount_elevationC mountElevationInstance;
-
-    SPDLOG_DEBUG("Start monitoring mount elevation...");
-
-    while (!_exitThread) {
-        ReturnCode_t status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
-
-        if (status == 0) {
-            SPDLOG_DEBUG("Got valid elevation sample...");
-
-            {
-                std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
-                _mountElevation = mountElevationInstance.actualPosition;
-            }
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    }
 }
 
 void SimulatedFPGA::initialize() { SPDLOG_DEBUG("SimulatedFPGA: initialize()"); }
@@ -269,13 +250,14 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             case FPGAAddresses::ModbusSubnetERx:
             case FPGAAddresses::GyroRx:
                 break;
+            case FPGAAddresses::AirSupplyValveOpen:
+                _lastAirOpen = std::chrono::steady_clock::now();
             case FPGAAddresses::ILCPowerInterlockStatus:
             case FPGAAddresses::FanCoilerHeaterInterlockStatus:
             case FPGAAddresses::AirSupplyInterlockStatus:
             case FPGAAddresses::CabinetDoorInterlockStatus:
             case FPGAAddresses::TMAMotionStopInterlockStatus:
             case FPGAAddresses::GISHeartbeatInterlockStatus:
-            case FPGAAddresses::AirSupplyValveOpen:
             case FPGAAddresses::AirSupplyValveClosed:
             case FPGAAddresses::MirrorCellLightsOn:
             case FPGAAddresses::HeartbeatToSafetyController: {
@@ -288,6 +270,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                 setBit(supportFPGAData.DigitalOutputStates, DigitalOutputs::AirCommandOutputOn, state);
                 setBit(supportFPGAData.DigitalInputStates, DigitalInputs::AirValveOpened, !state);
                 setBit(supportFPGAData.DigitalInputStates, DigitalInputs::AirValveClosed, state);
+                if (state == false) {
+                    _lastAirOpen = std::chrono::steady_clock::now();
+                }
                 break;
             }
             case FPGAAddresses::MirrorCellLightControl: {
@@ -540,7 +525,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
-                                _writeModbusFloat(response, 120 + getRndPM1() * 0.5);  // Write DCA Pressure
+                                _writeModbusFloat(response, _getAirPressure());  // Write DCA Pressure
                             }
                             _writeModbusCRC(response);
                             break;
@@ -725,7 +710,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
-                                _writeModbusFloat(response, 120 + getRndPM1() * 0.5);  // Write DCA Pressure
+                                _writeModbusFloat(response, _getAirPressure());  // Write DCA Pressure
                             }
                             _writeModbusCRC(response);
                             break;
@@ -767,63 +752,6 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
             ++i;  // Read Write Trigger IRQ
         }
     }
-}
-
-void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
-    if (_sendResponse == false) {
-        return;
-    }
-    _crcVector.push(data);
-    response->push((data << 1) | 0x9000);
-}
-
-void SimulatedFPGA::_writeModbus16(std::queue<uint16_t>* response, int16_t data) {
-    _writeModbus(response, (data >> 8) & 0xFF);
-    _writeModbus(response, data & 0xFF);
-}
-
-void SimulatedFPGA::_writeModbus32(std::queue<uint16_t>* response, int32_t data) {
-    _writeModbus(response, (data >> 24) & 0xFF);
-    _writeModbus(response, (data >> 16) & 0xFF);
-    _writeModbus(response, (data >> 8) & 0xFF);
-    _writeModbus(response, data & 0xFF);
-}
-
-void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t>* response, float data) {
-    uint8_t buffer[4];
-    memcpy(buffer, &data, 4);
-    _writeModbus(response, buffer[3]);
-    _writeModbus(response, buffer[2]);
-    _writeModbus(response, buffer[1]);
-    _writeModbus(response, buffer[0]);
-}
-
-void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
-    uint16_t buffer[256];
-    int i = 0;
-    while (!_crcVector.empty()) {
-        buffer[i] = _crcVector.front();
-        i++;
-        _crcVector.pop();
-    }
-    uint16_t crc = CRC::modbus(buffer, 0, i);
-    response->push((((crc >> 0) & 0xFF) << 1) | 0x9000);
-    response->push((((crc >> 8) & 0xFF) << 1) | 0x9000);  // Write CRC
-
-    uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::instance().getTimestamp());
-
-    for (int i = 0; i < 8; ++i) {
-        response->push(0xB000 | (rawTimestamp & 0xFF));  // Write Timestamp
-        rawTimestamp >>= 8;
-    }
-    response->push(0xA000);  // Write End of Frame
-}
-
-void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t>* response, int index) {
-    _writeModbus16(
-            response,
-            (_hardpointActuatorData->encoder[index] < _HPEncoderLow[index] ? 0x0200 : 0x0000) |
-                    (_hardpointActuatorData->encoder[index] > _HPEncoderHigh[index] ? 0x0100 : 0x0000));
 }
 
 void SimulatedFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
@@ -915,4 +843,95 @@ void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint3
     for (size_t i = 0; i < length; i++) {
         data[i] = i;
     }
+}
+
+void SimulatedFPGA::_monitorElevation(void) {
+    MTMount_elevationC mountElevationInstance;
+
+    SPDLOG_DEBUG("Start monitoring mount elevation...");
+
+    while (!_exitThread) {
+        ReturnCode_t status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
+
+        if (status == 0) {
+            SPDLOG_DEBUG("Got valid elevation sample...");
+
+            {
+                std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
+                _mountElevation = mountElevationInstance.actualPosition;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+}
+
+void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
+    if (_sendResponse == false) {
+        return;
+    }
+    _crcVector.push(data);
+    response->push((data << 1) | 0x9000);
+}
+
+void SimulatedFPGA::_writeModbus16(std::queue<uint16_t>* response, int16_t data) {
+    _writeModbus(response, (data >> 8) & 0xFF);
+    _writeModbus(response, data & 0xFF);
+}
+
+void SimulatedFPGA::_writeModbus32(std::queue<uint16_t>* response, int32_t data) {
+    _writeModbus(response, (data >> 24) & 0xFF);
+    _writeModbus(response, (data >> 16) & 0xFF);
+    _writeModbus(response, (data >> 8) & 0xFF);
+    _writeModbus(response, data & 0xFF);
+}
+
+void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t>* response, float data) {
+    uint8_t buffer[4];
+    memcpy(buffer, &data, 4);
+    _writeModbus(response, buffer[3]);
+    _writeModbus(response, buffer[2]);
+    _writeModbus(response, buffer[1]);
+    _writeModbus(response, buffer[0]);
+}
+
+void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
+    uint16_t buffer[256];
+    int i = 0;
+    while (!_crcVector.empty()) {
+        buffer[i] = _crcVector.front();
+        i++;
+        _crcVector.pop();
+    }
+    uint16_t crc = CRC::modbus(buffer, 0, i);
+    response->push((((crc >> 0) & 0xFF) << 1) | 0x9000);
+    response->push((((crc >> 8) & 0xFF) << 1) | 0x9000);  // Write CRC
+
+    uint64_t rawTimestamp = Timestamp::toRaw(M1M3SSPublisher::instance().getTimestamp());
+
+    for (int i = 0; i < 8; ++i) {
+        response->push(0xB000 | (rawTimestamp & 0xFF));  // Write Timestamp
+        rawTimestamp >>= 8;
+    }
+    response->push(0xA000);  // Write End of Frame
+}
+
+void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t>* response, int index) {
+    _writeModbus16(
+            response,
+            (_hardpointActuatorData->encoder[index] < _HPEncoderLow[index] ? 0x0200 : 0x0000) |
+                    (_hardpointActuatorData->encoder[index] > _HPEncoderHigh[index] ? 0x0100 : 0x0000));
+}
+
+float SimulatedFPGA::_getAirPressure() {
+    float baseValue = 120;
+    auto now = std::chrono::steady_clock::now();
+#define WAIT_SECONDS 60
+    if (M1M3SSPublisher::instance().getEventAirSupplyStatus()->airValveClosed == true) {
+        baseValue = 0;
+
+    } else if (now < (_lastAirOpen + std::chrono::seconds(WAIT_SECONDS))) {
+        baseValue = 120 * std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastAirOpen).count() /
+                    (WAIT_SECONDS * 1000);
+    }
+    return fabs(baseValue + getRndPM1() * 0.5);
 }
