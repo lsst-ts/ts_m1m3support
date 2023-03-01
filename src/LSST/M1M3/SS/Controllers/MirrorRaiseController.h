@@ -83,6 +83,8 @@ private:
 
     bool _lastForceFilled;
     bool _lastPositionCompleted;
+    bool _airPressureWaitReported;
+    bool _raisePauseReported;
 };
 
 } /* namespace SS */

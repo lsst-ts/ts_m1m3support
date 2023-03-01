@@ -123,6 +123,11 @@ private:
 
     // simulates properly clock signal
     std::chrono::time_point<std::chrono::steady_clock> _nextClock;
+
+    // simulates pressure raising after air valve is opened
+    std::chrono::time_point<std::chrono::steady_clock> _lastAirOpen;
+
+    float _getAirPressure();
 };
 
 /**
