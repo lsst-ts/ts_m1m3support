@@ -23,10 +23,11 @@
 
 #include <spdlog/spdlog.h>
 
+#include <AirSupplyStatus.h>
+#include <ForceController.h>
 #include <HardpointActuatorWarning.h>
 #include <M1M3SSPublisher.h>
 #include <MirrorRaiseController.h>
-#include <ForceController.h>
 #include <PositionController.h>
 #include <PowerController.h>
 #include <SafetyController.h>
@@ -71,7 +72,14 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _forceController->zeroVelocityForces();
     _forceController->zeroSupportPercentage();
     _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp();
+
     HardpointActuatorWarning::instance().waitingForAirPressureBeforeRaise = false;
+
+    if (AirSupplyStatus::instance().airValveClosed == true) {
+        SPDLOG_WARN(
+                "Air valve is closed and the mirror was commanded to raise. Please check that the compressed "
+                "air is provided to the M1M3 support system");
+    }
 }
 
 void MirrorRaiseController::runLoop() {
@@ -83,7 +91,7 @@ void MirrorRaiseController::runLoop() {
         if (_forceController->supportPercentageZeroed() && hpWarning->anyAirLowPressureFault) {
             if (hpWarning->waitingForAirPressureBeforeRaise == false) {
                 hpWarning->waitingForAirPressureBeforeRaise = true;
-                SPDLOG_WARN("Waiting for air pressure in the hardpoints");
+                SPDLOG_INFO("Waiting for air pressure in the hardpoints");
             }
             return;
         }
