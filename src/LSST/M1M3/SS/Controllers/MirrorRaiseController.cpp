@@ -21,13 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
+#include <AirSupplyStatus.h>
+#include <ForceController.h>
+#include <HardpointActuatorWarning.h>
+#include <M1M3SSPublisher.h>
 #include <MirrorRaiseController.h>
 #include <PositionController.h>
-#include <ForceController.h>
-#include <SafetyController.h>
-#include <M1M3SSPublisher.h>
 #include <PowerController.h>
-#include <spdlog/spdlog.h>
+#include <SafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -53,6 +56,7 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _bypassMoveToReference = bypassMoveToReference;
     _lastForceFilled = false;
     _lastPositionCompleted = false;
+    _raisePauseReported = false;
 
     _safetyController->raiseOperationTimeout(false);
     _positionController->stopMotion();
@@ -68,12 +72,33 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _forceController->zeroVelocityForces();
     _forceController->zeroSupportPercentage();
     _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp();
+
+    HardpointActuatorWarning::instance().waitingForAirPressureBeforeRaise = false;
+
+    if (AirSupplyStatus::instance().airValveClosed == true) {
+        SPDLOG_WARN(
+                "Air valve is closed and the mirror was commanded to raise. Please check that the compressed "
+                "air is provided to the M1M3 support system");
+    }
 }
 
 void MirrorRaiseController::runLoop() {
     SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
                  M1M3SSPublisher::instance().getEventForceActuatorState()->supportPercentage);
     if (!_forceController->supportPercentageFilled()) {
+        auto hpWarning = &HardpointActuatorWarning::instance();
+        // Wait for pressure to raise after valve opening
+        if (_forceController->supportPercentageZeroed() && hpWarning->anyAirLowPressureFault) {
+            if (hpWarning->waitingForAirPressureBeforeRaise == false) {
+                hpWarning->waitingForAirPressureBeforeRaise = true;
+                SPDLOG_INFO("Waiting for air pressure in the hardpoints");
+            }
+            return;
+        }
+        if (hpWarning->waitingForAirPressureBeforeRaise == true) {
+            hpWarning->waitingForAirPressureBeforeRaise = false;
+            SPDLOG_INFO("Hardpoint air pressure stabilized, raising the mirror");
+        }
         // We are still in the process of transferring the support force from the static supports
         // to the force actuators
         if (_positionController->forcesInTolerance(true) && _forceController->followingErrorInTolerance()) {
@@ -81,6 +106,10 @@ void MirrorRaiseController::runLoop() {
             // the force actuators are following their setpoints, we can continue to transfer the
             // support force from the static supports to the force actuators
             _forceController->incSupportPercentage();
+            if (_raisePauseReported == true) {
+                _raisePauseReported = false;
+                SPDLOG_INFO("Raising resumed");
+            }
             if (_forceController->supportPercentageFilled()) {
                 // All of the support force has been transfered from the static supports to the
                 // force actuators, stop the hardpoints from chasing and start moving to the
@@ -89,6 +118,11 @@ void MirrorRaiseController::runLoop() {
                 if (!_bypassMoveToReference) {
                     _positionController->moveToReferencePosition();
                 }
+            }
+        } else {
+            if (_raisePauseReported == false) {
+                _raisePauseReported = true;
+                SPDLOG_WARN("Raising paused - waiting for hardpoints movements");
             }
         }
     }

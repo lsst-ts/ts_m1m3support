@@ -953,23 +953,28 @@ void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float airPressure = _hardpointMonitorData->breakawayPressure[actuatorId];
     float minPressure = _hardpointActuatorSettings->airPressureFaultLow;
     float maxPressure = _hardpointActuatorSettings->airPressureFaultHigh;
-    int loadCellError = 0;
+    int pressureError = 0;
     switch (_detailedState->detailedState) {
         case MTM1M3::MTM1M3_shared_DetailedStates_RaisingState:
         case MTM1M3::MTM1M3_shared_DetailedStates_RaisingEngineeringState:
             minPressure = _hardpointActuatorSettings->airPressureFaultLowRaising;
+            // don't fault if we are waiting for pressure to build up
+            if (HardpointActuatorWarning::instance().waitingForAirPressureBeforeRaise == true) break;
         case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
         case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
         case MTM1M3::MTM1M3_shared_DetailedStates_LoweringState:
         case MTM1M3::MTM1M3_shared_DetailedStates_LoweringEngineeringState:
-            if (airPressure < minPressure) loadCellError = -1;
-            if (airPressure > maxPressure) loadCellError = 1;
-            _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError, airPressure);
-            break;
+            if (airPressure < minPressure)
+                pressureError = -1;
+            else if (airPressure > maxPressure)
+                pressureError = 1;
         default:
-            _safetyController->hardpointActuatorAirPressure(actuatorId, 0, airPressure);
             break;
     }
+    _safetyController->hardpointActuatorAirPressure(actuatorId, pressureError, airPressure);
+
+    HardpointActuatorWarning::instance().setAirPressure(actuatorId, (airPressure < minPressure),
+                                                        (airPressure > maxPressure), airPressure);
 }
 
 void ILCResponseParser::_warnResponseTimeout(double timestamp, int32_t actuatorId) {

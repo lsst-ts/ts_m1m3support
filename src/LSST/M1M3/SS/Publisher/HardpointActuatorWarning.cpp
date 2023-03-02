@@ -28,6 +28,8 @@ using namespace LSST::M1M3::SS;
 HardpointActuatorWarning::HardpointActuatorWarning(token) {
     timestamp = NAN;
     _updated = false;
+    waitingForAirPressureBeforeRaise = false;
+
     for (int i = 0; i < HP_COUNT; i++) {
         ilcFault[i] = false;
 
@@ -61,6 +63,9 @@ HardpointActuatorWarning::HardpointActuatorWarning(token) {
 
         _ilcOldStatus[i] = 0xFFFF;
         _ilcOldFaults[i] = 0xFFFF;
+
+        _airPressureLowWarning[i] = false;
+        _airPressureHighWarning[i] = false;
     }
 }
 
@@ -95,6 +100,9 @@ void HardpointActuatorWarning::send() {
     anyLowProximityWarning = false;
     anyHighProximityWarning = false;
 
+    anyAirLowPressureFault = false;
+    anyAirHighPressureFault = false;
+
     for (int i = 0; i < HP_COUNT; ++i) {
         anyMajorFault = anyMajorFault || majorFault[i];
         anyMinorFault = anyMinorFault || minorFault[i];
@@ -121,6 +129,8 @@ void HardpointActuatorWarning::send() {
         anyBroadcastCounterWarning = anyBroadcastCounterWarning || broadcastCounterWarning[i];
         anyLowProximityWarning = anyLowProximityWarning || lowProximityWarning[i];
         anyHighProximityWarning = anyHighProximityWarning || highProximityWarning[i];
+        anyAirLowPressureFault = anyAirLowPressureFault || _airPressureLowWarning[i];
+        anyAirHighPressureFault = anyAirHighPressureFault || _airPressureHighWarning[i];
     }
     anyWarning = anyMajorFault || anyMinorFault || anyFaultOverride || anyMainCalibrationError ||
                  anyBackupCalibrationError || anyLimitSwitch1Operated || anyLimitSwitch2Operated ||
@@ -208,5 +218,17 @@ void HardpointActuatorWarning::setProximityWarning(int32_t hpIndex, bool lowWarn
             SPDLOG_INFO("HP #{} encoder moved below high proximity warning.");
         }
         highProximityWarning[hpIndex] = highWarning;
+    }
+}
+
+void HardpointActuatorWarning::setAirPressure(int32_t hpIndex, bool lowWarning, bool highWarning,
+                                              float airPressure) {
+    if (_airPressureLowWarning[hpIndex] != lowWarning) {
+        _updated = true;
+        _airPressureLowWarning[hpIndex] = lowWarning;
+    }
+    if (_airPressureHighWarning[hpIndex] != highWarning) {
+        _updated = true;
+        _airPressureHighWarning[hpIndex] = highWarning;
     }
 }

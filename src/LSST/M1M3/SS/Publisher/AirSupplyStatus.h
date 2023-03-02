@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LSST_HARDPOINTACTUATORSETTINGS_H
-#define LSST_HARDPOINTACTUATORSETTINGS_H
+#ifndef LSST_AIRSUPPLYSTATUS_H
+#define LSST_AIRSUPPLYSTATUS_H
+
+#include <chrono>
 
 #include <SAL_MTM1M3.h>
 
 #include <cRIO/Singleton.h>
-#include <M1M3SSPublisher.h>
 
 #include "DataTypes.h"
 
@@ -35,33 +36,36 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class HardpointActuatorWarning : public MTM1M3_logevent_hardpointActuatorWarningC,
-                                 public cRIO::Singleton<HardpointActuatorWarning> {
+/**
+ * Handles air supply status.
+ */
+class AirSupplyStatus : public MTM1M3_logevent_airSupplyStatusC, public cRIO::Singleton<AirSupplyStatus> {
 public:
-    HardpointActuatorWarning(token);
+    AirSupplyStatus(token);
 
     void send();
 
-    void setStatus(int32_t hpIndex, double _timestamp, uint8_t status, int broadcastCounter);
-    void setIlcStatus(int32_t hpIndex, uint16_t ilcStatus, uint16_t ilcFaults);
-    void setProximityWarning(int32_t hpIndex, bool lowWarning, bool highWarning);
-    void setAirPressure(int32_t hpIndex, bool lowWarning, bool highWarning, float airPressure);
+    void setAirCommanded(bool _airCommandedOn);
 
-    bool anyAirLowPressureFault;
-    bool anyAirHighPressureFault;
-    bool waitingForAirPressureBeforeRaise;
+    /**
+     * Set outputs, returns if mismatch is detected.
+     *
+     * @param _timestamp timestamp when new commended output was readout
+     * @param _airCommandOutputOn new air commanded output
+     *
+     * @return true if airCommandedOn != airCommandOutputOn
+     */
+    bool setOutputs(double _timestamp, bool _airCommandOutputOn);
+
+    bool setInputs(double _timestamp, bool _airValveClosed, bool _airValveOpened);
 
 private:
     bool _updated;
-
-    uint16_t _ilcOldStatus[HP_COUNT];
-    uint16_t _ilcOldFaults[HP_COUNT];
-    bool _airPressureLowWarning[HP_COUNT];
-    bool _airPressureHighWarning[HP_COUNT];
+    std::chrono::steady_clock::time_point _airToggledTime;
 };
 
 }  // namespace SS
 }  // namespace M1M3
 }  // namespace LSST
 
-#endif  // LSST_HARDPOINTACTUATORSETTINGS_H
+#endif  // ! LSST_AIRSUPPLYSTATUS_H
