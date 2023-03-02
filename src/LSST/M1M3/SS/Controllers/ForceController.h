@@ -54,8 +54,10 @@ namespace M1M3 {
 namespace SS {
 
 struct ForceActuatorIndicesNeighbors {
-    std::vector<int32_t> NearZIndices;
-    std::vector<int32_t> FarIndices;
+    ForceActuatorIndicesNeighbors();
+    int nearCount;
+    int NearZIndices[FA_MAX_NEAR_COUNT];
+    int FarIndices[FA_FAR_COUNT];
 };
 
 /**
@@ -276,7 +278,7 @@ private:
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_gyroDataC* _gyroData;
 
-    std::vector<ForceActuatorIndicesNeighbors> _neighbors;
+    ForceActuatorIndicesNeighbors _neighbors[FA_COUNT];
 
     float _zero[FA_COUNT];
     float _mirrorWeight;

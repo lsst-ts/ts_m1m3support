@@ -28,7 +28,6 @@
 
 #include <ForceActuatorSettings.h>
 #include <SettingReader.h>
-#include <boost/tokenizer.hpp>
 #include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
 
@@ -81,13 +80,10 @@ void SettingReader::configure(std::string settingsToApply) {
     SPDLOG_DEBUG("SettingReader: configure(\"{}\")", settingsToApply);
     _currentSet = "";
     _currentVersion = "";
-    if (settingsToApply.find(',') != std::string::npos) {
-        typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-        tokenizer tokenize(settingsToApply);
-        tokenizer::iterator token = tokenize.begin();
-        _currentSet = *token;
-        ++token;
-        _currentVersion = *token;
+    auto commaPos = settingsToApply.find(',');
+    if (commaPos != std::string::npos) {
+        _currentSet = settingsToApply.substr(0, commaPos);
+        _currentVersion = settingsToApply.substr(commaPos + 1);
     } else {
         AliasApplicationSettings* aliasApplicationSettings = loadAliasApplicationSettings();
         for (uint32_t i = 0; i != aliasApplicationSettings->Aliases.size(); ++i) {
@@ -117,12 +113,6 @@ AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
 void SettingReader::loadForceActuatorSettings() {
     SPDLOG_DEBUG("SettingReader: loadForceActuatorSettings()");
     ForceActuatorSettings::instance().load(_getSetPath("ForceActuatorSettings.yaml"));
-}
-
-HardpointActuatorApplicationSettings* SettingReader::loadHardpointActuatorApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadHardpointActuatorApplicationSettings()");
-    _hardpointActuatorApplicationSettings.load(_getBasePath("HardpointActuatorApplicationSettings.yaml"));
-    return &_hardpointActuatorApplicationSettings;
 }
 
 HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
@@ -165,12 +155,6 @@ DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
     SPDLOG_DEBUG("SettingReader: loadDisplacementSensorSettings()");
     _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.yaml"));
     return &_displacementSensorSettings;
-}
-
-HardpointMonitorApplicationSettings* SettingReader::loadHardpointMonitorApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadHardpointMonitorApplicationSettings()");
-    _hardpointMonitorApplicationSettings.load(_getBasePath("HardpointMonitorApplicationSettings.yaml"));
-    return &_hardpointMonitorApplicationSettings;
 }
 
 GyroSettings* SettingReader::loadGyroSettings() {
