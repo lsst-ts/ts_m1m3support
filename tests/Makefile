@@ -62,12 +62,12 @@ clean:
 
 %.cpp.o: %.cpp.d
 	@echo '[CPP] $(patsubst %.d,%,$<)'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
+	${co}$(CPP) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
 
 %.cpp.d: %.cpp
 	@echo '[DPP] $<'
-	${co}$(CPP) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
+	${co}$(CPP) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
 
 ${BINARIES}: %: %.cpp.o ../src/libM1M3SS.a
 	@echo '[TPP] $<'
-	${co}$(CPP) -o $@ $(LIBS_FLAGS) $(BOOST_CPPFLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) $^ ../$(CRIOCPP)/lib/libcRIOcpp.a $(LIBS)
+	${co}$(CPP) -o $@ $(LIBS_FLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) $^ ../$(CRIOCPP)/lib/libcRIOcpp.a $(LIBS)

@@ -39,9 +39,9 @@ void HardpointActuatorSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        TableLoader::loadTable(1, 1, 6, &HardpointDisplacementToMirrorPosition,
+        TableLoader::loadTable(1, 6, &HardpointDisplacementToMirrorPosition,
                                doc["HardpointDisplacementToMirrorPositionTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &MirrorPositionToHardpointDisplacement,
+        TableLoader::loadTable(1, 6, &MirrorPositionToHardpointDisplacement,
                                doc["MirrorPositionToHardpointDisplacementTablePath"].as<std::string>());
         micrometersPerStep = doc["MicrometersPerStep"].as<double>();
         micrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();

@@ -24,13 +24,25 @@
 #ifndef HARDPOINTACTUATORAPPLICATIONSETTINGS_H_
 #define HARDPOINTACTUATORAPPLICATIONSETTINGS_H_
 
-#include <HardpointActuatorTableRow.h>
-#include <vector>
-#include <string>
+#include <cstdint>
+
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
+
+struct HardpointActuatorTableRow {
+    int32_t Index;
+    int32_t ActuatorID;
+    double XPosition;
+    double YPosition;
+    double ZPosition;
+    uint8_t Subnet;
+    uint8_t Address;
+    float SensorOffset;
+    float SensorSensitivity;
+};
 
 /**
  * Loads Hardpoint Settings. Settings are stored in csv file, pointed from Base
@@ -38,9 +50,15 @@ namespace SS {
  */
 class HardpointActuatorApplicationSettings {
 public:
-    std::vector<HardpointActuatorTableRow> Table;
-
-    void load(const std::string &filename);
+    /**
+     * Source data. Contains hardpoint actuator position and addresses. Populated in
+     * HardpointActuatorApplicationSettings.cpp.
+     *
+     * @snippet Settings/HardpointActuatorApplicationSettings.cpp HarpointActuatorTableRow initialization
+     *
+     * @see ForceActuatorTableRow
+     */
+    static HardpointActuatorTableRow Table[HP_COUNT];
 };
 
 } /* namespace SS */

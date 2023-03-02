@@ -45,8 +45,9 @@ namespace M1M3 {
 namespace SS {
 
 struct ForceActuatorNeighbors {
-    std::vector<int32_t> NearZIDs;
-    std::vector<int32_t> FarIDs;
+    ForceActuatorNeighbors();
+    int NearZIDs[FA_MAX_NEAR_COUNT];
+    int FarIDs[FA_FAR_COUNT];
 };
 
 /**
@@ -160,7 +161,7 @@ public:
     std::vector<Limit> MeasuredPrimaryCylinderLimitTable;
     std::vector<Limit> MeasuredSecondaryCylinderLimitTable;
 
-    std::vector<ForceActuatorNeighbors> Neighbors;
+    ForceActuatorNeighbors Neighbors[FA_COUNT];
 
     ForceComponentSettings AberrationComponentSettings;
     ForceComponentSettings AccelerationComponentSettings;

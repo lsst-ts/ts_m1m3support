@@ -135,7 +135,7 @@ public:
      *
      * @return actuator ID - 3 digits number, where 1st digit is actuator quadrant
      */
-    const int ZIndexToActuatorId(int zIndex);
+    const static int ZIndexToActuatorId(int zIndex);
 };
 
 } /* namespace SS */

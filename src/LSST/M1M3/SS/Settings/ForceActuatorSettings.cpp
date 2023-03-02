@@ -22,7 +22,8 @@
  */
 
 #include <spdlog/spdlog.h>
-#include <algorithm>
+
+#include <rapidcsv.h>
 
 #include <yaml-cpp/yaml.h>
 
@@ -35,6 +36,11 @@
 #include <TableLoader.h>
 
 using namespace LSST::M1M3::SS;
+
+ForceActuatorNeighbors::ForceActuatorNeighbors() {
+    memset(NearZIDs, 0, sizeof(NearZIDs));
+    memset(FarIDs, 0, sizeof(FarIDs));
+}
 
 ForceActuatorSettings::ForceActuatorSettings(token) {
     memset(primaryFollowingErrorWarningThreshold, 0, sizeof(primaryFollowingErrorWarningThreshold));
@@ -62,106 +68,92 @@ void ForceActuatorSettings::load(const std::string &filename) {
                     std::find(disabledIndices.begin(), disabledIndices.end(), faId) == disabledIndices.end();
         }
 
-        TableLoader::loadTable(1, 1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &AzimuthXTable, doc["AzimuthXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &AzimuthYTable, doc["AzimuthYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &AzimuthZTable, doc["AzimuthZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &HardpointForceMomentTable,
+        TableLoader::loadTable(1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &AzimuthXTable, doc["AzimuthXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &AzimuthYTable, doc["AzimuthYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &AzimuthZTable, doc["AzimuthZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &HardpointForceMomentTable,
                                doc["HardpointForceMomentTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &ForceDistributionXTable,
+        TableLoader::loadTable(1, 3, &ForceDistributionXTable,
                                doc["ForceDistributionXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &ForceDistributionYTable,
+        TableLoader::loadTable(1, 3, &ForceDistributionYTable,
                                doc["ForceDistributionYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &ForceDistributionZTable,
+        TableLoader::loadTable(1, 3, &ForceDistributionZTable,
                                doc["ForceDistributionZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &MomentDistributionXTable,
+        TableLoader::loadTable(1, 3, &MomentDistributionXTable,
                                doc["MomentDistributionXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &MomentDistributionYTable,
+        TableLoader::loadTable(1, 3, &MomentDistributionYTable,
                                doc["MomentDistributionYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &MomentDistributionZTable,
+        TableLoader::loadTable(1, 3, &MomentDistributionZTable,
                                doc["MomentDistributionZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &ElevationXTable, doc["ElevationXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &ElevationYTable, doc["ElevationYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &ElevationZTable, doc["ElevationZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 1, &StaticXTable, doc["StaticXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 1, &StaticYTable, doc["StaticYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 1, &StaticZTable, doc["StaticZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &ThermalXTable, doc["ThermalXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &ThermalYTable, doc["ThermalYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &ThermalZTable, doc["ThermalZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &VelocityXTable, doc["VelocityXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &VelocityYTable, doc["VelocityYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &VelocityZTable, doc["VelocityZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &ElevationXTable, doc["ElevationXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &ElevationYTable, doc["ElevationYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &ElevationZTable, doc["ElevationZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, &StaticXTable, doc["StaticXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, &StaticYTable, doc["StaticYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 1, &StaticZTable, doc["StaticZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &ThermalXTable, doc["ThermalXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &ThermalYTable, doc["ThermalYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 6, &ThermalZTable, doc["ThermalZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &VelocityXTable, doc["VelocityXTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &VelocityYTable, doc["VelocityYTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &VelocityZTable, doc["VelocityZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
 
-        TableLoader::loadLimitTable(1, 1, &AccelerationLimitXTable,
+        TableLoader::loadLimitTable(1, &AccelerationLimitXTable,
                                     doc["AccelerationLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &AccelerationLimitYTable,
+        TableLoader::loadLimitTable(1, &AccelerationLimitYTable,
                                     doc["AccelerationLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &AccelerationLimitZTable,
+        TableLoader::loadLimitTable(1, &AccelerationLimitZTable,
                                     doc["AccelerationLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ActiveOpticLimitZTable,
+        TableLoader::loadLimitTable(1, &ActiveOpticLimitZTable,
                                     doc["ActiveOpticLimitZTablePath"].as<std::string>());
         netActiveOpticForceTolerance = doc["NetActiveOpticForceTolerance"].as<float>();
-        TableLoader::loadLimitTable(1, 1, &AzimuthLimitXTable,
-                                    doc["AzimuthLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &AzimuthLimitYTable,
-                                    doc["AzimuthLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &AzimuthLimitZTable,
-                                    doc["AzimuthLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &BalanceLimitXTable,
-                                    doc["BalanceLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &BalanceLimitYTable,
-                                    doc["BalanceLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &BalanceLimitZTable,
-                                    doc["BalanceLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ElevationLimitXTable,
+        TableLoader::loadLimitTable(1, &AzimuthLimitXTable, doc["AzimuthLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &AzimuthLimitYTable, doc["AzimuthLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &AzimuthLimitZTable, doc["AzimuthLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &BalanceLimitXTable, doc["BalanceLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &BalanceLimitYTable, doc["BalanceLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &BalanceLimitZTable, doc["BalanceLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &ElevationLimitXTable,
                                     doc["ElevationLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ElevationLimitYTable,
+        TableLoader::loadLimitTable(1, &ElevationLimitYTable,
                                     doc["ElevationLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ElevationLimitZTable,
+        TableLoader::loadLimitTable(1, &ElevationLimitZTable,
                                     doc["ElevationLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ForceLimitXTable, doc["ForceLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ForceLimitYTable, doc["ForceLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ForceLimitZTable, doc["ForceLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &StaticLimitXTable, doc["StaticLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &StaticLimitYTable, doc["StaticLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &StaticLimitZTable, doc["StaticLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &OffsetLimitXTable, doc["OffsetLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &OffsetLimitYTable, doc["OffsetLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &OffsetLimitZTable, doc["OffsetLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ThermalLimitXTable,
-                                    doc["ThermalLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ThermalLimitYTable,
-                                    doc["ThermalLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &ThermalLimitZTable,
-                                    doc["ThermalLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &VelocityLimitXTable,
+        TableLoader::loadLimitTable(1, &ForceLimitXTable, doc["ForceLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &ForceLimitYTable, doc["ForceLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &ForceLimitZTable, doc["ForceLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &StaticLimitXTable, doc["StaticLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &StaticLimitYTable, doc["StaticLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &StaticLimitZTable, doc["StaticLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &OffsetLimitXTable, doc["OffsetLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &OffsetLimitYTable, doc["OffsetLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &OffsetLimitZTable, doc["OffsetLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &ThermalLimitXTable, doc["ThermalLimitXTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &ThermalLimitYTable, doc["ThermalLimitYTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &ThermalLimitZTable, doc["ThermalLimitZTablePath"].as<std::string>());
+        TableLoader::loadLimitTable(1, &VelocityLimitXTable,
                                     doc["VelocityLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &VelocityLimitYTable,
+        TableLoader::loadLimitTable(1, &VelocityLimitYTable,
                                     doc["VelocityLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &VelocityLimitZTable,
+        TableLoader::loadLimitTable(1, &VelocityLimitZTable,
                                     doc["VelocityLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &CylinderLimitPrimaryTable,
+        TableLoader::loadLimitTable(1, &CylinderLimitPrimaryTable,
                                     doc["CylinderLimitPrimaryTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &CylinderLimitSecondaryTable,
+        TableLoader::loadLimitTable(1, &CylinderLimitSecondaryTable,
                                     doc["CylinderLimitSecondaryTablePath"].as<std::string>());
 
-        TableLoader::loadLimitTable(1, 1, &MeasuredPrimaryCylinderLimitTable,
+        TableLoader::loadLimitTable(1, &MeasuredPrimaryCylinderLimitTable,
                                     doc["MeasuredPrimaryCylinderLimitTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, 1, &MeasuredSecondaryCylinderLimitTable,
+        TableLoader::loadLimitTable(1, &MeasuredSecondaryCylinderLimitTable,
                                     doc["MeasuredSecondaryCylinderLimitTablePath"].as<std::string>());
         _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
                                   doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
 
-        Neighbors.clear();
-        for (int i = 0; i < FA_COUNT; ++i) {
-            ForceActuatorNeighbors neighbors;
-            Neighbors.push_back(neighbors);
-        }
         _loadNearNeighborZTable(doc["ForceActuatorNearZNeighborsTablePath"].as<std::string>());
         _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
 
@@ -467,67 +459,78 @@ DistributedForces ForceActuatorSettings::calculateForceDistribution(float xForce
 void ForceActuatorSettings::log() { M1M3SSPublisher::instance().logForceActuatorSettings(this); }
 
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
-    std::string fullname = SettingReader::instance().getFilePath(filename);
-    std::ifstream inputStream(fullname.c_str());
-    if (!inputStream.is_open()) {
-        throw std::runtime_error("Cannot read " + fullname + ": " + strerror(errno));
-    }
-
-    std::string lineText;
-    int32_t lineNumber = 0;
-    while (std::getline(inputStream, lineText)) {
-        boost::trim_right(lineText);
-        // Skip the first ROW (Header)
-        if (lineNumber >= 1 && !lineText.empty()) {
-            // Line Format:
-            //     ActuatorID,Neighbor1,...,Neighbor7
-            tokenizer tok(lineText);
-            ForceActuatorNeighbors neighbors;
-            tokenizer::iterator i = tok.begin();
-            // Skip the first COLUMN (Row ID)
-            ++i;
-            for (; i != tok.end(); ++i) {
-                int32_t id = boost::lexical_cast<int32_t>(*i);
-                if (id != 0) {
-                    Neighbors[lineNumber - 1].NearZIDs.push_back(id);
+    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    try {
+        rapidcsv::Document nearTable(fullPath);
+        if (nearTable.GetColumnCount() != FA_MAX_NEAR_COUNT + 1) {
+            throw std::runtime_error(fmt::format("Near neighbors CSV {} has {} columns, expected {}",
+                                                 fullPath, nearTable.GetColumnCount(),
+                                                 FA_MAX_NEAR_COUNT + 1));
+        }
+        if (nearTable.GetRowCount() != FA_COUNT) {
+            throw std::runtime_error(fmt::format("Near neighbors CSV {} has {} rows, expected {}", fullPath,
+                                                 nearTable.GetRowCount(), FA_COUNT));
+        }
+        for (size_t row = 0; row < FA_COUNT; row++) {
+            size_t neighIdx = 0;
+            try {
+                auto tableID = nearTable.GetCell<unsigned>(0, row);
+                unsigned expectedID =
+                        SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
+                                row);
+                if (tableID != expectedID) {
+                    throw std::runtime_error(
+                            fmt::format("{}:{} expected ID {}, read {}", fullPath, row, expectedID, tableID));
                 }
+                for (neighIdx = 0; neighIdx < FA_MAX_NEAR_COUNT; neighIdx++) {
+                    Neighbors[row].NearZIDs[neighIdx] = nearTable.GetCell<unsigned>(neighIdx + 1, row);
+                }
+            } catch (std::logic_error &er) {
+                throw std::runtime_error(
+                        fmt::format("{}:{}: cannot parse row (\"{}\") (column {}): {}", fullPath, row,
+                                    rowToStr(nearTable.GetRow<std::string>(row)), neighIdx, er.what()));
             }
         }
-        lineNumber++;
+    } catch (std::ios_base::failure &er) {
+        throw std::runtime_error(fmt::format("Cannot read near neighbors CSV {}: {}", fullPath, er.what()));
     }
-    inputStream.close();
 }
 
 void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char>> tokenizer;
-    std::string fullname = SettingReader::instance().getFilePath(filename);
-    std::ifstream inputStream(fullname.c_str());
-    if (!inputStream.is_open()) {
-        throw std::runtime_error("Cannot read " + fullname + ": " + strerror(errno));
-    }
-
-    std::string lineText;
-    int32_t lineNumber = 0;
-    while (std::getline(inputStream, lineText)) {
-        boost::trim_right(lineText);
-        if (lineNumber >= 1 && !lineText.empty()) {
-            // Line Format:
-            //     ActuatorID,Neighbor1,...,Neighbor12
-            tokenizer tok(lineText);
-            tokenizer::iterator i = tok.begin();
-            ForceActuatorNeighbors neighbors;
-            for (int j = 0; j < 12; j++) {
-                ++i;
-                int32_t id = boost::lexical_cast<int32_t>(*i);
-                if (id != 0) {
-                    Neighbors[lineNumber - 1].FarIDs.push_back(id);
+    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    try {
+        rapidcsv::Document farTable(fullPath);
+        if (farTable.GetColumnCount() != FA_FAR_COUNT + 1) {
+            throw std::runtime_error(fmt::format("Far neighbor CSV {} has {} columns, expected {}", fullPath,
+                                                 farTable.GetColumnCount(), FA_FAR_COUNT + 1));
+        }
+        if (farTable.GetRowCount() != FA_COUNT) {
+            throw std::runtime_error(fmt::format("Far neighbor CSV {} has {} rows, expected {}", fullPath,
+                                                 farTable.GetRowCount(), FA_COUNT));
+        }
+        for (size_t row = 0; row < FA_COUNT; row++) {
+            size_t neighIdx = 0;
+            try {
+                auto tableID = farTable.GetCell<unsigned>(0, row);
+                unsigned expectedID =
+                        SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
+                                row);
+                if (tableID != expectedID) {
+                    throw std::runtime_error(
+                            fmt::format("{}:{} expected ID {}, read {}", fullPath, row, expectedID, tableID));
                 }
+                for (neighIdx = 0; neighIdx < FA_FAR_COUNT; neighIdx++) {
+                    Neighbors[row].FarIDs[neighIdx] = farTable.GetCell<unsigned>(neighIdx + 1, row);
+                }
+            } catch (std::logic_error &er) {
+                throw std::runtime_error(
+                        fmt::format("{}:{}: cannot parse row (\"{}\") (column {}): {}", fullPath, row,
+                                    rowToStr(farTable.GetRow<std::string>(row)), neighIdx, er.what()));
             }
         }
-        lineNumber++;
+    } catch (std::ios_base::failure &er) {
+        throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
-    inputStream.close();
 }
 
 void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primaryFilename,
