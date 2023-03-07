@@ -130,7 +130,7 @@ public:
 
     void forceActuatorFollowingError(int actuatorDataIndex, bool countingWarning, bool immediateFault);
 
-    void hardpointActuatorLoadCellError(bool conditionFlag);
+    void hardpointActuatorBreakawayFault(int actuatorDataIndex, bool conditionFlag);
 
     /**
      * Triggers hardpoint measured force warning and faults.

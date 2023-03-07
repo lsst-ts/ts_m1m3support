@@ -531,10 +531,9 @@ void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool c
                     "Force Actuator #{} Following Error {}", actuatorDataIndex + 1, sum);
 }
 
-void SafetyController::hardpointActuatorLoadCellError(bool conditionFlag) {
-    _updateOverride(FaultCodes::HardpointActuatorLoadCellError,
-                    _safetyControllerSettings->ILC.FaultOnHardpointActuatorLoadCellError, conditionFlag,
-                    "Hardpoint Actuator Load Cell Error");
+void SafetyController::hardpointActuatorBreakawayFault(int actuatorDataIndex, bool conditionFlag) {
+    _updateOverride(FaultCodes::HardpointActuatorLoadCellError, true, conditionFlag,
+                    "Hardpoint Actuator # {} Breakaway Fault/Load Cell Error", actuatorDataIndex + 1);
 }
 
 void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, bool warningFlag,
