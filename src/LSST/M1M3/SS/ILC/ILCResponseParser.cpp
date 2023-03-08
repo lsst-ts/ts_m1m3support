@@ -920,10 +920,11 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
 
 void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId) {
     float measuredForce = _hardpointActuatorData->measuredForce[actuatorId];
-    float loadCellMax = _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh;
-    float loadCellMin = _hardpointActuatorSettings->hardpointMeasuredForceFaultLow;
-    bool loadCellError = measuredForce > loadCellMax || measuredForce < loadCellMin;
-    _safetyController->hardpointActuatorLoadCellError(loadCellError);
+
+    float breakawayMax = _hardpointActuatorSettings->hardpointBreakawayFaultHigh;
+    float breakawayMin = _hardpointActuatorSettings->hardpointBreakawayFaultLow;
+    bool breakawayFault = measuredForce > breakawayMax || measuredForce < breakawayMin;
+    _safetyController->hardpointActuatorBreakawayFault(actuatorId, breakawayFault);
 
     // As soon as mirror is at least a bit raised, tests shall be performed
     // this is software line of defense for excessive forces. Hardpoints shall

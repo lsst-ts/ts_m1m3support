@@ -38,7 +38,6 @@ struct ILCSafetySettings {
     int ForceActuatorFollowingErrorCountThreshold;
     int ForceActuatorFollowingErrorPeriod;
     bool FaultOnForceActuatorFollowingErrorImmediate;
-    bool FaultOnHardpointActuatorLoadCellError;
     bool FaultOnHardpointActuatorMeasuredForce;
     int HardpointActuatorMeasuredForceCountThreshold;
     int HardpointActuatorMeasuredForcePeriod;
@@ -57,7 +56,6 @@ struct ILCSafetySettings {
         ForceActuatorFollowingErrorPeriod = node["ForceActuatorFollowingErrorPeriod"].as<int>();
         FaultOnForceActuatorFollowingErrorImmediate =
                 node["FaultOnForceActuatorFollowingErrorImmediate"].as<bool>();
-        FaultOnHardpointActuatorLoadCellError = node["FaultOnHardpointActuatorLoadCellError"].as<bool>();
         FaultOnHardpointActuatorMeasuredForce = node["FaultOnHardpointActuatorMeasuredForce"].as<bool>();
         HardpointActuatorMeasuredForceCountThreshold =
                 node["HardpointActuatorMeasuredForceCountThreshold"].as<int>();

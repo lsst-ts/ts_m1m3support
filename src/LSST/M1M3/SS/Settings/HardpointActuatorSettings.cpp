@@ -69,6 +69,9 @@ void HardpointActuatorSettings::load(const std::string &filename) {
         hardpointMeasuredForceWarningHigh = doc["HardpointMeasuredForceWarningHigh"].as<float>();
         hardpointMeasuredForceWarningLow = doc["HardpointMeasuredForceWarningLow"].as<float>();
 
+        hardpointBreakawayFaultHigh = doc["HardpointBreakawayFaultHigh"].as<float>();
+        hardpointBreakawayFaultLow = doc["HardpointBreakawayFaultLow"].as<float>();
+
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFaultLow) {
             throw std::runtime_error(
                     fmt::format("{} HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
@@ -112,6 +115,13 @@ void HardpointActuatorSettings::load(const std::string &filename) {
                     "{} HardpointMeasuredForceFaultLow ({:.2f}) is lower or equal "
                     "HardpointMeasuredForceFSBWarningLow ({:.2f})",
                     filename, hardpointMeasuredForceFaultLow, hardpointMeasuredForceFSBWarningLow));
+        }
+
+        if (hardpointBreakawayFaultLow >= hardpointBreakawayFaultHigh) {
+            throw std::runtime_error(
+                    fmt::format("{} HardpointBreakawayFaultLow ({:.2f}) is lower or equal "
+                                "HardpointBreakawayFaultHigh ({:.2f})",
+                                filename, hardpointBreakawayFaultLow, hardpointBreakawayFaultHigh));
         }
 
         airPressureFaultHigh = doc["AirPressureFaultHigh"].as<float>();
