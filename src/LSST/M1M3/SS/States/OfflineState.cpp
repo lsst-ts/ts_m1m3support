@@ -53,6 +53,7 @@ States::Type OfflineState::enterControl(EnterControlCommand* command) {
     // Model::get().getDigitalInputOutput()->turnCellLightsOff();
     Model::get().getDigitalInputOutput()->turnCellLightsOn();
     Model::get().getDigitalInputOutput()->turnAirOn();
+    Model::get().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
     // TODO: May need to change power controller to act like digital input output
     // Model::get().getPowerController()->setBothPowerNetworks(false);
     return States::StandbyState;
