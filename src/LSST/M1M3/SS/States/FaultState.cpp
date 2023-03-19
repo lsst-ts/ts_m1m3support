@@ -87,6 +87,7 @@ States::Type FaultState::standby(StandbyCommand* command) {
     Model::get().getPowerController()->setAllPowerNetworks(false);
     Model::get().getForceController()->zeroSupportPercentage();
     Model::get().getSafetyController()->clearErrorCode();
+    Model::get().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
     return States::StandbyState;
 }
 

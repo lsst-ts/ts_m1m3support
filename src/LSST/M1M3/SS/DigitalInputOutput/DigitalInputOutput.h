@@ -70,6 +70,21 @@ public:
      */
     void tryToggleHeartbeat();
 
+    /**
+     * Sets CH1 trigger for crtitical fult to safety controller.
+     *
+     * Use to signal to safety controller mirror is in fault state.
+     *
+     */
+    void setCriticalFailureToSafetyController();
+
+    /**
+     * Clear CH1 trigger for critical fault to safety controller.
+     *
+     * Use to signal to safety controller mirror is not in fault state.
+     */
+    void clearCriticalFailureToSafetyController();
+
     /*!
      * Turns the air on.
      */

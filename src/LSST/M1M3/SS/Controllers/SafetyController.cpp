@@ -625,6 +625,7 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
         // shall first make sure mirror is faulted, before performing anything else (logging,..)
         LoweringFaultState::ensureFaulted();
         M1M3SSPublisher::get().logErrorCode();
+        Model::get().getDigitalInputOutput()->setCriticalFailureToSafetyController();
         SPDLOG_ERROR("Faulted ({}): {}", _errorCodeData->errorCode, _errorCodeData->errorReport);
         _clearError();
         return States::LoweringFaultState;
