@@ -274,7 +274,7 @@ void startLog() {
 }
 
 int main(int argc, char* const argv[]) {
-    const char* configRoot = "/var/lib/ts-M1M3support";
+    const char* configRoot = "/var/lib/M1M3support";
 
     processArgs(argc, argv, configRoot);
 
