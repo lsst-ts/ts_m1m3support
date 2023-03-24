@@ -185,6 +185,18 @@ void DigitalInputOutput::tryToggleHeartbeat() {
     }
 }
 
+void DigitalInputOutput::setCriticalFailureToSafetyController() {
+    SPDLOG_TRACE("DigitalInputOutput: trigerring critical fault");
+    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 0};
+    IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+}
+
+void DigitalInputOutput::clearCriticalFailureToSafetyController() {
+    SPDLOG_TRACE("DigitalInputOutput: clear critical fault");
+    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 1};
+    IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+}
+
 void DigitalInputOutput::turnAirOn() {
     SPDLOG_INFO("Air valve commanded to open");
     _airSupplyStatus->setAirCommanded(true);
