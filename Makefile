@@ -54,23 +54,27 @@ simulator:
 
 ipk: ts-M1M3supportd m1m3sscli ts-M1M3support_${VERSION}_x64.ipk
 
+TS_DDSCONFIG=../ts_ddsconfig
+
 ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
 	@echo '[MK ] ipk $@'
 	${co}mkdir -p ipk/data/usr/sbin
 	${co}mkdir -p ipk/data/etc/init.d
 	${co}mkdir -p ipk/data/etc/default
-	${co}mkdir -p ipk/data/var/lib/ts-M1M3support
+	${co}mkdir -p ipk/data/var/lib/M1M3support
 	${co}mkdir -p ipk/control
 	${co}cp ts-M1M3supportd ipk/data/usr/sbin/ts-M1M3supportd
 	${co}cp m1m3sscli ipk/data/usr/sbin/m1m3sscli
 	${co}cp init ipk/data/etc/init.d/ts-M1M3support
-	${co}cp default_ts-M1M3support ipk/data/etc/default/ts-M1M3support
-	${co}cp -r SettingFiles/* ipk/data/var/lib/ts-M1M3support
-	${co}cp -r Bitfiles/* ipk/data/var/lib/ts-M1M3support
+	${co}cp default_ts-M1M3support ipk/data/etc/default/M1M3support
+	${co}cp -r ${TS_DDSCONFIG}/python/lsst/ts/ddsconfig/data/config/ospl-embedded-shmem.xml ipk/data/var/lib/M1M3support || echo "Cannot find ${TS_DDSCONFIG} ospl-embedded-shmem.xml - check it out?"
+	${co}cp -r ${TS_DDSCONFIG}/python/lsst/ts/ddsconfig/data/qos/QoS.xml ipk/data/var/lib/M1M3support || echo "Cannot find ${TS_DDSCONFIG} QoS.xml - check it out?"
+	${co}cp -r SettingFiles/* ipk/data/var/lib/M1M3support
+	${co}cp -r Bitfiles/* ipk/data/var/lib/M1M3support
 	${co}sed s?@VERSION@?$(VERSION)?g control.ipk.in > ipk/control/control
 	${co}cp postinst prerm postrm ipk/control
-	${co}echo -e "/etc/default/ts-M1M3support" > ipk/control/conffiles
-	${co}find SettingFiles -name '*.yaml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/ts-M1M3support#' >> ipk/control/conffiles
+	${co}echo -e "/etc/default/ts-M1M3support\n/var/lib/M1M3support/ospl-embedded-shmem.xml\n/var/lib/M1M3supportS/QoS.xml" > ipk/control/conffiles
+	${co}find SettingFiles -name '*.yaml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/M1M3support#' >> ipk/control/conffiles
 	${co}echo "2.0" > ipk/debian-binary
 	${co}tar czf ipk/data.tar.gz -P --transform "s#^ipk/data#.#" --owner=0 --group=0 ipk/data
 	${co}tar czf ipk/control.tar.gz -P --transform "s#^ipk/control#.#" --owner=0 --group=0 ipk/control
