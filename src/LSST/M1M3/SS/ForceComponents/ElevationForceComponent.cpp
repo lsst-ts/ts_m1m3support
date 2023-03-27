@@ -21,20 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
+#include <DistributedForces.h>
 #include <ElevationForceComponent.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <ForcesAndMoments.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <SafetyController.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <Range.h>
-#include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <RaisingLoweringInfo.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ElevationForceComponent::ElevationForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
@@ -57,7 +57,7 @@ void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z)
         return;
     }
 
-    float supportRatio = _forceActuatorState->supportPercentage / 100.0;
+    float supportRatio = RaisingLoweringInfo::instance().supportRatio();
 
     for (int i = 0; i < FA_COUNT; ++i) {
         if (i < FA_X_COUNT) {
@@ -179,7 +179,3 @@ void ElevationForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedElevationForces();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

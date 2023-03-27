@@ -162,40 +162,6 @@ void ForceController::reset() {
     _finalForceComponent.reset();
 }
 
-void ForceController::incSupportPercentage() {
-    SPDLOG_TRACE("ForceController: incSupportPercentage()");
-    _forceActuatorState->supportPercentage += ForceActuatorSettings::instance().raiseIncrementPercentage;
-    if (supportPercentageFilled()) {
-        _forceActuatorState->supportPercentage = 100.0;
-    }
-    M1M3SSPublisher::instance().logForceActuatorState();
-}
-
-void ForceController::decSupportPercentage() {
-    SPDLOG_TRACE("ForceController: decSupportPercentage()");
-    _forceActuatorState->supportPercentage -= ForceActuatorSettings::instance().lowerDecrementPercentage;
-    if (supportPercentageZeroed()) {
-        _forceActuatorState->supportPercentage = 0.0;
-    }
-    M1M3SSPublisher::instance().logForceActuatorState();
-}
-
-void ForceController::zeroSupportPercentage() {
-    SPDLOG_INFO("ForceController: zeroSupportPercentage()");
-    _forceActuatorState->supportPercentage = 0.0;
-    M1M3SSPublisher::instance().logForceActuatorState();
-}
-
-void ForceController::fillSupportPercentage() {
-    SPDLOG_INFO("ForceController: fillSupportPercentage()");
-    _forceActuatorState->supportPercentage = 100.0;
-    M1M3SSPublisher::instance().logForceActuatorState();
-}
-
-bool ForceController::supportPercentageFilled() { return _forceActuatorState->supportPercentage >= 100.0; }
-
-bool ForceController::supportPercentageZeroed() { return _forceActuatorState->supportPercentage <= 0.0; }
-
 bool ForceController::followingErrorInTolerance() {
     SPDLOG_TRACE("ForceController: followingErrorInTolerance()");
     float limit = ForceActuatorSettings::instance().raiseLowerFollowingErrorLimit;
