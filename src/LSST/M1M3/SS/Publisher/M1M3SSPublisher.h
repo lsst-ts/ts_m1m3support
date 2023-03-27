@@ -356,6 +356,10 @@ public:
     void logSummaryState();
     void tryLogSummaryState();
 
+    void logRaisingLoweringInfo(MTM1M3_logevent_raisingLoweringInfoC* data) {
+        _m1m3SAL->logEvent_raisingLoweringInfo(data, 0);
+    }
+
     void ackCommandsetLogLevel(int32_t commandID, int32_t ackCode, std::string description);
 
     /**

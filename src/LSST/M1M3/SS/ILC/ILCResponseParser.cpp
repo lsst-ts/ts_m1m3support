@@ -29,7 +29,9 @@
 
 #include <cRIO/CliApp.h>
 
+#include <ILCDataTypes.h>
 #include <ILCResponseParser.h>
+#include <ILCSubnetData.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
 #include <ForceActuatorForceWarning.h>
@@ -40,14 +42,11 @@
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
 #include <LimitLog.h>
-#include <ILCDataTypes.h>
+#include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 #include <Timestamp.h>
-#include <ILCSubnetData.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ILCResponseParser::ILCResponseParser() {
     _hardpointActuatorSettings = 0;
@@ -930,7 +929,7 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
     // this is software line of defense for excessive forces. Hardpoints shall
     // break if excess force is applied (either compression or tension),
     // protecting the mirror from damage.
-    if (_forceActuatorState->supportPercentage > 0) {
+    if (RaisingLoweringInfo::instance().supportPercentage > 0) {
         float maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
         float minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (_forceActuatorState->balanceForcesApplied) {
@@ -1112,7 +1111,3 @@ void ILCResponseParser::_warnUnknownProblem(double timestamp, int32_t actuatorId
     _ilcWarning->unknownProblem = true;
     M1M3SSPublisher::instance().logILCWarning();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
