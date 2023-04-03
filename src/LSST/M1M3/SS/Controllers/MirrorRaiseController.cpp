@@ -88,7 +88,7 @@ void MirrorRaiseController::runLoop() {
     if (!RaisingLoweringInfo::instance().supportPercentageFilled()) {
         auto hpWarning = &HardpointActuatorWarning::instance();
         // Wait for pressure to raise after valve opening
-        if (RaisingLoweringInfo::instance().supportPercentageZeroed() && hpWarning->anyAirLowPressureFault) {
+        if (RaisingLoweringInfo::instance().supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
             if (hpWarning->waitingForAirPressureBeforeRaise == false) {
                 hpWarning->waitingForAirPressureBeforeRaise = true;
                 SPDLOG_INFO("Waiting for air pressure in the hardpoints");
