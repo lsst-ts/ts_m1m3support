@@ -28,7 +28,6 @@ using namespace LSST::M1M3::SS;
 HardpointActuatorWarning::HardpointActuatorWarning(token) {
     timestamp = NAN;
     _updated = false;
-    waitingForAirPressureBeforeRaise = false;
 
     for (int i = 0; i < HP_COUNT; i++) {
         ilcFault[i] = false;

@@ -959,7 +959,7 @@ void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
         case MTM1M3::MTM1M3_shared_DetailedStates_RaisingEngineeringState:
             minPressure = _hardpointActuatorSettings->airPressureFaultLowRaising;
             // don't fault if we are waiting for pressure to build up
-            if (HardpointActuatorWarning::instance().waitingForAirPressureBeforeRaise == true) break;
+            if (RaisingLoweringInfo::instance().waitAirPressure == true) break;
         case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
         case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
         case MTM1M3::MTM1M3_shared_DetailedStates_LoweringState:
