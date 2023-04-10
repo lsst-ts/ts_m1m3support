@@ -74,7 +74,7 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     RaisingLoweringInfo::instance().zeroSupportPercentage();
     _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp();
 
-    HardpointActuatorWarning::instance().waitingForAirPressureBeforeRaise = false;
+    RaisingLoweringInfo::instance().setWaitAirPressure(false);
 
     if (AirSupplyStatus::instance().airValveClosed == true) {
         SPDLOG_WARN(
@@ -84,19 +84,21 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
 }
 
 void MirrorRaiseController::runLoop() {
-    SPDLOG_TRACE("MirrorRaiseController: runLoop() {}", RaisingLoweringInfo::instance().weightSupportedPercent);
+    SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
+                 RaisingLoweringInfo::instance().weightSupportedPercent);
     if (!RaisingLoweringInfo::instance().supportPercentageFilled()) {
         auto hpWarning = &HardpointActuatorWarning::instance();
+        auto raiseInfo = &RaisingLoweringInfo::instance();
         // Wait for pressure to raise after valve opening
-        if (RaisingLoweringInfo::instance().supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
-            if (hpWarning->waitingForAirPressureBeforeRaise == false) {
-                hpWarning->waitingForAirPressureBeforeRaise = true;
+        if (raiseInfo->supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
+            if (raiseInfo->waitAirPressure == false) {
+                raiseInfo->setWaitAirPressure(true);
                 SPDLOG_INFO("Waiting for air pressure in the hardpoints");
             }
             return;
         }
-        if (hpWarning->waitingForAirPressureBeforeRaise == true) {
-            hpWarning->waitingForAirPressureBeforeRaise = false;
+        if (raiseInfo->waitAirPressure == true) {
+            raiseInfo->setWaitAirPressure(false);
             SPDLOG_INFO("Hardpoint air pressure stabilized, raising the mirror");
         }
         // We are still in the process of transferring the support force from the static supports

@@ -47,8 +47,6 @@ public:
     void setProximityWarning(int32_t hpIndex, bool lowWarning, bool highWarning);
     void setAirPressure(int32_t hpIndex, bool lowFault, bool highFault, float airPressure);
 
-    bool waitingForAirPressureBeforeRaise;
-
 private:
     bool _updated;
 

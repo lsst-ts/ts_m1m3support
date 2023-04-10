@@ -72,3 +72,10 @@ void RaisingLoweringInfo::fillSupportPercentage() {
 bool RaisingLoweringInfo::supportPercentageFilled() { return weightSupportedPercent >= 100.0; }
 
 bool RaisingLoweringInfo::supportPercentageZeroed() { return weightSupportedPercent <= 0; }
+
+void RaisingLoweringInfo::setWaitAirPressure(bool newWait) {
+    if (waitAirPressure != newWait) {
+        waitAirPressure = newWait;
+        M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
+    }
+}

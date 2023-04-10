@@ -71,7 +71,8 @@ void MirrorLowerController::start() {
 }
 
 void MirrorLowerController::runLoop() {
-    SPDLOG_TRACE("MirrorLowerController: runLoop() {}", RaisingLoweringInfo::instance().weightSupportedPercent);
+    SPDLOG_TRACE("MirrorLowerController: runLoop() {}",
+                 RaisingLoweringInfo::instance().weightSupportedPercent);
     if (_movedToLowerPosition == false) {
         _movedToLowerPosition = _positionController->motionComplete();
         if (_movedToLowerPosition == true) {

@@ -85,6 +85,13 @@ public:
      */
     bool supportPercentageZeroed();
 
+    /**
+     * Sets waitAirPressure field. Sends update if the value changed.
+     *
+     * @param newWait new waitAirPressure value.
+     */
+    void setWaitAirPressure(bool newWait);
+
 private:
     bool _updated;
 };
