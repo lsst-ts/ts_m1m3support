@@ -45,7 +45,7 @@ public:
      * @return Mirror supported ration (in 0-1 range, 1 mirror weight fully
      * supported by force actuators)
      */
-    float supportRatio() { return supportPercentage / 100.0; }
+    float supportRatio() { return weightSupportedPercent / 100.0; }
 
     /**
      * Increases mirrror support percentage by RaiseIncrementPercentage setting

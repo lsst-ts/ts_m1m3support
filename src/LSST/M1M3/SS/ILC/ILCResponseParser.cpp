@@ -929,7 +929,7 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
     // this is software line of defense for excessive forces. Hardpoints shall
     // break if excess force is applied (either compression or tension),
     // protecting the mirror from damage.
-    if (RaisingLoweringInfo::instance().supportPercentage > 0) {
+    if (RaisingLoweringInfo::instance().weightSupportedPercent > 0) {
         float maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
         float minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (_forceActuatorState->balanceForcesApplied) {
