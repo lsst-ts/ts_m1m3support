@@ -84,7 +84,7 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
 }
 
 void MirrorRaiseController::runLoop() {
-    SPDLOG_TRACE("MirrorRaiseController: runLoop() {}", RaisingLoweringInfo::instance().supportPercentage);
+    SPDLOG_TRACE("MirrorRaiseController: runLoop() {}", RaisingLoweringInfo::instance().weightSupportedPercent);
     if (!RaisingLoweringInfo::instance().supportPercentageFilled()) {
         auto hpWarning = &HardpointActuatorWarning::instance();
         // Wait for pressure to raise after valve opening

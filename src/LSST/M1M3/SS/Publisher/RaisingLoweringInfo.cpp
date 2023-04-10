@@ -30,7 +30,7 @@
 using namespace LSST::M1M3::SS;
 
 RaisingLoweringInfo::RaisingLoweringInfo(token) {
-    supportPercentage = 0;
+    weightSupportedPercent = 0;
     waitAirPressure = false;
 
     memset(waitHardpoint, 0, sizeof(waitHardpoint));
@@ -41,34 +41,34 @@ RaisingLoweringInfo::RaisingLoweringInfo(token) {
 
 void RaisingLoweringInfo::incSupportPercentage() {
     SPDLOG_TRACE("Incrementing support percentage");
-    supportPercentage += ForceActuatorSettings::instance().raiseIncrementPercentage;
+    weightSupportedPercent += ForceActuatorSettings::instance().raiseIncrementPercentage;
     if (supportPercentageFilled()) {
-        supportPercentage = 100.0;
+        weightSupportedPercent = 100.0;
     }
     M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
 }
 
 void RaisingLoweringInfo::decSupportPercentage() {
     SPDLOG_TRACE("Decrementing support percentage");
-    supportPercentage -= ForceActuatorSettings::instance().lowerDecrementPercentage;
+    weightSupportedPercent -= ForceActuatorSettings::instance().lowerDecrementPercentage;
     if (supportPercentageZeroed()) {
-        supportPercentage = 0.0;
+        weightSupportedPercent = 0.0;
     }
     M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
 }
 
 void RaisingLoweringInfo::zeroSupportPercentage() {
     SPDLOG_DEBUG("Zero support percentage");
-    supportPercentage = 0;
+    weightSupportedPercent = 0;
     M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
 }
 
 void RaisingLoweringInfo::fillSupportPercentage() {
     SPDLOG_DEBUG("Filled support percentage");
-    supportPercentage = 100;
+    weightSupportedPercent = 100;
     M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
 }
 
-bool RaisingLoweringInfo::supportPercentageFilled() { return supportPercentage >= 100.0; }
+bool RaisingLoweringInfo::supportPercentageFilled() { return weightSupportedPercent >= 100.0; }
 
-bool RaisingLoweringInfo::supportPercentageZeroed() { return supportPercentage <= 0; }
+bool RaisingLoweringInfo::supportPercentageZeroed() { return weightSupportedPercent <= 0; }
