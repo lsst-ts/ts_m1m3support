@@ -34,9 +34,18 @@ RaisingLoweringInfo::RaisingLoweringInfo(token) {
     waitAirPressure = false;
 
     memset(waitHardpoint, 0, sizeof(waitHardpoint));
-    memset(waitForceActuator, 0, sizeof(waitForceActuator));
+    memset(waitXForceActuator, 0, sizeof(waitXForceActuator));
+    memset(waitYForceActuator, 0, sizeof(waitYForceActuator));
+    memset(waitZForceActuator, 0, sizeof(waitZForceActuator));
 
     _updated = true;
+}
+
+void RaisingLoweringInfo::sendUpdates(bool force) {
+    if (_updated || force) {
+        M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
+        _updated = false;
+    }
 }
 
 void RaisingLoweringInfo::incSupportPercentage() {
@@ -45,7 +54,7 @@ void RaisingLoweringInfo::incSupportPercentage() {
     if (supportPercentageFilled()) {
         weightSupportedPercent = 100.0;
     }
-    M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
+    _updated = true;
 }
 
 void RaisingLoweringInfo::decSupportPercentage() {
@@ -54,28 +63,65 @@ void RaisingLoweringInfo::decSupportPercentage() {
     if (supportPercentageZeroed()) {
         weightSupportedPercent = 0.0;
     }
-    M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
+    _updated = true;
 }
 
 void RaisingLoweringInfo::zeroSupportPercentage() {
     SPDLOG_DEBUG("Zero support percentage");
-    weightSupportedPercent = 0;
-    M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
+    if (weightSupportedPercent != 0) {
+        weightSupportedPercent = 0;
+        sendUpdates(true);
+    }
 }
 
 void RaisingLoweringInfo::fillSupportPercentage() {
     SPDLOG_DEBUG("Filled support percentage");
-    weightSupportedPercent = 100;
-    M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
+    if (weightSupportedPercent != 100) {
+        weightSupportedPercent = 100;
+        sendUpdates(true);
+    }
 }
 
 bool RaisingLoweringInfo::supportPercentageFilled() { return weightSupportedPercent >= 100.0; }
 
 bool RaisingLoweringInfo::supportPercentageZeroed() { return weightSupportedPercent <= 0; }
 
+void RaisingLoweringInfo::setHPWait(size_t hpIndex, bool newWait) {
+    if (waitHardpoint[hpIndex] != newWait) {
+        _updated = true;
+        waitHardpoint[hpIndex] = newWait;
+    }
+}
+
+void RaisingLoweringInfo::setFAXWait(size_t faXIndex, bool newWait) {
+    if (waitXForceActuator[faXIndex] != newWait) {
+        _updated = true;
+        waitXForceActuator[faXIndex] = newWait;
+    }
+}
+
+void RaisingLoweringInfo::setFAYWait(size_t faYIndex, bool newWait) {
+    if (waitYForceActuator[faYIndex] != newWait) {
+        _updated = true;
+        waitYForceActuator[faYIndex] = newWait;
+    }
+}
+
+void RaisingLoweringInfo::setFAZWait(size_t faZIndex, bool newWait) {
+    if (waitZForceActuator[faZIndex] != newWait) {
+        _updated = true;
+        waitZForceActuator[faZIndex] = newWait;
+    }
+}
+
 void RaisingLoweringInfo::setWaitAirPressure(bool newWait) {
     if (waitAirPressure != newWait) {
+        _updated = true;
         waitAirPressure = newWait;
-        M1M3SSPublisher::instance().logRaisingLoweringInfo(this);
+        if (newWait) {
+            SPDLOG_INFO("Waiting for air pressure in the hardpoints");
+        } else {
+            SPDLOG_INFO("Hardpoint air pressure stabilized, raising the mirror");
+        }
     }
 }

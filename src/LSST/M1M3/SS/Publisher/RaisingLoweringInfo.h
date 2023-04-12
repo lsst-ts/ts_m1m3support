@@ -40,6 +40,13 @@ public:
     RaisingLoweringInfo(token);
 
     /**
+     * Sends updates to RaisingLoweringInfo structure.
+     *
+     * @param force if true, send updates even when _updated flag is not set
+     */
+    void sendUpdates(bool force = false);
+
+    /**
      * Returns ratio of mirror mass supported.
      *
      * @return Mirror supported ration (in 0-1 range, 1 mirror weight fully
@@ -84,6 +91,15 @@ public:
      * actuator values.
      */
     bool supportPercentageZeroed();
+
+    /**
+     * Sets waitHardpoint field, triggers updates if needed.
+     */
+    void setHPWait(size_t hpIndex, bool newWait);
+
+    void setFAXWait(size_t faXIndex, bool newWait);
+    void setFAYWait(size_t faYIndex, bool newWait);
+    void setFAZWait(size_t faZIndex, bool newWait);
 
     /**
      * Sets waitAirPressure field. Sends update if the value changed.

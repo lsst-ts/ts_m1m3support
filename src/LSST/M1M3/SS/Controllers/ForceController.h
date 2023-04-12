@@ -143,7 +143,7 @@ public:
      * Tests following error on all actuaturs. Reports any violation into
      * spdlog.
      */
-    bool followingErrorInTolerance();
+    bool faRaiseFollowingErrorInTolerance();
 
     void updateAppliedForces();
 

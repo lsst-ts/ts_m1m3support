@@ -20,8 +20,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+#include <cmath>
+#include <cstring>
 #include <iostream>
+#include <unistd.h>
+#include <vector>
 
 #include <ForceActuatorData.h>
 #include <ForceController.h>
@@ -31,15 +34,12 @@
 #include <ForceActuatorLimits.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
+#include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
 #include <PIDSettings.h>
 #include <Range.h>
 #include <TMA.h>
-#include <cmath>
-#include <cstring>
-#include <vector>
-#include <unistd.h>
 
 using namespace std;
 
@@ -162,26 +162,33 @@ void ForceController::reset() {
     _finalForceComponent.reset();
 }
 
-bool ForceController::followingErrorInTolerance() {
+bool ForceController::faRaiseFollowingErrorInTolerance() {
     SPDLOG_TRACE("ForceController: followingErrorInTolerance()");
     float limit = ForceActuatorSettings::instance().raiseLowerFollowingErrorLimit;
-    bool inTolerance = true;
+    auto raiseInfo = &RaisingLoweringInfo::instance();
+    bool ret = true;
 
     for (int i = 0; i < FA_COUNT; ++i) {
         if (i < FA_X_COUNT) {
             float fe = ForceActuatorData::instance().xForce[i] - _appliedForces->xForces[i];
-            inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerX[i], limit, fe);
+            bool xInRange = Range::InRangeTrigger(-limit, limit, fe, limitTriggerX[i], limit, fe);
+            raiseInfo->setFAXWait(i, !xInRange);
+            ret = ret & xInRange;
         }
 
         if (i < FA_Y_COUNT) {
             float fe = ForceActuatorData::instance().yForce[i] - _appliedForces->yForces[i];
-            inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerY[i], limit, fe);
+            bool yInRange = Range::InRangeTrigger(-limit, limit, fe, limitTriggerY[i], limit, fe);
+            raiseInfo->setFAYWait(i, !yInRange);
+            ret = ret & yInRange;
         }
 
         float fe = ForceActuatorData::instance().zForce[i] - _appliedForces->zForces[i];
-        inTolerance &= Range::InRangeTrigger(-limit, limit, fe, limitTriggerZ[i], limit, fe);
+        bool zInRange = Range::InRangeTrigger(-limit, limit, fe, limitTriggerZ[i], limit, fe);
+        raiseInfo->setFAZWait(i, !zInRange);
+        ret = ret & zInRange;
     }
-    return inTolerance;
+    return ret;
 }
 
 void ForceController::updateAppliedForces() {

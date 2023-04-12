@@ -86,24 +86,19 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
 void MirrorRaiseController::runLoop() {
     SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
                  RaisingLoweringInfo::instance().weightSupportedPercent);
-    if (!RaisingLoweringInfo::instance().supportPercentageFilled()) {
+    auto raiseInfo = &RaisingLoweringInfo::instance();
+    if (!raiseInfo->supportPercentageFilled()) {
         auto hpWarning = &HardpointActuatorWarning::instance();
-        auto raiseInfo = &RaisingLoweringInfo::instance();
         // Wait for pressure to raise after valve opening
         if (raiseInfo->supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
-            if (raiseInfo->waitAirPressure == false) {
-                raiseInfo->setWaitAirPressure(true);
-                SPDLOG_INFO("Waiting for air pressure in the hardpoints");
-            }
+            raiseInfo->setWaitAirPressure(true);
             return;
         }
-        if (raiseInfo->waitAirPressure == true) {
-            raiseInfo->setWaitAirPressure(false);
-            SPDLOG_INFO("Hardpoint air pressure stabilized, raising the mirror");
-        }
+        raiseInfo->setWaitAirPressure(false);
         // We are still in the process of transferring the support force from the static supports
         // to the force actuators
-        if (_positionController->forcesInTolerance(true) && _forceController->followingErrorInTolerance()) {
+        if (_positionController->hpRaiseLowerForcesInTolerance(true) &&
+            _forceController->faRaiseFollowingErrorInTolerance()) {
             // The forces on the hardpoints are within tolerance and
             // the force actuators are following their setpoints, we can continue to transfer the
             // support force from the static supports to the force actuators
@@ -127,6 +122,7 @@ void MirrorRaiseController::runLoop() {
                 SPDLOG_WARN("Raising paused - waiting for hardpoints movements");
             }
         }
+        raiseInfo->sendUpdates();
     }
 }
 
