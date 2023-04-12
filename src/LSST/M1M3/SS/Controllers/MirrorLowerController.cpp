@@ -82,12 +82,14 @@ void MirrorLowerController::runLoop() {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
         // TODO: Does it matter if the following error is bad when we are trying to lower the mirror?
-        if (_positionController->forcesInTolerance(false)) {
+        if (_positionController->hpRaiseLowerForcesInTolerance(false)) {
             // The forces on the hardpoints are within tolerance, we can continue to transfer the
             // support force from the static supports to the force actuators
             RaisingLoweringInfo::instance().decSupportPercentage();
         }
     }
+
+    RaisingLoweringInfo::instance().sendUpdates();
 }
 
 bool MirrorLowerController::checkComplete() {
