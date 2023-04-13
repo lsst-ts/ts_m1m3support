@@ -29,6 +29,7 @@
 #endif
 
 #include <FPGA.h>
+#include <FPGAAddresses.h>
 #include <ForceActuatorApplicationSettings.h>
 
 #include <cRIO/FPGACliApp.h>
@@ -45,10 +46,13 @@
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
 
+#define MAX_FORCE 50
+
 class M1M3SScli : public FPGACliApp {
 public:
     M1M3SScli(const char* name, const char* description);
     int setPower(command_vec cmds);
+    int setAir(command_vec cmds);
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
 
@@ -93,6 +97,9 @@ public:
 M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(name, description) {
     addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>",
                "Power off/on ILC bus");
+
+    addCommand("air", std::bind(&M1M3SScli::setAir, this, std::placeholders::_1), "b", NEED_FPGA, "<0|1>",
+               "Turns air valve off/on");
 
     addILCCommand(
             "calibration",
@@ -154,16 +161,27 @@ int M1M3SScli::setPower(command_vec cmds) {
             std::cerr << "Invalid number of arguments to power command." << std::endl;
             return -1;
     }
-    uint16_t pa[16] = {65, aux, 66, aux, 67, aux, 68, aux, 69, net, 70, net, 71, net, 72, net};
+    uint16_t pa[16] = {FPGAAddresses::DCAuxPowerNetworkAOn, aux, FPGAAddresses::DCAuxPowerNetworkBOn, aux,
+                       FPGAAddresses::DCAuxPowerNetworkCOn, aux, FPGAAddresses::DCAuxPowerNetworkDOn, aux,
+                       FPGAAddresses::DCPowerNetworkAOn,    net, FPGAAddresses::DCPowerNetworkBOn,    net,
+                       FPGAAddresses::DCPowerNetworkCOn,    net, FPGAAddresses::DCPowerNetworkDOn,    net};
     getFPGA()->writeCommandFIFO(pa, 16, 0);
+    return 0;
+}
+
+int M1M3SScli::setAir(command_vec cmds) {
+    uint16_t on = CliApp::onOff(cmds[0]);
+    uint16_t aa[2] = {FPGAAddresses::AirSupplyValveControl, on};
+    getFPGA()->writeCommandFIFO(aa, 2, 0);
     return 0;
 }
 
 int M1M3SScli::setSAAOffset(command_vec cmds) {
     float primary = stof(cmds[0]);
 
-    if (fabs(primary) > 10) {
-        std::cerr << "Force offset must be below 10 N, received " << primary << std::endl;
+    if (fabs(primary) > MAX_FORCE) {
+        std::cerr << "Force offset must be below " << MAX_FORCE << " N, received " << primary << " N "
+                  << std::endl;
         return -1;
     }
 
@@ -183,9 +201,9 @@ int M1M3SScli::setDAAOffset(command_vec cmds) {
     float primary = stof(cmds[0]);
     float secondary = stof(cmds[1]);
 
-    if (fabs(primary) > 10 || fabs(secondary) > 10) {
-        std::cerr << "Force offset must be below 10 N, received " << primary << " and " << secondary
-                  << std::endl;
+    if (fabs(primary) > MAX_FORCE || fabs(secondary) > MAX_FORCE) {
+        std::cerr << "Force offset must be below " << MAX_FORCE << " N, received " << primary << " N and "
+                  << secondary << " N" << std::endl;
         return -1;
     }
 
