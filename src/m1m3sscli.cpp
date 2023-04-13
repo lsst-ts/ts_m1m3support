@@ -49,7 +49,8 @@ class M1M3SScli : public FPGACliApp {
 public:
     M1M3SScli(const char* name, const char* description);
     int setPower(command_vec cmds);
-    int setOffset(command_vec cmds);
+    int setSAAOffset(command_vec cmds);
+    int setDAAOffset(command_vec cmds);
 
 protected:
     virtual LSST::cRIO::FPGA* newFPGA(const char* dir) override;
@@ -123,8 +124,11 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
             },
             "Read hardpoint info");
 
-    addCommand("offset", std::bind(&M1M3SScli::setOffset, this, std::placeholders::_1), "FFI*", NEED_FPGA,
-               "<primary> <secondary> <ILC..>", "Set ILC primary and secondary force offsets");
+    addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",
+               NEED_FPGA, "<primary> <ILC..>", "Set ILC primary force offset");
+
+    addCommand("daa-offset", std::bind(&M1M3SScli::setDAAOffset, this, std::placeholders::_1), "DDs?",
+               NEED_FPGA, "<primary> <secondary> <ILC..>", "Set ILC primary and secondary force offsets");
 
     addILC(std::make_shared<PrintElectromechanical>(1));
     addILC(std::make_shared<PrintElectromechanical>(2));
@@ -155,9 +159,46 @@ int M1M3SScli::setPower(command_vec cmds) {
     return 0;
 }
 
-int M1M3SScli::setOffset(command_vec cmds) {
+int M1M3SScli::setSAAOffset(command_vec cmds) {
+    float primary = stof(cmds[0]);
+
+    if (fabs(primary) > 10) {
+        std::cerr << "Force offset must be below 10 N, received " << primary << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 1);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setSAAForceOffset(u.second, false,
+                                                                                      primary);
+    }
+    runILCCommands();
+    return 0;
+}
+
+int M1M3SScli::setDAAOffset(command_vec cmds) {
     float primary = stof(cmds[0]);
     float secondary = stof(cmds[1]);
+
+    if (fabs(primary) > 10 || fabs(secondary) > 10) {
+        std::cerr << "Force offset must be below 10 N, received " << primary << " and " << secondary
+                  << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 2);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDAAForceOffset(u.second, false,
+                                                                                      primary, secondary);
+    }
+    runILCCommands();
+    return 0;
 }
 
 LSST::cRIO::FPGA* M1M3SScli::newFPGA(const char* dir) { return new PrintSSFPGA(); }
@@ -213,6 +254,9 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
             else {
                 int id = std::stoi(c);
                 if (id >= 101 && id <= 443) {
+                    if (getDebugLevel() > 1) {
+                        std::cout << "FA ID: " << std::dec << +id;
+                    }
                     id = forceActuators.ActuatorIdToZIndex(id);
                     if (id < 0) {
                         std::cerr << "Unknown actuator ID " << c << std::endl;
@@ -220,12 +264,12 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
                         continue;
                     }
                     ForceActuatorTableRow row = forceActuators.Table[id];
-                    if (getDebugLevel() > 1) {
-                        std::cout << "Id: " << id << " address: " << std::to_string(bus) << "/"
-                                  << std::to_string(address) << std::endl;
-                    }
                     bus = row.Subnet - 1;
                     address = row.Address;
+                    if (getDebugLevel() > 1) {
+                        std::cout << " Index: " << id << " address: " << std::to_string(bus) << "/"
+                                  << std::to_string(address) << std::endl;
+                    }
                 }
             }
         } catch (std::logic_error& e) {
