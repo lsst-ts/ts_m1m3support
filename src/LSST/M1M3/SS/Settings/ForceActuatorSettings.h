@@ -33,7 +33,6 @@
 
 #include <DataTypes.h>
 #include <DistributedForces.h>
-#include <ForceActuatorLimits.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorBumpTestSettings.h>
 #include <ForceComponentSettings.h>
