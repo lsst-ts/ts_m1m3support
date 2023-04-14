@@ -28,7 +28,6 @@ using namespace LSST::M1M3::SS;
 HardpointActuatorWarning::HardpointActuatorWarning(token) {
     timestamp = NAN;
     _updated = false;
-    waitingForAirPressureBeforeRaise = false;
 
     for (int i = 0; i < HP_COUNT; i++) {
         ilcFault[i] = false;
@@ -64,8 +63,8 @@ HardpointActuatorWarning::HardpointActuatorWarning(token) {
         _ilcOldStatus[i] = 0xFFFF;
         _ilcOldFaults[i] = 0xFFFF;
 
-        _airPressureLowWarning[i] = false;
-        _airPressureHighWarning[i] = false;
+        lowAirPressureFault[i] = false;
+        highAirPressureFault[i] = false;
     }
 }
 
@@ -99,9 +98,8 @@ void HardpointActuatorWarning::send() {
     anyBroadcastCounterWarning = false;
     anyLowProximityWarning = false;
     anyHighProximityWarning = false;
-
-    anyAirLowPressureFault = false;
-    anyAirHighPressureFault = false;
+    anyLowAirPressureFault = false;
+    anyHighAirPressureFault = false;
 
     for (int i = 0; i < HP_COUNT; ++i) {
         anyMajorFault = anyMajorFault || majorFault[i];
@@ -129,8 +127,8 @@ void HardpointActuatorWarning::send() {
         anyBroadcastCounterWarning = anyBroadcastCounterWarning || broadcastCounterWarning[i];
         anyLowProximityWarning = anyLowProximityWarning || lowProximityWarning[i];
         anyHighProximityWarning = anyHighProximityWarning || highProximityWarning[i];
-        anyAirLowPressureFault = anyAirLowPressureFault || _airPressureLowWarning[i];
-        anyAirHighPressureFault = anyAirHighPressureFault || _airPressureHighWarning[i];
+        anyLowAirPressureFault = anyLowAirPressureFault || lowAirPressureFault[i];
+        anyHighAirPressureFault = anyHighAirPressureFault || highAirPressureFault[i];
     }
     anyWarning = anyMajorFault || anyMinorFault || anyFaultOverride || anyMainCalibrationError ||
                  anyBackupCalibrationError || anyLimitSwitch1Operated || anyLimitSwitch2Operated ||
@@ -139,7 +137,7 @@ void HardpointActuatorWarning::send() {
                  anyOneWire2Mismatch || anyWatchdogReset || anyBrownOut || anyEventTrapReset ||
                  anyMotorDriverFault || anySSRPowerFault || anyAuxPowerFault || anySMCPowerFault ||
                  anyILCFault || anyBroadcastCounterWarning || anyLowProximityWarning ||
-                 anyHighProximityWarning;
+                 anyHighProximityWarning || anyLowAirPressureFault || anyHighAirPressureFault;
 
     M1M3SSPublisher::instance().logHardpointActuatorWarning(this);
 
@@ -221,14 +219,14 @@ void HardpointActuatorWarning::setProximityWarning(int32_t hpIndex, bool lowWarn
     }
 }
 
-void HardpointActuatorWarning::setAirPressure(int32_t hpIndex, bool lowWarning, bool highWarning,
+void HardpointActuatorWarning::setAirPressure(int32_t hpIndex, bool lowFault, bool highFault,
                                               float airPressure) {
-    if (_airPressureLowWarning[hpIndex] != lowWarning) {
+    if (lowAirPressureFault[hpIndex] != lowFault) {
         _updated = true;
-        _airPressureLowWarning[hpIndex] = lowWarning;
+        lowAirPressureFault[hpIndex] = lowFault;
     }
-    if (_airPressureHighWarning[hpIndex] != highWarning) {
+    if (highAirPressureFault[hpIndex] != highFault) {
         _updated = true;
-        _airPressureHighWarning[hpIndex] = highWarning;
+        highAirPressureFault[hpIndex] = highFault;
     }
 }

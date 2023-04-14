@@ -30,6 +30,7 @@
 #include <MirrorRaiseController.h>
 #include <PositionController.h>
 #include <PowerController.h>
+#include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 
 namespace LSST {
@@ -70,10 +71,10 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _forceController->zeroStaticForces();
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
-    _forceController->zeroSupportPercentage();
+    RaisingLoweringInfo::instance().zeroSupportPercentage();
     _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp();
 
-    HardpointActuatorWarning::instance().waitingForAirPressureBeforeRaise = false;
+    RaisingLoweringInfo::instance().setWaitAirPressure(false);
 
     if (AirSupplyStatus::instance().airValveClosed == true) {
         SPDLOG_WARN(
@@ -84,33 +85,29 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
 
 void MirrorRaiseController::runLoop() {
     SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
-                 M1M3SSPublisher::instance().getEventForceActuatorState()->supportPercentage);
-    if (!_forceController->supportPercentageFilled()) {
+                 RaisingLoweringInfo::instance().weightSupportedPercent);
+    auto raiseInfo = &RaisingLoweringInfo::instance();
+    if (!raiseInfo->supportPercentageFilled()) {
         auto hpWarning = &HardpointActuatorWarning::instance();
         // Wait for pressure to raise after valve opening
-        if (_forceController->supportPercentageZeroed() && hpWarning->anyAirLowPressureFault) {
-            if (hpWarning->waitingForAirPressureBeforeRaise == false) {
-                hpWarning->waitingForAirPressureBeforeRaise = true;
-                SPDLOG_INFO("Waiting for air pressure in the hardpoints");
-            }
+        if (raiseInfo->supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
+            raiseInfo->setWaitAirPressure(true);
             return;
         }
-        if (hpWarning->waitingForAirPressureBeforeRaise == true) {
-            hpWarning->waitingForAirPressureBeforeRaise = false;
-            SPDLOG_INFO("Hardpoint air pressure stabilized, raising the mirror");
-        }
+        raiseInfo->setWaitAirPressure(false);
         // We are still in the process of transferring the support force from the static supports
         // to the force actuators
-        if (_positionController->forcesInTolerance(true) && _forceController->followingErrorInTolerance()) {
+        if (_positionController->hpRaiseLowerForcesInTolerance(true) &&
+            _forceController->faRaiseFollowingErrorInTolerance()) {
             // The forces on the hardpoints are within tolerance and
             // the force actuators are following their setpoints, we can continue to transfer the
             // support force from the static supports to the force actuators
-            _forceController->incSupportPercentage();
+            RaisingLoweringInfo::instance().incSupportPercentage();
             if (_raisePauseReported == true) {
                 _raisePauseReported = false;
                 SPDLOG_INFO("Raising resumed");
             }
-            if (_forceController->supportPercentageFilled()) {
+            if (RaisingLoweringInfo::instance().supportPercentageFilled()) {
                 // All of the support force has been transfered from the static supports to the
                 // force actuators, stop the hardpoints from chasing and start moving to the
                 // reference position
@@ -125,11 +122,12 @@ void MirrorRaiseController::runLoop() {
                 SPDLOG_WARN("Raising paused - waiting for hardpoints movements");
             }
         }
+        raiseInfo->sendUpdates();
     }
 }
 
 bool MirrorRaiseController::checkComplete() {
-    bool forceFilled = _forceController->supportPercentageFilled();
+    bool forceFilled = RaisingLoweringInfo::instance().supportPercentageFilled();
     bool positionCompleted = _positionController->motionComplete();
     if (_lastForceFilled != forceFilled) {
         SPDLOG_INFO("MirrorRaiseController::checkComplete force controller support percentage {}",
@@ -160,7 +158,7 @@ void MirrorRaiseController::complete() {
     _forceController->applyStaticForces();
     _forceController->applyThermalForces();
     _forceController->zeroVelocityForces();
-    _forceController->fillSupportPercentage();
+    RaisingLoweringInfo::instance().fillSupportPercentage();
 }
 
 bool MirrorRaiseController::checkTimeout() {

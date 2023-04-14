@@ -45,19 +45,13 @@ public:
     void setStatus(int32_t hpIndex, double _timestamp, uint8_t status, int broadcastCounter);
     void setIlcStatus(int32_t hpIndex, uint16_t ilcStatus, uint16_t ilcFaults);
     void setProximityWarning(int32_t hpIndex, bool lowWarning, bool highWarning);
-    void setAirPressure(int32_t hpIndex, bool lowWarning, bool highWarning, float airPressure);
-
-    bool anyAirLowPressureFault;
-    bool anyAirHighPressureFault;
-    bool waitingForAirPressureBeforeRaise;
+    void setAirPressure(int32_t hpIndex, bool lowFault, bool highFault, float airPressure);
 
 private:
     bool _updated;
 
     uint16_t _ilcOldStatus[HP_COUNT];
     uint16_t _ilcOldFaults[HP_COUNT];
-    bool _airPressureLowWarning[HP_COUNT];
-    bool _airPressureHighWarning[HP_COUNT];
 };
 
 }  // namespace SS
