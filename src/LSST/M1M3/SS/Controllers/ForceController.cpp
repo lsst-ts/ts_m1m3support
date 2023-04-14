@@ -31,7 +31,6 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorSettings.h>
-#include <ForceActuatorLimits.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <RaisingLoweringInfo.h>
