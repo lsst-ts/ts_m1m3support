@@ -29,6 +29,7 @@
 #include <Model.h>
 #include <HardpointActuatorMotionStates.h>
 #include <Range.h>
+#include <RaisingLoweringInfo.h>
 #include <SAL_MTM1M3C.h>
 #include <TMA.h>
 
@@ -87,9 +88,10 @@ void PositionController::disableChaseAll() {
     M1M3SSPublisher::instance().tryLogHardpointActuatorState();
 }
 
-bool PositionController::forcesInTolerance(bool raise) {
+bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
     SPDLOG_TRACE("PositionController: forcesInTolerance({})", raise);
-    bool inTolerance = true;
+    bool ret = true;
+    auto raiseLowerInfo = &RaisingLoweringInfo::instance();
 
     class PositionLimitTrigger : public LimitTrigger<float, float, float> {
     public:
@@ -129,24 +131,28 @@ bool PositionController::forcesInTolerance(bool raise) {
                                                PositionLimitTrigger(3), PositionLimitTrigger(4),
                                                PositionLimitTrigger(5), PositionLimitTrigger(6)};
     for (int i = 0; i < HP_COUNT; i++) {
+        bool inRange;
         if (raise) {
-            inTolerance &= Range::InRangeTrigger((float)_positionControllerSettings->raiseHPForceLimitLow,
-                                                 (float)_positionControllerSettings->raiseHPForceLimitHigh,
-                                                 _hardpointActuatorData->measuredForce[i], triggers[i],
-                                                 (float)_positionControllerSettings->raiseHPForceLimitLow,
-                                                 (float)_positionControllerSettings->raiseHPForceLimitHigh,
-                                                 _hardpointActuatorData->measuredForce[i]);
+            inRange = Range::InRangeTrigger((float)_positionControllerSettings->raiseHPForceLimitLow,
+                                            (float)_positionControllerSettings->raiseHPForceLimitHigh,
+                                            _hardpointActuatorData->measuredForce[i], triggers[i],
+                                            (float)_positionControllerSettings->raiseHPForceLimitLow,
+                                            (float)_positionControllerSettings->raiseHPForceLimitHigh,
+                                            _hardpointActuatorData->measuredForce[i]);
         } else {
-            inTolerance &= Range::InRangeTrigger((float)_positionControllerSettings->lowerHPForceLimitLow,
-                                                 (float)_positionControllerSettings->lowerHPForceLimitHigh,
-                                                 _hardpointActuatorData->measuredForce[i], triggers[i],
-                                                 (float)_positionControllerSettings->lowerHPForceLimitLow,
-                                                 (float)_positionControllerSettings->lowerHPForceLimitHigh,
-                                                 _hardpointActuatorData->measuredForce[i]);
+            inRange = Range::InRangeTrigger((float)_positionControllerSettings->lowerHPForceLimitLow,
+                                            (float)_positionControllerSettings->lowerHPForceLimitHigh,
+                                            _hardpointActuatorData->measuredForce[i], triggers[i],
+                                            (float)_positionControllerSettings->lowerHPForceLimitLow,
+                                            (float)_positionControllerSettings->lowerHPForceLimitHigh,
+                                            _hardpointActuatorData->measuredForce[i]);
         }
+        raiseLowerInfo->setHPWait(i, !inRange);
+
+        ret = ret & inRange;
         checkLimits(i);
     }
-    return inTolerance;
+    return ret;
 }
 
 bool PositionController::motionComplete() {

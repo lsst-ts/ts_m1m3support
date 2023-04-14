@@ -80,16 +80,12 @@ struct ForceActuatorIndicesNeighbors {
  * Mirror weight (gravitational force, which depends on elevation, so is
  * calculated by ElevationForceComponent) can be supported (counteracted) from
  * 0 to 100%. Mirror is active when its weight is fully supported by actuators.
- * See incSupportPercentage(), decSupportPercentage(), zeroSupportPercentage()
- * and fillSupportPercentage() methods for support percentage manipulation. As
+ * See RaisingLoweringInfo for methods to manipulate the support percentage. As
  * the mirror is being raised, the support fraction is increased. When the
  * mirror is being lowered, its support fraction is lowered.
  *
- * The supportPercentageFilled() and supportPercentageZeroed() methods reports
- * mirror raising state.
- *
- * Actual support percentage, together with the force actuator state and
- * enabled ForceComponent subclass, is reported in forceActuatorState event.
+ * The force actuator state and enabled ForceComponent subclass is reported in
+ * forceActuatorState event.
  *
  * Various other corrections - manual offsets, dynamic force (acceleration when
  * TMA is moving), bending mode corrections for active optics - are handled in
@@ -144,48 +140,10 @@ public:
     void updateTMAElevationData(MTMount_elevationC* tmaElevationData);
 
     /**
-     * Increases mirrror support percentage by RaiseIncrementPercentage setting
-     * value.
-     */
-    void incSupportPercentage();
-
-    /**
-     * Decrements mirror support percentage by LowerDecrementPercentage setting
-     * value.
-     */
-    void decSupportPercentage();
-
-    /**
-     * Sets support percentage to 0%.
-     */
-    void zeroSupportPercentage();
-
-    /**
-     * Sets support percentage to 100%.
-     */
-    void fillSupportPercentage();
-
-    /**
-     * Is mirror support percentage equal or more than 100%?
-     *
-     * @return true if the mirror is fully supported by target force actuator
-     * values.
-     */
-    bool supportPercentageFilled();
-
-    /**
-     * Is mirror support percentage less or equal to 0?
-     *
-     * @return true if mirror the mirror is not supported by target force
-     * actuator values.
-     */
-    bool supportPercentageZeroed();
-
-    /**
      * Tests following error on all actuaturs. Reports any violation into
      * spdlog.
      */
-    bool followingErrorInTolerance();
+    bool faRaiseFollowingErrorInTolerance();
 
     void updateAppliedForces();
 

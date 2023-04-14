@@ -71,7 +71,16 @@ public:
     bool enableChaseAll();
     void disableChaseAll();
 
-    bool forcesInTolerance(bool raise);
+    /**
+     * Checks that hardpoint forces are in tolerance for mirror raising and
+     * lowering. Records raise/lowering forces status in
+     * RaisingLoweringInfo.waitHardpoint field.
+     *
+     * @param raise true if mirror is being raised - raising limits are then used
+     *
+     * @return true if all hardpoint forces are within tolerance
+     */
+    bool hpRaiseLowerForcesInTolerance(bool raise);
     bool motionComplete();
 
     /**

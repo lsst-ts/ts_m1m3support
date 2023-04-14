@@ -30,6 +30,7 @@
 #include <Model.h>
 #include <SettingReader.h>
 #include <StateTypes.h>
+#include <RaisingLoweringInfo.h>
 
 #include <SAL_MTM1M3.h>
 
@@ -135,14 +136,14 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     SECTION("Elevation 0 deg with 100% support") {
         Model::get().getForceController()->applyElevationForces();
-        Model::get().getForceController()->fillSupportPercentage();
+        RaisingLoweringInfo::instance().fillSupportPercentage();
 
         runAndCheck(Model::get().getForceController(), 0, 10500.0, -0.79729, 89.23988, 0.8879, 11.76017);
     }
 
     SECTION("Elevation 45 deg with 100% support") {
         Model::get().getForceController()->applyElevationForces();
-        Model::get().getForceController()->fillSupportPercentage();
+        RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
@@ -167,7 +168,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     SECTION("Elevation 90 deg with 100% support") {
         Model::get().getForceController()->applyElevationForces();
-        Model::get().getForceController()->fillSupportPercentage();
+        RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 90.0;
 
@@ -176,7 +177,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     SECTION("Elevation 45 deg with 100% support, progressing load") {
         Model::get().getForceController()->applyElevationForces();
-        Model::get().getForceController()->fillSupportPercentage();
+        RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
@@ -195,7 +196,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     SECTION("Elevation 45 deg with 100% support, force sum doesn't support mirror") {
         Model::get().getForceController()->applyElevationForces();
-        Model::get().getForceController()->fillSupportPercentage();
+        RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 

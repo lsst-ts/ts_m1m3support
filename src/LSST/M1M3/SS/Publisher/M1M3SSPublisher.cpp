@@ -117,6 +117,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedStaticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedThermalForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_raisingLoweringInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
@@ -471,27 +472,25 @@ void M1M3SSPublisher::logForceActuatorState() {
 }
 
 void M1M3SSPublisher::tryLogForceActuatorState() {
-    bool changeDetected =
-            _eventForceActuatorState.slewFlag != _previousEventForceActuatorState.slewFlag ||
-            _eventForceActuatorState.staticForcesApplied !=
-                    _previousEventForceActuatorState.staticForcesApplied ||
-            _eventForceActuatorState.elevationForcesApplied !=
-                    _previousEventForceActuatorState.elevationForcesApplied ||
-            _eventForceActuatorState.azimuthForcesApplied !=
-                    _previousEventForceActuatorState.azimuthForcesApplied ||
-            _eventForceActuatorState.thermalForcesApplied !=
-                    _previousEventForceActuatorState.thermalForcesApplied ||
-            _eventForceActuatorState.offsetForcesApplied !=
-                    _previousEventForceActuatorState.offsetForcesApplied ||
-            _eventForceActuatorState.accelerationForcesApplied !=
-                    _previousEventForceActuatorState.accelerationForcesApplied ||
-            _eventForceActuatorState.velocityForcesApplied !=
-                    _previousEventForceActuatorState.velocityForcesApplied ||
-            _eventForceActuatorState.activeOpticForcesApplied !=
-                    _previousEventForceActuatorState.activeOpticForcesApplied ||
-            _eventForceActuatorState.balanceForcesApplied !=
-                    _previousEventForceActuatorState.balanceForcesApplied ||
-            _eventForceActuatorState.supportPercentage != _previousEventForceActuatorState.supportPercentage;
+    bool changeDetected = _eventForceActuatorState.slewFlag != _previousEventForceActuatorState.slewFlag ||
+                          _eventForceActuatorState.staticForcesApplied !=
+                                  _previousEventForceActuatorState.staticForcesApplied ||
+                          _eventForceActuatorState.elevationForcesApplied !=
+                                  _previousEventForceActuatorState.elevationForcesApplied ||
+                          _eventForceActuatorState.azimuthForcesApplied !=
+                                  _previousEventForceActuatorState.azimuthForcesApplied ||
+                          _eventForceActuatorState.thermalForcesApplied !=
+                                  _previousEventForceActuatorState.thermalForcesApplied ||
+                          _eventForceActuatorState.offsetForcesApplied !=
+                                  _previousEventForceActuatorState.offsetForcesApplied ||
+                          _eventForceActuatorState.accelerationForcesApplied !=
+                                  _previousEventForceActuatorState.accelerationForcesApplied ||
+                          _eventForceActuatorState.velocityForcesApplied !=
+                                  _previousEventForceActuatorState.velocityForcesApplied ||
+                          _eventForceActuatorState.activeOpticForcesApplied !=
+                                  _previousEventForceActuatorState.activeOpticForcesApplied ||
+                          _eventForceActuatorState.balanceForcesApplied !=
+                                  _previousEventForceActuatorState.balanceForcesApplied;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventForceActuatorState.ilcState[i] != _previousEventForceActuatorState.ilcState[i];
