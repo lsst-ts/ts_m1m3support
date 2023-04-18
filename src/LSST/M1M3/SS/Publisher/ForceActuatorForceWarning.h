@@ -65,6 +65,8 @@ private:
     void _checkSecondaryMeasuredForce(int dataIndex, float secondaryForce);
     void _checkSecondaryFollowingError(int dataIndex, float secondaryForce, float secondarySetpoint);
 
+    float _measuredForceWarningRatio;
+
     bool _shouldSend;
 };
 

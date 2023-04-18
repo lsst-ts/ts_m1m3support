@@ -26,8 +26,8 @@ VelocityYTablePath: Tables/VelocityYTable.csv
 VelocityZTablePath: Tables/VelocityZTable.csv
 VelocityXZTablePath: Tables/VelocityXZTable.csv
 VelocityYZTablePath: Tables/VelocityYZTable.csv
-MeasuredPrimaryCylinderLimitTablePath: Tables/MeasuredPrimaryCylinderLimitTable.csv
-MeasuredSecondaryCylinderLimitTablePath: Tables/MeasuredSecondaryCylinderLimitTable.csv
+MeasuredCylinderLimitTablePath: Tables/MeasuredCylinderLimitTable.csv
+MeasuredWarningPercentage: 90
 FollowingErrorPrimaryCylinderLimitTablePath: Tables/FollowingErrorPrimaryCylinderLimitTable.csv
 FollowingErrorSecondaryCylinderLimitTablePath: Tables/FollowingErrorSecondaryCylinderLimitTable.csv
 AccelerationLimitXTablePath: Tables/AccelerationLimitXTable.csv
