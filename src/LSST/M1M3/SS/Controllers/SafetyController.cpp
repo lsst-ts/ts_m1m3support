@@ -386,7 +386,7 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
 void SafetyController::forceControllerNotifyMeasuredForceLimit(int actuatorId, bool primary,
                                                                float measuredForce, bool conditionFlag) {
     _updateOverride(FaultCodes::ForceControllerMeasuredForceLimit, true, conditionFlag,
-                    fmt::format("Force actuator {} ({}) measured force ({} N) outside limits", actuatorId,
+                    fmt::format("Force actuator {} {} measured force ({} N) outside limits", actuatorId,
                                 (primary ? "primary cylinder" : "secondary cylinder"), measuredForce));
 }
 
