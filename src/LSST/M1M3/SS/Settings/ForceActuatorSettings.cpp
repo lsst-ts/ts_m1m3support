@@ -54,6 +54,8 @@ ForceActuatorSettings::ForceActuatorSettings(token) {
            sizeof(secondaryFollowingErrorCountingFaultThreshold));
     memset(secondaryFollowingErrorImmediateFaultThreshold, 0,
            sizeof(secondaryFollowingErrorImmediateFaultThreshold));
+
+    measuredWarningPercentage = 90;
 }
 
 void ForceActuatorSettings::load(const std::string &filename) {
@@ -147,10 +149,12 @@ void ForceActuatorSettings::load(const std::string &filename) {
         TableLoader::loadLimitTable(1, &CylinderLimitSecondaryTable,
                                     doc["CylinderLimitSecondaryTablePath"].as<std::string>());
 
-        TableLoader::loadLimitTable(1, &MeasuredPrimaryCylinderLimitTable,
-                                    doc["MeasuredPrimaryCylinderLimitTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &MeasuredSecondaryCylinderLimitTable,
-                                    doc["MeasuredSecondaryCylinderLimitTablePath"].as<std::string>());
+        measuredWarningPercentage = doc["MeasuredWarningPercentage"].as<float>();
+
+        TableLoader::loadCylinderLimitTable(
+                1, primaryCylinderMeasuredForceLowLimit, primaryCylinderMeasuredForceHighLimit,
+                secondaryCylinderMeasuredForceLowLimit, secondaryCylinderMeasuredForceHighLimit,
+                doc["MeasuredCylinderLimitTablePath"].as<std::string>());
         _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
                                   doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
 
