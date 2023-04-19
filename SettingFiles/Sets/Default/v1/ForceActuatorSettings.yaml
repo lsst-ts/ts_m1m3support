@@ -1,3 +1,8 @@
+BoosterValveControl:
+  FollowingError:
+    Enabled: On
+    Open: 50
+    Close: 45
 DisabledActuators: []
 AccelerationXTablePath: Tables/AccelerationXTable.csv
 AccelerationYTablePath: Tables/AccelerationYTable.csv

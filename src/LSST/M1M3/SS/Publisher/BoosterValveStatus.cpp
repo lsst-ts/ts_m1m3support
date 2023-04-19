@@ -28,8 +28,8 @@ using namespace LSST::M1M3::SS;
 
 BoosterValveStatus::BoosterValveStatus(token) {
     slewFlag = false;
-    followingErrorTrigerred = false;
-    accelerometerTrigerred = false;
+    followingErrorTriggerred = false;
+    accelerometerTriggerred = false;
 
     _shouldSend = true;
 }
