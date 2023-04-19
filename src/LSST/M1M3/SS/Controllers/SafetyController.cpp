@@ -383,6 +383,13 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
                     "Force controller force clipping");
 }
 
+void SafetyController::forceControllerNotifyMeasuredForceLimit(int actuatorId, bool primary,
+                                                               float measuredForce, bool conditionFlag) {
+    _updateOverride(FaultCodes::ForceControllerMeasuredForceLimit, true, conditionFlag,
+                    fmt::format("Force actuator {} {} measured force ({} N) outside limits", actuatorId,
+                                (primary ? "primary cylinder" : "secondary cylinder"), measuredForce));
+}
+
 void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {

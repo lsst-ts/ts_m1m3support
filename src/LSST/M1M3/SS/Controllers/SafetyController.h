@@ -105,6 +105,8 @@ public:
     void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
     void forceControllerNotifyVelocityForceClipping(bool conditionFlag);
     void forceControllerNotifyForceClipping(bool conditionFlag);
+    void forceControllerNotifyMeasuredForceLimit(int actuatorId, bool primary, float measuredForce,
+                                                 bool conditionFlag);
 
     void positionControllerNotifyLimitLow(int hp, bool conditionFlag);
     void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);

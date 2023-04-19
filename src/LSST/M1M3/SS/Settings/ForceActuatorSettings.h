@@ -33,7 +33,6 @@
 
 #include <DataTypes.h>
 #include <DistributedForces.h>
-#include <ForceActuatorLimits.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorBumpTestSettings.h>
 #include <ForceComponentSettings.h>
@@ -158,8 +157,6 @@ public:
     std::vector<Limit> VelocityLimitZTable;
     std::vector<Limit> CylinderLimitPrimaryTable;
     std::vector<Limit> CylinderLimitSecondaryTable;
-    std::vector<Limit> MeasuredPrimaryCylinderLimitTable;
-    std::vector<Limit> MeasuredSecondaryCylinderLimitTable;
 
     ForceActuatorNeighbors Neighbors[FA_COUNT];
 
@@ -189,6 +186,8 @@ private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
     void _loadFollowingErrorTables(const std::string &primaryFilename, const std::string &secondaryFilename);
+
+    float _measuredForceWarningRatio;
 };
 
 }  // namespace SS
