@@ -29,7 +29,6 @@
 #include <ForceActuatorSettings.h>
 #include <Range.h>
 #include <ForcesAndMoments.h>
-#include <ForceConverter.h>
 #include <DistributedForces.h>
 #include <spdlog/spdlog.h>
 
@@ -38,16 +37,14 @@ namespace M1M3 {
 namespace SS {
 
 VelocityForceComponent::VelocityForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Velocity", forceActuatorSettings->VelocityComponentSettings) {
+        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        : ForceComponent("Velocity", ForceActuatorSettings::instance().VelocityComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedVelocityForces = M1M3SSPublisher::get().getAppliedVelocityForces();
-    _preclippedVelocityForces = M1M3SSPublisher::get().getEventPreclippedVelocityForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();
+    _preclippedVelocityForces = M1M3SSPublisher::instance().getEventPreclippedVelocityForces();
 }
 
 void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
@@ -77,8 +74,8 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
                                                                   float angularVelocityZ) {
     SPDLOG_TRACE("VelocityForceComponent: applyVelocityForcesByMirrorForces({:.1f}, {:.1f}, {:.1f})",
                  angularVelocityX, angularVelocityY, angularVelocityZ);
-    DistributedForces forces = ForceConverter::calculateForceFromAngularVelocity(
-            _forceActuatorSettings, angularVelocityX, angularVelocityY, angularVelocityZ);
+    DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularVelocity(
+            angularVelocityX, angularVelocityY, angularVelocityZ);
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
@@ -100,9 +97,9 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
 void VelocityForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("VelocityForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _forceActuatorState->velocityForcesApplied = isEnabled();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 }
 
 void VelocityForceComponent::postUpdateActions() {
@@ -110,7 +107,7 @@ void VelocityForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedVelocityForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedVelocityForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -119,8 +116,8 @@ void VelocityForceComponent::postUpdateActions() {
         _forceSetpointWarning->velocityForceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].LowFault;
-            float xHighFault = _forceActuatorSettings->VelocityLimitXTable[xIndex].HighFault;
+            float xLowFault = ForceActuatorSettings::instance().VelocityLimitXTable[xIndex].LowFault;
+            float xHighFault = ForceActuatorSettings::instance().VelocityLimitXTable[xIndex].HighFault;
             _preclippedVelocityForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedVelocityForces->xForces[xIndex],
@@ -130,8 +127,8 @@ void VelocityForceComponent::postUpdateActions() {
         }
 
         if (yIndex != -1) {
-            float yLowFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].LowFault;
-            float yHighFault = _forceActuatorSettings->VelocityLimitYTable[yIndex].HighFault;
+            float yLowFault = ForceActuatorSettings::instance().VelocityLimitYTable[yIndex].LowFault;
+            float yHighFault = ForceActuatorSettings::instance().VelocityLimitYTable[yIndex].HighFault;
             _preclippedVelocityForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedVelocityForces->yForces[yIndex],
@@ -140,8 +137,8 @@ void VelocityForceComponent::postUpdateActions() {
                     notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         }
 
-        float zLowFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].LowFault;
-        float zHighFault = _forceActuatorSettings->VelocityLimitZTable[zIndex].HighFault;
+        float zLowFault = ForceActuatorSettings::instance().VelocityLimitZTable[zIndex].LowFault;
+        float zHighFault = ForceActuatorSettings::instance().VelocityLimitZTable[zIndex].HighFault;
         _preclippedVelocityForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedVelocityForces->zForces[zIndex],
@@ -151,8 +148,8 @@ void VelocityForceComponent::postUpdateActions() {
         clippingRequired = _forceSetpointWarning->velocityForceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedVelocityForces->xForces,
+    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _appliedVelocityForces->xForces,
             _appliedVelocityForces->yForces, _appliedVelocityForces->zForces);
     _appliedVelocityForces->fx = fm.Fx;
     _appliedVelocityForces->fy = fm.Fy;
@@ -162,8 +159,8 @@ void VelocityForceComponent::postUpdateActions() {
     _appliedVelocityForces->mz = fm.Mz;
     _appliedVelocityForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _preclippedVelocityForces->xForces,
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _preclippedVelocityForces->xForces,
             _preclippedVelocityForces->yForces, _preclippedVelocityForces->zForces);
     _preclippedVelocityForces->fx = fm.Fx;
     _preclippedVelocityForces->fy = fm.Fy;
@@ -175,11 +172,11 @@ void VelocityForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyVelocityForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedVelocityForces();
+        M1M3SSPublisher::instance().logPreclippedVelocityForces();
     }
-    M1M3SSPublisher::get().logAppliedVelocityForces();
+    M1M3SSPublisher::instance().logAppliedVelocityForces();
 }
 
 } /* namespace SS */

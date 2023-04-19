@@ -21,21 +21,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+#include <cstring>
+#include <chrono>
+
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
 #include <DigitalInputOutput.h>
 #include <FPGAAddresses.h>
-#include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
 #include <InterlockWarning.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
+#include <SupportFPGAData.h>
 #include <Timestamp.h>
 #include <Range.h>
-#include <SAL_MTM1M3C.h>
-#include <spdlog/spdlog.h>
-
-#include <algorithm>
-#include <cstring>
-#include <chrono>
 
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
@@ -46,19 +48,18 @@ DigitalInputOutput::DigitalInputOutput() {
     SPDLOG_DEBUG("DigitalInputOutput: DigitalInputOutput()");
     _safetyController = 0;
 
-    _airSupplyStatus = M1M3SSPublisher::get().getEventAirSupplyStatus();
-    _airSupplyWarning = M1M3SSPublisher::get().getEventAirSupplyWarning();
-    _cellLightStatus = M1M3SSPublisher::get().getEventCellLightStatus();
-    _cellLightWarning = M1M3SSPublisher::get().getEventCellLightWarning();
-    _interlockStatus = M1M3SSPublisher::get().getEventInterlockStatus();
+    _airSupplyStatus = &AirSupplyStatus::instance();
+    _airSupplyWarning = M1M3SSPublisher::instance().getEventAirSupplyWarning();
+    _cellLightStatus = M1M3SSPublisher::instance().getEventCellLightStatus();
+    _cellLightWarning = M1M3SSPublisher::instance().getEventCellLightWarning();
+    _interlockStatus = M1M3SSPublisher::instance().getEventInterlockStatus();
 
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
     _lastToggleTimestamp = 0;
 
-    _lightToggledTime = _airToggledTime = std::chrono::steady_clock::now();
+    _lightToggledTime = std::chrono::steady_clock::now();
 
-    memset(_airSupplyStatus, 0, sizeof(MTM1M3_logevent_airSupplyStatusC));
     memset(_airSupplyWarning, 0, sizeof(MTM1M3_logevent_airSupplyWarningC));
     memset(_cellLightStatus, 0, sizeof(MTM1M3_logevent_cellLightStatusC));
     memset(_cellLightWarning, 0, sizeof(MTM1M3_logevent_cellLightWarningC));
@@ -83,13 +84,12 @@ void DigitalInputOutput::processData() {
         tryPublish = true;
         _lastDOTimestamp = fpgaData->DigitalOutputTimestamp;
 
-        _airSupplyStatus->timestamp = timestamp;
-        _airSupplyStatus->airCommandOutputOn =
-                (fpgaData->DigitalOutputStates & DigitalOutputs::AirCommandOutputOn) != 0;
+        // Polarity is swapped
+        bool airMismatch = _airSupplyStatus->setOutputs(
+                timestamp, (fpgaData->DigitalOutputStates & DigitalOutputs::AirCommandOutputOn) != 0);
 
         _airSupplyWarning->timestamp = timestamp;
-        _airSupplyWarning->commandOutputMismatch =
-                _airSupplyStatus->airCommandOutputOn != _airSupplyStatus->airCommandedOn;
+        _airSupplyWarning->commandOutputMismatch = airMismatch;
 
         _cellLightStatus->timestamp = timestamp;
         // Polarity is swapped
@@ -123,24 +123,13 @@ void DigitalInputOutput::processData() {
         tryPublish = true;
         _lastDITimestamp = fpgaData->DigitalInputTimestamp;
 
-        _airSupplyStatus->timestamp = timestamp;
         // Polarity is swapped
-        _airSupplyStatus->airValveOpened =
-                (fpgaData->DigitalInputStates & DigitalInputs::AirValveOpened) == 0;
-        // Polarity is swapped
-        _airSupplyStatus->airValveClosed =
-                (fpgaData->DigitalInputStates & DigitalInputs::AirValveClosed) == 0;
+        bool airMismatch = _airSupplyStatus->setInputs(
+                timestamp, (fpgaData->DigitalInputStates & DigitalInputs::AirValveClosed) == 0,
+                (fpgaData->DigitalInputStates & DigitalInputs::AirValveOpened) == 0);
 
         _airSupplyWarning->timestamp = timestamp;
-        _airSupplyWarning->commandSensorMismatch =
-                (now - _airToggledTime) >
-                        std::chrono::seconds(SettingReader::instance()
-                                                     .getSafetyControllerSettings()
-                                                     ->AirController.ValveTransitionTimeout) &&
-                ((_airSupplyStatus->airCommandedOn &&
-                  (!_airSupplyStatus->airValveOpened || _airSupplyStatus->airValveClosed)) ||
-                 (!_airSupplyStatus->airCommandedOn &&
-                  (_airSupplyStatus->airValveOpened || !_airSupplyStatus->airValveClosed)));
+        _airSupplyWarning->commandSensorMismatch = airMismatch;
 
         _cellLightStatus->timestamp = timestamp;
         _cellLightStatus->cellLightsOn = (fpgaData->DigitalInputStates & DigitalInputs::CellLightsOn) != 0;
@@ -170,18 +159,18 @@ void DigitalInputOutput::processData() {
             _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
         }
     }
+    _airSupplyStatus->send();
     if (tryPublish) {
-        M1M3SSPublisher::get().tryLogAirSupplyStatus();
-        M1M3SSPublisher::get().tryLogAirSupplyWarning();
-        M1M3SSPublisher::get().tryLogCellLightStatus();
-        M1M3SSPublisher::get().tryLogCellLightWarning();
-        M1M3SSPublisher::get().tryLogInterlockStatus();
+        M1M3SSPublisher::instance().tryLogAirSupplyWarning();
+        M1M3SSPublisher::instance().tryLogCellLightStatus();
+        M1M3SSPublisher::instance().tryLogCellLightWarning();
+        M1M3SSPublisher::instance().tryLogInterlockStatus();
     }
 }
 
 void DigitalInputOutput::tryToggleHeartbeat() {
     SPDLOG_TRACE("DigitalInputOutput: tryToggleHeartbeat()");
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
     if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
         SPDLOG_DEBUG("DigitalInputOutput: toggleHeartbeat()");
         _lastToggleTimestamp = timestamp;
@@ -191,25 +180,35 @@ void DigitalInputOutput::tryToggleHeartbeat() {
         IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 
         // sends software heartbeat
-        M1M3SSPublisher::get().logHeartbeat();
-        M1M3SSPublisher::get().logInterlockStatus();
+        M1M3SSPublisher::instance().logHeartbeat();
+        M1M3SSPublisher::instance().logInterlockStatus();
     }
 }
 
-void DigitalInputOutput::turnAirOn() {
-    SPDLOG_INFO("DigitalInputOutput: turnAirOn()");
-    _airSupplyStatus->airCommandedOn = true;
-    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
+void DigitalInputOutput::setCriticalFailureToSafetyController() {
+    SPDLOG_TRACE("DigitalInputOutput: trigerring critical fault");
+    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 0};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    _airToggledTime = std::chrono::steady_clock::now();
+}
+
+void DigitalInputOutput::clearCriticalFailureToSafetyController() {
+    SPDLOG_TRACE("DigitalInputOutput: clear critical fault");
+    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 1};
+    IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+}
+
+void DigitalInputOutput::turnAirOn() {
+    SPDLOG_INFO("Air valve commanded to open");
+    _airSupplyStatus->setAirCommanded(true);
+    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, true};
+    IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
 void DigitalInputOutput::turnAirOff() {
-    SPDLOG_INFO("DigitalInputOutput: turnAirOff()");
-    _airSupplyStatus->airCommandedOn = false;
-    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, (uint16_t)_airSupplyStatus->airCommandedOn};
+    SPDLOG_INFO("Air valve commanded to close");
+    _airSupplyStatus->setAirCommanded(false);
+    uint16_t buffer[2] = {FPGAAddresses::AirSupplyValveControl, false};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    _airToggledTime = std::chrono::steady_clock::now();
 }
 
 void DigitalInputOutput::turnCellLightsOn() {

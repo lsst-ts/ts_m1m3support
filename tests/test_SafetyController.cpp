@@ -73,7 +73,7 @@ HardpointActuatorSettings hardpointActuatorSettings;
 void init_logger() {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     m1m3SAL->setDebugLevel(2);
-    M1M3SSPublisher::get().setSAL(m1m3SAL);
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
     SettingReader::instance().setRootPath("../SettingFiles/");
     REQUIRE_NOTHROW(Model::get().loadSettings("Default"));

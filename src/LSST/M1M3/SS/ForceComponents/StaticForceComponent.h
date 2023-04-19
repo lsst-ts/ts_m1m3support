@@ -26,7 +26,6 @@
 
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 #include <vector>
@@ -37,8 +36,7 @@ namespace SS {
 
 class StaticForceComponent : public ForceComponent {
 public:
-    StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                         ForceActuatorSettings* forceActuatorSettings);
+    StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     /**
      * Apply static forces. Enable static forces if those were disabled.
@@ -56,7 +54,6 @@ protected:
 private:
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;

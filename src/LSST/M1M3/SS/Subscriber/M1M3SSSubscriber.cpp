@@ -150,8 +150,8 @@ Command* M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
             spdlog::set_level(spdlog::level::debug);
         else
             spdlog::set_level(spdlog::level::trace);
-        M1M3SSPublisher::get().ackCommandsetLogLevel(commandID, ACK_COMPLETE, "Complete");
-        M1M3SSPublisher::get().newLogLevel(logLevel);
+        M1M3SSPublisher::instance().ackCommandsetLogLevel(commandID, ACK_COMPLETE, "Complete");
+        M1M3SSPublisher::instance().newLogLevel(logLevel);
     }
     return 0;
 }

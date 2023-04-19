@@ -40,8 +40,7 @@ namespace SS {
 class ILCResponseParser {
 public:
     ILCResponseParser();
-    ILCResponseParser(ForceActuatorSettings* forceActuatorSettings,
-                      HardpointActuatorSettings* hardpointActuatorSettings, ILCSubnetData* subnetData,
+    ILCResponseParser(HardpointActuatorSettings* hardpointActuatorSettings, ILCSubnetData* subnetData,
                       SafetyController* safetyController);
 
     void parse(ModbusBuffer* buffer, uint8_t subnet);
@@ -86,12 +85,9 @@ private:
     void _parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap map);
 
-    void _checkForceActuatorMeasuredForce(ILCMap map);
-    void _checkForceActuatorFollowingError(ILCMap map);
+    void _checkForceActuatorForces(ILCMap map);
     void _checkHardpointActuatorMeasuredForce(int32_t actuatorId);
     void _checkHardpointActuatorAirPressure(int32_t actuatorId);
-
-    void _publishForceActuatorForceWarning();
 
     void _warnResponseTimeout(double timestamp, int32_t actuatorId);
     void _warnInvalidCRC(double timestamp);
@@ -104,7 +100,6 @@ private:
     void _warnUnknownProblem(double timestamp, int32_t actuatorId);
 
     HardpointActuatorSettings* _hardpointActuatorSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
     ILCSubnetData* _subnetData;
     SafetyController* _safetyController;
 
@@ -117,7 +112,6 @@ private:
 
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointActuatorInfo;
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
-    MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
 
     MTM1M3_logevent_forceActuatorInfoC* _forceActuatorInfo;
@@ -125,7 +119,6 @@ private:
     MTM1M3_logevent_forceActuatorWarningC* _forceActuatorWarning;
     MTM1M3_logevent_forceActuatorForceWarningC* _forceWarning;
     MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
-    MTM1M3_forceActuatorDataC* _forceActuatorData;
 
     MTM1M3_logevent_hardpointMonitorInfoC* _hardpointMonitorInfo;
     MTM1M3_logevent_hardpointMonitorStateC* _hardpointMonitorState;

@@ -73,29 +73,6 @@ public:
         *zForce = primaryCylinder;
     }
 
-    static ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-            ForceActuatorSettings* forceActuatorSettings, float* xForces, float* yForces, float* zForces);
-    static ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-            ForceActuatorSettings* forceActuatorSettings, float* zForces);
-
-    static DistributedForces calculateForceFromAngularAcceleration(
-            ForceActuatorSettings* forceActuatorSettings, float angularAccelerationX,
-            float angularAccelerationY, float angularAccelerationZ);
-    static DistributedForces calculateForceFromAngularVelocity(ForceActuatorSettings* forceActuatorSettings,
-                                                               float angularVelocityX, float angularVelocityY,
-                                                               float angularVelocityZ);
-    static DistributedForces calculateForceFromAzimuthAngle(ForceActuatorSettings* forceActuatorSettings,
-                                                            float azimuthAngle);
-    static DistributedForces calculateForceFromElevationAngle(ForceActuatorSettings* forceActuatorSettings,
-                                                              float elevationAngle);
-    static DistributedForces calculateForceFromTemperature(ForceActuatorSettings* forceActuatorSettings,
-                                                           float temperature);
-    static DistributedForces calculateForceDistribution(ForceActuatorSettings* forceActuatorSettings,
-                                                        float xForce, float yForce, float zForce,
-                                                        float xMoment, float yMoment, float zMoment);
-
 private:
     static double constexpr _reciprocalSqrt2 = 0.70710678118654752440084436210485;
 };

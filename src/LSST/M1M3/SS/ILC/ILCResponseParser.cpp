@@ -29,37 +29,35 @@
 
 #include <cRIO/CliApp.h>
 
+#include <ILCDataTypes.h>
 #include <ILCResponseParser.h>
+#include <ILCSubnetData.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorData.h>
+#include <ForceActuatorForceWarning.h>
 #include <ForceActuatorSettings.h>
+#include <ForceConverter.h>
 #include <HardpointActuatorSettings.h>
+#include <HardpointActuatorWarning.h>
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
 #include <LimitLog.h>
-#include <ForceConverter.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ILCDataTypes.h>
+#include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 #include <Timestamp.h>
-#include <ILCSubnetData.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ILCResponseParser::ILCResponseParser() {
-    _forceActuatorSettings = 0;
     _hardpointActuatorSettings = 0;
     _subnetData = 0;
     _safetyController = 0;
     _hardpointActuatorInfo = 0;
     _hardpointActuatorState = 0;
-    _hardpointActuatorWarning = 0;
     _hardpointActuatorData = 0;
     _forceActuatorInfo = 0;
     _forceActuatorState = 0;
-    _forceWarning = 0;
     _appliedCylinderForces = 0;
-    _forceActuatorData = 0;
     _hardpointMonitorInfo = 0;
     _hardpointMonitorState = 0;
     _hardpointMonitorWarning = 0;
@@ -70,44 +68,28 @@ ILCResponseParser::ILCResponseParser() {
     _summaryState = 0;
 }
 
-ILCResponseParser::ILCResponseParser(ForceActuatorSettings* forceActuatorSettings,
-                                     HardpointActuatorSettings* hardpointActuatorSettings,
+ILCResponseParser::ILCResponseParser(HardpointActuatorSettings* hardpointActuatorSettings,
                                      ILCSubnetData* subnetData, SafetyController* safetyController) {
     SPDLOG_DEBUG("ILCResponseParser: ILCResponseParser()");
-    _forceActuatorSettings = forceActuatorSettings;
     _hardpointActuatorSettings = hardpointActuatorSettings;
     _subnetData = subnetData;
     _safetyController = safetyController;
-    _hardpointActuatorInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
-    _hardpointActuatorState = M1M3SSPublisher::get().getEventHardpointActuatorState();
-    _hardpointActuatorWarning = M1M3SSPublisher::get().getEventHardpointActuatorWarning();
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
-    _forceActuatorInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceWarning = M1M3SSPublisher::get().getEventForceActuatorForceWarning();
-    _appliedCylinderForces = M1M3SSPublisher::get().getAppliedCylinderForces();
-    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
-    _hardpointMonitorInfo = M1M3SSPublisher::get().getEventHardpointMonitorInfo();
-    _hardpointMonitorState = M1M3SSPublisher::get().getEventHardpointMonitorState();
-    _hardpointMonitorWarning = M1M3SSPublisher::get().getEventHardpointMonitorWarning();
-    _hardpointMonitorData = M1M3SSPublisher::get().getHardpointMonitorData();
-    _ilcWarning = M1M3SSPublisher::get().getEventILCWarning();
-    _outerLoopData = M1M3SSPublisher::get().getOuterLoopData();
-    _detailedState = M1M3SSPublisher::get().getEventDetailedState();
-    _summaryState = M1M3SSPublisher::get().getEventSummaryState();
+    _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
+    _hardpointActuatorState = M1M3SSPublisher::instance().getEventHardpointActuatorState();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
+    _forceActuatorInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
+    _hardpointMonitorInfo = M1M3SSPublisher::instance().getEventHardpointMonitorInfo();
+    _hardpointMonitorState = M1M3SSPublisher::instance().getEventHardpointMonitorState();
+    _hardpointMonitorWarning = M1M3SSPublisher::instance().getEventHardpointMonitorWarning();
+    _hardpointMonitorData = M1M3SSPublisher::instance().getHardpointMonitorData();
+    _ilcWarning = M1M3SSPublisher::instance().getEventILCWarning();
+    _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
+    _detailedState = M1M3SSPublisher::instance().getEventDetailedState();
+    _summaryState = M1M3SSPublisher::instance().getEventSummaryState();
 
-    _forceWarning->timestamp = 0;
-    _forceWarning->anyWarning = false;
-    _forceWarning->anyPrimaryAxisMeasuredForceWarning = false;
-    _forceWarning->anySecondaryAxisMeasuredForceWarning = false;
-    _forceWarning->anyPrimaryAxisFollowingErrorWarning = false;
-    _forceWarning->anySecondaryAxisFollowingErrorWarning = false;
-    for (int i = 0; i < FA_COUNT; ++i) {
-        _forceWarning->primaryAxisMeasuredForceWarning[i] = false;
-        _forceWarning->secondaryAxisMeasuredForceWarning[i] = false;
-        _forceWarning->primaryAxisFollowingErrorWarning[i] = false;
-        _forceWarning->secondaryAxisFollowingErrorWarning[i] = false;
-    }
+    ForceActuatorForceWarning::instance().reset();
 
     _ilcWarning->timestamp = 0;
     _ilcWarning->actuatorId = -1;
@@ -155,10 +137,10 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     double globalTimestamp = Timestamp::fromRaw((d << 48) | (c << 32) | (b << 16) | a);
     _forceActuatorState->timestamp = globalTimestamp;
     M1M3SSPublisher::getForceActuatorWarning()->setTimestamp(globalTimestamp);
-    _forceWarning->timestamp = globalTimestamp;
-    _forceActuatorData->timestamp = globalTimestamp;
+    ForceActuatorForceWarning::instance().setTimestamp(globalTimestamp);
+    ForceActuatorData::instance().timestamp = globalTimestamp;
     _hardpointActuatorState->timestamp = globalTimestamp;
-    _hardpointActuatorWarning->timestamp = globalTimestamp;
+    HardpointActuatorWarning::instance().timestamp = globalTimestamp;
     _hardpointActuatorData->timestamp = globalTimestamp;
     _hardpointMonitorState->timestamp = globalTimestamp;
     _hardpointMonitorWarning->timestamp = globalTimestamp;
@@ -387,7 +369,7 @@ void ILCResponseParser::clearResponses() {
 }
 
 void ILCResponseParser::verifyResponses() {
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
     bool warn = false;
     bool anyTimeout = false;
     for (int i = 0; i < FA_COUNT; i++) {
@@ -503,40 +485,7 @@ void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer* buffer, ILC
 void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointActuatorState->ilcState[dataIndex] = buffer->readU8();
-    uint16_t ilcStatus = buffer->readU16();
-    _hardpointActuatorWarning->majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
-    _hardpointActuatorWarning->minorFault[dataIndex] = (ilcStatus & 0x0002) != 0;
-    // 0x0004 is reserved
-    _hardpointActuatorWarning->faultOverride[dataIndex] = (ilcStatus & 0x0008) != 0;
-    _hardpointActuatorWarning->mainCalibrationError[dataIndex] = (ilcStatus & 0x0010) != 0;
-    _hardpointActuatorWarning->backupCalibrationError[dataIndex] = (ilcStatus & 0x0020) != 0;
-    // 0x0040 is reserved
-    // 0x0080 is reserved
-    _hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (ilcStatus & 0x0100) != 0;
-    _hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (ilcStatus & 0x0200) != 0;
-    // 0x0400 is reserved
-    // 0x0800 is reserved
-    // 0x1000 is reserved
-    // 0x2000 is DCA (FA only)
-    // 0x4000 is DCA (FA only)
-    // 0x8000 is reserved
-    uint16_t ilcFaults = buffer->readU16();
-    _hardpointActuatorWarning->uniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
-    _hardpointActuatorWarning->applicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
-    _hardpointActuatorWarning->applicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
-    _hardpointActuatorWarning->applicationCRCMismatch[dataIndex] = (ilcFaults & 0x0008) != 0;
-    _hardpointActuatorWarning->oneWireMissing[dataIndex] = (ilcFaults & 0x0010) != 0;
-    _hardpointActuatorWarning->oneWire1Mismatch[dataIndex] = (ilcFaults & 0x0020) != 0;
-    _hardpointActuatorWarning->oneWire2Mismatch[dataIndex] = (ilcFaults & 0x0040) != 0;
-    // 0x0080 is reserved
-    _hardpointActuatorWarning->watchdogReset[dataIndex] = (ilcFaults & 0x0100) != 0;
-    _hardpointActuatorWarning->brownOut[dataIndex] = (ilcFaults & 0x0200) != 0;
-    _hardpointActuatorWarning->eventTrapReset[dataIndex] = (ilcFaults & 0x0400) != 0;
-    _hardpointActuatorWarning->motorDriverFault[dataIndex] = (ilcFaults & 0x0800) != 0;
-    _hardpointActuatorWarning->ssrPowerFault[dataIndex] = (ilcFaults & 0x1000) != 0;
-    _hardpointActuatorWarning->auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
-    _hardpointActuatorWarning->smcPowerFault[dataIndex] = (ilcFaults & 0x4000) != 0;
-    // 0x8000 is reserved
+    HardpointActuatorWarning::instance().setIlcStatus(dataIndex, buffer->readU16(), buffer->readU16());
     buffer->skipToNextFrame();
 }
 
@@ -613,17 +562,18 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
     int32_t dataIndex = map.DataIndex;
     uint8_t status = buffer->readU8();
     _hardpointActuatorData->timestamp = timestamp;
-    _hardpointActuatorWarning->timestamp = timestamp;
-    _hardpointActuatorWarning->ilcFault[dataIndex] = (status & 0x01) != 0;
-    // 0x02 is reserved
-    _hardpointActuatorWarning->limitSwitch1Operated[dataIndex] = (status & 0x04) != 0;
-    _hardpointActuatorWarning->limitSwitch2Operated[dataIndex] = (status & 0x08) != 0;
-    _hardpointActuatorWarning->broadcastCounterWarning[dataIndex] =
-            _outerLoopData->broadcastCounter != ((status & 0xF0) >> 4);
+    HardpointActuatorWarning::instance().setStatus(dataIndex, timestamp, status,
+                                                   _outerLoopData->broadcastCounter);
     // Encoder value needs to be swapped to keep with the theme of extension is positive
-    // retaction is negative
+    // retraction is negative
     _hardpointActuatorData->encoder[dataIndex] =
             -buffer->readI32() + _hardpointActuatorSettings->getEncoderOffset(dataIndex);
+    HardpointActuatorWarning::instance().setProximityWarning(
+            dataIndex,
+            _hardpointActuatorData
+                    ->encoder[dataIndex]<_hardpointActuatorSettings->lowProximityEncoder[dataIndex],
+                                         _hardpointActuatorData->encoder[dataIndex]>
+                            _hardpointActuatorSettings->highProximityEncoder[dataIndex]);
     // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
@@ -650,21 +600,20 @@ void ILCResponseParser::_parseForceDemandResponse(ModbusBuffer* buffer, uint8_t 
     } else {
         _parseDualAxisForceDemandResponse(buffer, map);
     }
-    _checkForceActuatorMeasuredForce(map);
-    _checkForceActuatorFollowingError(map);
+    _checkForceActuatorForces(map);
 }
 
 void ILCResponseParser::_parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
                                                             _outerLoopData->broadcastCounter);
-    _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
+    ForceActuatorData::instance().primaryCylinderForce[dataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
-    float z = 0;
-    ForceConverter::saaToMirror(_forceActuatorData->primaryCylinderForce[dataIndex],
-                                _forceActuatorData->secondaryCylinderForce[dataIndex], &x, &y, &z);
-    _forceActuatorData->zForce[dataIndex] = z;
+    float z = ForceActuatorData::instance().primaryCylinderForce[dataIndex];
+    ForceConverter::saaToMirror(ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                                ForceActuatorData::instance().secondaryCylinderForce[dataIndex], &x, &y, &z);
+    ForceActuatorData::instance().zForce[dataIndex] = z;
     buffer->skipToNextFrame();
 }
 
@@ -675,40 +624,40 @@ void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer* buffer, 
     int yIndex = map.YDataIndex;
     M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
                                                             _outerLoopData->broadcastCounter);
-    _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
-    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
+    ForceActuatorData::instance().primaryCylinderForce[dataIndex] = buffer->readSGL();
+    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
     float z = 0;
     switch (_forceActuatorInfo->actuatorOrientation[dataIndex]) {
         case ForceActuatorOrientations::PositiveX:
             ForceConverter::daaPositiveXToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
         case ForceActuatorOrientations::NegativeX:
             ForceConverter::daaNegativeXToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
         case ForceActuatorOrientations::PositiveY:
             ForceConverter::daaPositiveYToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
         case ForceActuatorOrientations::NegativeY:
             ForceConverter::daaNegativeYToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
     }
     if (xIndex != -1) {
-        _forceActuatorData->xForce[xIndex] = x;
+        ForceActuatorData::instance().xForce[xIndex] = x;
     }
     if (yIndex != -1) {
-        _forceActuatorData->yForce[yIndex] = y;
+        ForceActuatorData::instance().yForce[yIndex] = y;
     }
-    _forceActuatorData->zForce[dataIndex] = z;
+    ForceActuatorData::instance().zForce[dataIndex] = z;
     buffer->skipToNextFrame();
 }
 
@@ -719,21 +668,20 @@ void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer* buffer,
     } else {
         _parseDualAxisPneumaticForceStatusResponse(buffer, map);
     }
-    _checkForceActuatorMeasuredForce(map);
-    _checkForceActuatorFollowingError(map);
+    _checkForceActuatorForces(map);
 }
 
 void ILCResponseParser::_parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
                                                             _outerLoopData->broadcastCounter);
-    _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
+    ForceActuatorData::instance().primaryCylinderForce[dataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
     float z = 0;
-    ForceConverter::saaToMirror(_forceActuatorData->primaryCylinderForce[dataIndex],
-                                _forceActuatorData->secondaryCylinderForce[dataIndex], &x, &y, &z);
-    _forceActuatorData->zForce[dataIndex] = z;
+    ForceConverter::saaToMirror(ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                                ForceActuatorData::instance().secondaryCylinderForce[dataIndex], &x, &y, &z);
+    ForceActuatorData::instance().zForce[dataIndex] = z;
     buffer->skipToNextFrame();
 }
 
@@ -744,40 +692,40 @@ void ILCResponseParser::_parseDualAxisPneumaticForceStatusResponse(ModbusBuffer*
     int yIndex = map.YDataIndex;
     M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
                                                             _outerLoopData->broadcastCounter);
-    _forceActuatorData->primaryCylinderForce[dataIndex] = buffer->readSGL();
-    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
+    ForceActuatorData::instance().primaryCylinderForce[dataIndex] = buffer->readSGL();
+    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex] = buffer->readSGL();
     float x = 0;
     float y = 0;
     float z = 0;
     switch (_forceActuatorInfo->actuatorOrientation[dataIndex]) {
         case ForceActuatorOrientations::PositiveX:
             ForceConverter::daaPositiveXToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
         case ForceActuatorOrientations::NegativeX:
             ForceConverter::daaNegativeXToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
         case ForceActuatorOrientations::PositiveY:
             ForceConverter::daaPositiveYToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
         case ForceActuatorOrientations::NegativeY:
             ForceConverter::daaNegativeYToMirror(
-                    _forceActuatorData->primaryCylinderForce[dataIndex],
-                    _forceActuatorData->secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
+                    ForceActuatorData::instance().primaryCylinderForce[dataIndex],
+                    ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex], &x, &y, &z);
             break;
     }
     if (xIndex != -1) {
-        _forceActuatorData->xForce[xIndex] = x;
+        ForceActuatorData::instance().xForce[xIndex] = x;
     }
     if (yIndex != -1) {
-        _forceActuatorData->yForce[yIndex] = y;
+        ForceActuatorData::instance().yForce[yIndex] = y;
     }
-    _forceActuatorData->zForce[dataIndex] = z;
+    ForceActuatorData::instance().zForce[dataIndex] = z;
     buffer->skipToNextFrame();
 }
 
@@ -939,83 +887,53 @@ void ILCResponseParser::_parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap ma
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_checkForceActuatorMeasuredForce(ILCMap map) {
+void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
     int32_t dataIndex = map.DataIndex;
-    int32_t secondaryDataIndex = map.SecondaryDataIndex;
-    float primaryForce = _forceActuatorData->primaryCylinderForce[dataIndex];
-    float primaryLowLimit = _forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].LowFault;
-    float primaryHighLimit = _forceActuatorSettings->MeasuredPrimaryCylinderLimitTable[dataIndex].HighFault;
-    bool primaryLimitWarning = primaryForce < primaryLowLimit || primaryForce > primaryHighLimit;
-    bool previousPrimaryLimit = _forceWarning->primaryAxisMeasuredForceWarning[dataIndex];
-    _forceWarning->primaryAxisMeasuredForceWarning[dataIndex] = primaryLimitWarning;
-    bool anyChange = primaryLimitWarning != previousPrimaryLimit;
+    float primaryForce = ForceActuatorData::instance().primaryCylinderForce[dataIndex];
+    float primarySetpoint = _appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0f;
 
-    if (secondaryDataIndex != -1) {
-        float secondaryForce = _forceActuatorData->secondaryCylinderForce[secondaryDataIndex];
-        float secondaryLowLimit =
-                _forceActuatorSettings->MeasuredSecondaryCylinderLimitTable[secondaryDataIndex].LowFault;
-        float secondaryHighLimit =
-                _forceActuatorSettings->MeasuredSecondaryCylinderLimitTable[secondaryDataIndex].HighFault;
-        bool secondaryLimitWarning =
-                secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit;
-        bool previousSecondaryLimit = _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex];
-        _forceWarning->secondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
-        anyChange = (secondaryLimitWarning != previousSecondaryLimit) || anyChange;
-    }
+    auto& fafWarning = ForceActuatorForceWarning::instance();
 
-    if (anyChange) {
-        _publishForceActuatorForceWarning();
-    }
-}
+    bool primaryFaulted = fafWarning.checkPrimary(dataIndex, map.ActuatorId, primaryForce, primarySetpoint);
+    _safetyController->forceControllerNotifyMeasuredForceLimit(map.ActuatorId, true, primaryForce,
+                                                               primaryFaulted);
 
-void ILCResponseParser::_checkForceActuatorFollowingError(ILCMap map) {
-    // TODO: UPDATE
-    int32_t dataIndex = map.DataIndex;
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
 
-    float primaryForce = _forceActuatorData->primaryCylinderForce[dataIndex];
-    float primarySetpoint = _appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0;
-    float primaryLimit = _forceActuatorSettings->FollowingErrorPrimaryCylinderLimitTable[dataIndex].HighFault;
-    float primaryFollowingError = primaryForce - primarySetpoint;
-    bool primaryLimitWarning = std::abs(primaryFollowingError) > primaryLimit;
-    bool previousPrimaryWarning = _forceWarning->primaryAxisFollowingErrorWarning[dataIndex];
-    _forceWarning->primaryAxisFollowingErrorWarning[dataIndex] = primaryLimitWarning;
-    bool anyChange = primaryLimitWarning != previousPrimaryWarning;
-    bool secondaryLimitWarning = false;
+    bool countingWarning = fafWarning.primaryAxisFollowingErrorCountingFault[dataIndex];
+    bool immediateFault = fafWarning.primaryAxisFollowingErrorImmediateFault[dataIndex];
 
     if (secondaryDataIndex != -1) {
-        float secondaryForce = _forceActuatorData->secondaryCylinderForce[secondaryDataIndex];
+        float secondaryForce = ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex];
         float secondarySetpoint =
-                _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0;
-        float secondaryLimit =
-                _forceActuatorSettings->FollowingErrorSecondaryCylinderLimitTable[secondaryDataIndex]
-                        .HighFault;
-        float secondaryFollowingError = secondaryForce - secondarySetpoint;
-        secondaryLimitWarning = std::abs(secondaryFollowingError) > secondaryLimit;
-        bool previousSecondaryWarning = _forceWarning->secondaryAxisFollowingErrorWarning[dataIndex];
-        _forceWarning->secondaryAxisFollowingErrorWarning[dataIndex] = secondaryLimitWarning;
-        anyChange = anyChange || secondaryLimitWarning != previousSecondaryWarning;
+                _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0f;
+        bool secondaryFaulted = ForceActuatorForceWarning::instance().checkSecondary(
+                secondaryDataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
+        _safetyController->forceControllerNotifyMeasuredForceLimit(map.ActuatorId, false, secondaryForce,
+                                                                   secondaryFaulted);
+
+        countingWarning =
+                countingWarning || fafWarning.secondaryAxisFollowingErrorCountingFault[secondaryDataIndex];
+        immediateFault =
+                immediateFault || fafWarning.secondaryAxisFollowingErrorImmediateFault[secondaryDataIndex];
     }
 
-    _safetyController->forceActuatorFollowingError(dataIndex, primaryLimitWarning || secondaryLimitWarning);
-
-    if (anyChange) {
-        _publishForceActuatorForceWarning();
-    }
+    _safetyController->forceActuatorFollowingError(dataIndex, countingWarning, immediateFault);
 }
 
 void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId) {
     float measuredForce = _hardpointActuatorData->measuredForce[actuatorId];
-    float loadCellMax = _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh;
-    float loadCellMin = _hardpointActuatorSettings->hardpointMeasuredForceFaultLow;
-    bool loadCellError = measuredForce > loadCellMax || measuredForce < loadCellMin;
-    _safetyController->hardpointActuatorLoadCellError(loadCellError);
+
+    float breakawayMax = _hardpointActuatorSettings->hardpointBreakawayFaultHigh;
+    float breakawayMin = _hardpointActuatorSettings->hardpointBreakawayFaultLow;
+    bool breakawayFault = measuredForce > breakawayMax || measuredForce < breakawayMin;
+    _safetyController->hardpointActuatorBreakawayFault(actuatorId, breakawayFault);
 
     // As soon as mirror is at least a bit raised, tests shall be performed
     // this is software line of defense for excessive forces. Hardpoints shall
     // break if excess force is applied (either compression or tension),
     // protecting the mirror from damage.
-    if (_forceActuatorState->supportPercentage > 0) {
+    if (RaisingLoweringInfo::instance().weightSupportedPercent > 0) {
         float maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
         float minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (_forceActuatorState->balanceForcesApplied) {
@@ -1039,50 +957,28 @@ void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float airPressure = _hardpointMonitorData->breakawayPressure[actuatorId];
     float minPressure = _hardpointActuatorSettings->airPressureFaultLow;
     float maxPressure = _hardpointActuatorSettings->airPressureFaultHigh;
-    int loadCellError = 0;
+    int pressureError = 0;
     switch (_detailedState->detailedState) {
         case MTM1M3::MTM1M3_shared_DetailedStates_RaisingState:
         case MTM1M3::MTM1M3_shared_DetailedStates_RaisingEngineeringState:
             minPressure = _hardpointActuatorSettings->airPressureFaultLowRaising;
+            // don't fault if we are waiting for pressure to build up
+            if (RaisingLoweringInfo::instance().waitAirPressure == true) break;
         case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
         case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
         case MTM1M3::MTM1M3_shared_DetailedStates_LoweringState:
         case MTM1M3::MTM1M3_shared_DetailedStates_LoweringEngineeringState:
-            if (airPressure < minPressure) loadCellError = -1;
-            if (airPressure > maxPressure) loadCellError = 1;
-            _safetyController->hardpointActuatorAirPressure(actuatorId, loadCellError, airPressure);
-            break;
+            if (airPressure < minPressure)
+                pressureError = -1;
+            else if (airPressure > maxPressure)
+                pressureError = 1;
         default:
-            _safetyController->hardpointActuatorAirPressure(actuatorId, 0, airPressure);
             break;
     }
-}
+    _safetyController->hardpointActuatorAirPressure(actuatorId, pressureError, airPressure);
 
-void ILCResponseParser::_publishForceActuatorForceWarning() {
-    _forceWarning->timestamp = M1M3SSPublisher::get().getTimestamp();
-    _forceWarning->anyPrimaryAxisMeasuredForceWarning = false;
-    _forceWarning->anySecondaryAxisMeasuredForceWarning = false;
-    _forceWarning->anyPrimaryAxisFollowingErrorWarning = false;
-    _forceWarning->anySecondaryAxisFollowingErrorWarning = false;
-    for (int i = 0; i < FA_COUNT; ++i) {
-        _forceWarning->anyPrimaryAxisMeasuredForceWarning =
-                _forceWarning->anyPrimaryAxisMeasuredForceWarning ||
-                _forceWarning->primaryAxisMeasuredForceWarning[i];
-        _forceWarning->anySecondaryAxisMeasuredForceWarning =
-                _forceWarning->anySecondaryAxisMeasuredForceWarning ||
-                _forceWarning->secondaryAxisMeasuredForceWarning[i];
-        _forceWarning->anyPrimaryAxisFollowingErrorWarning =
-                _forceWarning->anyPrimaryAxisFollowingErrorWarning ||
-                _forceWarning->primaryAxisFollowingErrorWarning[i];
-        _forceWarning->anySecondaryAxisFollowingErrorWarning =
-                _forceWarning->anySecondaryAxisFollowingErrorWarning ||
-                _forceWarning->secondaryAxisFollowingErrorWarning[i];
-    }
-    _forceWarning->anyWarning = _forceWarning->anyPrimaryAxisMeasuredForceWarning ||
-                                _forceWarning->anySecondaryAxisMeasuredForceWarning ||
-                                _forceWarning->anyPrimaryAxisFollowingErrorWarning ||
-                                _forceWarning->anySecondaryAxisFollowingErrorWarning;
-    M1M3SSPublisher::get().logForceActuatorForceWarning();
+    HardpointActuatorWarning::instance().setAirPressure(actuatorId, (airPressure < minPressure),
+                                                        (airPressure > maxPressure), airPressure);
 }
 
 void ILCResponseParser::_warnResponseTimeout(double timestamp, int32_t actuatorId) {
@@ -1097,7 +993,7 @@ void ILCResponseParser::_warnResponseTimeout(double timestamp, int32_t actuatorI
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnInvalidCRC(double timestamp) {
@@ -1112,7 +1008,7 @@ void ILCResponseParser::_warnInvalidCRC(double timestamp) {
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnIllegalFunction(double timestamp, int32_t actuatorId) {
@@ -1127,7 +1023,7 @@ void ILCResponseParser::_warnIllegalFunction(double timestamp, int32_t actuatorI
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnIllegalDataValue(double timestamp, int32_t actuatorId) {
@@ -1142,7 +1038,7 @@ void ILCResponseParser::_warnIllegalDataValue(double timestamp, int32_t actuator
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnInvalidLength(double timestamp, int32_t actuatorId) {
@@ -1157,7 +1053,7 @@ void ILCResponseParser::_warnInvalidLength(double timestamp, int32_t actuatorId)
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownSubnet(double timestamp) {
@@ -1172,7 +1068,7 @@ void ILCResponseParser::_warnUnknownSubnet(double timestamp) {
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownAddress(double timestamp, int32_t actuatorId) {
@@ -1187,7 +1083,7 @@ void ILCResponseParser::_warnUnknownAddress(double timestamp, int32_t actuatorId
     _ilcWarning->unknownAddress = true;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownFunction(double timestamp, int32_t actuatorId) {
@@ -1202,7 +1098,7 @@ void ILCResponseParser::_warnUnknownFunction(double timestamp, int32_t actuatorI
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = true;
     _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
 
 void ILCResponseParser::_warnUnknownProblem(double timestamp, int32_t actuatorId) {
@@ -1217,9 +1113,5 @@ void ILCResponseParser::_warnUnknownProblem(double timestamp, int32_t actuatorId
     _ilcWarning->unknownAddress = false;
     _ilcWarning->unknownFunction = false;
     _ilcWarning->unknownProblem = true;
-    M1M3SSPublisher::get().logILCWarning();
+    M1M3SSPublisher::instance().logILCWarning();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

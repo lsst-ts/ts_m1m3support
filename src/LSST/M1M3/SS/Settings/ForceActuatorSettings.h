@@ -24,30 +24,39 @@
 #ifndef FORCEACTUATORSETTINGS_H_
 #define FORCEACTUATORSETTINGS_H_
 
-#include <SAL_MTM1M3.h>
-
-#include <DataTypes.h>
-#include <ForceActuatorLimits.h>
-#include <ForceComponentSettings.h>
-#include <ForceActuatorBumpTestSettings.h>
-#include <Limit.h>
 #include <string>
 #include <vector>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
+#include <DataTypes.h>
+#include <DistributedForces.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorBumpTestSettings.h>
+#include <ForceComponentSettings.h>
+#include <ForcesAndMoments.h>
+#include <Limit.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 struct ForceActuatorNeighbors {
-    std::vector<int32_t> NearZIDs;
-    std::vector<int32_t> FarIDs;
+    ForceActuatorNeighbors();
+    int NearZIDs[FA_MAX_NEAR_COUNT];
+    int FarIDs[FA_FAR_COUNT];
 };
 
 /**
  * Stores force actuator settings. Publish settings through SAL/DDS.
  */
-class ForceActuatorSettings : public MTM1M3_logevent_forceActuatorSettingsC {
+class ForceActuatorSettings : public MTM1M3_logevent_forceActuatorSettingsC,
+                              public cRIO::Singleton<ForceActuatorSettings> {
 public:
+    ForceActuatorSettings(token);
+
     void load(const std::string &filename);
 
     /**
@@ -58,6 +67,31 @@ public:
      * @return true if given actuator is disabled in configuration file.
      */
     bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
+
+    ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces,
+            float *yForces, float *zForces);
+
+    /** Calculates
+     */
+    ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces);
+
+    DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,
+                                                            float angularAccelerationY,
+                                                            float angularAccelerationZ);
+
+    DistributedForces calculateForceFromAngularVelocity(float angularVelocityX, float angularVelocityY,
+                                                        float angularVelocityZ);
+
+    DistributedForces calculateForceFromAzimuthAngle(float azimuthAngle);
+
+    DistributedForces calculateForceFromElevationAngle(float elevationAngle);
+
+    DistributedForces calculateForceFromTemperature(float temperature);
+
+    DistributedForces calculateForceDistribution(float xForce, float yForce, float zForce, float xMoment,
+                                                 float yMoment, float zMoment);
 
     /**
      * Sends updates through SAL/DDS.
@@ -124,12 +158,7 @@ public:
     std::vector<Limit> CylinderLimitPrimaryTable;
     std::vector<Limit> CylinderLimitSecondaryTable;
 
-    std::vector<Limit> MeasuredPrimaryCylinderLimitTable;
-    std::vector<Limit> MeasuredSecondaryCylinderLimitTable;
-    std::vector<Limit> FollowingErrorPrimaryCylinderLimitTable;
-    std::vector<Limit> FollowingErrorSecondaryCylinderLimitTable;
-
-    std::vector<ForceActuatorNeighbors> Neighbors;
+    ForceActuatorNeighbors Neighbors[FA_COUNT];
 
     ForceComponentSettings AberrationComponentSettings;
     ForceComponentSettings AccelerationComponentSettings;
@@ -156,6 +185,9 @@ public:
 private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
+    void _loadFollowingErrorTables(const std::string &primaryFilename, const std::string &secondaryFilename);
+
+    float _measuredForceWarningRatio;
 };
 
 }  // namespace SS

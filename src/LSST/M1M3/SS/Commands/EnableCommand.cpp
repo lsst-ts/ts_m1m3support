@@ -34,15 +34,15 @@ EnableCommand::EnableCommand(int32_t commandID, MTM1M3_command_enableC*) : Comma
 void EnableCommand::execute() { Context::get().enable(this); }
 
 void EnableCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenable(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandenable(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenable(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandenable(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void EnableCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenable(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandenable(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

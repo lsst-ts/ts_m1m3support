@@ -24,9 +24,10 @@
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
+#include <ForceActuatorForceWarning.h>
 #include <LoweringFaultState.h>
-#include <SafetyController.h>
 #include <M1M3SSPublisher.h>
+#include <SafetyController.h>
 #include <SafetyControllerSettings.h>
 #include <SAL_MTM1M3C.h>
 
@@ -37,7 +38,7 @@ namespace SS {
 SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSettings) {
     SPDLOG_DEBUG("SafetyController: SafetyController()");
     _safetyControllerSettings = safetyControllerSettings;
-    _errorCodeData = M1M3SSPublisher::get().getEventErrorCode();
+    _errorCodeData = M1M3SSPublisher::instance().getEventErrorCode();
 
     for (int i = 0; i < _safetyControllerSettings->ILC.CommunicationTimeoutPeriod; ++i) {
         _ilcCommunicationTimeoutData.push_back(0);
@@ -59,7 +60,7 @@ SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSet
     }
 
     _clearError();
-    M1M3SSPublisher::get().logErrorCode();
+    M1M3SSPublisher::instance().logErrorCode();
 }
 
 void SafetyController::clearErrorCode() {
@@ -69,6 +70,9 @@ void SafetyController::clearErrorCode() {
         std::fill(_forceActuatorFollowingErrorData[faId].begin(),
                   _forceActuatorFollowingErrorData[faId].end(), 0);
     }
+
+    ForceActuatorForceWarning::instance().reset();
+
     for (int hpId = 0; hpId < HP_COUNT; hpId++) {
         std::fill(_hardpointActuatorMeasuredForceData[hpId].begin(),
                   _hardpointActuatorMeasuredForceData[hpId].end(), 0);
@@ -82,7 +86,7 @@ void SafetyController::clearErrorCode() {
     memset(_hardpointFeViolations, 0, HP_COUNT * sizeof(int));
 
     _clearError();
-    M1M3SSPublisher::get().logErrorCode();
+    M1M3SSPublisher::instance().logErrorCode();
 }
 
 void SafetyController::airControllerNotifyCommandOutputMismatch(bool conditionFlag, bool commanded,
@@ -278,22 +282,19 @@ void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) {
                     "Force controller safety limit");
 }
 
-void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag) {
+void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerXMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag,
-                    "Force controller X Moment Limit");
+                    _safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag, failed);
 }
 
-void SafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag) {
+void SafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerYMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag,
-                    "Force controller Y Moment Limit");
+                    _safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag, failed);
 }
 
-void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag) {
+void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerZMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag,
-                    "Force controller Z Moment Limit");
+                    _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag, failed);
 }
 
 void SafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed,
@@ -382,11 +383,18 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
                     "Force controller force clipping");
 }
 
+void SafetyController::forceControllerNotifyMeasuredForceLimit(int actuatorId, bool primary,
+                                                               float measuredForce, bool conditionFlag) {
+    _updateOverride(FaultCodes::ForceControllerMeasuredForceLimit, true, conditionFlag,
+                    fmt::format("Force actuator {} {} measured force ({} N) outside limits", actuatorId,
+                                (primary ? "primary cylinder" : "secondary cylinder"), measuredForce));
+}
+
 void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitLowError,
-                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                            M1M3SSPublisher::instance().getEventDetailedState()->detailedState !=
                                     MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
                             conditionFlag, "Hardpoint #{} hit low limit", hp + 1);
             _hardpointLimitLowTriggered[hp] = true;
@@ -404,7 +412,7 @@ void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionF
     if (conditionFlag) {
         if (_hardpointLimitHighTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitHighError,
-                            M1M3SSPublisher::get().getEventDetailedState()->detailedState !=
+                            M1M3SSPublisher::instance().getEventDetailedState()->detailedState !=
                                     MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
                             conditionFlag, "Hardpoint #{} hit high limit", hp + 1);
             _hardpointLimitHighTriggered[hp] = true;
@@ -511,23 +519,28 @@ void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
                     "ILC communication timeouted: {}", sum);
 }
 
-void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool conditionFlag) {
+void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool countingWarning,
+                                                   bool immediateFault) {
+    _updateOverride(FaultCodes::ForceActuatorFollowingErrorImmediate,
+                    _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingErrorImmediate,
+                    immediateFault, "Force Actuator #{} Following Error immediate fault",
+                    actuatorDataIndex + 1);
+
     _forceActuatorFollowingErrorData[actuatorDataIndex].pop_front();
-    _forceActuatorFollowingErrorData[actuatorDataIndex].push_back(conditionFlag ? 1 : 0);
+    _forceActuatorFollowingErrorData[actuatorDataIndex].push_back(countingWarning ? 1 : 0);
     int sum = 0;
     for (auto i : _forceActuatorFollowingErrorData[actuatorDataIndex]) {
         sum += i;
     }
-    _updateOverride(FaultCodes::ForceActuatorFollowingError,
-                    _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingError,
+    _updateOverride(FaultCodes::ForceActuatorFollowingErrorCounting,
+                    _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingErrorCounting,
                     sum >= _safetyControllerSettings->ILC.ForceActuatorFollowingErrorCountThreshold,
                     "Force Actuator #{} Following Error {}", actuatorDataIndex + 1, sum);
 }
 
-void SafetyController::hardpointActuatorLoadCellError(bool conditionFlag) {
-    _updateOverride(FaultCodes::HardpointActuatorLoadCellError,
-                    _safetyControllerSettings->ILC.FaultOnHardpointActuatorLoadCellError, conditionFlag,
-                    "Hardpoint Actuator Load Cell Error");
+void SafetyController::hardpointActuatorBreakawayFault(int actuatorDataIndex, bool conditionFlag) {
+    _updateOverride(FaultCodes::HardpointActuatorLoadCellError, true, conditionFlag,
+                    "Hardpoint Actuator # {} Breakaway Fault/Load Cell Error", actuatorDataIndex + 1);
 }
 
 void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, bool warningFlag,
@@ -624,7 +637,8 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
         // shall first make sure mirror is faulted, before performing anything else (logging,..)
         LoweringFaultState::ensureFaulted();
-        M1M3SSPublisher::get().logErrorCode();
+        M1M3SSPublisher::instance().logErrorCode();
+        Model::get().getDigitalInputOutput()->setCriticalFailureToSafetyController();
         SPDLOG_ERROR("Faulted ({}): {}", _errorCodeData->errorCode, _errorCodeData->errorReport);
         _clearError();
         return States::LoweringFaultState;

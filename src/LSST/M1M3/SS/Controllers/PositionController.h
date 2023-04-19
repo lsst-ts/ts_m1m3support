@@ -71,7 +71,16 @@ public:
     bool enableChaseAll();
     void disableChaseAll();
 
-    bool forcesInTolerance(bool raise);
+    /**
+     * Checks that hardpoint forces are in tolerance for mirror raising and
+     * lowering. Records raise/lowering forces status in
+     * RaisingLoweringInfo.waitHardpoint field.
+     *
+     * @param raise true if mirror is being raised - raising limits are then used
+     *
+     * @return true if all hardpoint forces are within tolerance
+     */
+    bool hpRaiseLowerForcesInTolerance(bool raise);
     bool motionComplete();
 
     /**
@@ -176,7 +185,6 @@ private:
 
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
-    MTM1M3_logevent_hardpointActuatorWarningC* _hardpointActuatorWarning;
     MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 
     int32_t _scaledMaxStepsPerLoop[HP_COUNT];

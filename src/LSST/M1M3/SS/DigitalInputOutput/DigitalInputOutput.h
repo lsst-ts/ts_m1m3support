@@ -24,11 +24,12 @@
 #ifndef DIGITALINPUTOUTPUT_H_
 #define DIGITALINPUTOUTPUT_H_
 
+#include <chrono>
+
+#include <AirSupplyStatus.h>
 #include <DataTypes.h>
 #include <IFPGA.h>
 #include <SafetyController.h>
-
-#include <chrono>
 
 struct MTM1M3_logevent_airSupplyStatusC;
 struct MTM1M3_logevent_airSupplyWarningC;
@@ -70,6 +71,21 @@ public:
      */
     void tryToggleHeartbeat();
 
+    /**
+     * Sets CH1 trigger for crtitical fult to safety controller.
+     *
+     * Use to signal to safety controller mirror is in fault state.
+     *
+     */
+    void setCriticalFailureToSafetyController();
+
+    /**
+     * Clear CH1 trigger for critical fault to safety controller.
+     *
+     * Use to signal to safety controller mirror is not in fault state.
+     */
+    void clearCriticalFailureToSafetyController();
+
     /*!
      * Turns the air on.
      */
@@ -90,7 +106,7 @@ public:
 private:
     SafetyController* _safetyController;
 
-    MTM1M3_logevent_airSupplyStatusC* _airSupplyStatus;
+    AirSupplyStatus* _airSupplyStatus;
     MTM1M3_logevent_airSupplyWarningC* _airSupplyWarning;
     MTM1M3_logevent_cellLightStatusC* _cellLightStatus;
     MTM1M3_logevent_cellLightWarningC* _cellLightWarning;

@@ -21,13 +21,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
+#include <AirSupplyStatus.h>
+#include <ForceController.h>
+#include <HardpointActuatorWarning.h>
+#include <M1M3SSPublisher.h>
 #include <MirrorRaiseController.h>
 #include <PositionController.h>
-#include <ForceController.h>
-#include <SafetyController.h>
-#include <M1M3SSPublisher.h>
 #include <PowerController.h>
-#include <spdlog/spdlog.h>
+#include <RaisingLoweringInfo.h>
+#include <SafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -53,6 +57,7 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _bypassMoveToReference = bypassMoveToReference;
     _lastForceFilled = false;
     _lastPositionCompleted = false;
+    _raisePauseReported = false;
 
     _safetyController->raiseOperationTimeout(false);
     _positionController->stopMotion();
@@ -66,22 +71,43 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _forceController->zeroStaticForces();
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
-    _forceController->zeroSupportPercentage();
-    _cachedTimestamp = M1M3SSPublisher::get().getTimestamp();
+    RaisingLoweringInfo::instance().zeroSupportPercentage();
+    _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp();
+
+    RaisingLoweringInfo::instance().setWaitAirPressure(false);
+
+    if (AirSupplyStatus::instance().airValveClosed == true) {
+        SPDLOG_WARN(
+                "Air valve is closed and the mirror was commanded to raise. Please check that the compressed "
+                "air is provided to the M1M3 support system");
+    }
 }
 
 void MirrorRaiseController::runLoop() {
     SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
-                 M1M3SSPublisher::get().getEventForceActuatorState()->supportPercentage);
-    if (!_forceController->supportPercentageFilled()) {
+                 RaisingLoweringInfo::instance().weightSupportedPercent);
+    auto raiseInfo = &RaisingLoweringInfo::instance();
+    if (!raiseInfo->supportPercentageFilled()) {
+        auto hpWarning = &HardpointActuatorWarning::instance();
+        // Wait for pressure to raise after valve opening
+        if (raiseInfo->supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
+            raiseInfo->setWaitAirPressure(true);
+            return;
+        }
+        raiseInfo->setWaitAirPressure(false);
         // We are still in the process of transferring the support force from the static supports
         // to the force actuators
-        if (_positionController->forcesInTolerance(true) && _forceController->followingErrorInTolerance()) {
+        if (_positionController->hpRaiseLowerForcesInTolerance(true) &&
+            _forceController->faRaiseFollowingErrorInTolerance()) {
             // The forces on the hardpoints are within tolerance and
             // the force actuators are following their setpoints, we can continue to transfer the
             // support force from the static supports to the force actuators
-            _forceController->incSupportPercentage();
-            if (_forceController->supportPercentageFilled()) {
+            RaisingLoweringInfo::instance().incSupportPercentage();
+            if (_raisePauseReported == true) {
+                _raisePauseReported = false;
+                SPDLOG_INFO("Raising resumed");
+            }
+            if (RaisingLoweringInfo::instance().supportPercentageFilled()) {
                 // All of the support force has been transfered from the static supports to the
                 // force actuators, stop the hardpoints from chasing and start moving to the
                 // reference position
@@ -90,12 +116,18 @@ void MirrorRaiseController::runLoop() {
                     _positionController->moveToReferencePosition();
                 }
             }
+        } else {
+            if (_raisePauseReported == false) {
+                _raisePauseReported = true;
+                SPDLOG_WARN("Raising paused - waiting for hardpoints movements");
+            }
         }
+        raiseInfo->sendUpdates();
     }
 }
 
 bool MirrorRaiseController::checkComplete() {
-    bool forceFilled = _forceController->supportPercentageFilled();
+    bool forceFilled = RaisingLoweringInfo::instance().supportPercentageFilled();
     bool positionCompleted = _positionController->motionComplete();
     if (_lastForceFilled != forceFilled) {
         SPDLOG_INFO("MirrorRaiseController::checkComplete force controller support percentage {}",
@@ -126,11 +158,11 @@ void MirrorRaiseController::complete() {
     _forceController->applyStaticForces();
     _forceController->applyThermalForces();
     _forceController->zeroVelocityForces();
-    _forceController->fillSupportPercentage();
+    RaisingLoweringInfo::instance().fillSupportPercentage();
 }
 
 bool MirrorRaiseController::checkTimeout() {
-    return M1M3SSPublisher::get().getTimestamp() >=
+    return M1M3SSPublisher::instance().getTimestamp() >=
            (_cachedTimestamp + _positionController->getRaiseTimeout());
 }
 

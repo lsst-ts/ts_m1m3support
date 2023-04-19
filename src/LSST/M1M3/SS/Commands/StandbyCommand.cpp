@@ -34,15 +34,15 @@ StandbyCommand::StandbyCommand(int32_t commandID, MTM1M3_command_standbyC*) : Co
 void StandbyCommand::execute() { Context::get().standby(this); }
 
 void StandbyCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandstandby(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandstandby(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void StandbyCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandstandby(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandstandby(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void StandbyCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandstandby(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandstandby(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

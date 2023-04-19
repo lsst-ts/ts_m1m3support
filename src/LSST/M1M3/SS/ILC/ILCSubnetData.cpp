@@ -33,7 +33,6 @@ namespace M1M3 {
 namespace SS {
 
 ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                             ForceActuatorSettings* forceActuatorSettings,
                              HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
                              HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
         : _forceActuatorApplicationSettings(forceActuatorApplicationSettings) {

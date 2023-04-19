@@ -82,16 +82,21 @@ ILCSettings:
   FaultOnCommunicationTimeout: On
   CommunicationTimeoutCountThreshold: 3
   CommunicationTimeoutPeriod: 5
-  FaultOnForceActuatorFollowingError: On
+  FaultOnForceActuatorFollowingErrorCounting: On
   ForceActuatorFollowingErrorCountThreshold: 50
   ForceActuatorFollowingErrorPeriod: 50
-  FaultOnHardpointActuatorLoadCellError: On
+  FaultOnForceActuatorFollowingErrorImmediate: On
   FaultOnHardpointActuatorMeasuredForce: On
   HardpointActuatorMeasuredForceCountThreshold: 50
   HardpointActuatorMeasuredForcePeriod: 50
   FaultOnAirPressure: On
   AirPressureCountThreshold: 50
   AirPressurePeriod: 50
+ForceActuatorFollowingError:
+  FaultOnCounting: On
+  FaultCount: 45
+  FaultCountPeriod: 50
+  FaultOnImmediate: On
 TMASettings:
   AzimuthTimeout: 0.5
   ElevationTimeout: 0.5

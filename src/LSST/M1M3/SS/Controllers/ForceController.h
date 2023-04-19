@@ -54,8 +54,10 @@ namespace M1M3 {
 namespace SS {
 
 struct ForceActuatorIndicesNeighbors {
-    std::vector<int32_t> NearZIndices;
-    std::vector<int32_t> FarIndices;
+    ForceActuatorIndicesNeighbors();
+    int nearCount;
+    int NearZIndices[FA_MAX_NEAR_COUNT];
+    int FarIndices[FA_FAR_COUNT];
 };
 
 /**
@@ -78,16 +80,12 @@ struct ForceActuatorIndicesNeighbors {
  * Mirror weight (gravitational force, which depends on elevation, so is
  * calculated by ElevationForceComponent) can be supported (counteracted) from
  * 0 to 100%. Mirror is active when its weight is fully supported by actuators.
- * See incSupportPercentage(), decSupportPercentage(), zeroSupportPercentage()
- * and fillSupportPercentage() methods for support percentage manipulation. As
+ * See RaisingLoweringInfo for methods to manipulate the support percentage. As
  * the mirror is being raised, the support fraction is increased. When the
  * mirror is being lowered, its support fraction is lowered.
  *
- * The supportPercentageFilled() and supportPercentageZeroed() methods reports
- * mirror raising state.
- *
- * Actual support percentage, together with the force actuator state and
- * enabled ForceComponent subclass, is reported in forceActuatorState event.
+ * The force actuator state and enabled ForceComponent subclass is reported in
+ * forceActuatorState event.
  *
  * Various other corrections - manual offsets, dynamic force (acceleration when
  * TMA is moving), bending mode corrections for active optics - are handled in
@@ -130,7 +128,7 @@ struct ForceActuatorIndicesNeighbors {
 class ForceController {
 public:
     ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                    ForceActuatorSettings* forceActuatorSettings, PIDSettings* pidSettings);
+                    PIDSettings* pidSettings);
 
     void reset();
 
@@ -142,48 +140,10 @@ public:
     void updateTMAElevationData(MTMount_elevationC* tmaElevationData);
 
     /**
-     * Increases mirrror support percentage by RaiseIncrementPercentage setting
-     * value.
-     */
-    void incSupportPercentage();
-
-    /**
-     * Decrements mirror support percentage by LowerDecrementPercentage setting
-     * value.
-     */
-    void decSupportPercentage();
-
-    /**
-     * Sets support percentage to 0%.
-     */
-    void zeroSupportPercentage();
-
-    /**
-     * Sets support percentage to 100%.
-     */
-    void fillSupportPercentage();
-
-    /**
-     * Is mirror support percentage equal or more than 100%?
-     *
-     * @return true if the mirror is fully supported by target force actuator
-     * values.
-     */
-    bool supportPercentageFilled();
-
-    /**
-     * Is mirror support percentage less or equal to 0?
-     *
-     * @return true if mirror the mirror is not supported by target force
-     * actuator values.
-     */
-    bool supportPercentageZeroed();
-
-    /**
      * Tests following error on all actuaturs. Reports any violation into
      * spdlog.
      */
-    bool followingErrorInTolerance();
+    bool faRaiseFollowingErrorInTolerance();
 
     void updateAppliedForces();
 
@@ -247,7 +207,6 @@ private:
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
     PIDSettings* _pidSettings;
     SafetyController* _safetyController;
 
@@ -269,7 +228,6 @@ private:
     MTM1M3_logevent_preclippedCylinderForcesC* _preclippedCylinderForces;
 
     MTM1M3_logevent_forceActuatorInfoC* _forceActuatorInfo;
-    MTM1M3_forceActuatorDataC* _forceActuatorData;
 
     MTM1M3_inclinometerDataC* _inclinometerData;
     MTM1M3_pidDataC* _pidData;
@@ -278,7 +236,7 @@ private:
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_gyroDataC* _gyroData;
 
-    std::vector<ForceActuatorIndicesNeighbors> _neighbors;
+    ForceActuatorIndicesNeighbors _neighbors[FA_COUNT];
 
     float _zero[FA_COUNT];
     float _mirrorWeight;

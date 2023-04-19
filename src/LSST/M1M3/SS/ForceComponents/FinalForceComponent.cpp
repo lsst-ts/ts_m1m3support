@@ -29,7 +29,6 @@
 #include <ForceActuatorSettings.h>
 #include <Range.h>
 #include <ForcesAndMoments.h>
-#include <ForceConverter.h>
 #include <DistributedForces.h>
 #include <spdlog/spdlog.h>
 
@@ -37,27 +36,25 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                         ForceActuatorSettings* forceActuatorSettings)
-        : ForceComponent("Final", forceActuatorSettings->FinalComponentSettings) {
+FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        : ForceComponent("Final", ForceActuatorSettings::instance().FinalComponentSettings) {
     _safetyController = Model::get().getSafetyController();
-    _enabledForceActuators = M1M3SSPublisher::get().getEnabledForceActuators();
+    _enabledForceActuators = M1M3SSPublisher::instance().getEnabledForceActuators();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorState = M1M3SSPublisher::get().getEventForceActuatorState();
-    _forceSetpointWarning = M1M3SSPublisher::get().getEventForceSetpointWarning();
-    _appliedForces = M1M3SSPublisher::get().getAppliedForces();
-    _preclippedForces = M1M3SSPublisher::get().getEventPreclippedForces();
+    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
+    _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
+    _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
+    _preclippedForces = M1M3SSPublisher::instance().getEventPreclippedForces();
 
-    _appliedAccelerationForces = M1M3SSPublisher::get().getAppliedAccelerationForces();
-    _appliedActiveOpticForces = M1M3SSPublisher::get().getEventAppliedActiveOpticForces();
-    _appliedAzimuthForces = M1M3SSPublisher::get().getAppliedAzimuthForces();
-    _appliedBalanceForces = M1M3SSPublisher::get().getAppliedBalanceForces();
-    _appliedElevationForces = M1M3SSPublisher::get().getAppliedElevationForces();
-    _appliedOffsetForces = M1M3SSPublisher::get().getEventAppliedOffsetForces();
-    _appliedStaticForces = M1M3SSPublisher::get().getEventAppliedStaticForces();
-    _appliedThermalForces = M1M3SSPublisher::get().getAppliedThermalForces();
-    _appliedVelocityForces = M1M3SSPublisher::get().getAppliedVelocityForces();
+    _appliedAccelerationForces = M1M3SSPublisher::instance().getAppliedAccelerationForces();
+    _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
+    _appliedAzimuthForces = M1M3SSPublisher::instance().getAppliedAzimuthForces();
+    _appliedBalanceForces = M1M3SSPublisher::instance().getAppliedBalanceForces();
+    _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
+    _appliedOffsetForces = M1M3SSPublisher::instance().getEventAppliedOffsetForces();
+    _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();
+    _appliedThermalForces = M1M3SSPublisher::instance().getAppliedThermalForces();
+    _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();
 
     enable();
 }
@@ -117,7 +114,7 @@ void FinalForceComponent::postUpdateActions() {
 
     bool notInRange = false;
     bool clippingRequired = false;
-    _appliedForces->timestamp = M1M3SSPublisher::get().getTimestamp();
+    _appliedForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedForces->timestamp = _appliedForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
@@ -126,8 +123,8 @@ void FinalForceComponent::postUpdateActions() {
         _forceSetpointWarning->forceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = _forceActuatorSettings->ForceLimitXTable[xIndex].LowFault;
-            float xHighFault = _forceActuatorSettings->ForceLimitXTable[xIndex].HighFault;
+            float xLowFault = ForceActuatorSettings::instance().ForceLimitXTable[xIndex].LowFault;
+            float xHighFault = ForceActuatorSettings::instance().ForceLimitXTable[xIndex].HighFault;
             _preclippedForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedForces->xForces[xIndex],
                                                   _appliedForces->xForces + xIndex);
@@ -136,8 +133,8 @@ void FinalForceComponent::postUpdateActions() {
         }
 
         if (yIndex != -1) {
-            float yLowFault = _forceActuatorSettings->ForceLimitYTable[yIndex].LowFault;
-            float yHighFault = _forceActuatorSettings->ForceLimitYTable[yIndex].HighFault;
+            float yLowFault = ForceActuatorSettings::instance().ForceLimitYTable[yIndex].LowFault;
+            float yHighFault = ForceActuatorSettings::instance().ForceLimitYTable[yIndex].HighFault;
             _preclippedForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedForces->yForces[yIndex],
                                                   _appliedForces->yForces + yIndex);
@@ -145,8 +142,8 @@ void FinalForceComponent::postUpdateActions() {
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
 
-        float zLowFault = _forceActuatorSettings->ForceLimitZTable[zIndex].LowFault;
-        float zHighFault = _forceActuatorSettings->ForceLimitZTable[zIndex].HighFault;
+        float zLowFault = ForceActuatorSettings::instance().ForceLimitZTable[zIndex].LowFault;
+        float zHighFault = ForceActuatorSettings::instance().ForceLimitZTable[zIndex].HighFault;
         _preclippedForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedForces->zForces[zIndex],
                                               _appliedForces->zForces + zIndex);
@@ -155,9 +152,9 @@ void FinalForceComponent::postUpdateActions() {
         clippingRequired = _forceSetpointWarning->forceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _appliedForces->xForces,
-            _appliedForces->yForces, _appliedForces->zForces);
+    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _appliedForces->xForces, _appliedForces->yForces,
+            _appliedForces->zForces);
     _appliedForces->fx = fm.Fx;
     _appliedForces->fy = fm.Fy;
     _appliedForces->fz = fm.Fz;
@@ -166,9 +163,9 @@ void FinalForceComponent::postUpdateActions() {
     _appliedForces->mz = fm.Mz;
     _appliedForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceConverter::calculateForcesAndMoments(_forceActuatorApplicationSettings, _forceActuatorSettings,
-                                                   _preclippedForces->xForces, _preclippedForces->yForces,
-                                                   _preclippedForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, _preclippedForces->xForces, _preclippedForces->yForces,
+            _preclippedForces->zForces);
     _preclippedForces->fx = fm.Fx;
     _preclippedForces->fy = fm.Fy;
     _preclippedForces->fz = fm.Fz;
@@ -179,11 +176,11 @@ void FinalForceComponent::postUpdateActions() {
 
     _safetyController->forceControllerNotifyForceClipping(clippingRequired);
 
-    M1M3SSPublisher::get().tryLogForceSetpointWarning();
+    M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::get().logPreclippedForces();
+        M1M3SSPublisher::instance().logPreclippedForces();
     }
-    M1M3SSPublisher::get().logAppliedForces();
+    M1M3SSPublisher::instance().logAppliedForces();
 }
 
 } /* namespace SS */

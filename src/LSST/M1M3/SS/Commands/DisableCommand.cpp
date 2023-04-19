@@ -34,15 +34,15 @@ DisableCommand::DisableCommand(int32_t commandID, MTM1M3_command_disableC*) : Co
 void DisableCommand::execute() { Context::get().disable(this); }
 
 void DisableCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommanddisable(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommanddisable(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void DisableCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommanddisable(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommanddisable(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void DisableCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommanddisable(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommanddisable(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

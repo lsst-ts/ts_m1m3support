@@ -29,31 +29,48 @@
 
 using namespace LSST::M1M3::SS;
 
-HardpointActuatorSettings::HardpointActuatorSettings() { memset(_encoderOffset, 0, sizeof(_encoderOffset)); }
+HardpointActuatorSettings::HardpointActuatorSettings() {
+    memset(encoderOffset, 0, sizeof(encoderOffset));
+    memset(lowProximityEncoder, 0, sizeof(lowProximityEncoder));
+    memset(highProximityEncoder, 0, sizeof(highProximityEncoder));
+}
 
 void HardpointActuatorSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        TableLoader::loadTable(1, 1, 6, &HardpointDisplacementToMirrorPosition,
+        TableLoader::loadTable(1, 6, &HardpointDisplacementToMirrorPosition,
                                doc["HardpointDisplacementToMirrorPositionTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, 6, &MirrorPositionToHardpointDisplacement,
+        TableLoader::loadTable(1, 6, &MirrorPositionToHardpointDisplacement,
                                doc["MirrorPositionToHardpointDisplacementTablePath"].as<std::string>());
         micrometersPerStep = doc["MicrometersPerStep"].as<double>();
         micrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
 
-        std::vector<int32_t> offsetVec = doc["HPEncoderOffsets"].as<std::vector<int32_t>>();
-        if (offsetVec.size() != HP_COUNT) {
-            throw std::runtime_error(fmt::format("Invalid HP offsets size, expected {}, received {}",
-                                                 HP_COUNT, offsetVec.size()));
-        }
-        memcpy(_encoderOffset, offsetVec.data(), HP_COUNT * sizeof(int32_t));
+        auto _hpIntSettings = [doc](int32_t *data, const char *field) {
+            std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t>>();
+            if (dataVec.size() != HP_COUNT) {
+                throw std::runtime_error(fmt::format(
+                        "Invalid {} field in HardpointActuatorSettings, expected {}, found {} integers",
+                        field, HP_COUNT, dataVec.size()));
+            }
+            for (int i = 0; i < HP_COUNT; i++) {
+                data[i] = dataVec[i];
+            }
+        };
+
+        _hpIntSettings(encoderOffset, "HPEncoderOffsets");
+        _hpIntSettings(lowProximityEncoder, "LowProximity");
+        _hpIntSettings(highProximityEncoder, "HighProximity");
+
         hardpointMeasuredForceFaultHigh = doc["HardpointMeasuredForceFaultHigh"].as<float>();
         hardpointMeasuredForceFaultLow = doc["HardpointMeasuredForceFaultLow"].as<float>();
         hardpointMeasuredForceFSBWarningHigh = doc["HardpointMeasuredForceFSBWarningHigh"].as<float>();
         hardpointMeasuredForceFSBWarningLow = doc["HardpointMeasuredForceFSBWarningLow"].as<float>();
         hardpointMeasuredForceWarningHigh = doc["HardpointMeasuredForceWarningHigh"].as<float>();
         hardpointMeasuredForceWarningLow = doc["HardpointMeasuredForceWarningLow"].as<float>();
+
+        hardpointBreakawayFaultHigh = doc["HardpointBreakawayFaultHigh"].as<float>();
+        hardpointBreakawayFaultLow = doc["HardpointBreakawayFaultLow"].as<float>();
 
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFaultLow) {
             throw std::runtime_error(
@@ -100,6 +117,13 @@ void HardpointActuatorSettings::load(const std::string &filename) {
                     filename, hardpointMeasuredForceFaultLow, hardpointMeasuredForceFSBWarningLow));
         }
 
+        if (hardpointBreakawayFaultLow >= hardpointBreakawayFaultHigh) {
+            throw std::runtime_error(
+                    fmt::format("{} HardpointBreakawayFaultLow ({:.2f}) is lower or equal "
+                                "HardpointBreakawayFaultHigh ({:.2f})",
+                                filename, hardpointBreakawayFaultLow, hardpointBreakawayFaultHigh));
+        }
+
         airPressureFaultHigh = doc["AirPressureFaultHigh"].as<float>();
         airPressureFaultLow = doc["AirPressureFaultLow"].as<float>();
         airPressureFaultLowRaising = doc["AirPressureFaultLowRaising"].as<float>();
@@ -114,7 +138,14 @@ void HardpointActuatorSettings::load(const std::string &filename) {
                     "{} AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLowRaising ({:.2f})",
                     filename, airPressureFaultHigh, airPressureFaultLowRaising));
         }
-
+        for (int i = 0; i < HP_COUNT; i++) {
+            if (lowProximityEncoder[i] >= highProximityEncoder[i]) {
+                throw std::runtime_error(
+                        fmt::format("HardpointActuatorSettings LowProximity isn't smaller than HighProximity "
+                                    "for hardpoint {}",
+                                    i + 1));
+            }
+        }
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
@@ -122,4 +153,4 @@ void HardpointActuatorSettings::load(const std::string &filename) {
     log();
 }
 
-void HardpointActuatorSettings::log() { M1M3SSPublisher::get().logHardpointActuatorSettings(this); }
+void HardpointActuatorSettings::log() { M1M3SSPublisher::instance().logHardpointActuatorSettings(this); }

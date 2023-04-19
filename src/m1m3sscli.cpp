@@ -29,6 +29,7 @@
 #endif
 
 #include <FPGA.h>
+#include <FPGAAddresses.h>
 #include <ForceActuatorApplicationSettings.h>
 
 #include <cRIO/FPGACliApp.h>
@@ -45,10 +46,15 @@
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
 
+#define MAX_FORCE 50
+
 class M1M3SScli : public FPGACliApp {
 public:
     M1M3SScli(const char* name, const char* description);
     int setPower(command_vec cmds);
+    int setAir(command_vec cmds);
+    int setSAAOffset(command_vec cmds);
+    int setDAAOffset(command_vec cmds);
 
 protected:
     virtual LSST::cRIO::FPGA* newFPGA(const char* dir) override;
@@ -62,6 +68,10 @@ public:
 protected:
     void processHardpointForceStatus(uint8_t address, uint8_t status, int32_t encoderPostion,
                                      float loadCellForce) override;
+
+    virtual void processSAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce) override;
+    virtual void processDAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce,
+                                       float secondaryLoadCellForce) override;
 
     void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                 float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
@@ -88,12 +98,23 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
     addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>",
                "Power off/on ILC bus");
 
+    addCommand("air", std::bind(&M1M3SScli::setAir, this, std::placeholders::_1), "b", NEED_FPGA, "<0|1>",
+               "Turns air valve off/on");
+
     addILCCommand(
             "calibration",
             [](ILCUnit u) {
                 std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportCalibrationData(u.second);
             },
             "Read calibration data");
+
+    addILCCommand(
+            "measured",
+            [](ILCUnit u) {
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportForceActuatorForceStatus(
+                        u.second);
+            },
+            "Report measured load cell force");
 
     addILCCommand(
             "pressure",
@@ -109,6 +130,12 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
                         u.second);
             },
             "Read hardpoint info");
+
+    addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",
+               NEED_FPGA, "<primary> <ILC..>", "Set ILC primary force offset");
+
+    addCommand("daa-offset", std::bind(&M1M3SScli::setDAAOffset, this, std::placeholders::_1), "DDs?",
+               NEED_FPGA, "<primary> <secondary> <ILC..>", "Set ILC primary and secondary force offsets");
 
     addILC(std::make_shared<PrintElectromechanical>(1));
     addILC(std::make_shared<PrintElectromechanical>(2));
@@ -134,8 +161,61 @@ int M1M3SScli::setPower(command_vec cmds) {
             std::cerr << "Invalid number of arguments to power command." << std::endl;
             return -1;
     }
-    uint16_t pa[16] = {65, aux, 66, aux, 67, aux, 68, aux, 69, net, 70, net, 71, net, 72, net};
+    uint16_t pa[16] = {FPGAAddresses::DCAuxPowerNetworkAOn, aux, FPGAAddresses::DCAuxPowerNetworkBOn, aux,
+                       FPGAAddresses::DCAuxPowerNetworkCOn, aux, FPGAAddresses::DCAuxPowerNetworkDOn, aux,
+                       FPGAAddresses::DCPowerNetworkAOn,    net, FPGAAddresses::DCPowerNetworkBOn,    net,
+                       FPGAAddresses::DCPowerNetworkCOn,    net, FPGAAddresses::DCPowerNetworkDOn,    net};
     getFPGA()->writeCommandFIFO(pa, 16, 0);
+    return 0;
+}
+
+int M1M3SScli::setAir(command_vec cmds) {
+    uint16_t on = CliApp::onOff(cmds[0]);
+    uint16_t aa[2] = {FPGAAddresses::AirSupplyValveControl, on};
+    getFPGA()->writeCommandFIFO(aa, 2, 0);
+    return 0;
+}
+
+int M1M3SScli::setSAAOffset(command_vec cmds) {
+    float primary = stof(cmds[0]);
+
+    if (fabs(primary) > MAX_FORCE) {
+        std::cerr << "Force offset must be below " << MAX_FORCE << " N, received " << primary << " N "
+                  << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 1);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setSAAForceOffset(u.second, false,
+                                                                                      primary);
+    }
+    runILCCommands();
+    return 0;
+}
+
+int M1M3SScli::setDAAOffset(command_vec cmds) {
+    float primary = stof(cmds[0]);
+    float secondary = stof(cmds[1]);
+
+    if (fabs(primary) > MAX_FORCE || fabs(secondary) > MAX_FORCE) {
+        std::cerr << "Force offset must be below " << MAX_FORCE << " N, received " << primary << " N and "
+                  << secondary << " N" << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 2);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDAAForceOffset(u.second, false,
+                                                                                      primary, secondary);
+    }
+    runILCCommands();
     return 0;
 }
 
@@ -192,6 +272,9 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
             else {
                 int id = std::stoi(c);
                 if (id >= 101 && id <= 443) {
+                    if (getDebugLevel() > 1) {
+                        std::cout << "FA ID: " << std::dec << +id;
+                    }
                     id = forceActuators.ActuatorIdToZIndex(id);
                     if (id < 0) {
                         std::cerr << "Unknown actuator ID " << c << std::endl;
@@ -199,12 +282,12 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
                         continue;
                     }
                     ForceActuatorTableRow row = forceActuators.Table[id];
-                    if (getDebugLevel() > 1) {
-                        std::cout << "Id: " << id << " address: " << std::to_string(bus) << "/"
-                                  << std::to_string(address) << std::endl;
-                    }
                     bus = row.Subnet - 1;
                     address = row.Address;
+                    if (getDebugLevel() > 1) {
+                        std::cout << " Index: " << id << " address: " << std::to_string(bus) << "/"
+                                  << std::to_string(address) << std::endl;
+                    }
                 }
             }
         } catch (std::logic_error& e) {
@@ -265,6 +348,28 @@ void PrintElectromechanical::processHardpointForceStatus(uint8_t address, uint8_
               << std::endl;
     std::cout << "Encoder Position: " << encoderPostion << std::endl;
     std::cout << "Load Cell Force: " << std::setprecision(2) << std::fixed << loadCellForce << " N"
+              << std::endl;
+}
+
+void PrintElectromechanical::processSAAForceStatus(uint8_t address, uint8_t status,
+                                                   float primaryLoadCellForce) {
+    _printSepline();
+    std::cout << "Status: 0x" << std::setfill('0') << std::setw(2) << std::hex << status << std::dec
+              << " (ILC: " << (status & 0x80 ? "FAULT" : "OK") << " DCA: " << (status & 0x40 ? "FAULT" : "OK")
+              << ")" << std::endl;
+    std::cout << "Primary force: " << std::setprecision(2) << std::fixed << primaryLoadCellForce << " N"
+              << std::endl;
+}
+
+void PrintElectromechanical::processDAAForceStatus(uint8_t address, uint8_t status,
+                                                   float primaryLoadCellForce, float secondaryLoadCellForce) {
+    _printSepline();
+    std::cout << "Status: 0x" << std::setfill('0') << std::setw(2) << std::hex << status << std::dec
+              << " (ILC: " << (status & 0x80 ? "FAULT" : "OK") << " DCA: " << (status & 0x40 ? "FAULT" : "OK")
+              << ")" << std::endl;
+    std::cout << "Primary force: " << std::setprecision(2) << std::fixed << primaryLoadCellForce << " N"
+              << std::endl;
+    std::cout << "Secondary force: " << std::setprecision(2) << std::fixed << secondaryLoadCellForce << " N"
               << std::endl;
 }
 

@@ -21,14 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <sal_MTM1M3.h>
+#include <spdlog/spdlog.h>
+
 #include <BumpTestController.h>
+#include <ForceActuatorData.h>
+#include <ForceActuatorSettings.h>
 #include <ForceController.h>
 #include <Model.h>
 #include <Publisher.h>
 #include <SettingReader.h>
-
-#include <sal_MTM1M3.h>
-#include <spdlog/spdlog.h>
 
 using namespace MTM1M3;
 
@@ -45,7 +47,7 @@ BumpTestController::BumpTestController() {
     _testForce = 222;
 
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
-            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();
     for (int i = 0; i < FA_COUNT; i++) {
         forceActuatorBumpTestStatus->primaryTest[i] = MTM1M3_shared_BumpTest_NotTested;
     }
@@ -54,7 +56,7 @@ BumpTestController::BumpTestController() {
     }
 
     forceActuatorBumpTestStatus->actuatorId = -1;
-    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+    M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
 }
 
 int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary) {
@@ -65,13 +67,13 @@ int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bo
                               .getForceActuatorApplicationSettings()
                               ->ZIndexToSecondaryCylinderIndex[_zIndex];
 
-    _testedWarning = SettingReader::instance().getForceActuatorSettings()->TestedTolerances.warning;
-    _testedError = SettingReader::instance().getForceActuatorSettings()->TestedTolerances.error;
-    _nonTestedWarning = SettingReader::instance().getForceActuatorSettings()->NonTestedTolerances.warning;
-    _nonTestedError = SettingReader::instance().getForceActuatorSettings()->NonTestedTolerances.error;
+    _testedWarning = ForceActuatorSettings::instance().TestedTolerances.warning;
+    _testedError = ForceActuatorSettings::instance().TestedTolerances.error;
+    _nonTestedWarning = ForceActuatorSettings::instance().NonTestedTolerances.warning;
+    _nonTestedError = ForceActuatorSettings::instance().NonTestedTolerances.error;
 
-    _testSettleTime = SettingReader::instance().getForceActuatorSettings()->bumpTestSettleTime;
-    _testMeasurements = SettingReader::instance().getForceActuatorSettings()->bumpTestMeasurements;
+    _testSettleTime = ForceActuatorSettings::instance().bumpTestSettleTime;
+    _testMeasurements = ForceActuatorSettings::instance().bumpTestMeasurements;
 
     _testPrimary = testPrimary;
     _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
@@ -81,7 +83,7 @@ int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bo
     SettingReader::instance().getSafetyControllerSettings()->ForceController.enterBumpTesting();
 
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
-            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();
 
     forceActuatorBumpTestStatus->actuatorId = actuatorId;
 
@@ -93,7 +95,7 @@ int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bo
         forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex] = MTM1M3_shared_BumpTest_NotTested;
     }
 
-    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+    M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
     return 0;
 }
 
@@ -101,11 +103,11 @@ void BumpTestController::runLoop() {
     // force actuator data are updated only in UpdateCommand; as only a single
     // command can be executed, there isn't a race condition
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
-            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();
 
     if (forceActuatorBumpTestStatus->actuatorId < 0) {
         if (_sleepUntil != 0) {
-            double timestamp = M1M3SSPublisher::get().getTimestamp();
+            double timestamp = M1M3SSPublisher::instance().getTimestamp();
             if (_sleepUntil <= timestamp) {
                 SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
                 _sleepUntil = 0;
@@ -119,7 +121,7 @@ void BumpTestController::runLoop() {
                 _runCylinder('Z', _zIndex, _zAverages, &(forceActuatorBumpTestStatus->primaryTest[_zIndex]));
         switch (pRet) {
             case STATE_CHANGED:
-                M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+                M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
                 return;
             case NO_CHANGE:
                 return;
@@ -128,7 +130,8 @@ void BumpTestController::runLoop() {
                 break;
         }
 
-        forceActuatorBumpTestStatus->primaryTestTimestamps[_zIndex] = M1M3SSPublisher::get().getTimestamp();
+        forceActuatorBumpTestStatus->primaryTestTimestamps[_zIndex] =
+                M1M3SSPublisher::instance().getTimestamp();
         _testPrimary = false;
     }
 
@@ -142,7 +145,7 @@ void BumpTestController::runLoop() {
 
         switch (sRet) {
             case STATE_CHANGED:
-                M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+                M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
                 return;
             case NO_CHANGE:
                 return;
@@ -152,16 +155,16 @@ void BumpTestController::runLoop() {
         }
 
         forceActuatorBumpTestStatus->secondaryTestTimestamps[_secondaryIndex] =
-                M1M3SSPublisher::get().getTimestamp();
+                M1M3SSPublisher::instance().getTimestamp();
         _testSecondary = false;
     }
 
     forceActuatorBumpTestStatus->actuatorId = -1;
-    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+    M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
 }
 
 void BumpTestController::stopAll(bool forced) {
-    M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
+    M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
 
     _resetProgress();
 
@@ -169,7 +172,7 @@ void BumpTestController::stopAll(bool forced) {
         SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
     }
 
-    M1M3SSPublisher::get().logForceActuatorBumpTestStatus();
+    M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
 }
 
 void BumpTestController::stopCylinder(char axis) {
@@ -191,9 +194,9 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                                                                          double averages[],
                                                                          short int* stage) {
     ForceController* forceController = Model::get().getForceController();
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
-            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus();
+            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();
     forceActuatorBumpTestStatus->timestamp = timestamp;
 
     bool positive = false;
@@ -306,7 +309,7 @@ void BumpTestController::_resetProgress(bool zeroOffsets) {
         //
         // Drop of the measuredForce on top of FAs can take some time, as it isn't instantinous due to physics
         // involved
-        _sleepUntil = M1M3SSPublisher::get().getTimestamp() + _testSettleTime;
+        _sleepUntil = M1M3SSPublisher::instance().getTimestamp() + _testSettleTime;
     }
 }
 
@@ -321,12 +324,9 @@ bool BumpTestController::_collectAverages() {
 
     _testProgress++;
 
-    for (int i = 0; i < FA_X_COUNT; ++i)
-        _xAverages[i] += M1M3SSPublisher::get().getForceActuatorData()->xForce[i];
-    for (int i = 0; i < FA_Y_COUNT; ++i)
-        _yAverages[i] += M1M3SSPublisher::get().getForceActuatorData()->yForce[i];
-    for (int i = 0; i < FA_Z_COUNT; ++i)
-        _zAverages[i] += M1M3SSPublisher::get().getForceActuatorData()->zForce[i];
+    for (int i = 0; i < FA_X_COUNT; ++i) _xAverages[i] += ForceActuatorData::instance().xForce[i];
+    for (int i = 0; i < FA_Y_COUNT; ++i) _yAverages[i] += ForceActuatorData::instance().yForce[i];
+    for (int i = 0; i < FA_Z_COUNT; ++i) _zAverages[i] += ForceActuatorData::instance().zForce[i];
 
     if (_testProgress >= _testMeasurements) {
         for (int i = 0; i < FA_X_COUNT; ++i) _xAverages[i] /= _testProgress;

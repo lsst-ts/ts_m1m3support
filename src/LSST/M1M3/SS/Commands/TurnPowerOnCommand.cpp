@@ -45,7 +45,8 @@ bool TurnPowerOnCommand::validate() {
     if (!(_data.turnPowerNetworkAOn || _data.turnPowerNetworkBOn || _data.turnPowerNetworkCOn ||
           _data.turnPowerNetworkDOn || _data.turnAuxPowerNetworkAOn || _data.turnAuxPowerNetworkBOn ||
           _data.turnAuxPowerNetworkCOn || _data.turnAuxPowerNetworkDOn)) {
-        M1M3SSPublisher::get().logCommandRejectionWarning("TurnPowerOn", "At least one field is not TRUE.");
+        M1M3SSPublisher::instance().logCommandRejectionWarning("TurnPowerOn",
+                                                               "At least one field is not TRUE.");
     }
     return _data.turnPowerNetworkAOn || _data.turnPowerNetworkBOn || _data.turnPowerNetworkCOn ||
            _data.turnPowerNetworkDOn || _data.turnAuxPowerNetworkAOn || _data.turnAuxPowerNetworkBOn ||
@@ -55,15 +56,15 @@ bool TurnPowerOnCommand::validate() {
 void TurnPowerOnCommand::execute() { Context::get().turnPowerOn(this); }
 
 void TurnPowerOnCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandturnPowerOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnPowerOnCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandturnPowerOn(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void TurnPowerOnCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandturnPowerOn(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

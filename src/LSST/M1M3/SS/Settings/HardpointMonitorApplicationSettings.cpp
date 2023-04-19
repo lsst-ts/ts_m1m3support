@@ -22,51 +22,11 @@
  */
 
 #include <HardpointMonitorApplicationSettings.h>
-#include <SettingReader.h>
-#include <fstream>
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-#include <yaml-cpp/yaml.h>
-#include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-void HardpointMonitorApplicationSettings::load(const std::string &filename) {
-    try {
-        YAML::Node doc = YAML::LoadFile(filename);
-
-        typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-
-        std::string hardpointActuatorTablePath =
-                SettingReader::instance().getFilePath(doc["HardpointMonitorTablePath"].as<std::string>());
-        std::ifstream inputStream(hardpointActuatorTablePath.c_str());
-        if (!inputStream.is_open()) {
-            throw std::runtime_error("Cannot read " + hardpointActuatorTablePath + ": " + strerror(errno));
-        }
-
-        std::string lineText;
-        int32_t lineNumber = 0;
-        Table.clear();
-        while (std::getline(inputStream, lineText)) {
-            boost::trim_right(lineText);
-            if (lineNumber != 0) {
-                tokenizer tok(lineText);
-                tokenizer::iterator i = tok.begin();
-                HardpointMonitorTableRow row;
-                row.Index = boost::lexical_cast<int32_t>(*i);
-                ++i;
-                row.ActuatorID = boost::lexical_cast<int32_t>(*i);
-                ++i;
-                row.Subnet = (uint8_t)boost::lexical_cast<int32_t>(*i);
-                ++i;
-                row.Address = (uint8_t)boost::lexical_cast<int32_t>(*i);
-                Table.push_back(row);
-            }
-            lineNumber++;
-        }
-        inputStream.close();
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
-    }
-}
+//! [HardpointMonitorTableRow initialization]
+HardpointMonitorTableRow HardpointMonitorApplicationSettings::Table[HP_COUNT] = {
+        {0, 11, 5, 84}, {1, 12, 5, 85}, {2, 13, 5, 86}, {3, 14, 5, 87}, {4, 15, 5, 88}, {5, 16, 5, 89},
+};
+//! [HardpointMonitorTableRow initialization]

@@ -21,17 +21,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <MirrorLowerController.h>
-#include <PositionController.h>
-#include <ForceController.h>
-#include <SafetyController.h>
-#include <M1M3SSPublisher.h>
-#include <PowerController.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <ForceController.h>
+#include <M1M3SSPublisher.h>
+#include <MirrorLowerController.h>
+#include <PositionController.h>
+#include <PowerController.h>
+#include <RaisingLoweringInfo.h>
+#include <SafetyController.h>
+
+using namespace LSST::M1M3::SS;
 
 MirrorLowerController::MirrorLowerController(PositionController* positionController,
                                              ForceController* forceController,
@@ -65,32 +65,36 @@ void MirrorLowerController::start() {
     _forceController->zeroStaticForces();
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
-    _forceController->fillSupportPercentage();
+    RaisingLoweringInfo::instance().fillSupportPercentage();
 
     setStartTimestamp();
 }
 
 void MirrorLowerController::runLoop() {
     SPDLOG_TRACE("MirrorLowerController: runLoop() {}",
-                 M1M3SSPublisher::get().getEventForceActuatorState()->supportPercentage);
+                 RaisingLoweringInfo::instance().weightSupportedPercent);
     if (_movedToLowerPosition == false) {
         _movedToLowerPosition = _positionController->motionComplete();
         if (_movedToLowerPosition == true) {
             _positionController->enableChaseAll();
         }
-    } else if (_forceController->supportPercentageZeroed() == false) {
+    } else if (RaisingLoweringInfo::instance().supportPercentageZeroed() == false) {
         // We are still in the process of transfering the support force from the static supports
         // to the force actuators
         // TODO: Does it matter if the following error is bad when we are trying to lower the mirror?
-        if (_positionController->forcesInTolerance(false)) {
+        if (_positionController->hpRaiseLowerForcesInTolerance(false)) {
             // The forces on the hardpoints are within tolerance, we can continue to transfer the
             // support force from the static supports to the force actuators
-            _forceController->decSupportPercentage();
+            RaisingLoweringInfo::instance().decSupportPercentage();
         }
     }
+
+    RaisingLoweringInfo::instance().sendUpdates();
 }
 
-bool MirrorLowerController::checkComplete() { return _forceController->supportPercentageZeroed(); }
+bool MirrorLowerController::checkComplete() {
+    return RaisingLoweringInfo::instance().supportPercentageZeroed();
+}
 
 void MirrorLowerController::complete() {
     SPDLOG_INFO("MirrorLowerController: complete()");
@@ -108,11 +112,11 @@ void MirrorLowerController::complete() {
     _forceController->zeroStaticForces();
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
-    _forceController->zeroSupportPercentage();
+    RaisingLoweringInfo::instance().zeroSupportPercentage();
 }
 
 bool MirrorLowerController::checkTimeout() {
-    return M1M3SSPublisher::get().getTimestamp() >=
+    return M1M3SSPublisher::instance().getTimestamp() >=
            (_cachedTimestamp + _positionController->getLowerTimeout());
 }
 
@@ -142,7 +146,3 @@ void MirrorLowerController::abortRaiseM1M3() {
 
     setStartTimestamp();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

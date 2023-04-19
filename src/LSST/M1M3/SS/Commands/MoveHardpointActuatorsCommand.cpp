@@ -40,7 +40,7 @@ MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(int32_t commandID,
 bool MoveHardpointActuatorsCommand::validate() {
     if (_data.steps[0] == 0 && _data.steps[1] == 0 && _data.steps[2] == 0 && _data.steps[3] == 0 &&
         _data.steps[4] == 0 && _data.steps[5] == 0) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "MoveHardpointActuators",
                 "The field Steps must have at least one index with a step value not equal to zero.");
     }
@@ -51,15 +51,17 @@ bool MoveHardpointActuatorsCommand::validate() {
 void MoveHardpointActuatorsCommand::execute() { Context::get().moveHardpointActuators(this); }
 
 void MoveHardpointActuatorsCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandmoveHardpointActuators(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandmoveHardpointActuators(getCommandID(), ACK_INPROGRESS,
+                                                                 "In-Progress");
 }
 
 void MoveHardpointActuatorsCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandmoveHardpointActuators(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandmoveHardpointActuators(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void MoveHardpointActuatorsCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandmoveHardpointActuators(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandmoveHardpointActuators(getCommandID(), ACK_FAILED,
+                                                                 "Failed: " + reason);
 }
 
 } /* namespace SS */

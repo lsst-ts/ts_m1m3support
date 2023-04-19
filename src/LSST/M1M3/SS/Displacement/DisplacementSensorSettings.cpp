@@ -32,7 +32,7 @@ void DisplacementSensorSettings::load(const std::string &filename) {
     try {
         YAML::Node doc = YAML::LoadFile(filename);
 
-        TableLoader::loadTable(1, 1, 8, &this->ConverterMatrix, doc["PositionTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 8, &this->ConverterMatrix, doc["PositionTablePath"].as<std::string>());
         NPorts = doc["NPorts"].as<std::vector<int32_t>>();
         NOffsets = doc["NOffsets"].as<std::vector<double>>();
 

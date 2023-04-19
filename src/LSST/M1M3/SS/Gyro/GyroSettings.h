@@ -39,7 +39,7 @@ struct GyroSettings : public MTM1M3_logevent_gyroSettingsC {
 
     void load(const std::string &filename);
 
-    void log() { M1M3SSPublisher::get().logGyroSettings(this); }
+    void log() { M1M3SSPublisher::instance().logGyroSettings(this); }
 };
 
 } /* namespace SS */

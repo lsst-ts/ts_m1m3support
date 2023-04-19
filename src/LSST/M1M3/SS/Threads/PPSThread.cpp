@@ -45,7 +45,7 @@ void PPSThread::run() {
             continue;
         }
         IFPGA::get().ackPPS();
-        uint64_t timestamp = Timestamp::toFPGA(M1M3SSPublisher::get().getTimestamp());
+        uint64_t timestamp = Timestamp::toFPGA(M1M3SSPublisher::instance().getTimestamp());
         if (_keepRunning) {
             IFPGA::get().writeTimestampFIFO(timestamp);
         }

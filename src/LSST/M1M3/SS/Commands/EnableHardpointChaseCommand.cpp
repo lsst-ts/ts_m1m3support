@@ -36,15 +36,16 @@ EnableHardpointChaseCommand::EnableHardpointChaseCommand(int32_t commandID,
 void EnableHardpointChaseCommand::execute() { Context::get().enableHardpointChase(this); }
 
 void EnableHardpointChaseCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenableHardpointChase(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandenableHardpointChase(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void EnableHardpointChaseCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenableHardpointChase(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandenableHardpointChase(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void EnableHardpointChaseCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenableHardpointChase(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandenableHardpointChase(getCommandID(), ACK_FAILED,
+                                                               "Failed: " + reason);
 }
 
 } /* namespace SS */

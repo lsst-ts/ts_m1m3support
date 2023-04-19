@@ -52,10 +52,11 @@ public:
      *
      * @return hardpoint zero offset (HP<HP>EncoderOffset value)
      */
-    int32_t getEncoderOffset(int hp) { return _encoderOffset[hp]; }
+    int32_t getEncoderOffset(int hp) { return encoderOffset[hp]; }
 
-private:
-    int32_t _encoderOffset[HP_COUNT];
+    // TODO move to XML
+    float hardpointBreakawayFaultHigh;
+    float hardpointBreakawayFaultLow;
 };
 
 } /* namespace SS */

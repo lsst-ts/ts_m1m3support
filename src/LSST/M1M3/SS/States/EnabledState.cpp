@@ -21,13 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <EnabledState.h>
 #include <Accelerometer.h>
 #include <Displacement.h>
+#include <DigitalInputOutput.h>
+#include <EnabledState.h>
+#include <ForceActuatorData.h>
 #include <ForceController.h>
+#include <HardpointActuatorWarning.h>
 #include <ILC.h>
 #include <Inclinometer.h>
-#include <DigitalInputOutput.h>
 #include <Model.h>
 #include <PositionController.h>
 #include <SafetyController.h>
@@ -65,13 +67,13 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* co
 
 States::Type EnabledState::setAirSlewFlag(SetAirSlewFlagCommand* command) {
     MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
-            M1M3SSPublisher::get().getEventForceActuatorState();
-    MTM1M3_outerLoopDataC* outerLoop = M1M3SSPublisher::get().getOuterLoopData();
+            M1M3SSPublisher::instance().getEventForceActuatorState();
+    MTM1M3_outerLoopDataC* outerLoop = M1M3SSPublisher::instance().getOuterLoopData();
     SPDLOG_INFO("EnabledState: setAirSlewFlag to {}", command->slewFlag);
     forceActuatorState->slewFlag = command->slewFlag;
     outerLoop->slewFlag = command->slewFlag;
 
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
 
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
@@ -99,13 +101,13 @@ void EnabledState::runLoop() {
     ilc->calculateFAMirrorForces();
     ilc->verifyResponses();
     ilc->publishForceActuatorStatus();
-    ilc->publishForceActuatorData();
+    ForceActuatorData::instance().send();
     ilc->publishHardpointStatus();
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
-    M1M3SSPublisher::get().tryLogHardpointActuatorWarning();
-    M1M3SSPublisher::get().getEnabledForceActuators()->log();
+    HardpointActuatorWarning::instance().send();
+    M1M3SSPublisher::instance().getEnabledForceActuators()->log();
 }
 
 void EnabledState::sendTelemetry() {

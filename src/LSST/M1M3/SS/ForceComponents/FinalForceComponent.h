@@ -27,7 +27,6 @@
 #include <EnabledForceActuators.h>
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <SafetyController.h>
 #include <SAL_MTM1M3C.h>
 
@@ -47,10 +46,8 @@ public:
      * @brief Sets internal variables.
      *
      * @param forceActuatorApplicationSettings
-     * @param forceActuatorSettings
      */
-    FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                        ForceActuatorSettings* forceActuatorSettings);
+    FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     /**
      * @brief Sums applied forces to target x,y and z forces.
@@ -65,7 +62,6 @@ private:
     SafetyController* _safetyController;
     EnabledForceActuators* _enabledForceActuators;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    ForceActuatorSettings* _forceActuatorSettings;
 
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;

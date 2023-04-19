@@ -34,7 +34,7 @@ PanicCommand::PanicCommand(int32_t commandID) : Command(commandID) {}
 
 bool PanicCommand::validate() {
     if (Model::get().getSafetyController() == NULL) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "Panic",
                 "Panic command cannot be called without Safety Controller (most likely called in a wrong "
                 "state).");
@@ -46,15 +46,15 @@ bool PanicCommand::validate() {
 void PanicCommand::execute() { Model::get().getSafetyController()->userPanic(); }
 
 void PanicCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandpanic(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandpanic(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void PanicCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandpanic(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandpanic(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void PanicCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandpanic(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandpanic(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */
