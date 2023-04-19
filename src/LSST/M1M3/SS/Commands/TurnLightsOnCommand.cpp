@@ -35,15 +35,15 @@ TurnLightsOnCommand::TurnLightsOnCommand(int32_t commandID, MTM1M3_command_turnL
 void TurnLightsOnCommand::execute() { Context::get().turnLightsOn(this); }
 
 void TurnLightsOnCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandturnLightsOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandturnLightsOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void TurnLightsOnCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandturnLightsOn(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandturnLightsOn(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void TurnLightsOnCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandturnLightsOn(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandturnLightsOn(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

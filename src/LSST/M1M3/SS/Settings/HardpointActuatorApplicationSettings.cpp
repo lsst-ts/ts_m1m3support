@@ -22,64 +22,15 @@
  */
 
 #include <HardpointActuatorApplicationSettings.h>
-#include <SettingReader.h>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-#include <stdio.h>
-#include <yaml-cpp/yaml.h>
-#include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-void HardpointActuatorApplicationSettings::load(const std::string &filename) {
-    try {
-        YAML::Node doc = YAML::LoadFile(filename);
-
-        typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-
-        std::string hardpointActuatorTablePath =
-                SettingReader::instance().getFilePath(doc["HardpointActuatorTablePath"].as<std::string>());
-        std::ifstream inputStream(hardpointActuatorTablePath.c_str());
-        if (!inputStream.is_open()) {
-            throw std::runtime_error("Cannot read " + hardpointActuatorTablePath + ": " + strerror(errno));
-        }
-
-        std::string lineText;
-        int32_t lineNumber = 0;
-        this->Table.clear();
-        while (std::getline(inputStream, lineText)) {
-            boost::trim_right(lineText);
-            if (lineNumber != 0) {
-                tokenizer tok(lineText);
-                tokenizer::iterator i = tok.begin();
-                HardpointActuatorTableRow row;
-                row.Index = boost::lexical_cast<int32_t>(*i);
-                ++i;
-                row.ActuatorID = boost::lexical_cast<int32_t>(*i);
-                ++i;
-                row.XPosition = boost::lexical_cast<double>(*i);
-                ++i;
-                row.YPosition = boost::lexical_cast<double>(*i);
-                ++i;
-                row.ZPosition = boost::lexical_cast<double>(*i);
-                ++i;
-                row.Subnet = (uint8_t)boost::lexical_cast<int32_t>(*i);
-                ++i;
-                row.Address = (uint8_t)boost::lexical_cast<int32_t>(*i);
-                ++i;
-                row.SensorOffset = boost::lexical_cast<float>(*i);
-                ++i;
-                row.SensorSensitivity = boost::lexical_cast<float>(*i);
-                this->Table.push_back(row);
-            }
-            lineNumber++;
-        }
-        inputStream.close();
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
-    }
-}
+//! [HarpointActuatorTableRow initialization]
+HardpointActuatorTableRow HardpointActuatorApplicationSettings::Table[HP_COUNT] = {
+        {0, 1, 776.78278, 0.00000, -89.00000, 5, 1, 0, 3},
+        {1, 2, 1442.56799, 0.00000, -89.00000, 5, 2, 0, 3},
+        {2, 3, 2108.37793, 0.00000, -89.00000, 5, 3, 0, 3},
+        {3, 4, 2774.18799, 0.00000, -89.00000, 5, 4, 0, 3},
+        {4, 5, 3439.99805, 0.00000, -89.00000, 5, 5, 0, 3},
+        {5, 6, 3968.01294, 0.00000, -89.00000, 5, 6, 0, 3}};
+//! [HardpointActuatorTableRow initialization]

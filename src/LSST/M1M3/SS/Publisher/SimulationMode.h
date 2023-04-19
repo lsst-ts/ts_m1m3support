@@ -21,16 +21,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef HARDPOINTMONITORTABLEROW_H_
-#define HARDPOINTMONITORTABLEROW_H_
+#ifndef LSST_SIMULATIONMODE_H
+#define LSST_SIMULATIONMODE_H
 
-#include <DataTypes.h>
+#include <unistd.h>
 
-struct HardpointMonitorTableRow {
-    int32_t Index;
-    int32_t ActuatorID;
-    uint8_t Subnet;
-    uint8_t Address;
+#include <SAL_MTM1M3.h>
+#include <spdlog/spdlog.h>
+
+#include <cRIO/Singleton.h>
+#include <M1M3SSPublisher.h>
+
+namespace LSST {
+namespace M1M3 {
+namespace SS {
+
+class SimulationMode : public MTM1M3_logevent_simulationModeC, public cRIO::Singleton<SimulationMode> {
+public:
+    SimulationMode(token) { mode = -1; }
+
+    void setSimulationMode(int newMode) {
+        if (mode == newMode) {
+            SPDLOG_CRITICAL("Simulation mode {} already set!", mode);
+            exit(1);
+        }
+        mode = newMode;
+        M1M3SSPublisher::instance().logSimulationMode(this);
+    }
 };
 
-#endif /* HARDPOINTMONITORTABLEROW_H_ */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
+
+#endif  // !LSST_SIMULATIONMODE_H

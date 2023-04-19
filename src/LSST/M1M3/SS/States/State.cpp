@@ -167,7 +167,7 @@ States::Type State::enableAllForceActuators(EnableAllForceActuatorsCommand* comm
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";
     SPDLOG_WARN(reason);
-    M1M3SSPublisher::get().logCommandRejectionWarning(cmd_name, reason);
+    M1M3SSPublisher::instance().logCommandRejectionWarning(cmd_name, reason);
     command->ackFailed(reason);
     return States::NoStateTransition;
 }

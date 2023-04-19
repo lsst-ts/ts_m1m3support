@@ -33,15 +33,15 @@ ExitControlCommand::ExitControlCommand(int32_t commandID) : Command(commandID) {
 void ExitControlCommand::execute() { Context::get().exitControl(this); }
 
 void ExitControlCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandexitControl(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandexitControl(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void ExitControlCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandexitControl(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandexitControl(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ExitControlCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandexitControl(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandexitControl(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

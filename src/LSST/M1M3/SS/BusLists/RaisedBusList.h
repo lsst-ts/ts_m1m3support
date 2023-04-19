@@ -40,7 +40,6 @@ public:
 
 private:
     MTM1M3_outerLoopDataC* _outerLoopData;
-    MTM1M3_forceActuatorDataC* _forceActuatorData;
     MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
     MTM1M3_logevent_forceActuatorInfoC* _forceInfo;

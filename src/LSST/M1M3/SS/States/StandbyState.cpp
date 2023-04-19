@@ -51,10 +51,10 @@ States::Type StandbyState::start(StartCommand* command) {
     SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
 
     Model::get().loadSettings(command->getConfigurationOverride());
-    M1M3SSPublisher::get().getEventConfigurationApplied()->version =
+    M1M3SSPublisher::instance().getEventConfigurationApplied()->version =
             SettingReader::instance().getSettingsVersion();
-    M1M3SSPublisher::get().getEventConfigurationApplied()->otherInfo = "";
-    M1M3SSPublisher::get().logConfigurationApplied();
+    M1M3SSPublisher::instance().getEventConfigurationApplied()->otherInfo = "";
+    M1M3SSPublisher::instance().logConfigurationApplied();
 
     PowerController* powerController = Model::get().getPowerController();
     ILC* ilc = Model::get().getILC();
@@ -123,8 +123,8 @@ States::Type StandbyState::start(StartCommand* command) {
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     digitalInputOutput->tryToggleHeartbeat();
-    M1M3SSPublisher::getEnabledForceActuators()->log();
-    M1M3SSPublisher::get().tryLogForceActuatorState();
+    M1M3SSPublisher::instance().getEnabledForceActuators()->log();
+    M1M3SSPublisher::instance().tryLogForceActuatorState();
     std::this_thread::sleep_for(20ms);
     ilc->verifyResponses();
     ilc->publishForceActuatorInfo();

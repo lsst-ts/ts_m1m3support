@@ -87,9 +87,9 @@ public:
     void interlockNotifyGISHeartbeatLost(bool conditionFlag);
 
     void forceControllerNotifySafetyLimit(bool conditionFlag);
-    void forceControllerNotifyXMomentLimit(bool conditionFlag);
-    void forceControllerNotifyYMomentLimit(bool conditionFlag);
-    void forceControllerNotifyZMomentLimit(bool conditionFlag);
+    void forceControllerNotifyXMomentLimit(bool conditionFlag, std::string failed);
+    void forceControllerNotifyYMomentLimit(bool conditionFlag, std::string failed);
+    void forceControllerNotifyZMomentLimit(bool conditionFlag, std::string failed);
     void forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed, float nominalZ,
                                                 float nominalZWarning);
     void forceControllerNotifyMagnitudeLimit(bool conditionFlag, float globalForce);
@@ -105,6 +105,8 @@ public:
     void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
     void forceControllerNotifyVelocityForceClipping(bool conditionFlag);
     void forceControllerNotifyForceClipping(bool conditionFlag);
+    void forceControllerNotifyMeasuredForceLimit(int actuatorId, bool primary, float measuredForce,
+                                                 bool conditionFlag);
 
     void positionControllerNotifyLimitLow(int hp, bool conditionFlag);
     void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
@@ -128,9 +130,9 @@ public:
 
     void ilcCommunicationTimeout(bool conditionFlag);
 
-    void forceActuatorFollowingError(int actuatorDataIndex, bool conditionFlag);
+    void forceActuatorFollowingError(int actuatorDataIndex, bool countingWarning, bool immediateFault);
 
-    void hardpointActuatorLoadCellError(bool conditionFlag);
+    void hardpointActuatorBreakawayFault(int actuatorDataIndex, bool conditionFlag);
 
     /**
      * Triggers hardpoint measured force warning and faults.

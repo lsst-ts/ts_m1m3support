@@ -36,17 +36,18 @@ EnableHardpointCorrectionsCommand::EnableHardpointCorrectionsCommand(
 void EnableHardpointCorrectionsCommand::execute() { Context::get().enableHardpointCorrections(this); }
 
 void EnableHardpointCorrectionsCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandenableHardpointCorrections(getCommandID(), ACK_INPROGRESS,
-                                                                "In-Progress");
+    M1M3SSPublisher::instance().ackCommandenableHardpointCorrections(getCommandID(), ACK_INPROGRESS,
+                                                                     "In-Progress");
 }
 
 void EnableHardpointCorrectionsCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandenableHardpointCorrections(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandenableHardpointCorrections(getCommandID(), ACK_COMPLETE,
+                                                                     "Completed");
 }
 
 void EnableHardpointCorrectionsCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandenableHardpointCorrections(getCommandID(), ACK_FAILED,
-                                                                "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandenableHardpointCorrections(getCommandID(), ACK_FAILED,
+                                                                     "Failed: " + reason);
 }
 
 } /* namespace SS */

@@ -127,6 +127,9 @@ public:
 
     const int XIndexToActuatorId(int xIndex) { return ZIndexToActuatorId(XIndexToZIndex[xIndex]); }
     const int YIndexToActuatorId(int yIndex) { return ZIndexToActuatorId(YIndexToZIndex[yIndex]); }
+    const int SecondaryCylinderIndexToActuatorId(int secIndex) {
+        return ZIndexToActuatorId(SecondaryCylinderIndexToZIndex[secIndex]);
+    }
 
     /**
      * Returns actuator ID for given Z index.
@@ -135,7 +138,7 @@ public:
      *
      * @return actuator ID - 3 digits number, where 1st digit is actuator quadrant
      */
-    const int ZIndexToActuatorId(int zIndex);
+    const static int ZIndexToActuatorId(int zIndex);
 };
 
 } /* namespace SS */

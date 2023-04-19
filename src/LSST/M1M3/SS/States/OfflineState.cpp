@@ -25,6 +25,8 @@
 #include <Model.h>
 #include <DigitalInputOutput.h>
 #include <PowerController.h>
+#include <SimulationMode.h>
+
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -40,17 +42,18 @@ States::Type OfflineState::update(UpdateCommand* command) {
 States::Type OfflineState::enterControl(EnterControlCommand* command) {
     SPDLOG_INFO("OfflineState: enterControl()");
 
-    M1M3SSPublisher::get().logSoftwareVersions();
+    M1M3SSPublisher::instance().logSoftwareVersions();
 #ifdef SIMULATOR
-    M1M3SSPublisher::get().setSimulationMode(1);
+    SimulationMode::instance().setSimulationMode(1);
 #else
-    M1M3SSPublisher::get().setSimulationMode(0);
+    SimulationMode::instance().setSimulationMode(0);
 #endif
     Model::get().publishRecommendedSettings();
     // Model::get().getDigitalInputOutput()->turnAirOff();
     // Model::get().getDigitalInputOutput()->turnCellLightsOff();
     Model::get().getDigitalInputOutput()->turnCellLightsOn();
     Model::get().getDigitalInputOutput()->turnAirOn();
+    Model::get().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
     // TODO: May need to change power controller to act like digital input output
     // Model::get().getPowerController()->setBothPowerNetworks(false);
     return States::StandbyState;

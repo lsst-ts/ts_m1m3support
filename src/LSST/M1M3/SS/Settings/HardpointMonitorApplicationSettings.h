@@ -24,19 +24,30 @@
 #ifndef HARDPOINTMONITORAPPLICATIONSETTINGS_H_
 #define HARDPOINTMONITORAPPLICATIONSETTINGS_H_
 
-#include <HardpointMonitorTableRow.h>
-#include <vector>
-#include <string>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+struct HardpointMonitorTableRow {
+    int32_t Index;
+    int32_t ActuatorID;
+    uint8_t Subnet;
+    uint8_t Address;
+};
+
 class HardpointMonitorApplicationSettings {
 public:
-    std::vector<HardpointMonitorTableRow> Table;
-
-    void load(const std::string &filename);
+    /**
+     * Source data. Contains monitor address. Populated in
+     * HardpointMonitorApplicationSettings.cpp.
+     *
+     * @snippet Settings/HardpointMonitorApplicationSettings.cpp HardpointMonitorTableRow initialization
+     *
+     * @see ForceActuatorTableRow
+     */
+    static HardpointMonitorTableRow Table[HP_COUNT];
 };
 
 } /* namespace SS */

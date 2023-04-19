@@ -32,7 +32,6 @@
 #include <SafetyControllerSettings.h>
 #include <AliasApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointActuatorSettings.h>
 #include <ILCApplicationSettings.h>
@@ -88,11 +87,15 @@ public:
         return &_forceActuatorApplicationSettings;
     }
 
-    ForceActuatorSettings* loadForceActuatorSettings();
-    ForceActuatorSettings* getForceActuatorSettings() { return &_forceActuatorSettings; }
-    HardpointActuatorApplicationSettings* loadHardpointActuatorApplicationSettings();
+    void loadForceActuatorSettings();
 
     HardpointActuatorSettings* getHardpointActuatorSettings() { return &_hardpointActuatorSettings; }
+    HardpointActuatorApplicationSettings* getHardpointActuatorApplicationSettings() {
+        return &_hardpointActuatorApplicationSettings;
+    }
+    HardpointMonitorApplicationSettings* getHardpointMonitorApplicationSettings() {
+        return &_hardpointMonitorApplicationSettings;
+    }
 
     HardpointActuatorSettings* loadHardpointActuatorSettings();
     ILCApplicationSettings* loadILCApplicationSettings();
@@ -102,7 +105,6 @@ public:
     PositionControllerSettings* loadPositionControllerSettings();
     AccelerometerSettings* loadAccelerometerSettings();
     DisplacementSensorSettings* loadDisplacementSensorSettings();
-    HardpointMonitorApplicationSettings* loadHardpointMonitorApplicationSettings();
     GyroSettings* loadGyroSettings();
     ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
     PIDSettings* loadPIDSettings();
@@ -117,7 +119,6 @@ private:
 
     AliasApplicationSettings _aliasApplicationSettings;
     ForceActuatorApplicationSettings _forceActuatorApplicationSettings;
-    ForceActuatorSettings _forceActuatorSettings;
     HardpointActuatorApplicationSettings _hardpointActuatorApplicationSettings;
     HardpointActuatorSettings _hardpointActuatorSettings;
     ILCApplicationSettings _ilcApplicationSettings;

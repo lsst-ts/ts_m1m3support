@@ -24,63 +24,60 @@
 #ifndef TABLELOADER_H_
 #define TABLELOADER_H_
 
+#include <string>
+#include <vector>
+
+#include <spdlog/fmt/fmt.h>
+
+#include <rapidcsv.h>
+
 #include <Limit.h>
 #include <DataTypes.h>
 #include <SettingReader.h>
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-#include <fstream>
-#include <string>
-#include <vector>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/// Conversion functions, used when worng data are encountered
+std::string rowToStr(std::vector<std::string> row);
+
 class TableLoader {
 public:
     template <typename t>
-    static void loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<t>* data,
+    static void loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t>* data,
                           const std::string& filename);
-    static void loadLimitTable(int rowsToSkip, int columnsToSkip, std::vector<Limit>* data,
-                               const std::string& filename);
+    static void loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data, const std::string& filename);
+    static void loadCylinderLimitTable(size_t columnsToSkip, float primaryLow[FA_COUNT],
+                                       float primaryHigh[FA_COUNT], float secondaryLow[FA_S_COUNT],
+                                       float secondaryHigh[FA_S_COUNT], const std::string& filename);
 };
 
 template <typename t>
-void TableLoader::loadTable(int rowsToSkip, int columnsToSkip, int columnsToKeep, std::vector<t>* data,
+void TableLoader::loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t>* data,
                             const std::string& filename) {
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-
     std::string fullPath = SettingReader::instance().getFilePath(filename);
-    std::ifstream inputStream(fullPath.c_str());
-    if (!inputStream.is_open()) {
-        throw std::runtime_error("Cannot open " + fullPath + ": " + strerror(errno));
-    }
-    std::string lineText;
-    int32_t lineNumber = 0;
-    data->clear();
-    while (std::getline(inputStream, lineText)) {
-        boost::trim_right(lineText);
-        if (lineNumber >= rowsToSkip && !lineText.empty()) {
-            tokenizer tok(lineText);
-            tokenizer::iterator i = tok.begin();
-            for (int j = 0; j < columnsToSkip; j++) {
-                ++i;
-            }
-            for (int j = 0; j < columnsToKeep; j++) {
+    try {
+        rapidcsv::Document table(fullPath);
+        data->clear();
+        if (columnsToSkip + columnsToKeep != table.GetColumnCount()) {
+            throw std::runtime_error(fmt::format("CSV {} has {} columns, expected {}", fullPath,
+                                                 table.GetColumnCount(), columnsToSkip + columnsToKeep));
+        }
+        for (size_t row = 0; row < table.GetRowCount(); row++) {
+            for (size_t column = columnsToSkip; column < columnsToSkip + columnsToKeep; column++) {
                 try {
-                    data->push_back(boost::lexical_cast<t>(*i));
-                } catch (boost::bad_lexical_cast& bc) {
-                    throw std::runtime_error("Cannot cast " + filename + ":" + std::to_string(lineNumber) +
-                                             ":" + std::to_string(j + columnsToSkip) + " " + (*i));
+                    data->push_back(table.GetCell<t>(column, row));
+                } catch (std::logic_error& er) {
+                    throw std::runtime_error(fmt::format("{}:{}:{}: cannot parse {}: {}", fullPath, row,
+                                                         column, table.GetCell<std::string>(column, row),
+                                                         er.what()));
                 }
-                ++i;
             }
         }
-        lineNumber++;
+    } catch (std::ios_base::failure& er) {
+        throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
-    inputStream.close();
 }
 
 } /* namespace SS */

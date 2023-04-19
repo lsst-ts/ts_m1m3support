@@ -21,21 +21,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef HARDPOINTACTUATORTABLEROW_H_
-#define HARDPOINTACTUATORTABLEROW_H_
+#ifndef LSST_FORCEACTUATORDATA_H
+#define LSST_FORCEACTUATORDATA_H
 
-#include <DataTypes.h>
+#include <SAL_MTM1M3.h>
 
-struct HardpointActuatorTableRow {
-    int32_t Index;
-    int32_t ActuatorID;
-    double XPosition;
-    double YPosition;
-    double ZPosition;
-    uint8_t Subnet;
-    uint8_t Address;
-    float SensorOffset;
-    float SensorSensitivity;
+#include <cRIO/Singleton.h>
+#include <M1M3SSPublisher.h>
+
+namespace LSST {
+namespace M1M3 {
+namespace SS {
+
+/**
+ * Wrapper object for MTM1M3_forceActuatorData telemetry.
+ */
+class ForceActuatorData : public MTM1M3_forceActuatorDataC, public cRIO::Singleton<ForceActuatorData> {
+public:
+    ForceActuatorData(token) {}
+
+    void send() { M1M3SSPublisher::instance().putForceActuatorData(this); }
 };
 
-#endif /* HARDPOINTACTUATORTABLEROW_H_ */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
+
+#endif  // !LSST_FORCEACTUATORDATA_H

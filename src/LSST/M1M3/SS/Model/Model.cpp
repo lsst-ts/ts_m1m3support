@@ -100,7 +100,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     SettingReader::instance().configure(settingsToApply);
 
-    M1M3SSPublisher::get().reset();
+    M1M3SSPublisher::instance().reset();
 
     SPDLOG_INFO("Model: Loading ILC application settings");
     ILCApplicationSettings* ilcApplicationSettings = SettingReader::instance().loadILCApplicationSettings();
@@ -108,10 +108,10 @@ void Model::loadSettings(std::string settingsToApply) {
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
             SettingReader::instance().getForceActuatorApplicationSettings();
     SPDLOG_INFO("Model: Loading force actuator settings");
-    ForceActuatorSettings* forceActuatorSettings = SettingReader::instance().loadForceActuatorSettings();
+    SettingReader::instance().loadForceActuatorSettings();
     SPDLOG_INFO("Model: Loading hardpoint actuator application settings");
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
-            SettingReader::instance().loadHardpointActuatorApplicationSettings();
+            SettingReader::instance().getHardpointActuatorApplicationSettings();
     SPDLOG_INFO("Model: Loading hardpoint actuator settings");
     HardpointActuatorSettings* hardpointActuatorSettings =
             SettingReader::instance().loadHardpointActuatorSettings();
@@ -128,7 +128,7 @@ void Model::loadSettings(std::string settingsToApply) {
             SettingReader::instance().loadDisplacementSensorSettings();
     SPDLOG_INFO("Model: Loading hardpoint monitor application settings");
     HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
-            SettingReader::instance().loadHardpointMonitorApplicationSettings();
+            SettingReader::instance().getHardpointMonitorApplicationSettings();
     SPDLOG_INFO("Model: Loading gyro settings");
     GyroSettings* gyroSettings = SettingReader::instance().loadGyroSettings();
     SPDLOG_INFO("Model: Loading PID settings");
@@ -136,7 +136,7 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Loading inclinometer settings");
     InclinometerSettings* inclinometerSettings = SettingReader::instance().loadInclinometerSettings();
 
-    _populateForceActuatorInfo(forceActuatorApplicationSettings, forceActuatorSettings);
+    _populateForceActuatorInfo(forceActuatorApplicationSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
                                    positionControllerSettings);
     _populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
@@ -162,13 +162,12 @@ void Model::loadSettings(std::string settingsToApply) {
     delete _ilc;
     SPDLOG_INFO("Model: Creating ILC");
     _ilc = new ILC(_positionController, ilcApplicationSettings, forceActuatorApplicationSettings,
-                   forceActuatorSettings, hardpointActuatorApplicationSettings, hardpointActuatorSettings,
+                   hardpointActuatorApplicationSettings, hardpointActuatorSettings,
                    hardpointMonitorApplicationSettings, _safetyController);
 
     delete _forceController;
     SPDLOG_INFO("Model: Creating force controller");
-    _forceController =
-            new ForceController(forceActuatorApplicationSettings, forceActuatorSettings, pidSettings);
+    _forceController = new ForceController(forceActuatorApplicationSettings, pidSettings);
 
     SPDLOG_INFO("Model: Updating digital input output");
     _digitalInputOutput.setSafetyController(_safetyController);
@@ -201,7 +200,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     // apply disabled FA from setting
     for (int i = 0; i < FA_COUNT; i++) {
-        if (forceActuatorSettings->isActuatorDisabled(i)) {
+        if (ForceActuatorSettings::instance().isActuatorDisabled(i)) {
             _ilc->disableFA(forceActuatorApplicationSettings->ZIndexToActuatorId(i));
         }
     }
@@ -214,32 +213,33 @@ void Model::queryFPGAData() {}
 void Model::publishStateChange(States::Type newState) {
     SPDLOG_DEBUG("Model: publishStateChange({:d})", newState);
     uint64_t state = (uint64_t)newState;
-    double timestamp = M1M3SSPublisher::get().getTimestamp();
-    MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::get().getEventSummaryState();
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
+    MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::instance().getEventSummaryState();
     // summaryStateData->timestamp = timestamp;
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
-    M1M3SSPublisher::get().logSummaryState();
-    MTM1M3_logevent_detailedStateC* detailedStateData = M1M3SSPublisher::get().getEventDetailedState();
+    M1M3SSPublisher::instance().logSummaryState();
+    MTM1M3_logevent_detailedStateC* detailedStateData = M1M3SSPublisher::instance().getEventDetailedState();
     detailedStateData->timestamp = timestamp;
     detailedStateData->detailedState = (int32_t)(state & 0x00000000FFFFFFFF);
-    M1M3SSPublisher::get().logDetailedState();
+    M1M3SSPublisher::instance().logDetailedState();
 }
 
 void Model::publishRecommendedSettings() {
     SPDLOG_DEBUG("Model: publishRecommendedSettings()");
-    MTM1M3_logevent_configurationsAvailableC* data = M1M3SSPublisher::get().getEventConfigurationsAvailable();
+    MTM1M3_logevent_configurationsAvailableC* data =
+            M1M3SSPublisher::instance().getEventConfigurationsAvailable();
     data->overrides = LSST::cRIO::join(SettingReader::instance().getAvailableConfigurations());
     data->version = GIT_HASH;
     data->url = "https://github.com/lsst-ts/ts_m1m3support";
     data->schemaVersion = "v1";
-    M1M3SSPublisher::get().logConfigurationsAvailable();
+    M1M3SSPublisher::instance().logConfigurationsAvailable();
 }
 
 void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
     SPDLOG_TRACE("Model: publishOuterLoop()");
-    MTM1M3_outerLoopDataC* data = M1M3SSPublisher::get().getOuterLoopData();
+    MTM1M3_outerLoopDataC* data = M1M3SSPublisher::instance().getOuterLoopData();
     data->executionTime = executionTime.count() / 1000000000.0;
-    M1M3SSPublisher::get().putOuterLoopData();
+    M1M3SSPublisher::instance().putOuterLoopData();
 }
 
 void Model::exitControl() { _mutex.unlock(); }
@@ -249,10 +249,9 @@ void Model::waitForExitControl() {
     _mutex.unlock();
 }
 
-void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                       ForceActuatorSettings* forceActuatorSettings) {
+void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings) {
     SPDLOG_DEBUG("Model: populateForceActuatorInfo()");
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::get().getEventForceActuatorInfo();
+    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
     for (int i = 0; i < FA_COUNT; i++) {
         ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
         forceInfo->referenceId[i] = row.ActuatorID;
@@ -272,7 +271,7 @@ void Model::_populateHardpointActuatorInfo(
         PositionControllerSettings* positionControllerSettings) {
     SPDLOG_DEBUG("Model: populateHardpointActuatorInfo()");
     MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
-            M1M3SSPublisher::get().getEventHardpointActuatorInfo();
+            M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
         hardpointInfo->referenceId[row.Index] = row.ActuatorID;
@@ -289,7 +288,7 @@ void Model::_populateHardpointMonitorInfo(
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
     SPDLOG_DEBUG("Model: populateHardpointMonitorInfo()");
     MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo =
-            M1M3SSPublisher::get().getEventHardpointMonitorInfo();
+            M1M3SSPublisher::instance().getEventHardpointMonitorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];
         hardpointMonitorInfo->referenceId[row.Index] = row.ActuatorID;

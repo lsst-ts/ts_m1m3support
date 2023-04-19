@@ -32,8 +32,8 @@ PID::PID(int id, PIDParameters parameters) {
     _id = id;
     _initialParameters = parameters;
 
-    _pidInfo = M1M3SSPublisher::get().getEventPIDInfo();
-    _pidData = M1M3SSPublisher::get().getPIDData();
+    _pidInfo = M1M3SSPublisher::instance().getEventPIDInfo();
+    _pidData = M1M3SSPublisher::instance().getPIDData();
     _pidInfo->timestep[_id] = parameters.Timestep;
     _pidInfo->p[_id] = parameters.P;
     _pidInfo->i[_id] = parameters.I;
@@ -96,8 +96,8 @@ double PID::process(double setpoint, double measurement) {
 }
 
 void PID::publishTelemetry() {
-    _pidData->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().putPIDData();
+    _pidData->timestamp = M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().putPIDData();
 }
 
 void PID::_calculateIntermediateValues() {
@@ -115,8 +115,8 @@ void PID::_calculateIntermediateValues() {
 }
 
 void PID::_publishInfo() {
-    _pidInfo->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().logPIDInfo();
+    _pidInfo->timestamp = M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().logPIDInfo();
 }
 
 } /* namespace SS */

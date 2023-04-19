@@ -21,11 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
+
 #include <ILC.h>
 #include <M1M3SSPublisher.h>
 #include <DataTypes.h>
 #include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorData.h>
+#include <ForceActuatorFollowingErrorCounter.h>
+#include <ForceActuatorForceWarning.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <iostream>
 #include <unistd.h>
@@ -35,13 +40,11 @@
 #include <cstring>
 #include <BusList.h>
 #include <SAL_MTM1M3C.h>
-#include <ForceConverter.h>
 #include <spdlog/spdlog.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
 #include <RoundRobin.h>
 #include <PositionController.h>
-#include <cmath>
 
 #define ADDRESS_COUNT 256
 
@@ -49,15 +52,14 @@ using namespace LSST::M1M3::SS;
 
 ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-         ForceActuatorSettings* forceActuatorSettings,
          HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
          HardpointActuatorSettings* hardpointActuatorSettings,
          HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
          SafetyController* safetyController)
-        : _subnetData(forceActuatorApplicationSettings, forceActuatorSettings,
-                      hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
+        : _subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings,
+                      hardpointMonitorApplicationSettings),
           _ilcMessageFactory(ilcApplicationSettings),
-          _responseParser(forceActuatorSettings, hardpointActuatorSettings, &_subnetData, safetyController),
+          _responseParser(hardpointActuatorSettings, &_subnetData, safetyController),
           _busListSetADCChannelOffsetAndSensitivity(&_subnetData, &_ilcMessageFactory),
           _busListSetADCScanRate(&_subnetData, &_ilcMessageFactory),
           _busListSetBoostValveDCAGains(&_subnetData, &_ilcMessageFactory),
@@ -83,11 +85,9 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
     SPDLOG_DEBUG("ILC: ILC()");
     _safetyController = safetyController;
     _hardpointActuatorSettings = hardpointActuatorSettings;
-    _hardpointActuatorData = M1M3SSPublisher::get().getHardpointActuatorData();
+    _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorSettings = forceActuatorSettings;
-    _forceActuatorData = M1M3SSPublisher::get().getForceActuatorData();
-    _hardpointActuatorInfo = M1M3SSPublisher::get().getEventHardpointActuatorInfo();
+    _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     _controlListToggle = 0;
     _positionController = positionController;
 
@@ -249,8 +249,7 @@ void ILC::read(uint8_t subnet) {
     IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
     uint16_t reportedLength = _rxBuffer.readLength();
     if (reportedLength == 0) {
-        SPDLOG_ERROR("ILC: Timeout on response");
-        return;
+        throw std::runtime_error(fmt::format("ILC subnet {}: Timeout on response", subnet));
     }
 
     _rxBuffer.setIndex(0);
@@ -266,6 +265,8 @@ void ILC::readAll() {
     read(3);
     read(4);
     read(5);
+    ForceActuatorForceWarning::instance().send();
+    ForceActuatorFollowingErrorCounter::instance().send();
 }
 
 void ILC::flush(uint8_t subnet) {
@@ -357,7 +358,7 @@ void ILC::calculateHPPostion() {
 }
 
 void ILC::calculateHPMirrorForces() {
-    std::vector<float> m = _forceActuatorSettings->HardpointForceMomentTable;
+    std::vector<float> m = ForceActuatorSettings::instance().HardpointForceMomentTable;
     float* force = _hardpointActuatorData->measuredForce;
     _hardpointActuatorData->fx = m[0] * force[0] + m[1] * force[1] + m[2] * force[2] + m[3] * force[3] +
                                  m[4] * force[4] + m[5] * force[5];
@@ -377,16 +378,16 @@ void ILC::calculateHPMirrorForces() {
 }
 
 void ILC::calculateFAMirrorForces() {
-    ForcesAndMoments fm = ForceConverter::calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _forceActuatorSettings, _forceActuatorData->xForce,
-            _forceActuatorData->yForce, _forceActuatorData->zForce);
-    _forceActuatorData->fx = fm.Fx;
-    _forceActuatorData->fy = fm.Fy;
-    _forceActuatorData->fz = fm.Fz;
-    _forceActuatorData->mx = fm.Mx;
-    _forceActuatorData->my = fm.My;
-    _forceActuatorData->mz = fm.Mz;
-    _forceActuatorData->forceMagnitude = fm.ForceMagnitude;
+    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
+            _forceActuatorApplicationSettings, ForceActuatorData::instance().xForce,
+            ForceActuatorData::instance().yForce, ForceActuatorData::instance().zForce);
+    ForceActuatorData::instance().fx = fm.Fx;
+    ForceActuatorData::instance().fy = fm.Fy;
+    ForceActuatorData::instance().fz = fm.Fz;
+    ForceActuatorData::instance().mx = fm.Mx;
+    ForceActuatorData::instance().my = fm.My;
+    ForceActuatorData::instance().mz = fm.Mz;
+    ForceActuatorData::instance().forceMagnitude = fm.ForceMagnitude;
 }
 
 void ILC::clearResponses() {
@@ -400,37 +401,38 @@ void ILC::verifyResponses() {
 }
 
 void ILC::publishForceActuatorInfo() {
-    M1M3SSPublisher::get().getEventForceActuatorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().logForceActuatorInfo();
+    M1M3SSPublisher::instance().getEventForceActuatorInfo()->timestamp =
+            M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().logForceActuatorInfo();
 }
 
 void ILC::publishForceActuatorStatus() {
-    // M1M3SSPublisher::get().putForceActuatorStatus();
+    // M1M3SSPublisher::instance().putForceActuatorStatus();
 }
 
-void ILC::publishForceActuatorData() { M1M3SSPublisher::get().putForceActuatorData(); }
-
 void ILC::publishHardpointActuatorInfo() {
-    M1M3SSPublisher::get().getEventHardpointActuatorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().logHardpointActuatorInfo();
+    M1M3SSPublisher::instance().getEventHardpointActuatorInfo()->timestamp =
+            M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().logHardpointActuatorInfo();
 }
 
 void ILC::publishHardpointStatus() {
-    // M1M3SSPublisher::get().putHardpointStatus();
+    // M1M3SSPublisher::instance().putHardpointStatus();
 }
 
-void ILC::publishHardpointData() { M1M3SSPublisher::get().putHardpointActuatorData(); }
+void ILC::publishHardpointData() { M1M3SSPublisher::instance().putHardpointActuatorData(); }
 
 void ILC::publishHardpointMonitorInfo() {
-    M1M3SSPublisher::get().getEventHardpointMonitorInfo()->timestamp = M1M3SSPublisher::get().getTimestamp();
-    M1M3SSPublisher::get().logHardpointMonitorInfo();
+    M1M3SSPublisher::instance().getEventHardpointMonitorInfo()->timestamp =
+            M1M3SSPublisher::instance().getTimestamp();
+    M1M3SSPublisher::instance().logHardpointMonitorInfo();
 }
 
 void ILC::publishHardpointMonitorStatus() {
-    // M1M3SSPublisher::get().putHardpointMonitorStatus();
+    // M1M3SSPublisher::instance().putHardpointMonitorStatus();
 }
 
-void ILC::publishHardpointMonitorData() { M1M3SSPublisher::get().putHardpointMonitorData(); }
+void ILC::publishHardpointMonitorData() { M1M3SSPublisher::instance().putHardpointMonitorData(); }
 
 void ILC::disableFA(uint32_t actuatorId) {
     if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
@@ -438,24 +440,24 @@ void ILC::disableFA(uint32_t actuatorId) {
         return;
     }
     _subnetData.disableFA(actuatorId);
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, false);
+    M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabled(actuatorId, false);
     buildBusLists();
 }
 
 void ILC::enableFA(uint32_t actuatorId) {
     _subnetData.enableFA(actuatorId);
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabled(actuatorId, true);
+    M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabled(actuatorId, true);
     buildBusLists();
 }
 
 void ILC::enableAllFA() {
     _subnetData.enableAllFA();
-    M1M3SSPublisher::get().getEnabledForceActuators()->setEnabledAll();
+    M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabledAll();
     buildBusLists();
 }
 
 uint32_t ILC::hasDisabledFarNeighbor(uint32_t actuatorIndex) {
-    for (auto farID : _forceActuatorSettings->Neighbors[actuatorIndex].FarIDs) {
+    for (auto farID : ForceActuatorSettings::instance().Neighbors[actuatorIndex].FarIDs) {
         if (isDisabled(farID)) {
             return farID;
         }

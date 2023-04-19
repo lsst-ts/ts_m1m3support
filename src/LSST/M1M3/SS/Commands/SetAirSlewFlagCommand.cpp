@@ -37,15 +37,15 @@ SetAirSlewFlagCommand::SetAirSlewFlagCommand(int32_t commandID, MTM1M3_command_s
 void SetAirSlewFlagCommand::execute() { Context::get().setAirSlewFlag(this); }
 
 void SetAirSlewFlagCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandsetAirSlewFlag(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void SetAirSlewFlagCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(getCommandID(), ACK_COMPLETE, "Completed");
+    M1M3SSPublisher::instance().ackCommandsetAirSlewFlag(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
 void SetAirSlewFlagCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandsetAirSlewFlag(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandsetAirSlewFlag(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

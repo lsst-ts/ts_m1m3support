@@ -49,7 +49,6 @@ class ILCSubnetData {
 
 public:
     ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                  ForceActuatorSettings* forceActuatorSettings,
                   HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
                   HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 

@@ -36,11 +36,11 @@ RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C*
 }
 
 bool RaiseM1M3Command::validate() {
-    if (M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
-        M1M3SSPublisher::get().logCommandRejectionWarning(
+    if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "RaiseM1M3",
                 fmt::format("Cannot raise M1M3 as bump test for actuator {} is in progress.",
-                            M1M3SSPublisher::get().getEventForceActuatorBumpTestStatus()->actuatorId));
+                            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId));
         return false;
     }
     return Command::validate();
@@ -49,15 +49,15 @@ bool RaiseM1M3Command::validate() {
 void RaiseM1M3Command::execute() { Context::get().raiseM1M3(this); }
 
 void RaiseM1M3Command::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandraiseM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandraiseM1M3(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
 void RaiseM1M3Command::ackComplete() {
-    M1M3SSPublisher::get().ackCommandraiseM1M3(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandraiseM1M3(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void RaiseM1M3Command::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandraiseM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandraiseM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
 
 } /* namespace SS */

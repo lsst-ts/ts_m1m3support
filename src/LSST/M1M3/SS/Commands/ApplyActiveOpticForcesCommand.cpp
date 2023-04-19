@@ -40,15 +40,17 @@ ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
 void ApplyActiveOpticForcesCommand::execute() { Context::get().applyActiveOpticForces(this); }
 
 void ApplyActiveOpticForcesCommand::ackInProgress() {
-    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
+    M1M3SSPublisher::instance().ackCommandapplyActiveOpticForces(getCommandID(), ACK_INPROGRESS,
+                                                                 "In-Progress");
 }
 
 void ApplyActiveOpticForcesCommand::ackComplete() {
-    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(getCommandID(), ACK_COMPLETE, "Complete");
+    M1M3SSPublisher::instance().ackCommandapplyActiveOpticForces(getCommandID(), ACK_COMPLETE, "Complete");
 }
 
 void ApplyActiveOpticForcesCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::get().ackCommandapplyActiveOpticForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
+    M1M3SSPublisher::instance().ackCommandapplyActiveOpticForces(getCommandID(), ACK_FAILED,
+                                                                 "Failed: " + reason);
 }
 
 } /* namespace SS */

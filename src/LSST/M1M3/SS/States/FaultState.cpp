@@ -21,28 +21,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <FaultState.h>
-#include <DigitalInputOutput.h>
-#include <Model.h>
-#include <ILC.h>
-#include <Displacement.h>
-#include <Inclinometer.h>
-#include <PowerController.h>
-#include <SafetyController.h>
-#include <ForceController.h>
-#include <unistd.h>
-#include <M1M3SSPublisher.h>
-#include <ModelPublisher.h>
-#include <Accelerometer.h>
-#include <spdlog/spdlog.h>
-#include <Gyro.h>
-#include <FPGA.h>
-#include <chrono>
 #include <thread>
+#include <unistd.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <spdlog/spdlog.h>
+
+#include <ILC.h>
+#include <FaultState.h>
+#include <ForceActuatorData.h>
+#include <Model.h>
+#include <ModelPublisher.h>
+#include <RaisingLoweringInfo.h>
+
+using namespace LSST::M1M3::SS;
 
 FaultState::FaultState() : State("FaultState") {}
 FaultState::FaultState(std::string name) : State(name) {}
@@ -69,7 +60,7 @@ States::Type FaultState::update(UpdateCommand* command) {
     ilc->calculateFAMirrorForces();
     ilc->verifyResponses();
     ilc->publishForceActuatorStatus();
-    ilc->publishForceActuatorData();
+    ForceActuatorData::instance().send();
     ilc->publishHardpointStatus();
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
@@ -85,11 +76,8 @@ States::Type FaultState::standby(StandbyCommand* command) {
     Model::get().getILC()->readAll();
     Model::get().getILC()->verifyResponses();
     Model::get().getPowerController()->setAllPowerNetworks(false);
-    Model::get().getForceController()->zeroSupportPercentage();
+    RaisingLoweringInfo::instance().zeroSupportPercentage();
     Model::get().getSafetyController()->clearErrorCode();
+    Model::get().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
     return States::StandbyState;
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
