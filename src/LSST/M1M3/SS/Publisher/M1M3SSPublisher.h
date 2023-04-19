@@ -242,6 +242,9 @@ public:
     void logAppliedStaticForces();
     void logAppliedThermalForces();
     void logAppliedVelocityForces();
+    void logBoosterValveSettigns(MTM1M3_logevent_boosterValveSettingsC* data) {
+        _m1m3SAL->logEvent_boosterValveSettings(data, 0);
+    }
     void logBoosterValveStatus(MTM1M3_logevent_boosterValveStatusC* data) {
         _m1m3SAL->logEvent_boosterValveStatus(data, 0);
     }

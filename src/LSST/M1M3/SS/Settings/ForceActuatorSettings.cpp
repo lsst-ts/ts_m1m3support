@@ -27,12 +27,11 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "rapidcsv.h"
-
+#include <BoosterValveSettings.h>
 #include <ForceActuatorSettings.h>
-#include <SettingReader.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
+#include <SettingReader.h>
 #include <TableLoader.h>
 
 using namespace LSST::M1M3::SS;
@@ -69,6 +68,8 @@ void ForceActuatorSettings::load(const std::string &filename) {
             enabledActuators[i] =
                     std::find(disabledIndices.begin(), disabledIndices.end(), faId) == disabledIndices.end();
         }
+
+        BoosterValveSettings::instance().load(doc["BoosterValveControl"]);
 
         TableLoader::loadTable(1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
         TableLoader::loadTable(1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());

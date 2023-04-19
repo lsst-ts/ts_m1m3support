@@ -21,32 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <spdlog/spdlog.h>
+#ifndef LSST_BOOSTERVALVESETTINGS_H
+#define LSST_BOOSTERVALVESETTINGS_H
 
-#include <ActiveState.h>
-#include <BoosterValveController.h>
-#include <ForceController.h>
-#include <Model.h>
-#include <Publisher.h>
-#include <SafetyController.h>
+#include <yaml-cpp/yaml.h>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveState::ActiveState() : EnabledState("ActiveState") {}
+/**
+ * Wrapper object for MTM1M3_logevent_boosterValveSettings event.
+ */
+class BoosterValveSettings : public MTM1M3_logvent_boosterValveSettingsC,
+                             public cRIO::Singleton<BoosterValveSettings> {
+public:
+    BoosterValveSettings(token);
 
-States::Type ActiveState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("ActiveState: update()");
-    sendTelemetry();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
+    void load(YAML::Node node);
 
-States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
-    SPDLOG_INFO("ActiveState: enterEngineering()");
-    return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
-}
+    void log() { M1M3SSPublisher::instance().logBoosterValveSettings(this); }
+};
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
+
+#endif  // !LSST_BOOSTERVALVESETTINGS_H

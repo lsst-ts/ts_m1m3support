@@ -67,6 +67,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedActiveOpticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedOffsetForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedStaticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_boosterValveSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_boosterValveStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
