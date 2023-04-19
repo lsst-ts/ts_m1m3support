@@ -59,3 +59,63 @@ void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data,
         throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
 }
+
+void TableLoader::loadCylinderLimitTable(size_t columnsToSkip, float primaryLow[FA_COUNT],
+                                         float primaryHigh[FA_COUNT], float secondaryLow[FA_S_COUNT],
+                                         float secondaryHigh[FA_S_COUNT], const std::string& filename) {
+    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    try {
+        rapidcsv::Document limitTable(fullPath);
+        if (columnsToSkip + 4 != limitTable.GetColumnCount()) {
+            throw std::runtime_error(fmt::format("CSV {} has {} columns, expected {}", fullPath,
+                                                 limitTable.GetColumnCount(), columnsToSkip + 4));
+        }
+        if (limitTable.GetRowCount() != FA_COUNT) {
+            throw std::runtime_error(fmt::format("CSV {} has {} rows, expected {}", fullPath,
+                                                 limitTable.GetRowCount(), FA_COUNT));
+        }
+        for (size_t row = 0; row < FA_COUNT; row++) {
+            auto id = limitTable.GetCell<int>(0, row);
+            auto expectedId =
+                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(row);
+            if (id != expectedId) {
+                throw std::runtime_error(
+                        fmt::format("CSV {} row {} has incorrect ActuatorID - {}, expected {}", fullPath, row,
+                                    id, expectedId));
+            }
+            primaryLow[row] = limitTable.GetCell<float>(1, row);
+            primaryHigh[row] = limitTable.GetCell<float>(2, row);
+            if (primaryLow[row] >= primaryHigh[row]) {
+                throw std::runtime_error(fmt::format(
+                        "CSV {} row {} - primary limits are in incorrect order, low - high expected, {} - {} "
+                        "configured.",
+                        fullPath, row, primaryLow[row], primaryHigh[row]));
+            }
+
+            auto secIndex = SettingReader::instance()
+                                    .getForceActuatorApplicationSettings()
+                                    ->ZIndexToSecondaryCylinderIndex[row];
+            if (secIndex == -1) {
+                auto secLow = limitTable.GetCell<std::string>(3, row);
+                auto secHigh = limitTable.GetCell<std::string>(4, row);
+                if (secLow != "-" || secHigh != "-") {
+                    throw std::runtime_error(
+                            fmt::format("CSV {} row {} shouldn't specify secondary limits (should be '-'), "
+                                        "yet {} and {} found.",
+                                        fullPath, row, secLow, secHigh));
+                }
+            } else {
+                secondaryLow[secIndex] = limitTable.GetCell<float>(3, row);
+                secondaryHigh[secIndex] = limitTable.GetCell<float>(4, row);
+                if (secondaryLow[secIndex] >= secondaryHigh[secIndex]) {
+                    throw std::runtime_error(
+                            fmt::format("CSV {} row {} - secondary limits are in incorrect order, low - high "
+                                        "expected, {} - {} configured.",
+                                        fullPath, row, secondaryLow[secIndex], secondaryHigh[secIndex]));
+                }
+            }
+        }
+    } catch (std::ios_base::failure& er) {
+        throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
+    }
+}

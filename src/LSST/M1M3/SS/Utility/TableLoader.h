@@ -24,15 +24,16 @@
 #ifndef TABLELOADER_H_
 #define TABLELOADER_H_
 
-#include <Limit.h>
-#include <DataTypes.h>
-#include <SettingReader.h>
 #include <string>
 #include <vector>
 
 #include <spdlog/fmt/fmt.h>
 
 #include <rapidcsv.h>
+
+#include <Limit.h>
+#include <DataTypes.h>
+#include <SettingReader.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -47,6 +48,9 @@ public:
     static void loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t>* data,
                           const std::string& filename);
     static void loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data, const std::string& filename);
+    static void loadCylinderLimitTable(size_t columnsToSkip, float primaryLow[FA_COUNT],
+                                       float primaryHigh[FA_COUNT], float secondaryLow[FA_S_COUNT],
+                                       float secondaryHigh[FA_S_COUNT], const std::string& filename);
 };
 
 template <typename t>

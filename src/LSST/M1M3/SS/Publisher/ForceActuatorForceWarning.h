@@ -35,7 +35,10 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Wrapper object for MTM1M3_logevent_forceActuatorForceWarningC.
+ * Wrapper object for MTM1M3_logevent_forceActuatorForceWarningC. The check
+ * done on forces are done on with actual measured forces. Forces might be
+ * clipped before being applied to the FAs - look on various preclipped events
+ * for the clipping, and
  */
 class ForceActuatorForceWarning : public MTM1M3_logevent_forceActuatorForceWarningC,
                                   public cRIO::Singleton<ForceActuatorForceWarning> {
@@ -50,8 +53,33 @@ public:
 
     void setTimestamp(double globalTimestamp);
 
-    void checkPrimary(int dataIndex, float primaryForce, float primarySetpoint);
-    void checkSecondary(int dataIndex, float secondaryForce, float secondarySetpoint);
+    /**
+     * Check primary force, Check for following error and measured force.
+     * Returns true if the force is out of limit and system shall fault the
+     * mirror.
+     *
+     * @param dataIndex FA index
+     * @param actuatorId FA ID
+     * @param primaryForce force measured on the force actuator
+     * @param primarySetpoint FA setpoint - target force
+     *
+     * @return true if mirror shall fault (measured force exceed allowable limits)
+     */
+    bool checkPrimary(int dataIndex, int actuatorId, float primaryForce, float primarySetpoint);
+
+    /**
+     * Check secondary force. Check for following error and measured force.
+     * Returns true if the force is out of limit and system shall fault the
+     * mirror.
+     *
+     * @param dataIndex FA index
+     * @param actuatorId FA ID
+     * @param secondaryForce force measured on the force actuator
+     * @param secondarySetpoint FA setpoint = target force
+     *
+     * @return true if mirror shall fault (measured force exceed allowable limits)
+     */
+    bool checkSecondary(int dataIndex, int actuatorId, float secondaryForce, float secondarySetpoint);
 
     /**
      * Sends updates through SAL/DDS.
@@ -59,11 +87,13 @@ public:
     void send();
 
 private:
-    void _checkPrimaryMeasuredForce(int dataIndex, float primaryForce);
+    bool _checkPrimaryMeasuredForce(int dataIndex, int actuatorId, float primaryForce);
     void _checkPrimaryFollowingError(int dataIndex, float primaryForce, float primarySetpoint);
 
-    void _checkSecondaryMeasuredForce(int dataIndex, float secondaryForce);
+    bool _checkSecondaryMeasuredForce(int dataIndex, int actuatorId, float secondaryForce);
     void _checkSecondaryFollowingError(int dataIndex, float secondaryForce, float secondarySetpoint);
+
+    float _measuredForceWarningRatio;
 
     bool _shouldSend;
 };

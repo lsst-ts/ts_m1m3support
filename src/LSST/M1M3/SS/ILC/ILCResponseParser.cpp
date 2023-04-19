@@ -894,7 +894,9 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
 
     auto& fafWarning = ForceActuatorForceWarning::instance();
 
-    fafWarning.checkPrimary(dataIndex, primaryForce, primarySetpoint);
+    bool primaryFaulted = fafWarning.checkPrimary(dataIndex, map.ActuatorId, primaryForce, primarySetpoint);
+    _safetyController->forceControllerNotifyMeasuredForceLimit(map.ActuatorId, true, primaryForce,
+                                                               primaryFaulted);
 
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
 
@@ -905,8 +907,10 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
         float secondaryForce = ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex];
         float secondarySetpoint =
                 _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0f;
-        ForceActuatorForceWarning::instance().checkSecondary(secondaryDataIndex, secondaryForce,
-                                                             secondarySetpoint);
+        bool secondaryFaulted = ForceActuatorForceWarning::instance().checkSecondary(
+                secondaryDataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
+        _safetyController->forceControllerNotifyMeasuredForceLimit(map.ActuatorId, false, secondaryForce,
+                                                                   secondaryFaulted);
 
         countingWarning =
                 countingWarning || fafWarning.secondaryAxisFollowingErrorCountingFault[secondaryDataIndex];
