@@ -21,7 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <chrono>
+#include <thread>
+
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
 #include <Accelerometer.h>
+#include <BoosterValveStatus.h>
 #include <Displacement.h>
 #include <DigitalInputOutput.h>
 #include <EnabledState.h>
@@ -40,12 +48,7 @@
 #include <M1M3SSPublisher.h>
 #include <ModelPublisher.h>
 #include <Gyro.h>
-#include <spdlog/spdlog.h>
 #include <FPGA.h>
-#include <SAL_MTM1M3C.h>
-
-#include <chrono>
-#include <thread>
 
 namespace LSST {
 namespace M1M3 {
@@ -66,14 +69,9 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* co
 }
 
 States::Type EnabledState::setAirSlewFlag(SetAirSlewFlagCommand* command) {
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
-            M1M3SSPublisher::instance().getEventForceActuatorState();
-    MTM1M3_outerLoopDataC* outerLoop = M1M3SSPublisher::instance().getOuterLoopData();
     SPDLOG_INFO("EnabledState: setAirSlewFlag to {}", command->slewFlag);
-    forceActuatorState->slewFlag = command->slewFlag;
-    outerLoop->slewFlag = command->slewFlag;
 
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    BoosterValveStatus::instance().setSlewFlag(command->slewFlag);
 
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }

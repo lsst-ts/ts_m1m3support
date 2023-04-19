@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LSST_FORCEACTUATORFOLLOWINGERRORCOUNTER_H
-#define LSST_FORCEACTUATORFOLLOWINGERRORCOUNTER_H
+#ifndef LSST_BOOSTERVALVESTATUS_H
+#define LSST_BOOSTERVALVESTATUS_H
 
 #include <string.h>
 
@@ -35,25 +35,21 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Wrapper object for MTM1M3_logevent_forceActuatorForceWarningC.
+ * Wrapper object for MTM1M3_logevent_boosterValveStatusC.
  */
-class ForceActuatorFollowingErrorCounter : public MTM1M3_logevent_forceActuatorFollowingErrorCounterC,
-                                           public cRIO::Singleton<ForceActuatorFollowingErrorCounter> {
+class BoosterValveStatus : public MTM1M3_logevent_boosterValveStatusC,
+                           public cRIO::Singleton<BoosterValveStatus> {
 public:
-    ForceActuatorFollowingErrorCounter(token);
+    BoosterValveStatus(token);
 
-    void increaseCounter() { counter++; }
-
-    void updatePrimaryCounts(int dataIndex, bool warningTriggered, bool countingTriggered);
-    void updateSecondaryCounts(int dataIndex, bool warningTriggered, bool countingTriggered);
+    void setSlewFlag(bool newSlewFlag);
 
     /**
      * Sends updates through SAL/DDS.
      */
-    void send();
+    void log(bool force = false);
 
 private:
-    long long _lastSendCounter;
     bool _shouldSend;
 };
 
@@ -61,4 +57,4 @@ private:
 }  // namespace M1M3
 }  // namespace LSST
 
-#endif  // LSST_FORCEACTUATORFOLLOWINGERRORCOUNTER_H
+#endif  // LSST_BOOSTERVALVESTATUS_H
