@@ -21,18 +21,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <StandbyState.h>
-#include <ILC.h>
-#include <DigitalInputOutput.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <PowerController.h>
-#include <SettingReader.h>
-#include <Gyro.h>
-
 #include <thread>
 #include <chrono>
 #include <spdlog/spdlog.h>
+
+#include <BoosterValveStatus.h>
+#include <DigitalInputOutput.h>
+#include <Gyro.h>
+#include <ILC.h>
+#include <Model.h>
+#include <PowerController.h>
+#include <SafetyController.h>
+#include <SettingReader.h>
+#include <StandbyState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -138,6 +139,8 @@ States::Type StandbyState::start(StartCommand* command) {
     gyro->setRotationUnitsRadians();
     gyro->exitConfigurationMode();
     gyro->bit();
+    BoosterValveStatus::instance().setSlewFlag(false);
+    BoosterValveStatus::instance().log(true);
     digitalInputOutput->tryToggleHeartbeat();
     return Model::get().getSafetyController()->checkSafety(States::DisabledState);
 }
