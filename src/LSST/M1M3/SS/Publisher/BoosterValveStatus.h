@@ -44,13 +44,14 @@ public:
 
     void setSlewFlag(bool newSlewFlag);
 
+    void setUserTriggered(bool newUserTriggered);
+    void setFollowingErrorTriggered(bool newFollowingErrorTriggered);
+    void setAccelerometerTriggered(bool newAccelerometerTriggered);
+
     /**
      * Sends updates through SAL/DDS.
      */
-    void log(bool force = false);
-
-private:
-    bool _shouldSend;
+    void log();
 };
 
 }  // namespace SS

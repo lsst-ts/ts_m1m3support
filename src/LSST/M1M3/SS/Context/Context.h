@@ -45,7 +45,8 @@
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
-#include <SetAirSlewFlagCommand.h>
+#include <BoosterValveOpenCommand.h>
+#include <BoosterValveCloseCommand.h>
 #include <TestHardpointCommand.h>
 #include <KillHardpointTestCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
@@ -120,7 +121,8 @@ public:
     void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     void enterEngineering(EnterEngineeringCommand* command);
     void exitEngineering(ExitEngineeringCommand* command);
-    void setAirSlewFlag(SetAirSlewFlagCommand* command);
+    void boosterValveOpen(BoosterValveOpenCommand* command);
+    void boosterValveClose(BoosterValveCloseCommand* command);
     void testHardpoint(TestHardpointCommand* command);
     void killHardpointTest(KillHardpointTestCommand* command);
     void moveHardpointActuators(MoveHardpointActuatorsCommand* command);

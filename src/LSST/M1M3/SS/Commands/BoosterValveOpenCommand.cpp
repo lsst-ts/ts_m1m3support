@@ -21,35 +21,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LSST_BOOSTERVALVESETTINGS_H
-#define LSST_BOOSTERVALVESETTINGS_H
-
-#include <yaml-cpp/yaml.h>
-
-#include <SAL_MTM1M3.h>
-
-#include <cRIO/Singleton.h>
+#include <BoosterValveOpenCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-/**
- * Wrapper object for MTM1M3_logevent_boosterValveSettings event.
- */
-class BoosterValveSettings : public MTM1M3_logevent_boosterValveSettingsC,
-                             public cRIO::Singleton<BoosterValveSettings> {
-public:
-    BoosterValveSettings(token);
+BoosterValveOpenCommand::BoosterValveOpenCommand(int32_t commandID, MTM1M3_command_boosterValveOpenC* data)
+        : Command(commandID) {}
 
-    void load(YAML::Node node);
+void BoosterValveOpenCommand::execute() { Context::get().boosterValveOpen(this); }
 
-    void log() { M1M3SSPublisher::instance().logBoosterValveSettings(this); }
-};
+void BoosterValveOpenCommand::ackInProgress() {
+    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_INPROGRESS, "In-Progress");
+}
 
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
+void BoosterValveOpenCommand::ackComplete() {
+    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_COMPLETE, "Completed");
+}
 
-#endif  // !LSST_BOOSTERVALVESETTINGS_H
+void BoosterValveOpenCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_FAILED, "Failed: " + reason);
+}

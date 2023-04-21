@@ -68,14 +68,6 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* co
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledState::setAirSlewFlag(SetAirSlewFlagCommand* command) {
-    SPDLOG_INFO("EnabledState: setAirSlewFlag to {}", command->slewFlag);
-
-    BoosterValveStatus::instance().setSlewFlag(command->slewFlag);
-
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
 void EnabledState::runLoop() {
     SPDLOG_TRACE("EnabledState: runLoop()");
     ILC* ilc = Model::get().getILC();

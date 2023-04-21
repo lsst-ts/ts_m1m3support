@@ -139,8 +139,8 @@ States::Type StandbyState::start(StartCommand* command) {
     gyro->setRotationUnitsRadians();
     gyro->exitConfigurationMode();
     gyro->bit();
-    BoosterValveStatus::instance().setSlewFlag(false);
-    BoosterValveStatus::instance().log(true);
+    BoosterValveStatus::instance().setUserTriggered(false);
+    BoosterValveStatus::instance().log();
     digitalInputOutput->tryToggleHeartbeat();
     return Model::get().getSafetyController()->checkSafety(States::DisabledState);
 }

@@ -21,35 +21,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SETAIRSLEWFLAGCOMMAND_H_
-#define SETAIRSLEWFLAGCOMMAND_H_
+#include <BoosterValveCloseCommand.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+using namespace LSST::M1M3::SS;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+BoosterValveCloseCommand::BoosterValveCloseCommand(int32_t commandID, MTM1M3_command_boosterValveCloseC* data)
+        : Command(commandID) {}
 
-/**
- * Sets slew flag for force actuators. Should be used for testing booster
- * valves - slew flag operates booster valves.
- */
-class SetAirSlewFlagCommand : public Command {
-public:
-    SetAirSlewFlagCommand(int32_t commandID, MTM1M3_command_setAirSlewFlagC*);
+void BoosterValveCloseCommand::execute() { Context::get().boosterValveClose(this); }
 
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+void BoosterValveCloseCommand::ackInProgress() {
+    M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_INPROGRESS, "In-Progress");
+}
 
-    bool slewFlag;
-};
+void BoosterValveCloseCommand::ackComplete() {
+    M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_COMPLETE, "Completed");
+}
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif  // !SETAIRSLEWFLAGCOMMAND_H_
+void BoosterValveCloseCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_FAILED, "Failed: " + reason);
+}

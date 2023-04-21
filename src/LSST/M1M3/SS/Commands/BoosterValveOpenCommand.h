@@ -21,35 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef LSST_BOOSTERVALVESETTINGS_H
-#define LSST_BOOSTERVALVESETTINGS_H
+#ifndef BOOSTERVALVEOPENCOMMAND_H_
+#define BOOSTERVALVEOPENCOMMAND_H_
 
-#include <yaml-cpp/yaml.h>
+#include <SAL_MTM1M3C.h>
 
-#include <SAL_MTM1M3.h>
-
-#include <cRIO/Singleton.h>
-#include <M1M3SSPublisher.h>
+#include <Command.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Wrapper object for MTM1M3_logevent_boosterValveSettings event.
+ * Command system to open booster valves.
  */
-class BoosterValveSettings : public MTM1M3_logevent_boosterValveSettingsC,
-                             public cRIO::Singleton<BoosterValveSettings> {
+class BoosterValveOpenCommand : public Command {
 public:
-    BoosterValveSettings(token);
+    BoosterValveOpenCommand(int32_t commandID, MTM1M3_command_boosterValveOpenC*);
 
-    void load(YAML::Node node);
-
-    void log() { M1M3SSPublisher::instance().logBoosterValveSettings(this); }
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
+} /* namespace SS */
+} /* namespace M1M3 */
+} /* namespace LSST */
 
-#endif  // !LSST_BOOSTERVALVESETTINGS_H
+#endif  // !BOOSTERVALVEOPENCOMMAND_H_

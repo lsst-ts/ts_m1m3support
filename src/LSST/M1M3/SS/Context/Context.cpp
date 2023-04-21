@@ -143,10 +143,16 @@ void Context::exitEngineering(ExitEngineeringCommand* command) {
     _updateCurrentStateIfRequired(state->exitEngineering(command));
 }
 
-void Context::setAirSlewFlag(SetAirSlewFlagCommand* command) {
-    SPDLOG_DEBUG("Context: setAirSlewFlag()");
+void Context::boosterValveOpen(BoosterValveOpenCommand* command) {
+    SPDLOG_DEBUG("Context: boosterValveOpen()");
     State* state = StaticStateFactory::get().create(_currentState);
-    _updateCurrentStateIfRequired(state->setAirSlewFlag(command));
+    _updateCurrentStateIfRequired(state->boosterValveOpen(command));
+}
+
+void Context::boosterValveClose(BoosterValveCloseCommand* command) {
+    SPDLOG_DEBUG("Context: boosterValveClose()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->boosterValveClose(command));
 }
 
 void Context::testHardpoint(TestHardpointCommand* command) {

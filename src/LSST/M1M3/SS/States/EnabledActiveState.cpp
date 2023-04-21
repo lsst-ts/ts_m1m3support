@@ -21,13 +21,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <EnabledActiveState.h>
-#include <Model.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <EnabledActiveState.h>
+#include <Model.h>
+
+using namespace LSST::M1M3::SS;
 
 States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command* command) {
     SPDLOG_INFO("EnabledActiveState: lowerM1M3()");
@@ -61,7 +60,3 @@ States::Type EnabledActiveState::disableHardpointCorrections(DisableHardpointCor
     Model::get().getForceController()->zeroBalanceForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
