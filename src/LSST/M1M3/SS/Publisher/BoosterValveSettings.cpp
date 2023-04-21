@@ -32,7 +32,7 @@ BoosterValveSettings::BoosterValveSettings(token) {
 }
 
 void BoosterValveSettings::load(YAML::Node node) {
-    auto &followingError = node["FollowingError"];
+    auto followingError = node["FollowingError"];
     followingErrorTriggerEnabled = followingError["Enabled"].as<bool>();
     followingErrorTriggerOpen = followingError["Open"].as<float>();
     followingErrorTriggerClose = followingError["Close"].as<float>();

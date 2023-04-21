@@ -46,7 +46,8 @@
 #include <ClearActiveOpticForcesCommand.h>
 #include <EnterEngineeringCommand.h>
 #include <ExitEngineeringCommand.h>
-#include <SetAirSlewFlagCommand.h>
+#include <BoosterValveOpenCommand.h>
+#include <BoosterValveCloseCommand.h>
 #include <TestHardpointCommand.h>
 #include <KillHardpointTestCommand.h>
 #include <MoveHardpointActuatorsCommand.h>
@@ -116,6 +117,8 @@ public:
     virtual States::Type update(UpdateCommand* command) = 0;
     virtual States::Type turnAirOn(TurnAirOnCommand* command);
     virtual States::Type turnAirOff(TurnAirOffCommand* command);
+    virtual States::Type boosterValveOpen(BoosterValveOpenCommand* command);
+    virtual States::Type boosterValveClose(BoosterValveCloseCommand* command);
     virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command);
     virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command);
     virtual States::Type raiseM1M3(RaiseM1M3Command* command);
@@ -124,7 +127,6 @@ public:
     virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     virtual States::Type enterEngineering(EnterEngineeringCommand* command);
     virtual States::Type exitEngineering(ExitEngineeringCommand* command);
-    virtual States::Type setAirSlewFlag(SetAirSlewFlagCommand* command);
     virtual States::Type testHardpoint(TestHardpointCommand* command);
     virtual States::Type killHardpointTest(KillHardpointTestCommand* command);
     virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command);

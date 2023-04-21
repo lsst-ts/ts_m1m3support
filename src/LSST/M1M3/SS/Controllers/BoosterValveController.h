@@ -48,7 +48,7 @@ class BoosterValveController {
 public:
     BoosterValveController();
 
-    void checkFollowingErrors();
+    void checkFollowingErrors(bool engineering);
 };
 
 }  // namespace SS

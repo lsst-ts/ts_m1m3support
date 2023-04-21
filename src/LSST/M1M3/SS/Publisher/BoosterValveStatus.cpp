@@ -28,25 +28,38 @@ using namespace LSST::M1M3::SS;
 
 BoosterValveStatus::BoosterValveStatus(token) {
     slewFlag = false;
-    followingErrorTriggerred = false;
-    accelerometerTriggerred = false;
-
-    _shouldSend = true;
+    userTriggered = false;
+    followingErrorTriggered = false;
+    accelerometerTriggered = false;
 }
 
-void BoosterValveStatus::setSlewFlag(bool newSlewFlag) {
-    if (slewFlag != newSlewFlag) {
+void BoosterValveStatus::setUserTriggered(bool newUserTriggered) {
+    if (userTriggered != newUserTriggered) {
+        SPDLOG_INFO("Observer would like to have booster valves {}", newUserTriggered ? "opened" : "closed");
+        userTriggered = newUserTriggered;
+        log();
+    }
+}
+
+void BoosterValveStatus::setFollowingErrorTriggered(bool newFollowingErrorTriggered) {
+    if (followingErrorTriggered != newFollowingErrorTriggered) {
+        followingErrorTriggered = newFollowingErrorTriggered;
+        log();
+    }
+}
+
+void BoosterValveStatus::setAccelerometerTriggered(bool newAccelerometerTriggered) {
+    if (accelerometerTriggered != newAccelerometerTriggered) {
+        accelerometerTriggered = newAccelerometerTriggered;
+        log();
+    }
+}
+
+void BoosterValveStatus::log() {
+    bool newSlewFlag = userTriggered || followingErrorTriggered || accelerometerTriggered;
+    if (newSlewFlag != slewFlag) {
+        SPDLOG_INFO("Booster valve SlewFlag set to {}", newSlewFlag ? "on" : "off");
         slewFlag = newSlewFlag;
-        log(true);
     }
-}
-
-void BoosterValveStatus::log(bool force) {
-    if (_shouldSend == false && force == false) {
-        return;
-    }
-
     M1M3SSPublisher::instance().logBoosterValveStatus(this);
-
-    _shouldSend = false;
 }
