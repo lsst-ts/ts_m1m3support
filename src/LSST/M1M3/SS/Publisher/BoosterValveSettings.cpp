@@ -29,6 +29,17 @@ BoosterValveSettings::BoosterValveSettings(token) {
     followingErrorTriggerEnabled = false;
     followingErrorTriggerOpen = 50;
     followingErrorTriggerClose = 45;
+
+    accelerometerTriggerEnabled = false;
+
+    accelerometerXTriggerOpen = 1;
+    accelerometerXTriggerClose = 0.9;
+
+    accelerometerYTriggerOpen = 1;
+    accelerometerYTriggerClose = 0.9;
+
+    accelerometerZTriggerOpen = 1;
+    accelerometerZTriggerClose = 0.9;
 }
 
 void BoosterValveSettings::load(YAML::Node node) {

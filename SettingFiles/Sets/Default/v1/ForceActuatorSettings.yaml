@@ -3,6 +3,14 @@ BoosterValveControl:
     Enabled: On
     Open: 50
     Close: 45
+  Accelerometer:
+    Enabled: On
+    OpenX: 2.0
+    CloseX: 1.0
+    OpenY: 2.0
+    CloseY: 1.0
+    OpenZ: 2.0
+    CloseZ: 1.0
 DisabledActuators: []
 AccelerationXTablePath: Tables/AccelerationXTable.csv
 AccelerationYTablePath: Tables/AccelerationYTable.csv

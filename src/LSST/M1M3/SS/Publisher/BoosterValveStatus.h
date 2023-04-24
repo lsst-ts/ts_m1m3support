@@ -48,6 +48,8 @@ public:
     void setFollowingErrorTriggered(bool newFollowingErrorTriggered);
     void setAccelerometerTriggered(bool newAccelerometerTriggered);
 
+    void reset();
+
     /**
      * Sends updates through SAL/DDS.
      */
