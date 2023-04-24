@@ -29,26 +29,17 @@
 #include <SAL_MTM1M3C.h>
 
 #include <Accelerometer.h>
-#include <BoosterValveStatus.h>
-#include <Displacement.h>
-#include <DigitalInputOutput.h>
+#include <BoosterValveController.h>
 #include <EnabledState.h>
 #include <ForceActuatorData.h>
-#include <ForceController.h>
 #include <HardpointActuatorWarning.h>
 #include <ILC.h>
-#include <Inclinometer.h>
 #include <Model.h>
-#include <PositionController.h>
-#include <SafetyController.h>
-#include <PowerController.h>
 #include <TMA.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <M1M3SSPublisher.h>
 #include <ModelPublisher.h>
-#include <Gyro.h>
-#include <FPGA.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -96,6 +87,7 @@ void EnabledState::runLoop() {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
+    BoosterValveController::instance().checkTriggers();
     HardpointActuatorWarning::instance().send();
     M1M3SSPublisher::instance().getEnabledForceActuators()->log();
 }

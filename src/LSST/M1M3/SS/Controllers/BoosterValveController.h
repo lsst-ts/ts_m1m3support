@@ -24,6 +24,8 @@
 #ifndef BOOSTERVALVE_H_
 #define BOOSTERVALVE_H_
 
+#include <cRIO/Singleton.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -44,11 +46,21 @@ namespace SS {
  * will be turn off only if all enabled control (autonomous, user) signal the
  * valve shall be off.
  */
-class BoosterValveController {
+class BoosterValveController : public cRIO::Singleton<BoosterValveController> {
 public:
-    BoosterValveController();
+    BoosterValveController(token);
 
-    void checkFollowingErrors(bool engineering);
+    void checkTriggers();
+
+    void checkFollowingErrors();
+    void checkAccelerometer();
+
+private:
+    void _checkFollowingErrorOpen();
+    void _checkFollowingErrorClose();
+
+    void _checkAccelerometerOpen();
+    void _checkAccelerometerClose();
 };
 
 }  // namespace SS

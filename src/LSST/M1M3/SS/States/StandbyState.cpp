@@ -62,6 +62,8 @@ States::Type StandbyState::start(StartCommand* command) {
     DigitalInputOutput* digitalInputOutput = Model::get().getDigitalInputOutput();
     Gyro* gyro = Model::get().getGyro();
 
+    BoosterValveStatus::instance().reset();
+
     digitalInputOutput->tryToggleHeartbeat();
     std::this_thread::sleep_for(1ms);  // wait for GIS to sense heartbeat
 
@@ -139,8 +141,6 @@ States::Type StandbyState::start(StartCommand* command) {
     gyro->setRotationUnitsRadians();
     gyro->exitConfigurationMode();
     gyro->bit();
-    BoosterValveStatus::instance().setUserTriggered(false);
-    BoosterValveStatus::instance().log();
     digitalInputOutput->tryToggleHeartbeat();
     return Model::get().getSafetyController()->checkSafety(States::DisabledState);
 }

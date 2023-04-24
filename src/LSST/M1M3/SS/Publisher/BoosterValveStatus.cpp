@@ -55,6 +55,14 @@ void BoosterValveStatus::setAccelerometerTriggered(bool newAccelerometerTriggere
     }
 }
 
+void BoosterValveStatus::reset() {
+    slewFlag = false;
+    userTriggered = false;
+    followingErrorTriggered = false;
+    accelerometerTriggered = false;
+    log();
+}
+
 void BoosterValveStatus::log() {
     bool newSlewFlag = userTriggered || followingErrorTriggered || accelerometerTriggered;
     if (newSlewFlag != slewFlag) {
