@@ -55,6 +55,12 @@ States::Type State::turnAirOn(TurnAirOnCommand* command) {
 States::Type State::turnAirOff(TurnAirOffCommand* command) {
     return this->rejectCommandInvalidState(command, "TurnAirOff");
 }
+States::Type State::boosterValveOpen(BoosterValveOpenCommand* command) {
+    return this->rejectCommandInvalidState(command, "BoosterValveOpen");
+}
+States::Type State::boosterValveClose(BoosterValveCloseCommand* command) {
+    return this->rejectCommandInvalidState(command, "BoosterValveClose");
+}
 States::Type State::applyOffsetForces(ApplyOffsetForcesCommand* command) {
     return this->rejectCommandInvalidState(command, "ApplyOffsetForces");
 }
@@ -78,9 +84,6 @@ States::Type State::enterEngineering(EnterEngineeringCommand* command) {
 }
 States::Type State::exitEngineering(ExitEngineeringCommand* command) {
     return this->rejectCommandInvalidState(command, "ExitEngineering");
-}
-States::Type State::setAirSlewFlag(SetAirSlewFlagCommand* command) {
-    return this->rejectCommandInvalidState(command, "SetAirSlewFlag");
 }
 States::Type State::testHardpoint(TestHardpointCommand* command) {
     return this->rejectCommandInvalidState(command, "TestHardpoint");

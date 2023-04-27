@@ -21,35 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SETAIRSLEWFLAGCOMMAND_H_
-#define SETAIRSLEWFLAGCOMMAND_H_
+#ifndef LSST_BOOSTERVALVESETTINGS_H
+#define LSST_BOOSTERVALVESETTINGS_H
 
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <yaml-cpp/yaml.h>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Sets slew flag for force actuators. Should be used for testing booster
- * valves - slew flag operates booster valves.
+ * Wrapper object for MTM1M3_logevent_boosterValveSettings event.
  */
-class SetAirSlewFlagCommand : public Command {
+class BoosterValveSettings : public MTM1M3_logevent_boosterValveSettingsC,
+                             public cRIO::Singleton<BoosterValveSettings> {
 public:
-    SetAirSlewFlagCommand(int32_t commandID, MTM1M3_command_setAirSlewFlagC*);
+    BoosterValveSettings(token);
 
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+    void load(YAML::Node node);
 
-    bool slewFlag;
+    void log() { M1M3SSPublisher::instance().logBoosterValveSettings(this); }
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif  // !SETAIRSLEWFLAGCOMMAND_H_
+#endif  // !LSST_BOOSTERVALVESETTINGS_H

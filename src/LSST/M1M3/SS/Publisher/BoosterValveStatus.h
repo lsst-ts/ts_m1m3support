@@ -21,32 +21,43 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <spdlog/spdlog.h>
+#ifndef LSST_BOOSTERVALVESTATUS_H
+#define LSST_BOOSTERVALVESTATUS_H
 
-#include <ActiveState.h>
-#include <BoosterValveController.h>
-#include <ForceController.h>
-#include <Model.h>
-#include <Publisher.h>
-#include <SafetyController.h>
+#include <string.h>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveState::ActiveState() : EnabledState("ActiveState") {}
+/**
+ * Wrapper object for MTM1M3_logevent_boosterValveStatusC.
+ */
+class BoosterValveStatus : public MTM1M3_logevent_boosterValveStatusC,
+                           public cRIO::Singleton<BoosterValveStatus> {
+public:
+    BoosterValveStatus(token);
 
-States::Type ActiveState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("ActiveState: update()");
-    sendTelemetry();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
+    void setSlewFlag(bool newSlewFlag);
 
-States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
-    SPDLOG_INFO("ActiveState: enterEngineering()");
-    return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
-}
+    void setUserTriggered(bool newUserTriggered);
+    void setFollowingErrorTriggered(bool newFollowingErrorTriggered);
+    void setAccelerometerTriggered(bool newAccelerometerTriggered);
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+    void reset();
+
+    /**
+     * Sends updates through SAL/DDS.
+     */
+    void log();
+};
+
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
+
+#endif  // LSST_BOOSTERVALVESTATUS_H

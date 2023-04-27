@@ -21,38 +21,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+#include <unistd.h>
+
 #include <ActiveEngineeringState.h>
-#include <Model.h>
-#include <ILC.h>
-#include <Displacement.h>
-#include <Inclinometer.h>
-#include <ForceController.h>
-#include <ApplyOffsetForcesCommand.h>
 #include <ApplyActiveOpticForcesCommand.h>
+#include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <ApplyOffsetForcesCommand.h>
+#include <BoosterValveStatus.h>
 #include <ClearActiveOpticForcesCommand.h>
-#include <SafetyController.h>
 #include <DigitalInputOutput.h>
-#include <TMAAzimuthSampleCommand.h>
-#include <TMAElevationSampleCommand.h>
+#include <Displacement.h>
+#include <ForceController.h>
+#include <ILC.h>
+#include <Inclinometer.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <MoveHardpointActuatorsCommand.h>
-#include <TranslateM1M3Command.h>
+#include <PIDParameters.h>
 #include <PositionController.h>
 #include <PositionM1M3Command.h>
-#include <M1M3SSPublisher.h>
 #include <PowerController.h>
+#include <ResetPIDCommand.h>
+#include <RunMirrorForceProfileCommand.h>
+#include <SafetyController.h>
+#include <TMAAzimuthSampleCommand.h>
+#include <TMAElevationSampleCommand.h>
+#include <TranslateM1M3Command.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
-#include <ApplyOffsetForcesByMirrorForceCommand.h>
-#include <RunMirrorForceProfileCommand.h>
-#include <PIDParameters.h>
 #include <UpdatePIDCommand.h>
-#include <ResetPIDCommand.h>
-#include <unistd.h>
-#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ActiveEngineeringState::ActiveEngineeringState() : EnabledState("ActiveEngineeringState") {}
 
@@ -73,7 +73,13 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     Model::get().getDigitalInputOutput()->turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     Model::get().getPowerController()->setAllPowerNetworks(true);
+    BoosterValveStatus::instance().setUserTriggered(false);
     return Model::get().getSafetyController()->checkSafety(States::ActiveState);
+}
+
+States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command) {
+    BoosterValveStatus::instance().setUserTriggered(false);
+    return EnabledActiveState::lowerM1M3(command);
 }
 
 States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command) {
@@ -123,7 +129,3 @@ States::Type ActiveEngineeringState::resetPID(ResetPIDCommand* command) {
     Model::get().getForceController()->resetPID(command->getData()->pid);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

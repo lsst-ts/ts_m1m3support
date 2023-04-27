@@ -21,25 +21,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cstring>
+
+#include <spdlog/spdlog.h>
+
 #include <Accelerometer.h>
 #include <AccelerometerSettings.h>
 #include <Conversion.h>
 #include <IFPGA.h>
-#include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
+#include <SupportFPGAData.h>
 #include <Timestamp.h>
-#include <SAL_MTM1M3C.h>
-#include <spdlog/spdlog.h>
-
-#include <cstring>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Accelerometer::Accelerometer(AccelerometerSettings* accelerometerSettings) {
+Accelerometer::Accelerometer() {
     SPDLOG_DEBUG("Accelerometer: Accelerometer()");
-    _accelerometerSettings = accelerometerSettings;
 
     _accelerometerData = M1M3SSPublisher::instance().getAccelerometerData();
     _accelerometerWarning = M1M3SSPublisher::instance().getEventAccelerometerWarning();
@@ -54,24 +53,27 @@ void Accelerometer::processData() {
     SPDLOG_TRACE("Accelerometer: processData()");
     SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     _accelerometerData->timestamp = Timestamp::fromFPGA(fpgaData->AccelerometerSampleTimestamp);
+
+    auto& accelerometerSettings = AccelerometerSettings::instance();
+
     for (int i = 0; i < 8; i++) {
         _accelerometerData->rawAccelerometer[i] = fpgaData->AccelerometerRaw[i];
         _accelerometerData->accelerometer[i] =
-                G2M_S_2(((_accelerometerData->rawAccelerometer[i] - _accelerometerSettings->bias[i]) *
-                         _accelerometerSettings->sensitivity[i]) *
-                                _accelerometerSettings->scalar[i] +
-                        _accelerometerSettings->accelerometerOffset[i]);
+                G2M_S_2(((_accelerometerData->rawAccelerometer[i] - accelerometerSettings.bias[i]) *
+                         accelerometerSettings.sensitivity[i]) *
+                                accelerometerSettings.scalar[i] +
+                        accelerometerSettings.accelerometerOffset[i]);
     }
     _accelerometerData->angularAccelerationX =
             (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
-            _accelerometerSettings->angularAccelerationDistance[0];
+            accelerometerSettings.angularAccelerationDistance[0];
     _accelerometerData->angularAccelerationY =
             (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
-            _accelerometerSettings->angularAccelerationDistance[1];
+            accelerometerSettings.angularAccelerationDistance[1];
     _accelerometerData->angularAccelerationZ =
             (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
              _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
-            (_accelerometerSettings->angularAccelerationDistance[2] * 2);
+            (accelerometerSettings.angularAccelerationDistance[2] * 2);
     M1M3SSPublisher::instance().putAccelerometerData();
 }
 

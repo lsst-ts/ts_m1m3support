@@ -48,6 +48,8 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandPanic());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnAirOn());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnAirOff());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandBoosterValveOpen());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandBoosterValveClose());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyOffsetForces());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearOffsetForces());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandRaiseM1M3());
@@ -56,7 +58,6 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearActiveOpticForces());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnterEngineering());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandExitEngineering());
-        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandSetAirSlewFlag());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTestHardpoint());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandKillHardpointTest());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandMoveHardpointActuators());
