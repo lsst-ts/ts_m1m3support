@@ -32,6 +32,7 @@
 #include <SAL_MTMountC.h>
 
 #include <AirSupplyStatus.h>
+#include <AccelerometerSettings.h>
 #include <CRC.h>
 #include <FPGAAddresses.h>
 #include <M1M3SSPublisher.h>
@@ -148,8 +149,13 @@ void SimulatedFPGA::pullTelemetry() {
     supportFPGAData.DisplacementRaw8 = (int32_t)(getRndPM1() + 80) * 1000.0;
     supportFPGAData.AccelerometerSampleCount++;
     supportFPGAData.AccelerometerSampleTimestamp = timestamp;
+
+    auto& accelerometerSettings = AccelerometerSettings::instance();
     for (int i = 0; i < 8; i++) {
-        supportFPGAData.AccelerometerRaw[i] = getRndPM1() * 0.01;
+        supportFPGAData.AccelerometerRaw[i] =
+                (getRndPM1() * 0.001 - accelerometerSettings.accelerometerOffset[i]) /
+                        (accelerometerSettings.sensitivity[i] * accelerometerSettings.scalar[i]) +
+                accelerometerSettings.bias[i];
     }
     supportFPGAData.GyroTxBytes = 0;
     supportFPGAData.GyroRxBytes = 0;

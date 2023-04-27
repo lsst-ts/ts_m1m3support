@@ -21,32 +21,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <spdlog/spdlog.h>
+#ifndef BOOSTERVALVECLOSECOMMAND_H_
+#define BOOSTERVALVECLOSECOMMAND_H_
 
-#include <ActiveState.h>
-#include <BoosterValveController.h>
-#include <ForceController.h>
-#include <Model.h>
-#include <Publisher.h>
-#include <SafetyController.h>
+#include <SAL_MTM1M3C.h>
+
+#include <Command.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ActiveState::ActiveState() : EnabledState("ActiveState") {}
+/**
+ * Sets slew flag for force actuators. Should be used for testing booster
+ * valves - slew flag operates booster valves.
+ */
+class BoosterValveCloseCommand : public Command {
+public:
+    BoosterValveCloseCommand(int32_t commandID, MTM1M3_command_boosterValveCloseC*);
 
-States::Type ActiveState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("ActiveState: update()");
-    sendTelemetry();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
-    SPDLOG_INFO("ActiveState: enterEngineering()");
-    return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
-}
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif  // !BOOSTERVALVECLOSECOMMAND_H_

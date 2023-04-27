@@ -41,7 +41,6 @@ public:
 
     States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) override;
     States::Type storeTMAElevationSample(TMAElevationSampleCommand* command) override;
-    States::Type setAirSlewFlag(SetAirSlewFlagCommand* command) override;
 
 protected:
     /**

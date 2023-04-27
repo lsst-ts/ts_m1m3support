@@ -242,6 +242,12 @@ public:
     void logAppliedStaticForces();
     void logAppliedThermalForces();
     void logAppliedVelocityForces();
+    void logBoosterValveSettings(MTM1M3_logevent_boosterValveSettingsC* data) {
+        _m1m3SAL->logEvent_boosterValveSettings(data, 0);
+    }
+    void logBoosterValveStatus(MTM1M3_logevent_boosterValveStatusC* data) {
+        _m1m3SAL->logEvent_boosterValveStatus(data, 0);
+    }
     void logCellLightStatus();
     void tryLogCellLightStatus();
     void logCellLightWarning();
@@ -385,7 +391,8 @@ public:
     void ackCommandclearActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenterEngineering(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandsetAirSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandboosterValveOpen(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandboosterValveClose(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandtestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandkillHardpointTest(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandmoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);

@@ -72,6 +72,8 @@ public:
     Command* tryAcceptCommandPanic();
     Command* tryAcceptCommandTurnAirOn();
     Command* tryAcceptCommandTurnAirOff();
+    Command* tryAcceptCommandBoosterValveOpen();
+    Command* tryAcceptCommandBoosterValveClose();
     Command* tryAcceptCommandApplyOffsetForces();
     Command* tryAcceptCommandClearOffsetForces();
     Command* tryAcceptCommandRaiseM1M3();
@@ -80,7 +82,6 @@ public:
     Command* tryAcceptCommandClearActiveOpticForces();
     Command* tryAcceptCommandEnterEngineering();
     Command* tryAcceptCommandExitEngineering();
-    Command* tryAcceptCommandSetAirSlewFlag();
     Command* tryAcceptCommandTestHardpoint();
     Command* tryAcceptCommandKillHardpointTest();
     Command* tryAcceptCommandMoveHardpointActuators();
@@ -131,7 +132,8 @@ private:
     MTM1M3_command_clearActiveOpticForcesC _clearActiveOpticForcesData;
     MTM1M3_command_enterEngineeringC _enterEngineeringData;
     MTM1M3_command_exitEngineeringC _exitEngineeringData;
-    MTM1M3_command_setAirSlewFlagC _setAirSlewFlagData;
+    MTM1M3_command_boosterValveOpenC _boosterValveOpenData;
+    MTM1M3_command_boosterValveCloseC _boosterValveCloseData;
     MTM1M3_command_testHardpointC _testHardpointData;
     MTM1M3_command_killHardpointTestC _killHardpointTestData;
     MTM1M3_command_moveHardpointActuatorsC _moveHardpointActuatorsData;

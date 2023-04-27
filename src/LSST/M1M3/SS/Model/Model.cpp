@@ -122,7 +122,7 @@ void Model::loadSettings(std::string settingsToApply) {
     PositionControllerSettings* positionControllerSettings =
             SettingReader::instance().loadPositionControllerSettings();
     SPDLOG_INFO("Model: Loading accelerometer settings");
-    AccelerometerSettings* accelerometerSettings = SettingReader::instance().loadAccelerometerSettings();
+    SettingReader::instance().loadAccelerometerSettings();
     SPDLOG_INFO("Model: Loading displacement settings");
     DisplacementSensorSettings* displacementSensorSettings =
             SettingReader::instance().loadDisplacementSensorSettings();
@@ -174,7 +174,7 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _accelerometer;
     SPDLOG_INFO("Model: Creating accelerometer");
-    _accelerometer = new Accelerometer(accelerometerSettings);
+    _accelerometer = new Accelerometer();
 
     delete _powerController;
     SPDLOG_INFO("Model: Creating power controller");

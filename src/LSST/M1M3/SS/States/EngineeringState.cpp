@@ -21,27 +21,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <EngineeringState.h>
-#include <Model.h>
-#include <DigitalInputOutput.h>
-#include <PositionController.h>
-#include <ForceController.h>
-#include <PowerController.h>
-#include <MoveHardpointActuatorsCommand.h>
-#include <EnableHardpointChaseCommand.h>
-#include <DisableHardpointChaseCommand.h>
-#include <ApplyOffsetForcesCommand.h>
-#include <ApplyOffsetForcesByMirrorForceCommand.h>
-#include <TurnPowerOnCommand.h>
-#include <TurnPowerOffCommand.h>
-#include <SafetyController.h>
-#include <M1M3SSPublisher.h>
-#include <ILC.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <ApplyOffsetForcesCommand.h>
+#include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <BoosterValveStatus.h>
+#include <DigitalInputOutput.h>
+#include <DisableHardpointChaseCommand.h>
+#include <EnableHardpointChaseCommand.h>
+#include <EngineeringState.h>
+#include <ForceController.h>
+#include <ILC.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <MoveHardpointActuatorsCommand.h>
+#include <PositionController.h>
+#include <PowerController.h>
+#include <SafetyController.h>
+#include <TurnPowerOnCommand.h>
+#include <TurnPowerOffCommand.h>
+
+using namespace LSST::M1M3::SS;
 
 States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command) {
     SPDLOG_INFO("{}: turnAirOn()", this->name);
@@ -52,6 +52,18 @@ States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command) {
 States::Type EngineeringState::turnAirOff(TurnAirOffCommand* command) {
     SPDLOG_INFO("{}: turnAirOff()", this->name);
     Model::get().getDigitalInputOutput()->turnAirOff();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EngineeringState::boosterValveOpen(BoosterValveOpenCommand* command) {
+    SPDLOG_INFO("{}: boosterValveOpen", name);
+    BoosterValveStatus::instance().setUserTriggered(true);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EngineeringState::boosterValveClose(BoosterValveCloseCommand* command) {
+    SPDLOG_INFO("{}: boosterValveClose", name);
+    BoosterValveStatus::instance().setUserTriggered(false);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -199,7 +211,3 @@ States::Type EngineeringState::enableAllForceActuators(EnableAllForceActuatorsCo
     Model::get().getILC()->enableAllFA();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

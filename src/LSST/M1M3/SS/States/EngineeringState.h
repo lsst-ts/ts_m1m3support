@@ -38,6 +38,8 @@ class EngineeringState : public virtual EnabledState {
 public:
     virtual States::Type turnAirOn(TurnAirOnCommand* command) override;
     virtual States::Type turnAirOff(TurnAirOffCommand* command) override;
+    virtual States::Type boosterValveOpen(BoosterValveOpenCommand* command) override;
+    virtual States::Type boosterValveClose(BoosterValveCloseCommand* command) override;
     virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command) override;
     virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command) override;
     virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command) override;

@@ -21,29 +21,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ParkedEngineeringState.h>
-#include <Model.h>
-#include <Displacement.h>
-#include <Inclinometer.h>
-#include <ILC.h>
+#include <spdlog/spdlog.h>
 #include <unistd.h>
-#include <ForceController.h>
+
 #include <ApplyOffsetForcesCommand.h>
-#include <SafetyController.h>
-#include <PositionController.h>
-#include <MoveHardpointActuatorsCommand.h>
-#include <EnableHardpointChaseCommand.h>
-#include <DisableHardpointChaseCommand.h>
+#include <BoosterValveStatus.h>
 #include <DigitalInputOutput.h>
+#include <DisableHardpointChaseCommand.h>
+#include <Displacement.h>
+#include <EnableHardpointChaseCommand.h>
+#include <ForceController.h>
+#include <ILC.h>
+#include <Inclinometer.h>
+#include <Model.h>
+#include <MoveHardpointActuatorsCommand.h>
+#include <ParkedEngineeringState.h>
+#include <PositionController.h>
 #include <PowerController.h>
+#include <RaiseM1M3Command.h>
+#include <SafetyController.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
-#include <RaiseM1M3Command.h>
-#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ParkedEngineeringState::ParkedEngineeringState() : EnabledState("ParkedEngineeringState") {}
 
@@ -63,6 +63,7 @@ States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
 
     Model::get().getBumpTestController()->stopAll(true);
     Model::get().getHardpointTestController()->killHardpointTest(-1);
+    BoosterValveStatus::instance().setUserTriggered(false);
 
     Model::get().getMirrorRaiseController()->start(command->getData()->bypassReferencePosition);
     return Model::get().getSafetyController()->checkSafety(States::RaisingEngineeringState);
@@ -81,6 +82,7 @@ States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* com
     Model::get().getDigitalInputOutput()->turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     Model::get().getPowerController()->setAllPowerNetworks(true);
+    BoosterValveStatus::instance().setUserTriggered(false);
     return Model::get().getSafetyController()->checkSafety(States::ParkedState);
 }
 
@@ -123,7 +125,3 @@ States::Type ParkedEngineeringState::killHardpointTest(KillHardpointTestCommand*
     Model::get().getHardpointTestController()->killHardpointTest(command->getData()->hardpointActuator - 1);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

@@ -21,33 +21,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <BoosterValveCloseCommand.h>
 #include <Context.h>
-#include <SetAirSlewFlagCommand.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-SetAirSlewFlagCommand::SetAirSlewFlagCommand(int32_t commandID, MTM1M3_command_setAirSlewFlagC* data)
-        : Command(commandID) {
-    slewFlag = data->slewFlag;
+BoosterValveCloseCommand::BoosterValveCloseCommand(int32_t commandID, MTM1M3_command_boosterValveCloseC* data)
+        : Command(commandID) {}
+
+void BoosterValveCloseCommand::execute() { Context::get().boosterValveClose(this); }
+
+void BoosterValveCloseCommand::ackInProgress() {
+    M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
-void SetAirSlewFlagCommand::execute() { Context::get().setAirSlewFlag(this); }
-
-void SetAirSlewFlagCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandsetAirSlewFlag(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void BoosterValveCloseCommand::ackComplete() {
+    M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
-void SetAirSlewFlagCommand::ackComplete() {
-    M1M3SSPublisher::instance().ackCommandsetAirSlewFlag(getCommandID(), ACK_COMPLETE, "Completed");
+void BoosterValveCloseCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-void SetAirSlewFlagCommand::ackFailed(std::string reason) {
-    M1M3SSPublisher::instance().ackCommandsetAirSlewFlag(getCommandID(), ACK_FAILED, "Failed: " + reason);
-}
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

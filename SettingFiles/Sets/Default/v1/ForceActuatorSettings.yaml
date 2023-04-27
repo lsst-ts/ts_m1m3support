@@ -1,3 +1,16 @@
+BoosterValveControl:
+  FollowingError:
+    Enabled: On
+    Open: 50
+    Close: 45
+  Accelerometer:
+    Enabled: On
+    OpenX: 0.2
+    CloseX: 0.15
+    OpenY: 0.2
+    CloseY: 0.15
+    OpenZ: 0.2
+    CloseZ: 0.15
 DisabledActuators: []
 AccelerationXTablePath: Tables/AccelerationXTable.csv
 AccelerationYTablePath: Tables/AccelerationYTable.csv

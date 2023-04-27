@@ -21,18 +21,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <StandbyState.h>
-#include <ILC.h>
-#include <DigitalInputOutput.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <PowerController.h>
-#include <SettingReader.h>
-#include <Gyro.h>
-
 #include <thread>
 #include <chrono>
 #include <spdlog/spdlog.h>
+
+#include <BoosterValveStatus.h>
+#include <DigitalInputOutput.h>
+#include <Gyro.h>
+#include <ILC.h>
+#include <Model.h>
+#include <PowerController.h>
+#include <SafetyController.h>
+#include <SettingReader.h>
+#include <StandbyState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -60,6 +61,8 @@ States::Type StandbyState::start(StartCommand* command) {
     ILC* ilc = Model::get().getILC();
     DigitalInputOutput* digitalInputOutput = Model::get().getDigitalInputOutput();
     Gyro* gyro = Model::get().getGyro();
+
+    BoosterValveStatus::instance().reset();
 
     digitalInputOutput->tryToggleHeartbeat();
     std::this_thread::sleep_for(1ms);  // wait for GIS to sense heartbeat

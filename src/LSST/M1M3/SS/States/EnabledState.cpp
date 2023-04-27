@@ -21,31 +21,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <chrono>
+#include <thread>
+
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
 #include <Accelerometer.h>
-#include <Displacement.h>
-#include <DigitalInputOutput.h>
+#include <BoosterValveController.h>
 #include <EnabledState.h>
 #include <ForceActuatorData.h>
-#include <ForceController.h>
 #include <HardpointActuatorWarning.h>
 #include <ILC.h>
-#include <Inclinometer.h>
 #include <Model.h>
-#include <PositionController.h>
-#include <SafetyController.h>
-#include <PowerController.h>
 #include <TMA.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <M1M3SSPublisher.h>
 #include <ModelPublisher.h>
-#include <Gyro.h>
-#include <spdlog/spdlog.h>
-#include <FPGA.h>
-#include <SAL_MTM1M3C.h>
-
-#include <chrono>
-#include <thread>
 
 namespace LSST {
 namespace M1M3 {
@@ -62,19 +56,6 @@ States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* comman
 States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAElevationSample()");
     TMA::instance().updateTMAElevation(command->getData());
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type EnabledState::setAirSlewFlag(SetAirSlewFlagCommand* command) {
-    MTM1M3_logevent_forceActuatorStateC* forceActuatorState =
-            M1M3SSPublisher::instance().getEventForceActuatorState();
-    MTM1M3_outerLoopDataC* outerLoop = M1M3SSPublisher::instance().getOuterLoopData();
-    SPDLOG_INFO("EnabledState: setAirSlewFlag to {}", command->slewFlag);
-    forceActuatorState->slewFlag = command->slewFlag;
-    outerLoop->slewFlag = command->slewFlag;
-
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
-
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -106,6 +87,7 @@ void EnabledState::runLoop() {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
+    BoosterValveController::instance().checkTriggers();
     HardpointActuatorWarning::instance().send();
     M1M3SSPublisher::instance().getEnabledForceActuators()->log();
 }

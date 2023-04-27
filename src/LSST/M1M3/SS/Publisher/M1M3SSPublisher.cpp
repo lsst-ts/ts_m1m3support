@@ -22,6 +22,7 @@
  */
 #include <spdlog/spdlog.h>
 
+#include <BoosterValveStatus.h>
 #include <M1M3SSPublisher.h>
 
 extern const char* VERSION;
@@ -66,6 +67,8 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedActiveOpticForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedOffsetForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedStaticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_boosterValveSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_boosterValveStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_cellLightStatus");
@@ -125,7 +128,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
 }
 
 void M1M3SSPublisher::reset() {
-    getOuterLoopData()->slewFlag = false;
+    BoosterValveStatus::instance().setUserTriggered(false);
 
     // as all comparision uses != for change detection, this will make the expression true and so updates will
     // be send
@@ -472,8 +475,7 @@ void M1M3SSPublisher::logForceActuatorState() {
 }
 
 void M1M3SSPublisher::tryLogForceActuatorState() {
-    bool changeDetected = _eventForceActuatorState.slewFlag != _previousEventForceActuatorState.slewFlag ||
-                          _eventForceActuatorState.staticForcesApplied !=
+    bool changeDetected = _eventForceActuatorState.staticForcesApplied !=
                                   _previousEventForceActuatorState.staticForcesApplied ||
                           _eventForceActuatorState.elevationForcesApplied !=
                                   _previousEventForceActuatorState.elevationForcesApplied ||
@@ -1468,7 +1470,8 @@ ACK_COMMAND(applyActiveOpticForces)
 ACK_COMMAND(clearActiveOpticForces)
 ACK_COMMAND(enterEngineering)
 ACK_COMMAND(exitEngineering)
-ACK_COMMAND(setAirSlewFlag)
+ACK_COMMAND(boosterValveOpen)
+ACK_COMMAND(boosterValveClose)
 ACK_COMMAND(testHardpoint)
 ACK_COMMAND(killHardpointTest)
 ACK_COMMAND(moveHardpointActuators)

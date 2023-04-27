@@ -52,6 +52,7 @@ public:
      */
     void send();
 
+private:
     long long _lastSendCounter;
     bool _shouldSend;
 };

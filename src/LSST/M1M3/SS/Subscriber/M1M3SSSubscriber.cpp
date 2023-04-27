@@ -58,7 +58,8 @@
 #include <StandbyCommand.h>
 #include <StartCommand.h>
 #include <StopHardpointMotionCommand.h>
-#include <SetAirSlewFlagCommand.h>
+#include <BoosterValveOpenCommand.h>
+#include <BoosterValveCloseCommand.h>
 #include <TestHardpointCommand.h>
 #include <TranslateM1M3Command.h>
 #include <TurnAirOnCommand.h>
@@ -96,6 +97,8 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_panic");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOn");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOff");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_boosterValveOpen");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_boosterValveClose");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearOffsetForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_raiseM1M3");
@@ -104,7 +107,6 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitEngineering");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setAirSlewFlag");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_testHardpoint");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_killHardpointTest");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_moveHardpointActuators");
@@ -198,7 +200,9 @@ COMMAND(ClearActiveOpticForces, clearActiveOpticForces)
 COMMAND(EnterEngineering, enterEngineering)
 COMMAND(ExitEngineering, exitEngineering)
 
-COMMAND(SetAirSlewFlag, setAirSlewFlag)
+COMMAND(BoosterValveOpen, boosterValveOpen)
+COMMAND(BoosterValveClose, boosterValveClose)
+
 COMMAND(TestHardpoint, testHardpoint)
 COMMAND(KillHardpointTest, killHardpointTest)
 

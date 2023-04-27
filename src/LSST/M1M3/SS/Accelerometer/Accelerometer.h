@@ -24,10 +24,7 @@
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 
-#include <AccelerometerSettings.h>
-
-struct MTM1M3_accelerometerDataC;
-struct MTM1M3_logevent_accelerometerWarningC;
+#include <SAL_MTM1M3.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,9 +37,8 @@ class Accelerometer {
 public:
     /*!
      * Instantiates the accelerometer.
-     * @param[in] accelerometerSettings The accelerometer settings.
      */
-    Accelerometer(AccelerometerSettings* accelerometerSettings);
+    Accelerometer();
 
     /*!
      * Processes currently available accelerometer data and publish it.
@@ -50,8 +46,6 @@ public:
     void processData();
 
 private:
-    AccelerometerSettings* _accelerometerSettings;
-
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_logevent_accelerometerWarningC* _accelerometerWarning;
 };

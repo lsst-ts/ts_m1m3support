@@ -21,32 +21,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <spdlog/spdlog.h>
+#include <BoosterValveOpenCommand.h>
+#include <Context.h>
+#include <M1M3SSPublisher.h>
 
-#include <ActiveState.h>
-#include <BoosterValveController.h>
-#include <ForceController.h>
-#include <Model.h>
-#include <Publisher.h>
-#include <SafetyController.h>
+using namespace LSST::M1M3::SS;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+BoosterValveOpenCommand::BoosterValveOpenCommand(int32_t commandID, MTM1M3_command_boosterValveOpenC* data)
+        : Command(commandID) {}
 
-ActiveState::ActiveState() : EnabledState("ActiveState") {}
+void BoosterValveOpenCommand::execute() { Context::get().boosterValveOpen(this); }
 
-States::Type ActiveState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("ActiveState: update()");
-    sendTelemetry();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+void BoosterValveOpenCommand::ackInProgress() {
+    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_INPROGRESS, "In-Progress");
 }
 
-States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
-    SPDLOG_INFO("ActiveState: enterEngineering()");
-    return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
+void BoosterValveOpenCommand::ackComplete() {
+    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_COMPLETE, "Completed");
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+void BoosterValveOpenCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_FAILED, "Failed: " + reason);
+}

@@ -22,6 +22,7 @@
  */
 
 #include <ActiveBusList.h>
+#include <BoosterValveStatus.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
 #include <M1M3SSPublisher.h>
@@ -44,6 +45,8 @@ ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
 void ActiveBusList::buildBuffer() {
     BusList::buildBuffer();
     SPDLOG_DEBUG("ActiveBusList: buildBuffer()");
+
+    bool slewFlag = BoosterValveStatus::instance().slewFlag;
 
     _lvdtSampleClock = 0;
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
@@ -78,8 +81,7 @@ void ActiveBusList::buildBuffer() {
                 }
             }
             this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
-                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
-                                                          daaSecondary);
+                                                          slewFlag, saaPrimary, daaPrimary, daaSecondary);
             this->buffer.writeTimestamp();
             for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
                 uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
@@ -146,6 +148,9 @@ void ActiveBusList::buildBuffer() {
 
 void ActiveBusList::update() {
     _outerLoopData->broadcastCounter = RoundRobin::BroadcastCounter(_outerLoopData->broadcastCounter);
+
+    bool slewFlag = BoosterValveStatus::instance().slewFlag;
+
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         if (this->subnetData->getFACount(subnetIndex) > 0) {
             int32_t saaPrimary[16];
@@ -171,8 +176,7 @@ void ActiveBusList::update() {
             }
             this->buffer.setIndex(_setForceCommandIndex[subnetIndex]);
             this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
-                                                          _outerLoopData->slewFlag, saaPrimary, daaPrimary,
-                                                          daaSecondary);
+                                                          slewFlag, saaPrimary, daaPrimary, daaSecondary);
 
             int32_t statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;
