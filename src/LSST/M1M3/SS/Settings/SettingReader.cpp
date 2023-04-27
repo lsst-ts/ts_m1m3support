@@ -26,10 +26,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <ForceActuatorSettings.h>
-#include <SettingReader.h>
 #include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
+
+#include <ForceActuatorSettings.h>
+#include <AccelerometerSettings.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -145,10 +147,9 @@ PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
     return &_positionControllerSettings;
 }
 
-AccelerometerSettings* SettingReader::loadAccelerometerSettings() {
+void SettingReader::loadAccelerometerSettings() {
     SPDLOG_DEBUG("SettingReader: loadAccelerometerSettings()");
-    _accelerometerSettings.load(_getSetPath("AccelerometerSettings.yaml"));
-    return &_accelerometerSettings;
+    AccelerometerSettings::instance().load(_getSetPath("AccelerometerSettings.yaml"));
 }
 
 DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
