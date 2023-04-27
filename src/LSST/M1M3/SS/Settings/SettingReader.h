@@ -37,7 +37,6 @@
 #include <ILCApplicationSettings.h>
 #include <RecommendedApplicationSettings.h>
 #include <PositionControllerSettings.h>
-#include <AccelerometerSettings.h>
 #include <DisplacementSensorSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <GyroSettings.h>
@@ -103,7 +102,7 @@ public:
     SafetyControllerSettings* loadSafetyControllerSettings();
     SafetyControllerSettings* getSafetyControllerSettings() { return &_safetyControllerSettings; }
     PositionControllerSettings* loadPositionControllerSettings();
-    AccelerometerSettings* loadAccelerometerSettings();
+    void loadAccelerometerSettings();
     DisplacementSensorSettings* loadDisplacementSensorSettings();
     GyroSettings* loadGyroSettings();
     ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
@@ -125,7 +124,6 @@ private:
     RecommendedApplicationSettings _recommendedApplicationSettings;
     SafetyControllerSettings _safetyControllerSettings;
     PositionControllerSettings _positionControllerSettings;
-    AccelerometerSettings _accelerometerSettings;
     DisplacementSensorSettings _displacementSensorSettings;
     HardpointMonitorApplicationSettings _hardpointMonitorApplicationSettings;
     GyroSettings _gyroSettings;

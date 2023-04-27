@@ -21,11 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <AccelerometerSettings.h>
 #include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
 
+#include <AccelerometerSettings.h>
+
 using namespace LSST::M1M3::SS;
+
+AccelerometerSettings::AccelerometerSettings(token) {
+    memset(angularAccelerationDistance, 0, sizeof(angularAccelerationDistance));
+    memset(bias, 0, sizeof(bias));
+    memset(sensitivity, 0, sizeof(sensitivity));
+    memset(accelerometerOffset, 0, sizeof(accelerometerOffset));
+    memset(scalar, 0, sizeof(scalar));
+}
 
 void AccelerometerSettings::load(const std::string &filename) {
     try {

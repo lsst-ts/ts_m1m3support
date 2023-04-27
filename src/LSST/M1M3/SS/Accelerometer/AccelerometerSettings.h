@@ -24,17 +24,23 @@
 #ifndef ACCELEROMETERSETTINGS_H_
 #define ACCELEROMETERSETTINGS_H_
 
-#include <SAL_MTM1M3.h>
-#include <M1M3SSPublisher.h>
-
 #include <string>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class AccelerometerSettings : public MTM1M3_logevent_accelerometerSettingsC {
+class AccelerometerSettings : public MTM1M3_logevent_accelerometerSettingsC,
+                              public cRIO::Singleton<AccelerometerSettings> {
 public:
+    AccelerometerSettings(token);
+
     void load(const std::string &filename);
 
     void log() { M1M3SSPublisher::instance().logAccelerometerSettings(this); }
