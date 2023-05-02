@@ -564,9 +564,15 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                     }
 
                     auto fillHPStatus = [address, function, &response, this](int steps) {
-                        _writeModbus(response, address);              // Write Address
-                        _writeModbus(response, function);             // Write Function
-                        _writeModbus(response, _broadCastCounter());  // Write ILC Status
+                        int index = address - 1;
+                        _writeModbus(response, address);   // Write Address
+                        _writeModbus(response, function);  // Write Function
+                        uint8_t status =
+                                (_hardpointActuatorData->encoder[index] < _HPEncoderLow[index] ? 0x08
+                                                                                               : 0x00) |
+                                (_hardpointActuatorData->encoder[index] > _HPEncoderHigh[index] ? 0x04
+                                                                                                : 0x00);
+                        _writeModbus(response, _broadCastCounter() | status);  // Write ILC Status
                         // Number of steps issued / 4 + current encoder
                         // The encoder is also inverted after being received to match axis direction
                         // So we have to also invert the encoder here to counteract that
@@ -576,10 +582,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             steps = -4;
                         }
                         int32_t encoder =
-                                -(M1M3SSPublisher::instance().getHardpointActuatorData()->encoder[address -
-                                                                                                  1]) +
+                                -(M1M3SSPublisher::instance().getHardpointActuatorData()->encoder[index]) +
                                 SettingReader::instance().getHardpointActuatorSettings()->getEncoderOffset(
-                                        address - 1) -
+                                        index) -
                                 steps / 4;
                         _writeModbus32(response, encoder);               // Write Encoder
                         _writeModbusFloat(response, getRndPM1() * 8.0);  // Write Measured Force
