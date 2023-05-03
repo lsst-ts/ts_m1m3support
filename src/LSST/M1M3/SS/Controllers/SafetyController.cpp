@@ -265,8 +265,17 @@ void SafetyController::interlockNotifyCabinetDoorOpen(bool conditionFlag) {
 }
 
 void SafetyController::interlockNotifyTMAMotionStop(bool conditionFlag) {
+    // this is needed to break circular dependency; so CSC can transition to
+    // Disabled state, then M1M3 Critical Support System Failure interlock can
+    // be reset on Pils, so the TMA Motion Stop interlock will release, and
+    // startup sequence can continue
+    bool triggerFault = true;
+    if (conditionFlag && M1M3SSPublisher::instance().getEventSummaryState()->summaryState ==
+                                 MTM1M3::MTM1M3_shared_SummaryStates_DisabledState) {
+        triggerFault = false;
+    }
     _updateOverride(FaultCodes::InterlockTMAMotionStop,
-                    _safetyControllerSettings->Interlock.FaultOnTMAMotionStop, conditionFlag,
+                    _safetyControllerSettings->Interlock.FaultOnTMAMotionStop && triggerFault, conditionFlag,
                     "Interlock TMA Motion Stop");
 }
 
