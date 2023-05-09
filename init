@@ -22,7 +22,7 @@ test -r /etc/default/rcS && . /etc/default/rcS
 
 # Source devices, export all variables
 set -a
-. /etc/default/ts-M1M3support
+. /etc/default/M1M3support
 set +a
 
 startdaemon(){
