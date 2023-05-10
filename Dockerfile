@@ -25,7 +25,7 @@ RUN source ~/.crio_setup.sh && cd repos/ts_sal \
     && git fetch && git checkout develop && git pull
 
 RUN source ~/.crio_setup.sh && cd $TS_XML_DIR \
-    && git fetch && git checkout $XML_BRANCH && git pull \
+    && git fetch && git checkout $XML_BRANCH \
     && salgenerator generate cpp MTM1M3 \
     && salgenerator generate cpp MTMount
 
