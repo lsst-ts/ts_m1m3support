@@ -42,7 +42,7 @@ ForceActuatorPressure::ForceActuatorPressure() {
 
 void ForceActuatorPressure::parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, int32_t primaryIndex,
                                                                int32_t secondaryIndex) {
-    timestamps[primaryIndex] = M1M3SSPublisher::get().getTimestamp();
+    timestamps[primaryIndex] = M1M3SSPublisher::instance().getTimestamp();
     primaryCylinderPushPressures[primaryIndex] = buffer->readSGL();
     primaryCylinderPullPressures[primaryIndex] = buffer->readSGL();
     if (secondaryIndex >= 0) {

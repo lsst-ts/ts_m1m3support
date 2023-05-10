@@ -35,7 +35,6 @@
 #include <cRIO/FPGACliApp.h>
 #include <cRIO/ElectromechanicalPneumaticILC.h>
 
-#include <CliApp.hpp>
 #include <iostream>
 #include <iomanip>
 

@@ -7,6 +7,7 @@ all: compile
 TEST_SRCS := $(shell ls test_*.cpp 2>/dev/null)
 BINARIES := $(patsubst %.cpp,%,$(TEST_SRCS))
 DEPS := $(patsubst %.cpp,%.cpp.d,$(TEST_SRCS))
+OBJS := $(patsubst %.cpp,%.cpp.o,$(TEST_SRCS))
 JUNIT_FILES := $(shell ls *.xml 2>/dev/null)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -55,7 +56,7 @@ junit: compile
 	@$(foreach b,$(BINARIES),echo '[JUT] ${b}'; ./${b} -r junit -o ${b}.xml;)
 
 clean:
-	@$(foreach df,$(BINARIES) $(DEPS) $(JUNIT_FILES),echo '[RM ] ${df}'; $(RM) ${df};)
+	@$(foreach df,$(BINARIES) $(DEPS) $(OBJS) $(JUNIT_FILES),echo '[RM ] ${df}'; $(RM) ${df};)
 
 ../src/libM1M3SS.a: FORCE
 	@$(MAKE) -C ../src libM1M3SS.a SIMULATOR=1

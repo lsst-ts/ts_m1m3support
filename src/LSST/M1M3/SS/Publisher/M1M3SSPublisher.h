@@ -70,7 +70,7 @@ public:
      * @see putAccelerometerData
      */
     MTM1M3_accelerometerDataC* getAccelerometerData() { return &_accelerometerData; }
-    static ForceActuatorPressure* getForceActuatorPressure() { return &(get()._forceActuatorPressure); }
+    static ForceActuatorPressure* getForceActuatorPressure() { return &(instance()._forceActuatorPressure); }
     MTM1M3_gyroDataC* getGyroData() { return &_gyroData; }
     MTM1M3_hardpointActuatorDataC* getHardpointActuatorData() { return &_hardpointActuatorData; }
     MTM1M3_hardpointMonitorDataC* getHardpointMonitorData() { return &_hardpointMonitorData; }

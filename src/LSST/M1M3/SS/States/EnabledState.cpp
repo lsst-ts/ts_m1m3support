@@ -102,7 +102,7 @@ void EnabledState::runLoop() {
     ilc->verifyResponses();
     ilc->publishForceActuatorStatus();
     ForceActuatorData::instance().send();
-    M1M3SSPublisher::get().putForceActuatorPressure();
+    M1M3SSPublisher::instance().putForceActuatorPressure();
     ilc->publishHardpointStatus();
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
