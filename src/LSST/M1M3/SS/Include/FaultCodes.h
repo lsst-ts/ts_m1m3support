@@ -100,7 +100,9 @@ struct FaultCodes {
         ForceControllerOffsetForceClipping = _MASK_FORCE_CONTROLLER | 0x10,
         ForceControllerVelocityForceClipping = _MASK_FORCE_CONTROLLER | 0x11,
         ForceControllerForceClipping = _MASK_FORCE_CONTROLLER | 0x12,
-        ForceControllerMeasuredForceLimit = _MASK_FORCE_CONTROLLER | 0x13,
+        ForceControllerMeasuredXForceLimit = _MASK_FORCE_CONTROLLER | 0x13,
+        ForceControllerMeasuredYForceLimit = _MASK_FORCE_CONTROLLER | 0x14,
+        ForceControllerMeasuredZForceLimit = _MASK_FORCE_CONTROLLER | 0x15,
         CellLightOutputMismatch = _MASK_CELL_LIGHT | 0x01,  // 6106
         CellLightSensorMismatch = _MASK_CELL_LIGHT | 0x02,
         PowerControllerPowerNetworkAOutputMismatch = _MASK_POWER_CONTROLLER | 0x01,  // 6107
