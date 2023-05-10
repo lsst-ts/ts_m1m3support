@@ -41,79 +41,46 @@ void ForceActuatorForceWarning::reset() {
     timestamp = 0;
     anyWarning = false;
     anyFault = false;
-    anyPrimaryAxisMeasuredForceWarning = false;
     anyPrimaryAxisFollowingErrorWarning = false;
     anyPrimaryAxisFollowingErrorCountingFault = false;
     anyPrimaryAxisFollowingErrorImmediateFault = false;
 
     for (int i = 0; i < FA_COUNT; i++) {
-        primaryAxisMeasuredForceWarning[i] = false;
         primaryAxisFollowingErrorWarning[i] = false;
         primaryAxisFollowingErrorCountingFault[i] = false;
         primaryAxisFollowingErrorImmediateFault[i] = false;
     }
 
-    anySecondaryAxisMeasuredForceWarning = false;
     anySecondaryAxisFollowingErrorWarning = false;
     anySecondaryAxisFollowingErrorCountingFault = false;
     anySecondaryAxisFollowingErrorImmediateFault = false;
 
     for (int i = 0; i < FA_S_COUNT; i++) {
-        secondaryAxisMeasuredForceWarning[i] = false;
         secondaryAxisFollowingErrorWarning[i] = false;
         secondaryAxisFollowingErrorCountingFault[i] = false;
         secondaryAxisFollowingErrorImmediateFault[i] = false;
+    }
+
+    anyMeasuredZForceWarning = false;
+    for (int i = 0; i < FA_Z_COUNT; i++) {
+        measuredZForceWarning[i] = false;
+    }
+
+    anyMeasuredYForceWarning = false;
+    for (int i = 0; i < FA_Y_COUNT; i++) {
+        measuredYForceWarning[i] = false;
+    }
+
+    anyMeasuredXForceWarning = false;
+    for (int i = 0; i < FA_X_COUNT; i++) {
+        measuredXForceWarning[i] = false;
     }
 }
 
 void ForceActuatorForceWarning::setTimestamp(double globalTimestamp) { timestamp = globalTimestamp; }
 
-bool ForceActuatorForceWarning::checkPrimary(int dataIndex, int actuatorId, float primaryForce,
+void ForceActuatorForceWarning::checkPrimary(int dataIndex, int actuatorId, float primaryForce,
                                              float primarySetpoint) {
-    _checkPrimaryFollowingError(dataIndex, primaryForce, primarySetpoint);
-    return _checkPrimaryMeasuredForce(dataIndex, actuatorId, primaryForce);
-}
-
-bool ForceActuatorForceWarning::checkSecondary(int dataIndex, int actuatorId, float secondaryForce,
-                                               float secondarySetpoint) {
-    _checkSecondaryFollowingError(dataIndex, secondaryForce, secondarySetpoint);
-    return _checkSecondaryMeasuredForce(dataIndex, actuatorId, secondaryForce);
-}
-
-bool ForceActuatorForceWarning::_checkPrimaryMeasuredForce(int dataIndex, int actuatorId,
-                                                           float primaryForce) {
-    float primaryLowLimit = ForceActuatorSettings::instance().primaryCylinderMeasuredForceLowLimit[dataIndex];
-    float primaryHighLimit =
-            ForceActuatorSettings::instance().primaryCylinderMeasuredForceHighLimit[dataIndex];
-
-    if (primaryForce < primaryLowLimit || primaryForce > primaryHighLimit) {
-        return true;
-    }
-
-    auto primaryLowWarning = primaryLowLimit * _measuredForceWarningRatio;
-    auto primaryHighWarning = primaryHighLimit * _measuredForceWarningRatio;
-
-    bool primaryLimitWarning = primaryForce < primaryLowWarning || primaryForce > primaryHighWarning;
-    if (primaryLimitWarning != primaryAxisMeasuredForceWarning[dataIndex]) {
-        if (primaryLimitWarning) {
-            anyWarning = true;
-            anyPrimaryAxisMeasuredForceWarning = true;
-            SPDLOG_WARN(
-                    "Primary measured force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
-                    "{:.1f} N",
-                    actuatorId, primaryForce, primaryLowWarning, primaryHighWarning);
-        } else {
-            SPDLOG_INFO("Primary measured force for actuator {} in limits", actuatorId);
-        }
-        primaryAxisMeasuredForceWarning[dataIndex] = primaryLimitWarning;
-        _shouldSend = true;
-    }
-
-    return false;
-}
-
-void ForceActuatorForceWarning::_checkPrimaryFollowingError(int dataIndex, float primaryForce,
-                                                            float primarySetpoint) {
     float followingError = primaryForce - primarySetpoint;
     ForceActuatorData::instance().primaryCylinderFollowingError[dataIndex] = followingError;
 
@@ -161,42 +128,8 @@ void ForceActuatorForceWarning::_checkPrimaryFollowingError(int dataIndex, float
                                                                        countingTriggered);
 }
 
-bool ForceActuatorForceWarning::_checkSecondaryMeasuredForce(int dataIndex, int actuatorId,
-                                                             float secondaryForce) {
-    float secondaryLowLimit =
-            ForceActuatorSettings::instance().secondaryCylinderMeasuredForceLowLimit[dataIndex];
-    float secondaryHighLimit =
-            ForceActuatorSettings::instance().secondaryCylinderMeasuredForceHighLimit[dataIndex];
-
-    if (secondaryForce < secondaryLowLimit || secondaryForce > secondaryHighLimit) {
-        return true;
-    }
-
-    auto secondaryLowWarning = secondaryLowLimit * _measuredForceWarningRatio;
-    auto secondaryHighWarning = secondaryHighLimit * _measuredForceWarningRatio;
-
-    bool secondaryLimitWarning =
-            secondaryForce < secondaryLowWarning || secondaryForce > secondaryHighWarning;
-    if (secondaryLimitWarning != secondaryAxisMeasuredForceWarning[dataIndex]) {
-        if (secondaryLimitWarning) {
-            anyWarning = true;
-            anySecondaryAxisMeasuredForceWarning = true;
-            SPDLOG_WARN(
-                    "Secondary measured force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
-                    "{:.1f} N",
-                    actuatorId, secondaryForce, secondaryLowWarning, secondaryHighWarning);
-        } else {
-            SPDLOG_INFO("Primary measured force for actuator {} in limits", actuatorId);
-        }
-    }
-    secondaryAxisMeasuredForceWarning[dataIndex] = secondaryLimitWarning;
-    _shouldSend = true;
-
-    return false;
-}
-
-void ForceActuatorForceWarning::_checkSecondaryFollowingError(int dataIndex, float secondaryForce,
-                                                              float secondarySetpoint) {
+void ForceActuatorForceWarning::checkSecondary(int dataIndex, int actuatorId, float secondaryForce,
+                                               float secondarySetpoint) {
     float followingError = secondaryForce - secondarySetpoint;
     ForceActuatorData::instance().secondaryCylinderFollowingError[dataIndex] = followingError;
 
@@ -244,11 +177,101 @@ void ForceActuatorForceWarning::_checkSecondaryFollowingError(int dataIndex, flo
                                                                          countingTriggered);
 }
 
+bool ForceActuatorForceWarning::checkXMeasuredForce(int xIndex, int actuatorId, float xForce) {
+    float xLowLimit = ForceActuatorSettings::instance().measuredXForceLowLimit[xIndex];
+    float xHighLimit = ForceActuatorSettings::instance().measuredXForceHighLimit[xIndex];
+
+    if (xForce < xLowLimit || xForce > xHighLimit) {
+        return true;
+    }
+
+    auto xLowWarning = xLowLimit * _measuredForceWarningRatio;
+    auto xHighWarning = xHighLimit * _measuredForceWarningRatio;
+
+    bool xLimitWarning = xForce < xLowWarning || xForce > xHighWarning;
+    if (xLimitWarning != measuredXForceWarning[xIndex]) {
+        if (xLimitWarning) {
+            anyWarning = true;
+            anyMeasuredXForceWarning = true;
+            SPDLOG_WARN(
+                    "Measured X force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
+                    "{:.1f} N",
+                    actuatorId, xForce, xLowWarning, xHighWarning);
+        } else {
+            SPDLOG_INFO("Measured X force for actuator {} in limits", actuatorId);
+        }
+        measuredXForceWarning[xIndex] = xLimitWarning;
+        _shouldSend = true;
+    }
+
+    return false;
+}
+
+bool ForceActuatorForceWarning::checkYMeasuredForce(int yIndex, int actuatorId, float yForce) {
+    float yLowLimit = ForceActuatorSettings::instance().measuredYForceLowLimit[yIndex];
+    float yHighLimit = ForceActuatorSettings::instance().measuredYForceHighLimit[yIndex];
+
+    if (yForce < yLowLimit || yForce > yHighLimit) {
+        return true;
+    }
+
+    auto yLowWarning = yLowLimit * _measuredForceWarningRatio;
+    auto yHighWarning = yHighLimit * _measuredForceWarningRatio;
+
+    bool yLimitWarning = yForce < yLowWarning || yForce > yHighWarning;
+    if (yLimitWarning != measuredYForceWarning[yIndex]) {
+        if (yLimitWarning) {
+            anyWarning = true;
+            anyMeasuredYForceWarning = true;
+            SPDLOG_WARN(
+                    "Measured Y force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
+                    "{:.1f} N",
+                    actuatorId, yForce, yLowWarning, yHighWarning);
+        } else {
+            SPDLOG_INFO("Measured Y force for actuator {} in limits", actuatorId);
+        }
+        measuredYForceWarning[yIndex] = yLimitWarning;
+        _shouldSend = true;
+    }
+
+    return false;
+}
+
+bool ForceActuatorForceWarning::checkZMeasuredForce(int zIndex, int actuatorId, float zForce) {
+    float zLowLimit = ForceActuatorSettings::instance().measuredZForceLowLimit[zIndex];
+    float zHighLimit = ForceActuatorSettings::instance().measuredZForceHighLimit[zIndex];
+
+    if (zForce < zLowLimit || zForce > zHighLimit) {
+        return true;
+    }
+
+    auto zLowWarning = zLowLimit * _measuredForceWarningRatio;
+    auto zHighWarning = zHighLimit * _measuredForceWarningRatio;
+
+    bool zLimitWarning = zForce < zLowWarning || zForce > zHighWarning;
+    if (zLimitWarning != measuredZForceWarning[zIndex]) {
+        if (zLimitWarning) {
+            anyWarning = true;
+            anyMeasuredZForceWarning = true;
+            SPDLOG_WARN(
+                    "Measured Z force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
+                    "{:.1f} N",
+                    actuatorId, zForce, zLowWarning, zHighWarning);
+        } else {
+            SPDLOG_INFO("Measured Z force for actuator {} in limits", actuatorId);
+        }
+        measuredZForceWarning[zIndex] = zLimitWarning;
+        _shouldSend = true;
+    }
+
+    return false;
+}
+
 void ForceActuatorForceWarning::send() {
     if (_shouldSend == false) {
         return;
     }
-    anyWarning = anyPrimaryAxisMeasuredForceWarning || anySecondaryAxisMeasuredForceWarning ||
+    anyWarning = anyMeasuredZForceWarning || anyMeasuredYForceWarning || anyMeasuredXForceWarning ||
                  anyPrimaryAxisFollowingErrorWarning || anySecondaryAxisFollowingErrorWarning;
     anyFault = anyPrimaryAxisFollowingErrorCountingFault || anySecondaryAxisFollowingErrorCountingFault ||
                anyPrimaryAxisFollowingErrorImmediateFault || anySecondaryAxisFollowingErrorImmediateFault;

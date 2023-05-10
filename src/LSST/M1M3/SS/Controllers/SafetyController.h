@@ -24,13 +24,15 @@
 #ifndef SAFETYCONTROLLER_H_
 #define SAFETYCONTROLLER_H_
 
+#include <list>
+
 #include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
 
 #include <FaultCodes.h>
 #include <StateTypes.h>
 #include <SafetyControllerSettings.h>
-#include <SAL_MTM1M3C.h>
-#include <list>
 
 namespace LSST {
 namespace M1M3 {
@@ -105,8 +107,9 @@ public:
     void forceControllerNotifyOffsetForceClipping(bool conditionFlag);
     void forceControllerNotifyVelocityForceClipping(bool conditionFlag);
     void forceControllerNotifyForceClipping(bool conditionFlag);
-    void forceControllerNotifyMeasuredForceLimit(int actuatorId, bool primary, float measuredForce,
-                                                 bool conditionFlag);
+    void forceControllerNotifyMeasuredXForceLimit(int actuatorId, float xForce, bool conditionFlag);
+    void forceControllerNotifyMeasuredYForceLimit(int actuatorId, float yForce, bool conditionFlag);
+    void forceControllerNotifyMeasuredZForceLimit(int actuatorId, float zForce, bool conditionFlag);
 
     void positionControllerNotifyLimitLow(int hp, bool conditionFlag);
     void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
