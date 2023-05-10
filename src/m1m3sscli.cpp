@@ -20,6 +20,17 @@
  * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
+#include <iomanip>
+
+#include <spdlog/async.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+#include <cRIO/FPGACliApp.h>
+#include <cRIO/ElectromechanicalPneumaticILC.h>
+#include <cRIO/PrintILC.h>
+
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
 #define FPGAClass SimulatedFPGA
@@ -32,19 +43,9 @@
 #include <FPGAAddresses.h>
 #include <ForceActuatorApplicationSettings.h>
 
-#include <cRIO/FPGACliApp.h>
-#include <cRIO/ElectromechanicalPneumaticILC.h>
-#include <cRIO/PrintILC.h>
-
-#include <iostream>
-#include <iomanip>
-
-#include <spdlog/async.h>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
+using namespace LSST::M1M3::SS::FPGAAddresses;
 
 #define MAX_FORCE 50
 
@@ -53,12 +54,15 @@ public:
     M1M3SScli(const char* name, const char* description);
     int setPower(command_vec cmds);
     int setAir(command_vec cmds);
+    int setLights(command_vec cmds);
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
 
 protected:
     virtual LSST::cRIO::FPGA* newFPGA(const char* dir) override;
     virtual ILCUnits getILCs(command_vec cmds) override;
+
+    void _printSupportData();
 };
 
 class PrintElectromechanical : public ElectromechanicalPneumaticILC, public PrintILC {
@@ -100,6 +104,9 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
 
     addCommand("air", std::bind(&M1M3SScli::setAir, this, std::placeholders::_1), "b", NEED_FPGA, "<0|1>",
                "Turns air valve off/on");
+
+    addCommand("lights", std::bind(&M1M3SScli::setLights, this, std::placeholders::_1), "b", NEED_FPGA,
+               "<0|1>", "Turns lights off/on");
 
     addILCCommand(
             "calibration",
@@ -166,13 +173,30 @@ int M1M3SScli::setPower(command_vec cmds) {
                        FPGAAddresses::DCPowerNetworkAOn,    net, FPGAAddresses::DCPowerNetworkBOn,    net,
                        FPGAAddresses::DCPowerNetworkCOn,    net, FPGAAddresses::DCPowerNetworkDOn,    net};
     getFPGA()->writeCommandFIFO(pa, 16, 0);
+
+    _printSupportData();
     return 0;
 }
 
 int M1M3SScli::setAir(command_vec cmds) {
-    uint16_t on = CliApp::onOff(cmds[0]);
-    uint16_t aa[2] = {FPGAAddresses::AirSupplyValveControl, on};
-    getFPGA()->writeCommandFIFO(aa, 2, 0);
+    if (cmds.size() == 1) {
+        uint16_t on = CliApp::onOff(cmds[0]);
+        uint16_t aa[2] = {FPGAAddresses::AirSupplyValveControl, on};
+        getFPGA()->writeCommandFIFO(aa, 2, 0);
+    }
+
+    _printSupportData();
+    return 0;
+}
+
+int M1M3SScli::setLights(command_vec cmds) {
+    if (cmds.size() == 1) {
+        uint16_t on = CliApp::onOff(cmds[0]);
+        uint16_t aa[2] = {FPGAAddresses::MirrorCellLightControl, on};
+        getFPGA()->writeCommandFIFO(aa, 2, 0);
+    }
+
+    _printSupportData();
     return 0;
 }
 
@@ -263,9 +287,11 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
                     continue;
                 }
                 address = std::stoi(add_s);
-                if (address <= 0 || address > 46) {
+                if ((bus != 4 && (address <= 0 || address > 46)) ||
+                    (address <= 0 || address > 89 || (address > 6 && address < 84))) {
                     std::cerr << "Invalid address " << c << std::endl;
-                    continue;
+                    units.clear();
+                    return units;
                 }
             }
             // try to find bus & address by FA/HP ID
@@ -288,6 +314,17 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
                         std::cout << " Index: " << id << " address: " << std::to_string(bus) << "/"
                                   << std::to_string(address) << std::endl;
                     }
+                    // HP actuator and monitor ILCs
+                } else if (id >= 1 && id <= 6) {
+                    bus = 4;
+                    address = id;
+                } else if (id >= 11 && id <= 16) {
+                    bus = 4;
+                    address = 73 + id;  // 84 + 0-based ID
+                } else {
+                    std::cerr << "Invalid ID (1-6 for HP, 11-16 for HPmon, 101-443): " << id << std::endl;
+                    units.clear();
+                    return units;
                 }
             }
         } catch (std::logic_error& e) {
@@ -316,6 +353,30 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
     }
 
     return units;
+}
+
+void M1M3SScli::_printSupportData() {
+    dynamic_cast<FPGAClass*>(getFPGA())->pullTelemetry();
+    SupportFPGAData* fpgaData = dynamic_cast<FPGAClass*>(getFPGA())->getSupportFPGAData();
+
+    auto printOnOff = [](bool on) { return (on ? "on" : "off"); };
+    auto printNeg = [printOnOff](bool neg) { return printOnOff(!neg); };
+
+    std::cout << "Air Valve Command Open: "
+              << printOnOff(fpgaData->DigitalOutputStates & FPGAAddresses::DigitalOutputs::AirCommandOutputOn)
+              << std::endl
+              << "Air Valve Open: "
+              << printNeg(fpgaData->DigitalInputStates & FPGAAddresses::DigitalInputs::AirValveOpened)
+              << std::endl
+              << "Air Valve Closed: "
+              << printNeg(fpgaData->DigitalInputStates & FPGAAddresses::DigitalInputs::AirValveClosed)
+              << std::endl
+              << "Lights Commanded On: "
+              << printOnOff(fpgaData->DigitalOutputStates & FPGAAddresses::DigitalOutputs::CellLightsOutputOn)
+              << std::endl
+              << "Lights On: "
+              << printOnOff(fpgaData->DigitalInputStates & FPGAAddresses::DigitalInputs::CellLightsOn)
+              << std::endl;
 }
 
 unsigned int _printout = 0;
