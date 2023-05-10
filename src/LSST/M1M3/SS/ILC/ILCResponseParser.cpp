@@ -850,14 +850,15 @@ void ILCResponseParser::_parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap ma
 
 void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
     int32_t dataIndex = map.DataIndex;
-    float primaryForce = ForceActuatorData::instance().primaryCylinderForce[dataIndex];
+
+    auto& faData = ForceActuatorData::instance();
+
+    float primaryForce = faData.primaryCylinderForce[dataIndex];
     float primarySetpoint = _appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0f;
 
     auto& fafWarning = ForceActuatorForceWarning::instance();
 
-    bool primaryFaulted = fafWarning.checkPrimary(dataIndex, map.ActuatorId, primaryForce, primarySetpoint);
-    _safetyController->forceControllerNotifyMeasuredForceLimit(map.ActuatorId, true, primaryForce,
-                                                               primaryFaulted);
+    fafWarning.checkPrimary(dataIndex, map.ActuatorId, primaryForce, primarySetpoint);
 
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
 
@@ -868,10 +869,6 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
         float secondaryForce = ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex];
         float secondarySetpoint =
                 _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0f;
-        bool secondaryFaulted = ForceActuatorForceWarning::instance().checkSecondary(
-                secondaryDataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
-        _safetyController->forceControllerNotifyMeasuredForceLimit(map.ActuatorId, false, secondaryForce,
-                                                                   secondaryFaulted);
 
         countingWarning =
                 countingWarning || fafWarning.secondaryAxisFollowingErrorCountingFault[secondaryDataIndex];
@@ -880,6 +877,24 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
     }
 
     _safetyController->forceActuatorFollowingError(dataIndex, countingWarning, immediateFault);
+
+    float zForce = faData.zForce[dataIndex];
+    bool zFaulted = fafWarning.checkZMeasuredForce(dataIndex, map.ActuatorId, zForce);
+    _safetyController->forceControllerNotifyMeasuredZForceLimit(map.ActuatorId, zForce, zFaulted);
+
+    auto yIndex = map.YDataIndex;
+    if (yIndex >= 0) {
+        float yForce = faData.yForce[yIndex];
+        bool yFaulted = fafWarning.checkYMeasuredForce(yIndex, map.ActuatorId, yForce);
+        _safetyController->forceControllerNotifyMeasuredYForceLimit(map.ActuatorId, yForce, yFaulted);
+    }
+
+    auto xIndex = map.XDataIndex;
+    if (xIndex >= 0) {
+        float xForce = faData.xForce[xIndex];
+        bool xFaulted = fafWarning.checkXMeasuredForce(xIndex, map.ActuatorId, xForce);
+        _safetyController->forceControllerNotifyMeasuredXForceLimit(map.ActuatorId, xForce, xFaulted);
+    }
 }
 
 void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId) {

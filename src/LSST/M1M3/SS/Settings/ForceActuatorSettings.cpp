@@ -152,10 +152,10 @@ void ForceActuatorSettings::load(const std::string &filename) {
 
         measuredWarningPercentage = doc["MeasuredWarningPercentage"].as<float>();
 
-        TableLoader::loadCylinderLimitTable(
-                1, primaryCylinderMeasuredForceLowLimit, primaryCylinderMeasuredForceHighLimit,
-                secondaryCylinderMeasuredForceLowLimit, secondaryCylinderMeasuredForceHighLimit,
-                doc["MeasuredCylinderLimitTablePath"].as<std::string>());
+        TableLoader::loadMirrorLimitTable(1, measuredZForceLowLimit, measuredZForceHighLimit,
+                                          measuredYForceLowLimit, measuredYForceHighLimit,
+                                          measuredXForceLowLimit, measuredXForceHighLimit,
+                                          doc["MeasuredMirrorLimitTablePath"].as<std::string>());
         _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
                                   doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
 

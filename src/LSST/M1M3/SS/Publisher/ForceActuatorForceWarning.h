@@ -62,10 +62,8 @@ public:
      * @param actuatorId FA ID
      * @param primaryForce force measured on the force actuator
      * @param primarySetpoint FA setpoint - target force
-     *
-     * @return true if mirror shall fault (measured force exceed allowable limits)
      */
-    bool checkPrimary(int dataIndex, int actuatorId, float primaryForce, float primarySetpoint);
+    void checkPrimary(int dataIndex, int actuatorId, float primaryForce, float primarySetpoint);
 
     /**
      * Check secondary force. Check for following error and measured force.
@@ -79,7 +77,11 @@ public:
      *
      * @return true if mirror shall fault (measured force exceed allowable limits)
      */
-    bool checkSecondary(int dataIndex, int actuatorId, float secondaryForce, float secondarySetpoint);
+    void checkSecondary(int dataIndex, int actuatorId, float secondaryForce, float secondarySetpoint);
+
+    bool checkXMeasuredForce(int xIndex, int actuatorId, float xForce);
+    bool checkYMeasuredForce(int yIndex, int actuatorId, float yForce);
+    bool checkZMeasuredForce(int zIndex, int actuatorId, float zForce);
 
     /**
      * Sends updates through SAL/DDS.
@@ -87,12 +89,6 @@ public:
     void send();
 
 private:
-    bool _checkPrimaryMeasuredForce(int dataIndex, int actuatorId, float primaryForce);
-    void _checkPrimaryFollowingError(int dataIndex, float primaryForce, float primarySetpoint);
-
-    bool _checkSecondaryMeasuredForce(int dataIndex, int actuatorId, float secondaryForce);
-    void _checkSecondaryFollowingError(int dataIndex, float secondaryForce, float secondarySetpoint);
-
     float _measuredForceWarningRatio;
 
     bool _shouldSend;

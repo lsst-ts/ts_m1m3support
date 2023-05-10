@@ -24,16 +24,15 @@
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
+#include <SAL_MTM1M3C.h>
+
 #include <ForceActuatorForceWarning.h>
 #include <LoweringFaultState.h>
 #include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 #include <SafetyControllerSettings.h>
-#include <SAL_MTM1M3C.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSettings) {
     SPDLOG_DEBUG("SafetyController: SafetyController()");
@@ -392,11 +391,25 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
                     "Force controller force clipping");
 }
 
-void SafetyController::forceControllerNotifyMeasuredForceLimit(int actuatorId, bool primary,
-                                                               float measuredForce, bool conditionFlag) {
-    _updateOverride(FaultCodes::ForceControllerMeasuredForceLimit, true, conditionFlag,
-                    fmt::format("Force actuator {} {} measured force ({} N) outside limits", actuatorId,
-                                (primary ? "primary cylinder" : "secondary cylinder"), measuredForce));
+void SafetyController::forceControllerNotifyMeasuredXForceLimit(int actuatorId, float xForce,
+                                                                bool conditionFlag) {
+    _updateOverride(
+            FaultCodes::ForceControllerMeasuredXForceLimit, true, conditionFlag,
+            fmt::format("Force actuator X {} measured force ({} N) outside limits", actuatorId, xForce));
+}
+
+void SafetyController::forceControllerNotifyMeasuredYForceLimit(int actuatorId, float yForce,
+                                                                bool conditionFlag) {
+    _updateOverride(
+            FaultCodes::ForceControllerMeasuredYForceLimit, true, conditionFlag,
+            fmt::format("Force actuator Y {} measured force ({} N) outside limits", actuatorId, yForce));
+}
+
+void SafetyController::forceControllerNotifyMeasuredZForceLimit(int actuatorId, float zForce,
+                                                                bool conditionFlag) {
+    _updateOverride(
+            FaultCodes::ForceControllerMeasuredZForceLimit, true, conditionFlag,
+            fmt::format("Force actuator Z {} measured force ({} N) outside limits", actuatorId, zForce));
 }
 
 void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
@@ -659,7 +672,3 @@ void SafetyController::_clearError() {
     _errorCodeData->errorCode = FaultCodes::NoFault;
     _errorCodeData->errorReport = "Error cleared";
 }
-
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
