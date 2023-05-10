@@ -60,15 +60,16 @@ void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data,
     }
 }
 
-void TableLoader::loadCylinderLimitTable(size_t columnsToSkip, float primaryLow[FA_COUNT],
-                                         float primaryHigh[FA_COUNT], float secondaryLow[FA_S_COUNT],
-                                         float secondaryHigh[FA_S_COUNT], const std::string& filename) {
+void TableLoader::loadMirrorLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUNT], float zHigh[FA_Z_COUNT],
+                                       float yLow[FA_Y_COUNT], float yHigh[FA_Y_COUNT],
+                                       float xLow[FA_X_COUNT], float xHigh[FA_X_COUNT],
+                                       const std::string& filename) {
     std::string fullPath = SettingReader::instance().getFilePath(filename);
     try {
         rapidcsv::Document limitTable(fullPath);
-        if (columnsToSkip + 4 != limitTable.GetColumnCount()) {
+        if (columnsToSkip + 6 != limitTable.GetColumnCount()) {
             throw std::runtime_error(fmt::format("CSV {} has {} columns, expected {}", fullPath,
-                                                 limitTable.GetColumnCount(), columnsToSkip + 4));
+                                                 limitTable.GetColumnCount(), columnsToSkip + 6));
         }
         if (limitTable.GetRowCount() != FA_COUNT) {
             throw std::runtime_error(fmt::format("CSV {} has {} rows, expected {}", fullPath,
@@ -83,35 +84,56 @@ void TableLoader::loadCylinderLimitTable(size_t columnsToSkip, float primaryLow[
                         fmt::format("CSV {} row {} has incorrect ActuatorID - {}, expected {}", fullPath, row,
                                     id, expectedId));
             }
-            primaryLow[row] = limitTable.GetCell<float>(1, row);
-            primaryHigh[row] = limitTable.GetCell<float>(2, row);
-            if (primaryLow[row] >= primaryHigh[row]) {
+            zLow[row] = limitTable.GetCell<float>(1, row);
+            zHigh[row] = limitTable.GetCell<float>(2, row);
+            if (zLow[row] >= zHigh[row]) {
                 throw std::runtime_error(fmt::format(
-                        "CSV {} row {} - primary limits are in incorrect order, low - high expected, {} - {} "
+                        "CSV {} row {} - Z limits are in incorrect order, low - high expected, {} - {} "
                         "configured.",
-                        fullPath, row, primaryLow[row], primaryHigh[row]));
+                        fullPath, row, zLow[row], zHigh[row]));
             }
 
-            auto secIndex = SettingReader::instance()
-                                    .getForceActuatorApplicationSettings()
-                                    ->ZIndexToSecondaryCylinderIndex[row];
-            if (secIndex == -1) {
-                auto secLow = limitTable.GetCell<std::string>(3, row);
-                auto secHigh = limitTable.GetCell<std::string>(4, row);
-                if (secLow != "-" || secHigh != "-") {
+            auto yIndex =
+                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[row];
+            if (yIndex == -1) {
+                auto strYLow = limitTable.GetCell<std::string>(3, row);
+                auto strYHigh = limitTable.GetCell<std::string>(4, row);
+                if (strYLow != "-" || strYHigh != "-") {
                     throw std::runtime_error(
-                            fmt::format("CSV {} row {} shouldn't specify secondary limits (should be '-'), "
+                            fmt::format("CSV {} row {} shouldn't specify Y limits (should be '-'), "
                                         "yet {} and {} found.",
-                                        fullPath, row, secLow, secHigh));
+                                        fullPath, row, strYLow, strYHigh));
                 }
             } else {
-                secondaryLow[secIndex] = limitTable.GetCell<float>(3, row);
-                secondaryHigh[secIndex] = limitTable.GetCell<float>(4, row);
-                if (secondaryLow[secIndex] >= secondaryHigh[secIndex]) {
+                yLow[yIndex] = limitTable.GetCell<float>(3, row);
+                yHigh[yIndex] = limitTable.GetCell<float>(4, row);
+                if (yLow[yIndex] >= yHigh[yIndex]) {
                     throw std::runtime_error(
-                            fmt::format("CSV {} row {} - secondary limits are in incorrect order, low - high "
+                            fmt::format("CSV {} row {} - Y limits are in incorrect order, low - high "
                                         "expected, {} - {} configured.",
-                                        fullPath, row, secondaryLow[secIndex], secondaryHigh[secIndex]));
+                                        fullPath, row, yLow[yIndex], yHigh[yIndex]));
+                }
+            }
+
+            auto xIndex =
+                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[row];
+            if (xIndex == -1) {
+                auto strXLow = limitTable.GetCell<std::string>(5, row);
+                auto strXHigh = limitTable.GetCell<std::string>(6, row);
+                if (strXLow != "-" || strXHigh != "-") {
+                    throw std::runtime_error(
+                            fmt::format("CSV {} row {} shouldn't specify X limits (should be '-'), "
+                                        "yet {} and {} found.",
+                                        fullPath, row, strXLow, strXHigh));
+                }
+            } else {
+                xLow[xIndex] = limitTable.GetCell<float>(5, row);
+                xHigh[xIndex] = limitTable.GetCell<float>(6, row);
+                if (xLow[xIndex] >= xHigh[xIndex]) {
+                    throw std::runtime_error(
+                            fmt::format("CSV {} row {} - X limits are in incorrect order, low - high "
+                                        "expected, {} - {} configured.",
+                                        fullPath, row, xLow[xIndex], xHigh[xIndex]));
                 }
             }
         }
