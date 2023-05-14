@@ -22,29 +22,31 @@
  */
 
 #include <cmath>
+#include <cstring>
+#include <unistd.h>
 
-#include <ILC.h>
-#include <M1M3SSPublisher.h>
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
+#include <BusList.h>
 #include <DataTypes.h>
-#include <ILCApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
 #include <ForceActuatorFollowingErrorCounter.h>
 #include <ForceActuatorForceWarning.h>
-#include <HardpointActuatorApplicationSettings.h>
-#include <iostream>
-#include <unistd.h>
-#include <IFPGA.h>
-#include <FPGAAddresses.h>
-#include <Timestamp.h>
-#include <cstring>
-#include <BusList.h>
-#include <SAL_MTM1M3C.h>
-#include <spdlog/spdlog.h>
+#include <ForceActuatorInfo.h>
 #include <ForceActuatorSettings.h>
+#include <FPGAAddresses.h>
+#include <HardpointActuatorApplicationSettings.h>
 #include <HardpointActuatorSettings.h>
-#include <RoundRobin.h>
+#include <ILC.h>
+#include <ILCApplicationSettings.h>
+#include <IFPGA.h>
+#include <M1M3SSPublisher.h>
 #include <PositionController.h>
+#include <RoundRobin.h>
+#include <Timestamp.h>
 
 #define ADDRESS_COUNT 256
 
@@ -401,9 +403,8 @@ void ILC::verifyResponses() {
 }
 
 void ILC::publishForceActuatorInfo() {
-    M1M3SSPublisher::instance().getEventForceActuatorInfo()->timestamp =
-            M1M3SSPublisher::instance().getTimestamp();
-    M1M3SSPublisher::instance().logForceActuatorInfo();
+    ForceActuatorInfo::instance().timestamp = M1M3SSPublisher::instance().getTimestamp();
+    ForceActuatorInfo::instance().log();
 }
 
 void ILC::publishForceActuatorStatus() {
