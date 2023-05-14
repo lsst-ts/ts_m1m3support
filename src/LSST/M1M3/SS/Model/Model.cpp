@@ -21,35 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <cRIO/Join.h>
 
-#include <Model.h>
-#include <SettingReader.h>
-#include <M1M3SSPublisher.h>
+#include <Accelerometer.h>
+#include <DigitalInputOutput.h>
 #include <Displacement.h>
-#include <Inclinometer.h>
-#include <ILC.h>
-#include <Timestamp.h>
-#include <ILCApplicationSettings.h>
-#include <U16ArrayUtilities.h>
-#include <iostream>
-
 #include <IFPGA.h>
+#include <ILC.h>
+#include <Inclinometer.h>
+#include <ILCApplicationSettings.h>
 #include <FPGAAddresses.h>
 #include <ForceController.h>
-#include <ForceActuatorSettings.h>
-#include <SafetyController.h>
-#include <PositionController.h>
-#include <Accelerometer.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorInfo.h>
+#include <ForceActuatorSettings.h>
+#include <Gyro.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
-#include <PowerController.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <MirrorRaiseController.h>
 #include <MirrorLowerController.h>
-#include <Gyro.h>
-#include <spdlog/spdlog.h>
-#include <DigitalInputOutput.h>
+#include <PositionController.h>
+#include <PowerController.h>
+#include <SafetyController.h>
+#include <SettingReader.h>
+#include <Timestamp.h>
+#include <U16ArrayUtilities.h>
 
 using namespace std;
 using namespace LSST::M1M3::SS;
@@ -136,7 +136,7 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Loading inclinometer settings");
     InclinometerSettings* inclinometerSettings = SettingReader::instance().loadInclinometerSettings();
 
-    _populateForceActuatorInfo(forceActuatorApplicationSettings);
+    ForceActuatorInfo::instance().populate(forceActuatorApplicationSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
                                    positionControllerSettings);
     _populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
@@ -247,22 +247,6 @@ void Model::exitControl() { _mutex.unlock(); }
 void Model::waitForExitControl() {
     _mutex.lock();
     _mutex.unlock();
-}
-
-void Model::_populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings) {
-    SPDLOG_DEBUG("Model: populateForceActuatorInfo()");
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
-    for (int i = 0; i < FA_COUNT; i++) {
-        ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
-        forceInfo->referenceId[i] = row.ActuatorID;
-        forceInfo->modbusSubnet[i] = row.Subnet;
-        forceInfo->modbusAddress[i] = row.Address;
-        forceInfo->actuatorType[i] = row.Type;
-        forceInfo->actuatorOrientation[i] = row.Orientation;
-        forceInfo->xPosition[i] = row.XPosition;
-        forceInfo->yPosition[i] = row.YPosition;
-        forceInfo->zPosition[i] = row.ZPosition;
-    }
 }
 
 void Model::_populateHardpointActuatorInfo(

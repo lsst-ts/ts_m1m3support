@@ -34,14 +34,15 @@
 #include <ILCSubnetData.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
+#include <ForceActuatorInfo.h>
 #include <ForceActuatorForceWarning.h>
 #include <ForceActuatorSettings.h>
 #include <ForceConverter.h>
 #include <HardpointActuatorSettings.h>
 #include <HardpointActuatorWarning.h>
+#include <LimitLog.h>
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
-#include <LimitLog.h>
 #include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 #include <Timestamp.h>
@@ -55,7 +56,6 @@ ILCResponseParser::ILCResponseParser() {
     _hardpointActuatorInfo = 0;
     _hardpointActuatorState = 0;
     _hardpointActuatorData = 0;
-    _forceActuatorInfo = 0;
     _forceActuatorState = 0;
     _appliedCylinderForces = 0;
     _hardpointMonitorInfo = 0;
@@ -77,7 +77,6 @@ ILCResponseParser::ILCResponseParser(HardpointActuatorSettings* hardpointActuato
     _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     _hardpointActuatorState = M1M3SSPublisher::instance().getEventHardpointActuatorState();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
-    _forceActuatorInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
     _hardpointMonitorInfo = M1M3SSPublisher::instance().getEventHardpointMonitorInfo();
@@ -375,9 +374,10 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < FA_COUNT; i++) {
         if (_faExpectedResponses[i] != 0) {
             warn = true;
+            auto& _forceActuatorInfo = ForceActuatorInfo::instance();
             TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
-                        _forceActuatorInfo->referenceId[i]);
-            _warnResponseTimeout(timestamp, _forceActuatorInfo->referenceId[i]);
+                        _forceActuatorInfo.referenceId[i]);
+            _warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i]);
             _faExpectedResponses[i] = 0;
         }
     }
@@ -455,15 +455,10 @@ void ILCResponseParser::_parseReportHPServerIDResponse(ModbusBuffer* buffer, ILC
 }
 
 void ILCResponseParser::_parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
-    int32_t dataIndex = map.DataIndex;
     uint8_t length = buffer->readU8();
-    _forceActuatorInfo->ilcUniqueId[dataIndex] = buffer->readU48();
-    _forceActuatorInfo->ilcApplicationType[dataIndex] = buffer->readU8();
-    _forceActuatorInfo->networkNodeType[dataIndex] = buffer->readU8();
-    _forceActuatorInfo->ilcSelectedOptions[dataIndex] = buffer->readU8();
-    _forceActuatorInfo->networkNodeOptions[dataIndex] = buffer->readU8();
-    _forceActuatorInfo->majorRevision[dataIndex] = buffer->readU8();
-    _forceActuatorInfo->minorRevision[dataIndex] = buffer->readU8();
+    ForceActuatorInfo::instance().serverIDResponse(map.DataIndex, buffer->readU48(), buffer->readU8(),
+                                                   buffer->readU8(), buffer->readU8(), buffer->readU8(),
+                                                   buffer->readU8(), buffer->readU8());
     buffer->incIndex(length - 12);
     buffer->skipToNextFrame();
 }
@@ -588,9 +583,7 @@ void ILCResponseParser::_parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer
 }
 
 void ILCResponseParser::_parseReadBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
-    int32_t dataIndex = map.DataIndex;
-    _forceActuatorInfo->mezzaninePrimaryCylinderGain[dataIndex] = buffer->readSGL();
-    _forceActuatorInfo->mezzanineSecondaryCylinderGain[dataIndex] = buffer->readSGL();
+    ForceActuatorInfo::instance().boosterValveDCAGains(map.DataIndex, buffer->readSGL(), buffer->readSGL());
     buffer->skipToNextFrame();
 }
 
@@ -629,7 +622,7 @@ void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer* buffer, 
     float x = 0;
     float y = 0;
     float z = 0;
-    switch (_forceActuatorInfo->actuatorOrientation[dataIndex]) {
+    switch (ForceActuatorInfo::instance().actuatorOrientation[dataIndex]) {
         case ForceActuatorOrientations::PositiveX:
             ForceConverter::daaPositiveXToMirror(
                     ForceActuatorData::instance().primaryCylinderForce[dataIndex],
@@ -697,7 +690,7 @@ void ILCResponseParser::_parseDualAxisPneumaticForceStatusResponse(ModbusBuffer*
     float x = 0;
     float y = 0;
     float z = 0;
-    switch (_forceActuatorInfo->actuatorOrientation[dataIndex]) {
+    switch (ForceActuatorInfo::instance().actuatorOrientation[dataIndex]) {
         case ForceActuatorOrientations::PositiveX:
             ForceConverter::daaPositiveXToMirror(
                     ForceActuatorData::instance().primaryCylinderForce[dataIndex],
@@ -736,8 +729,7 @@ void ILCResponseParser::_parseSetHPADCScanRateResponse(ModbusBuffer* buffer, ILC
 }
 
 void ILCResponseParser::_parseSetFAADCScanRateResponse(ModbusBuffer* buffer, ILCMap map) {
-    int32_t dataIndex = map.DataIndex;
-    _forceActuatorInfo->adcScanRate[dataIndex] = buffer->readU8();
+    ForceActuatorInfo::instance().parseFAADCScanRate(map.DataIndex, buffer);
     buffer->skipToNextFrame();
 }
 
@@ -785,35 +777,7 @@ void ILCResponseParser::_parseReadHPCalibrationResponse(ModbusBuffer* buffer, IL
 }
 
 void ILCResponseParser::_parseReadFACalibrationResponse(ModbusBuffer* buffer, ILCMap map) {
-    int32_t dataIndex = map.DataIndex;
-    _forceActuatorInfo->mainPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-    _forceActuatorInfo->mainSecondaryCylinderCoefficient[dataIndex] =
-            _forceActuatorInfo->mainPrimaryCylinderCoefficient[dataIndex];
-    buffer->readSGL();  // Main Coefficient K2
-    buffer->readSGL();  // Main Coefficient K3
-    buffer->readSGL();  // Main Coefficient K4
-    _forceActuatorInfo->mainPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-    _forceActuatorInfo->mainSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-    buffer->readSGL();  // Main Offset Channel 3
-    buffer->readSGL();  // Main Offset Channel 4
-    _forceActuatorInfo->mainPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-    _forceActuatorInfo->mainSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-    buffer->readSGL();  // Main Sensitivity Channel 3
-    buffer->readSGL();  // Main Sensitivity Channel 4
-    _forceActuatorInfo->backupPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-    _forceActuatorInfo->backupSecondaryCylinderCoefficient[dataIndex] =
-            _forceActuatorInfo->backupPrimaryCylinderCoefficient[dataIndex];
-    buffer->readSGL();  // Backup Coefficient K2
-    buffer->readSGL();  // Backup Coefficient K3
-    buffer->readSGL();  // Backup Coefficient K4
-    _forceActuatorInfo->backupPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-    _forceActuatorInfo->backupSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-    buffer->readSGL();  // Backup Offset Channel 3
-    buffer->readSGL();  // Backup Offset Channel 4
-    _forceActuatorInfo->backupPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-    _forceActuatorInfo->backupSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-    buffer->readSGL();  // Backup Sensitivity Channel 3
-    buffer->readSGL();  // Backup Sensitivity Channel 4
+    ForceActuatorInfo::instance().setFACalibration(map.DataIndex, buffer->readU8());
     buffer->skipToNextFrame();
 }
 
@@ -836,11 +800,8 @@ void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer* buffer,
 }
 
 void ILCResponseParser::_parseReportDCAIDResponse(ModbusBuffer* buffer, ILCMap map) {
-    int32_t dataIndex = map.DataIndex;
-    _forceActuatorInfo->mezzanineUniqueId[dataIndex] = buffer->readU48();
-    _forceActuatorInfo->mezzanineFirmwareType[dataIndex] = buffer->readU8();
-    _forceActuatorInfo->mezzanineMajorRevision[dataIndex] = buffer->readU8();
-    _forceActuatorInfo->mezzanineMinorRevision[dataIndex] = buffer->readU8();
+    ForceActuatorInfo::instance().setDCAID(map.DataIndex, buffer->readU48(), buffer->readU8(),
+                                           buffer->readU8(), buffer->readU8());
     buffer->skipToNextFrame();
 }
 
