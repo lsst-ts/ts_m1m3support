@@ -27,6 +27,7 @@
 #include <vector>
 
 #include <ForceActuatorData.h>
+#include <ForceActuatorInfo.h>
 #include <ForceController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorOrientations.h>
@@ -73,7 +74,6 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _preclippedCylinderForces = M1M3SSPublisher::instance().getEventPreclippedCylinderForces();
 
-    _forceActuatorInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
     _inclinometerData = M1M3SSPublisher::instance().getInclinometerData();
 
     _pidData = M1M3SSPublisher::instance().getPIDData();
@@ -445,6 +445,7 @@ void ForceController::_sumAllForces() {
 void ForceController::_convertForcesToSetpoints() {
     SPDLOG_TRACE("ForceController: convertForcesToSetpoints()");
     bool clippingRequired = false;
+    auto& forceActuatorInfo = ForceActuatorInfo::instance();
     for (int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
@@ -457,7 +458,7 @@ void ForceController::_convertForcesToSetpoints() {
                     ForceActuatorSettings::instance().CylinderLimitSecondaryTable[sIndex].LowFault;
             float secondaryHighFault =
                     ForceActuatorSettings::instance().CylinderLimitSecondaryTable[sIndex].HighFault;
-            switch (_forceActuatorInfo->actuatorOrientation[pIndex]) {
+            switch (forceActuatorInfo.actuatorOrientation[pIndex]) {
                 case ForceActuatorOrientations::PositiveY:
                     _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
                             _toInt24(_appliedForces->yForces[yIndex] * _sqrt2);
@@ -486,7 +487,7 @@ void ForceController::_convertForcesToSetpoints() {
         float primaryLowFault = ForceActuatorSettings::instance().CylinderLimitPrimaryTable[pIndex].LowFault;
         float primaryHighFault =
                 ForceActuatorSettings::instance().CylinderLimitPrimaryTable[pIndex].HighFault;
-        switch (_forceActuatorInfo->actuatorOrientation[pIndex]) {
+        switch (forceActuatorInfo.actuatorOrientation[pIndex]) {
             case ForceActuatorOrientations::PositiveY:
                 _preclippedCylinderForces->primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex] - _appliedForces->yForces[yIndex]);

@@ -227,8 +227,6 @@ private:
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_preclippedCylinderForcesC* _preclippedCylinderForces;
 
-    MTM1M3_logevent_forceActuatorInfoC* _forceActuatorInfo;
-
     MTM1M3_inclinometerDataC* _inclinometerData;
     MTM1M3_pidDataC* _pidData;
     MTM1M3_logevent_pidInfoC* _pidInfo;

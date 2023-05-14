@@ -21,12 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SetADCScanRateBusList.h>
+#include <spdlog/spdlog.h>
+
+#include <ForceActuatorInfo.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
 #include <M1M3SSPublisher.h>
 #include <SAL_MTM1M3C.h>
-#include <spdlog/spdlog.h>
+#include <SetADCScanRateBusList.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -39,7 +41,7 @@ void SetADCScanRateBusList::buildBuffer() {
     BusList::buildBuffer();
     SPDLOG_DEBUG("SetADCScanRateBusList: buildBuffer()");
 
-    MTM1M3_logevent_forceActuatorInfoC* forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
+    auto& forceInfo = ForceActuatorInfo::instance();
     MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
             M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
@@ -50,7 +52,7 @@ void SetADCScanRateBusList::buildBuffer() {
             bool disabled = this->subnetData->getFAIndex(subnetIndex, faIndex).Disabled;
             if (!disabled) {
                 this->ilcMessageFactory->setADCScanRate(&this->buffer, address,
-                                                        forceInfo->adcScanRate[dataIndex]);
+                                                        forceInfo.adcScanRate[dataIndex]);
                 this->expectedFAResponses[dataIndex] = 1;
             }
         }

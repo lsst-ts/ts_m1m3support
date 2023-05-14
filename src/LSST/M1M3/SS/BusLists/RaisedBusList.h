@@ -42,7 +42,6 @@ private:
     MTM1M3_outerLoopDataC* _outerLoopData;
     MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    MTM1M3_logevent_forceActuatorInfoC* _forceInfo;
 
     int32_t _setForceCommandIndex[5];
     int32_t _moveStepCommandIndex[5];
