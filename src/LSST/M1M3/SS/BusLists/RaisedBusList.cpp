@@ -21,15 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cstring>
+
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
 #include <BoosterValveStatus.h>
-#include <RaisedBusList.h>
 #include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
 #include <M1M3SSPublisher.h>
+#include <RaisedBusList.h>
 #include <RoundRobin.h>
-#include <SAL_MTM1M3C.h>
-#include <cstring>
-#include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -39,7 +42,6 @@ RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMe
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
     _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
-    _forceInfo = M1M3SSPublisher::instance().getEventForceActuatorInfo();
 }
 
 void RaisedBusList::buildBuffer() {

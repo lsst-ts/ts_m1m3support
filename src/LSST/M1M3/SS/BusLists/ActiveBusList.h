@@ -24,8 +24,9 @@
 #ifndef ACTIVEBUSLIST_H_
 #define ACTIVEBUSLIST_H_
 
-#include <BusList.h>
 #include <SAL_MTM1M3C.h>
+
+#include <BusList.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -42,7 +43,6 @@ private:
     MTM1M3_outerLoopDataC* _outerLoopData;
     MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    MTM1M3_logevent_forceActuatorInfoC* _forceInfo;
 
     int32_t _setForceCommandIndex[5];
     int32_t _hpFreezeCommandIndex[5];

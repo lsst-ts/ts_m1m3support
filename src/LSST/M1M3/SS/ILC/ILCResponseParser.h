@@ -114,7 +114,6 @@ private:
     MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
 
-    MTM1M3_logevent_forceActuatorInfoC* _forceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceActuatorWarningC* _forceActuatorWarning;
     MTM1M3_logevent_forceActuatorForceWarningC* _forceWarning;

@@ -109,7 +109,6 @@ public:
     MTM1M3_logevent_forceActuatorBumpTestStatusC* getEventForceActuatorBumpTestStatus() {
         return &_eventForceActuatorBumpTestStatus;
     }
-    MTM1M3_logevent_forceActuatorInfoC* getEventForceActuatorInfo() { return &_eventForceActuatorInfo; }
     MTM1M3_logevent_forceActuatorStateC* getEventForceActuatorState() { return &_eventForceActuatorState; }
     static ForceActuatorWarning* getForceActuatorWarning() { return &(instance()._forceActuatorWarning); }
     MTM1M3_logevent_forceSetpointWarningC* getEventForceSetpointWarning() {
@@ -283,8 +282,9 @@ public:
         _m1m3SAL->logEvent_forceActuatorFollowingErrorCounter(data, 0);
     }
     void tryLogForceActuatorForceWarning();
-    void logForceActuatorInfo();
-    void tryLogForceActuatorInfo();
+    void logForceActuatorInfo(MTM1M3_logevent_forceActuatorInfoC* data) {
+        _m1m3SAL->logEvent_forceActuatorInfo(data, 0);
+    }
     void logForceActuatorState();
     void tryLogForceActuatorState();
     void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {
@@ -459,7 +459,6 @@ private:
     EnabledForceActuators _enabledForceActuators;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _eventForceActuatorBumpTestStatus;
-    MTM1M3_logevent_forceActuatorInfoC _eventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _eventForceActuatorState;
     ForceActuatorWarning _forceActuatorWarning;
     MTM1M3_logevent_forceSetpointWarningC _eventForceSetpointWarning;
@@ -505,7 +504,6 @@ private:
     MTM1M3_logevent_displacementSensorWarningC _previousEventDisplacementSensorWarning;
     MTM1M3_logevent_errorCodeC _previousEventErrorCode;
     MTM1M3_logevent_forceActuatorBumpTestStatusC _previousEventForceActuatorBumpTestStatus;
-    MTM1M3_logevent_forceActuatorInfoC _previousEventForceActuatorInfo;
     MTM1M3_logevent_forceActuatorStateC _previousEventForceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC _previousEventForceSetpointWarning;
     MTM1M3_logevent_gyroWarningC _previousEventGyroWarning;

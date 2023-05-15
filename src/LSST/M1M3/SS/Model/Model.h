@@ -24,6 +24,10 @@
 #ifndef MODEL_H_
 #define MODEL_H_
 
+#include <chrono>
+#include <mutex>
+#include <string>
+
 #include <Accelerometer.h>
 #include <MirrorRaiseController.h>
 #include <MirrorLowerController.h>
@@ -47,9 +51,6 @@
 #include <ProfileController.h>
 #include <SafetyController.h>
 #include <StateTypes.h>
-#include <chrono>
-#include <mutex>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {
@@ -107,7 +108,6 @@ private:
     Model& operator=(const Model&) = delete;
     Model(const Model&) = delete;
 
-    void _populateForceActuatorInfo(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
     void _populateHardpointActuatorInfo(
             HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
             HardpointActuatorSettings* hardpointActuatorSettings,
