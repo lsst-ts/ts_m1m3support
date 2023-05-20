@@ -123,29 +123,29 @@ void FinalForceComponent::postUpdateActions() {
         _forceSetpointWarning->forceWarning[zIndex] = false;
 
         if (xIndex != -1) {
-            float xLowFault = ForceActuatorSettings::instance().ForceLimitXTable[xIndex].LowFault;
-            float xHighFault = ForceActuatorSettings::instance().ForceLimitXTable[xIndex].HighFault;
+            float xLow = ForceActuatorSettings::instance().appliedXForceLowLimit[xIndex];
+            float xHigh = ForceActuatorSettings::instance().appliedXForceHighLimit[xIndex];
             _preclippedForces->xForces[xIndex] = xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedForces->xForces[xIndex],
+            notInRange = !Range::InRangeAndCoerce(xLow, xHigh, _preclippedForces->xForces[xIndex],
                                                   _appliedForces->xForces + xIndex);
             _forceSetpointWarning->forceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
 
         if (yIndex != -1) {
-            float yLowFault = ForceActuatorSettings::instance().ForceLimitYTable[yIndex].LowFault;
-            float yHighFault = ForceActuatorSettings::instance().ForceLimitYTable[yIndex].HighFault;
+            float yLow = ForceActuatorSettings::instance().appliedYForceLowLimit[yIndex];
+            float yHigh = ForceActuatorSettings::instance().appliedYForceHighLimit[yIndex];
             _preclippedForces->yForces[yIndex] = yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedForces->yForces[yIndex],
+            notInRange = !Range::InRangeAndCoerce(yLow, yHigh, _preclippedForces->yForces[yIndex],
                                                   _appliedForces->yForces + yIndex);
             _forceSetpointWarning->forceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
 
-        float zLowFault = ForceActuatorSettings::instance().ForceLimitZTable[zIndex].LowFault;
-        float zHighFault = ForceActuatorSettings::instance().ForceLimitZTable[zIndex].HighFault;
+        float zLow = ForceActuatorSettings::instance().appliedZForceLowLimit[zIndex];
+        float zHigh = ForceActuatorSettings::instance().appliedZForceHighLimit[zIndex];
         _preclippedForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedForces->zForces[zIndex],
+        notInRange = !Range::InRangeAndCoerce(zLow, zHigh, _preclippedForces->zForces[zIndex],
                                               _appliedForces->zForces + zIndex);
         _forceSetpointWarning->forceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->forceWarning[zIndex];
