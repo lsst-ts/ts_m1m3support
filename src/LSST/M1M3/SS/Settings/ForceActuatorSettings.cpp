@@ -127,9 +127,10 @@ void ForceActuatorSettings::load(const std::string &filename) {
                                     doc["ElevationLimitYTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, &ElevationLimitZTable,
                                     doc["ElevationLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ForceLimitXTable, doc["ForceLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ForceLimitYTable, doc["ForceLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ForceLimitZTable, doc["ForceLimitZTablePath"].as<std::string>());
+        TableLoader::loadForceLimitTable(1, appliedZForceLowLimit, appliedZForceHighLimit,
+                                         appliedYForceLowLimit, appliedYForceHighLimit, appliedXForceLowLimit,
+                                         appliedXForceHighLimit,
+                                         doc["AppliedForceLimitTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, &StaticLimitXTable, doc["StaticLimitXTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, &StaticLimitYTable, doc["StaticLimitYTablePath"].as<std::string>());
         TableLoader::loadLimitTable(1, &StaticLimitZTable, doc["StaticLimitZTablePath"].as<std::string>());
@@ -152,10 +153,10 @@ void ForceActuatorSettings::load(const std::string &filename) {
 
         measuredWarningPercentage = doc["MeasuredWarningPercentage"].as<float>();
 
-        TableLoader::loadMirrorLimitTable(1, measuredZForceLowLimit, measuredZForceHighLimit,
-                                          measuredYForceLowLimit, measuredYForceHighLimit,
-                                          measuredXForceLowLimit, measuredXForceHighLimit,
-                                          doc["MeasuredMirrorLimitTablePath"].as<std::string>());
+        TableLoader::loadForceLimitTable(1, measuredZForceLowLimit, measuredZForceHighLimit,
+                                         measuredYForceLowLimit, measuredYForceHighLimit,
+                                         measuredXForceLowLimit, measuredXForceHighLimit,
+                                         doc["MeasuredMirrorLimitTablePath"].as<std::string>());
         _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
                                   doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
 

@@ -57,9 +57,7 @@ BalanceLimitZTablePath: Tables/BalanceLimitZTable.csv
 ElevationLimitXTablePath: Tables/ElevationLimitXTable.csv
 ElevationLimitYTablePath: Tables/ElevationLimitYTable.csv
 ElevationLimitZTablePath: Tables/ElevationLimitZTable.csv
-ForceLimitXTablePath: Tables/ForceLimitXTable.csv
-ForceLimitYTablePath: Tables/ForceLimitYTable.csv
-ForceLimitZTablePath: Tables/ForceLimitZTable.csv
+AppliedForceLimitTablePath: Tables/AppliedForceLimitTable.csv
 OffsetLimitXTablePath: Tables/OffsetLimitXTable.csv
 OffsetLimitYTablePath: Tables/OffsetLimitYTable.csv
 OffsetLimitZTablePath: Tables/OffsetLimitZTable.csv

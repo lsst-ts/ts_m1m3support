@@ -60,10 +60,9 @@ void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data,
     }
 }
 
-void TableLoader::loadMirrorLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUNT], float zHigh[FA_Z_COUNT],
-                                       float yLow[FA_Y_COUNT], float yHigh[FA_Y_COUNT],
-                                       float xLow[FA_X_COUNT], float xHigh[FA_X_COUNT],
-                                       const std::string& filename) {
+void TableLoader::loadForceLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUNT], float zHigh[FA_Z_COUNT],
+                                      float yLow[FA_Y_COUNT], float yHigh[FA_Y_COUNT], float xLow[FA_X_COUNT],
+                                      float xHigh[FA_X_COUNT], const std::string& filename) {
     std::string fullPath = SettingReader::instance().getFilePath(filename);
     try {
         rapidcsv::Document limitTable(fullPath);

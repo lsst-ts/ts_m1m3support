@@ -48,9 +48,9 @@ public:
     static void loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t>* data,
                           const std::string& filename);
     static void loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data, const std::string& filename);
-    static void loadMirrorLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUNT], float zHigh[FA_Z_COUNT],
-                                     float yLow[FA_Y_COUNT], float yHigh[FA_Y_COUNT], float xLow[FA_X_COUNT],
-                                     float xHigh[FA_X_COUNT], const std::string& filename);
+    static void loadForceLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUNT], float zHigh[FA_Z_COUNT],
+                                    float yLow[FA_Y_COUNT], float yHigh[FA_Y_COUNT], float xLow[FA_X_COUNT],
+                                    float xHigh[FA_X_COUNT], const std::string& filename);
 };
 
 template <typename t>
