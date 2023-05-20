@@ -140,9 +140,6 @@ public:
     std::vector<Limit> ElevationLimitXTable;
     std::vector<Limit> ElevationLimitYTable;
     std::vector<Limit> ElevationLimitZTable;
-    std::vector<Limit> ForceLimitXTable;
-    std::vector<Limit> ForceLimitYTable;
-    std::vector<Limit> ForceLimitZTable;
     std::vector<Limit> OffsetLimitXTable;
     std::vector<Limit> OffsetLimitYTable;
     std::vector<Limit> OffsetLimitZTable;

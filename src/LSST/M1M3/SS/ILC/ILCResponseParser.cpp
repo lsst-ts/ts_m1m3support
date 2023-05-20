@@ -870,6 +870,8 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
         float secondarySetpoint =
                 _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0f;
 
+        fafWarning.checkSecondary(secondaryDataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
+
         countingWarning =
                 countingWarning || fafWarning.secondaryAxisFollowingErrorCountingFault[secondaryDataIndex];
         immediateFault =
