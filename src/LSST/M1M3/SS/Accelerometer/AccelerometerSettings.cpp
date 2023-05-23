@@ -36,9 +36,9 @@ AccelerometerSettings::AccelerometerSettings(token) {
     memset(scalar, 0, sizeof(scalar));
 }
 
-void AccelerometerSettings::load(const std::string &filename) {
+void AccelerometerSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading AccelerometerSettings");
 
         angularAccelerationDistance[0] = doc["AngularAccelerationXDistance"].as<float>();
         angularAccelerationDistance[1] = doc["AngularAccelerationYDistance"].as<float>();
@@ -51,7 +51,7 @@ void AccelerometerSettings::load(const std::string &filename) {
             scalar[i] = accNode["Scalar"].as<float>();
         }
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading AccelerometerSettings: {}", ex.what()));
     }
 
     log();

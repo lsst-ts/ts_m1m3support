@@ -46,8 +46,7 @@ public:
      * @param[in] fpgaData The fpga data.
      * @param[in] safetyController The safety controller.
      */
-    Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController,
-                 InclinometerSettings* inclinometerSettings);
+    Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController);
 
     /*!
      * Processes currently available inclinometer data and publish it.

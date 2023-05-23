@@ -24,11 +24,14 @@
 #ifndef POSITIONCONTROLLERSETTINGS_H_
 #define POSITIONCONTROLLERSETTINGS_H_
 
+#include <string>
+
 #include <SAL_MTM1M3.h>
-#include <M1M3SSPublisher.h>
+
+#include <cRIO/Singleton.h>
 
 #include <DataTypes.h>
-#include <string>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,9 +43,12 @@ namespace SS {
  *
  * @see StartCommand
  */
-class PositionControllerSettings : public MTM1M3_logevent_positionControllerSettingsC {
+class PositionControllerSettings : public MTM1M3_logevent_positionControllerSettingsC,
+                                   public cRIO::Singleton<PositionControllerSettings> {
 public:
-    void load(const std::string &filename);
+    PositionControllerSettings(token);
+
+    void load(YAML::Node doc);
 
     void log() { M1M3SSPublisher::instance().logPositionControllerSettings(this); }
 };

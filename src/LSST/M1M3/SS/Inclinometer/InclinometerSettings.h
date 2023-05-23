@@ -24,7 +24,12 @@
 #ifndef INCLINOMETERSETTINGS_H_
 #define INCLINOMETERSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 #include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
 #include <M1M3SSPublisher.h>
 
 #include <string>
@@ -33,9 +38,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class InclinometerSettings : public MTM1M3_logevent_inclinometerSettingsC {
+class InclinometerSettings : public MTM1M3_logevent_inclinometerSettingsC,
+                             public cRIO::Singleton<InclinometerSettings> {
 public:
-    void load(const std::string &filename);
+    InclinometerSettings(token);
+
+    void load(YAML::Node doc);
 
     void log() { M1M3SSPublisher::instance().logInclinometerSettings(this); }
 };

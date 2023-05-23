@@ -21,20 +21,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
+#include "spdlog/sinks/base_sink.h"
+#include <spdlog/spdlog.h>
+
 #include <catch2/catch_test_macros.hpp>
+
+#include <SAL_MTM1M3.h>
 
 #include <Model.h>
 #include <HardpointActuatorSettings.h>
-#include <SafetyControllerSettings.h>
-#include <SafetyController.h>
-#include <SettingReader.h>
-
-#include "spdlog/sinks/base_sink.h"
-#include <string>
-#include <spdlog/spdlog.h>
-
-#include <SAL_MTM1M3.h>
 #include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <SafetyControllerSettings.h>
+#include <SettingReader.h>
 
 int lowCount = 0;
 int highCount = 0;
@@ -68,7 +69,6 @@ using check_sink_st = check_sink<spdlog::details::null_mutex>;
 using namespace LSST::M1M3::SS;
 
 SafetyControllerSettings safetyControllerSettings;
-HardpointActuatorSettings hardpointActuatorSettings;
 
 void init_logger() {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
@@ -84,9 +84,6 @@ void init_logger() {
 
     REQUIRE_NOTHROW(
             safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yaml"));
-
-    REQUIRE_NOTHROW(
-            hardpointActuatorSettings.load("../SettingFiles/Sets/Default/v1/HardpointActuatorSettings.yaml"));
 }
 
 TEST_CASE("Failure on low air pressure", "[SafetyController]") {
@@ -97,14 +94,15 @@ TEST_CASE("Failure on low air pressure", "[SafetyController]") {
     lowCount = highCount = 0;
 
     for (int i = 0; i < safetyControllerSettings.ILC.AirPressureCountThreshold - 1; i++) {
-        safetyController.hardpointActuatorAirPressure(0, -1,
-                                                      hardpointActuatorSettings.airPressureFaultLow - 1);
+        safetyController.hardpointActuatorAirPressure(
+                0, -1, HardpointActuatorSettings::instance().airPressureFaultLow - 1);
         safetyController.checkSafety(States::ActiveState);
         REQUIRE(lowCount == 0);
         REQUIRE(highCount == 0);
     }
 
-    safetyController.hardpointActuatorAirPressure(0, -1, hardpointActuatorSettings.airPressureFaultLow - 1);
+    safetyController.hardpointActuatorAirPressure(
+            0, -1, HardpointActuatorSettings::instance().airPressureFaultLow - 1);
     safetyController.checkSafety(States::ActiveState);
     REQUIRE(lowCount == 1);
     REQUIRE(highCount == 0);
@@ -118,14 +116,15 @@ TEST_CASE("Failure on high air pressure", "[SafetyController]") {
     lowCount = highCount = 0;
 
     for (int i = 0; i < safetyControllerSettings.ILC.AirPressureCountThreshold - 1; i++) {
-        safetyController.hardpointActuatorAirPressure(0, 1,
-                                                      hardpointActuatorSettings.airPressureFaultHigh + 1);
+        safetyController.hardpointActuatorAirPressure(
+                0, 1, HardpointActuatorSettings::instance().airPressureFaultHigh + 1);
         safetyController.checkSafety(States::ActiveState);
         REQUIRE(lowCount == 0);
         REQUIRE(highCount == 0);
     }
 
-    safetyController.hardpointActuatorAirPressure(0, 1, hardpointActuatorSettings.airPressureFaultHigh + 1);
+    safetyController.hardpointActuatorAirPressure(
+            0, 1, HardpointActuatorSettings::instance().airPressureFaultHigh + 1);
     safetyController.checkSafety(States::ActiveState);
     REQUIRE(lowCount == 0);
     REQUIRE(highCount == 1);

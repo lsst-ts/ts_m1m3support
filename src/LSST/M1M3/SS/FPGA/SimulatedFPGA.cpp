@@ -583,9 +583,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         }
                         int32_t encoder =
                                 -(M1M3SSPublisher::instance().getHardpointActuatorData()->encoder[index]) +
-                                SettingReader::instance().getHardpointActuatorSettings()->getEncoderOffset(
-                                        index) -
-                                steps / 4;
+                                HardpointActuatorSettings::instance().getEncoderOffset(index) - steps / 4;
                         _writeModbus32(response, encoder);               // Write Encoder
                         _writeModbusFloat(response, getRndPM1() * 8.0);  // Write Measured Force
                         _writeModbusCRC(response);

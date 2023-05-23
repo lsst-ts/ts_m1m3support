@@ -50,7 +50,6 @@
 using namespace LSST::M1M3::SS;
 
 ILCResponseParser::ILCResponseParser() {
-    _hardpointActuatorSettings = 0;
     _subnetData = 0;
     _safetyController = 0;
     _hardpointActuatorInfo = 0;
@@ -68,10 +67,9 @@ ILCResponseParser::ILCResponseParser() {
     _summaryState = 0;
 }
 
-ILCResponseParser::ILCResponseParser(HardpointActuatorSettings* hardpointActuatorSettings,
-                                     ILCSubnetData* subnetData, SafetyController* safetyController) {
+ILCResponseParser::ILCResponseParser(ILCSubnetData* subnetData, SafetyController* safetyController) {
     SPDLOG_DEBUG("ILCResponseParser: ILCResponseParser()");
-    _hardpointActuatorSettings = hardpointActuatorSettings;
+    _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
     _subnetData = subnetData;
     _safetyController = safetyController;
     _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
@@ -869,6 +867,7 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
         float secondaryForce = ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex];
         float secondarySetpoint =
                 _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0f;
+        fafWarning.checkSecondary(dataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
 
         fafWarning.checkSecondary(secondaryDataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
 

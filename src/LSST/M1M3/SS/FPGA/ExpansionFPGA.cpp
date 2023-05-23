@@ -21,15 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ExpansionFPGA.h>
-#include <ExpansionFPGAApplicationSettings.h>
-#include <NiFpga_ts_M1M3SupportExpansionFPGA.h>
-#include <NiError.h>
-
-#include <thread>
+#include <chrono>
 #include <unistd.h>
 
 #include <spdlog/spdlog.h>
+
+#include <ExpansionFPGA.h>
+#include <ExpansionFPGAApplicationSettings.h>
+#include <NiError.h>
+#include <NiFpga_ts_M1M3SupportExpansionFPGA.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -37,6 +37,8 @@ namespace SS {
 
 ExpansionFPGA::ExpansionFPGA() {
     SPDLOG_DEBUG("ExpansionFPGA: ExpansionFPGA()");
+    _disabled = true;
+    _fpga_resource = "";
     _session = 0;
     _remaining = 0;
 }
@@ -45,19 +47,19 @@ ExpansionFPGA::~ExpansionFPGA() {}
 
 void ExpansionFPGA::initialize() {
     SPDLOG_DEBUG("ExpansionFPGA: initialize()");
-    if (!expansionFPGAApplicationSettings->Enabled) {
+    if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
 }
 
 void ExpansionFPGA::open() {
-    SPDLOG_DEBUG("ExpansionFPGA: open({})", expansionFPGAApplicationSettings->Resource);
-    if (!expansionFPGAApplicationSettings->Enabled) {
+    SPDLOG_DEBUG("ExpansionFPGA: open({})", _fpga_resource);
+    if (_disabled) {
         return;
     }
-    NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA,
-           expansionFPGAApplicationSettings->Resource.c_str(), 0, &(_session));
+    NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(), 0,
+           &(_session));
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
@@ -68,7 +70,7 @@ void ExpansionFPGA::open() {
 
 void ExpansionFPGA::close() {
     SPDLOG_DEBUG("ExpansionFPGA: close()");
-    if (!expansionFPGAApplicationSettings->Enabled) {
+    if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
@@ -76,14 +78,14 @@ void ExpansionFPGA::close() {
 
 void ExpansionFPGA::finalize() {
     SPDLOG_DEBUG("ExpansionFPGA: finalize()");
-    if (!expansionFPGAApplicationSettings->Enabled) {
+    if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Finalize());
 }
 
 void ExpansionFPGA::sample() {
-    if (!expansionFPGAApplicationSettings->Enabled) {
+    if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__,
@@ -91,7 +93,7 @@ void ExpansionFPGA::sample() {
 }
 
 void ExpansionFPGA::readSlot1(float* data) {
-    if (!expansionFPGAApplicationSettings->Enabled) {
+    if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__,
@@ -100,7 +102,7 @@ void ExpansionFPGA::readSlot1(float* data) {
 }
 
 void ExpansionFPGA::readSlot2(uint32_t* data) {
-    if (!expansionFPGAApplicationSettings->Enabled) {
+    if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__,

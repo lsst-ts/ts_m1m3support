@@ -57,10 +57,8 @@ ForceActuatorSettings::ForceActuatorSettings(token) {
     measuredWarningPercentage = 90;
 }
 
-void ForceActuatorSettings::load(const std::string &filename) {
+void ForceActuatorSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
-
         auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
         for (int i = 0; i < FA_COUNT; ++i) {
@@ -204,7 +202,7 @@ void ForceActuatorSettings::load(const std::string &filename) {
         bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
         bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("Cannot load ForceActuatorSettings: {}", ex.what()));
     }
 
     log();
@@ -465,7 +463,7 @@ DistributedForces ForceActuatorSettings::calculateForceDistribution(float xForce
 void ForceActuatorSettings::log() { M1M3SSPublisher::instance().logForceActuatorSettings(this); }
 
 void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
-    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document nearTable(fullPath);
         if (nearTable.GetColumnCount() != FA_MAX_NEAR_COUNT + 1) {
@@ -503,7 +501,7 @@ void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename)
 }
 
 void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
-    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document farTable(fullPath);
         if (farTable.GetColumnCount() != FA_FAR_COUNT + 1) {
@@ -541,7 +539,7 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
 
 void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primaryFilename,
                                                       const std::string &secondaryFilename) {
-    auto primaryFullPath = SettingReader::instance().getFilePath(primaryFilename);
+    auto primaryFullPath = SettingReader::instance().getTablePath(primaryFilename);
     try {
         rapidcsv::Document primary(primaryFullPath);
         auto ID = primary.GetColumn<int>("ID");
@@ -573,7 +571,7 @@ void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primary
         throw std::runtime_error(fmt::format("Cannot read {}: {}", primaryFilename, er.what()));
     }
 
-    auto secondaryFullPath = SettingReader::instance().getFilePath(secondaryFilename);
+    auto secondaryFullPath = SettingReader::instance().getTablePath(secondaryFilename);
     try {
         rapidcsv::Document secondary(secondaryFullPath);
         auto ID = secondary.GetColumn<int>("ID");

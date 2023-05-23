@@ -21,57 +21,73 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <dirent.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
 
-#include <ForceActuatorSettings.h>
 #include <AccelerometerSettings.h>
+#include <DisplacementSensorSettings.h>
+#include <ExpansionFPGAApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <GyroSettings.h>
+#include <ILCApplicationSettings.h>
+#include <InclinometerSettings.h>
+#include <HardpointActuatorSettings.h>
+#include <PIDSettings.h>
+#include <PositionControllerSettings.h>
 #include <SettingReader.h>
+
+extern const char* CONFIG_SCHEMA_VERSION;
 
 using namespace LSST::M1M3::SS;
 
-void SettingReader::setRootPath(std::string rootPath) {
-    SPDLOG_DEBUG("SettingReader: setRootPath(\"{}\")", rootPath);
+auto test_dir = [](std::string dir) {
+    struct stat dirstat;
+    if (stat(dir.c_str(), &dirstat)) {
+        throw std::runtime_error("Directory " + dir + " cannot be accessed: " + strerror(errno));
+    }
+    if (!(dirstat.st_mode & (S_IFLNK | S_IFDIR))) {
+        throw std::runtime_error(dir + " isn't directory or link");
+    }
+};
 
-    auto test_dir = [](std::string dir) {
-        struct stat dirstat;
-        if (stat(dir.c_str(), &dirstat)) {
-            throw std::runtime_error("Directory " + dir + " doesn't exist: " + strerror(errno));
-        }
-        if (!(dirstat.st_mode & (S_IFLNK | S_IFDIR))) {
-            throw std::runtime_error(dir + " isn't directory or link");
-        }
-    };
+void SettingReader::setRootPath(std::string rootPath) {
+    if (rootPath[0] != '/') {
+        char* cwd = getcwd(NULL, 0);
+        rootPath = std::string(cwd) + "/" + rootPath;
+        free(cwd);
+    }
+    SPDLOG_DEBUG("Configuration absolute path: {}", rootPath);
 
     test_dir(rootPath);
 
     _rootPath = rootPath;
-
-    test_dir(_getBasePath(""));
-
     _currentSet = "";
-    _currentVersion = "";
 
     test_dir(_getSetPath(""));
+    test_dir(getTablePath(""));
 }
 
-std::string SettingReader::getFilePath(std::string filename) {
+std::string SettingReader::getTablePath(std::string filename) {
     if (filename[0] == '/') return filename;
-    return _rootPath + "/" + filename;
+    return _getSetPath("tables/" + filename);
 }
 
 std::list<std::string> SettingReader::getAvailableConfigurations() {
     std::list<std::string> ret;
-    std::string setPath = _rootPath + "/Sets";
-    auto dirp = opendir(setPath.c_str());
+    auto setdir = _getSetPath("");
+    auto dirp = opendir(setdir.c_str());
+    if (dirp == NULL) {
+        throw std::runtime_error("Directory " + setdir + " cannot be opened: " + strerror(errno));
+    }
     dirent* de;
     while ((de = readdir(dirp)) != NULL) {
-        if ((de->d_type & DT_DIR) == DT_DIR && de->d_name[0] != '.') {
+        if ((de->d_type & DT_REG) == DT_REG && de->d_name[0] != '.' && de->d_name[0] != '_') {
             ret.push_back(de->d_name);
         }
     }
@@ -80,110 +96,34 @@ std::list<std::string> SettingReader::getAvailableConfigurations() {
 
 void SettingReader::configure(std::string settingsToApply) {
     SPDLOG_DEBUG("SettingReader: configure(\"{}\")", settingsToApply);
-    _currentSet = "";
-    _currentVersion = "";
-    auto commaPos = settingsToApply.find(',');
-    if (commaPos != std::string::npos) {
-        _currentSet = settingsToApply.substr(0, commaPos);
-        _currentVersion = settingsToApply.substr(commaPos + 1);
-    } else {
-        AliasApplicationSettings* aliasApplicationSettings = loadAliasApplicationSettings();
-        for (uint32_t i = 0; i != aliasApplicationSettings->Aliases.size(); ++i) {
-            Alias alias = aliasApplicationSettings->Aliases[i];
-            if (alias.Name.compare(settingsToApply) == 0) {
-                _currentSet = alias.Set;
-                _currentVersion = alias.Version;
-                break;
-            }
-        }
-    }
+    _currentSet = settingsToApply;
     if (_currentSet.empty()) {
         throw std::runtime_error("Cannot find configuration for " + settingsToApply + " settings");
     }
+}
 
-    if (_currentVersion.empty()) {
-        throw std::runtime_error("Empty version for " + settingsToApply + " settings");
+void SettingReader::load() {
+    std::string filename = _getSetPath("_init.yaml");
+    try {
+        SPDLOG_INFO("Reading configurationf file {}", filename);
+        YAML::Node settings = YAML::LoadFile(filename);
+
+        ForceActuatorSettings::instance().load(settings["ForceActuatorSettings"]);
+        HardpointActuatorSettings::instance().load(settings["HardpointActuatorSettings"]);
+        _safetyControllerSettings.load(settings["SafetyControllerSettings"]);
+        PositionControllerSettings::instance().load(settings["PositionControllerSettings"]);
+        AccelerometerSettings::instance().load(settings["AccelerometerSettings"]);
+        DisplacementSensorSettings::instance().load(settings["DisplacementSensorSettings"]);
+        GyroSettings::instance().load(settings["GyroSettings"]);
+        ILCApplicationSettings::instance().load(settings["ILCApplicationSettings"]);
+        ExpansionFPGAApplicationSettings::instance().load(settings["ExpansionFPGAApplicationSettings"]);
+        PIDSettings::instance().load(settings["PIDSettings"]);
+        InclinometerSettings::instance().load(settings["InclinometerSettings"]);
+    } catch (YAML::Exception& ex) {
+        throw runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
 }
 
-AliasApplicationSettings* SettingReader::loadAliasApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadAliasApplicationSettings()");
-    _aliasApplicationSettings.load(_getBasePath("AliasApplicationSettings.yaml"));
-    return &_aliasApplicationSettings;
-}
-
-void SettingReader::loadForceActuatorSettings() {
-    SPDLOG_DEBUG("SettingReader: loadForceActuatorSettings()");
-    ForceActuatorSettings::instance().load(_getSetPath("ForceActuatorSettings.yaml"));
-}
-
-HardpointActuatorSettings* SettingReader::loadHardpointActuatorSettings() {
-    SPDLOG_DEBUG("SettingReader: loadHardpointActuatorSettings()");
-    _hardpointActuatorSettings.load(_getSetPath("HardpointActuatorSettings.yaml"));
-    return &_hardpointActuatorSettings;
-}
-
-ILCApplicationSettings* SettingReader::loadILCApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadILCApplicationSettings()");
-    _ilcApplicationSettings.load(_getBasePath("ILCApplicationSettings.yaml"));
-    return &_ilcApplicationSettings;
-}
-
-RecommendedApplicationSettings* SettingReader::loadRecommendedApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadRecommendedApplicationSettings()");
-    _recommendedApplicationSettings.load(_getBasePath("RecommendedApplicationSettings.yaml"));
-    return &_recommendedApplicationSettings;
-}
-
-SafetyControllerSettings* SettingReader::loadSafetyControllerSettings() {
-    SPDLOG_DEBUG("SettingReader: loadSafetyControllerSettings()");
-    _safetyControllerSettings.load(_getSetPath("SafetyControllerSettings.yaml"));
-    return &_safetyControllerSettings;
-}
-
-PositionControllerSettings* SettingReader::loadPositionControllerSettings() {
-    SPDLOG_DEBUG("SettingReader: loadPositionControllerSettings()");
-    _positionControllerSettings.load(_getSetPath("PositionControllerSettings.yaml"));
-    return &_positionControllerSettings;
-}
-
-void SettingReader::loadAccelerometerSettings() {
-    SPDLOG_DEBUG("SettingReader: loadAccelerometerSettings()");
-    AccelerometerSettings::instance().load(_getSetPath("AccelerometerSettings.yaml"));
-}
-
-DisplacementSensorSettings* SettingReader::loadDisplacementSensorSettings() {
-    SPDLOG_DEBUG("SettingReader: loadDisplacementSensorSettings()");
-    _displacementSensorSettings.load(_getSetPath("DisplacementSensorSettings.yaml"));
-    return &_displacementSensorSettings;
-}
-
-GyroSettings* SettingReader::loadGyroSettings() {
-    SPDLOG_DEBUG("SettingReader: loadGyroSettings()");
-    _gyroSettings.load(_getSetPath("GyroSettings.yaml"));
-    return &_gyroSettings;
-}
-
-ExpansionFPGAApplicationSettings* SettingReader::loadExpansionFPGAApplicationSettings() {
-    SPDLOG_DEBUG("SettingReader: loadExpansionFPGAApplicationSettings()");
-    _expansionFPGAApplicationSettings.load(_getBasePath("ExpansionFPGAApplicationSettings.yaml"));
-    return &_expansionFPGAApplicationSettings;
-}
-
-PIDSettings* SettingReader::loadPIDSettings() {
-    SPDLOG_DEBUG("SettingReader: loadPIDSettings()");
-    _pidSettings.load(_getSetPath("PIDSettings.yaml"));
-    return &_pidSettings;
-}
-
-InclinometerSettings* SettingReader::loadInclinometerSettings() {
-    SPDLOG_DEBUG("SettingReader: loadInclinometerSettings()");
-    _inclinometerSettings.load(_getSetPath("InclinometerSettings.yaml"));
-    return &_inclinometerSettings;
-}
-
-std::string SettingReader::_getBasePath(std::string file) { return _rootPath + "/Base/" + file; }
-
 std::string SettingReader::_getSetPath(std::string file) {
-    return _rootPath + "/Sets/" + _currentSet + "/" + _currentVersion + "/" + file;
+    return _rootPath + "/" + CONFIG_SCHEMA_VERSION + "/" + file;
 }

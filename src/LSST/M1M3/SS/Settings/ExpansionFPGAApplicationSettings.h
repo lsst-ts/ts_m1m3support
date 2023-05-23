@@ -24,18 +24,23 @@
 #ifndef EXPANSIONFPGAAPPLICATIONSETTINGS_H_
 #define EXPANSIONFPGAAPPLICATIONSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
+#include <cRIO/Singleton.h>
+
 #include <DataTypes.h>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct ExpansionFPGAApplicationSettings {
+struct ExpansionFPGAApplicationSettings : public cRIO::Singleton<ExpansionFPGAApplicationSettings> {
+    ExpansionFPGAApplicationSettings(token);
+
+    void load(YAML::Node doc);
+
     bool Enabled;
     std::string Resource;
-
-    void load(const std::string &filename);
 };
 
 } /* namespace SS */

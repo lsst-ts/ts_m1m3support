@@ -24,12 +24,23 @@
 #ifndef ILC_H_
 #define ILC_H_
 
+#include <SAL_MTM1M3C.h>
+
+#include <ActiveBusList.h>
+#include <ChangeILCModeBusList.h>
+#include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorSettings.h>
+#include <FreezeSensorBusList.h>
+#include <HardpointActuatorApplicationSettings.h>
+#include <HardpointActuatorSettings.h>
+#include <HardpointMonitorApplicationSettings.h>
 #include <ILCDataTypes.h>
+#include <ILCMessageFactory.h>
+#include <ILCResponseParser.h>
 #include <ILCSubnetData.h>
 #include <ModbusBuffer.h>
-#include <ILCMessageFactory.h>
-#include <SetADCChanneOffsetAndSensitivityBusList.h>
-#include <ChangeILCModeBusList.h>
+#include <PositionController.h>
+#include <RaisedBusList.h>
 #include <ReadBoostValveDCAGainBusList.h>
 #include <ReadCalibrationBusList.h>
 #include <ReportADCScanRateBusList.h>
@@ -38,21 +49,10 @@
 #include <ReportServerIDBusList.h>
 #include <ReportServerStatusBusList.h>
 #include <ResetBustList.h>
+#include <SafetyController.h>
+#include <SetADCChanneOffsetAndSensitivityBusList.h>
 #include <SetADCScanRateBusList.h>
 #include <SetBoostValveDCAGainBusList.h>
-#include <FreezeSensorBusList.h>
-#include <RaisedBusList.h>
-#include <ActiveBusList.h>
-#include <ILCResponseParser.h>
-#include <SAL_MTM1M3C.h>
-#include <ILCApplicationSettings.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <HardpointActuatorApplicationSettings.h>
-#include <HardpointActuatorSettings.h>
-#include <HardpointMonitorApplicationSettings.h>
-#include <PositionController.h>
-#include <SafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -66,10 +66,9 @@ namespace SS {
  */
 class ILC {
 public:
-    ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
+    ILC(PositionController* positionController,
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
         HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-        HardpointActuatorSettings* hardpointActuatorSettings,
         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
         SafetyController* safetyController);
     virtual ~ILC();

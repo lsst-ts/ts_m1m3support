@@ -36,12 +36,12 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Inclinometer::Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController,
-                           InclinometerSettings* inclinometerSettings) {
+Inclinometer::Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController) {
     SPDLOG_DEBUG("Inclinometer: Inclinometer()");
+
     _fpgaData = fpgaData;
     _safetyController = safetyController;
-    _inclinometerSettings = inclinometerSettings;
+    _inclinometerSettings = &InclinometerSettings::instance();
 
     _inclinometerData = M1M3SSPublisher::instance().getInclinometerData();
     _inclinometerWarning = M1M3SSPublisher::instance().getEventInclinometerSensorWarning();
