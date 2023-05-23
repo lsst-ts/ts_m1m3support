@@ -29,20 +29,10 @@
 
 #include <cRIO/Singleton.h>
 
-#include <SafetyControllerSettings.h>
-#include <AliasApplicationSettings.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
-#include <HardpointActuatorSettings.h>
-#include <ILCApplicationSettings.h>
-#include <RecommendedApplicationSettings.h>
-#include <PositionControllerSettings.h>
-#include <DisplacementSensorSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
-#include <GyroSettings.h>
-#include <ExpansionFPGAApplicationSettings.h>
-#include <PIDSettings.h>
-#include <InclinometerSettings.h>
+#include <SafetyControllerSettings.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -65,9 +55,9 @@ public:
      */
     void setRootPath(std::string rootPath);
 
-    std::string getFilePath(std::string filename);
+    std::string getTablePath(std::string filename);
 
-    std::string getSettingsVersion() { return _currentSet + ":" + _currentVersion; }
+    std::string getSettingsVersion() { return _currentSet; }
 
     /**
      * Returns available configurations.
@@ -80,15 +70,16 @@ public:
      * @throw runtime_error if configuration is
      */
     void configure(std::string settingsToApply);
-    AliasApplicationSettings* loadAliasApplicationSettings();
+
+    /**
+     * Loads all settings.
+     */
+    void load();
 
     ForceActuatorApplicationSettings* getForceActuatorApplicationSettings() {
         return &_forceActuatorApplicationSettings;
     }
 
-    void loadForceActuatorSettings();
-
-    HardpointActuatorSettings* getHardpointActuatorSettings() { return &_hardpointActuatorSettings; }
     HardpointActuatorApplicationSettings* getHardpointActuatorApplicationSettings() {
         return &_hardpointActuatorApplicationSettings;
     }
@@ -96,44 +87,21 @@ public:
         return &_hardpointMonitorApplicationSettings;
     }
 
-    HardpointActuatorSettings* loadHardpointActuatorSettings();
-    ILCApplicationSettings* loadILCApplicationSettings();
-    RecommendedApplicationSettings* loadRecommendedApplicationSettings();
-    SafetyControllerSettings* loadSafetyControllerSettings();
     SafetyControllerSettings* getSafetyControllerSettings() { return &_safetyControllerSettings; }
-    PositionControllerSettings* loadPositionControllerSettings();
-    void loadAccelerometerSettings();
-    DisplacementSensorSettings* loadDisplacementSensorSettings();
-    GyroSettings* loadGyroSettings();
-    ExpansionFPGAApplicationSettings* loadExpansionFPGAApplicationSettings();
-    PIDSettings* loadPIDSettings();
-    InclinometerSettings* loadInclinometerSettings();
 
 private:
     SettingReader& operator=(const SettingReader&) = delete;
     SettingReader(const SettingReader&) = delete;
 
-    std::string _getBasePath(std::string file);
     std::string _getSetPath(std::string file);
 
-    AliasApplicationSettings _aliasApplicationSettings;
     ForceActuatorApplicationSettings _forceActuatorApplicationSettings;
     HardpointActuatorApplicationSettings _hardpointActuatorApplicationSettings;
-    HardpointActuatorSettings _hardpointActuatorSettings;
-    ILCApplicationSettings _ilcApplicationSettings;
-    RecommendedApplicationSettings _recommendedApplicationSettings;
     SafetyControllerSettings _safetyControllerSettings;
-    PositionControllerSettings _positionControllerSettings;
-    DisplacementSensorSettings _displacementSensorSettings;
     HardpointMonitorApplicationSettings _hardpointMonitorApplicationSettings;
-    GyroSettings _gyroSettings;
-    ExpansionFPGAApplicationSettings _expansionFPGAApplicationSettings;
-    PIDSettings _pidSettings;
-    InclinometerSettings _inclinometerSettings;
 
     std::string _rootPath;
     std::string _currentSet;
-    std::string _currentVersion;
 };
 
 } /* namespace SS */

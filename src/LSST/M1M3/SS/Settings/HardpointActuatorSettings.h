@@ -24,24 +24,27 @@
 #ifndef HARDPOINTACTUATORSETTINGS_H_
 #define HARDPOINTACTUATORSETTINGS_H_
 
-#include <SAL_MTM1M3.h>
-
-#include <DataTypes.h>
 #include <string>
 #include <vector>
+
+#include <yaml-cpp/yaml.h>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class HardpointActuatorSettings : public MTM1M3_logevent_hardpointActuatorSettingsC {
+class HardpointActuatorSettings : public MTM1M3_logevent_hardpointActuatorSettingsC,
+                                  public cRIO::Singleton<HardpointActuatorSettings> {
 public:
-    std::vector<double> HardpointDisplacementToMirrorPosition;
-    std::vector<double> MirrorPositionToHardpointDisplacement;
+    HardpointActuatorSettings(token);
 
-    HardpointActuatorSettings();
-
-    void load(const std::string &filename);
+    void load(YAML::Node doc);
 
     void log();
 
@@ -53,6 +56,9 @@ public:
      * @return hardpoint zero offset (HP<HP>EncoderOffset value)
      */
     int32_t getEncoderOffset(int hp) { return encoderOffset[hp]; }
+
+    std::vector<double> HardpointDisplacementToMirrorPosition;
+    std::vector<double> MirrorPositionToHardpointDisplacement;
 
     // TODO move to XML
     float hardpointBreakawayFaultHigh;

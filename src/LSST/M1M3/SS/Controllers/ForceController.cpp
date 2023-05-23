@@ -51,12 +51,11 @@ ForceActuatorIndicesNeighbors::ForceActuatorIndicesNeighbors() {
     memset(FarIndices, 0, sizeof(FarIndices));
 }
 
-ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                                 PIDSettings* pidSettings)
+ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
         : _accelerationForceComponent(forceActuatorApplicationSettings),
           _activeOpticForceComponent(forceActuatorApplicationSettings),
           _azimuthForceComponent(forceActuatorApplicationSettings),
-          _balanceForceComponent(forceActuatorApplicationSettings, pidSettings),
+          _balanceForceComponent(forceActuatorApplicationSettings),
           _elevationForceComponent(forceActuatorApplicationSettings),
           _offsetForceComponent(forceActuatorApplicationSettings),
           _staticForceComponent(forceActuatorApplicationSettings),
@@ -66,7 +65,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     SPDLOG_DEBUG("ForceController: ForceController()");
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _safetyController = Model::get().getSafetyController();
-    _pidSettings = pidSettings;
+    _pidSettings = &PIDSettings::instance();
 
     _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
     _appliedForces = M1M3SSPublisher::instance().getAppliedForces();

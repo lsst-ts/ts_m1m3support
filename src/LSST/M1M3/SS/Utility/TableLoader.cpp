@@ -35,7 +35,7 @@ std::string LSST::M1M3::SS::rowToStr(std::vector<std::string> row) {
 
 void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data,
                                  const std::string& filename) {
-    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document limitTable(fullPath);
         data->clear();
@@ -63,7 +63,7 @@ void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data,
 void TableLoader::loadForceLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUNT], float zHigh[FA_Z_COUNT],
                                       float yLow[FA_Y_COUNT], float yHigh[FA_Y_COUNT], float xLow[FA_X_COUNT],
                                       float xHigh[FA_X_COUNT], const std::string& filename) {
-    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document limitTable(fullPath);
         if (columnsToSkip + 6 != limitTable.GetColumnCount()) {

@@ -24,26 +24,32 @@
 #ifndef DISPLACEMENTSENSORSETTINGS_H_
 #define DISPLACEMENTSENSORSETTINGS_H_
 
+#include <string>
+#include <vector>
+
+#include <yaml-cpp/yaml.h>
+
 #include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
 
 #include <DataTypes.h>
 #include <M1M3SSPublisher.h>
-#include <string>
-#include <vector>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class DisplacementSensorSettings : public MTM1M3_logevent_displacementSensorSettingsC {
+class DisplacementSensorSettings : public MTM1M3_logevent_displacementSensorSettingsC,
+                                   public cRIO::Singleton<DisplacementSensorSettings> {
 public:
     std::vector<double> ConverterMatrix;
     std::vector<int32_t> NPorts;
     std::vector<double> NOffsets;
 
-    DisplacementSensorSettings() : NPorts(8), NOffsets(8) {}
+    DisplacementSensorSettings(token) : NPorts(8), NOffsets(8) {}
 
-    void load(const std::string &filename);
+    void load(YAML::Node doc);
 
     void log() { M1M3SSPublisher::instance().logDisplacementSensorSettings(this); }
 };

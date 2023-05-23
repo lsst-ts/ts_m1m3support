@@ -158,7 +158,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
     }
 }
 
-void initializeFPGAs(IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
+void initializeFPGA(IFPGA* fpga) {
 #ifdef SIMULATOR
     SPDLOG_WARN("Starting Simulator version! Version {}", VERSION);
 #else
@@ -169,13 +169,6 @@ void initializeFPGAs(IFPGA* fpga, IExpansionFPGA* expansionFPGA) {
 
     fpga->initialize();
     fpga->open();
-
-    SPDLOG_INFO("Main: Load expansion FPGA application settings");
-    ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings =
-            SettingReader::instance().loadExpansionFPGAApplicationSettings();
-    SPDLOG_INFO("Main: Create expansion FPGA");
-    expansionFPGA->setExpansionFPGAApplicationSettings(expansionFPGAApplicationSettings);
-    expansionFPGA->open();
 }
 
 void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL, int retPipe) {
@@ -350,7 +343,6 @@ int main(int argc, char* const argv[]) {
         startLog();
     }
 
-    SPDLOG_INFO("Main: Creating setting reader, root {}", configRoot);
     SettingReader::instance().setRootPath(configRoot);
     SPDLOG_INFO("Main: Initializing M1M3 SAL");
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
@@ -386,7 +378,7 @@ int main(int argc, char* const argv[]) {
     IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
 
     try {
-        initializeFPGAs(fpga, expansionFPGA);
+        initializeFPGA(fpga);
 
         spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) { l->flush(); });
 

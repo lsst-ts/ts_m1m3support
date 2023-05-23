@@ -21,18 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ILCMessageFactory.h>
-#include <ModbusBuffer.h>
 #include <ILCApplicationSettings.h>
 #include <ILCDataTypes.h>
+#include <ILCMessageFactory.h>
+#include <ModbusBuffer.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILCMessageFactory::ILCMessageFactory(ILCApplicationSettings* ilcApplicationSettings) {
-    _ilcApplicationSettings = ilcApplicationSettings;
-}
+ILCMessageFactory::ILCMessageFactory() { _ilcApplicationSettings = &ILCApplicationSettings::instance(); }
 
 void ILCMessageFactory::reportServerID(ModbusBuffer* buffer, uint8_t address) {
     buffer->writeU8(address);

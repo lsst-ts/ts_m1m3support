@@ -38,7 +38,6 @@
 #include <ForceController.h>
 #include <Gyro.h>
 #include <HardpointActuatorApplicationSettings.h>
-#include <HardpointActuatorSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <HardpointTestController.h>
 #include <Inclinometer.h>
@@ -109,9 +108,7 @@ private:
     Model(const Model&) = delete;
 
     void _populateHardpointActuatorInfo(
-            HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-            HardpointActuatorSettings* hardpointActuatorSettings,
-            PositionControllerSettings* positionControllerSettings);
+            HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings);
     void _populateHardpointMonitorInfo(
             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 

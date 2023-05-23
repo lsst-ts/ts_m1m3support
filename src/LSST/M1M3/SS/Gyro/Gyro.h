@@ -43,9 +43,8 @@ class Gyro {
 public:
     /*!
      * Instantiates the gyro sensor.
-     * @param[in] gyroSettings The gyro settings.
      */
-    Gyro(GyroSettings* gyroSettings);
+    Gyro();
 
     /*!
      * Executes a built in test.

@@ -21,14 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PIDSettings.h>
+#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
+
+#include <PIDSettings.h>
 
 using namespace LSST::M1M3::SS;
 
-void PIDSettings::load(const std::string &filename) {
+PIDSettings::PIDSettings(token) {}
+
+void PIDSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading PIDSettings");
 
         _parsePID(doc["Fx"], 0);
         _parsePID(doc["Fy"], 1);
@@ -37,7 +41,7 @@ void PIDSettings::load(const std::string &filename) {
         _parsePID(doc["My"], 4);
         _parsePID(doc["Mz"], 5);
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading PIDSettings: {}", ex.what()));
     }
 
     log();

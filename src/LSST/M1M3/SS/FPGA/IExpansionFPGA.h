@@ -42,14 +42,14 @@ namespace SS {
  */
 class IExpansionFPGA {
 public:
-    IExpansionFPGA() { expansionFPGAApplicationSettings = NULL; };
-    virtual ~IExpansionFPGA(){};
+    IExpansionFPGA() {}
+    virtual ~IExpansionFPGA() {}
 
     static IExpansionFPGA& get();
 
-    void setExpansionFPGAApplicationSettings(
-            ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings) {
-        this->expansionFPGAApplicationSettings = expansionFPGAApplicationSettings;
+    void setResource(bool enabled, std::string resource) {
+        _disabled = !enabled;
+        _fpga_resource = resource;
     }
 
     /**
@@ -136,7 +136,8 @@ public:
     virtual void readSlot2(uint32_t* data) = 0;
 
 protected:
-    ExpansionFPGAApplicationSettings* expansionFPGAApplicationSettings;
+    bool _disabled;
+    std::string _fpga_resource;
 
 private:
     IExpansionFPGA& operator=(const IExpansionFPGA&) = delete;

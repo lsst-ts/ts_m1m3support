@@ -24,19 +24,23 @@
 #ifndef PIDSETTINGS_H_
 #define PIDSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
 #include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
 #include <M1M3SSPublisher.h>
 #include <PIDParameters.h>
-
-#include <yaml-cpp/yaml.h>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct PIDSettings : public MTM1M3_logevent_pidSettingsC {
-    void load(const std::string &filename);
+struct PIDSettings : public MTM1M3_logevent_pidSettingsC, public cRIO::Singleton<PIDSettings> {
+    PIDSettings(token);
+
+    void load(YAML::Node doc);
 
     void log() { M1M3SSPublisher::instance().logPIDSettings(this); }
 

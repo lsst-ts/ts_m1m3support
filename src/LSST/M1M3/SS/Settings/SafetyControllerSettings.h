@@ -24,20 +24,23 @@
 #ifndef SAFETYCONTROLLERSETTINGS_H_
 #define SAFETYCONTROLLERSETTINGS_H_
 
+#include <string>
+
+#include <yaml-cpp/yaml.h>
+
 #include <AirControllerSafetySettings.h>
+#include <CellLightsSafetySettings.h>
 #include <DisplacementSafetySettings.h>
+#include <ForceControllerSafetySettings.h>
+#include <ILCSafetySettings.h>
 #include <InclinometerSafetySettings.h>
 #include <InterlockControllerSafetySettings.h>
-#include <ForceControllerSafetySettings.h>
+#include <LowerOperationSafetySettings.h>
 #include <PositionControllerSafetySettings.h>
-#include <CellLightsSafetySettings.h>
 #include <PositionControllerSafetySettings.h>
 #include <PowerControllerSafetySettings.h>
 #include <RaiseOperationSafetySettings.h>
-#include <LowerOperationSafetySettings.h>
-#include <ILCSafetySettings.h>
 #include <TMASafetySettings.h>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {
@@ -69,7 +72,7 @@ public:
      *
      * @throws std::runtime_error on error
      */
-    void load(const std::string &filename);
+    void load(YAML::Node doc);
 };
 
 } /* namespace SS */

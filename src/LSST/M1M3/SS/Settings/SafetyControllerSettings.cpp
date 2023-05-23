@@ -21,15 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SafetyControllerSettings.h>
-#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
+#include <yaml-cpp/yaml.h>
+
+#include <SafetyControllerSettings.h>
 
 using namespace LSST::M1M3::SS;
 
-void SafetyControllerSettings::load(const std::string &filename) {
+void SafetyControllerSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading SafetyControllerSettings");
 
         AirController.set(doc["AirControllerSettings"]);
         Displacement.set(doc["DisplacementSettings"]);
@@ -44,6 +45,6 @@ void SafetyControllerSettings::load(const std::string &filename) {
         ILC.set(doc["ILCSettings"]);
         TMA.set(doc["TMASettings"]);
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading SafetyControllerSettings: {}", ex.what()));
     }
 }
