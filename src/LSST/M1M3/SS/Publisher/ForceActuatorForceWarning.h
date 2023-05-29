@@ -30,6 +30,8 @@
 
 #include <cRIO/Singleton.h>
 
+#include <DataTypes.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -87,6 +89,14 @@ public:
      * Sends updates through SAL/DDS.
      */
     void send();
+
+    // TODO: declared in XML 17.0.0 and higher
+    bool anyMeasuredXForceWarning;
+    bool measuredXForceWarning[FA_X_COUNT];
+    bool anyMeasuredYForceWarning;
+    bool measuredYForceWarning[FA_Y_COUNT];
+    bool anyMeasuredZForceWarning;
+    bool measuredZForceWarning[FA_Z_COUNT];
 
 private:
     float _measuredForceWarningRatio;

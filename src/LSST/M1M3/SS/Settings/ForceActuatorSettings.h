@@ -179,6 +179,21 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
+    // TODO: declared in XML 17.0.0 and higher
+    float measuredXForceLowLimit[FA_X_COUNT];
+    float measuredXForceHighLimit[FA_X_COUNT];
+    float measuredYForceLowLimit[FA_Y_COUNT];
+    float measuredYForceHighLimit[FA_Y_COUNT];
+    float measuredZForceLowLimit[FA_Z_COUNT];
+    float measuredZForceHighLimit[FA_Z_COUNT];
+
+    float appliedXForceLowLimit[FA_X_COUNT];
+    float appliedXForceHighLimit[FA_X_COUNT];
+    float appliedYForceLowLimit[FA_Y_COUNT];
+    float appliedYForceHighLimit[FA_Y_COUNT];
+    float appliedZForceLowLimit[FA_Z_COUNT];
+    float appliedZForceHighLimit[FA_Z_COUNT];
+
 private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
