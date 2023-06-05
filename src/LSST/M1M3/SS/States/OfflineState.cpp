@@ -22,9 +22,10 @@
  */
 
 #include <OfflineState.h>
-#include <Model.h>
 #include <DigitalInputOutput.h>
+#include <Model.h>
 #include <PowerController.h>
+#include <RaisingLoweringInfo.h>
 #include <SimulationMode.h>
 
 #include <spdlog/spdlog.h>
@@ -42,6 +43,8 @@ States::Type OfflineState::update(UpdateCommand* command) {
 States::Type OfflineState::enterControl(EnterControlCommand* command) {
     SPDLOG_INFO("OfflineState: enterControl()");
 
+    RaisingLoweringInfo::instance().sendUpdates(true);
+
     M1M3SSPublisher::instance().logSoftwareVersions();
 #ifdef SIMULATOR
     SimulationMode::instance().setSimulationMode(1);
@@ -52,8 +55,6 @@ States::Type OfflineState::enterControl(EnterControlCommand* command) {
     Model::get().getDigitalInputOutput()->turnAirOff();
     Model::get().getDigitalInputOutput()->turnCellLightsOff();
     Model::get().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
-    // TODO: May need to change power controller to act like digital input output
-    // Model::get().getPowerController()->setBothPowerNetworks(false);
     return States::StandbyState;
 }
 

@@ -31,6 +31,7 @@
 #include <ILC.h>
 #include <Model.h>
 #include <PowerController.h>
+#include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
 #include <StandbyState.h>
@@ -52,6 +53,7 @@ States::Type StandbyState::update(UpdateCommand* command) {
 States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
     SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+    RaisingLoweringInfo::instance().sendUpdates(true);
 
     Model::get().loadSettings(command->getConfigurationOverride());
 
