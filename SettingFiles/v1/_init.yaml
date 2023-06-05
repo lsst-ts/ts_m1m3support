@@ -331,7 +331,7 @@ SafetyControllerSettings:
     FaultOnNearNeighborCheck: On
     FaultOnMagnitudeLimit: On
     FaultOnFarNeighborCheck: On
-    FaultOnElevationForceClipping: On
+    FaultOnElevationForceClipping: Off
     FaultOnAzimuthForceClipping: On
     FaultOnThermalForceClipping: On
     FaultOnBalanceForceClipping: On
@@ -341,7 +341,7 @@ SafetyControllerSettings:
     FaultOnStaticForceClipping: On
     FaultOnOffsetForceClipping: On
     FaultOnVelocityForceClipping: On
-    FaultOnForceClipping: On
+    FaultOnForceClipping: Off
   PositionControllerSettings:
     FollowingErrorPercentage: 50
     FaultNumberOfFollowingErrors: 10

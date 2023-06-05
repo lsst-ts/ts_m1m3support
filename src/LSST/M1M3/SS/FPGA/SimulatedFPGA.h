@@ -24,17 +24,18 @@
 #ifndef LSST_M1M3_SS_FPGA_SIMULATEDFPGA_H_
 #define LSST_M1M3_SS_FPGA_SIMULATEDFPGA_H_
 
-#include <IFPGA.h>
-#include <thread>
+#include <chrono>
 #include <mutex>
 #include <queue>
-#include <chrono>
-#include <ILCSubnetData.h>
-#include <HardpointActuatorSettings.h>
+#include <thread>
 
 #include <SAL_MTM1M3C.h>
+#include <SAL_MTMount.h>
 #include <SAL_MTMountC.h>
-#include "SAL_MTMount.h"
+
+#include <IFPGA.h>
+#include <ILCSubnetData.h>
+#include <HardpointActuatorSettings.h>
 
 struct MTMount_AltC;
 struct MTMount_AzC;
@@ -116,6 +117,9 @@ private:
     void _monitorElevation(void);
 
     float _mountElevation = 90.;
+    std::chrono::steady_clock::time_point _mountElevationValidTo;
+    bool _simulatingToHorizon;
+    bool _mountSimulatedMovementFirstPass = true;
 
     bool _exitThread = false;
 
