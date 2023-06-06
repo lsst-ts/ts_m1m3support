@@ -68,8 +68,6 @@ using check_sink_st = check_sink<spdlog::details::null_mutex>;
 
 using namespace LSST::M1M3::SS;
 
-SafetyControllerSettings safetyControllerSettings;
-
 void init_logger() {
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     m1m3SAL->setDebugLevel(2);
@@ -81,19 +79,19 @@ void init_logger() {
     auto logger = std::make_shared<spdlog::logger>("Test", std::make_shared<check_sink_st>());
     spdlog::set_default_logger(logger);
     spdlog::set_level(spdlog::level::trace);
-
-    REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yaml"));
 }
 
 TEST_CASE("Failure on low air pressure", "[SafetyController]") {
     init_logger();
 
-    SafetyController safetyController(&safetyControllerSettings);
+    SafetyControllerSettings* safetyControllerSettings =
+            SettingReader::instance().getSafetyControllerSettings();
+
+    SafetyController safetyController(safetyControllerSettings);
 
     lowCount = highCount = 0;
 
-    for (int i = 0; i < safetyControllerSettings.ILC.AirPressureCountThreshold - 1; i++) {
+    for (int i = 0; i < safetyControllerSettings->ILC.AirPressureCountThreshold - 1; i++) {
         safetyController.hardpointActuatorAirPressure(
                 0, -1, HardpointActuatorSettings::instance().airPressureFaultLow - 1);
         safetyController.checkSafety(States::ActiveState);
@@ -111,11 +109,14 @@ TEST_CASE("Failure on low air pressure", "[SafetyController]") {
 TEST_CASE("Failure on high air pressure", "[SafetyController]") {
     init_logger();
 
-    SafetyController safetyController(&safetyControllerSettings);
+    SafetyControllerSettings* safetyControllerSettings =
+            SettingReader::instance().getSafetyControllerSettings();
+
+    SafetyController safetyController(safetyControllerSettings);
 
     lowCount = highCount = 0;
 
-    for (int i = 0; i < safetyControllerSettings.ILC.AirPressureCountThreshold - 1; i++) {
+    for (int i = 0; i < safetyControllerSettings->ILC.AirPressureCountThreshold - 1; i++) {
         safetyController.hardpointActuatorAirPressure(
                 0, 1, HardpointActuatorSettings::instance().airPressureFaultHigh + 1);
         safetyController.checkSafety(States::ActiveState);

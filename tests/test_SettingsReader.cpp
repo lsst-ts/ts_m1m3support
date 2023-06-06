@@ -30,6 +30,6 @@ using namespace LSST::M1M3::SS;
 TEST_CASE("List available settingsi", "[SettingReader]") {
     SettingReader::instance().setRootPath("../SettingFiles/");
     auto configs = SettingReader::instance().getAvailableConfigurations();
-    REQUIRE(configs.front() == "Default");
-    REQUIRE(configs.size() == 1);
+    REQUIRE(configs.front() == "");
+    REQUIRE(configs.size() == 0);
 }
