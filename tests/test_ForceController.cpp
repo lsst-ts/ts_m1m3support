@@ -123,10 +123,6 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
     REQUIRE(ForceActuatorSettings::instance().useInclinometer == true);
 
-    SafetyControllerSettings safetyControllerSettings;
-    REQUIRE_NOTHROW(
-            safetyControllerSettings.load("../SettingFiles/Sets/Default/v1/SafetyControllerSettings.yaml"));
-
     runAndCheck(Model::get().getForceController(), 0, 0, 0, 0, 0, 0);
 
     SECTION("Elevation 0 deg with 0% support") {
@@ -215,6 +211,11 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         for (int i = 0; i < FA_Z_COUNT; i++) {
             appliedElevationForces->zForces[i] = -50000;
         }
+
+        SafetyControllerSettings *safetyControllerSettings =
+                SettingReader::instance().getSafetyControllerSettings();
+        // make sure M1M3 will fail - default settings is now false
+        safetyControllerSettings->ForceController.FaultOnForceClipping = true;
 
         for (int i = 0; i < 2; i++) {
             Model::get().getForceController()->processAppliedForces();
