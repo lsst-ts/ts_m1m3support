@@ -24,12 +24,13 @@
 #ifndef POSITIONCONTROLLER_H_
 #define POSITIONCONTROLLER_H_
 
+#include <SAL_MTM1M3C.h>
+
 #include <DataTypes.h>
-#include <Units.h>
 #include <HardpointActuatorSettings.h>
 #include <PositionControllerSettings.h>
 #include <SafetyController.h>
-#include <SAL_MTM1M3C.h>
+#include <Units.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -57,8 +58,7 @@ namespace SS {
  */
 class PositionController {
 public:
-    PositionController(PositionControllerSettings* positionControllerSettings,
-                       HardpointActuatorSettings* hardpointActuatorSettings);
+    PositionController();
 
     /**
      * Returns raise and lower timeout.

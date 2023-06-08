@@ -25,6 +25,7 @@
 #define ILCMESSAGEFACTORY_H_
 
 #include <DataTypes.h>
+#include <ILCApplicationSettings.h>
 #include <ModbusBuffer.h>
 
 namespace LSST {
@@ -35,7 +36,7 @@ struct ILCApplicationSettings;
 
 class ILCMessageFactory {
 public:
-    ILCMessageFactory(ILCApplicationSettings* ilcApplicationSettings);
+    ILCMessageFactory();
 
     void reportServerID(ModbusBuffer* buffer, uint8_t address);
 

@@ -24,14 +24,21 @@
 #ifndef ILCAPPLICATIONSETTINGS_H_
 #define ILCAPPLICATIONSETTINGS_H_
 
+#include <yaml-cpp/yaml.h>
+
+#include <cRIO/Singleton.h>
+
 #include <DataTypes.h>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct ILCApplicationSettings {
+struct ILCApplicationSettings : public cRIO::Singleton<ILCApplicationSettings> {
+    ILCApplicationSettings(token);
+
+    void load(YAML::Node doc);
+
     uint32_t ReportServerID;
     uint32_t ReportServerStatus;
     uint32_t ChangeILCMode;
@@ -54,8 +61,6 @@ struct ILCApplicationSettings {
     uint32_t ReportDCAStatus;
     uint32_t ReportDCAPressure;
     uint32_t ReportLVDT;
-
-    void load(const std::string &filename);
 };
 
 } /* namespace SS */

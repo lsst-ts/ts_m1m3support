@@ -21,29 +21,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PositionController.h>
-#include <PositionControllerSettings.h>
+#include <spdlog/spdlog.h>
+#include <stdlib.h>
+
+#include <SAL_MTM1M3C.h>
+
+#include <HardpointActuatorMotionStates.h>
 #include <HardpointActuatorSettings.h>
 #include <HardpointActuatorWarning.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
-#include <HardpointActuatorMotionStates.h>
+#include <PositionController.h>
+#include <PositionControllerSettings.h>
 #include <Range.h>
 #include <RaisingLoweringInfo.h>
-#include <SAL_MTM1M3C.h>
 #include <TMA.h>
-
-#include <spdlog/spdlog.h>
-#include <stdlib.h>
 
 using namespace LSST::M1M3::SS;
 
-PositionController::PositionController(PositionControllerSettings* positionControllerSettings,
-                                       HardpointActuatorSettings* hardpointActuatorSettings) {
+PositionController::PositionController() {
     SPDLOG_DEBUG("PositionController: PositionController()");
     _safetyController = Model::get().getSafetyController();
-    _positionControllerSettings = positionControllerSettings;
-    _hardpointActuatorSettings = hardpointActuatorSettings;
+    _positionControllerSettings = &PositionControllerSettings::instance();
+    _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _hardpointActuatorState = M1M3SSPublisher::instance().getEventHardpointActuatorState();
     _hardpointInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();

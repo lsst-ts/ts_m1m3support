@@ -21,16 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <DisplacementSensorSettings.h>
 #include <TableLoader.h>
-#include <yaml-cpp/yaml.h>
-#include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-void DisplacementSensorSettings::load(const std::string &filename) {
+void DisplacementSensorSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading DisplacementSensorSettings");
 
         TableLoader::loadTable(1, 8, &this->ConverterMatrix, doc["PositionTablePath"].as<std::string>());
         NPorts = doc["NPorts"].as<std::vector<int32_t>>();
@@ -44,7 +44,7 @@ void DisplacementSensorSettings::load(const std::string &filename) {
         yRotationOffset = doc["YRotationOffset"].as<double>();
         zRotationOffset = doc["ZRotationOffset"].as<double>();
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading DisplacementSensorSettings: {}", ex.what()));
     }
 
     if (NPorts.size() != 8) {

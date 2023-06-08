@@ -37,12 +37,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-HardpointTestController::HardpointTestController(PositionController *positionController,
-                                                 HardpointActuatorSettings *hardpointActuatorSettings) {
+HardpointTestController::HardpointTestController(PositionController *positionController) {
     SPDLOG_DEBUG("HardpointTestController: HardpointTestController()");
 
     _positionController = positionController;
-    _hardpointActuatorSettings = hardpointActuatorSettings;
+    _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
 
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _hardpointActuatorState = M1M3SSPublisher::instance().getEventHardpointActuatorState();

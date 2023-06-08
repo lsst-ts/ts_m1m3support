@@ -24,12 +24,12 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_BALANCEFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_BALANCEFORCECOMPONENT_H_
 
-#include <ForceComponent.h>
+#include <SAL_MTM1M3C.h>
+
 #include <ForceActuatorApplicationSettings.h>
-#include <PIDSettings.h>
+#include <ForceComponent.h>
 #include <PID.h>
 #include <SafetyController.h>
-#include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -53,8 +53,7 @@ namespace SS {
  */
 class BalanceForceComponent : public ForceComponent {
 public:
-    BalanceForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                          PIDSettings* pidSettings);
+    BalanceForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     void applyBalanceForces(float* x, float* y, float* z);
 
@@ -86,7 +85,6 @@ private:
 
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    PIDSettings* _pidSettings;
 
     PID _fx;
     PID _fy;

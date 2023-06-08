@@ -27,6 +27,7 @@
 #include <SAL_MTM1M3.h>
 
 #include <DataTypes.h>
+#include <HardpointActuatorSettings.h>
 #include <PositionController.h>
 
 namespace LSST {
@@ -39,8 +40,7 @@ namespace SS {
  */
 class HardpointTestController : public MTM1M3_logevent_hardpointTestStatusC {
 public:
-    HardpointTestController(PositionController* positionController,
-                            HardpointActuatorSettings* _hardpointActuatorSettings);
+    HardpointTestController(PositionController* positionController);
 
     /**
      * Starts hardpoint test.

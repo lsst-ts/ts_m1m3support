@@ -21,40 +21,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ILCApplicationSettings.h>
-#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
+#include <yaml-cpp/yaml.h>
+
+#include <ILCApplicationSettings.h>
 
 using namespace LSST::M1M3::SS;
 
-void ILCApplicationSettings::load(const std::string &filename) {
-    try {
-        YAML::Node doc = YAML::LoadFile(filename);
-        auto timings = doc["Timings"];
+ILCApplicationSettings::ILCApplicationSettings(token) {}
 
-        ReportServerID = timings["ReportServerID"].as<uint32_t>();
-        ReportServerStatus = timings["ReportServerStatus"].as<uint32_t>();
-        ChangeILCMode = timings["ChangeILCMode"].as<uint32_t>();
-        BroadcastStepMotor = timings["BroadcastStepMotor"].as<uint32_t>();
-        UnicastStepMotor = timings["UnicastStepMotor"].as<uint32_t>();
-        ElectromechanicalForceAndStatus = timings["ElectromechanicalForceAndStatus"].as<uint32_t>();
-        BroadcastFreezeSensorValues = timings["BroadcastFreezeSensorValues"].as<uint32_t>();
-        SetBoostValveDCAGains = timings["SetBoostValveDCAGains"].as<uint32_t>();
-        ReadBoostValveDCAGains = timings["ReadBoostValveDCAGains"].as<uint32_t>();
-        BroadcastForceDemand = timings["BroadcastForceDemand"].as<uint32_t>();
-        UnicastSingleAxisForceDemand = timings["UnicastSingleAxisForceDemand"].as<uint32_t>();
-        UnicastDualAxisForceDemand = timings["UnicastDualAxisForceDemand"].as<uint32_t>();
-        PneumaticForceAndStatus = timings["PneumaticForceAndStatus"].as<uint32_t>();
-        SetADCScanRate = timings["SetADCScanRate"].as<uint32_t>();
-        SetADCChannelOffsetAndSensitivity = timings["SetADCChannelOffsetAndSensitivity"].as<uint32_t>();
-        Reset = timings["Reset"].as<uint32_t>();
-        ReadCalibration = timings["ReadCalibration"].as<uint32_t>();
-        ReadDCAPressureValues = timings["ReadDCAPressureValues"].as<uint32_t>();
-        ReportDCAID = timings["ReportDCAID"].as<uint32_t>();
-        ReportDCAStatus = timings["ReportDCAStatus"].as<uint32_t>();
-        ReportDCAPressure = timings["ReportDCAPressure"].as<uint32_t>();
-        ReportLVDT = timings["ReportLVDT"].as<uint32_t>();
+void ILCApplicationSettings::load(YAML::Node doc) {
+    try {
+        SPDLOG_INFO("Loading ILCApplicationSettings");
+
+        ReportServerID = doc["ReportServerID"].as<uint32_t>();
+        ReportServerStatus = doc["ReportServerStatus"].as<uint32_t>();
+        ChangeILCMode = doc["ChangeILCMode"].as<uint32_t>();
+        BroadcastStepMotor = doc["BroadcastStepMotor"].as<uint32_t>();
+        UnicastStepMotor = doc["UnicastStepMotor"].as<uint32_t>();
+        ElectromechanicalForceAndStatus = doc["ElectromechanicalForceAndStatus"].as<uint32_t>();
+        BroadcastFreezeSensorValues = doc["BroadcastFreezeSensorValues"].as<uint32_t>();
+        SetBoostValveDCAGains = doc["SetBoostValveDCAGains"].as<uint32_t>();
+        ReadBoostValveDCAGains = doc["ReadBoostValveDCAGains"].as<uint32_t>();
+        BroadcastForceDemand = doc["BroadcastForceDemand"].as<uint32_t>();
+        UnicastSingleAxisForceDemand = doc["UnicastSingleAxisForceDemand"].as<uint32_t>();
+        UnicastDualAxisForceDemand = doc["UnicastDualAxisForceDemand"].as<uint32_t>();
+        PneumaticForceAndStatus = doc["PneumaticForceAndStatus"].as<uint32_t>();
+        SetADCScanRate = doc["SetADCScanRate"].as<uint32_t>();
+        SetADCChannelOffsetAndSensitivity = doc["SetADCChannelOffsetAndSensitivity"].as<uint32_t>();
+        Reset = doc["Reset"].as<uint32_t>();
+        ReadCalibration = doc["ReadCalibration"].as<uint32_t>();
+        ReadDCAPressureValues = doc["ReadDCAPressureValues"].as<uint32_t>();
+        ReportDCAID = doc["ReportDCAID"].as<uint32_t>();
+        ReportDCAStatus = doc["ReportDCAStatus"].as<uint32_t>();
+        ReportDCAPressure = doc["ReportDCAPressure"].as<uint32_t>();
+        ReportLVDT = doc["ReportLVDT"].as<uint32_t>();
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading ILCApplicationSettings: {}", ex.what()));
     }
 }

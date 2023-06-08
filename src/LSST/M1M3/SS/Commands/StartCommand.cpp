@@ -22,7 +22,6 @@
  */
 
 #include <Context.h>
-#include <RecommendedApplicationSettings.h>
 #include <StartCommand.h>
 #include <SettingReader.h>
 #include <M1M3SSPublisher.h>
@@ -39,9 +38,12 @@ StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) : Com
 
 bool StartCommand::validate() {
     if (_data.configurationOverride.empty()) {
-        RecommendedApplicationSettings* recommendedApplicationSettings =
-                SettingReader::instance().loadRecommendedApplicationSettings();
-        _data.configurationOverride = recommendedApplicationSettings->Configuration;
+        _data.configurationOverride = "Default";
+    }
+    if (_data.configurationOverride[0] == '_') {
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
+                "start", "configurationOverride argument shall not start with _");
+        return false;
     }
     return true;
 }

@@ -31,7 +31,6 @@
 #include <IFPGA.h>
 #include <ILC.h>
 #include <Inclinometer.h>
-#include <ILCApplicationSettings.h>
 #include <FPGAAddresses.h>
 #include <ForceController.h>
 #include <ForceActuatorApplicationSettings.h>
@@ -54,6 +53,8 @@
 using namespace std;
 using namespace LSST::M1M3::SS;
 
+extern const char* CONFIG_SCHEMA_VERSION;
+extern const char* CONFIG_URL;
 extern const char* GIT_HASH;
 
 Model::Model() {
@@ -98,76 +99,50 @@ Model& Model::get() {
 void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: loadSettings({})", settingsToApply);
 
-    SettingReader::instance().configure(settingsToApply);
+    SettingReader* _settingReader = &SettingReader::instance();
+
+    _settingReader->configure(settingsToApply);
 
     M1M3SSPublisher::instance().reset();
 
-    SPDLOG_INFO("Model: Loading ILC application settings");
-    ILCApplicationSettings* ilcApplicationSettings = SettingReader::instance().loadILCApplicationSettings();
-    SPDLOG_INFO("Model: Loading force actuator application settings");
+    _settingReader->load();
+
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-            SettingReader::instance().getForceActuatorApplicationSettings();
-    SPDLOG_INFO("Model: Loading force actuator settings");
-    SettingReader::instance().loadForceActuatorSettings();
-    SPDLOG_INFO("Model: Loading hardpoint actuator application settings");
+            _settingReader->getForceActuatorApplicationSettings();
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
-            SettingReader::instance().getHardpointActuatorApplicationSettings();
-    SPDLOG_INFO("Model: Loading hardpoint actuator settings");
-    HardpointActuatorSettings* hardpointActuatorSettings =
-            SettingReader::instance().loadHardpointActuatorSettings();
-    SPDLOG_INFO("Model: Loading safety controller settings");
-    SafetyControllerSettings* safetyControllerSettings =
-            SettingReader::instance().loadSafetyControllerSettings();
-    SPDLOG_INFO("Model: Loading position controller settings");
-    PositionControllerSettings* positionControllerSettings =
-            SettingReader::instance().loadPositionControllerSettings();
-    SPDLOG_INFO("Model: Loading accelerometer settings");
-    SettingReader::instance().loadAccelerometerSettings();
-    SPDLOG_INFO("Model: Loading displacement settings");
-    DisplacementSensorSettings* displacementSensorSettings =
-            SettingReader::instance().loadDisplacementSensorSettings();
-    SPDLOG_INFO("Model: Loading hardpoint monitor application settings");
+            _settingReader->getHardpointActuatorApplicationSettings();
     HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
-            SettingReader::instance().getHardpointMonitorApplicationSettings();
-    SPDLOG_INFO("Model: Loading gyro settings");
-    GyroSettings* gyroSettings = SettingReader::instance().loadGyroSettings();
-    SPDLOG_INFO("Model: Loading PID settings");
-    PIDSettings* pidSettings = SettingReader::instance().loadPIDSettings();
-    SPDLOG_INFO("Model: Loading inclinometer settings");
-    InclinometerSettings* inclinometerSettings = SettingReader::instance().loadInclinometerSettings();
+            _settingReader->getHardpointMonitorApplicationSettings();
 
     ForceActuatorInfo::instance().populate(forceActuatorApplicationSettings);
-    _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings, hardpointActuatorSettings,
-                                   positionControllerSettings);
+    _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings);
     _populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
 
     delete _safetyController;
     SPDLOG_INFO("Model: Creating safety controller");
-    _safetyController = new SafetyController(safetyControllerSettings);
+    _safetyController = new SafetyController(SettingReader::instance().getSafetyControllerSettings());
 
     delete _displacement;
     SPDLOG_INFO("Model: Creating displacement");
-    _displacement = new Displacement(displacementSensorSettings, IFPGA::get().getSupportFPGAData(),
-                                     _safetyController);
+    _displacement = new Displacement(IFPGA::get().getSupportFPGAData(), _safetyController);
 
     delete _inclinometer;
     SPDLOG_INFO("Model: Creating inclinometer");
-    _inclinometer =
-            new Inclinometer(IFPGA::get().getSupportFPGAData(), _safetyController, inclinometerSettings);
+    _inclinometer = new Inclinometer(IFPGA::get().getSupportFPGAData(), _safetyController);
 
     delete _positionController;
     SPDLOG_INFO("Model: Creating position controller");
-    _positionController = new PositionController(positionControllerSettings, hardpointActuatorSettings);
+    _positionController = new PositionController();
 
     delete _ilc;
     SPDLOG_INFO("Model: Creating ILC");
-    _ilc = new ILC(_positionController, ilcApplicationSettings, forceActuatorApplicationSettings,
-                   hardpointActuatorApplicationSettings, hardpointActuatorSettings,
-                   hardpointMonitorApplicationSettings, _safetyController);
+    _ilc = new ILC(_positionController, forceActuatorApplicationSettings,
+                   hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings,
+                   _safetyController);
 
     delete _forceController;
     SPDLOG_INFO("Model: Creating force controller");
-    _forceController = new ForceController(forceActuatorApplicationSettings, pidSettings);
+    _forceController = new ForceController(forceActuatorApplicationSettings);
 
     SPDLOG_INFO("Model: Updating digital input output");
     _digitalInputOutput.setSafetyController(_safetyController);
@@ -192,11 +167,11 @@ void Model::loadSettings(std::string settingsToApply) {
 
     delete _hardpointTestController;
     SPDLOG_INFO("Model: Creating hardpoint test controller");
-    _hardpointTestController = new HardpointTestController(_positionController, hardpointActuatorSettings);
+    _hardpointTestController = new HardpointTestController(_positionController);
 
     delete _gyro;
     SPDLOG_INFO("Model: Creating gyro");
-    _gyro = new Gyro(gyroSettings);
+    _gyro = new Gyro();
 
     // apply disabled FA from setting
     for (int i = 0; i < FA_COUNT; i++) {
@@ -215,7 +190,6 @@ void Model::publishStateChange(States::Type newState) {
     uint64_t state = (uint64_t)newState;
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
     MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::instance().getEventSummaryState();
-    // summaryStateData->timestamp = timestamp;
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
     M1M3SSPublisher::instance().logSummaryState();
     MTM1M3_logevent_detailedStateC* detailedStateData = M1M3SSPublisher::instance().getEventDetailedState();
@@ -225,13 +199,14 @@ void Model::publishStateChange(States::Type newState) {
 }
 
 void Model::publishRecommendedSettings() {
-    SPDLOG_DEBUG("Model: publishRecommendedSettings()");
     MTM1M3_logevent_configurationsAvailableC* data =
             M1M3SSPublisher::instance().getEventConfigurationsAvailable();
     data->overrides = LSST::cRIO::join(SettingReader::instance().getAvailableConfigurations());
     data->version = GIT_HASH;
-    data->url = "https://github.com/lsst-ts/ts_m1m3support";
-    data->schemaVersion = "v1";
+    data->url = CONFIG_URL;
+    data->schemaVersion = CONFIG_SCHEMA_VERSION;
+    SPDLOG_DEBUG("Publishing recommended settings: overrides: {} version: {} schema version: {}",
+                 data->overrides, data->version, data->schemaVersion);
     M1M3SSPublisher::instance().logConfigurationsAvailable();
 }
 
@@ -250,9 +225,8 @@ void Model::waitForExitControl() {
 }
 
 void Model::_populateHardpointActuatorInfo(
-        HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-        HardpointActuatorSettings* hardpointActuatorSettings,
-        PositionControllerSettings* positionControllerSettings) {
+        HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings) {
+    PositionControllerSettings* positionControllerSettings = &PositionControllerSettings::instance();
     SPDLOG_DEBUG("Model: populateHardpointActuatorInfo()");
     MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
             M1M3SSPublisher::instance().getEventHardpointActuatorInfo();

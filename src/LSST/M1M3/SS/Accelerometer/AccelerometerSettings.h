@@ -26,6 +26,8 @@
 
 #include <string>
 
+#include <yaml-cpp/yaml.h>
+
 #include <SAL_MTM1M3.h>
 
 #include <cRIO/Singleton.h>
@@ -41,7 +43,7 @@ class AccelerometerSettings : public MTM1M3_logevent_accelerometerSettingsC,
 public:
     AccelerometerSettings(token);
 
-    void load(const std::string &filename);
+    void load(YAML::Node doc);
 
     void log() { M1M3SSPublisher::instance().logAccelerometerSettings(this); }
 };

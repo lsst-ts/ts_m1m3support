@@ -7,7 +7,7 @@ all: libM1M3SS.a
 version.c: force
 	${co}grep -qsF "VERSION=\"$(VERSION)\"" version.c \
 	|| echo "[VER] version $(VERSION) git hash $(GIT_HASH)" && \
-	printf >version.c 'const char *VERSION="%s";\nconst char *GIT_HASH="%s";' $(VERSION) $(GIT_HASH)
+	printf >version.c 'const char *VERSION="%s";\nconst char *GIT_HASH="%s";\nconst char *CONFIG_URL="https://github.com/lsst-ts/ts_m1m3support/SettingFiles/v1";\nconst char *CONFIG_SCHEMA_VERSION="v1";' $(VERSION) $(GIT_HASH)
 
 C_SRCS = $(shell find LSST NiFpga -name '*.c')
 LIB_CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
@@ -53,7 +53,7 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/Threads" \
 	-I"LSST/M1M3/SS/Utility" \
 
-libM1M3SS.a: $(LIB_OBJS)
+libM1M3SS.a: version.c $(LIB_OBJS)
 	@echo '[AR ] $@'
 	${co}$(AR) rs $@ $^
 

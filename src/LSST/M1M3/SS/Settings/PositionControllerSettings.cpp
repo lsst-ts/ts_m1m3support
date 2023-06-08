@@ -21,15 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PositionControllerSettings.h>
-#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
+#include <yaml-cpp/yaml.h>
+
+#include <PositionControllerSettings.h>
 
 using namespace LSST::M1M3::SS;
 
-void PositionControllerSettings::load(const std::string &filename) {
+PositionControllerSettings::PositionControllerSettings(token) {}
+
+void PositionControllerSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading PositionControllerSettings");
 
         forceToStepsCoefficient = doc["ForceToStepsCoefficient"].as<double>();
         encoderToStepsCoefficient = doc["EncoderToStepsCoefficient"].as<double>();
@@ -57,7 +60,7 @@ void PositionControllerSettings::load(const std::string &filename) {
             referencePosition[i] = encoders[i];
         }
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading PositionControllerSettings: {}", ex.what()));
     }
 
     log();

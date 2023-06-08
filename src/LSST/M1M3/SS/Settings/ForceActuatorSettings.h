@@ -27,6 +27,8 @@
 #include <string>
 #include <vector>
 
+#include <yaml-cpp/yaml.h>
+
 #include <SAL_MTM1M3.h>
 
 #include <cRIO/Singleton.h>
@@ -57,7 +59,7 @@ class ForceActuatorSettings : public MTM1M3_logevent_forceActuatorSettingsC,
 public:
     ForceActuatorSettings(token);
 
-    void load(const std::string &filename);
+    void load(YAML::Node doc);
 
     /**
      * Returns true if actuator with given ID is disabled in configuration file.

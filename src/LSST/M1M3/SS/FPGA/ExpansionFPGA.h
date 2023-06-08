@@ -24,6 +24,8 @@
 #ifndef EXPANSIONFPGA_H_
 #define EXPANSIONFPGA_H_
 
+#include <string>
+
 #include <IExpansionFPGA.h>
 
 namespace LSST {

@@ -26,8 +26,8 @@
 
 #include <DataTypes.h>
 #include <DisplacementSensorSettings.h>
-#include <SupportFPGAData.h>
 #include <SafetyController.h>
+#include <SupportFPGAData.h>
 
 struct MTM1M3_imsDataC;
 struct MTM1M3_logevent_displacementSensorWarningC;
@@ -43,12 +43,10 @@ class Displacement {
 public:
     /*!
      * Instantiates the displacement sensor.
-     * @param[in] displacementSensorSettings The displacement settings.
      * @param[in] _fpgaData The fpga data.
      * @param[in] safetyController The safety controller.
      */
-    Displacement(DisplacementSensorSettings* displacementSensorSettings, SupportFPGAData* fpgaData,
-                 SafetyController* safetyController);
+    Displacement(SupportFPGAData* fpgaData, SafetyController* safetyController);
 
     /*!
      * Processes currently available displacement sensor data and publish it.

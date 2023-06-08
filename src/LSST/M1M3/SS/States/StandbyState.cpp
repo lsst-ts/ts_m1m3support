@@ -31,13 +31,16 @@
 #include <ILC.h>
 #include <Model.h>
 #include <PowerController.h>
+#include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
 #include <StandbyState.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+extern const char* CONFIG_SCHEMA_VERSION;
+extern const char* CONFIG_URL;
+extern const char* GIT_HASH;
+
+using namespace LSST::M1M3::SS;
 
 StandbyState::StandbyState() : State("StandbyState") {}
 
@@ -50,11 +53,25 @@ States::Type StandbyState::update(UpdateCommand* command) {
 States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
     SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+    RaisingLoweringInfo::instance().sendUpdates(true);
 
     Model::get().loadSettings(command->getConfigurationOverride());
-    M1M3SSPublisher::instance().getEventConfigurationApplied()->version =
-            SettingReader::instance().getSettingsVersion();
-    M1M3SSPublisher::instance().getEventConfigurationApplied()->otherInfo = "";
+
+    auto configurationApplied = M1M3SSPublisher::instance().getEventConfigurationApplied();
+    configurationApplied->configurations = "_init.yaml";
+    configurationApplied->version = GIT_HASH;
+    configurationApplied->url = CONFIG_URL;
+    configurationApplied->schemaVersion = CONFIG_SCHEMA_VERSION;
+    configurationApplied->otherInfo =
+            "accelerometerSettings,"
+            "boosterValveSettings,"
+            "displacementSensorSettings,"
+            "forceActuatorSettings,"
+            "gyroSettings,"
+            "hardpointActuatorSettings,"
+            "inclinometerSettings,"
+            "pidSettings,"
+            "positionControllerSettings,";
     M1M3SSPublisher::instance().logConfigurationApplied();
 
     PowerController* powerController = Model::get().getPowerController();
@@ -150,7 +167,3 @@ States::Type StandbyState::exitControl(ExitControlCommand* command) {
     Model::get().exitControl();
     return States::OfflineState;
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

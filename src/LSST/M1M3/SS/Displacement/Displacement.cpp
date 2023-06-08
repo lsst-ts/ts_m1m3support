@@ -21,25 +21,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <Displacement.h>
-#include <DisplacementSensorSettings.h>
-#include <SupportFPGAData.h>
-#include <M1M3SSPublisher.h>
-#include <SafetyController.h>
-#include <Timestamp.h>
-#include <SAL_MTM1M3C.h>
+#include <cstring>
+
 #include <spdlog/spdlog.h>
 
-#include <cstring>
+#include <SAL_MTM1M3C.h>
+
+#include <Displacement.h>
+#include <DisplacementSensorSettings.h>
+#include <M1M3SSPublisher.h>
+#include <SafetyController.h>
+#include <SupportFPGAData.h>
+#include <Timestamp.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Displacement::Displacement(DisplacementSensorSettings* displacementSensorSettings, SupportFPGAData* fpgaData,
-                           SafetyController* safetyController) {
+Displacement::Displacement(SupportFPGAData* fpgaData, SafetyController* safetyController) {
     SPDLOG_DEBUG("Displacement: Displacement()");
-    _displacementSensorSettings = displacementSensorSettings;
+    _displacementSensorSettings = &DisplacementSensorSettings::instance();
     _fpgaData = fpgaData;
     _safetyController = safetyController;
 
