@@ -58,7 +58,7 @@ States::Type StandbyState::start(StartCommand* command) {
     Model::get().loadSettings(command->getConfigurationOverride());
 
     auto configurationApplied = M1M3SSPublisher::instance().getEventConfigurationApplied();
-    configurationApplied->configurations = "_init";
+    configurationApplied->configurations = "_init.yaml";
     configurationApplied->version = GIT_HASH;
     configurationApplied->url = CONFIG_URL;
     configurationApplied->schemaVersion = CONFIG_SCHEMA_VERSION;
