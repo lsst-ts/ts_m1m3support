@@ -24,30 +24,31 @@
 #ifndef FORCECONTROLLER_H_
 #define FORCECONTROLLER_H_
 
-#include <DataTypes.h>
-#include <ForcesAndMoments.h>
-#include <LimitTrigger.h>
+#include <spdlog/spdlog.h>
+#include <vector>
+
 #include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
-#include <DistributedForces.h>
-#include <PID.h>
-#include <vector>
+
 #include <AccelerationForceComponent.h>
 #include <ActiveOpticForceComponent.h>
 #include <AzimuthForceComponent.h>
 #include <BalanceForceComponent.h>
+#include <DataTypes.h>
+#include <DistributedForces.h>
 #include <ElevationForceComponent.h>
-#include <OffsetForceComponent.h>
-#include <StaticForceComponent.h>
-#include <ThermalForceComponent.h>
-#include <VelocityForceComponent.h>
 #include <FinalForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <SafetyController.h>
+#include <ForcesAndMoments.h>
+#include <LimitTrigger.h>
+#include <OffsetForceComponent.h>
+#include <PID.h>
 #include <PIDSettings.h>
-
-#include <spdlog/spdlog.h>
+#include <SafetyController.h>
+#include <StaticForceComponent.h>
+#include <ThermalForceComponent.h>
+#include <VelocityForceComponent.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -127,8 +128,7 @@ struct ForceActuatorIndicesNeighbors {
  */
 class ForceController {
 public:
-    ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                    PIDSettings* pidSettings);
+    ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
     void reset();
 

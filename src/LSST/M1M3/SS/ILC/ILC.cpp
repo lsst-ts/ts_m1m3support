@@ -52,16 +52,15 @@
 
 using namespace LSST::M1M3::SS;
 
-ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcApplicationSettings,
+ILC::ILC(PositionController* positionController,
          ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
          HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-         HardpointActuatorSettings* hardpointActuatorSettings,
          HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
          SafetyController* safetyController)
         : _subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings,
                       hardpointMonitorApplicationSettings),
-          _ilcMessageFactory(ilcApplicationSettings),
-          _responseParser(hardpointActuatorSettings, &_subnetData, safetyController),
+          _ilcMessageFactory(),
+          _responseParser(&_subnetData, safetyController),
           _busListSetADCChannelOffsetAndSensitivity(&_subnetData, &_ilcMessageFactory),
           _busListSetADCScanRate(&_subnetData, &_ilcMessageFactory),
           _busListSetBoostValveDCAGains(&_subnetData, &_ilcMessageFactory),
@@ -86,7 +85,7 @@ ILC::ILC(PositionController* positionController, ILCApplicationSettings* ilcAppl
           _busListActive(&_subnetData, &_ilcMessageFactory) {
     SPDLOG_DEBUG("ILC: ILC()");
     _safetyController = safetyController;
-    _hardpointActuatorSettings = hardpointActuatorSettings;
+    _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();

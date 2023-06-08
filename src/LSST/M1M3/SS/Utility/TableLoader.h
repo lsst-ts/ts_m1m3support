@@ -56,7 +56,7 @@ public:
 template <typename t>
 void TableLoader::loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t>* data,
                             const std::string& filename) {
-    std::string fullPath = SettingReader::instance().getFilePath(filename);
+    std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document table(fullPath);
         data->clear();

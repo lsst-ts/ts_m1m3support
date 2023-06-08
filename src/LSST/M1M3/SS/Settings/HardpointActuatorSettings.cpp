@@ -21,23 +21,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <HardpointActuatorSettings.h>
 #include <M1M3SSPublisher.h>
 #include <TableLoader.h>
-#include <yaml-cpp/yaml.h>
-#include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-HardpointActuatorSettings::HardpointActuatorSettings() {
+HardpointActuatorSettings::HardpointActuatorSettings(token) {
     memset(encoderOffset, 0, sizeof(encoderOffset));
     memset(lowProximityEncoder, 0, sizeof(lowProximityEncoder));
     memset(highProximityEncoder, 0, sizeof(highProximityEncoder));
 }
 
-void HardpointActuatorSettings::load(const std::string &filename) {
+void HardpointActuatorSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading HardpointActuatorSettings");
 
         TableLoader::loadTable(1, 6, &HardpointDisplacementToMirrorPosition,
                                doc["HardpointDisplacementToMirrorPositionTablePath"].as<std::string>());
@@ -74,54 +74,54 @@ void HardpointActuatorSettings::load(const std::string &filename) {
 
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFaultLow) {
             throw std::runtime_error(
-                    fmt::format("{} HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
+                    fmt::format("HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
                                 "HardpointMeasuredForceFaultLow ({:.2f})",
-                                filename, hardpointMeasuredForceFaultHigh, hardpointMeasuredForceFaultLow));
+                                hardpointMeasuredForceFaultHigh, hardpointMeasuredForceFaultLow));
         }
         if (hardpointMeasuredForceWarningHigh <= hardpointMeasuredForceWarningLow) {
-            throw std::runtime_error(fmt::format(
-                    "{} HardpointMeasuredForceWarningHigh ({:.2f}) is lower or equal "
-                    "HardpointMeasuredForceWarningLow ({:.2f})",
-                    filename, hardpointMeasuredForceWarningHigh, hardpointMeasuredForceWarningLow));
+            throw std::runtime_error(
+                    fmt::format("HardpointMeasuredForceWarningHigh ({:.2f}) is lower or equal "
+                                "HardpointMeasuredForceWarningLow ({:.2f})",
+                                hardpointMeasuredForceWarningHigh, hardpointMeasuredForceWarningLow));
         }
         if (hardpointMeasuredForceFSBWarningHigh <= hardpointMeasuredForceFSBWarningLow) {
-            throw std::runtime_error(fmt::format(
-                    "{} HardpointMeasuredForceFSBWarningHigh ({:.2f}) is lower or equal "
-                    "HardpointMeasuredForceFSBWarningLow ({:.2f})",
-                    filename, hardpointMeasuredForceFSBWarningHigh, hardpointMeasuredForceFSBWarningLow));
+            throw std::runtime_error(
+                    fmt::format("HardpointMeasuredForceFSBWarningHigh ({:.2f}) is lower or equal "
+                                "HardpointMeasuredForceFSBWarningLow ({:.2f})",
+                                hardpointMeasuredForceFSBWarningHigh, hardpointMeasuredForceFSBWarningLow));
         }
 
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceWarningHigh) {
-            throw std::runtime_error(fmt::format(
-                    "{} HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
-                    "HardpointMeasuredForceWarningHigh ({:.2f})",
-                    filename, hardpointMeasuredForceFaultHigh, hardpointMeasuredForceWarningHigh));
+            throw std::runtime_error(
+                    fmt::format("HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
+                                "HardpointMeasuredForceWarningHigh ({:.2f})",
+                                hardpointMeasuredForceFaultHigh, hardpointMeasuredForceWarningHigh));
         }
         if (hardpointMeasuredForceFaultLow >= hardpointMeasuredForceWarningLow) {
             throw std::runtime_error(
-                    fmt::format("{} HardpointMeasuredForceFaultLow ({:.2f}) is lower or equal "
+                    fmt::format("HardpointMeasuredForceFaultLow ({:.2f}) is lower or equal "
                                 "HardpointMeasuredForceWarningLow ({:.2f})",
-                                filename, hardpointMeasuredForceFaultLow, hardpointMeasuredForceWarningLow));
+                                hardpointMeasuredForceFaultLow, hardpointMeasuredForceWarningLow));
         }
 
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFSBWarningHigh) {
-            throw std::runtime_error(fmt::format(
-                    "{} HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
-                    "HardpointMeasuredForceFSBWarningHigh ({:.2f})",
-                    filename, hardpointMeasuredForceFaultHigh, hardpointMeasuredForceFSBWarningHigh));
+            throw std::runtime_error(
+                    fmt::format("HardpointMeasuredForceFaultHigh ({:.2f}) is lower or equal "
+                                "HardpointMeasuredForceFSBWarningHigh ({:.2f})",
+                                hardpointMeasuredForceFaultHigh, hardpointMeasuredForceFSBWarningHigh));
         }
         if (hardpointMeasuredForceFaultLow >= hardpointMeasuredForceFSBWarningLow) {
-            throw std::runtime_error(fmt::format(
-                    "{} HardpointMeasuredForceFaultLow ({:.2f}) is lower or equal "
-                    "HardpointMeasuredForceFSBWarningLow ({:.2f})",
-                    filename, hardpointMeasuredForceFaultLow, hardpointMeasuredForceFSBWarningLow));
+            throw std::runtime_error(
+                    fmt::format("HardpointMeasuredForceFaultLow ({:.2f}) is lower or equal "
+                                "HardpointMeasuredForceFSBWarningLow ({:.2f})",
+                                hardpointMeasuredForceFaultLow, hardpointMeasuredForceFSBWarningLow));
         }
 
         if (hardpointBreakawayFaultLow >= hardpointBreakawayFaultHigh) {
             throw std::runtime_error(
-                    fmt::format("{} HardpointBreakawayFaultLow ({:.2f}) is lower or equal "
+                    fmt::format("HardpointBreakawayFaultLow ({:.2f}) is lower or equal "
                                 "HardpointBreakawayFaultHigh ({:.2f})",
-                                filename, hardpointBreakawayFaultLow, hardpointBreakawayFaultHigh));
+                                hardpointBreakawayFaultLow, hardpointBreakawayFaultHigh));
         }
 
         airPressureFaultHigh = doc["AirPressureFaultHigh"].as<float>();
@@ -130,13 +130,13 @@ void HardpointActuatorSettings::load(const std::string &filename) {
 
         if (airPressureFaultHigh <= airPressureFaultLow) {
             throw std::runtime_error(fmt::format(
-                    "{} AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLow ({:.2f})",
-                    filename, airPressureFaultHigh, airPressureFaultLow));
+                    "AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLow ({:.2f})",
+                    airPressureFaultHigh, airPressureFaultLow));
         }
         if (airPressureFaultHigh <= airPressureFaultLowRaising) {
             throw std::runtime_error(fmt::format(
-                    "{} AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLowRaising ({:.2f})",
-                    filename, airPressureFaultHigh, airPressureFaultLowRaising));
+                    "AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLowRaising ({:.2f})",
+                    airPressureFaultHigh, airPressureFaultLowRaising));
         }
         for (int i = 0; i < HP_COUNT; i++) {
             if (lowProximityEncoder[i] >= highProximityEncoder[i]) {
@@ -147,7 +147,7 @@ void HardpointActuatorSettings::load(const std::string &filename) {
             }
         }
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("Cannot load HardpointActuatorSettings: {}", ex.what()));
     }
 
     log();

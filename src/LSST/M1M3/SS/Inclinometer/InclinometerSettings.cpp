@@ -21,15 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <InclinometerSettings.h>
-#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
+#include <yaml-cpp/yaml.h>
+
+#include <InclinometerSettings.h>
 
 using namespace LSST::M1M3::SS;
 
-void InclinometerSettings::load(const std::string &filename) {
+InclinometerSettings::InclinometerSettings(token) {}
+
+void InclinometerSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading InclinometerSettings");
 
         inclinometerOffset = doc["Offset"].as<float>();
 
@@ -39,7 +42,7 @@ void InclinometerSettings::load(const std::string &filename) {
         warningHigh = limits["WarningHigh"].as<float>();
         faultHigh = limits["FaultHigh"].as<float>();
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading InclinometerSettings: {}", ex.what()));
     }
 
     log();

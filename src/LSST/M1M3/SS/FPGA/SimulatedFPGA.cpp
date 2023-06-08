@@ -42,6 +42,12 @@
 
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
+using namespace std::chrono_literals;
+
+// simulate 1 degree per second (there are 50 loops runs per second)
+const float MOUNT_SIMULATION_STEP = 1 / 50.0;
+// Mount data are valid for 20 seconds in simulation, before simulated mount movement takes over
+#define MOUNT_VALIDITY 20s
 
 /**
  * Return data writen to modbus. The data are right shifted by 1 to allow for
@@ -59,6 +65,9 @@ SimulatedFPGA::SimulatedFPGA() {
     SPDLOG_INFO("SimulatedFPGA: SimulatedFPGA()");
     _lastRequest = -1;
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
+    _mountElevationValidTo = chrono::steady_clock::now();
+    _simulatingToHorizon = true;
+
     supportFPGAData.DigitalInputStates =
             0x0001 | 0x0002 | 0x0008 | DigitalOutputs::AirCommandOutputOn | 0x0040 | 0x0080;
     _mgrMTMount = SAL_MTMount();
@@ -130,6 +139,38 @@ void SimulatedFPGA::pullTelemetry() {
         std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
         supportFPGAData.InclinometerAngleRaw =
                 (int32_t)((_mountElevation - 90.0) * 1000.0) + (getRndPM1() * 5.0);
+
+        switch (M1M3SSPublisher::instance().getEventDetailedState()->detailedState) {
+            case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
+                if (chrono::steady_clock::now() > _mountElevationValidTo) {
+                    if (_mountSimulatedMovementFirstPass) {
+                        SPDLOG_INFO("Starting to simulate mirror movement");
+                        _mountSimulatedMovementFirstPass = false;
+                    }
+                    if (_simulatingToHorizon) {
+                        _mountElevation -= MOUNT_SIMULATION_STEP;
+                        if (_mountElevation < 0.1) {
+                            _simulatingToHorizon = false;
+                        }
+                    } else {
+                        _mountElevation += MOUNT_SIMULATION_STEP;
+                        if (_mountElevation > 90.5) {
+                            _simulatingToHorizon = true;
+                        }
+                    }
+                } else {
+                    if (_mountSimulatedMovementFirstPass == false) {
+                        SPDLOG_INFO("Using simulated elevation from TMA");
+                        _mountSimulatedMovementFirstPass = true;
+                    }
+                }
+                break;
+            case MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState:
+                _mountElevation = 90.0;
+                _simulatingToHorizon = true;
+                _mountSimulatedMovementFirstPass = true;
+                break;
+        }
     }
 
     supportFPGAData.DisplacementTxBytes = 0;
@@ -583,9 +624,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         }
                         int32_t encoder =
                                 -(M1M3SSPublisher::instance().getHardpointActuatorData()->encoder[index]) +
-                                SettingReader::instance().getHardpointActuatorSettings()->getEncoderOffset(
-                                        index) -
-                                steps / 4;
+                                HardpointActuatorSettings::instance().getEncoderOffset(index) - steps / 4;
                         _writeModbus32(response, encoder);               // Write Encoder
                         _writeModbusFloat(response, getRndPM1() * 8.0);  // Write Measured Force
                         _writeModbusCRC(response);
@@ -865,14 +904,14 @@ void SimulatedFPGA::_monitorElevation(void) {
         ReturnCode_t status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
 
         if (status == 0) {
-            SPDLOG_DEBUG("Got valid elevation sample...");
-
             {
                 std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
                 _mountElevation = mountElevationInstance.actualPosition;
+                SPDLOG_TRACE("Received mount elevation {:.06f}", _mountElevation);
+                _mountElevationValidTo = chrono::steady_clock::now() + MOUNT_VALIDITY;
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(20ms);
     }
 }
 

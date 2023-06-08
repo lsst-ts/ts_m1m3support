@@ -24,14 +24,16 @@
 #ifndef ILCRESPONSEPARSER_H_
 #define ILCRESPONSEPARSER_H_
 
+#include <SAL_MTM1M3C.h>
+
 #include <DataTypes.h>
 #include <HardpointActuatorSettings.h>
 #include <ForceActuatorSettings.h>
+#include <HardpointActuatorSettings.h>
 #include <ILCSubnetData.h>
 #include <ILCDataTypes.h>
 #include <ModbusBuffer.h>
 #include <SafetyController.h>
-#include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,8 +42,7 @@ namespace SS {
 class ILCResponseParser {
 public:
     ILCResponseParser();
-    ILCResponseParser(HardpointActuatorSettings* hardpointActuatorSettings, ILCSubnetData* subnetData,
-                      SafetyController* safetyController);
+    ILCResponseParser(ILCSubnetData* subnetData, SafetyController* safetyController);
 
     void parse(ModbusBuffer* buffer, uint8_t subnet);
     void incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm);

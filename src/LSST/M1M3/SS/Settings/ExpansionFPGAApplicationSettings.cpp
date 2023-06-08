@@ -21,19 +21,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ExpansionFPGAApplicationSettings.h>
-#include <yaml-cpp/yaml.h>
 #include <spdlog/spdlog.h>
+#include <yaml-cpp/yaml.h>
+
+#include <ExpansionFPGAApplicationSettings.h>
+#include <IExpansionFPGA.h>
 
 using namespace LSST::M1M3::SS;
 
-void ExpansionFPGAApplicationSettings::load(const std::string &filename) {
+ExpansionFPGAApplicationSettings::ExpansionFPGAApplicationSettings(token){};
+
+void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
     try {
-        YAML::Node doc = YAML::LoadFile(filename);
+        SPDLOG_INFO("Loading ExpansionFPGAApplicationSettings");
 
         Enabled = doc["Enabled"].as<bool>();
         Resource = doc["Resource"].as<std::string>();
+
+        IExpansionFPGA::get().setResource(Enabled, Resource);
+        if (Enabled) {
+            IExpansionFPGA::get().close();
+            SPDLOG_INFO("Opening expansion FPGA: {}", Resource);
+            IExpansionFPGA::get().open();
+        }
+
     } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        throw std::runtime_error(fmt::format("YAML Loading ExpansionFPGAApplicationSettings: {}", ex.what()));
     }
 }

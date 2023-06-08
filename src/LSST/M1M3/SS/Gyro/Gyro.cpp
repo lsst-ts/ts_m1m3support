@@ -21,27 +21,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
+#include <SAL_MTM1M3C.h>
+
+#include <FPGAAddresses.h>
 #include <Gyro.h>
 #include <GyroSettings.h>
 #include <IFPGA.h>
-#include <FPGAAddresses.h>
-#include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
 #include <Timestamp.h>
-#include <SAL_MTM1M3C.h>
-#include <spdlog/spdlog.h>
-
-#include <cstring>
-#include <thread>
-#include <chrono>
+#include <SupportFPGAData.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Gyro::Gyro(GyroSettings* gyroSettings) {
+Gyro::Gyro() {
     SPDLOG_DEBUG("Gyro: Gyro()");
-    _gyroSettings = gyroSettings;
+    _gyroSettings = &GyroSettings::instance();
 
     _gyroData = M1M3SSPublisher::instance().getGyroData();
     _gyroWarning = M1M3SSPublisher::instance().getEventGyroWarning();

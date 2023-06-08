@@ -24,22 +24,29 @@
 #ifndef GYROSETTINGS_H_
 #define GYROSETTINGS_H_
 
-#include <SAL_MTM1M3.h>
-#include <M1M3SSPublisher.h>
-
 #include <string>
 #include <vector>
+
+#include <yaml-cpp/yaml.h>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct GyroSettings : public MTM1M3_logevent_gyroSettingsC {
-    std::vector<double> AxesMatrix;
+struct GyroSettings : public MTM1M3_logevent_gyroSettingsC, public cRIO::Singleton<GyroSettings> {
+    GyroSettings(token);
 
-    void load(const std::string &filename);
+    void load(YAML::Node doc);
 
     void log() { M1M3SSPublisher::instance().logGyroSettings(this); }
+
+    std::vector<double> AxesMatrix;
 };
 
 } /* namespace SS */
