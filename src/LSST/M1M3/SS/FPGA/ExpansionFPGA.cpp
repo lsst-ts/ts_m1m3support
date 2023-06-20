@@ -69,11 +69,15 @@ void ExpansionFPGA::open() {
 }
 
 void ExpansionFPGA::close() {
+    if (_session == 0) {
+        return;
+    }
     SPDLOG_DEBUG("ExpansionFPGA: close()");
     if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
+    _session = 0;
 }
 
 void ExpansionFPGA::finalize() {
