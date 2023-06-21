@@ -55,7 +55,11 @@ States::Type StandbyState::start(StartCommand* command) {
     SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
     RaisingLoweringInfo::instance().sendUpdates(true);
 
+    SPDLOG_INFO("Loading settings");
+
     Model::get().loadSettings(command->getConfigurationOverride());
+
+    SPDLOG_INFO("Done loading settings");
 
     auto configurationApplied = M1M3SSPublisher::instance().getEventConfigurationApplied();
     configurationApplied->configurations = "_init.yaml";
@@ -85,7 +89,9 @@ States::Type StandbyState::start(StartCommand* command) {
     std::this_thread::sleep_for(1ms);  // wait for GIS to sense heartbeat
 
     IFPGA::get().pullTelemetry();
+
     digitalInputOutput->processData();
+
     powerController->processData();
 
     powerController->setAllAuxPowerNetworks(false);

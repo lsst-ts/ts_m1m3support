@@ -51,6 +51,8 @@ void ExpansionFPGA::initialize() {
     if (_disabled) {
         return;
     }
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
 
     Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
@@ -67,22 +69,18 @@ void ExpansionFPGA::open() {
     Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
+
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
 
     Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
 
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
-
-    // TODO is that really needed to wait?
-
-    for (int i = 0; i < 10; i++) {
-        Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
     Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
+    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
 }
 
 void ExpansionFPGA::close() {
