@@ -26,6 +26,7 @@
 
 #include <ExpansionFPGAApplicationSettings.h>
 #include <IExpansionFPGA.h>
+#include <Model.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -40,9 +41,24 @@ void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
 
         IExpansionFPGA::get().setResource(Enabled, Resource);
         if (Enabled) {
+            auto digitalInputOutput = Model::get().getDigitalInputOutput();
+
+            digitalInputOutput->tryToggleHeartbeat();
             IExpansionFPGA::get().close();
+            digitalInputOutput->tryToggleHeartbeat();
+
             SPDLOG_INFO("Opening expansion FPGA: {}", Resource);
             IExpansionFPGA::get().open();
+
+            // TODO replace that with wait for IRQ from the expansion FPGA, being raised in FPGA after it
+            // finish initialization
+
+            for (int i = 0; i < 50; i++) {
+                digitalInputOutput->tryToggleHeartbeat();
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            }
+
+            digitalInputOutput->tryToggleHeartbeat();
         }
 
     } catch (YAML::Exception &ex) {

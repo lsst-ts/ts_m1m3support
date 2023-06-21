@@ -173,6 +173,10 @@ void DigitalInputOutput::tryToggleHeartbeat() {
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
     if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
         SPDLOG_DEBUG("DigitalInputOutput: toggleHeartbeat()");
+        auto lag = timestamp - _lastToggleTimestamp;
+        if (_lastToggleTimestamp != 0 && lag > HEARTBEAT_PERIOD * 1.5) {
+            SPDLOG_WARN("Toggling heartbeat after {:0.03f} seconds!", lag);
+        }
         _lastToggleTimestamp = timestamp;
         _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
         uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
