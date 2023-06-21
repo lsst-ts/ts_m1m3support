@@ -1,4 +1,4 @@
-FROM lsstts/develop-env:c0028.004 as crio-develop
+FROM lsstts/develop-env:develop as crio-develop
 
 ARG XML_BRANCH=develop
 
@@ -14,8 +14,14 @@ RUN source ~/.setup.sh \
     && mamba install -y readline yaml-cpp catch2 spdlog \
     && echo > .crio_setup.sh -e \
 echo "Configuring cRIO development environment" \\n\
+source /home/saluser/.setup_salobj.sh \
+\\n\
+setup ts_idl -t current \\n\
+setup ts_sal -t current \\n\
+setup ts_salobj -t current \\n\
+setup ts_xml -t current \\n\
+\\n\
 export SHELL=bash \\n\
-source /home/saluser/.setup_salobj.sh \\n\
 export PATH=\$CONDA_PREFIX/bin:\$PATH \\n\
 export LIBS="-L\$CONDA_PREFIX/lib" \\n\
 export CPP_FLAGS="-I\$CONDA_PREFIX/include" \\n
