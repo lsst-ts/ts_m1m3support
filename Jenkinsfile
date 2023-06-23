@@ -91,13 +91,12 @@ node {
                     cd $WORKSPACE/ts_m1m3support
                     ./ts-M1M3supportd -c SettingFiles &
     
-                    echo "Waiting for 30 seconds"
-                    sleep 30
+                    echo "Waiting for 15 seconds"
+                    sleep 15
     
-                    cd $SALUSER_HOME/repos
-                    ./ts_sal/test/MTM1M3/cpp/src/sacpp_MTM1M3_start_commander Default
-                    sleep 30
-                    killall ts-M1M3supportd
+                    cd tests
+                    ./runSimulator.py
+                    killall -9 ts-M1M3supportd
                 """
             }
         }

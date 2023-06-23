@@ -28,6 +28,7 @@
 
 #include <ExpansionFPGA.h>
 #include <ExpansionFPGAApplicationSettings.h>
+#include <Model.h>
 #include <NiError.h>
 #include <NiFpga_ts_M1M3SupportExpansionFPGA.h>
 
@@ -50,7 +51,11 @@ void ExpansionFPGA::initialize() {
     if (_disabled) {
         return;
     }
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
+
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
 }
 
 void ExpansionFPGA::open() {
@@ -61,19 +66,33 @@ void ExpansionFPGA::open() {
     NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(), 0,
            &(_session));
 
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
+
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
+
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
+
+    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
-    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 void ExpansionFPGA::close() {
+    if (_session == 0) {
+        return;
+    }
     SPDLOG_DEBUG("ExpansionFPGA: close()");
     if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
+    _session = 0;
 }
 
 void ExpansionFPGA::finalize() {
