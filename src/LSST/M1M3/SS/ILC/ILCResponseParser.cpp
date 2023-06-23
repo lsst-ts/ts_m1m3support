@@ -867,7 +867,6 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
         float secondaryForce = ForceActuatorData::instance().secondaryCylinderForce[secondaryDataIndex];
         float secondarySetpoint =
                 _appliedCylinderForces->secondaryCylinderForces[secondaryDataIndex] / 1000.0f;
-        fafWarning.checkSecondary(dataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
 
         fafWarning.checkSecondary(secondaryDataIndex, map.ActuatorId, secondaryForce, secondarySetpoint);
 
