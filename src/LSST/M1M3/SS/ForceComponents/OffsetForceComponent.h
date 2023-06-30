@@ -47,8 +47,9 @@ public:
     void applyActuatorOffset(char axis, int index, float offset);
     void zeroOffsetForces();
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:

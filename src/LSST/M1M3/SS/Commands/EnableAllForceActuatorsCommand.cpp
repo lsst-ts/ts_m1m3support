@@ -27,9 +27,7 @@
 
 using namespace LSST::M1M3::SS;
 
-EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(int32_t commandID,
-                                                               MTM1M3_command_enableAllForceActuatorsC* data)
-        : Command(commandID) {}
+EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(int32_t commandID) : Command(commandID) {}
 
 void EnableAllForceActuatorsCommand::execute() { Context::get().enableAllForceActuators(this); }
 

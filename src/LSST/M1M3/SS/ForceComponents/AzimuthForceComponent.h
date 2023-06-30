@@ -46,8 +46,9 @@ public:
      */
     void applyAzimuthForcesByAzimuthAngle(float azimuthAngle);
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:
