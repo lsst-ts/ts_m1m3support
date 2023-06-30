@@ -40,6 +40,7 @@
 #include <ForceComponentSettings.h>
 #include <ForcesAndMoments.h>
 #include <Limit.h>
+#include <YAMLSettings.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -55,11 +56,12 @@ struct ForceActuatorNeighbors {
  * Stores force actuator settings. Publish settings through SAL/DDS.
  */
 class ForceActuatorSettings : public MTM1M3_logevent_forceActuatorSettingsC,
-                              public cRIO::Singleton<ForceActuatorSettings> {
+                              public cRIO::Singleton<ForceActuatorSettings>,
+                              public YAMLSettings {
 public:
     ForceActuatorSettings(token);
 
-    void load(YAML::Node doc);
+    void load(YAML::Node doc) override;
 
     /**
      * Returns true if actuator with given ID is disabled in configuration file.
@@ -180,6 +182,8 @@ public:
      * Tolerances for actuators not tested.
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
+
+    bool useGyroscope;
 
 private:
     void _loadNearNeighborZTable(const std::string &filename);

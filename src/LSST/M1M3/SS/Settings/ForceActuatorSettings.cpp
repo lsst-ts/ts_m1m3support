@@ -41,7 +41,7 @@ ForceActuatorNeighbors::ForceActuatorNeighbors() {
     memset(FarIDs, 0, sizeof(FarIDs));
 }
 
-ForceActuatorSettings::ForceActuatorSettings(token) {
+ForceActuatorSettings::ForceActuatorSettings(token) : YAMLSettings("ForceActuatorSettings") {
     memset(primaryFollowingErrorWarningThreshold, 0, sizeof(primaryFollowingErrorWarningThreshold));
     memset(primaryFollowingErrorCountingFaultThreshold, 0,
            sizeof(primaryFollowingErrorCountingFaultThreshold));
@@ -69,40 +69,34 @@ void ForceActuatorSettings::load(YAML::Node doc) {
 
         BoosterValveSettings::instance().load(doc["BoosterValveControl"]);
 
-        TableLoader::loadTable(1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &AzimuthXTable, doc["AzimuthXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &AzimuthYTable, doc["AzimuthYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &AzimuthZTable, doc["AzimuthZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &HardpointForceMomentTable,
-                               doc["HardpointForceMomentTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &ForceDistributionXTable,
-                               doc["ForceDistributionXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &ForceDistributionYTable,
-                               doc["ForceDistributionYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &ForceDistributionZTable,
-                               doc["ForceDistributionZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &MomentDistributionXTable,
-                               doc["MomentDistributionXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &MomentDistributionYTable,
-                               doc["MomentDistributionYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &MomentDistributionZTable,
-                               doc["MomentDistributionZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ElevationXTable, doc["ElevationXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ElevationYTable, doc["ElevationYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ElevationZTable, doc["ElevationZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, &StaticXTable, doc["StaticXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, &StaticYTable, doc["StaticYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, &StaticZTable, doc["StaticZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ThermalXTable, doc["ThermalXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ThermalYTable, doc["ThermalYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ThermalZTable, doc["ThermalZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityXTable, doc["VelocityXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityYTable, doc["VelocityYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityZTable, doc["VelocityZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
+        // TODO plety of tables with FA_Z_COUNT (156) rows use only 12 or 100 X/Y rows. Remove extra rows
+        loadTable(1, 3, FA_Z_COUNT, &AccelerationXTable, doc, "AccelerationXTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &AccelerationYTable, doc, "AccelerationYTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &AccelerationZTable, doc, "AccelerationZTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &AzimuthXTable, doc, "AzimuthXTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &AzimuthYTable, doc, "AzimuthYTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &AzimuthZTable, doc, "AzimuthZTablePath");
+        loadTable(1, 6, HP_COUNT, &HardpointForceMomentTable, doc, "HardpointForceMomentTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &ForceDistributionXTable, doc, "ForceDistributionXTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &ForceDistributionYTable, doc, "ForceDistributionYTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &ForceDistributionZTable, doc, "ForceDistributionZTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &MomentDistributionXTable, doc, "MomentDistributionXTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &MomentDistributionYTable, doc, "MomentDistributionYTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &MomentDistributionZTable, doc, "MomentDistributionZTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &ElevationXTable, doc, "ElevationXTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &ElevationYTable, doc, "ElevationYTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &ElevationZTable, doc, "ElevationZTablePath");
+        loadTable(1, 1, FA_X_COUNT, &StaticXTable, doc, "StaticXTablePath");
+        loadTable(1, 1, FA_Y_COUNT, &StaticYTable, doc, "StaticYTablePath");
+        loadTable(1, 1, FA_Z_COUNT, &StaticZTable, doc, "StaticZTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &ThermalXTable, doc, "ThermalXTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &ThermalYTable, doc, "ThermalYTablePath");
+        loadTable(1, 6, FA_Z_COUNT, &ThermalZTable, doc, "ThermalZTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &VelocityXTable, doc, "VelocityXTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &VelocityYTable, doc, "VelocityYTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &VelocityZTable, doc, "VelocityZTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &VelocityXZTable, doc, "VelocityXZTablePath");
+        loadTable(1, 3, FA_Z_COUNT, &VelocityYZTable, doc, "VelocityYZTablePath");
 
         TableLoader::loadLimitTable(1, &AccelerationLimitXTable,
                                     doc["AccelerationLimitXTablePath"].as<std::string>());
