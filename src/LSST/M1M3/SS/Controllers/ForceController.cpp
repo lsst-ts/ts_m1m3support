@@ -26,6 +26,8 @@
 #include <unistd.h>
 #include <vector>
 
+#include <SAL_MTM1M3C.h>
+
 #include <ForceActuatorData.h>
 #include <ForceActuatorInfo.h>
 #include <ForceController.h>
@@ -433,6 +435,49 @@ void ForceController::zeroVelocityForces() {
     if (_velocityForceComponent.isEnabled()) {
         _velocityForceComponent.disable();
     }
+}
+
+void ForceController::enableDisableForceComponent(int forceComponentEnum, bool enabled) {
+    ForceComponent* forceComponent = NULL;
+    switch (forceComponentEnum) {
+        case MTM1M3::enableDisableForceComponent_AccelerationForce:
+            forceComponent = &_accelerationForceComponent;
+            break;
+        case MTM1M3::enableDisableForceComponent_ActiveOpticForce:
+            forceComponent = &_activeOpticForceComponent;
+            break;
+        case MTM1M3::enableDisableForceComponent_AzimuthForce:
+            forceComponent = &_azimuthForceComponent;
+            break;
+        case MTM1M3::enableDisableForceComponent_OffsetForce:
+            forceComponent = &_offsetForceComponent;
+            break;
+        case MTM1M3::enableDisableForceComponent_StaticForce:
+            forceComponent = &_staticForceComponent;
+            break;
+        case MTM1M3::enableDisableForceComponent_ThermalForce:
+            forceComponent = &_thermalForceComponent;
+            break;
+        case MTM1M3::enableDisableForceComponent_VelocityForce:
+            forceComponent = &_velocityForceComponent;
+            break;
+        default:
+            throw std::runtime_error(fmt::format("Unknown forceComponent: {}", forceComponentEnum));
+    }
+
+    if (enabled) {
+        if (forceComponent->isEnabled() == false && forceComponent->isInitialising() == false) {
+            SPDLOG_INFO("Enabling {}ForceComponent, as requested", forceComponent->getName());
+            forceComponent->enable();
+        }
+    } else {
+        if (forceComponent->isEnabled() == true && forceComponent->isDisabling() == false) {
+            SPDLOG_INFO("Disabling {}ForceComponent, as requested", forceComponent->getName());
+            forceComponent->disable();
+        }
+    }
+
+    forceComponent->postEnableDisableActions();
 }
 
 void ForceController::_sumAllForces() {

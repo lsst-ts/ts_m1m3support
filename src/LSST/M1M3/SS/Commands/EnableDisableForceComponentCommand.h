@@ -21,33 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BOOSTERVALVEOPENCOMMAND_H_
-#define BOOSTERVALVEOPENCOMMAND_H_
-
-#include <SAL_MTM1M3C.h>
+#ifndef ENABLEDISABLEFORCECOMPONENTSCOMMAND_H_
+#define ENABLEDISABLEFORCECOMPONENTSCOMMAND_H_
 
 #include <Command.h>
+#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/**
- * Command system to open booster valves.
- */
-class BoosterValveOpenCommand : public Command {
+class EnableDisableForceComponentCommand : public Command {
 public:
-    BoosterValveOpenCommand(int32_t commandID);
+    EnableDisableForceComponentCommand(int32_t commandID, MTM1M3_command_enableDisableForceComponentC* data);
 
+    MTM1M3_command_enableDisableForceComponentC* getData() { return &_data; }
+
+    bool validate() override;
     void execute() override;
     void ackInProgress() override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
+
+private:
+    MTM1M3_command_enableDisableForceComponentC _data;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif  // !BOOSTERVALVEOPENCOMMAND_H_
+#endif /* ENABLEDISABLEFORCECOMPONENTSCOMMAND_H_ */

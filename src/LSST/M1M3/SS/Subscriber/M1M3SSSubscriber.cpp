@@ -39,6 +39,7 @@
 #include <DisableHardpointCorrectionsCommand.h>
 #include <EnableAllForceActuatorsCommand.h>
 #include <EnableCommand.h>
+#include <EnableDisableForceComponentCommand.h>
 #include <EnableForceActuatorCommand.h>
 #include <EnableHardpointCorrectionsCommand.h>
 #include <EnableHardpointChaseCommand.h>
@@ -132,6 +133,7 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableForceActuator");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableAllForceActuators");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableForceActuator");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableDisableForceComponent");
 
     _mtMountSAL->salTelemetrySub((char*)"MTMount_azimuth");
     _mtMountSAL->salTelemetrySub((char*)"MTMount_elevation");
@@ -200,8 +202,8 @@ COMMAND(ClearActiveOpticForces, clearActiveOpticForces)
 COMMAND(EnterEngineering, enterEngineering)
 COMMAND(ExitEngineering, exitEngineering)
 
-COMMAND(BoosterValveOpen, boosterValveOpen)
-COMMAND(BoosterValveClose, boosterValveClose)
+COMMAND_NOPARS(BoosterValveOpen, boosterValveOpen)
+COMMAND_NOPARS(BoosterValveClose, boosterValveClose)
 
 COMMAND(TestHardpoint, testHardpoint)
 COMMAND(KillHardpointTest, killHardpointTest)
@@ -238,7 +240,9 @@ COMMAND(KillForceActuatorBumpTest, killForceActuatorBumpTest)
 
 COMMAND(DisableForceActuator, disableForceActuator)
 COMMAND(EnableForceActuator, enableForceActuator)
-COMMAND(EnableAllForceActuators, enableAllForceActuators)
+COMMAND_NOPARS(EnableAllForceActuators, enableAllForceActuators)
+
+COMMAND(EnableDisableForceComponent, enableDisableForceComponent)
 
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
     int32_t result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);

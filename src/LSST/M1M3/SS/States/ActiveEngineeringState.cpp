@@ -129,3 +129,12 @@ States::Type ActiveEngineeringState::resetPID(ResetPIDCommand* command) {
     Model::get().getForceController()->resetPID(command->getData()->pid);
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
+
+States::Type ActiveEngineeringState::enableDisableForceComponent(
+        EnableDisableForceComponentCommand* command) {
+    SPDLOG_INFO("EnableDisableForceComponentCommand forceComponent {}, enable {}",
+                command->getData()->forceComponent, command->getData()->enable ? "true" : "false");
+    Model::get().getForceController()->enableDisableForceComponent(command->getData()->forceComponent,
+                                                                   command->getData()->enable);
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}

@@ -39,7 +39,7 @@ namespace SS {
  */
 class BoosterValveCloseCommand : public Command {
 public:
-    BoosterValveCloseCommand(int32_t commandID, MTM1M3_command_boosterValveCloseC*);
+    BoosterValveCloseCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;
