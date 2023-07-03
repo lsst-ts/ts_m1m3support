@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.12.1
+-------
+
+* UseGyroscope configuration setting
+
 v2.12.0
 -------
 

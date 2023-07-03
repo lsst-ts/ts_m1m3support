@@ -58,12 +58,14 @@ States::Type EngineeringState::turnAirOff(TurnAirOffCommand* command) {
 States::Type EngineeringState::boosterValveOpen(BoosterValveOpenCommand* command) {
     SPDLOG_INFO("{}: boosterValveOpen", name);
     BoosterValveStatus::instance().setUserTriggered(true);
+    Model::get().getForceController()->applyVelocityForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::boosterValveClose(BoosterValveCloseCommand* command) {
     SPDLOG_INFO("{}: boosterValveClose", name);
     BoosterValveStatus::instance().setUserTriggered(false);
+    Model::get().getForceController()->zeroVelocityForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
