@@ -555,6 +555,13 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
                                           (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
+                                                                //
+                            // simulate following error in disabled state
+                            if (M1M3SSPublisher::instance().getEventDetailedState()->detailedState ==
+                                        MTM1M3::MTM1M3_shared_DetailedStates_DisabledState &&
+                                subnet == 4 && address == 17) {
+                                force = 505;
+                            }
                             // uncomment to simulate follow up error
                             // if (subnet == 1 && address == 17 && force > 500) force = 200;
                             _writeModbusFloat(response, force);  // Write Primary Cylinder Force

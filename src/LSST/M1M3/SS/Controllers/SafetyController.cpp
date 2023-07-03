@@ -541,12 +541,12 @@ void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
                     "ILC communication timeouted: {}", sum);
 }
 
-void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool countingWarning,
-                                                   bool immediateFault) {
+void SafetyController::forceActuatorFollowingError(int actuatorId, int actuatorDataIndex,
+                                                   bool countingWarning, bool immediateFault) {
     _updateOverride(FaultCodes::ForceActuatorFollowingErrorImmediate,
                     _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingErrorImmediate,
-                    immediateFault, "Force Actuator #{} Following Error immediate fault",
-                    actuatorDataIndex + 1);
+                    immediateFault, "Force Actuator ID {} ({}) Following Error immediate fault", actuatorId,
+                    actuatorDataIndex);
 
     _forceActuatorFollowingErrorData[actuatorDataIndex].pop_front();
     _forceActuatorFollowingErrorData[actuatorDataIndex].push_back(countingWarning ? 1 : 0);
@@ -557,7 +557,7 @@ void SafetyController::forceActuatorFollowingError(int actuatorDataIndex, bool c
     _updateOverride(FaultCodes::ForceActuatorFollowingErrorCounting,
                     _safetyControllerSettings->ILC.FaultOnForceActuatorFollowingErrorCounting,
                     sum >= _safetyControllerSettings->ILC.ForceActuatorFollowingErrorCountThreshold,
-                    "Force Actuator #{} Following Error {}", actuatorDataIndex + 1, sum);
+                    "Force Actuator ID {} Following Error {}", actuatorId, sum);
 }
 
 void SafetyController::hardpointActuatorBreakawayFault(int actuatorDataIndex, bool conditionFlag) {
