@@ -40,6 +40,7 @@
 #include <SettingReader.h>
 #include <SimulatedFPGA.h>
 #include <Timestamp.h>
+#include <Units.h>
 
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
@@ -49,7 +50,7 @@ using namespace std::chrono_literals;
 const float MOUNT_SIMULATION_STEP = 1 / 50.0;
 // Gyroscope simulated velocity change. Same time unit as MOUNT_SIMULATION_STEP. Reach roughly max +-6
 // deg/sec.
-const float GYRO_SIMULATE_STEP = 1 / 375.0;
+const float GYRO_SIMULATE_STEP = D2RAD / 375.0;
 // Mount data are valid for 20 seconds in simulation, before simulated mount movement takes over
 #define MOUNT_VALIDITY 20s
 
@@ -158,9 +159,9 @@ void SimulatedFPGA::pullTelemetry() {
                         _mountSimulatedMovementFirstPass = false;
                         if (ForceActuatorSettings::instance().useGyroscope == true) {
                             double gyroRatio = (_mountElevation - 45.0) / 90.0;
-                            supportFPGAData.GyroRawX = -12 * gyroRatio;
-                            supportFPGAData.GyroRawY = -12 * gyroRatio;
-                            supportFPGAData.GyroRawZ = 12 * gyroRatio;
+                            supportFPGAData.GyroRawX = -12 * gyroRatio * D2RAD;
+                            supportFPGAData.GyroRawY = -12 * gyroRatio * D2RAD;
+                            supportFPGAData.GyroRawZ = 12 * gyroRatio * D2RAD;
                         }
                     }
                     if (_simulatingToHorizon) {

@@ -25,6 +25,7 @@
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <TMA.h>
+#include <Units.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -52,7 +53,8 @@ void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
 void TMA::updateTMAAzimuth(MTMount_azimuthC* data) {
     SPDLOG_TRACE("TMA: updateTMAAzimuth({})", data->actualPosition);
     _azimuth_Actual = data->actualPosition;
-    _azimuth_ActualVelocity = data->actualVelocity;
+    // transform telescope coordinates into M1M3
+    _azimuth_ActualVelocity = -data->actualVelocity;
     _azimuth_Timestamp = data->timestamp;
 
     Model::get().getForceController()->updateTMAAzimuthForces(data);
@@ -61,7 +63,8 @@ void TMA::updateTMAAzimuth(MTMount_azimuthC* data) {
 void TMA::updateTMAElevation(MTMount_elevationC* data) {
     SPDLOG_TRACE("TMA: updateTMAElevation({})", data->actualPosition);
     _elevation_Actual = data->actualPosition;
-    _elevation_ActualVelocity = data->actualVelocity;
+    // transform telescope coordinates into M1M3
+    _elevation_ActualVelocity = -data->actualVelocity;
     _elevation_Timestamp = data->timestamp;
 
     Model::get().getSafetyController()->tmaInclinometerDeviation(
@@ -83,8 +86,8 @@ void TMA::getMirrorAngularVelocities(double& x, double& y, double& z) {
         y = gyroData->angularVelocityY;
         z = gyroData->angularVelocityZ;
     } else {
-        x = _elevation_ActualVelocity;
-        y = getElevationCos(true) * _azimuth_ActualVelocity;
-        z = getElevationSin(true) * _azimuth_ActualVelocity;
+        x = _elevation_ActualVelocity * D2RAD;
+        y = getElevationCos(true) * _azimuth_ActualVelocity * D2RAD;
+        z = getElevationSin(true) * _azimuth_ActualVelocity * D2RAD;
     }
 }
