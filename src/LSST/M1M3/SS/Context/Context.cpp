@@ -317,6 +317,12 @@ void Context::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
     _updateCurrentStateIfRequired(state->enableAllForceActuators(command));
 }
 
+void Context::enableDisableForceComponent(EnableDisableForceComponentCommand* command) {
+    SPDLOG_DEBUG("Context: enableDisableForceComponent()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->enableDisableForceComponent(command));
+}
+
 void Context::_updateCurrentStateIfRequired(States::Type potentialNewState) {
     if (potentialNewState != States::NoStateTransition) {
         _currentState = potentialNewState;

@@ -27,8 +27,7 @@
 
 using namespace LSST::M1M3::SS;
 
-BoosterValveOpenCommand::BoosterValveOpenCommand(int32_t commandID, MTM1M3_command_boosterValveOpenC* data)
-        : Command(commandID) {}
+BoosterValveOpenCommand::BoosterValveOpenCommand(int32_t commandID) : Command(commandID) {}
 
 void BoosterValveOpenCommand::execute() { Context::get().boosterValveOpen(this); }
 

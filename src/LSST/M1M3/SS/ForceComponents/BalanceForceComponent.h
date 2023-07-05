@@ -76,8 +76,9 @@ public:
     void resetPID(int id);
     void resetPIDs();
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:

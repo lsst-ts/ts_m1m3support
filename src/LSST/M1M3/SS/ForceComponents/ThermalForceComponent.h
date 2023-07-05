@@ -48,8 +48,9 @@ public:
     void applyThermalForces(float* x, float* y, float* z);
     void applyThermalForcesByMirrorTemperature(float temperature);
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:

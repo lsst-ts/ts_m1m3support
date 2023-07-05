@@ -47,8 +47,9 @@ public:
      */
     void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:

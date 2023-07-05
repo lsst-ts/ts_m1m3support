@@ -39,8 +39,9 @@ public:
 
     void applyActiveOpticForces(float* z);
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:
