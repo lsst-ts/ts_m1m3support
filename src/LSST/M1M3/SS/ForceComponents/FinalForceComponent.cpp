@@ -21,16 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
+#include <spdlog/spdlog.h>
+
+#include <DistributedForces.h>
 #include <FinalForceComponent.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <Range.h>
+#include <SafetyController.h>
+#include <SettingReader.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -68,39 +72,101 @@ void FinalForceComponent::applyForcesByComponents() {
 
     for (int i = 0; i < FA_COUNT; ++i) {
         if (i < 12) {
-            int zIndex = _forceActuatorApplicationSettings->XIndexToZIndex[i];
-
-            if (_enabledForceActuators->forceActuatorEnabled[zIndex] == true) {
-                xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
-                              _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
-                              _appliedOffsetForces->xForces[i] + _appliedStaticForces->xForces[i] +
-                              _appliedThermalForces->xForces[i] + _appliedVelocityForces->xForces[i]);
-            } else {
-                xTarget[i] = 0;
-            }
+            xTarget[i] = (_appliedAccelerationForces->xForces[i] + _appliedAzimuthForces->xForces[i] +
+                          _appliedBalanceForces->xForces[i] + _appliedElevationForces->xForces[i] +
+                          _appliedOffsetForces->xForces[i] + _appliedStaticForces->xForces[i] +
+                          _appliedThermalForces->xForces[i] + _appliedVelocityForces->xForces[i]);
         }
 
         if (i < 100) {
-            int zIndex = _forceActuatorApplicationSettings->YIndexToZIndex[i];
+            yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +
+                          _appliedBalanceForces->yForces[i] + _appliedElevationForces->yForces[i] +
+                          _appliedOffsetForces->yForces[i] + _appliedStaticForces->yForces[i] +
+                          _appliedThermalForces->yForces[i] + _appliedVelocityForces->yForces[i]);
+        }
 
-            if (_enabledForceActuators->forceActuatorEnabled[zIndex] == true) {
-                yTarget[i] = (_appliedAccelerationForces->yForces[i] + _appliedAzimuthForces->yForces[i] +
-                              _appliedBalanceForces->yForces[i] + _appliedElevationForces->yForces[i] +
-                              _appliedOffsetForces->yForces[i] + _appliedStaticForces->yForces[i] +
-                              _appliedThermalForces->yForces[i] + _appliedVelocityForces->yForces[i]);
-            } else {
-                yTarget[i] = 0;
+        zTarget[i] = (_appliedAccelerationForces->zForces[i] + _appliedActiveOpticForces->zForces[i] +
+                      _appliedAzimuthForces->zForces[i] + _appliedBalanceForces->zForces[i] +
+                      _appliedElevationForces->zForces[i] + _appliedOffsetForces->zForces[i] +
+                      _appliedStaticForces->zForces[i] + _appliedThermalForces->zForces[i] +
+                      _appliedVelocityForces->zForces[i]);
+    }
+
+    auto faApplicationSettings = SettingReader::instance().getForceActuatorApplicationSettings();
+
+    // find disabled FAs quadrants
+    std::vector<int> disabledInQuadrants[4];
+
+    for (int i = 0; i < FA_COUNT; i++) {
+        if (_enabledForceActuators->forceActuatorEnabled[i] == false) {
+            disabledInQuadrants[int(faApplicationSettings->ZIndexToActuatorId(i) / 100) - 1].push_back(i);
+        }
+    }
+
+    // 2nd pass - distribute any disabled FA force per quadrants
+    for (int q = 0; q < 4; q++) {
+        auto qd = disabledInQuadrants[q];
+
+        if (disabledInQuadrants[q].size() == 0) {
+            continue;
+        }
+
+        float excess_z = 0;
+        float excess_y = 0;
+        float excess_x = 0;
+
+        int z_disabled = 0;
+        int y_disabled = 0;
+        int x_disabled = 0;
+
+        for (auto disabled : qd) {
+            excess_z += zTarget[disabled];
+            zTarget[disabled] = 0;
+            z_disabled++;
+
+            int yIndex = faApplicationSettings->ZIndexToYIndex[disabled];
+            if (yIndex >= 0) {
+                excess_y += yTarget[yIndex];
+                yTarget[yIndex] = 0;
+                y_disabled++;
+            }
+
+            int xIndex = faApplicationSettings->ZIndexToXIndex[disabled];
+            if (xIndex >= 0) {
+                excess_x += xTarget[xIndex];
+                xTarget[xIndex] = 0;
+                x_disabled++;
             }
         }
 
-        if (_enabledForceActuators->forceActuatorEnabled[i] == true) {
-            zTarget[i] = (_appliedAccelerationForces->zForces[i] + _appliedActiveOpticForces->zForces[i] +
-                          _appliedAzimuthForces->zForces[i] + _appliedBalanceForces->zForces[i] +
-                          _appliedElevationForces->zForces[i] + _appliedOffsetForces->zForces[i] +
-                          _appliedStaticForces->zForces[i] + _appliedThermalForces->zForces[i] +
-                          _appliedVelocityForces->zForces[i]);
-        } else {
-            zTarget[i] = 0;
+        auto qz = faApplicationSettings->QuadrantZ[q];
+
+        for (auto fa : qz) {
+            if (std::find(qd.begin(), qd.end(), fa) != std::end(qd)) {
+                continue;
+            }
+
+            zTarget[fa] += excess_z / (qz.size() - z_disabled);
+        }
+
+        auto qy = faApplicationSettings->QuadrantY[q];
+
+        for (auto fa : qy) {
+            if (std::find(qd.begin(), qd.end(), fa) != std::end(qd)) {
+                continue;
+            }
+
+            yTarget[fa] += excess_y / (qy.size() - y_disabled);
+        }
+
+        auto qx = faApplicationSettings->QuadrantX[q];
+
+        for (auto fa : qx) {
+            if (std::find(qd.begin(), qd.end(), fa) != std::end(qd)) {
+                continue;
+            }
+
+            xTarget[fa] += excess_x / (qx.size() - x_disabled);
         }
     }
 }

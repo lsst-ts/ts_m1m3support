@@ -24,6 +24,8 @@
 #ifndef FORCEACTUATORAPPLICATIONSETTINGS_H_
 #define FORCEACTUATORAPPLICATIONSETTINGS_H_
 
+#include <vector>
+
 #include <DataTypes.h>
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorTypes.h>
@@ -130,6 +132,17 @@ public:
     const int SecondaryCylinderIndexToActuatorId(int secIndex) {
         return ZIndexToActuatorId(SecondaryCylinderIndexToZIndex[secIndex]);
     }
+
+    // indices of XYZ FAs in mirror quadrants. FAs are assigned trivially by
+    // actuator ID (first number depict quadrant), those arrays are there to
+    // simplify operations where FAs in quadrant are needed, notably
+    // distributing forces from disabled FAs.
+    std::vector<int> QuadrantZ[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned trivially by
+                                    /// actuator ID (first number depict quadrant).
+    std::vector<int> QuadrantY[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned trivially by
+                                    /// actuator ID (first number depict quadrant).
+    std::vector<int> QuadrantX[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned trivially by
+                                    /// actuator ID (first number depict quadrant).
 
     /**
      * Returns actuator ID for given Z index.
