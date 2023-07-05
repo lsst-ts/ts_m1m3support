@@ -33,9 +33,7 @@
 #include <SupportFPGAData.h>
 #include <Timestamp.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 Accelerometer::Accelerometer() {
     SPDLOG_DEBUG("Accelerometer: Accelerometer()");
@@ -68,7 +66,7 @@ void Accelerometer::processData() {
             (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
             accelerometerSettings.angularAccelerationDistance[0];
     _accelerometerData->angularAccelerationY =
-            (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
+            (_accelerometerData->accelerometer[3] - _accelerometerData->accelerometer[1]) /
             accelerometerSettings.angularAccelerationDistance[1];
     _accelerometerData->angularAccelerationZ =
             (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
@@ -76,7 +74,3 @@ void Accelerometer::processData() {
             (accelerometerSettings.angularAccelerationDistance[2] * 2);
     M1M3SSPublisher::instance().putAccelerometerData();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
