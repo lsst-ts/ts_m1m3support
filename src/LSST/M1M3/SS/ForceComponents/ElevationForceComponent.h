@@ -46,8 +46,9 @@ public:
      */
     void applyElevationForcesByElevationAngle(float elevationAngle);
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:

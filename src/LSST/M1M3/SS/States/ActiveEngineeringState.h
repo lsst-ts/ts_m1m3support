@@ -24,8 +24,8 @@
 #ifndef ACTIVEENGINEERINGSTATE_H_
 #define ACTIVEENGINEERINGSTATE_H_
 
-#include <EngineeringState.h>
 #include <EnabledActiveState.h>
+#include <EngineeringState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -48,6 +48,7 @@ public:
     virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command) override;
     virtual States::Type updatePID(UpdatePIDCommand* command) override;
     virtual States::Type resetPID(ResetPIDCommand* command) override;
+    virtual States::Type enableDisableForceComponent(EnableDisableForceComponentCommand* command) override;
 
 protected:
     States::Type getLoweringState() override { return States::LoweringEngineeringState; }

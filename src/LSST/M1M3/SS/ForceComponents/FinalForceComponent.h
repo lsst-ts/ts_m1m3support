@@ -54,8 +54,9 @@ public:
      */
     void applyForcesByComponents();
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:

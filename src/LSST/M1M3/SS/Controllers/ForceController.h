@@ -195,6 +195,8 @@ public:
     void applyVelocityForces();
     void zeroVelocityForces();
 
+    void enableDisableForceComponent(int forceComponentEnum, bool enabled);
+
 private:
     void _sumAllForces();
     void _convertForcesToSetpoints();

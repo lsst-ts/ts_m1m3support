@@ -52,8 +52,9 @@ public:
     void applyAccelerationForcesByAngularAccelerations(float angularAccelerationX, float angularAccelerationY,
                                                        float angularAccelerationZ);
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:

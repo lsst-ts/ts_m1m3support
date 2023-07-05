@@ -1415,6 +1415,7 @@ ACK_COMMAND(killForceActuatorBumpTest)
 ACK_COMMAND(disableForceActuator)
 ACK_COMMAND(enableForceActuator)
 ACK_COMMAND(enableAllForceActuators)
+ACK_COMMAND(enableDisableForceComponent)
 
 } /* namespace SS */
 } /* namespace M1M3 */

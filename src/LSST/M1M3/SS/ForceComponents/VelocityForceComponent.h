@@ -41,8 +41,9 @@ public:
     void applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY,
                                               float angularVelocityZ);
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:
