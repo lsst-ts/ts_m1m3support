@@ -24,6 +24,8 @@
 #ifndef FORCEACTUATORAPPLICATIONSETTINGS_H_
 #define FORCEACTUATORAPPLICATIONSETTINGS_H_
 
+#include <vector>
+
 #include <DataTypes.h>
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorTypes.h>
@@ -130,6 +132,10 @@ public:
     const int SecondaryCylinderIndexToActuatorId(int secIndex) {
         return ZIndexToActuatorId(SecondaryCylinderIndexToZIndex[secIndex]);
     }
+
+    std::vector<int> QuadrantZ[4];
+    std::vector<int> QuadrantY[4];
+    std::vector<int> QuadrantX[4];
 
     /**
      * Returns actuator ID for given Z index.
