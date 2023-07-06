@@ -1,0 +1,185 @@
+#!/usr/bin/env python3
+
+import argparse
+import asyncio
+import logging
+import sys
+
+from astropy.time import Time, TimeDelta
+import astropy.units as u
+import enum
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from lsst_efd_client import EfdClient, resample
+
+# distances (m) between an accelerometer and the center of telescope rotation
+# (intersection of azimuth and elevation axis)
+A1_CR = 4 * u.m
+A2_CR = 4 * u.m
+A3_CR = 4 * u.m
+A5_CR = 4 * u.m
+
+RAW_FIELDS = [f"rawAccelerometer{a}" for a in range(8)]
+
+class PeridoType(enum.IntEnum):
+    HORIZON = 0
+    ZENITH = 1
+
+
+class CalibrateACAccelerometer:
+    def __init__(self, start: Time, end: Time):
+        self.client = EfdClient("summit_efd")
+        self.start = start
+        self.end = end
+        self.interval = end - start
+
+        self._current_time = start
+        self._current_index = 0
+        self._period = 1800
+        self._tma_data = None
+
+    async def _load_period(self):
+            period_end = min(self.end, self._current_time + TimeDelta(self._period, format="sec"))
+            logging.info("Probing interval {self._current_time} - {period_end}")
+
+            self.elevation = await self.client.select_time_series(
+                "lsst.sal.MTMount.elevation",
+                ["timestamp", "actualPosition", "actualVelocity", "demandVelocity"],
+                self._current_time,
+                period_end,
+            )
+            self.elevation = self.elevation.rename(lambda n: "elevation_" + n, axis="columns")
+
+            self.azimuth = await self.client.select_time_series(
+                "lsst.sal.MTMount.elevation",
+                ["timestamp", "actualPosition", "actualVelocity", "demandVelocity"],
+                self._current_time,
+                period_end,
+            )
+            self.azimuth = self.azimuth.rename(lambda n: "azimuth_" + n, axis="columns")
+
+            self._tma_data = resample(self.elevation, self.azimuth)
+            self._current_index = 0
+
+            # derivative
+            index = self._tma_data.index
+            den = index.to_series().diff().dt.total_seconds()
+            num = self._tma_data.diff()
+            self._tma_derivative = num.div(den, axis=0)
+
+            index = self.elevation.index
+            den = index.to_series().diff().dt.total_seconds()
+            num = self.elevation.diff()
+            self.elevation_acc = num.div(den, axis=0)
+
+
+    async def next_period(self) -> PeridoType:
+        while self._current_time < self.end:
+            if self._tma_data is None or self._current_index > len(self._tma_data):
+                await self._load_period()
+                print("Derivative")
+                print(self._tma_derivative)
+                (self._tma_derivative["elevation_demandVelocity"] / self._tma_derivative["elevation_timestamp"]).plot(style="x-")
+                (self._tma_derivative["elevation_actualVelocity"] / self._tma_derivative["elevation_timestamp"]).plot(style=".-")
+                (self.elevation_acc["elevation_actualVelocity"] / self.elevation_acc["elevation_timestamp"]).plot(style="o-")
+
+                (self.elevation_acc["elevation_demandVelocity"] / self.elevation_acc["elevation_timestamp"]).plot(style="|-")
+
+                plt.legend(["el. demand", "el. actual", "el only actual", "el only demand"])
+                plt.show()
+
+            break
+
+            self._current_time = self.end
+
+    async def stat(self, start: Time, end: Time) -> list[tuple[float, float]]:
+        elevation = await self.client.select_time_series(
+            "lsst.sal.MTMount.elevation", ["actualPosition", "demandPosition"], start, end
+        )
+
+        try:
+            actual = elevation["actualPosition"]
+            demand = elevation["demandPosition"]
+
+            print(f"Elevation {np.mean(actual):.6f} {np.min(actual):.6f} {np.max(actual):.6f}")
+        except KeyError:
+            print("Unknow elevation, perharps TMA isn't running?")
+
+        dc_accelerometers = await self.client.select_time_series(
+            "lsst.sal.MTM1M3.accelerometerData", "*", start, end
+        )
+
+        stat = [(np.mean(dc_accelerometers[field]), np.std(dc_accelerometers[field])) for field in RAW_FIELDS]
+
+        for a in range(8):
+            print(f"Average {a+1}: {stat[a][0] * 1000:.1f} stdev {stat[a][1]}")
+        return stat
+
+    async def run(self, compare_times: list[Time]) -> None:
+        reference = await self.stat(self.start, self.end)
+
+        for t in compare_times:
+            stat = await self.stat(t, t + self.interval)
+            for a in range(8):
+                print(f"{a+1} std diff: {(stat[a][1] - reference[a][1]) * 1000} ratio: {(stat[a][1] / reference[a][1]) * 1000}")
+
+async def main(start: Time, end: Time, compare_times: list[Time]) -> None:
+    calibrator = CalibrateACAccelerometer(args.start, args.end)
+    # await calibrator.run(compare_times)
+    await calibrator.next_period()
+
+
+def parse_interval(interval: str)->float:
+    if len(interval) == 0:
+        raise RuntimeError("Empty interval specified")
+    suffix = interval[-1]
+    if suffix >= "0" and suffix <= "9":
+        return float(suffix)
+    elif suffix == "s":
+        return float(interval[:-1])
+    elif suffix == "m":
+        return float(interval[:-1]) * 60
+    elif suffix == "h":
+        return float(interval[:-1]) * 3600
+    elif suffix == "D":
+        return float(interval[:-1]) * 86400
+
+
+parser = argparse.ArgumentParser(
+    prog="DC average", description="Calculate DC accelerometer average"
+)
+
+parser.add_argument(
+    "--start",
+    help="start time",
+    type=Time,
+    default=Time.now() - TimeDelta(5, format="sec"),
+)
+parser.add_argument("--end", help="end time", type=Time)
+
+parser.add_argument(
+    "--compare",
+    help="Start times to compare with",
+    type=Time,
+    action="append",
+    default=[],
+)
+
+parser.add_argument("--interval", help="time interval to search", type=parse_interval)
+
+args = parser.parse_args()
+
+if args.end is not None and args.interval is not None:
+    sys.exit("Cannot specify both end time and interval")
+
+if args.end is None:
+    if args.interval is not None:
+        args.end = args.start + TimeDelta(args.interval, format="sec")
+    else:
+        args.end = args.start + TimeDelta(180, format="sec")
+
+print(f"Averages from {args.start} to {args.end}")
+
+asyncio.run(main(args.start, args.end, args.compare))
