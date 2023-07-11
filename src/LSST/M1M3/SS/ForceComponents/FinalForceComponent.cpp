@@ -105,7 +105,6 @@ void FinalForceComponent::applyForcesByComponents() {
 
     // 2nd pass - distribute any disabled FA force per quadrants
     for (int q = 0; q < 4; q++) {
-
         auto qd = disabledInQuadrants[q];
 
         if (disabledInQuadrants[q].size() == 0) {

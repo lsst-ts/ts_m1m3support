@@ -59,6 +59,7 @@ States::Type EngineeringState::boosterValveOpen(BoosterValveOpenCommand* command
     SPDLOG_INFO("{}: boosterValveOpen", name);
     BoosterValveStatus::instance().setUserTriggered(true);
     Model::get().getForceController()->applyVelocityForces();
+    Model::get().getForceController()->applyAccelerationForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -66,6 +67,7 @@ States::Type EngineeringState::boosterValveClose(BoosterValveCloseCommand* comma
     SPDLOG_INFO("{}: boosterValveClose", name);
     BoosterValveStatus::instance().setUserTriggered(false);
     Model::get().getForceController()->zeroVelocityForces();
+    Model::get().getForceController()->zeroAccelerationForces();
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

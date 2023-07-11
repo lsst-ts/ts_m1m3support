@@ -181,9 +181,9 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
-
     // TODO temporary, will be included in XML 18.0+
     bool useGyroscope;
+    bool useAccelerometers;
 
 private:
     void _loadNearNeighborZTable(const std::string &filename);
