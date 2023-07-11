@@ -51,6 +51,10 @@ const float MOUNT_SIMULATION_STEP = 1 / 50.0;
 // Gyroscope simulated velocity change. Same time unit as MOUNT_SIMULATION_STEP. Reach roughly max +-6
 // deg/sec.
 const float GYRO_SIMULATE_STEP = D2RAD / 375.0;
+// Accelerometers simulated acceleration change. Same time unit as MOUNT_SIMULATION_STEP. Reach roughly +-6
+// deg/sec.
+const float ACCEL_SIMULATED_STEP = D2RAD / 374.0;
+
 // Mount data are valid for 20 seconds in simulation, before simulated mount movement takes over
 #define MOUNT_VALIDITY 20s
 
