@@ -194,9 +194,9 @@ void ForceController::updateAppliedForces() {
 
     if (_accelerationForceComponent.isActive()) {
         if (_accelerationForceComponent.isEnabled()) {
-            _accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(
-                    _accelerometerData->angularAccelerationX, _accelerometerData->angularAccelerationY,
-                    _accelerometerData->angularAccelerationZ);
+            double x, y, z;
+            TMA::instance().getMirrorAngularAccelerations(x, y, z);
+            _accelerationForceComponent.applyAccelerationForcesByAngularAccelerations(x, y, z);
         }
         _accelerationForceComponent.update();
     }

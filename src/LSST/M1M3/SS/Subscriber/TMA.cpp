@@ -30,64 +30,108 @@
 using namespace LSST::M1M3::SS;
 
 TMA::TMA(token) {
-    _azimuth_Timestamp = 0;
-    _azimuth_Actual = NAN;
-    _azimuth_ActualVelocity = NAN;
-    _elevation_Timestamp = 0;
-    _elevation_Actual = NAN;
-    _elevation_ActualVelocity = NAN;
+    _last_azimuth_data.timestamp = 0;
+    _last_azimuth_data.actualPosition = NAN;
+    _last_azimuth_data.demandPosition = NAN;
+    _last_azimuth_data.actualVelocity = NAN;
+    _last_azimuth_data.demandVelocity = NAN;
+
+    _last_elevation_data.timestamp = 0;
+    _last_elevation_data.actualPosition = NAN;
+    _last_elevation_data.demandPosition = NAN;
+    _last_elevation_data.actualVelocity = NAN;
+    _last_elevation_data.demandVelocity = NAN;
+
+    _azimuth_demand_acceleration = NAN;
+    _azimuth_actual_acceleration = NAN;
+
+    _elevation_demand_acceleration = NAN;
+    _elevation_actual_acceleration = NAN;
 }
 
 void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
-    if (ForceActuatorSettings::instance().useInclinometer == false) {
+    if (ForceActuatorSettings::instance().useInclinometer == false ||
+        ForceActuatorSettings::instance().useGyroscope == false ||
+        ForceActuatorSettings::instance().useAccelerometers == false) {
         double timestamp = M1M3SSPublisher::instance().getTimestamp();
         if (checkAzimuth) {
-            Model::get().getSafetyController()->tmaAzimuthTimeout(_azimuth_Timestamp - timestamp);
+            Model::get().getSafetyController()->tmaAzimuthTimeout(_last_azimuth_data.timestamp - timestamp);
         }
         if (checkElevation) {
-            Model::get().getSafetyController()->tmaElevationTimeout(_elevation_Timestamp - timestamp);
+            Model::get().getSafetyController()->tmaElevationTimeout(_last_elevation_data.timestamp -
+                                                                    timestamp);
         }
     }
 }
 
-void TMA::updateTMAAzimuth(MTMount_azimuthC* data) {
+void TMA::updateTMAAzimuth(MTMount_azimuthC *data) {
     SPDLOG_TRACE("TMA: updateTMAAzimuth({})", data->actualPosition);
-    _azimuth_Actual = data->actualPosition;
-    // transform telescope coordinates into M1M3
-    _azimuth_ActualVelocity = -data->actualVelocity;
-    _azimuth_Timestamp = data->timestamp;
+
+    if (_last_azimuth_data.timestamp != 0) {
+        double elapsed = data->timestamp - _last_azimuth_data.timestamp;
+        _azimuth_demand_acceleration = (data->demandVelocity - _last_azimuth_data.demandVelocity) / elapsed;
+        _azimuth_actual_acceleration = (data->actualVelocity - _last_azimuth_data.actualVelocity) / elapsed;
+    }
+
+    memcpy(&_last_azimuth_data, data, sizeof(MTMount_azimuthC));
 
     Model::get().getForceController()->updateTMAAzimuthForces(data);
 }
 
-void TMA::updateTMAElevation(MTMount_elevationC* data) {
+void TMA::updateTMAElevation(MTMount_elevationC *data) {
     SPDLOG_TRACE("TMA: updateTMAElevation({})", data->actualPosition);
-    _elevation_Actual = data->actualPosition;
-    // transform telescope coordinates into M1M3
-    _elevation_ActualVelocity = -data->actualVelocity;
-    _elevation_Timestamp = data->timestamp;
+
+    if (_last_elevation_data.timestamp != 0) {
+        double elapsed = data->timestamp - _last_elevation_data.timestamp;
+        _elevation_demand_acceleration =
+                (data->demandVelocity - _last_elevation_data.demandVelocity) / elapsed;
+        _elevation_actual_acceleration =
+                (data->actualVelocity - _last_elevation_data.actualVelocity) / elapsed;
+    }
+
+    memcpy(&_last_elevation_data, data, sizeof(MTMount_elevationC));
 
     Model::get().getSafetyController()->tmaInclinometerDeviation(
-            _elevation_Actual - M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle);
+            _last_elevation_data.actualPosition -
+            M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle);
 }
 
 double TMA::getElevation(bool forceTelescope) {
     if (ForceActuatorSettings::instance().useInclinometer && forceTelescope == false) {
         return M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle;
     } else {
-        return _elevation_Actual;
+        return _last_elevation_data.actualPosition;
     }
 }
 
-void TMA::getMirrorAngularVelocities(double& x, double& y, double& z) {
+void TMA::getMirrorAngularVelocities(double &x, double &y, double &z) {
     if (ForceActuatorSettings::instance().useGyroscope) {
         auto gyroData = M1M3SSPublisher::instance().getGyroData();
         x = gyroData->angularVelocityX;
         y = gyroData->angularVelocityY;
         z = gyroData->angularVelocityZ;
     } else {
-        x = _elevation_ActualVelocity * D2RAD;
-        y = getElevationCos(true) * _azimuth_ActualVelocity * D2RAD;
-        z = getElevationSin(true) * _azimuth_ActualVelocity * D2RAD;
+        x = _last_elevation_data.actualVelocity * D2RAD;
+        y = getElevationCos(true) * _last_azimuth_data.actualVelocity * D2RAD;
+        z = getElevationSin(true) * _last_azimuth_data.actualVelocity * D2RAD;
+    }
+}
+
+void TMA::getMirrorAngularAccelerations(double &ax, double &ay, double &az) {
+    if (ForceActuatorSettings::instance().useAccelerometers) {
+        auto accelerometer = M1M3SSPublisher::instance().getAccelerometerData();
+        ax = accelerometer->angularAccelerationX;
+        ay = accelerometer->angularAccelerationY;
+        az = accelerometer->angularAccelerationZ;
+    } else {
+        if (isnan(_azimuth_actual_acceleration)) {
+            throw std::runtime_error("No TMA azimuth data received, cannot calculate acceleration.");
+        }
+        if (isnan(_elevation_actual_acceleration)) {
+            throw std::runtime_error("No TMA elevation data received, cannot calculate acceleration.");
+        }
+        ax = _elevation_actual_acceleration * D2RAD;
+        ay = getElevationCos(true) * _azimuth_actual_acceleration * D2RAD;
+        az = getElevationSin(true) * _azimuth_actual_acceleration * D2RAD;
     }
 }
