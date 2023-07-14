@@ -236,8 +236,9 @@ void ForceController::updateAppliedForces() {
     }
     if (_velocityForceComponent.isActive()) {
         if (_velocityForceComponent.isEnabled()) {
-            _velocityForceComponent.applyVelocityForcesByAngularVelocity(
-                    _gyroData->angularVelocityX, _gyroData->angularVelocityY, _gyroData->angularVelocityZ);
+            double x, y, z;
+            TMA::instance().getMirrorAngularVelocities(x, y, z);
+            _velocityForceComponent.applyVelocityForcesByAngularVelocity(x, y, z);
         }
         _velocityForceComponent.update();
     }
