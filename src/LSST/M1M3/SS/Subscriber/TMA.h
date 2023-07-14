@@ -55,14 +55,14 @@ public:
      *
      * @param data MTMount_azimuth data
      */
-    void updateTMAAzimuth(MTMount_azimuthC* data);
+    void updateTMAAzimuth(MTMount_azimuthC *data);
 
     /**
      * Updates elevation data to match current TMA data. Should be called on reception of new elevation data.
      *
      * @param data MTMount_elevation data
      */
-    void updateTMAElevation(MTMount_elevationC* data);
+    void updateTMAElevation(MTMount_elevationC *data);
 
     /**
      * Returns mirror elevation. Uses either telescope provided data, or internal inclinometer readout.
@@ -77,7 +77,9 @@ public:
      * Returns mirror angular X, Y and Z velocities. Those are calculated from
      * azimuth and elevation velocities.
      */
-    void getMirrorAngularVelocities(double& x, double& y, double& z);
+    void getMirrorAngularVelocities(double &x, double &y, double &z);
+
+    void getMirrorAngularAccelerations(double &ax, double &ay, double &az);
 
     /**
      * Returns elevation sin.
@@ -98,13 +100,15 @@ public:
     double getElevationCos(bool forceTelescope = false) { return cos(getElevation(forceTelescope) * D2RAD); }
 
 private:
-    double _azimuth_Timestamp;
-    double _azimuth_Actual;
-    double _azimuth_ActualVelocity;
+    /// hold values needed for acceleration calculation
+    MTMount_azimuthC _last_azimuth_data;
+    MTMount_elevationC _last_elevation_data;
 
-    double _elevation_Timestamp;
-    double _elevation_Actual;
-    double _elevation_ActualVelocity;
+    double _azimuth_demand_acceleration;
+    double _azimuth_actual_acceleration;
+
+    double _elevation_demand_acceleration;
+    double _elevation_actual_acceleration;
 };
 
 }  // namespace SS

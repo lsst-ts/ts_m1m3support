@@ -1,3 +1,4 @@
+M1M3_SUPPORT_CONFIG="/var/lib/M1M3support"
 OSPL_HOME=/opt/OpenSpliceDDS/V6.10.4/HDE/x86_64.linux
 OSPL_RELEASE=6.10.4
 OSPL_LOGPATH=/var/log/m1m3
