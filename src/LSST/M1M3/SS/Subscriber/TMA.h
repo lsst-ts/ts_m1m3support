@@ -67,30 +67,44 @@ public:
     /**
      * Returns mirror elevation. Uses either telescope provided data, or internal inclinometer readout.
      *
+     * @param forceTelescope if true, telescope elevation angle is provided
+     *
      * @return telescope elevation in degrees. 0 for horizon, 90 for zenith.
      */
-    double getElevation();
+    double getElevation(bool forceTelescope = false);
+
+    /**
+     * Returns mirror angular X, Y and Z velocities. Those are calculated from
+     * azimuth and elevation velocities.
+     */
+    void getMirrorAngularVelocities(double& x, double& y, double& z);
 
     /**
      * Returns elevation sin.
      *
+     * @param forceTelescope if true, telescope elevation angle is provided
+     *
      * @return elvation sin
      */
-    double getElevationSin() { return sin(getElevation() * D2RAD); }
+    double getElevationSin(bool forceTelescope = false) { return sin(getElevation(forceTelescope) * D2RAD); }
 
     /**
      * Returns elevation cos.
      *
+     * @param forceTelescope if true, telescope elevation angle is provided
+     *
      * @return elevation cos
      */
-    double getElevationCos() { return cos(getElevation() * D2RAD); }
+    double getElevationCos(bool forceTelescope = false) { return cos(getElevation(forceTelescope) * D2RAD); }
 
 private:
     double _azimuth_Timestamp;
     double _azimuth_Actual;
+    double _azimuth_ActualVelocity;
 
     double _elevation_Timestamp;
     double _elevation_Actual;
+    double _elevation_ActualVelocity;
 };
 
 }  // namespace SS

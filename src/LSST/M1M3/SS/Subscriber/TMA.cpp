@@ -25,13 +25,17 @@
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <TMA.h>
+#include <Units.h>
 
 using namespace LSST::M1M3::SS;
 
 TMA::TMA(token) {
     _azimuth_Timestamp = 0;
+    _azimuth_Actual = NAN;
+    _azimuth_ActualVelocity = NAN;
     _elevation_Timestamp = 0;
     _elevation_Actual = NAN;
+    _elevation_ActualVelocity = NAN;
 }
 
 void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
@@ -49,6 +53,8 @@ void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
 void TMA::updateTMAAzimuth(MTMount_azimuthC* data) {
     SPDLOG_TRACE("TMA: updateTMAAzimuth({})", data->actualPosition);
     _azimuth_Actual = data->actualPosition;
+    // transform telescope coordinates into M1M3
+    _azimuth_ActualVelocity = -data->actualVelocity;
     _azimuth_Timestamp = data->timestamp;
 
     Model::get().getForceController()->updateTMAAzimuthForces(data);
@@ -57,16 +63,31 @@ void TMA::updateTMAAzimuth(MTMount_azimuthC* data) {
 void TMA::updateTMAElevation(MTMount_elevationC* data) {
     SPDLOG_TRACE("TMA: updateTMAElevation({})", data->actualPosition);
     _elevation_Actual = data->actualPosition;
+    // transform telescope coordinates into M1M3
+    _elevation_ActualVelocity = -data->actualVelocity;
     _elevation_Timestamp = data->timestamp;
 
     Model::get().getSafetyController()->tmaInclinometerDeviation(
             _elevation_Actual - M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle);
 }
 
-double TMA::getElevation() {
-    if (ForceActuatorSettings::instance().useInclinometer) {
+double TMA::getElevation(bool forceTelescope) {
+    if (ForceActuatorSettings::instance().useInclinometer && forceTelescope == false) {
         return M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle;
     } else {
         return _elevation_Actual;
+    }
+}
+
+void TMA::getMirrorAngularVelocities(double& x, double& y, double& z) {
+    if (ForceActuatorSettings::instance().useGyroscope) {
+        auto gyroData = M1M3SSPublisher::instance().getGyroData();
+        x = gyroData->angularVelocityX;
+        y = gyroData->angularVelocityY;
+        z = gyroData->angularVelocityZ;
+    } else {
+        x = _elevation_ActualVelocity * D2RAD;
+        y = getElevationCos(true) * _azimuth_ActualVelocity * D2RAD;
+        z = getElevationSin(true) * _azimuth_ActualVelocity * D2RAD;
     }
 }
