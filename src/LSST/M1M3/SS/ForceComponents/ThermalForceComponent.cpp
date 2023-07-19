@@ -21,16 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ThermalForceComponent.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <SafetyController.h>
+#include <spdlog/spdlog.h>
+
+#include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <Range.h>
+#include <SafetyController.h>
+#include <ThermalForceComponent.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -41,7 +43,6 @@ ThermalForceComponent::ThermalForceComponent(
         : ForceComponent("Thermal", ForceActuatorSettings::instance().ThermalComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedThermalForces = M1M3SSPublisher::instance().getAppliedThermalForces();
     _preclippedThermalForces = M1M3SSPublisher::instance().getEventPreclippedThermalForces();
@@ -92,9 +93,7 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
 void ThermalForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("ThermalForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->thermalForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_thermalForcesApplied(isEnabled());
 }
 
 void ThermalForceComponent::postUpdateActions() {
