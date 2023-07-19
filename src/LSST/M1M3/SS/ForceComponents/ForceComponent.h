@@ -24,9 +24,10 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 
+#include <string>
+
 #include <DataTypes.h>
 #include <ForceComponentSettings.h>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {

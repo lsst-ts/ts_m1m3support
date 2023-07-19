@@ -48,7 +48,6 @@ private:
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedActiveOpticForcesC* _appliedActiveOpticForces;
     MTM1M3_logevent_preclippedActiveOpticForcesC* _preclippedActiveOpticForces;

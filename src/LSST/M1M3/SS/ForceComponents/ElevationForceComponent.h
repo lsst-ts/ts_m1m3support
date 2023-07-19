@@ -24,10 +24,11 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_ELEVATIONFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_ELEVATIONFORCECOMPONENT_H_
 
+#include <SAL_MTM1M3C.h>
+
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <SafetyController.h>
-#include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -55,7 +56,6 @@ private:
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_appliedElevationForcesC* _appliedElevationForces;
     MTM1M3_logevent_preclippedElevationForcesC* _preclippedElevationForces;

@@ -37,6 +37,7 @@
 #include <ForceActuatorInfo.h>
 #include <ForceActuatorForceWarning.h>
 #include <ForceActuatorSettings.h>
+#include <ForceControllerState.h>
 #include <ForceConverter.h>
 #include <HardpointActuatorSettings.h>
 #include <HardpointActuatorWarning.h>
@@ -916,7 +917,7 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
     if (RaisingLoweringInfo::instance().weightSupportedPercent > 0) {
         float maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
         float minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
-        if (_forceActuatorState->balanceForcesApplied) {
+        if (ForceControllerState::instance().balanceForcesApplied) {
             maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
             minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
         }
