@@ -21,15 +21,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <AccelerationForceComponent.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
+#include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <ForceControllerState.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <Range.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,7 +42,6 @@ AccelerationForceComponent::AccelerationForceComponent(
         : ForceComponent("Acceleration", ForceActuatorSettings::instance().AccelerationComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedAccelerationForces = M1M3SSPublisher::instance().getAppliedAccelerationForces();
     _preclippedAccelerationForces = M1M3SSPublisher::instance().getEventPreclippedAccelerationForces();
@@ -98,9 +99,7 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
 void AccelerationForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("AccelerationForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->accelerationForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_accelerationForcesApplied(isEnabled());
 }
 
 void AccelerationForceComponent::postUpdateActions() {

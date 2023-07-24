@@ -21,16 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <VelocityForceComponent.h>
+#include <spdlog/spdlog.h>
+
+#include <DistributedForces.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
-#include <SafetyController.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <Range.h>
+#include <SafetyController.h>
+#include <VelocityForceComponent.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -41,7 +43,6 @@ VelocityForceComponent::VelocityForceComponent(
         : ForceComponent("Velocity", ForceActuatorSettings::instance().VelocityComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();
     _preclippedVelocityForces = M1M3SSPublisher::instance().getEventPreclippedVelocityForces();
@@ -97,9 +98,7 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
 void VelocityForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("VelocityForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->velocityForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_velocityForcesApplied(isEnabled());
 }
 
 void VelocityForceComponent::postUpdateActions() {

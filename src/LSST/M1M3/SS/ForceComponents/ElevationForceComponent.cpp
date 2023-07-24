@@ -27,6 +27,7 @@
 #include <ElevationForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
@@ -41,7 +42,6 @@ ElevationForceComponent::ElevationForceComponent(
         : ForceComponent("Elevation", ForceActuatorSettings::instance().ElevationComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
     _preclippedElevationForces = M1M3SSPublisher::instance().getEventPreclippedElevationForces();
@@ -97,9 +97,7 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
 void ElevationForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("ElevationForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->elevationForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_elevationForcesApplied(isEnabled());
 }
 
 void ElevationForceComponent::postUpdateActions() {

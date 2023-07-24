@@ -21,16 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <AzimuthForceComponent.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
+#include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
 #include <LimitLog.h>
-#include <spdlog/spdlog.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <Range.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -41,7 +43,6 @@ AzimuthForceComponent::AzimuthForceComponent(
         : ForceComponent("Azimuth", ForceActuatorSettings::instance().AzimuthComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedAzimuthForces = M1M3SSPublisher::instance().getAppliedAzimuthForces();
     _preclippedAzimuthForces = M1M3SSPublisher::instance().getEventPreclippedAzimuthForces();
@@ -94,9 +95,7 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
 void AzimuthForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("AzimuthForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->azimuthForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_azimuthForcesApplied(isEnabled());
 }
 
 void AzimuthForceComponent::postUpdateActions() {

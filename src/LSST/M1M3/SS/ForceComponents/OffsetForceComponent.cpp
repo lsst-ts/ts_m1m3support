@@ -21,16 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <OffsetForceComponent.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <SafetyController.h>
+#include <spdlog/spdlog.h>
+
+#include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <OffsetForceComponent.h>
+#include <SafetyController.h>
+#include <Range.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,7 +42,6 @@ OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* for
         : ForceComponent("Offset", ForceActuatorSettings::instance().OffsetComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::instance().getEventAppliedOffsetForces();
     _preclippedOffsetForces = M1M3SSPublisher::instance().getEventPreclippedOffsetForces();
@@ -118,9 +119,7 @@ void OffsetForceComponent::zeroOffsetForces() {
 void OffsetForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("OffsetForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->offsetForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_offsetForcesApplied(isEnabled());
 }
 
 void OffsetForceComponent::postUpdateActions() {

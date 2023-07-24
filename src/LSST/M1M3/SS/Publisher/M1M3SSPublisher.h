@@ -290,6 +290,9 @@ public:
     void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {
         _m1m3SAL->logEvent_forceActuatorWarning(data, 0);
     }
+    void logForceControllerState(MTM1M3_logevent_forceControllerStateC* data) {
+        _m1m3SAL->logEvent_forceControllerState(data, 0);
+    }
     void logForceSetpointWarning();
     void tryLogForceSetpointWarning();
     void logGyroSettings(MTM1M3_logevent_gyroSettingsC* data) { _m1m3SAL->logEvent_gyroSettings(data, 0); }

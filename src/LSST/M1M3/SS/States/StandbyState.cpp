@@ -27,6 +27,7 @@
 
 #include <BoosterValveStatus.h>
 #include <DigitalInputOutput.h>
+#include <ForceControllerState.h>
 #include <Gyro.h>
 #include <ILC.h>
 #include <Model.h>
@@ -52,6 +53,9 @@ States::Type StandbyState::update(UpdateCommand* command) {
 
 States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
+
+    ForceControllerState::instance().log();
+
     SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
     RaisingLoweringInfo::instance().sendUpdates(true);
 
