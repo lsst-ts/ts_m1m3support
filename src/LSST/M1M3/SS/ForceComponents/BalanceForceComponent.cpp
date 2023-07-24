@@ -27,6 +27,7 @@
 #include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
@@ -48,7 +49,6 @@ BalanceForceComponent::BalanceForceComponent(
           _mz(5, PIDSettings::instance().getParameters(5)) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedBalanceForces = M1M3SSPublisher::instance().getAppliedBalanceForces();
     _preclippedBalanceForces = M1M3SSPublisher::instance().getEventPreclippedBalanceForces();
@@ -142,9 +142,7 @@ void BalanceForceComponent::postEnableDisableActions() {
         resetPIDs();
     }
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->balanceForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_balanceForcesApplied(isEnabled());
 }
 
 void BalanceForceComponent::postUpdateActions() {
