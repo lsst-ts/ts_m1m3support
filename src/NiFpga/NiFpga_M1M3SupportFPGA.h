@@ -23,12 +23,17 @@
 /**
  * The signature of the FPGA bitfile.
  */
-static const char* const NiFpga_M1M3SupportFPGA_Signature = "CFBE95E3F3E2220EA7D6D246D08D87B2";
+static const char* const NiFpga_M1M3SupportFPGA_Signature = "16922763B1DC6A8D1676BFF8A5958584";
 
 #if NiFpga_Cpp
 extern "C"
 {
 #endif
+
+typedef enum
+{
+   NiFpga_M1M3SupportFPGA_ControlU32_TabControl = 0x18000,
+} NiFpga_M1M3SupportFPGA_ControlU32;
 
 typedef enum
 {
