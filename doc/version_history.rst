@@ -4,6 +4,31 @@
 Version History
 ===============
 
+v2.13.0
+-------
+
+* Command to enable/disable force components
+
+v2.12.4
+-------
+* Calculations of mirror accelerations from TMA velocities (changes)
+* DC Accelerometer FPGA code improvements
+
+v2.12.3
+-------
+
+* Fixed DC Accelerometers calculations
+
+v2.12.2
+-------
+
+* Distribute disabled FA forces into their quadrants - allow force balancing to be activated
+
+v2.12.1
+-------
+
+* Don't test FA following error in disabled state
+
 v2.12.0
 -------
 
