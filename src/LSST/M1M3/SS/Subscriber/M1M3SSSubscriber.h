@@ -107,6 +107,7 @@ public:
     Command* tryAcceptCommandDisableForceActuator();
     Command* tryAcceptCommandEnableForceActuator();
     Command* tryAcceptCommandEnableAllForceActuators();
+    Command* tryAcceptCommandEnableDisableForceComponent();
 
     Command* tryGetSampleTMAAzimuth();
     Command* tryGetSampleTMAElevation();
@@ -132,8 +133,6 @@ private:
     MTM1M3_command_clearActiveOpticForcesC _clearActiveOpticForcesData;
     MTM1M3_command_enterEngineeringC _enterEngineeringData;
     MTM1M3_command_exitEngineeringC _exitEngineeringData;
-    MTM1M3_command_boosterValveOpenC _boosterValveOpenData;
-    MTM1M3_command_boosterValveCloseC _boosterValveCloseData;
     MTM1M3_command_testHardpointC _testHardpointData;
     MTM1M3_command_killHardpointTestC _killHardpointTestData;
     MTM1M3_command_moveHardpointActuatorsC _moveHardpointActuatorsData;
@@ -158,7 +157,7 @@ private:
     MTM1M3_command_killForceActuatorBumpTestC _killForceActuatorBumpTestData;
     MTM1M3_command_disableForceActuatorC _disableForceActuatorData;
     MTM1M3_command_enableForceActuatorC _enableForceActuatorData;
-    MTM1M3_command_enableAllForceActuatorsC _enableAllForceActuatorsData;
+    MTM1M3_command_enableDisableForceComponentC _enableDisableForceComponentData;
 
     MTMount_azimuthC _tmaAzimuth;
     MTMount_elevationC _tmaElevation;

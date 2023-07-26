@@ -34,11 +34,13 @@
 #include <AirSupplyStatus.h>
 #include <AccelerometerSettings.h>
 #include <CRC.h>
+#include <ForceActuatorSettings.h>
 #include <FPGAAddresses.h>
 #include <M1M3SSPublisher.h>
 #include <SettingReader.h>
 #include <SimulatedFPGA.h>
 #include <Timestamp.h>
+#include <Units.h>
 
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
@@ -46,6 +48,13 @@ using namespace std::chrono_literals;
 
 // simulate 1 degree per second (there are 50 loops runs per second)
 const float MOUNT_SIMULATION_STEP = 1 / 50.0;
+// Gyroscope simulated velocity change. Same time unit as MOUNT_SIMULATION_STEP. Reach roughly max +-6
+// deg/sec.
+const float GYRO_SIMULATE_STEP = D2RAD / 375.0;
+// Accelerometers simulated acceleration change. Same time unit as MOUNT_SIMULATION_STEP. Reach roughly +-6
+// deg/sec.
+const float ACCEL_SIMULATED_STEP = D2RAD / 374.0;
+
 // Mount data are valid for 20 seconds in simulation, before simulated mount movement takes over
 #define MOUNT_VALIDITY 20s
 
@@ -70,6 +79,11 @@ SimulatedFPGA::SimulatedFPGA() {
 
     supportFPGAData.DigitalInputStates =
             0x0001 | 0x0002 | 0x0008 | DigitalOutputs::AirCommandOutputOn | 0x0040 | 0x0080;
+
+    supportFPGAData.GyroRawX = 0;
+    supportFPGAData.GyroRawY = 0;
+    supportFPGAData.GyroRawZ = 0;
+
     _mgrMTMount = SAL_MTMount();
     _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
 
@@ -134,6 +148,7 @@ void SimulatedFPGA::pullTelemetry() {
 
     // Inclinometer raw value is measured as (negative) zenith angle (0 = zenith, -90 = horizon).
     // Converts elevation to zenith angle and adds random 1/200th deg (=18 arcsec) noise.
+    // Also simulates gyroscope values
 
     {
         std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
@@ -146,14 +161,30 @@ void SimulatedFPGA::pullTelemetry() {
                     if (_mountSimulatedMovementFirstPass) {
                         SPDLOG_INFO("Starting to simulate mirror movement");
                         _mountSimulatedMovementFirstPass = false;
+                        if (ForceActuatorSettings::instance().useGyroscope == true) {
+                            double gyroRatio = (_mountElevation - 45.0) / 90.0;
+                            supportFPGAData.GyroRawX = -12 * gyroRatio * D2RAD;
+                            supportFPGAData.GyroRawY = -12 * gyroRatio * D2RAD;
+                            supportFPGAData.GyroRawZ = 12 * gyroRatio * D2RAD;
+                        }
                     }
                     if (_simulatingToHorizon) {
                         _mountElevation -= MOUNT_SIMULATION_STEP;
+                        if (ForceActuatorSettings::instance().useGyroscope == true) {
+                            supportFPGAData.GyroRawX += GYRO_SIMULATE_STEP;
+                            supportFPGAData.GyroRawY += GYRO_SIMULATE_STEP;
+                            supportFPGAData.GyroRawZ -= GYRO_SIMULATE_STEP;
+                        }
                         if (_mountElevation < 0.1) {
                             _simulatingToHorizon = false;
                         }
                     } else {
                         _mountElevation += MOUNT_SIMULATION_STEP;
+                        if (ForceActuatorSettings::instance().useGyroscope == true) {
+                            supportFPGAData.GyroRawX -= GYRO_SIMULATE_STEP;
+                            supportFPGAData.GyroRawY -= GYRO_SIMULATE_STEP;
+                            supportFPGAData.GyroRawZ += GYRO_SIMULATE_STEP;
+                        }
                         if (_mountElevation > 90.5) {
                             _simulatingToHorizon = true;
                         }
@@ -161,6 +192,11 @@ void SimulatedFPGA::pullTelemetry() {
                 } else {
                     if (_mountSimulatedMovementFirstPass == false) {
                         SPDLOG_INFO("Using simulated elevation from TMA");
+                        if (ForceActuatorSettings::instance().useGyroscope == true) {
+                            supportFPGAData.GyroRawX = 0;
+                            supportFPGAData.GyroRawY = 0;
+                            supportFPGAData.GyroRawZ = 0;
+                        }
                         _mountSimulatedMovementFirstPass = true;
                     }
                 }
@@ -205,9 +241,9 @@ void SimulatedFPGA::pullTelemetry() {
     supportFPGAData.GyroErrorTimestamp = 0;
     supportFPGAData.GyroErrorCode = 0;
     supportFPGAData.GyroSampleTimestamp = timestamp;
-    supportFPGAData.GyroRawX = getRndPM1() * 0.01;
-    supportFPGAData.GyroRawY = getRndPM1() * 0.01;
-    supportFPGAData.GyroRawZ = getRndPM1() * 0.01;
+    supportFPGAData.GyroRawX += getRndPM1() * 0.001;
+    supportFPGAData.GyroRawY += getRndPM1() * 0.001;
+    supportFPGAData.GyroRawZ += getRndPM1() * 0.001;
     supportFPGAData.GyroStatus = 0x7F;
     supportFPGAData.GyroSequenceNumber++;
     if (supportFPGAData.GyroSequenceNumber > 127) {
@@ -524,6 +560,13 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                                     ->primaryCylinderForces[pIndex]) /
                                            1000.0) +
                                           (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
+                                                                //
+                            // simulate following error in disabled state
+                            if (M1M3SSPublisher::instance().getEventDetailedState()->detailedState ==
+                                        MTM1M3::MTM1M3_shared_DetailedStates_DisabledState &&
+                                subnet == 4 && address == 17) {
+                                force = 505;
+                            }
                             // uncomment to simulate follow up error
                             // if (subnet == 1 && address == 17 && force > 500) force = 200;
                             _writeModbusFloat(response, force);  // Write Primary Cylinder Force

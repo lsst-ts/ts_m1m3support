@@ -42,8 +42,12 @@ startdaemon(){
 		fi
 	done
 	logger -t M1M3support_start -p user.info "Starting with IP $LSST_DDS_IP"
-	echo -n "Starting TS M1M3 support:"
-	start-stop-daemon --start --oknodo --pidfile ${PIDFILE} --startas $DAEMON -- -p ${PIDFILE} -u m1m3:m1m3
+	OPTS="-u m1m3:m1m3 "
+	if [ $M1M3_SUPPORT_CONFIG ]; then
+		OPTS+="-c $M1M3_SUPPORT_CONFIG "
+	fi
+	echo -n "Starting TS M1M3 support: (config"
+	start-stop-daemon --start --oknodo --pidfile ${PIDFILE} --startas $DAEMON -- -p ${PIDFILE} ${OPTS}
 	echo "done"
 }
 stopdaemon(){

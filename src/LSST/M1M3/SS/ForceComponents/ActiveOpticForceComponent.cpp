@@ -21,15 +21,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <ActiveOpticForceComponent.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
+#include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <Range.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,7 +42,6 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(
         : ForceComponent("ActiveOptic", ForceActuatorSettings::instance().ActiveOpticComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
     _preclippedActiveOpticForces = M1M3SSPublisher::instance().getEventPreclippedActiveOpticForces();
@@ -64,9 +65,7 @@ void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
 void ActiveOpticForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("ActiveOpticForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->activeOpticForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_activeOpticForcesApplied(isEnabled());
 }
 
 void ActiveOpticForceComponent::postUpdateActions() {

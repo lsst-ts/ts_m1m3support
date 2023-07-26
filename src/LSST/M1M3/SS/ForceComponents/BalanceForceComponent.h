@@ -76,8 +76,9 @@ public:
     void resetPID(int id);
     void resetPIDs();
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:
@@ -93,7 +94,6 @@ private:
     PID _my;
     PID _mz;
 
-    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_appliedBalanceForcesC* _appliedBalanceForces;
     MTM1M3_logevent_preclippedBalanceForcesC* _preclippedBalanceForces;

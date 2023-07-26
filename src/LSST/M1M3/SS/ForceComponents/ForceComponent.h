@@ -24,9 +24,10 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_FORCECOMPONENT_H_
 
+#include <string>
+
 #include <DataTypes.h>
 #include <ForceComponentSettings.h>
-#include <string>
 
 namespace LSST {
 namespace M1M3 {
@@ -73,6 +74,13 @@ public:
     virtual ~ForceComponent();
 
     /**
+     * Returns force component name.
+     *
+     * @return force component name
+     */
+    const char *getName() { return _name; }
+
+    /**
      * Returns true if the force component is being initialised.
      *
      * @return true if the force component is being initialised
@@ -111,11 +119,6 @@ public:
      */
     void disable();
 
-    void update();
-
-    void reset();
-
-protected:
     /**
      * Called after enable/disable changes.
      *
@@ -124,6 +127,11 @@ protected:
      */
     virtual void postEnableDisableActions() = 0;
 
+    void update();
+
+    void reset();
+
+protected:
     /**
      * Called after update to forces.
      *

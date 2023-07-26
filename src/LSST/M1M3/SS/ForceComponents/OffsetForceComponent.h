@@ -24,10 +24,11 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_OFFSETFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_OFFSETFORCECOMPONENT_H_
 
+#include <SAL_MTM1M3C.h>
+
 #include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <SafetyController.h>
-#include <SAL_MTM1M3C.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -47,15 +48,15 @@ public:
     void applyActuatorOffset(char axis, int index, float offset);
     void zeroOffsetForces();
 
-protected:
     void postEnableDisableActions() override;
+
+protected:
     void postUpdateActions() override;
 
 private:
     SafetyController* _safetyController;
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     MTM1M3_logevent_appliedOffsetForcesC* _appliedOffsetForces;
     MTM1M3_logevent_preclippedOffsetForcesC* _preclippedOffsetForces;

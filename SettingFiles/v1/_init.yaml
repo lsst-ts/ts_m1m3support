@@ -146,6 +146,8 @@ ForceActuatorSettings:
   ForceActuatorNearZNeighborsTablePath: ForceActuatorNearNeighborZTable.csv
   ForceActuatorNeighborsTablePath: ForceActuatorNeighborsTable.csv
   UseInclinometer: True
+  UseGyroscope: True
+  UseAccelerometers: True
   MirrorXMoment: -65311
   MirrorYMoment: -20000
   MirrorZMoment: -20000

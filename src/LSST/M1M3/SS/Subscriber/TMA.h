@@ -55,42 +55,60 @@ public:
      *
      * @param data MTMount_azimuth data
      */
-    void updateTMAAzimuth(MTMount_azimuthC* data);
+    void updateTMAAzimuth(MTMount_azimuthC *data);
 
     /**
      * Updates elevation data to match current TMA data. Should be called on reception of new elevation data.
      *
      * @param data MTMount_elevation data
      */
-    void updateTMAElevation(MTMount_elevationC* data);
+    void updateTMAElevation(MTMount_elevationC *data);
 
     /**
      * Returns mirror elevation. Uses either telescope provided data, or internal inclinometer readout.
      *
+     * @param forceTelescope if true, telescope elevation angle is provided
+     *
      * @return telescope elevation in degrees. 0 for horizon, 90 for zenith.
      */
-    double getElevation();
+    double getElevation(bool forceTelescope = false);
+
+    /**
+     * Returns mirror angular X, Y and Z velocities. Those are calculated from
+     * azimuth and elevation velocities.
+     */
+    void getMirrorAngularVelocities(double &x, double &y, double &z);
+
+    void getMirrorAngularAccelerations(double &ax, double &ay, double &az);
 
     /**
      * Returns elevation sin.
      *
+     * @param forceTelescope if true, telescope elevation angle is provided
+     *
      * @return elvation sin
      */
-    double getElevationSin() { return sin(getElevation() * D2RAD); }
+    double getElevationSin(bool forceTelescope = false) { return sin(getElevation(forceTelescope) * D2RAD); }
 
     /**
      * Returns elevation cos.
      *
+     * @param forceTelescope if true, telescope elevation angle is provided
+     *
      * @return elevation cos
      */
-    double getElevationCos() { return cos(getElevation() * D2RAD); }
+    double getElevationCos(bool forceTelescope = false) { return cos(getElevation(forceTelescope) * D2RAD); }
 
 private:
-    double _azimuth_Timestamp;
-    double _azimuth_Actual;
+    /// hold values needed for acceleration calculation
+    MTMount_azimuthC _last_azimuth_data;
+    MTMount_elevationC _last_elevation_data;
 
-    double _elevation_Timestamp;
-    double _elevation_Actual;
+    double _azimuth_demand_acceleration;
+    double _azimuth_actual_acceleration;
+
+    double _elevation_demand_acceleration;
+    double _elevation_actual_acceleration;
 };
 
 }  // namespace SS

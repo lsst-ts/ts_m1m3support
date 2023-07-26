@@ -21,11 +21,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <State.h>
+#include <spdlog/spdlog.h>
+
 #include <DataTypes.h>
 #include <M1M3SSPublisher.h>
+#include <State.h>
 #include <Timestamp.h>
-#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -165,6 +166,9 @@ States::Type State::enableForceActuator(EnableForceActuatorCommand* command) {
 }
 States::Type State::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
     return rejectCommandInvalidState(command, "EnableAllForceActuators");
+}
+States::Type State::enableDisableForceComponent(EnableDisableForceComponentCommand* command) {
+    return rejectCommandInvalidState(command, "EnableDisableForceComponent");
 }
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
