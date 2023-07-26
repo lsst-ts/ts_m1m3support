@@ -37,7 +37,7 @@ namespace SS {
  */
 class EnableAllForceActuatorsCommand : public Command {
 public:
-    EnableAllForceActuatorsCommand(int32_t commandID, MTM1M3_command_enableAllForceActuatorsC* data);
+    EnableAllForceActuatorsCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;

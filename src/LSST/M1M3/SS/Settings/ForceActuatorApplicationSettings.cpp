@@ -351,6 +351,11 @@ ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         ForceActuatorTypes type = Table[zIndex].Type;
         ForceActuatorOrientations orientation = Table[zIndex].Orientation;
+
+        int q = int(ZIndexToActuatorId(zIndex) / 100) - 1;
+
+        QuadrantZ[q].push_back(zIndex);
+
         if (type == ForceActuatorTypes::DAA) {
             if (orientation == ForceActuatorOrientations::PositiveX ||
                 orientation == ForceActuatorOrientations::NegativeX) {
@@ -358,6 +363,8 @@ ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
 
                 ZIndexToXIndex[zIndex] = xIndex;
                 ZIndexToYIndex[zIndex] = -1;
+
+                QuadrantX[q].push_back(xIndex);
 
                 xIndex += 1;
             }
@@ -368,6 +375,8 @@ ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
 
                 ZIndexToXIndex[zIndex] = -1;
                 ZIndexToYIndex[zIndex] = yIndex;
+
+                QuadrantY[q].push_back(yIndex);
 
                 yIndex += 1;
             }

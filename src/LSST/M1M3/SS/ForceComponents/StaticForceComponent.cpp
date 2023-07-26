@@ -21,16 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <StaticForceComponent.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <SafetyController.h>
+#include <spdlog/spdlog.h>
+
+#include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <Range.h>
+#include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
-#include <DistributedForces.h>
-#include <spdlog/spdlog.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <Range.h>
+#include <SafetyController.h>
+#include <StaticForceComponent.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,7 +42,6 @@ StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings* for
         : ForceComponent("Static", ForceActuatorSettings::instance().StaticComponentSettings) {
     _safetyController = Model::get().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();
     _preclippedStaticForces = M1M3SSPublisher::instance().getEventPreclippedStaticForces();
@@ -71,9 +72,7 @@ void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<
 void StaticForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("StaticForceComponent: postEnableDisableActions()");
 
-    _forceActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _forceActuatorState->staticForcesApplied = isEnabled();
-    M1M3SSPublisher::instance().tryLogForceActuatorState();
+    ForceControllerState::instance().set_staticForcesApplied(isEnabled());
 }
 
 void StaticForceComponent::postUpdateActions() {

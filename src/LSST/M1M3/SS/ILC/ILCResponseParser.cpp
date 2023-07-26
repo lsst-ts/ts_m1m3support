@@ -37,6 +37,7 @@
 #include <ForceActuatorInfo.h>
 #include <ForceActuatorForceWarning.h>
 #include <ForceActuatorSettings.h>
+#include <ForceControllerState.h>
 #include <ForceConverter.h>
 #include <HardpointActuatorSettings.h>
 #include <HardpointActuatorWarning.h>
@@ -64,7 +65,6 @@ ILCResponseParser::ILCResponseParser() {
     _ilcWarning = 0;
     _outerLoopData = 0;
     _detailedState = 0;
-    _summaryState = 0;
 }
 
 ILCResponseParser::ILCResponseParser(ILCSubnetData* subnetData, SafetyController* safetyController) {
@@ -84,7 +84,6 @@ ILCResponseParser::ILCResponseParser(ILCSubnetData* subnetData, SafetyController
     _ilcWarning = M1M3SSPublisher::instance().getEventILCWarning();
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
     _detailedState = M1M3SSPublisher::instance().getEventDetailedState();
-    _summaryState = M1M3SSPublisher::instance().getEventSummaryState();
 
     ForceActuatorForceWarning::instance().reset();
 
@@ -876,7 +875,13 @@ void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
                 immediateFault || fafWarning.secondaryAxisFollowingErrorImmediateFault[secondaryDataIndex];
     }
 
-    _safetyController->forceActuatorFollowingError(dataIndex, countingWarning, immediateFault);
+    // In disabled state, CSC cannot be controlled. So following error can be
+    // high. We will ignore following error calculations until ILC is enabled
+    // and commanded forces are send in.
+    if (_detailedState->detailedState != MTM1M3::MTM1M3_shared_DetailedStates_DisabledState) {
+        _safetyController->forceActuatorFollowingError(map.ActuatorId, dataIndex, countingWarning,
+                                                       immediateFault);
+    }
 
     float zForce = faData.zForce[dataIndex];
     bool zFaulted = fafWarning.checkZMeasuredForce(dataIndex, map.ActuatorId, zForce);
@@ -912,7 +917,7 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
     if (RaisingLoweringInfo::instance().weightSupportedPercent > 0) {
         float maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
         float minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
-        if (_forceActuatorState->balanceForcesApplied) {
+        if (ForceControllerState::instance().balanceForcesApplied) {
             maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningHigh;
             minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceFSBWarningLow;
         }

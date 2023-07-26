@@ -27,8 +27,7 @@
 
 using namespace LSST::M1M3::SS;
 
-BoosterValveCloseCommand::BoosterValveCloseCommand(int32_t commandID, MTM1M3_command_boosterValveCloseC* data)
-        : Command(commandID) {}
+BoosterValveCloseCommand::BoosterValveCloseCommand(int32_t commandID) : Command(commandID) {}
 
 void BoosterValveCloseCommand::execute() { Context::get().boosterValveClose(this); }
 

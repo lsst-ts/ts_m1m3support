@@ -24,56 +24,56 @@
 #ifndef CONTEXT_H_
 #define CONTEXT_H_
 
-#include <StateTypes.h>
-
-#include <StaticStateFactory.h>
-#include <Model.h>
-#include <EnterControlCommand.h>
-#include <StartCommand.h>
-#include <EnableCommand.h>
-#include <DisableCommand.h>
-#include <StandbyCommand.h>
-#include <ExitControlCommand.h>
-#include <UpdateCommand.h>
-#include <TurnAirOnCommand.h>
-#include <TurnAirOffCommand.h>
-#include <ApplyOffsetForcesCommand.h>
-#include <ClearOffsetForcesCommand.h>
-#include <RaiseM1M3Command.h>
-#include <LowerM1M3Command.h>
+#include <AbortRaiseM1M3Command.h>
 #include <ApplyActiveOpticForcesCommand.h>
-#include <ClearActiveOpticForcesCommand.h>
-#include <EnterEngineeringCommand.h>
-#include <ExitEngineeringCommand.h>
+#include <ApplyOffsetForcesCommand.h>
+#include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <AbortProfileCommand.h>
 #include <BoosterValveOpenCommand.h>
 #include <BoosterValveCloseCommand.h>
-#include <TestHardpointCommand.h>
-#include <KillHardpointTestCommand.h>
-#include <MoveHardpointActuatorsCommand.h>
-#include <EnableHardpointChaseCommand.h>
+#include <ClearActiveOpticForcesCommand.h>
+#include <ClearOffsetForcesCommand.h>
+#include <DisableCommand.h>
+#include <DisableForceActuatorCommand.h>
 #include <DisableHardpointChaseCommand.h>
-#include <AbortRaiseM1M3Command.h>
-#include <TranslateM1M3Command.h>
-#include <StopHardpointMotionCommand.h>
-#include <TMAAzimuthSampleCommand.h>
-#include <TMAElevationSampleCommand.h>
-#include <PositionM1M3Command.h>
-#include <TurnLightsOnCommand.h>
-#include <TurnLightsOffCommand.h>
-#include <TurnPowerOnCommand.h>
-#include <TurnPowerOffCommand.h>
-#include <EnableHardpointCorrectionsCommand.h>
 #include <DisableHardpointCorrectionsCommand.h>
-#include <RunMirrorForceProfileCommand.h>
-#include <AbortProfileCommand.h>
-#include <ApplyOffsetForcesByMirrorForceCommand.h>
-#include <UpdatePIDCommand.h>
-#include <ResetPIDCommand.h>
+#include <EnableAllForceActuatorsCommand.h>
+#include <EnableCommand.h>
+#include <EnableDisableForceComponentCommand.h>
+#include <EnableForceActuatorCommand.h>
+#include <EnableHardpointChaseCommand.h>
+#include <EnableHardpointCorrectionsCommand.h>
+#include <EnterControlCommand.h>
+#include <EnterEngineeringCommand.h>
+#include <ExitControlCommand.h>
+#include <ExitEngineeringCommand.h>
 #include <ForceActuatorBumpTestCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
-#include <DisableForceActuatorCommand.h>
-#include <EnableForceActuatorCommand.h>
-#include <EnableAllForceActuatorsCommand.h>
+#include <KillHardpointTestCommand.h>
+#include <LowerM1M3Command.h>
+#include <Model.h>
+#include <MoveHardpointActuatorsCommand.h>
+#include <PositionM1M3Command.h>
+#include <RaiseM1M3Command.h>
+#include <ResetPIDCommand.h>
+#include <RunMirrorForceProfileCommand.h>
+#include <StandbyCommand.h>
+#include <StartCommand.h>
+#include <StateTypes.h>
+#include <StaticStateFactory.h>
+#include <StopHardpointMotionCommand.h>
+#include <TestHardpointCommand.h>
+#include <TMAAzimuthSampleCommand.h>
+#include <TMAElevationSampleCommand.h>
+#include <TranslateM1M3Command.h>
+#include <TurnAirOffCommand.h>
+#include <TurnAirOnCommand.h>
+#include <TurnLightsOffCommand.h>
+#include <TurnLightsOnCommand.h>
+#include <TurnPowerOffCommand.h>
+#include <TurnPowerOnCommand.h>
+#include <UpdateCommand.h>
+#include <UpdatePIDCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -150,6 +150,7 @@ public:
     void disableForceActuator(DisableForceActuatorCommand* command);
     void enableForceActuator(EnableForceActuatorCommand* command);
     void enableAllForceActuators(EnableAllForceActuatorsCommand* command);
+    void enableDisableForceComponent(EnableDisableForceComponentCommand* command);
 
 private:
     Context& operator=(const Context&) = delete;

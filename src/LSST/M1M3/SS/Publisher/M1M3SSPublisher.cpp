@@ -86,6 +86,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceControllerState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceSetpointWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroWarning");
@@ -96,6 +97,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorState");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointTestStatus");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_heartbeat");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_ilcWarning");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
@@ -124,7 +126,6 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
-    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointTestStatus");
 }
 
 void M1M3SSPublisher::reset() {
@@ -393,24 +394,7 @@ void M1M3SSPublisher::logForceActuatorState() {
 }
 
 void M1M3SSPublisher::tryLogForceActuatorState() {
-    bool changeDetected = _eventForceActuatorState.staticForcesApplied !=
-                                  _previousEventForceActuatorState.staticForcesApplied ||
-                          _eventForceActuatorState.elevationForcesApplied !=
-                                  _previousEventForceActuatorState.elevationForcesApplied ||
-                          _eventForceActuatorState.azimuthForcesApplied !=
-                                  _previousEventForceActuatorState.azimuthForcesApplied ||
-                          _eventForceActuatorState.thermalForcesApplied !=
-                                  _previousEventForceActuatorState.thermalForcesApplied ||
-                          _eventForceActuatorState.offsetForcesApplied !=
-                                  _previousEventForceActuatorState.offsetForcesApplied ||
-                          _eventForceActuatorState.accelerationForcesApplied !=
-                                  _previousEventForceActuatorState.accelerationForcesApplied ||
-                          _eventForceActuatorState.velocityForcesApplied !=
-                                  _previousEventForceActuatorState.velocityForcesApplied ||
-                          _eventForceActuatorState.activeOpticForcesApplied !=
-                                  _previousEventForceActuatorState.activeOpticForcesApplied ||
-                          _eventForceActuatorState.balanceForcesApplied !=
-                                  _previousEventForceActuatorState.balanceForcesApplied;
+    bool changeDetected = false;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
         changeDetected = changeDetected ||
                          _eventForceActuatorState.ilcState[i] != _previousEventForceActuatorState.ilcState[i];
@@ -1415,6 +1399,7 @@ ACK_COMMAND(killForceActuatorBumpTest)
 ACK_COMMAND(disableForceActuator)
 ACK_COMMAND(enableForceActuator)
 ACK_COMMAND(enableAllForceActuators)
+ACK_COMMAND(enableDisableForceComponent)
 
 } /* namespace SS */
 } /* namespace M1M3 */

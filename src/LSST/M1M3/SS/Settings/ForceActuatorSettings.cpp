@@ -162,6 +162,8 @@ void ForceActuatorSettings::load(YAML::Node doc) {
         _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
 
         useInclinometer = doc["UseInclinometer"].as<bool>();
+        useGyroscope = doc["UseGyroscope"].as<bool>();
+        useAccelerometers = doc["UseAccelerometers"].as<bool>();
         mirrorXMoment = doc["MirrorXMoment"].as<float>();
         mirrorYMoment = doc["MirrorYMoment"].as<float>();
         mirrorZMoment = doc["MirrorZMoment"].as<float>();
