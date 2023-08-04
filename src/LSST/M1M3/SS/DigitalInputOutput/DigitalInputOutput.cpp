@@ -140,7 +140,7 @@ void DigitalInputOutput::processData() {
 
         if (_safetyController) {
             // report heartbeat lost first. GIS cuts power if heartbeats aren't comming.
-            _safetyController->interlockNotifyGISHeartbeatLost(InterlockWarning::instance().gisHeartbeatLost);
+            _safetyController->interlockNotifyGISFault(InterlockWarning::instance().gisFault);
 
             _safetyController->airControllerNotifyCommandSensorMismatch(
                     _airSupplyWarning->commandSensorMismatch);

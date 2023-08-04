@@ -279,10 +279,9 @@ void SafetyController::interlockNotifyTMAMotionStop(bool conditionFlag) {
                     "Interlock TMA Motion Stop");
 }
 
-void SafetyController::interlockNotifyGISHeartbeatLost(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockGISHeartbeatLost,
-                    _safetyControllerSettings->Interlock.FaultOnGISHeartbeatLost, conditionFlag,
-                    "Interlock lost GIS Heartbeat");
+void SafetyController::interlockNotifyGISFault(bool conditionFlag) {
+    _updateOverride(FaultCodes::InterlockGISFault, _safetyControllerSettings->Interlock.FaultOnGISFault,
+                    conditionFlag, "GIS Interlock active");
 }
 
 void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) {

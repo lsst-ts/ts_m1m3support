@@ -364,7 +364,7 @@ SafetyControllerSettings:
     FaultOnAirSupplyOff: On
     FaultOnCabinetDoorOpen: On
     FaultOnTMAMotionStop: On
-    FaultOnGISHeartbeatLost: On
+    FaultOnGISFault: On
   ForceControllerSettings:
     FaultOnSafetyLimit: On
     FaultOnXMomentLimit: On

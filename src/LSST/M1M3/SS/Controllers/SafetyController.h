@@ -86,7 +86,7 @@ public:
     void interlockNotifyAirSupplyOff(bool conditionFlag);
     void interlockNotifyCabinetDoorOpen(bool conditionFlag);
     void interlockNotifyTMAMotionStop(bool conditionFlag);
-    void interlockNotifyGISHeartbeatLost(bool conditionFlag);
+    void interlockNotifyGISFault(bool conditionFlag);
 
     void forceControllerNotifySafetyLimit(bool conditionFlag);
     void forceControllerNotifyXMomentLimit(bool conditionFlag, std::string failed);

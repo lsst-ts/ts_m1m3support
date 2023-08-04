@@ -33,7 +33,7 @@ struct InterlockControllerSafetySettings {
     bool FaultOnAirSupplyOff;
     bool FaultOnCabinetDoorOpen;
     bool FaultOnTMAMotionStop;
-    bool FaultOnGISHeartbeatLost;
+    bool FaultOnGISFault;
 
     void set(YAML::Node node) {
         FaultOnHeartbeatStateOutputMismatch = node["FaultOnHeartbeatStateOutputMismatch"].as<bool>();
@@ -42,7 +42,7 @@ struct InterlockControllerSafetySettings {
         FaultOnAirSupplyOff = node["FaultOnAirSupplyOff"].as<bool>();
         FaultOnCabinetDoorOpen = node["FaultOnCabinetDoorOpen"].as<bool>();
         FaultOnTMAMotionStop = node["FaultOnTMAMotionStop"].as<bool>();
-        FaultOnGISHeartbeatLost = node["FaultOnGISHeartbeatLost"].as<bool>();
+        FaultOnGISFault = node["FaultOnGISFault"].as<bool>();
     }
 };
 

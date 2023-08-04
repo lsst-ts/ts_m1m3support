@@ -62,7 +62,7 @@ public:
             airSupplyOff = (inputStates & 0x0008) == 0;
             cabinetDoorOpen = (inputStates & 0x0010) == 0;
             tmaMotionStop = (inputStates & 0x0040) == 0;
-            gisHeartbeatLost = (inputStates & 0x0080) == 0;
+            gisFault = (inputStates & 0x0080) == 0;
             _currentInput = inputStates;
             M1M3SSPublisher::instance().logInterlockWarning(this);
         }

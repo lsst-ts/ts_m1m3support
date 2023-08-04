@@ -81,7 +81,7 @@ struct FaultCodes {
         InterlockGISEarthquake = _MASK_INTERLOCK | 0x09,
         InterlockGISEStop = _MASK_INTERLOCK | 0x0A,
         InterlockTMAMotionStop = _MASK_INTERLOCK | 0x0B,
-        InterlockGISHeartbeatLost = _MASK_INTERLOCK | 0x0C,
+        InterlockGISFault = _MASK_INTERLOCK | 0x0C,
         ForceControllerSafetyLimit = _MASK_FORCE_CONTROLLER | 0x01,  // 6105
         ForceControllerXMomentLimit = _MASK_FORCE_CONTROLLER | 0x02,
         ForceControllerYMomentLimit = _MASK_FORCE_CONTROLLER | 0x03,
