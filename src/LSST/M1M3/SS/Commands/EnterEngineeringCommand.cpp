@@ -29,8 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnterEngineeringCommand::EnterEngineeringCommand(int32_t commandID, MTM1M3_command_enterEngineeringC*)
-        : Command(commandID) {}
+EnterEngineeringCommand::EnterEngineeringCommand(int32_t commandID) : Command(commandID) {}
 
 void EnterEngineeringCommand::execute() { Context::get().enterEngineering(this); }
 

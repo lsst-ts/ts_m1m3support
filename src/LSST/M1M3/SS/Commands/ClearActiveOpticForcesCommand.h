@@ -34,7 +34,7 @@ namespace SS {
 
 class ClearActiveOpticForcesCommand : public Command {
 public:
-    ClearActiveOpticForcesCommand(int32_t commandID, MTM1M3_command_clearActiveOpticForcesC*);
+    ClearActiveOpticForcesCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;

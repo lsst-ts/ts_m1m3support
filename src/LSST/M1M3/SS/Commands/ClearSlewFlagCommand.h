@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISABLECOMMAND_H_
-#define DISABLECOMMAND_H_
+#ifndef CLEARSLEWFLAGCOMMAND_H_
+#define CLEARSLEWFLAGCOMMAND_H_
 
 #include <Command.h>
 #include <SAL_MTM1M3C.h>
@@ -32,14 +32,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * This command is responsible for transitioning the state
- * machine from the enabled state to the disabled state.
- * This is an external command and can be issued via SAL.
- */
-class DisableCommand : public Command {
+class ClearSlewFlagCommand : public Command {
 public:
-    DisableCommand(int32_t commandID);
+    ClearSlewFlagCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;
@@ -51,4 +46,4 @@ public:
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* DISABLECOMMAND_H_ */
+#endif /* CLEARSLEWFLAGCOMMAND_H_ */

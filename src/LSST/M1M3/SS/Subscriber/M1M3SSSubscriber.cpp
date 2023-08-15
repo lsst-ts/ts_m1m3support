@@ -33,6 +33,7 @@
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <ClearOffsetForcesCommand.h>
+#include <ClearSlewFlagCommand.h>
 #include <DisableCommand.h>
 #include <DisableForceActuatorCommand.h>
 #include <DisableHardpointChaseCommand.h>
@@ -56,6 +57,7 @@
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
+#include <SetSlewFlagCommand.h>
 #include <StandbyCommand.h>
 #include <StartCommand.h>
 #include <StopHardpointMotionCommand.h>
@@ -96,6 +98,8 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_standby");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitControl");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_panic");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setSlewFlag");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearSlewFlag");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOn");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOff");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_boosterValveOpen");
@@ -180,27 +184,30 @@ Command* M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
     }
 
 COMMAND(Start, start)
-COMMAND(Enable, enable)
-COMMAND(Disable, disable)
-COMMAND(Standby, standby)
+COMMAND_NOPARS(Enable, enable)
+COMMAND_NOPARS(Disable, disable)
+COMMAND_NOPARS(Standby, standby)
 COMMAND_NOPARS(ExitControl, exitControl)
 
 COMMAND_NOPARS(Panic, panic)
 
-COMMAND(TurnAirOn, turnAirOn)
-COMMAND(TurnAirOff, turnAirOff)
+COMMAND_NOPARS(SetSlewFlag, setSlewFlag)
+COMMAND_NOPARS(ClearSlewFlag, clearSlewFlag)
+
+COMMAND_NOPARS(TurnAirOn, turnAirOn)
+COMMAND_NOPARS(TurnAirOff, turnAirOff)
 
 COMMAND(ApplyOffsetForces, applyOffsetForces)
-COMMAND(ClearOffsetForces, clearOffsetForces)
+COMMAND_NOPARS(ClearOffsetForces, clearOffsetForces)
 
 COMMAND(RaiseM1M3, raiseM1M3)
-COMMAND(LowerM1M3, lowerM1M3)
+COMMAND_NOPARS(LowerM1M3, lowerM1M3)
 
 COMMAND(ApplyActiveOpticForces, applyActiveOpticForces)
-COMMAND(ClearActiveOpticForces, clearActiveOpticForces)
+COMMAND_NOPARS(ClearActiveOpticForces, clearActiveOpticForces)
 
-COMMAND(EnterEngineering, enterEngineering)
-COMMAND(ExitEngineering, exitEngineering)
+COMMAND_NOPARS(EnterEngineering, enterEngineering)
+COMMAND_NOPARS(ExitEngineering, exitEngineering)
 
 COMMAND_NOPARS(BoosterValveOpen, boosterValveOpen)
 COMMAND_NOPARS(BoosterValveClose, boosterValveClose)

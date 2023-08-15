@@ -39,7 +39,7 @@ namespace SS {
  */
 class StandbyCommand : public Command {
 public:
-    StandbyCommand(int32_t commandID, MTM1M3_command_standbyC*);
+    StandbyCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;

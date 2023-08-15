@@ -70,6 +70,8 @@ public:
     Command* tryAcceptCommandStandby();
     Command* tryAcceptCommandExitControl();
     Command* tryAcceptCommandPanic();
+    Command* tryAcceptCommandSetSlewFlag();
+    Command* tryAcceptCommandClearSlewFlag();
     Command* tryAcceptCommandTurnAirOn();
     Command* tryAcceptCommandTurnAirOff();
     Command* tryAcceptCommandBoosterValveOpen();

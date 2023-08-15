@@ -32,6 +32,7 @@
 #include <BoosterValveOpenCommand.h>
 #include <BoosterValveCloseCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
+#include <ClearSlewFlagCommand.h>
 #include <ClearOffsetForcesCommand.h>
 #include <DisableCommand.h>
 #include <DisableForceActuatorCommand.h>
@@ -57,6 +58,7 @@
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
+#include <SetSlewFlagCommand.h>
 #include <StandbyCommand.h>
 #include <StartCommand.h>
 #include <StateTypes.h>
@@ -111,6 +113,8 @@ public:
     void standby(StandbyCommand* command);
     void exitControl(ExitControlCommand* command);
     void update(UpdateCommand* command);
+    void setSlewFlag(SetSlewFlagCommand* command);
+    void clearSlewFlag(ClearSlewFlagCommand* command);
     void turnAirOn(TurnAirOnCommand* command);
     void turnAirOff(TurnAirOffCommand* command);
     void applyOffsetForces(ApplyOffsetForcesCommand* command);
