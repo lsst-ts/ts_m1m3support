@@ -30,6 +30,7 @@ using namespace LSST::M1M3::SS;
 
 States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command* command) {
     SPDLOG_INFO("EnabledActiveState: lowerM1M3()");
+    Model::get().getSlewController()->reset();
     Model::get().getForceController()->resetPIDs();
     Model::get().getMirrorLowerController()->start();
     return Model::get().getSafetyController()->checkSafety(getLoweringState());

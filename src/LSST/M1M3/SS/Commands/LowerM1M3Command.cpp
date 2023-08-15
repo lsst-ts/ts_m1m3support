@@ -29,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LowerM1M3Command::LowerM1M3Command(int32_t commandID, MTM1M3_command_lowerM1M3C*) : Command(commandID) {}
+LowerM1M3Command::LowerM1M3Command(int32_t commandID) : Command(commandID) {}
 
 void LowerM1M3Command::execute() { Context::get().lowerM1M3(this); }
 

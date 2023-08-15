@@ -34,7 +34,7 @@ namespace SS {
 
 class ClearOffsetForcesCommand : public Command {
 public:
-    ClearOffsetForcesCommand(int32_t commandID, MTM1M3_command_clearOffsetForcesC*);
+    ClearOffsetForcesCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;

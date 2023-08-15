@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the Vera C. Rubin Telescope and Site System.
+ * Developed for the Telescope & Site Software Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,34 +21,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISABLECOMMAND_H_
-#define DISABLECOMMAND_H_
+#include <sal_MTM1M3.h>
+#include <spdlog/spdlog.h>
 
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <BoosterValveStatus.h>
+#include <Model.h>
+#include <Publisher.h>
+#include <SlewController.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace MTM1M3;
 
-/*!
- * This command is responsible for transitioning the state
- * machine from the enabled state to the disabled state.
- * This is an external command and can be issued via SAL.
- */
-class DisableCommand : public Command {
-public:
-    DisableCommand(int32_t commandID);
+using namespace LSST::M1M3::SS;
 
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
-};
+SlewController::SlewController() { SPDLOG_DEBUG("SlewController: SlewController()"); }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+void SlewController::enterSlew() {
+    BoosterValveStatus::instance().enterSlew();
+    Model::get().getForceController()->applyVelocityForces();
+    Model::get().getForceController()->applyAccelerationForces();
+}
 
-#endif /* DISABLECOMMAND_H_ */
+void SlewController::exitSlew() {
+    BoosterValveStatus::instance().exitSlew();
+    Model::get().getForceController()->zeroAccelerationForces();
+    Model::get().getForceController()->zeroVelocityForces();
+}
+
+void SlewController::reset() { exitSlew(); }

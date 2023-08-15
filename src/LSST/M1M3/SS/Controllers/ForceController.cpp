@@ -259,11 +259,13 @@ void ForceController::processAppliedForces() {
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
 }
 
-void ForceController::applyAccelerationForces() {
+bool ForceController::applyAccelerationForces() {
     SPDLOG_INFO("ForceController: applyAccelerationForces()");
     if (!_accelerationForceComponent.isEnabled()) {
         _accelerationForceComponent.enable();
+        return false;
     }
+    return true;
 }
 
 void ForceController::zeroAccelerationForces() {
@@ -424,11 +426,13 @@ void ForceController::zeroThermalForces() {
     }
 }
 
-void ForceController::applyVelocityForces() {
+bool ForceController::applyVelocityForces() {
     SPDLOG_INFO("ForceController: applyVelocityForces()");
     if (!_velocityForceComponent.isEnabled()) {
         _velocityForceComponent.enable();
+        return false;
     }
+    return true;
 }
 
 void ForceController::zeroVelocityForces() {

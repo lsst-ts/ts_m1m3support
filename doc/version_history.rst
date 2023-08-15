@@ -4,6 +4,12 @@
 Version History
 ===============
 
+v2.13.0
+-------
+
+* Set and ClearSlewFlag commands
+* EnableDisableForceComponent command
+
 v2.12.0
 -------
 

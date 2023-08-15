@@ -41,6 +41,8 @@ public:
     ActiveEngineeringState();
 
     virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type setSlewFlag(SetSlewFlagCommand* command) override;
+    virtual States::Type clearSlewFlag(ClearSlewFlagCommand* command) override;
     virtual States::Type exitEngineering(ExitEngineeringCommand* command) override;
     virtual States::Type lowerM1M3(LowerM1M3Command* command) override;
     virtual States::Type translateM1M3(TranslateM1M3Command* command) override;

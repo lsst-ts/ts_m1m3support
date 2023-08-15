@@ -36,6 +36,7 @@
 #include <BoosterValveCloseCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <ClearOffsetForcesCommand.h>
+#include <ClearSlewFlagCommand.h>
 #include <Command.h>
 #include <DisableCommand.h>
 #include <DisableForceActuatorCommand.h>
@@ -60,6 +61,7 @@
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
+#include <SetSlewFlagCommand.h>
 #include <StandbyCommand.h>
 #include <StartCommand.h>
 #include <StateTypes.h>
@@ -116,6 +118,8 @@ public:
      * @return new state, or States::NoStateTransition if state doesn't change
      */
     virtual States::Type update(UpdateCommand* command) = 0;
+    virtual States::Type setSlewFlag(SetSlewFlagCommand* command);
+    virtual States::Type clearSlewFlag(ClearSlewFlagCommand* command);
     virtual States::Type turnAirOn(TurnAirOnCommand* command);
     virtual States::Type turnAirOff(TurnAirOffCommand* command);
     virtual States::Type boosterValveOpen(BoosterValveOpenCommand* command);

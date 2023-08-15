@@ -49,6 +49,7 @@
 #include <PowerController.h>
 #include <ProfileController.h>
 #include <SafetyController.h>
+#include <SlewController.h>
 #include <StateTypes.h>
 
 namespace LSST {
@@ -88,6 +89,7 @@ public:
     inline ProfileController* getProfileController() { return &_profileController; }
     inline BumpTestController* getBumpTestController() { return &_bumpTestController; }
     inline HardpointTestController* getHardpointTestController() { return _hardpointTestController; }
+    inline SlewController* getSlewController() { return &_slewController; }
 
     void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
     double getCachedTimestamp() { return _cachedTimestamp; }
@@ -127,6 +129,7 @@ private:
     ProfileController _profileController;
     BumpTestController _bumpTestController;
     HardpointTestController* _hardpointTestController;
+    SlewController _slewController;
 
     std::mutex _mutex;
 

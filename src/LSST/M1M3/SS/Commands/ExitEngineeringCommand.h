@@ -25,7 +25,6 @@
 #define EXITENGINEERINGCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -34,7 +33,7 @@ namespace SS {
 
 class ExitEngineeringCommand : public Command {
 public:
-    ExitEngineeringCommand(int32_t commandID, MTM1M3_command_exitEngineeringC*);
+    ExitEngineeringCommand(int32_t commandID);
 
     bool validate() override;
     void execute() override;

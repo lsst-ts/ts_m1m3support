@@ -40,6 +40,8 @@ public:
     ActiveState();
 
     virtual States::Type update(UpdateCommand* command) override;
+    virtual States::Type setSlewFlag(SetSlewFlagCommand* command) override;
+    virtual States::Type clearSlewFlag(ClearSlewFlagCommand* command) override;
     virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
 
 protected:
