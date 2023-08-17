@@ -62,6 +62,18 @@ States::Type ActiveEngineeringState::update(UpdateCommand* command) {
     return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
+States::Type ActiveEngineeringState::setSlewFlag(SetSlewFlagCommand* command) {
+    SPDLOG_INFO("ActiveEngineeringState: setSlewFlag()");
+    Model::get().getSlewController()->enterSlew();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::clearSlewFlag(ClearSlewFlagCommand* command) {
+    SPDLOG_INFO("ActiveEngineeringState: clearSlewFlag()");
+    Model::get().getSlewController()->exitSlew();
+    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
 States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
     SPDLOG_INFO("ActiveEngineeringState: exitEngineering()");
     Model::get().getForceController()->resetPIDs();

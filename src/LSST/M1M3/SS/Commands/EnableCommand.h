@@ -39,7 +39,7 @@ namespace SS {
  */
 class EnableCommand : public Command {
 public:
-    EnableCommand(int32_t commandID, MTM1M3_command_enableC*);
+    EnableCommand(int32_t commandID);
 
     void execute();
     void ackInProgress();

@@ -29,9 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(int32_t commandID,
-                                                             MTM1M3_command_clearActiveOpticForcesC*)
-        : Command(commandID) {}
+ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(int32_t commandID) : Command(commandID) {}
 
 void ClearActiveOpticForcesCommand::execute() { Context::get().clearActiveOpticForces(this); }
 

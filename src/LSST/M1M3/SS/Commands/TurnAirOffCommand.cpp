@@ -29,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-TurnAirOffCommand::TurnAirOffCommand(int32_t commandID, MTM1M3_command_turnAirOffC*) : Command(commandID) {}
+TurnAirOffCommand::TurnAirOffCommand(int32_t commandID) : Command(commandID) {}
 
 void TurnAirOffCommand::execute() { Context::get().turnAirOff(this); }
 

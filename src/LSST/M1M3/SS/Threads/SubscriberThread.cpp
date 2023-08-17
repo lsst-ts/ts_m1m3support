@@ -46,6 +46,8 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandStandby());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandExitControl());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandPanic());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandSetSlewFlag());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearSlewFlag());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnAirOn());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandTurnAirOff());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandBoosterValveOpen());

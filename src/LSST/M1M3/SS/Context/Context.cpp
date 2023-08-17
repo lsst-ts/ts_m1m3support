@@ -83,6 +83,18 @@ void Context::update(UpdateCommand* command) {
     _updateCurrentStateIfRequired(state->update(command));
 }
 
+void Context::setSlewFlag(SetSlewFlagCommand* command) {
+    SPDLOG_DEBUG("Context: setSlewFlag()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->setSlewFlag(command));
+}
+
+void Context::clearSlewFlag(ClearSlewFlagCommand* command) {
+    SPDLOG_DEBUG("Context: clearSlewFlag()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->clearSlewFlag(command));
+}
+
 void Context::turnAirOn(TurnAirOnCommand* command) {
     SPDLOG_DEBUG("Context: turnAirOn()");
     State* state = StaticStateFactory::get().create(_currentState);

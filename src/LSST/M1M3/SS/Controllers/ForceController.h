@@ -159,7 +159,12 @@ public:
      */
     void processAppliedForces();
 
-    void applyAccelerationForces();
+    /**
+     * Apply acceleration forces
+     *
+     * @return true if acceleration forces were already enabled
+     */
+    bool applyAccelerationForces();
     void zeroAccelerationForces();
 
     void applyActiveOpticForces(float* z);
@@ -192,7 +197,12 @@ public:
     void updateThermalForces(float temperature);
     void zeroThermalForces();
 
-    void applyVelocityForces();
+    /**
+     * Apply velocity forces.
+     *
+     * @return true if velocity forces were already enabled
+     */
+    bool applyVelocityForces();
     void zeroVelocityForces();
 
     void enableDisableForceComponent(int forceComponentEnum, bool enabled);

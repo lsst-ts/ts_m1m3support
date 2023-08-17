@@ -21,34 +21,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISABLECOMMAND_H_
-#define DISABLECOMMAND_H_
-
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <Context.h>
+#include <ClearSlewFlagCommand.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * This command is responsible for transitioning the state
- * machine from the enabled state to the disabled state.
- * This is an external command and can be issued via SAL.
- */
-class DisableCommand : public Command {
-public:
-    DisableCommand(int32_t commandID);
+ClearSlewFlagCommand::ClearSlewFlagCommand(int32_t commandID) : Command(commandID) {}
 
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
-};
+void ClearSlewFlagCommand::execute() { Context::get().clearSlewFlag(this); }
+
+void ClearSlewFlagCommand::ackInProgress() {
+    M1M3SSPublisher::instance().ackCommandclearSlewFlag(getCommandID(), ACK_INPROGRESS, "In-Progress");
+}
+
+void ClearSlewFlagCommand::ackComplete() {
+    M1M3SSPublisher::instance().ackCommandclearSlewFlag(getCommandID(), ACK_COMPLETE, "Complete");
+}
+
+void ClearSlewFlagCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::instance().ackCommandclearSlewFlag(getCommandID(), ACK_FAILED, "Failed: " + reason);
+}
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
-
-#endif /* DISABLECOMMAND_H_ */

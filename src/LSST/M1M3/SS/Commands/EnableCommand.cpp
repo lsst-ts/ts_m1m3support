@@ -29,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-EnableCommand::EnableCommand(int32_t commandID, MTM1M3_command_enableC*) : Command(commandID) {}
+EnableCommand::EnableCommand(int32_t commandID) : Command(commandID) {}
 
 void EnableCommand::execute() { Context::get().enable(this); }
 

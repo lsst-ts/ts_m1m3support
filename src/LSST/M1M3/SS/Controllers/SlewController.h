@@ -1,7 +1,7 @@
 /*
  * This file is part of LSST M1M3 support system package.
  *
- * Developed for the Vera C. Rubin Telescope and Site System.
+ * Developed for the Telescope & Site Software Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -21,34 +21,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISABLECOMMAND_H_
-#define DISABLECOMMAND_H_
+#ifndef SLEWCONTROLLER_H_
+#define SLEWCONTROLLER_H_
 
-#include <Command.h>
-#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * This command is responsible for transitioning the state
- * machine from the enabled state to the disabled state.
- * This is an external command and can be issued via SAL.
+/**
+ * Provides methods to enter and exit slew configuration.
  */
-class DisableCommand : public Command {
+class SlewController {
 public:
-    DisableCommand(int32_t commandID);
+    SlewController();
 
-    void execute() override;
-    void ackInProgress() override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+    void enterSlew();
+    void exitSlew();
+
+    void reset();
+
+private:
+    bool _velocityEnabled;
+    bool _accelerationEnabled;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* DISABLECOMMAND_H_ */
+#endif /* SLEWCONTROLLER_H_ */
