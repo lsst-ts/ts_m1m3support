@@ -29,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-DisableCommand::DisableCommand(int32_t commandID, MTM1M3_command_disableC*) : Command(commandID) {}
+DisableCommand::DisableCommand(int32_t commandID) : Command(commandID) {}
 
 void DisableCommand::execute() { Context::get().disable(this); }
 

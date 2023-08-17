@@ -56,7 +56,7 @@ void RaisedBusList::buildBuffer() {
         _roundRobinFAReportServerStatusIndex[subnetIndex] = 0;
     }
 
-    bool slewFlag = BoosterValveStatus::instance().slewFlag;
+    uint8_t boosterValves = BoosterValveStatus::instance().opened ? 255 : 0;
 
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
@@ -84,7 +84,8 @@ void RaisedBusList::buildBuffer() {
                 }
             }
             this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
-                                                          slewFlag, saaPrimary, daaPrimary, daaSecondary);
+                                                          boosterValves, saaPrimary, daaPrimary,
+                                                          daaSecondary);
             this->buffer.writeTimestamp();
             for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {
                 uint8_t address = this->subnetData->getFAIndex(subnetIndex, faIndex).Address;
@@ -160,7 +161,7 @@ void RaisedBusList::buildBuffer() {
 void RaisedBusList::update() {
     _outerLoopData->broadcastCounter = RoundRobin::BroadcastCounter(_outerLoopData->broadcastCounter);
 
-    bool slewFlag = BoosterValveStatus::instance().slewFlag;
+    uint8_t boosterValves = BoosterValveStatus::instance().opened ? 255 : 0;
 
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         if (this->subnetData->getFACount(subnetIndex) > 0) {
@@ -187,7 +188,8 @@ void RaisedBusList::update() {
             }
             this->buffer.setIndex(_setForceCommandIndex[subnetIndex]);
             this->ilcMessageFactory->broadcastForceDemand(&this->buffer, _outerLoopData->broadcastCounter,
-                                                          slewFlag, saaPrimary, daaPrimary, daaSecondary);
+                                                          boosterValves, saaPrimary, daaPrimary,
+                                                          daaSecondary);
 
             int32_t statusIndex = _roundRobinFAReportServerStatusIndex[subnetIndex];
             int32_t dataIndex = this->subnetData->getFAIndex(subnetIndex, statusIndex).DataIndex;

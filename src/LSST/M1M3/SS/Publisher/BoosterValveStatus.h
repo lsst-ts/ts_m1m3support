@@ -42,6 +42,9 @@ class BoosterValveStatus : public MTM1M3_logevent_boosterValveStatusC,
 public:
     BoosterValveStatus(token);
 
+    void enterSlew();
+    void exitSlew();
+
     void setSlewFlag(bool newSlewFlag);
 
     void setUserTriggered(bool newUserTriggered);
@@ -54,6 +57,9 @@ public:
      * Sends updates through SAL/DDS.
      */
     void log();
+
+    // TODO move to SAL/XML
+    bool opened;
 };
 
 }  // namespace SS

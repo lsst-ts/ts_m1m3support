@@ -25,7 +25,6 @@
 #define ENTERENGINEERINGCOMMAND_H_
 
 #include <Command.h>
-#include <SAL_MTM1M3C.h>
 #include <DataTypes.h>
 
 namespace LSST {
@@ -34,7 +33,7 @@ namespace SS {
 
 class EnterEngineeringCommand : public Command {
 public:
-    EnterEngineeringCommand(int32_t commandID, MTM1M3_command_enterEngineeringC*);
+    EnterEngineeringCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;

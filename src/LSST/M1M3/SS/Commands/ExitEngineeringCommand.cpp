@@ -31,8 +31,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID, MTM1M3_command_exitEngineeringC*)
-        : Command(commandID) {}
+ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID) : Command(commandID) {}
 
 bool ExitEngineeringCommand::validate() {
     if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {

@@ -79,5 +79,9 @@ States::Type FaultState::standby(StandbyCommand* command) {
     RaisingLoweringInfo::instance().zeroSupportPercentage();
     Model::get().getSafetyController()->clearErrorCode();
     Model::get().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
+
+    Model::get().getSlewController()->reset();
+    Model::get().getForceController()->reset();
+
     return States::StandbyState;
 }

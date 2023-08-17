@@ -50,6 +50,12 @@ States::Type State::standby(StandbyCommand* command) {
 States::Type State::exitControl(ExitControlCommand* command) {
     return this->rejectCommandInvalidState(command, "ExitControl");
 }
+States::Type State::setSlewFlag(SetSlewFlagCommand* command) {
+    return this->rejectCommandInvalidState(command, "SetSlewFlag");
+}
+States::Type State::clearSlewFlag(ClearSlewFlagCommand* command) {
+    return this->rejectCommandInvalidState(command, "ClearSlewFlag");
+}
 States::Type State::turnAirOn(TurnAirOnCommand* command) {
     return this->rejectCommandInvalidState(command, "TurnAirOn");
 }

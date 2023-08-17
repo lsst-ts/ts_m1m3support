@@ -57,14 +57,14 @@ public:
     void broadcastPneumaticFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter);
     void setBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address, float primaryGain, float secondaryGain);
     void readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address);
-    void broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, bool slewFlag,
+    void broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, uint8_t boosterValves,
                               int32_t* saaPrimarySetpoint, int32_t* daaPrimarySetpoint,
                               int32_t* daaSecondarySetpoint);
-    void unicastForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag, int32_t primarySetpoint,
-                            int32_t secondarySetpoint);
-    void unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
+    void unicastForceDemand(ModbusBuffer* buffer, uint8_t address, uint8_t boosterValve,
+                            int32_t primarySetpoint, int32_t secondarySetpoint);
+    void unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address, uint8_t boosterValve,
                                       int32_t primarySetpoint);
-    void unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
+    void unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, uint8_t boosterValve,
                                     int32_t primarySetpoint, int32_t secondarySetpoint);
 
     /**

@@ -34,7 +34,7 @@ namespace SS {
 
 class TurnAirOffCommand : public Command {
 public:
-    TurnAirOffCommand(int32_t commandID, MTM1M3_command_turnAirOffC*);
+    TurnAirOffCommand(int32_t commandID);
 
     void execute() override;
     void ackInProgress() override;

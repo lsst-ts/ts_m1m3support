@@ -129,13 +129,13 @@ void ILCMessageFactory::readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t add
     buffer->writeWaitForRx(_ilcApplicationSettings->ReadBoostValveDCAGains);
 }
 
-void ILCMessageFactory::broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, bool slewFlag,
-                                             int32_t* saaPrimarySetpoint, int32_t* daaPrimarySetpoint,
-                                             int32_t* daaSecondarySetpoint) {
+void ILCMessageFactory::broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter,
+                                             uint8_t boosterValves, int32_t* saaPrimarySetpoint,
+                                             int32_t* daaPrimarySetpoint, int32_t* daaSecondarySetpoint) {
     buffer->writeU8(249);
     buffer->writeU8(75);
     buffer->writeU8(broadcastCounter);
-    buffer->writeU8(slewFlag ? 255 : 0);
+    buffer->writeU8(boosterValves);
     for (int i = 0; i < 16; i++) {
         buffer->writeI24(saaPrimarySetpoint[i]);
     }
@@ -148,31 +148,32 @@ void ILCMessageFactory::broadcastForceDemand(ModbusBuffer* buffer, uint8_t broad
     buffer->writeDelay(_ilcApplicationSettings->BroadcastForceDemand);
 }
 
-void ILCMessageFactory::unicastForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
+void ILCMessageFactory::unicastForceDemand(ModbusBuffer* buffer, uint8_t address, uint8_t boosterValve,
                                            int32_t primarySetpoint, int32_t secondarySetpoint = 0) {
     if (address <= 16) {
-        this->unicastSingleAxisForceDemand(buffer, address, slewFlag, primarySetpoint);
+        this->unicastSingleAxisForceDemand(buffer, address, boosterValve, primarySetpoint);
     } else {
-        this->unicastDualAxisForceDemand(buffer, address, slewFlag, primarySetpoint, secondarySetpoint);
+        this->unicastDualAxisForceDemand(buffer, address, boosterValve, primarySetpoint, secondarySetpoint);
     }
 }
 
-void ILCMessageFactory::unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
-                                                     int32_t primarySetpoint) {
+void ILCMessageFactory::unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address,
+                                                     uint8_t boosterValve, int32_t primarySetpoint) {
     buffer->writeU8(address);
     buffer->writeU8(75);
-    buffer->writeU8(slewFlag ? 255 : 0);
+    buffer->writeU8(boosterValve);
     buffer->writeI24(primarySetpoint);
     buffer->writeCRC(6);
     buffer->writeEndOfFrame();
     buffer->writeWaitForRx(_ilcApplicationSettings->UnicastSingleAxisForceDemand);
 }
 
-void ILCMessageFactory::unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, bool slewFlag,
-                                                   int32_t primarySetpoint, int32_t secondarySetpoint) {
+void ILCMessageFactory::unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address,
+                                                   uint8_t boosterValve, int32_t primarySetpoint,
+                                                   int32_t secondarySetpoint) {
     buffer->writeU8(address);
     buffer->writeU8(75);
-    buffer->writeU8(slewFlag ? 255 : 0);
+    buffer->writeU8(boosterValve);
     buffer->writeI24(primarySetpoint);
     buffer->writeI24(secondarySetpoint);
     buffer->writeCRC(9);

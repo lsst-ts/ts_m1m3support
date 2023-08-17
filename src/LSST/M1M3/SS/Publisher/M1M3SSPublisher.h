@@ -384,6 +384,8 @@ public:
     void ackCommandstandby(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandexitControl(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandpanic(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandsetSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandclearSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandturnAirOn(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandturnAirOff(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandapplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);

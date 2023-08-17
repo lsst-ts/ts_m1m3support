@@ -29,7 +29,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StandbyCommand::StandbyCommand(int32_t commandID, MTM1M3_command_standbyC*) : Command(commandID) {}
+StandbyCommand::StandbyCommand(int32_t commandID) : Command(commandID) {}
 
 void StandbyCommand::execute() { Context::get().standby(this); }
 
