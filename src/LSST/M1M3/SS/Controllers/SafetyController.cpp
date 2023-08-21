@@ -456,6 +456,16 @@ void SafetyController::positionControllerNotifyUnstable(int hp, int32_t unstable
                     unstableCount, deltaEncoder);
 }
 
+void SafetyController::positionControllerHighTension(int hp, float weightSupportedPercent) {
+    _updateOverride(FaultCodes::HardpointHighTension,
+                    _safetyControllerSettings->PositionController.FaultForTensionAboveSupported >= 0,
+                    weightSupportedPercent >
+                            _safetyControllerSettings->PositionController.FaultForTensionAboveSupported,
+                    "Hardpoint #{} still in tension (not chasing) above {}% supported, limit is {}%.", hp + 1,
+                    weightSupportedPercent,
+                    _safetyControllerSettings->PositionController.FaultForTensionAboveSupported);
+}
+
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag, bool commanded, bool sensed) {
     _updateOverride(FaultCodes::CellLightOutputMismatch,
                     _safetyControllerSettings->CellLights.FaultOnOutputMismatch, conditionFlag,
@@ -562,7 +572,7 @@ void SafetyController::forceActuatorFollowingError(int actuatorId, int actuatorD
 
 void SafetyController::hardpointActuatorBreakawayFault(int actuatorDataIndex, bool conditionFlag) {
     _updateOverride(FaultCodes::HardpointActuatorLoadCellError, true, conditionFlag,
-                    "Hardpoint Actuator # {} Breakaway Fault/Load Cell Error", actuatorDataIndex + 1);
+                    "Hardpoint Actuator #{} Breakaway Fault/Load Cell Error", actuatorDataIndex + 1);
 }
 
 void SafetyController::hardpointActuatorMeasuredForce(int actuatorDataIndex, bool warningFlag,

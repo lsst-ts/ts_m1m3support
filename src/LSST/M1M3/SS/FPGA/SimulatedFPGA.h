@@ -37,13 +37,6 @@
 #include <ILCSubnetData.h>
 #include <HardpointActuatorSettings.h>
 
-struct MTMount_AltC;
-struct MTMount_AzC;
-struct MTM1M3_appliedCylinderForcesC;
-struct MTM1M3_logevent_appliedHardpointStepsC;
-struct MTM1M3_hardpointActuatorDataC;
-struct MTM1M3_outerLoopDataC;
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -96,6 +89,7 @@ private:
     SAL_MTMount _mgrMTMount;
 
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    HardpointActuatorSettings* _hardpointActuatorSettings;
 
     int _lastRequest;
     std::queue<uint16_t> _u8Response;
