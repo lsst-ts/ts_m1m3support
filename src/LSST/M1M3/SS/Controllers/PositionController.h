@@ -36,6 +36,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+typedef enum { NO_WAIT, CAN_WAIT, WAITING, ALREADY_WAITED } wait_tension_t;
+
 /**
  * Controls M1M3 position. This controller is used in active state to command
  * M1M3 hardpoints, which in turn moves M1M3 platform position and tip/tilt.
@@ -183,6 +185,8 @@ private:
 
     void _checkFollowingError(int hp);
 
+    void _resetWaitTension();
+
     PositionControllerSettings* _positionControllerSettings;
     HardpointActuatorSettings* _hardpointActuatorSettings;
 
@@ -196,7 +200,7 @@ private:
     int32_t _unstableEncoderCount[HP_COUNT];
 
     int32_t _lastEncoderCount[HP_COUNT];
-    int _waitTension[HP_COUNT];
+    wait_tension_t _waitTension[HP_COUNT];
 
     SafetyController* _safetyController;
 };
