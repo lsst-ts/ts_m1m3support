@@ -121,6 +121,7 @@ struct FaultCodes {
         HardpointActuator = _MASK_HARDPOINT | 0x01,                          // 6112
         HardpointActuatorLoadCellError = _MASK_HARDPOINT | 0x02,
         HardpointActuatorMeasuredForceError = _MASK_HARDPOINT | 0x03,
+        HardpointHighTension = _MASK_HARDPOINT | 0x04,
 
         /**
          * Triggered when pressure as measured inside hardpoint breakway

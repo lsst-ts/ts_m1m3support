@@ -27,6 +27,7 @@
 #include <SAL_MTMountC.h>
 
 #include <cRIO/Singleton.h>
+#include <Units.h>
 
 #include <cmath>
 

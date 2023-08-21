@@ -60,8 +60,7 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _raisePauseReported = false;
 
     _safetyController->raiseOperationTimeout(false);
-    _positionController->stopMotion();
-    _positionController->enableChaseAll();
+    _positionController->startRaise();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->zeroAzimuthForces();
@@ -92,6 +91,8 @@ void MirrorRaiseController::runLoop() {
         // Wait for pressure to raise after valve opening
         if (raiseInfo->supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
             raiseInfo->setWaitAirPressure(true);
+            // hpRaiseLowerForcesInTolerance needs to be called to stop encoder movement if on tension limit
+            _positionController->hpRaiseLowerForcesInTolerance(true);
             return;
         }
         raiseInfo->setWaitAirPressure(false);

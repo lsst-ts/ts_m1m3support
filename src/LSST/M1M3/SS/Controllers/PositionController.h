@@ -71,6 +71,9 @@ public:
     bool enableChaseAll();
     void disableChaseAll();
 
+    void startRaise();
+    void startLower();
+
     /**
      * Checks that hardpoint forces are in tolerance for mirror raising and
      * lowering. Records raise/lowering forces status in
@@ -193,6 +196,7 @@ private:
     int32_t _unstableEncoderCount[HP_COUNT];
 
     int32_t _lastEncoderCount[HP_COUNT];
+    int _waitTension[HP_COUNT];
 
     SafetyController* _safetyController;
 };

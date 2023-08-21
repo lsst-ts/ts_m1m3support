@@ -59,10 +59,6 @@ public:
 
     std::vector<double> HardpointDisplacementToMirrorPosition;
     std::vector<double> MirrorPositionToHardpointDisplacement;
-
-    // TODO move to XML
-    float hardpointBreakawayFaultHigh;
-    float hardpointBreakawayFaultLow;
 };
 
 } /* namespace SS */
