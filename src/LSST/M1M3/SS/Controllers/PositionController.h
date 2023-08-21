@@ -38,6 +38,9 @@ namespace SS {
 
 typedef enum { NO_WAIT, CAN_WAIT, WAITING, ALREADY_WAITED } wait_tension_t;
 
+const int MTM1M3_shared_HardpointActuatorMotionState_FinePositioning = MTM1M3::MTM1M3_shared_HardpointActuatorMotionState_FinePositiong;
+const int MTM1M3_shared_HardpointActuatorMotionState_WaitingTension = 5;
+
 /**
  * Controls M1M3 position. This controller is used in active state to command
  * M1M3 hardpoints, which in turn moves M1M3 platform position and tip/tilt.

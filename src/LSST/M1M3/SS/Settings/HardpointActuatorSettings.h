@@ -59,6 +59,10 @@ public:
 
     std::vector<double> HardpointDisplacementToMirrorPosition;
     std::vector<double> MirrorPositionToHardpointDisplacement;
+
+    float hardpointBreakawayFaultLow;
+    float hardpointBreakawayFaultHigh;
+    float ignoreTensionRaisingLowering;
 };
 
 } /* namespace SS */
