@@ -40,6 +40,15 @@
 using namespace MTM1M3;
 using namespace LSST::M1M3::SS;
 
+/**
+ * Can hardpoint see extra tension during raise operation?
+ *
+ * @param hp hardpoint (0-based) index
+ *
+ * @return true if the hardpoint can see excess tension as raised/lowered
+ */
+bool hp_can_see_tension(int hp) { return hp == 1 || hp == 4; }
+
 PositionController::PositionController() {
     SPDLOG_DEBUG("PositionController: PositionController()");
     _safetyController = Model::get().getSafetyController();
@@ -57,8 +66,9 @@ PositionController::PositionController() {
         _targetEncoderValues[i] = 0;
         _stableEncoderCount[i] = 0;
         _unstableEncoderCount[i] = 0;
-        _waitTension[i] = 0;
     }
+    _resetWaitTension();
+
     M1M3SSPublisher::instance().logHardpointActuatorState();
 }
 
@@ -93,16 +103,12 @@ void PositionController::disableChaseAll() {
 void PositionController::startRaise() {
     stopMotion();
     enableChaseAll();
-    for (int i = 0; i < HP_COUNT; i++) {
-        _waitTension[i] = 0;
-    }
+    _resetWaitTension();
 }
 
 void PositionController::startLower() {
     stopMotion();
-    for (int i = 0; i < HP_COUNT; i++) {
-        _waitTension[i] = 0;
-    }
+    _resetWaitTension();
 }
 
 bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
@@ -110,7 +116,7 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
     bool ret = true;
     auto raiseLowerInfo = &RaisingLoweringInfo::instance();
 
-    class PositionLimitTrigger : public LimitTrigger<float, float, float, int> {
+    class PositionLimitTrigger : public LimitTrigger<float, float, float, wait_tension_t> {
     public:
         PositionLimitTrigger(int hp) {
             _hp = hp;
@@ -127,8 +133,8 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
             return ((_counter % levels[3]) == 0);
         }
 
-        void execute(float lowLimit, float highLimit, float measured, int waitTension) override {
-            if (waitTension == 1) {
+        void execute(float lowLimit, float highLimit, float measured, wait_tension_t waitTension) override {
+            if (waitTension == WAITING) {
                 _counter = 0;
             } else {
                 SPDLOG_WARN("Violated hardpoint {} measured force {} ({}th occurence), limit {} to {}", _hp,
@@ -170,19 +176,19 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
 
         // tread HP 2 and 5 (index 1 and 4) differently when raising/lowering below 45 deg in elevation
         if ((TMA::instance().getElevation() < _hardpointActuatorSettings->ignoreTensionRaisingLowering) &&
-            (i == 1 || i == 4)) {
+            hp_can_see_tension(i)) {
             switch (_hardpointActuatorState->motionState[i]) {
                 case MTM1M3_shared_HardpointActuatorMotionState_Chasing:
                     if (_hardpointActuatorData->encoder[i] >
                         _hardpointActuatorSettings->highProximityEncoder[i]) {
-                        if (_waitTension[i] > 0) {
-                            _waitTension[i] = 2;
+                        if (_waitTension[i] != CAN_WAIT) {
+                            _waitTension[i] = ALREADY_WAITED;
                             ret = ret & inRange;
                         } else {
                             _hardpointActuatorState->motionState[i] =
                                     MTM1M3_shared_HardpointActuatorMotionState_WaitingTension;
                             _hardpointActuatorData->stepsCommanded[i] = 0;
-                            _waitTension[i] = 1;
+                            _waitTension[i] = WAITING;
                             M1M3SSPublisher::instance().logHardpointActuatorState();
                         }
                     } else {
@@ -585,4 +591,10 @@ void PositionController::_checkFollowingError(int hp) {
         _safetyController->hardpointActuatorFollowingError(hp, fePercent);
     }
     _lastEncoderCount[hp] = _hardpointActuatorData->encoder[hp];
+}
+
+void PositionController::_resetWaitTension() {
+    for (int i = 0; i < HP_COUNT; i++) {
+        _waitTension[i] = hp_can_see_tension(i) ? CAN_WAIT : NO_WAIT;
+    }
 }
