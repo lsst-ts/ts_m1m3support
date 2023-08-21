@@ -30,11 +30,13 @@ struct PositionControllerSafetySettings {
     float FollowingErrorPercentage;
     int FaultNumberOfFollowingErrors;
     int FaultOnUnstableCount;
+    float FaultForTensionAboveSupported;
 
     void set(YAML::Node node) {
         FollowingErrorPercentage = node["FollowingErrorPercentage"].as<float>();
         FaultNumberOfFollowingErrors = node["FaultNumberOfFollowingErrors"].as<int>();
         FaultOnUnstableCount = node["FaultOnUnstableCount"].as<int>();
+        FaultForTensionAboveSupported = node["FaultForTensionAboveSupported"].as<float>();
     }
 };
 

@@ -202,18 +202,18 @@ void HardpointActuatorWarning::setProximityWarning(int32_t hpIndex, bool lowWarn
     if (lowProximityWarning[hpIndex] != lowWarning) {
         _updated = true;
         if (lowWarning) {
-            SPDLOG_WARN("HP #{} encoder position is below low proximity warning.");
+            SPDLOG_WARN("HP #{} encoder position is below low proximity warning.", hpIndex + 1);
         } else {
-            SPDLOG_INFO("HP #{} encoder moved above low proximity warning.");
+            SPDLOG_INFO("HP #{} encoder moved above low proximity warning.", hpIndex + 1);
         }
         lowProximityWarning[hpIndex] = lowWarning;
     }
     if (highProximityWarning[hpIndex] != highWarning) {
         _updated = true;
-        if (lowWarning) {
-            SPDLOG_WARN("HP #{} encoder position is above high proximity warning.");
+        if (highWarning) {
+            SPDLOG_WARN("HP #{} encoder position is above high proximity warning.", hpIndex + 1);
         } else {
-            SPDLOG_INFO("HP #{} encoder moved below high proximity warning.");
+            SPDLOG_INFO("HP #{} encoder moved below high proximity warning.", hpIndex + 1);
         }
         highProximityWarning[hpIndex] = highWarning;
     }

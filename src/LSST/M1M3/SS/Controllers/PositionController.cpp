@@ -24,9 +24,9 @@
 #include <spdlog/spdlog.h>
 #include <stdlib.h>
 
+#include <sal_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
 
-#include <HardpointActuatorMotionStates.h>
 #include <HardpointActuatorSettings.h>
 #include <HardpointActuatorWarning.h>
 #include <M1M3SSPublisher.h>
@@ -37,6 +37,7 @@
 #include <RaisingLoweringInfo.h>
 #include <TMA.h>
 
+using namespace MTM1M3;
 using namespace LSST::M1M3::SS;
 
 PositionController::PositionController() {
@@ -49,30 +50,31 @@ PositionController::PositionController() {
     _hardpointInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
-        _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
+        _hardpointActuatorState->motionState[i] = MTM1M3_shared_HardpointActuatorMotionState_Standby;
         _hardpointActuatorData->stepsQueued[i] = 0;
         _hardpointActuatorData->stepsCommanded[i] = 0;
         _scaledMaxStepsPerLoop[i] = _positionControllerSettings->maxStepsPerLoop;
         _targetEncoderValues[i] = 0;
         _stableEncoderCount[i] = 0;
         _unstableEncoderCount[i] = 0;
+        _waitTension[i] = 0;
     }
     M1M3SSPublisher::instance().logHardpointActuatorState();
 }
 
 bool PositionController::enableChaseAll() {
     SPDLOG_INFO("PositionController: enableChaseAll()");
-    if (_hardpointActuatorState->motionState[0] != HardpointActuatorMotionStates::Standby ||
-        _hardpointActuatorState->motionState[1] != HardpointActuatorMotionStates::Standby ||
-        _hardpointActuatorState->motionState[2] != HardpointActuatorMotionStates::Standby ||
-        _hardpointActuatorState->motionState[3] != HardpointActuatorMotionStates::Standby ||
-        _hardpointActuatorState->motionState[4] != HardpointActuatorMotionStates::Standby ||
-        _hardpointActuatorState->motionState[5] != HardpointActuatorMotionStates::Standby) {
+    if (_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby ||
+        _hardpointActuatorState->motionState[1] != MTM1M3_shared_HardpointActuatorMotionState_Standby ||
+        _hardpointActuatorState->motionState[2] != MTM1M3_shared_HardpointActuatorMotionState_Standby ||
+        _hardpointActuatorState->motionState[3] != MTM1M3_shared_HardpointActuatorMotionState_Standby ||
+        _hardpointActuatorState->motionState[4] != MTM1M3_shared_HardpointActuatorMotionState_Standby ||
+        _hardpointActuatorState->motionState[5] != MTM1M3_shared_HardpointActuatorMotionState_Standby) {
         return false;
     }
     _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
-        _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Chasing;
+        _hardpointActuatorState->motionState[i] = MTM1M3_shared_HardpointActuatorMotionState_Chasing;
         _lastEncoderCount[i] = _hardpointActuatorData->encoder[i];
     }
     M1M3SSPublisher::instance().tryLogHardpointActuatorState();
@@ -83,9 +85,24 @@ void PositionController::disableChaseAll() {
     SPDLOG_INFO("PositionController: disableChaseAll()");
     _hardpointActuatorState->timestamp = M1M3SSPublisher::instance().getTimestamp();
     for (int i = 0; i < HP_COUNT; i++) {
-        _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
+        _hardpointActuatorState->motionState[i] = MTM1M3_shared_HardpointActuatorMotionState_Standby;
     }
     M1M3SSPublisher::instance().tryLogHardpointActuatorState();
+}
+
+void PositionController::startRaise() {
+    stopMotion();
+    enableChaseAll();
+    for (int i = 0; i < HP_COUNT; i++) {
+        _waitTension[i] = 0;
+    }
+}
+
+void PositionController::startLower() {
+    stopMotion();
+    for (int i = 0; i < HP_COUNT; i++) {
+        _waitTension[i] = 0;
+    }
 }
 
 bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
@@ -93,7 +110,7 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
     bool ret = true;
     auto raiseLowerInfo = &RaisingLoweringInfo::instance();
 
-    class PositionLimitTrigger : public LimitTrigger<float, float, float> {
+    class PositionLimitTrigger : public LimitTrigger<float, float, float, int> {
     public:
         PositionLimitTrigger(int hp) {
             _hp = hp;
@@ -110,9 +127,13 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
             return ((_counter % levels[3]) == 0);
         }
 
-        void execute(float lowLimit, float highLimit, float measured) override {
-            SPDLOG_WARN("Violated hardpoint {} measured force {} ({}th occurence), limit {} to {}", _hp,
-                        measured, _counter, lowLimit, highLimit);
+        void execute(float lowLimit, float highLimit, float measured, int waitTension) override {
+            if (waitTension == 1) {
+                _counter = 0;
+            } else {
+                SPDLOG_WARN("Violated hardpoint {} measured force {} ({}th occurence), limit {} to {}", _hp,
+                            measured, _counter, lowLimit, highLimit);
+            }
         }
 
         void reset() override {
@@ -131,25 +152,58 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
                                                PositionLimitTrigger(3), PositionLimitTrigger(4),
                                                PositionLimitTrigger(5), PositionLimitTrigger(6)};
     for (int i = 0; i < HP_COUNT; i++) {
-        bool inRange;
+        bool inRange = false;
+        float lowLimit = _hardpointActuatorSettings->hardpointBreakawayFaultLow;
+        float highLimit = _hardpointActuatorSettings->hardpointBreakawayFaultHigh;
         if (raise) {
-            inRange = Range::InRangeTrigger((float)_positionControllerSettings->raiseHPForceLimitLow,
-                                            (float)_positionControllerSettings->raiseHPForceLimitHigh,
-                                            _hardpointActuatorData->measuredForce[i], triggers[i],
-                                            (float)_positionControllerSettings->raiseHPForceLimitLow,
-                                            (float)_positionControllerSettings->raiseHPForceLimitHigh,
-                                            _hardpointActuatorData->measuredForce[i]);
+            lowLimit = _positionControllerSettings->raiseHPForceLimitLow;
+            highLimit = _positionControllerSettings->raiseHPForceLimitHigh;
         } else {
-            inRange = Range::InRangeTrigger((float)_positionControllerSettings->lowerHPForceLimitLow,
-                                            (float)_positionControllerSettings->lowerHPForceLimitHigh,
-                                            _hardpointActuatorData->measuredForce[i], triggers[i],
-                                            (float)_positionControllerSettings->lowerHPForceLimitLow,
-                                            (float)_positionControllerSettings->lowerHPForceLimitHigh,
-                                            _hardpointActuatorData->measuredForce[i]);
+            lowLimit = _positionControllerSettings->lowerHPForceLimitLow;
+            highLimit = _positionControllerSettings->lowerHPForceLimitHigh;
         }
+        inRange = Range::InRangeTrigger(lowLimit, highLimit, _hardpointActuatorData->measuredForce[i],
+                                        triggers[i], lowLimit, highLimit,
+                                        _hardpointActuatorData->measuredForce[i], _waitTension[i]);
+
         raiseLowerInfo->setHPWait(i, !inRange);
 
-        ret = ret & inRange;
+        // tread HP 2 and 5 (index 1 and 4) differently when raising/lowering below 45 deg in elevation
+        if ((TMA::instance().getElevation() < _hardpointActuatorSettings->ignoreTensionRaisingLowering) &&
+            (i == 1 || i == 4)) {
+            switch (_hardpointActuatorState->motionState[i]) {
+                case MTM1M3_shared_HardpointActuatorMotionState_Chasing:
+                    if (_hardpointActuatorData->encoder[i] >
+                        _hardpointActuatorSettings->highProximityEncoder[i]) {
+                        if (_waitTension[i] > 0) {
+                            _waitTension[i] = 2;
+                            ret = ret & inRange;
+                        } else {
+                            _hardpointActuatorState->motionState[i] =
+                                    MTM1M3_shared_HardpointActuatorMotionState_WaitingTension;
+                            _hardpointActuatorData->stepsCommanded[i] = 0;
+                            _waitTension[i] = 1;
+                            M1M3SSPublisher::instance().logHardpointActuatorState();
+                        }
+                    } else {
+                        ret = ret & inRange;
+                    }
+                    break;
+                case MTM1M3_shared_HardpointActuatorMotionState_WaitingTension:
+                    if (inRange) {
+                        _hardpointActuatorState->motionState[i] =
+                                MTM1M3_shared_HardpointActuatorMotionState_Chasing;
+                        M1M3SSPublisher::instance().logHardpointActuatorState();
+                    }
+                    break;
+                default:
+                    ret = ret & inRange;
+                    break;
+            }
+        } else {
+            ret = ret & inRange;
+        }
+
         checkLimits(i);
     }
     return ret;
@@ -157,12 +211,12 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
 
 bool PositionController::motionComplete() {
     SPDLOG_DEBUG("PositionController: motionComplete()");
-    return _hardpointActuatorState->motionState[0] == HardpointActuatorMotionStates::Standby &&
-           _hardpointActuatorState->motionState[1] == HardpointActuatorMotionStates::Standby &&
-           _hardpointActuatorState->motionState[2] == HardpointActuatorMotionStates::Standby &&
-           _hardpointActuatorState->motionState[3] == HardpointActuatorMotionStates::Standby &&
-           _hardpointActuatorState->motionState[4] == HardpointActuatorMotionStates::Standby &&
-           _hardpointActuatorState->motionState[5] == HardpointActuatorMotionStates::Standby;
+    return _hardpointActuatorState->motionState[0] == MTM1M3_shared_HardpointActuatorMotionState_Standby &&
+           _hardpointActuatorState->motionState[1] == MTM1M3_shared_HardpointActuatorMotionState_Standby &&
+           _hardpointActuatorState->motionState[2] == MTM1M3_shared_HardpointActuatorMotionState_Standby &&
+           _hardpointActuatorState->motionState[3] == MTM1M3_shared_HardpointActuatorMotionState_Standby &&
+           _hardpointActuatorState->motionState[4] == MTM1M3_shared_HardpointActuatorMotionState_Standby &&
+           _hardpointActuatorState->motionState[5] == MTM1M3_shared_HardpointActuatorMotionState_Standby;
 }
 
 bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
@@ -171,7 +225,7 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
         return false;
     }
     _hardpointActuatorData->stepsQueued[hpIndex] = steps;
-    _hardpointActuatorState->motionState[hpIndex] = HardpointActuatorMotionStates::Stepping;
+    _hardpointActuatorState->motionState[hpIndex] = MTM1M3_shared_HardpointActuatorMotionState_Stepping;
 
     double loopCycles[6];
     double maxLoopCycles = 0;
@@ -196,17 +250,17 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
 bool PositionController::move(int32_t* steps) {
     SPDLOG_INFO("PositionController: move({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", steps[0], steps[1], steps[2],
                 steps[3], steps[4], steps[5]);
-    if ((_hardpointActuatorState->motionState[0] != HardpointActuatorMotionStates::Standby &&
+    if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          steps[0] != 0) ||
-        (_hardpointActuatorState->motionState[1] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[1] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          steps[1] != 0) ||
-        (_hardpointActuatorState->motionState[2] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[2] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          steps[2] != 0) ||
-        (_hardpointActuatorState->motionState[3] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[3] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          steps[3] != 0) ||
-        (_hardpointActuatorState->motionState[4] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[4] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          steps[4] != 0) ||
-        (_hardpointActuatorState->motionState[5] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[5] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          steps[5] != 0)) {
         return false;
     }
@@ -215,8 +269,9 @@ bool PositionController::move(int32_t* steps) {
     double maxLoopCycles = 0;
     for (int i = 0; i < HP_COUNT; i++) {
         _hardpointActuatorData->stepsQueued[i] = steps[i];
-        _hardpointActuatorState->motionState[i] = steps[i] != 0 ? HardpointActuatorMotionStates::Stepping
-                                                                : HardpointActuatorMotionStates::Standby;
+        _hardpointActuatorState->motionState[i] =
+                steps[i] != 0 ? MTM1M3_shared_HardpointActuatorMotionState_Stepping
+                              : MTM1M3_shared_HardpointActuatorMotionState_Standby;
         loopCycles[i] = abs(steps[i]) / (double)_positionControllerSettings->maxStepsPerLoop;
         if (loopCycles[i] > maxLoopCycles) {
             maxLoopCycles = loopCycles[i];
@@ -236,17 +291,17 @@ bool PositionController::move(int32_t* steps) {
 bool PositionController::moveToEncoder(int32_t* encoderValues) {
     SPDLOG_INFO("PositionController: moveToEncoder({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", encoderValues[0],
                 encoderValues[1], encoderValues[2], encoderValues[3], encoderValues[4], encoderValues[5]);
-    if ((_hardpointActuatorState->motionState[0] != HardpointActuatorMotionStates::Standby &&
+    if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          encoderValues[0] != _hardpointActuatorData->encoder[0]) ||
-        (_hardpointActuatorState->motionState[1] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[1] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          encoderValues[1] != _hardpointActuatorData->encoder[1]) ||
-        (_hardpointActuatorState->motionState[2] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[2] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          encoderValues[2] != _hardpointActuatorData->encoder[2]) ||
-        (_hardpointActuatorState->motionState[3] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[3] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          encoderValues[3] != _hardpointActuatorData->encoder[3]) ||
-        (_hardpointActuatorState->motionState[4] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[4] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          encoderValues[4] != _hardpointActuatorData->encoder[4]) ||
-        (_hardpointActuatorState->motionState[5] != HardpointActuatorMotionStates::Standby &&
+        (_hardpointActuatorState->motionState[5] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
          encoderValues[5] != _hardpointActuatorData->encoder[5])) {
         return false;
     }
@@ -276,9 +331,10 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
         }
         _hardpointActuatorData->stepsQueued[i] =
                 deltaEncoder * _positionControllerSettings->encoderToStepsCoefficient;
-        _hardpointActuatorState->motionState[i] = _hardpointActuatorData->stepsQueued[i] != 0
-                                                          ? HardpointActuatorMotionStates::QuickPositioning
-                                                          : HardpointActuatorMotionStates::Standby;
+        _hardpointActuatorState->motionState[i] =
+                _hardpointActuatorData->stepsQueued[i] != 0
+                        ? MTM1M3_shared_HardpointActuatorMotionState_QuickPositioning
+                        : MTM1M3_shared_HardpointActuatorMotionState_Standby;
         loopCycles[i] = abs(_hardpointActuatorData->stepsQueued[i]) /
                         (double)_positionControllerSettings->maxStepsPerLoop;
         if (loopCycles[i] > maxLoopCycles) {
@@ -340,11 +396,12 @@ void PositionController::stopMotion(int hardpointIndex) {
     if (hardpointIndex < 0) {
         for (int i = 0; i < HP_COUNT; i++) {
             _hardpointActuatorData->stepsQueued[i] = 0;
-            _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
+            _hardpointActuatorState->motionState[i] = MTM1M3_shared_HardpointActuatorMotionState_Standby;
         }
     } else {
         _hardpointActuatorData->stepsQueued[hardpointIndex] = 0;
-        _hardpointActuatorState->motionState[hardpointIndex] = HardpointActuatorMotionStates::Standby;
+        _hardpointActuatorState->motionState[hardpointIndex] =
+                MTM1M3_shared_HardpointActuatorMotionState_Standby;
     }
 
     M1M3SSPublisher::instance().tryLogHardpointActuatorState();
@@ -356,11 +413,11 @@ void PositionController::updateSteps() {
     bool publishState = false;
     for (int i = 0; i < HP_COUNT; i++) {
         switch (_hardpointActuatorState->motionState[i]) {
-            case HardpointActuatorMotionStates::Standby:
+            case MTM1M3_shared_HardpointActuatorMotionState_Standby:
                 _hardpointActuatorData->stepsCommanded[i] = 0;
                 _hardpointActuatorData->stepsQueued[i] = 0;
                 break;
-            case HardpointActuatorMotionStates::Chasing: {
+            case MTM1M3_shared_HardpointActuatorMotionState_Chasing: {
                 _checkFollowingError(i);
                 float force = _hardpointActuatorData->measuredForce[i];
                 int32_t chaseSteps = (int32_t)(force * _positionControllerSettings->forceToStepsCoefficient);
@@ -369,7 +426,7 @@ void PositionController::updateSteps() {
                 _hardpointActuatorData->stepsCommanded[i] = (int16_t)chaseSteps;
                 break;
             }
-            case HardpointActuatorMotionStates::Stepping: {
+            case MTM1M3_shared_HardpointActuatorMotionState_Stepping: {
                 _checkFollowingError(i);
                 int32_t moveSteps =
                         Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
@@ -379,11 +436,12 @@ void PositionController::updateSteps() {
                 if (_hardpointActuatorData->stepsQueued[i] == 0 &&
                     _hardpointActuatorData->stepsCommanded[i] == 0) {
                     publishState = true;
-                    _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
+                    _hardpointActuatorState->motionState[i] =
+                            MTM1M3_shared_HardpointActuatorMotionState_Standby;
                 }
                 break;
             }
-            case HardpointActuatorMotionStates::QuickPositioning: {
+            case MTM1M3_shared_HardpointActuatorMotionState_QuickPositioning: {
                 _checkFollowingError(i);
                 int32_t moveSteps =
                         Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
@@ -393,11 +451,12 @@ void PositionController::updateSteps() {
                 if (_hardpointActuatorData->stepsQueued[i] == 0 &&
                     _hardpointActuatorData->stepsCommanded[i] == 0) {
                     publishState = true;
-                    _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::FinePositioning;
+                    _hardpointActuatorState->motionState[i] =
+                            MTM1M3_shared_HardpointActuatorMotionState_FinePositioning;
                 }
                 break;
             }
-            case HardpointActuatorMotionStates::FinePositioning: {
+            case MTM1M3_shared_HardpointActuatorMotionState_FinePositioning: {
                 _checkFollowingError(i);
                 int32_t deltaEncoder = _targetEncoderValues[i] - _hardpointActuatorData->encoder[i];
                 int32_t encoderSteps =
@@ -425,8 +484,16 @@ void PositionController::updateSteps() {
                 if (deltaEncoder == 0 && _stableEncoderCount[i] >= 2) {
                     publishState = true;
                     _hardpointActuatorData->stepsCommanded[i] = 0;
-                    _hardpointActuatorState->motionState[i] = HardpointActuatorMotionStates::Standby;
+                    _hardpointActuatorState->motionState[i] =
+                            MTM1M3_shared_HardpointActuatorMotionState_Standby;
                 }
+                break;
+            }
+            case MTM1M3_shared_HardpointActuatorMotionState_WaitingTension: {
+                auto raiseLowerInfo = &RaisingLoweringInfo::instance();
+                _hardpointActuatorData->stepsCommanded[i] = 0;
+
+                _safetyController->positionControllerHighTension(i, raiseLowerInfo->weightSupportedPercent);
                 break;
             }
         }
