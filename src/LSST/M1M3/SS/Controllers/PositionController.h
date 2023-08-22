@@ -201,6 +201,7 @@ private:
 
     int32_t _lastEncoderCount[HP_COUNT];
     wait_tension_t _waitTension[HP_COUNT];
+    uint16_t _raisingLoweringInRangeSamples[HP_COUNT];
 
     SafetyController* _safetyController;
 };

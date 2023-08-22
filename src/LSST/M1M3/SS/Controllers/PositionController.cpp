@@ -157,16 +157,24 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
     static PositionLimitTrigger triggers[6] = {PositionLimitTrigger(1), PositionLimitTrigger(2),
                                                PositionLimitTrigger(3), PositionLimitTrigger(4),
                                                PositionLimitTrigger(5), PositionLimitTrigger(6)};
+
+    float baseLowLimit = _hardpointActuatorSettings->hardpointBreakawayFaultLow;
+    float highLimit = _hardpointActuatorSettings->hardpointBreakawayFaultHigh;
+    if (raise) {
+        baseLowLimit = _positionControllerSettings->raiseHPForceLimitLow;
+        highLimit = _positionControllerSettings->raiseHPForceLimitHigh;
+    } else {
+        baseLowLimit = _positionControllerSettings->lowerHPForceLimitLow;
+        highLimit = _positionControllerSettings->lowerHPForceLimitHigh;
+    }
+
     for (int i = 0; i < HP_COUNT; i++) {
         bool inRange = false;
-        float lowLimit = _hardpointActuatorSettings->hardpointBreakawayFaultLow;
-        float highLimit = _hardpointActuatorSettings->hardpointBreakawayFaultHigh;
-        if (raise) {
-            lowLimit = _positionControllerSettings->raiseHPForceLimitLow;
-            highLimit = _positionControllerSettings->raiseHPForceLimitHigh;
-        } else {
-            lowLimit = _positionControllerSettings->lowerHPForceLimitLow;
-            highLimit = _positionControllerSettings->lowerHPForceLimitHigh;
+        float lowLimit = baseLowLimit;
+        // low limit when lowering needs to be adjusted. M1M3 shall not follow anything unsignificant
+        if (raise == false && _hardpointActuatorState->motionState[i] ==
+                                      MTM1M3_shared_HardpointActuatorMotionState_WaitingTension) {
+            lowLimit = (baseLowLimit + highLimit) / 2.0;
         }
         inRange = Range::InRangeTrigger(lowLimit, highLimit, _hardpointActuatorData->measuredForce[i],
                                         triggers[i], lowLimit, highLimit,
@@ -182,7 +190,12 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
                     if (_hardpointActuatorData->encoder[i] >
                         _hardpointActuatorSettings->highProximityEncoder[i]) {
                         if (_waitTension[i] != CAN_WAIT) {
-                            _waitTension[i] = ALREADY_WAITED;
+                            if (_waitTension[i] != ALREADY_WAITED) {
+                                _waitTension[i] = ALREADY_WAITED;
+                                SPDLOG_ERROR(
+                                        "HP {} chasing still enabled, as the HP was already in waiting state",
+                                        i + 1);
+                            }
                             ret = ret & inRange;
                         } else {
                             _hardpointActuatorState->motionState[i] =
@@ -190,6 +203,13 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
                             _hardpointActuatorData->stepsCommanded[i] = 0;
                             _waitTension[i] = WAITING;
                             M1M3SSPublisher::instance().logHardpointActuatorState();
+                            if (raise) {
+                                SPDLOG_WARN(
+                                        "HP {} waiting for tension force to clear as the mirror will raise",
+                                        i + 1);
+                            } else {
+                                SPDLOG_WARN("HP {} disable chasing as tension force is too high", i + 1);
+                            }
                         }
                     } else {
                         ret = ret & inRange;
@@ -197,9 +217,18 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
                     break;
                 case MTM1M3_shared_HardpointActuatorMotionState_WaitingTension:
                     if (inRange) {
+                        _raisingLoweringInRangeSamples[i]++;
+                        if (_raisingLoweringInRangeSamples[i] <
+                            _hardpointActuatorSettings->inRangeReadoutsToChaseFromWaitingTension) {
+                            break;
+                        }
                         _hardpointActuatorState->motionState[i] =
                                 MTM1M3_shared_HardpointActuatorMotionState_Chasing;
+                        _raisingLoweringInRangeSamples[i] = 0;
                         M1M3SSPublisher::instance().logHardpointActuatorState();
+                        SPDLOG_INFO("HP {} back in safe range, continue chasing", i + 1);
+                    } else {
+                        _raisingLoweringInRangeSamples[i] = 0;
                     }
                     break;
                 default:
@@ -596,5 +625,6 @@ void PositionController::_checkFollowingError(int hp) {
 void PositionController::_resetWaitTension() {
     for (int i = 0; i < HP_COUNT; i++) {
         _waitTension[i] = hp_can_see_tension(i) ? CAN_WAIT : NO_WAIT;
+        _raisingLoweringInRangeSamples[i] = 0;
     }
 }
