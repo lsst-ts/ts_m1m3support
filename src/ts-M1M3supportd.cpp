@@ -205,7 +205,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
             close(retPipe);
         }
 
-        Model::get().waitForExitControl();
+        Model::instance().waitForExitControl();
         SPDLOG_INFO("Main: ExitControl received");
 
         SPDLOG_INFO("Main: Stopping pps thread");

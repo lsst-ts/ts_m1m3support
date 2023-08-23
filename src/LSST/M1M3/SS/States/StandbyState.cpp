@@ -47,7 +47,7 @@ StandbyState::StandbyState() : State("StandbyState") {}
 
 States::Type StandbyState::update(UpdateCommand* command) {
     SPDLOG_TRACE("StandbyState: update()");
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
     return States::NoStateTransition;
 }
 
@@ -61,7 +61,7 @@ States::Type StandbyState::start(StartCommand* command) {
 
     SPDLOG_INFO("Loading settings");
 
-    Model::get().loadSettings(command->getConfigurationOverride());
+    Model::instance().loadSettings(command->getConfigurationOverride());
 
     SPDLOG_INFO("Done loading settings");
 
@@ -82,10 +82,10 @@ States::Type StandbyState::start(StartCommand* command) {
             "positionControllerSettings,";
     M1M3SSPublisher::instance().logConfigurationApplied();
 
-    PowerController* powerController = Model::get().getPowerController();
-    ILC* ilc = Model::get().getILC();
-    DigitalInputOutput* digitalInputOutput = Model::get().getDigitalInputOutput();
-    Gyro* gyro = Model::get().getGyro();
+    PowerController* powerController = Model::instance().getPowerController();
+    ILC* ilc = Model::instance().getILC();
+    DigitalInputOutput* digitalInputOutput = Model::instance().getDigitalInputOutput();
+    Gyro* gyro = Model::instance().getGyro();
 
     BoosterValveStatus::instance().reset();
 
@@ -169,11 +169,11 @@ States::Type StandbyState::start(StartCommand* command) {
     gyro->exitConfigurationMode();
     gyro->bit();
     digitalInputOutput->tryToggleHeartbeat();
-    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
+    return Model::instance().getSafetyController()->checkSafety(States::DisabledState);
 }
 
 States::Type StandbyState::exitControl(ExitControlCommand* command) {
     SPDLOG_INFO("StandbyState: ExitControl()");
-    Model::get().exitControl();
+    Model::instance().exitControl();
     return States::OfflineState;
 }

@@ -40,7 +40,7 @@ namespace SS {
 
 StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
         : ForceComponent("Static", ForceActuatorSettings::instance().StaticComponentSettings) {
-    _safetyController = Model::get().getSafetyController();
+    _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();

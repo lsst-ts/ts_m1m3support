@@ -50,18 +50,18 @@ DisabledState::DisabledState() : State("DisabledState") {}
 States::Type DisabledState::update(UpdateCommand* command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("DisabledState::update()");
-    ILC* ilc = Model::get().getILC();
+    ILC* ilc = Model::instance().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
     std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
-    Model::get().getAccelerometer()->processData();
-    Model::get().getDigitalInputOutput()->processData();
-    Model::get().getDisplacement()->processData();
-    Model::get().getGyro()->processData();
-    Model::get().getInclinometer()->processData();
-    Model::get().getPowerController()->processData();
+    Model::instance().getAccelerometer()->processData();
+    Model::instance().getDigitalInputOutput()->processData();
+    Model::instance().getDisplacement()->processData();
+    Model::instance().getGyro()->processData();
+    Model::instance().getInclinometer()->processData();
+    Model::instance().getPowerController()->processData();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     ilc->calculateHPPostion();
@@ -75,31 +75,31 @@ States::Type DisabledState::update(UpdateCommand* command) {
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
     HardpointActuatorWarning::instance().send();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type DisabledState::enable(EnableCommand* command) {
     SPDLOG_INFO("DisabledState: enable()");
-    Model::get().getILC()->writeSetModeEnableBuffer();
-    Model::get().getILC()->triggerModbus();
-    Model::get().getILC()->waitForAllSubnets(5000);
-    Model::get().getILC()->readAll();
-    Model::get().getILC()->verifyResponses();
-    Model::get().getDigitalInputOutput()->turnAirOn();
-    Model::get().getPowerController()->setAllAuxPowerNetworks(true);
-    return Model::get().getSafetyController()->checkSafety(States::ParkedState);
+    Model::instance().getILC()->writeSetModeEnableBuffer();
+    Model::instance().getILC()->triggerModbus();
+    Model::instance().getILC()->waitForAllSubnets(5000);
+    Model::instance().getILC()->readAll();
+    Model::instance().getILC()->verifyResponses();
+    Model::instance().getDigitalInputOutput()->turnAirOn();
+    Model::instance().getPowerController()->setAllAuxPowerNetworks(true);
+    return Model::instance().getSafetyController()->checkSafety(States::ParkedState);
 }
 
 States::Type DisabledState::standby(StandbyCommand* command) {
     SPDLOG_INFO("DisabledState: standby()");
-    Model::get().getILC()->writeSetModeStandbyBuffer();
-    Model::get().getILC()->triggerModbus();
-    Model::get().getILC()->waitForAllSubnets(5000);
-    Model::get().getILC()->readAll();
-    Model::get().getILC()->verifyResponses();
+    Model::instance().getILC()->writeSetModeStandbyBuffer();
+    Model::instance().getILC()->triggerModbus();
+    Model::instance().getILC()->waitForAllSubnets(5000);
+    Model::instance().getILC()->readAll();
+    Model::instance().getILC()->verifyResponses();
     M1M3SSPublisher::instance().tryLogForceActuatorState();
-    Model::get().getPowerController()->setBothPowerNetworks(false);
-    return Model::get().getSafetyController()->checkSafety(States::StandbyState);
+    Model::instance().getPowerController()->setBothPowerNetworks(false);
+    return Model::instance().getSafetyController()->checkSafety(States::StandbyState);
 }
 
 } /* namespace SS */

@@ -33,7 +33,7 @@ namespace SS {
 PanicCommand::PanicCommand(int32_t commandID) : Command(commandID) {}
 
 bool PanicCommand::validate() {
-    if (Model::get().getSafetyController() == NULL) {
+    if (Model::instance().getSafetyController() == NULL) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "Panic",
                 "Panic command cannot be called without Safety Controller (most likely called in a wrong "
@@ -43,7 +43,7 @@ bool PanicCommand::validate() {
     return true;
 }
 
-void PanicCommand::execute() { Model::get().getSafetyController()->userPanic(); }
+void PanicCommand::execute() { Model::instance().getSafetyController()->userPanic(); }
 
 void PanicCommand::ackInProgress() {
     M1M3SSPublisher::instance().ackCommandpanic(getCommandID(), ACK_INPROGRESS, "In-Progress");

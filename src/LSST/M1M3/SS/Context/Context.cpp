@@ -338,7 +338,7 @@ void Context::enableDisableForceComponent(EnableDisableForceComponentCommand* co
 void Context::_updateCurrentStateIfRequired(States::Type potentialNewState) {
     if (potentialNewState != States::NoStateTransition) {
         _currentState = potentialNewState;
-        Model::get().publishStateChange(potentialNewState);
+        Model::instance().publishStateChange(potentialNewState);
     }
 }
 

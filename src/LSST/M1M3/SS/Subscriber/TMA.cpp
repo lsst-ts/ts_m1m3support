@@ -55,10 +55,10 @@ void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
         ForceActuatorSettings::instance().useAccelerometers == false) {
         double timestamp = M1M3SSPublisher::instance().getTimestamp();
         if (checkAzimuth) {
-            Model::get().getSafetyController()->tmaAzimuthTimeout(_last_azimuth_data.timestamp - timestamp);
+            Model::instance().getSafetyController()->tmaAzimuthTimeout(_last_azimuth_data.timestamp - timestamp);
         }
         if (checkElevation) {
-            Model::get().getSafetyController()->tmaElevationTimeout(_last_elevation_data.timestamp -
+            Model::instance().getSafetyController()->tmaElevationTimeout(_last_elevation_data.timestamp -
                                                                     timestamp);
         }
     }
@@ -75,7 +75,7 @@ void TMA::updateTMAAzimuth(MTMount_azimuthC *data) {
 
     memcpy(&_last_azimuth_data, data, sizeof(MTMount_azimuthC));
 
-    Model::get().getForceController()->updateTMAAzimuthForces(data);
+    Model::instance().getForceController()->updateTMAAzimuthForces(data);
 }
 
 void TMA::updateTMAElevation(MTMount_elevationC *data) {
@@ -91,7 +91,7 @@ void TMA::updateTMAElevation(MTMount_elevationC *data) {
 
     memcpy(&_last_elevation_data, data, sizeof(MTMount_elevationC));
 
-    Model::get().getSafetyController()->tmaInclinometerDeviation(
+    Model::instance().getSafetyController()->tmaInclinometerDeviation(
             _last_elevation_data.actualPosition -
             M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle);
 }

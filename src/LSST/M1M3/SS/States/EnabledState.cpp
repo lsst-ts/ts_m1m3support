@@ -50,31 +50,31 @@ EnabledState::EnabledState(std::string name) : State(name) {}
 States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAAzimuthSample()");
     TMA::instance().updateTMAAzimuth(command->getData());
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAElevationSample()");
     TMA::instance().updateTMAElevation(command->getData());
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 void EnabledState::runLoop() {
     SPDLOG_TRACE("EnabledState: runLoop()");
-    ILC* ilc = Model::get().getILC();
-    Model::get().getForceController()->updateAppliedForces();
-    Model::get().getForceController()->processAppliedForces();
+    ILC* ilc = Model::instance().getILC();
+    Model::instance().getForceController()->updateAppliedForces();
+    Model::instance().getForceController()->processAppliedForces();
     ilc->writeControlListBuffer();
     ilc->triggerModbus();
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
     std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
-    Model::get().getAccelerometer()->processData();
-    Model::get().getDigitalInputOutput()->processData();
-    Model::get().getDisplacement()->processData();
-    Model::get().getGyro()->processData();
-    Model::get().getInclinometer()->processData();
-    Model::get().getPowerController()->processData();
+    Model::instance().getAccelerometer()->processData();
+    Model::instance().getDigitalInputOutput()->processData();
+    Model::instance().getDisplacement()->processData();
+    Model::instance().getGyro()->processData();
+    Model::instance().getInclinometer()->processData();
+    Model::instance().getPowerController()->processData();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     ilc->calculateHPPostion();
@@ -98,35 +98,35 @@ void EnabledState::sendTelemetry() {
 }
 
 bool EnabledState::raiseCompleted() {
-    if (Model::get().getMirrorRaiseController()->checkComplete()) {
-        Model::get().getMirrorRaiseController()->complete();
+    if (Model::instance().getMirrorRaiseController()->checkComplete()) {
+        Model::instance().getMirrorRaiseController()->complete();
         return true;
-    } else if (Model::get().getMirrorRaiseController()->checkTimeout()) {
-        Model::get().getMirrorRaiseController()->timeout();
+    } else if (Model::instance().getMirrorRaiseController()->checkTimeout()) {
+        Model::instance().getMirrorRaiseController()->timeout();
     }
     return false;
 }
 
 bool EnabledState::lowerCompleted() {
-    if (Model::get().getMirrorLowerController()->checkComplete()) {
-        Model::get().getMirrorLowerController()->complete();
+    if (Model::instance().getMirrorLowerController()->checkComplete()) {
+        Model::instance().getMirrorLowerController()->complete();
         return true;
-    } else if (Model::get().getMirrorLowerController()->checkTimeout()) {
-        Model::get().getMirrorLowerController()->timeout();
+    } else if (Model::instance().getMirrorLowerController()->checkTimeout()) {
+        Model::instance().getMirrorLowerController()->timeout();
     }
     return false;
 }
 
 States::Type EnabledState::disableMirror() {
-    Model::get().getILC()->writeSetModeDisableBuffer();
-    Model::get().getILC()->triggerModbus();
-    Model::get().getILC()->waitForAllSubnets(5000);
-    Model::get().getILC()->readAll();
-    Model::get().getILC()->verifyResponses();
-    Model::get().getForceController()->reset();
-    Model::get().getDigitalInputOutput()->turnAirOff();
-    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
-    return Model::get().getSafetyController()->checkSafety(States::DisabledState);
+    Model::instance().getILC()->writeSetModeDisableBuffer();
+    Model::instance().getILC()->triggerModbus();
+    Model::instance().getILC()->waitForAllSubnets(5000);
+    Model::instance().getILC()->readAll();
+    Model::instance().getILC()->verifyResponses();
+    Model::instance().getForceController()->reset();
+    Model::instance().getDigitalInputOutput()->turnAirOff();
+    Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
+    return Model::instance().getSafetyController()->checkSafety(States::DisabledState);
 }
 
 } /* namespace SS */

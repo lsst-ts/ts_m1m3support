@@ -44,7 +44,6 @@
 #include <LimitTrigger.h>
 #include <OffsetForceComponent.h>
 #include <PID.h>
-#include <PIDSettings.h>
 #include <SafetyController.h>
 #include <StaticForceComponent.h>
 #include <ThermalForceComponent.h>
@@ -175,7 +174,7 @@ public:
     void zeroAzimuthForces();
 
     void applyBalanceForces();
-    void zeroBalanceForces();
+    bool zeroBalanceForces();
     void updatePID(int id, PIDParameters parameters);
     void resetPID(int id);
     void resetPIDs();
@@ -219,7 +218,6 @@ private:
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    PIDSettings* _pidSettings;
     SafetyController* _safetyController;
 
     AccelerationForceComponent _accelerationForceComponent;

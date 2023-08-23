@@ -193,7 +193,7 @@ void BumpTestController::stopCylinder(char axis) {
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
                                                                          double averages[],
                                                                          short int* stage) {
-    ForceController* forceController = Model::get().getForceController();
+    ForceController* forceController = Model::instance().getForceController();
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =
             M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();
@@ -302,8 +302,8 @@ void BumpTestController::_resetProgress(bool zeroOffsets) {
     _resetAverages();
 
     if (zeroOffsets) {
-        Model::get().getForceController()->zeroOffsetForces();
-        Model::get().getForceController()->processAppliedForces();
+        Model::instance().getForceController()->zeroOffsetForces();
+        Model::instance().getForceController()->processAppliedForces();
 
         // make sure exitBumpTesting will be caled after FA gets back to ~proper values
         //

@@ -28,6 +28,8 @@
 #include <mutex>
 #include <string>
 
+#include <cRIO/Singleton.h>
+
 #include <Accelerometer.h>
 #include <MirrorRaiseController.h>
 #include <MirrorLowerController.h>
@@ -62,17 +64,10 @@ namespace SS {
  * Singleton. Provides methods to load setting. Populates pointers for cRIO
  * boards.
  */
-class Model {
+class Model : public cRIO::Singleton<Model> {
 public:
-    Model();
+    Model(token);
     virtual ~Model();
-
-    /**
-     * @brief Returns singleton instance.
-     *
-     * @return singleton instance
-     */
-    static Model& get();
 
     inline DigitalInputOutput* getDigitalInputOutput() { return &_digitalInputOutput; }
     inline Displacement* getDisplacement() { return _displacement; }
