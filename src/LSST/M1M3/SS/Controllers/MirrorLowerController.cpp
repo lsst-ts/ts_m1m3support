@@ -49,7 +49,7 @@ MirrorLowerController::MirrorLowerController(PositionController* positionControl
 void MirrorLowerController::start() {
     SPDLOG_INFO("MirrorLowerController: startLowerOperation()");
     _safetyController->lowerOperationTimeout(false);
-    _positionController->stopMotion();
+    _positionController->startLower();
 
     _movedToLowerPosition = false;
     if (_positionController->moveToLowerPosition() == false) {
