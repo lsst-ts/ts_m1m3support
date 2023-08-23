@@ -42,7 +42,7 @@ ParkedState::ParkedState() : EnabledState("ParkedState") {}
 States::Type ParkedState::update(UpdateCommand* command) {
     SPDLOG_TRACE("ParkedState: update()");
     sendTelemetry();
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command) {
@@ -51,15 +51,15 @@ States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "RaiseM1M3",
                 "The BypassReferencePosition parameter of the RaiseM1M3 cannot be true in the ParkedState.");
-        return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+        return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
     }
-    Model::get().getMirrorRaiseController()->start(false);
-    return Model::get().getSafetyController()->checkSafety(States::RaisingState);
+    Model::instance().getMirrorRaiseController()->start(false);
+    return Model::instance().getSafetyController()->checkSafety(States::RaisingState);
 }
 
 States::Type ParkedState::enterEngineering(EnterEngineeringCommand* command) {
     SPDLOG_INFO("ParkedState: enterEngineering()");
-    return Model::get().getSafetyController()->checkSafety(States::ParkedEngineeringState);
+    return Model::instance().getSafetyController()->checkSafety(States::ParkedEngineeringState);
 }
 
 States::Type ParkedState::disable(DisableCommand* command) {

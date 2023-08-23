@@ -38,7 +38,6 @@
 #include <ILCApplicationSettings.h>
 #include <InclinometerSettings.h>
 #include <HardpointActuatorSettings.h>
-#include <PIDSettings.h>
 #include <PositionControllerSettings.h>
 #include <SettingReader.h>
 
@@ -117,11 +116,21 @@ void SettingReader::load() {
         GyroSettings::instance().load(settings["GyroSettings"]);
         ILCApplicationSettings::instance().load(settings["ILCApplicationSettings"]);
         ExpansionFPGAApplicationSettings::instance().load(settings["ExpansionFPGAApplicationSettings"]);
-        PIDSettings::instance().load(settings["PIDSettings"]);
+
+        _slewPID.load(settings["PIDSettings"]["Slewing"]);
+        _trackingPID.load(settings["PIDSettings"]["Tracking"]);
+
         InclinometerSettings::instance().load(settings["InclinometerSettings"]);
     } catch (YAML::Exception& ex) {
         throw runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+}
+
+PIDSettings& SettingReader::getPIDSettings(bool slew) {
+    if (slew) {
+        return _slewPID;
+    }
+    return _trackingPID;
 }
 
 std::string SettingReader::_getSetPath(std::string file) {

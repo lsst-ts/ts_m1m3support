@@ -41,7 +41,7 @@ namespace SS {
 VelocityForceComponent::VelocityForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
         : ForceComponent("Velocity", ForceActuatorSettings::instance().VelocityComponentSettings) {
-    _safetyController = Model::get().getSafetyController();
+    _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();

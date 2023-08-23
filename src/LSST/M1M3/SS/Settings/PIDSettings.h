@@ -26,10 +26,6 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include <SAL_MTM1M3.h>
-
-#include <cRIO/Singleton.h>
-
 #include <M1M3SSPublisher.h>
 #include <PIDParameters.h>
 
@@ -37,8 +33,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-struct PIDSettings : public MTM1M3_logevent_pidSettingsC, public cRIO::Singleton<PIDSettings> {
-    PIDSettings(token);
+struct PIDSettings : public MTM1M3_logevent_pidSettingsC {
+    PIDSettings();
 
     void load(YAML::Node doc);
 
@@ -47,7 +43,7 @@ struct PIDSettings : public MTM1M3_logevent_pidSettingsC, public cRIO::Singleton
     PIDParameters getParameters(int index);
 
 private:
-    void _parsePID(const YAML::Node &node, int index);
+    void _parsePID(const YAML::Node& node, int index);
 };
 
 } /* namespace SS */

@@ -36,16 +36,16 @@ RaisingState::RaisingState() : EnabledState("RaisingState") {}
 States::Type RaisingState::update(UpdateCommand* command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("RaisingState: update()");
-    Model::get().getMirrorRaiseController()->runLoop();
+    Model::instance().getMirrorRaiseController()->runLoop();
     runLoop();
-    return Model::get().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveState
+    return Model::instance().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveState
                                                                             : States::NoStateTransition);
 }
 
 States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     SPDLOG_INFO("RaisingState: abortRaiseM1M3()");
-    Model::get().getMirrorLowerController()->abortRaiseM1M3();
-    return Model::get().getSafetyController()->checkSafety(States::LoweringState);
+    Model::instance().getMirrorLowerController()->abortRaiseM1M3();
+    return Model::instance().getSafetyController()->checkSafety(States::LoweringState);
 }
 
 } /* namespace SS */

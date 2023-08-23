@@ -28,11 +28,12 @@
 
 using namespace LSST::M1M3::SS;
 
-PIDSettings::PIDSettings(token) {}
+PIDSettings::PIDSettings() {}
 
 void PIDSettings::load(YAML::Node doc) {
     try {
-        SPDLOG_INFO("Loading PIDSettings");
+        name = doc.Tag();
+        SPDLOG_INFO("Loading {} PIDSettings", name);
 
         _parsePID(doc["Fx"], 0);
         _parsePID(doc["Fy"], 1);

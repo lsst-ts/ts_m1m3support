@@ -43,8 +43,7 @@ public:
     void reset();
 
 private:
-    bool _velocityEnabled;
-    bool _accelerationEnabled;
+    bool _balanceForcesEnabled;
 };
 
 }  // namespace SS

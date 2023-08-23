@@ -31,8 +31,8 @@
 #include <ForcesAndMoments.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
-#include <PIDSettings.h>
 #include <Range.h>
+#include <SettingReader.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -41,13 +41,13 @@ namespace SS {
 BalanceForceComponent::BalanceForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
         : ForceComponent("Balance", ForceActuatorSettings::instance().BalanceComponentSettings),
-          _fx(0, PIDSettings::instance().getParameters(0)),
-          _fy(1, PIDSettings::instance().getParameters(1)),
-          _fz(2, PIDSettings::instance().getParameters(2)),
-          _mx(3, PIDSettings::instance().getParameters(3)),
-          _my(4, PIDSettings::instance().getParameters(4)),
-          _mz(5, PIDSettings::instance().getParameters(5)) {
-    _safetyController = Model::get().getSafetyController();
+          _fx(0, SettingReader::instance().getPIDSettings(false).getParameters(0)),
+          _fy(1, SettingReader::instance().getPIDSettings(false).getParameters(1)),
+          _fz(2, SettingReader::instance().getPIDSettings(false).getParameters(2)),
+          _mx(3, SettingReader::instance().getPIDSettings(false).getParameters(3)),
+          _my(4, SettingReader::instance().getPIDSettings(false).getParameters(4)),
+          _mz(5, SettingReader::instance().getPIDSettings(false).getParameters(5)) {
+    _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedBalanceForces = M1M3SSPublisher::instance().getAppliedBalanceForces();

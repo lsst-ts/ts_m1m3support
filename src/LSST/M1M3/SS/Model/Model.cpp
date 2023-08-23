@@ -57,7 +57,7 @@ extern const char* CONFIG_SCHEMA_VERSION;
 extern const char* CONFIG_URL;
 extern const char* GIT_HASH;
 
-Model::Model() {
+Model::Model(token) {
     SPDLOG_DEBUG("Model: Model()");
     _safetyController = NULL;
     _displacement = NULL;
@@ -89,11 +89,6 @@ Model::~Model() {
     delete _mirrorRaiseController;
     delete _mirrorLowerController;
     delete _gyro;
-}
-
-Model& Model::get() {
-    static Model model;
-    return model;
 }
 
 void Model::loadSettings(std::string settingsToApply) {

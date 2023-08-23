@@ -40,7 +40,7 @@ namespace SS {
 ActiveOpticForceComponent::ActiveOpticForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
         : ForceComponent("ActiveOptic", ForceActuatorSettings::instance().ActiveOpticComponentSettings) {
-    _safetyController = Model::get().getSafetyController();
+    _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();

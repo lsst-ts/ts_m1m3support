@@ -51,7 +51,7 @@ bool hp_can_see_tension(int hp) { return hp == 1 || hp == 4; }
 
 PositionController::PositionController() {
     SPDLOG_DEBUG("PositionController: PositionController()");
-    _safetyController = Model::get().getSafetyController();
+    _safetyController = Model::instance().getSafetyController();
     _positionControllerSettings = &PositionControllerSettings::instance();
     _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();

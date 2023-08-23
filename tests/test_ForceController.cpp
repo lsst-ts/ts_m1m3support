@@ -119,41 +119,41 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
     SettingReader::instance().setRootPath("../SettingFiles");
 
-    REQUIRE_NOTHROW(Model::get().loadSettings("Default"));
+    REQUIRE_NOTHROW(Model::instance().loadSettings("Default"));
 
     REQUIRE(ForceActuatorSettings::instance().useInclinometer == true);
 
-    runAndCheck(Model::get().getForceController(), 0, 0, 0, 0, 0, 0);
+    runAndCheck(Model::instance().getForceController(), 0, 0, 0, 0, 0, 0);
 
     SECTION("Elevation 0 deg with 0% support") {
-        Model::get().getForceController()->applyElevationForces();
-        runAndCheck(Model::get().getForceController(), 0, 0, 0, 0, 0, 0);
+        Model::instance().getForceController()->applyElevationForces();
+        runAndCheck(Model::instance().getForceController(), 0, 0, 0, 0, 0, 0);
     }
 
     SECTION("Elevation 0 deg with 100% support") {
-        Model::get().getForceController()->applyElevationForces();
+        Model::instance().getForceController()->applyElevationForces();
         RaisingLoweringInfo::instance().fillSupportPercentage();
 
-        runAndCheck(Model::get().getForceController(), 0, 9965.86328, 30.3328, 169.59573, -32.7769,
+        runAndCheck(Model::instance().getForceController(), 0, 9965.86328, 30.3328, 169.59573, -32.7769,
                     -12.35224);
     }
 
     SECTION("Elevation 45 deg with 100% support") {
-        Model::get().getForceController()->applyElevationForces();
+        Model::instance().getForceController()->applyElevationForces();
         RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
-        runAndCheck(Model::get().getForceController(), 0, 8157.62793, 8134.57812, 84.48508, -21.52274,
+        runAndCheck(Model::instance().getForceController(), 0, 8157.62793, 8134.57812, 84.48508, -21.52274,
                     -25.1534);
-        runAndCheck(Model::get().getForceController(), 0, 16315.25586, 16269.15625, 168.97012, -43.04597,
+        runAndCheck(Model::instance().getForceController(), 0, 16315.25586, 16269.15625, 168.97012, -43.04597,
                     -50.3063);
 
-        runAndCheck(Model::get().getForceController(), 0, 119141.60156, 118804.97656, 1233.89075, -314.35049,
+        runAndCheck(Model::instance().getForceController(), 0, 119141.60156, 118804.97656, 1233.89075, -314.35049,
                     -367.35291, 1000);
         checkRejectedForces(0, 119141.60156, 118804.97656, 1233.89075, -314.35049, -367.35291);
 
-        runAndCheck(Model::get().getForceController(), 0, 119141.60156, 118804.97656f, 1233.89075, -314.35049,
+        runAndCheck(Model::instance().getForceController(), 0, 119141.60156, 118804.97656f, 1233.89075, -314.35049,
                     -367.35291);
 
         checkAppliedActuatorForcesYZ(1, 1186.86218, 590.02869);
@@ -164,41 +164,41 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
     }
 
     SECTION("Elevation 90 deg with 100% support") {
-        Model::get().getForceController()->applyElevationForces();
+        Model::instance().getForceController()->applyElevationForces();
         RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 90.0;
 
-        runAndCheck(Model::get().getForceController(), 0, 2.07198, 11000.72559, -77.41071, -19.8329,
+        runAndCheck(Model::instance().getForceController(), 0, 2.07198, 11000.72559, -77.41071, -19.8329,
                     -10.27149);
     }
 
     SECTION("Elevation 45 deg with 100% support, progressing load") {
-        Model::get().getForceController()->applyElevationForces();
+        Model::instance().getForceController()->applyElevationForces();
         RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
-        runAndCheck(Model::get().getForceController(), 0, 8157.62793, 8134.57812, 84.48508, -21.52274,
+        runAndCheck(Model::instance().getForceController(), 0, 8157.62793, 8134.57812, 84.48508, -21.52274,
                     -25.1534);
         checkRejectedForces(0, 8157.62793, 8134.57812, 84.48508, -21.52274, -25.1534);
 
-        Model::get().getForceController()->applyOffsetForcesByMirrorForces(1000, -1000, 200000, 20000, 20000,
+        Model::instance().getForceController()->applyOffsetForcesByMirrorForces(1000, -1000, 200000, 20000, 20000,
                                                                            -300000);
-        runAndCheck(Model::get().getForceController(), 6.9610, 16308.28906, 17662.20117, 302.42435, 92.18579,
+        runAndCheck(Model::instance().getForceController(), 6.9610, 16308.28906, 17662.20117, 302.42435, 92.18579,
                     -2139.87866);
         checkRejectedForces(6.96104, 16308.28906, 17662.20117, 302.42435, 92.18579, -2139.87866);
-        runAndCheck(Model::get().getForceController(), 13.92207, 24458.94531, 27189.82227, 520.36212,
+        runAndCheck(Model::instance().getForceController(), 13.92207, 24458.94531, 27189.82227, 520.36212,
                     205.89926, -4254.60693);
     }
 
     SECTION("Elevation 45 deg with 100% support, force sum doesn't support mirror") {
-        Model::get().getForceController()->applyElevationForces();
+        Model::instance().getForceController()->applyElevationForces();
         RaisingLoweringInfo::instance().fillSupportPercentage();
 
         M1M3SSPublisher::instance().getInclinometerData()->inclinometerAngle = 45.0;
 
-        runAndCheck(Model::get().getForceController(), 0, 8157.62793, 8134.57812, 84.48508, -21.52274,
+        runAndCheck(Model::instance().getForceController(), 0, 8157.62793, 8134.57812, 84.48508, -21.52274,
                     -25.1534);
 
         MTM1M3_appliedElevationForcesC *appliedElevationForces =
@@ -220,13 +220,13 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         safetyControllerSettings->ForceController.FaultOnForceClipping = true;
 
         for (int i = 0; i < 2; i++) {
-            Model::get().getForceController()->processAppliedForces();
-            CHECK(Model::get().getSafetyController()->checkSafety(States::ActiveState) ==
+            Model::instance().getForceController()->processAppliedForces();
+            CHECK(Model::instance().getSafetyController()->checkSafety(States::ActiveState) ==
                   States::ActiveState);
         }
 
-        Model::get().getForceController()->processAppliedForces();
-        CHECK(Model::get().getSafetyController()->checkSafety(States::ActiveState) ==
+        Model::instance().getForceController()->processAppliedForces();
+        CHECK(Model::instance().getSafetyController()->checkSafety(States::ActiveState) ==
               States::LoweringFaultState);
     }
 }

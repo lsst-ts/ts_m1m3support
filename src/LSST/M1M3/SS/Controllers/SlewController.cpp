@@ -27,6 +27,7 @@
 #include <BoosterValveStatus.h>
 #include <Model.h>
 #include <Publisher.h>
+#include <SettingReader.h>
 #include <SlewController.h>
 
 using namespace MTM1M3;
@@ -37,14 +38,32 @@ SlewController::SlewController() { SPDLOG_DEBUG("SlewController: SlewController(
 
 void SlewController::enterSlew() {
     BoosterValveStatus::instance().enterSlew();
-    Model::get().getForceController()->applyVelocityForces();
-    Model::get().getForceController()->applyAccelerationForces();
+    Model::instance().getForceController()->applyVelocityForces();
+    Model::instance().getForceController()->applyAccelerationForces();
+    if (ForceActuatorSettings::instance().useSlewBalanceForces) {
+        auto pidSettings = SettingReader::instance().getPIDSettings(true);
+        for (int i = 0; i < 6; i++) {
+            Model::instance().getForceController().updatePID(i, pidSettings.getParameters(i);
+        }
+    } else {
+        _balanceForcesEnabled = Model::instance().getForceController()->zeroBalanceForces();
+    }
 }
 
 void SlewController::exitSlew() {
     BoosterValveStatus::instance().exitSlew();
-    Model::get().getForceController()->zeroAccelerationForces();
-    Model::get().getForceController()->zeroVelocityForces();
+    Model::instance().getForceController()->zeroAccelerationForces();
+    Model::instance().getForceController()->zeroVelocityForces();
+    if (ForceActuatorSettings::instance().useSlewBalanceForces) {
+        auto pidSettings = SettingReader::instance().getPIDSettings(false);
+        for (int i = 0; i < 6; i++) {
+            Model::instance().getForceController().updatePID(i, pidSettings.getParameters(i);
+        }
+    } else {
+        if (_balanceForcesEnabled) {
+            Model::instance().getForceController()->applyBalanceForces();
+        }
+    }
 }
 
 void SlewController::reset() { exitSlew(); }
