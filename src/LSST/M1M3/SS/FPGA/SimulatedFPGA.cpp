@@ -37,9 +37,11 @@
 #include <ForceActuatorSettings.h>
 #include <FPGAAddresses.h>
 #include <M1M3SSPublisher.h>
+#include <RaisingLoweringInfo.h>
 #include <SettingReader.h>
 #include <SimulatedFPGA.h>
 #include <Timestamp.h>
+#include <TMA.h>
 #include <Units.h>
 
 using namespace LSST::M1M3::SS;
@@ -58,6 +60,9 @@ const float ACCEL_SIMULATED_STEP = D2RAD / 374.0;
 // Mount data are valid for 20 seconds in simulation, before simulated mount movement takes over
 #define MOUNT_VALIDITY 20s
 
+// Simulate raising below IgnoreTensionRaisingLowering elevation
+#define SIMULATE_RAISING_LOW_ELEVATION
+
 /**
  * Return data writen to modbus. The data are right shifted by 1 to allow for
  * signaling data end. See FPGA code for details.
@@ -66,7 +71,7 @@ uint8_t _readModbus(uint16_t data) { return (data >> 1) & 0xFF; }
 
 // HP encoder limits
 int32_t _HPEncoderLow[HP_COUNT] = {-10, -102, -43, -56, -78, 45};
-int32_t _HPEncoderHigh[HP_COUNT] = {65432, 66435, 60324, 67543, 61345, 63245};
+int32_t _HPEncoderHigh[HP_COUNT] = {65432, 66435, 60324, 67543, 66345, 63245};
 
 double LSST::M1M3::SS::getRndPM1() { return static_cast<double>(rand()) / (RAND_MAX / 2.0) - 1.0; }
 
@@ -76,6 +81,8 @@ SimulatedFPGA::SimulatedFPGA() {
     memset(&supportFPGAData, 0, sizeof(SupportFPGAData));
     _mountElevationValidTo = chrono::steady_clock::now();
     _simulatingToHorizon = true;
+
+    _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
 
     supportFPGAData.DigitalInputStates =
             0x0001 | 0x0002 | 0x0008 | DigitalOutputs::AirCommandOutputOn | 0x0040 | 0x0080;
@@ -91,10 +98,18 @@ SimulatedFPGA::SimulatedFPGA() {
 
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
     _hardpointActuatorData->encoder[0] = 15137;
+#ifdef SIMULATE_RAISING_LOW_ELEVATION
+    _hardpointActuatorData->encoder[1] = 59000;
+#else
     _hardpointActuatorData->encoder[1] = 20079;
+#endif
     _hardpointActuatorData->encoder[2] = 26384;
     _hardpointActuatorData->encoder[3] = 27424;
+#ifdef SIMULATE_RAISING_LOW_ELEVATION
+    _hardpointActuatorData->encoder[4] = 59000;
+#else
     _hardpointActuatorData->encoder[4] = 17560;
+#endif
     _hardpointActuatorData->encoder[5] = 23546;
 
     _sendResponse = true;
@@ -202,7 +217,15 @@ void SimulatedFPGA::pullTelemetry() {
                 }
                 break;
             case MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState:
+#ifdef SIMULATE_RAISING_LOW_ELEVATION
+                _mountElevation = _hardpointActuatorSettings->ignoreTensionRaisingLowering - 1;
+                _hardpointActuatorData->encoder[1] =
+                        _hardpointActuatorSettings->highProximityEncoder[1] - 1000;
+                _hardpointActuatorData->encoder[4] =
+                        _hardpointActuatorSettings->highProximityEncoder[4] - 1000;
+#else
                 _mountElevation = 90.0;
+#endif
                 _simulatingToHorizon = true;
                 _mountSimulatedMovementFirstPass = true;
                 break;
@@ -665,11 +688,24 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         } else if (steps > -4 && steps < 0) {
                             steps = -4;
                         }
-                        int32_t encoder =
-                                -(M1M3SSPublisher::instance().getHardpointActuatorData()->encoder[index]) +
-                                HardpointActuatorSettings::instance().getEncoderOffset(index) - steps / 4;
-                        _writeModbus32(response, encoder);               // Write Encoder
-                        _writeModbusFloat(response, getRndPM1() * 8.0);  // Write Measured Force
+                        int32_t encoder = -(_hardpointActuatorData->encoder[index]) +
+                                          _hardpointActuatorSettings->getEncoderOffset(index) - steps / 4;
+                        _writeModbus32(response, encoder);  // Write Encoder
+                        float force = getRndPM1() * 8.0;
+                        if ((address == 2 || address == 5) &&
+                            (TMA::instance().getElevation() <
+                             _hardpointActuatorSettings->ignoreTensionRaisingLowering)) {
+                            float supportedPct = RaisingLoweringInfo::instance().weightSupportedPercent;
+                            if (supportedPct < 20) {
+                                force += _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh * 0.9;
+                            } else if (supportedPct < 70) {
+                                force += _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh * 0.9 *
+                                         ((70 - supportedPct) / 50.0);
+                            } else if (supportedPct < 99) {
+                                force -= 20;
+                            }
+                        }
+                        _writeModbusFloat(response, force);  // Write Measured Force
                         _writeModbusCRC(response);
                     };
 
@@ -715,9 +751,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         case 67: {  // Force And Status
                             int steps = 0;
                             if (stepMotorBroadcast) {
-                                steps = M1M3SSPublisher::instance()
-                                                .getHardpointActuatorData()
-                                                ->stepsCommanded[address - 1];
+                                steps = _hardpointActuatorData->stepsCommanded[address - 1];
                             }
                             fillHPStatus(steps);
                             break;

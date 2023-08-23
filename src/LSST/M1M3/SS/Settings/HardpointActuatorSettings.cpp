@@ -71,6 +71,8 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
 
         hardpointBreakawayFaultHigh = doc["HardpointBreakawayFaultHigh"].as<float>();
         hardpointBreakawayFaultLow = doc["HardpointBreakawayFaultLow"].as<float>();
+        ignoreTensionRaisingLowering = doc["IgnoreTensionRaisingLowering"].as<float>();
+        inRangeReadoutsToChaseFromWaitingTension = doc["InRangeReadoutsToChaseFromWaitingTension"].as<int>();
 
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFaultLow) {
             throw std::runtime_error(
@@ -122,6 +124,12 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
                     fmt::format("HardpointBreakawayFaultLow ({:.2f}) is lower or equal "
                                 "HardpointBreakawayFaultHigh ({:.2f})",
                                 hardpointBreakawayFaultLow, hardpointBreakawayFaultHigh));
+        }
+
+        if (inRangeReadoutsToChaseFromWaitingTension <= 0) {
+            throw std::runtime_error(
+                    fmt::format("InRangeReadoutsToChaseFromWaitingTension must be positive number, is {}",
+                                inRangeReadoutsToChaseFromWaitingTension));
         }
 
         airPressureFaultHigh = doc["AirPressureFaultHigh"].as<float>();
