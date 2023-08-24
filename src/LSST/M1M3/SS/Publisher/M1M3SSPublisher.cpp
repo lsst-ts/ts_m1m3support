@@ -124,6 +124,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_raisingLoweringInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_slewControllerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
@@ -1402,6 +1403,7 @@ ACK_COMMAND(disableForceActuator)
 ACK_COMMAND(enableForceActuator)
 ACK_COMMAND(enableAllForceActuators)
 ACK_COMMAND(enableDisableForceComponent)
+ACK_COMMAND(setSlewControllerSettings)
 
 } /* namespace SS */
 } /* namespace M1M3 */

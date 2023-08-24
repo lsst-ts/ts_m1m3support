@@ -103,8 +103,8 @@ States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTest
     SPDLOG_INFO("ParkedEngineeringState: forceActuatorBumpTest({}, {}, {})", command->getData()->actuatorId,
                 command->getData()->testPrimary, command->getData()->testSecondary);
     Model::instance().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
-                                                              command->getData()->testPrimary,
-                                                              command->getData()->testSecondary);
+                                                                   command->getData()->testPrimary,
+                                                                   command->getData()->testSecondary);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -116,12 +116,14 @@ States::Type ParkedEngineeringState::killForceActuatorBumpTest(KillForceActuator
 
 States::Type ParkedEngineeringState::testHardpoint(TestHardpointCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: testHardpoint({})", command->getData()->hardpointActuator);
-    Model::instance().getHardpointTestController()->startHardpointTest(command->getData()->hardpointActuator - 1);
+    Model::instance().getHardpointTestController()->startHardpointTest(command->getData()->hardpointActuator -
+                                                                       1);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::killHardpointTest(KillHardpointTestCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: KillHardpointTest({})", command->getData()->hardpointActuator);
-    Model::instance().getHardpointTestController()->killHardpointTest(command->getData()->hardpointActuator - 1);
+    Model::instance().getHardpointTestController()->killHardpointTest(command->getData()->hardpointActuator -
+                                                                      1);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }

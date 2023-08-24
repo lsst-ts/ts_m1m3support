@@ -29,6 +29,7 @@
 #include <Publisher.h>
 #include <SettingReader.h>
 #include <SlewController.h>
+#include <SlewControllerSettings.h>
 
 using namespace MTM1M3;
 
@@ -37,13 +38,20 @@ using namespace LSST::M1M3::SS;
 SlewController::SlewController() { SPDLOG_DEBUG("SlewController: SlewController()"); }
 
 void SlewController::enterSlew() {
-    BoosterValveStatus::instance().enterSlew();
-    Model::instance().getForceController()->applyVelocityForces();
-    Model::instance().getForceController()->applyAccelerationForces();
-    if (ForceActuatorSettings::instance().useSlewBalanceForces) {
+    auto &slew_settings = SlewControllerSettings::instance();
+    if (slew_settings.triggerBoosterValves) {
+        BoosterValveStatus::instance().enterSlew();
+    }
+    if (slew_settings.useVelocityForces) {
+        Model::instance().getForceController()->applyVelocityForces();
+    }
+    if (slew_settings.useAccelerationForces) {
+        Model::instance().getForceController()->applyAccelerationForces();
+    }
+    if (slew_settings.useBalanceForces) {
         auto pidSettings = SettingReader::instance().getPIDSettings(true);
         for (int i = 0; i < 6; i++) {
-            Model::instance().getForceController().updatePID(i, pidSettings.getParameters(i);
+            Model::instance().getForceController()->updatePID(i, pidSettings.getParameters(i));
         }
     } else {
         _balanceForcesEnabled = Model::instance().getForceController()->zeroBalanceForces();
@@ -51,13 +59,20 @@ void SlewController::enterSlew() {
 }
 
 void SlewController::exitSlew() {
-    BoosterValveStatus::instance().exitSlew();
-    Model::instance().getForceController()->zeroAccelerationForces();
-    Model::instance().getForceController()->zeroVelocityForces();
-    if (ForceActuatorSettings::instance().useSlewBalanceForces) {
+    auto &slew_settings = SlewControllerSettings::instance();
+    if (slew_settings.triggerBoosterValves) {
+        BoosterValveStatus::instance().exitSlew();
+    }
+    if (slew_settings.useAccelerationForces) {
+        Model::instance().getForceController()->zeroAccelerationForces();
+    }
+    if (slew_settings.useVelocityForces) {
+        Model::instance().getForceController()->zeroVelocityForces();
+    }
+    if (slew_settings.useBalanceForces) {
         auto pidSettings = SettingReader::instance().getPIDSettings(false);
         for (int i = 0; i < 6; i++) {
-            Model::instance().getForceController().updatePID(i, pidSettings.getParameters(i);
+            Model::instance().getForceController()->updatePID(i, pidSettings.getParameters(i));
         }
     } else {
         if (_balanceForcesEnabled) {

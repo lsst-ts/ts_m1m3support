@@ -38,8 +38,8 @@ States::Type RaisingEngineeringState::update(UpdateCommand* command) {
     SPDLOG_TRACE("RaisingEngineeringState: update()");
     Model::instance().getMirrorRaiseController()->runLoop();
     runLoop();
-    return Model::instance().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveEngineeringState
-                                                                            : States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(
+            raiseCompleted() ? States::ActiveEngineeringState : States::NoStateTransition);
 }
 
 States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {

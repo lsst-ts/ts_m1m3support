@@ -147,6 +147,6 @@ States::Type ActiveEngineeringState::enableDisableForceComponent(
     SPDLOG_INFO("EnableDisableForceComponentCommand forceComponent {}, enable {}",
                 command->getData()->forceComponent, command->getData()->enable ? "true" : "false");
     Model::instance().getForceController()->enableDisableForceComponent(command->getData()->forceComponent,
-                                                                   command->getData()->enable);
+                                                                        command->getData()->enable);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }

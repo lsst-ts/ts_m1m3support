@@ -110,6 +110,7 @@ public:
     Command* tryAcceptCommandEnableForceActuator();
     Command* tryAcceptCommandEnableAllForceActuators();
     Command* tryAcceptCommandEnableDisableForceComponent();
+    Command* tryAcceptCommandSetSlewControllerSettings();
 
     Command* tryGetSampleTMAAzimuth();
     Command* tryGetSampleTMAElevation();
@@ -160,6 +161,7 @@ private:
     MTM1M3_command_disableForceActuatorC _disableForceActuatorData;
     MTM1M3_command_enableForceActuatorC _enableForceActuatorData;
     MTM1M3_command_enableDisableForceComponentC _enableDisableForceComponentData;
+    MTM1M3_command_setSlewControllerSettingsC _setSlewControllerSettingsData;
 
     MTMount_azimuthC _tmaAzimuth;
     MTMount_elevationC _tmaElevation;

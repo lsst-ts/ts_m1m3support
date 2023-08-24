@@ -164,7 +164,6 @@ void ForceActuatorSettings::load(YAML::Node doc) {
         useInclinometer = doc["UseInclinometer"].as<bool>();
         useGyroscope = doc["UseGyroscope"].as<bool>();
         useAccelerometers = doc["UseAccelerometers"].as<bool>();
-        useSlewBalanceForces = doc["UseSlewBalanceForces"].as<bool>();
 
         mirrorXMoment = doc["MirrorXMoment"].as<float>();
         mirrorYMoment = doc["MirrorYMoment"].as<float>();

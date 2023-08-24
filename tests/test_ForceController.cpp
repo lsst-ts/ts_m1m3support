@@ -149,12 +149,12 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         runAndCheck(Model::instance().getForceController(), 0, 16315.25586, 16269.15625, 168.97012, -43.04597,
                     -50.3063);
 
-        runAndCheck(Model::instance().getForceController(), 0, 119141.60156, 118804.97656, 1233.89075, -314.35049,
-                    -367.35291, 1000);
+        runAndCheck(Model::instance().getForceController(), 0, 119141.60156, 118804.97656, 1233.89075,
+                    -314.35049, -367.35291, 1000);
         checkRejectedForces(0, 119141.60156, 118804.97656, 1233.89075, -314.35049, -367.35291);
 
-        runAndCheck(Model::instance().getForceController(), 0, 119141.60156, 118804.97656f, 1233.89075, -314.35049,
-                    -367.35291);
+        runAndCheck(Model::instance().getForceController(), 0, 119141.60156, 118804.97656f, 1233.89075,
+                    -314.35049, -367.35291);
 
         checkAppliedActuatorForcesYZ(1, 1186.86218, 590.02869);
         checkRejectedActuatorForcesYZ(1, 1186.86218, 590.02869);
@@ -183,10 +183,10 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
                     -25.1534);
         checkRejectedForces(0, 8157.62793, 8134.57812, 84.48508, -21.52274, -25.1534);
 
-        Model::instance().getForceController()->applyOffsetForcesByMirrorForces(1000, -1000, 200000, 20000, 20000,
-                                                                           -300000);
-        runAndCheck(Model::instance().getForceController(), 6.9610, 16308.28906, 17662.20117, 302.42435, 92.18579,
-                    -2139.87866);
+        Model::instance().getForceController()->applyOffsetForcesByMirrorForces(1000, -1000, 200000, 20000,
+                                                                                20000, -300000);
+        runAndCheck(Model::instance().getForceController(), 6.9610, 16308.28906, 17662.20117, 302.42435,
+                    92.18579, -2139.87866);
         checkRejectedForces(6.96104, 16308.28906, 17662.20117, 302.42435, 92.18579, -2139.87866);
         runAndCheck(Model::instance().getForceController(), 13.92207, 24458.94531, 27189.82227, 520.36212,
                     205.89926, -4254.60693);

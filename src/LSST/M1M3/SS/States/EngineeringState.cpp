@@ -38,6 +38,7 @@
 #include <PositionController.h>
 #include <PowerController.h>
 #include <SafetyController.h>
+#include <SlewControllerSettings.h>
 #include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
 
@@ -209,5 +210,13 @@ States::Type EngineeringState::enableForceActuator(EnableForceActuatorCommand* c
 States::Type EngineeringState::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
     SPDLOG_INFO("{}: enableAllForceActuators()", name);
     Model::instance().getILC()->enableAllFA();
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type EngineeringState::setSlewControllerSettings(SetSlewControllerSettingsCommand* command) {
+    SPDLOG_INFO("{}: slewControllerSettings {}, enable {}", name, command->getData()->slewSettings,
+                command->getData()->enableSlewManagement);
+    SlewControllerSettings::instance().set(command->getData()->slewSettings,
+                                           command->getData()->enableSlewManagement);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
