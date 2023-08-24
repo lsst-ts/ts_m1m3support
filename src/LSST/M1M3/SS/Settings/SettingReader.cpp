@@ -40,6 +40,7 @@
 #include <HardpointActuatorSettings.h>
 #include <PositionControllerSettings.h>
 #include <SettingReader.h>
+#include <SlewControllerSettings.h>
 
 extern const char* CONFIG_SCHEMA_VERSION;
 
@@ -111,6 +112,8 @@ void SettingReader::load() {
         HardpointActuatorSettings::instance().load(settings["HardpointActuatorSettings"]);
         _safetyControllerSettings.load(settings["SafetyControllerSettings"]);
         PositionControllerSettings::instance().load(settings["PositionControllerSettings"]);
+        SlewControllerSettings::instance().load(settings["SlewControllerSettings"]);
+
         AccelerometerSettings::instance().load(settings["AccelerometerSettings"]);
         DisplacementSensorSettings::instance().load(settings["DisplacementSensorSettings"]);
         GyroSettings::instance().load(settings["GyroSettings"]);

@@ -176,6 +176,9 @@ States::Type State::enableAllForceActuators(EnableAllForceActuatorsCommand* comm
 States::Type State::enableDisableForceComponent(EnableDisableForceComponentCommand* command) {
     return rejectCommandInvalidState(command, "EnableDisableForceComponent");
 }
+States::Type State::setSlewControllerSettings(SetSlewControllerSettingsCommand* command) {
+    return rejectCommandInvalidState(command, "SetSlewControllerSettings");
+}
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
     std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";

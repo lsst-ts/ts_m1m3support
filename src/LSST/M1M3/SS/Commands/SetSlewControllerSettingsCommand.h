@@ -21,33 +21,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <RaisingState.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <ModelPublisher.h>
-#include <spdlog/spdlog.h>
+#ifndef SETSLEWCONTROLLERSETTINGSCOMMAND_H_
+#define SETSLEWCONTROLLERSETTINGSCOMMAND_H_
+
+#include <Command.h>
+#include <SAL_MTM1M3C.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisingState::RaisingState() : EnabledState("RaisingState") {}
+class SetSlewControllerSettingsCommand : public Command {
+public:
+    SetSlewControllerSettingsCommand(int32_t commandID, MTM1M3_command_setSlewControllerSettingsC* data);
 
-States::Type RaisingState::update(UpdateCommand* command) {
-    ModelPublisher publishIt{};
-    SPDLOG_TRACE("RaisingState: update()");
-    Model::instance().getMirrorRaiseController()->runLoop();
-    runLoop();
-    return Model::instance().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveState
-                                                                                 : States::NoStateTransition);
-}
+    MTM1M3_command_setSlewControllerSettingsC* getData() { return &_data; }
 
-States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
-    SPDLOG_INFO("RaisingState: abortRaiseM1M3()");
-    Model::instance().getMirrorLowerController()->abortRaiseM1M3();
-    return Model::instance().getSafetyController()->checkSafety(States::LoweringState);
-}
+    bool validate() override;
+    void execute() override;
+    void ackInProgress() override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
+
+private:
+    MTM1M3_command_setSlewControllerSettingsC _data;
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif /* SETSLEWCONTROLLERSETTINGSCOMMAND_H_ */

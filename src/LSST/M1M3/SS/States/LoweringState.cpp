@@ -39,7 +39,7 @@ States::Type LoweringState::update(UpdateCommand* command) {
     Model::instance().getMirrorLowerController()->runLoop();
     runLoop();
     return Model::instance().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedState
-                                                                            : States::NoStateTransition);
+                                                                                 : States::NoStateTransition);
 }
 
 } /* namespace SS */

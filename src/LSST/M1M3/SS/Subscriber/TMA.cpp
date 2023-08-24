@@ -55,11 +55,12 @@ void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
         ForceActuatorSettings::instance().useAccelerometers == false) {
         double timestamp = M1M3SSPublisher::instance().getTimestamp();
         if (checkAzimuth) {
-            Model::instance().getSafetyController()->tmaAzimuthTimeout(_last_azimuth_data.timestamp - timestamp);
+            Model::instance().getSafetyController()->tmaAzimuthTimeout(_last_azimuth_data.timestamp -
+                                                                       timestamp);
         }
         if (checkElevation) {
             Model::instance().getSafetyController()->tmaElevationTimeout(_last_elevation_data.timestamp -
-                                                                    timestamp);
+                                                                         timestamp);
         }
     }
 }

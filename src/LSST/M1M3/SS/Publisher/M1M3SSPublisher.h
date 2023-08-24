@@ -203,12 +203,14 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
+    void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
+        _m1m3SAL->logEvent_accelerometerSettings(data, 0);
+    }
     void logPositionControllerSettings(MTM1M3_logevent_positionControllerSettingsC* data) {
         _m1m3SAL->logEvent_positionControllerSettings(data, 0);
     }
-
-    void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
-        _m1m3SAL->logEvent_accelerometerSettings(data, 0);
+    void logSlewControllerSettings(MTM1M3_logevent_slewControllerSettingsC* data) {
+        _m1m3SAL->logEvent_slewControllerSettings(data, 0);
     }
 
     /**
@@ -425,6 +427,7 @@ public:
     void ackCommandenableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenableAllForceActuators(int32_t commandID, int32_t ackCode, std::string description);
     void ackCommandenableDisableForceComponent(int32_t commandID, int32_t ackCode, std::string description);
+    void ackCommandsetSlewControllerSettings(int32_t commandID, int32_t ackCode, std::string description);
 
 private:
     M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;

@@ -148,7 +148,6 @@ ForceActuatorSettings:
   UseInclinometer: True
   UseGyroscope: True
   UseAccelerometers: True
-  UseSlewBalanceForces: False
   MirrorXMoment: -65311
   MirrorYMoment: -20000
   MirrorZMoment: -20000
@@ -434,6 +433,10 @@ SafetyControllerSettings:
     AzimuthTimeout: 0.5
     ElevationTimeout: 0.5
     InclinometerDeviationDeg: 2
+SlewControllerSettings:
+  UseAccelerationForces: True
+  UseBalanceForces: True
+  UseVelocityForces: True
 ILCApplicationSettings:
   ReportServerID: 835
   ReportServerStatus: 270

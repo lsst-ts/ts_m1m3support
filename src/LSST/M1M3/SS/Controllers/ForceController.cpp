@@ -454,6 +454,9 @@ void ForceController::enableDisableForceComponent(int forceComponentEnum, bool e
         case MTM1M3::enableDisableForceComponent_AzimuthForce:
             forceComponent = &_azimuthForceComponent;
             break;
+        case MTM1M3::enableDisableForceComponent_BalanceForce:
+            forceComponent = &_balanceForceComponent;
+            break;
         case MTM1M3::enableDisableForceComponent_OffsetForce:
             forceComponent = &_offsetForceComponent;
             break;

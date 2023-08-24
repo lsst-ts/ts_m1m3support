@@ -38,8 +38,8 @@ States::Type LoweringEngineeringState::update(UpdateCommand* command) {
     SPDLOG_TRACE("LoweringEngineeringState: update()");
     Model::instance().getMirrorLowerController()->runLoop();
     runLoop();
-    return Model::instance().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedEngineeringState
-                                                                            : States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(
+            lowerCompleted() ? States::ParkedEngineeringState : States::NoStateTransition);
 }
 
 } /* namespace SS */

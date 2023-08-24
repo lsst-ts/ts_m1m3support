@@ -57,6 +57,7 @@
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
+#include <SetSlewControllerSettingsCommand.h>
 #include <SetSlewFlagCommand.h>
 #include <StandbyCommand.h>
 #include <StartCommand.h>
@@ -138,6 +139,7 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableAllForceActuators");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableForceActuator");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableDisableForceComponent");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setSlewControllerSettings");
 
     _mtMountSAL->salTelemetrySub((char*)"MTMount_azimuth");
     _mtMountSAL->salTelemetrySub((char*)"MTMount_elevation");
@@ -250,6 +252,7 @@ COMMAND(EnableForceActuator, enableForceActuator)
 COMMAND_NOPARS(EnableAllForceActuators, enableAllForceActuators)
 
 COMMAND(EnableDisableForceComponent, enableDisableForceComponent)
+COMMAND(SetSlewControllerSettings, setSlewControllerSettings)
 
 Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
     int32_t result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
