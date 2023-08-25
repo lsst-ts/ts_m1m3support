@@ -46,6 +46,7 @@ public:
      * Construct new ForceActuatorState
      */
     ForceControllerState(token) {
+        slewFlag = false;
         accelerationForcesApplied = false;
         activeOpticForcesApplied = false;
         azimuthForcesApplied = false;
@@ -70,6 +71,7 @@ public:
         }                           \
     }
 
+    appliedSetter(slewFlag);
     appliedSetter(accelerationForcesApplied);
     appliedSetter(activeOpticForcesApplied);
     appliedSetter(azimuthForcesApplied);

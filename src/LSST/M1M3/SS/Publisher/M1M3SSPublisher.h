@@ -334,7 +334,6 @@ public:
     };
     void newLogLevel(int newLevel);
     void logPIDInfo();
-    void tryLogPIDInfo();
     void logPIDSettings(MTM1M3_logevent_pidSettingsC* data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
     void logPowerStatus();
     void tryLogPowerStatus();
@@ -525,7 +524,6 @@ private:
     MTM1M3_logevent_inclinometerSensorWarningC _previousEventInclinometerSensorWarning;
     MTM1M3_logevent_interlockStatusC _previousEventInterlockStatus;
     MTM1M3_logevent_interlockWarningC _previousEventInterlockWarning;
-    MTM1M3_logevent_pidInfoC _previousEventPIDInfo;
     MTM1M3_logevent_powerStatusC _previousEventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _previousEventPowerSupplyStatus;
     MTM1M3_logevent_powerWarningC _previousEventPowerWarning;

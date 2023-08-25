@@ -173,7 +173,7 @@ public:
     void updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData);
     void zeroAzimuthForces();
 
-    void applyBalanceForces();
+    bool applyBalanceForces();
     bool zeroBalanceForces();
     void updatePID(int id, PIDParameters parameters);
     void resetPID(int id);

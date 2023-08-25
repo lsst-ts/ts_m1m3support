@@ -30,17 +30,19 @@ using namespace LSST::M1M3::SS;
 
 PIDSettings::PIDSettings() {}
 
-void PIDSettings::load(YAML::Node doc) {
+void PIDSettings::load(YAML::Node doc, const char *kind) {
     try {
-        name = doc.Tag();
-        SPDLOG_INFO("Loading {} PIDSettings", name);
+        name = kind;
+        SPDLOG_INFO("Loading {} PIDSettings", kind);
 
-        _parsePID(doc["Fx"], 0);
-        _parsePID(doc["Fy"], 1);
-        _parsePID(doc["Fz"], 2);
-        _parsePID(doc["Mx"], 3);
-        _parsePID(doc["My"], 4);
-        _parsePID(doc["Mz"], 5);
+        auto node = doc[kind];
+
+        _parsePID(node["Fx"], 0);
+        _parsePID(node["Fy"], 1);
+        _parsePID(node["Fz"], 2);
+        _parsePID(node["Mx"], 3);
+        _parsePID(node["My"], 4);
+        _parsePID(node["Mz"], 5);
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading PIDSettings: {}", ex.what()));
     }

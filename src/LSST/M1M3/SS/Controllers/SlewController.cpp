@@ -25,6 +25,7 @@
 #include <spdlog/spdlog.h>
 
 #include <BoosterValveStatus.h>
+#include <ForceControllerState.h>
 #include <Model.h>
 #include <Publisher.h>
 #include <SettingReader.h>
@@ -38,6 +39,7 @@ using namespace LSST::M1M3::SS;
 SlewController::SlewController() { SPDLOG_DEBUG("SlewController: SlewController()"); }
 
 void SlewController::enterSlew() {
+    ForceControllerState::instance().set_slewFlag(true);
     auto &slew_settings = SlewControllerSettings::instance();
     if (slew_settings.triggerBoosterValves) {
         BoosterValveStatus::instance().enterSlew();
@@ -53,6 +55,7 @@ void SlewController::enterSlew() {
         for (int i = 0; i < 6; i++) {
             Model::instance().getForceController()->updatePID(i, pidSettings.getParameters(i));
         }
+        _balanceForcesEnabled = Model::instance().getForceController()->applyBalanceForces();
     } else {
         _balanceForcesEnabled = Model::instance().getForceController()->zeroBalanceForces();
     }
@@ -74,11 +77,13 @@ void SlewController::exitSlew() {
         for (int i = 0; i < 6; i++) {
             Model::instance().getForceController()->updatePID(i, pidSettings.getParameters(i));
         }
-    } else {
-        if (_balanceForcesEnabled) {
-            Model::instance().getForceController()->applyBalanceForces();
-        }
     }
+    if (_balanceForcesEnabled) {
+        Model::instance().getForceController()->applyBalanceForces();
+    } else {
+        Model::instance().getForceController()->zeroBalanceForces();
+    }
+    ForceControllerState::instance().set_slewFlag(false);
 }
 
 void SlewController::reset() { exitSlew(); }

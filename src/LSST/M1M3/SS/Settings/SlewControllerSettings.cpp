@@ -36,6 +36,7 @@ void SlewControllerSettings::load(YAML::Node doc) {
     try {
         SPDLOG_INFO("Loading SlewControllerSettings");
 
+        triggerBoosterValves = doc["TriggerBoosterValves"].as<bool>();
         useAccelerationForces = doc["UseAccelerationForces"].as<bool>();
         useBalanceForces = doc["UseBalanceForces"].as<bool>();
         useVelocityForces = doc["UseVelocityForces"].as<bool>();

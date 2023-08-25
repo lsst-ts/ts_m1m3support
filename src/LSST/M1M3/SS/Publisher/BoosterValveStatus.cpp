@@ -27,27 +27,25 @@
 using namespace LSST::M1M3::SS;
 
 BoosterValveStatus::BoosterValveStatus(token) {
-    slewFlag = false;
     opened = false;
+    slewTriggered = false;
     userTriggered = false;
     followingErrorTriggered = false;
     accelerometerTriggered = false;
 }
 
 void BoosterValveStatus::enterSlew() {
-    if (slewFlag != true) {
+    if (slewTriggered != true) {
         SPDLOG_DEBUG("Triggered slew for booster valves");
-        slewFlag = true;
-        userTriggered = true;
+        slewTriggered = true;
         log();
     }
 }
 
 void BoosterValveStatus::exitSlew() {
-    if (slewFlag != false) {
-        SPDLOG_DEBUG("Exit slew of booster valves");
-        slewFlag = false;
-        userTriggered = false;
+    if (slewTriggered != false) {
+        SPDLOG_DEBUG("Exit slew for booster valves");
+        slewTriggered = false;
         log();
     }
 }
@@ -75,8 +73,8 @@ void BoosterValveStatus::setAccelerometerTriggered(bool newAccelerometerTriggere
 }
 
 void BoosterValveStatus::reset() {
-    slewFlag = false;
     opened = false;
+    slewTriggered = false;
     userTriggered = false;
     followingErrorTriggered = false;
     accelerometerTriggered = false;
@@ -84,7 +82,7 @@ void BoosterValveStatus::reset() {
 }
 
 void BoosterValveStatus::log() {
-    bool open = userTriggered || followingErrorTriggered || accelerometerTriggered;
+    bool open = slewTriggered || userTriggered || followingErrorTriggered || accelerometerTriggered;
     if (open != opened) {
         SPDLOG_INFO("Booster valve {}", open ? "opened" : "closed");
         opened = open;

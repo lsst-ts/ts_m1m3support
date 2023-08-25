@@ -280,37 +280,37 @@ PIDSettings:
   Slewing:
     Fx:
       Timestep: 0.02
-      P: 0.95
+      P: 0.35
       I: 0.1
       D: 0.0
       N: 0.0
     Fy:
       Timestep: 0.02
-      P: 0.95
+      P: 0.35
       I: 0.1
       D: 0.0
       N: 0.0
     Fz:
       Timestep: 0.02
-      P: 0.95
+      P: 0.35
       I: 0.1
       D: 0.0
       N: 0.0
     Mx:
       Timestep: 0.02
-      P: 0.95
+      P: 0.35
       I: 0.1
       D: 0.0
       N: 0.0
     My:
       Timestep: 0.02
-      P: 0.95
-      I: 6.1
+      P: 0.35
+      I: 0.1
       D: 0.0
       N: 0.0
     Mz:
       Timestep: 0.02
-      P: 0.95
+      P: 0.35
       I: 0.1
       D: 0.0
       N: 0.0
@@ -434,6 +434,7 @@ SafetyControllerSettings:
     ElevationTimeout: 0.5
     InclinometerDeviationDeg: 2
 SlewControllerSettings:
+  TriggerBoosterValves: True
   UseAccelerationForces: True
   UseBalanceForces: True
   UseVelocityForces: True
