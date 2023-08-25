@@ -309,11 +309,13 @@ void ForceController::zeroAzimuthForces() {
     }
 }
 
-void ForceController::applyBalanceForces() {
+bool ForceController::applyBalanceForces() {
     SPDLOG_INFO("ForceController: applyBalanceForces()");
     if (!_balanceForceComponent.isEnabled()) {
         _balanceForceComponent.enable();
+        return false;
     }
+    return true;
 }
 
 bool ForceController::zeroBalanceForces() {
@@ -326,7 +328,8 @@ bool ForceController::zeroBalanceForces() {
 }
 
 void ForceController::updatePID(int id, PIDParameters parameters) {
-    SPDLOG_INFO("ForceController: updatePID()");
+    SPDLOG_INFO("ForceController: updatePID({} {} {} {} {})", id, parameters.Timestep, parameters.P,
+                parameters.I, parameters.D);
     _balanceForceComponent.updatePID(id, parameters);
 }
 

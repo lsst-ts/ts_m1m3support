@@ -120,8 +120,8 @@ void SettingReader::load() {
         ILCApplicationSettings::instance().load(settings["ILCApplicationSettings"]);
         ExpansionFPGAApplicationSettings::instance().load(settings["ExpansionFPGAApplicationSettings"]);
 
-        _slewPID.load(settings["PIDSettings"]["Slewing"]);
-        _trackingPID.load(settings["PIDSettings"]["Tracking"]);
+        _slewPID.load(settings["PIDSettings"], "Slewing");
+        _trackingPID.load(settings["PIDSettings"], "Tracking");
 
         InclinometerSettings::instance().load(settings["InclinometerSettings"]);
     } catch (YAML::Exception& ex) {

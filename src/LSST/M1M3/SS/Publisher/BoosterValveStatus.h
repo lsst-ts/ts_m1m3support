@@ -57,9 +57,6 @@ public:
      * Sends updates through SAL/DDS.
      */
     void log();
-
-    // TODO move to SAL/XML
-    bool opened;
 };
 
 }  // namespace SS

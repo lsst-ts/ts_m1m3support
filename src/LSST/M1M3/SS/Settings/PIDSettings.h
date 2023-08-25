@@ -36,7 +36,7 @@ namespace SS {
 struct PIDSettings : public MTM1M3_logevent_pidSettingsC {
     PIDSettings();
 
-    void load(YAML::Node doc);
+    void load(YAML::Node doc, const char* kind);
 
     void log() { M1M3SSPublisher::instance().logPIDSettings(this); }
 

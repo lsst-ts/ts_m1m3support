@@ -34,13 +34,7 @@ PID::PID(int id, PIDParameters parameters) {
 
     _pidInfo = M1M3SSPublisher::instance().getEventPIDInfo();
     _pidData = M1M3SSPublisher::instance().getPIDData();
-    _pidInfo->timestep[_id] = parameters.Timestep;
-    _pidInfo->p[_id] = parameters.P;
-    _pidInfo->i[_id] = parameters.I;
-    _pidInfo->d[_id] = parameters.D;
-    _pidInfo->n[_id] = parameters.N;
-    _calculateIntermediateValues();
-    _publishInfo();
+    updateParameters(parameters);
 }
 
 void PID::updateParameters(PIDParameters parameters) {
