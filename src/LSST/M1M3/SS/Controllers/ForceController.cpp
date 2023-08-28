@@ -334,7 +334,7 @@ void ForceController::updatePID(int id, PIDParameters parameters) {
 }
 
 void ForceController::resetPID(int id) {
-    SPDLOG_INFO("ForceController: resetPID()");
+    SPDLOG_INFO("ForceController: resetPID({})", id);
     _balanceForceComponent.resetPID(id);
 }
 

@@ -126,7 +126,7 @@ void BalanceForceComponent::resetPID(int id) {
 }
 
 void BalanceForceComponent::resetPIDs() {
-    SPDLOG_DEBUG("BalanceForceComponent: resetPIDs()");
+    SPDLOG_INFO("BalanceForceComponent: resetPIDs()");
     _fx.restoreInitialParameters();
     _fy.restoreInitialParameters();
     _fz.restoreInitialParameters();
@@ -137,10 +137,6 @@ void BalanceForceComponent::resetPIDs() {
 
 void BalanceForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("BalanceForceComponent: postEnableDisableActions()");
-
-    if (isEnabled()) {
-        resetPIDs();
-    }
 
     ForceControllerState::instance().set_balanceForcesApplied(isEnabled());
 }
@@ -224,17 +220,17 @@ void BalanceForceComponent::postUpdateActions() {
 
 PID* BalanceForceComponent::_idToPID(int id) {
     switch (id) {
-        case 1:
+        case 0:
             return &_fx;
-        case 2:
+        case 1:
             return &_fy;
-        case 3:
+        case 2:
             return &_fz;
-        case 4:
+        case 3:
             return &_mx;
-        case 5:
+        case 4:
             return &_my;
-        case 6:
+        case 5:
             return &_mz;
         default:
             return 0;

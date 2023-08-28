@@ -138,7 +138,7 @@ States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand* command) {
 
 States::Type ActiveEngineeringState::resetPID(ResetPIDCommand* command) {
     SPDLOG_INFO("ActiveEngineeringState: resetPID()");
-    Model::instance().getForceController()->resetPID(command->getData()->pid);
+    Model::instance().getForceController()->resetPID(command->getData()->pid - 1);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
