@@ -32,8 +32,8 @@ PIDSettings::PIDSettings() {}
 
 void PIDSettings::load(YAML::Node doc, const char *kind) {
     try {
-        name = kind;
-        SPDLOG_INFO("Loading {} PIDSettings", kind);
+        settingName = kind;
+        SPDLOG_INFO("Loading {} PIDSettings", settingName);
 
         auto node = doc[kind];
 
