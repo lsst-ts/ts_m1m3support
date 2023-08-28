@@ -176,7 +176,17 @@ public:
     bool applyBalanceForces();
     bool zeroBalanceForces();
     void updatePID(int id, PIDParameters parameters);
+
+    /**
+     * Reset given PID settings to system default (tracking).
+     *
+     * @param id PID id (0 based, 0-5)
+     */
     void resetPID(int id);
+
+    /**
+     * Resets all PIDs to initial (tracking) settings.
+     */
     void resetPIDs();
 
     void applyElevationForces();
