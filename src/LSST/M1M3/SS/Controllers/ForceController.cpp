@@ -39,7 +39,6 @@
 #include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
-#include <PIDSettings.h>
 #include <Range.h>
 #include <TMA.h>
 
@@ -66,8 +65,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
           _finalForceComponent(forceActuatorApplicationSettings) {
     SPDLOG_DEBUG("ForceController: ForceController()");
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
-    _safetyController = Model::get().getSafetyController();
-    _pidSettings = &PIDSettings::instance();
+    _safetyController = Model::instance().getSafetyController();
 
     _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
     _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
@@ -311,27 +309,32 @@ void ForceController::zeroAzimuthForces() {
     }
 }
 
-void ForceController::applyBalanceForces() {
+bool ForceController::applyBalanceForces() {
     SPDLOG_INFO("ForceController: applyBalanceForces()");
     if (!_balanceForceComponent.isEnabled()) {
         _balanceForceComponent.enable();
+        return false;
     }
+    return true;
 }
 
-void ForceController::zeroBalanceForces() {
+bool ForceController::zeroBalanceForces() {
     SPDLOG_INFO("ForceController: zeroBalanceForces()");
     if (_balanceForceComponent.isEnabled()) {
         _balanceForceComponent.disable();
+        return true;
     }
+    return false;
 }
 
 void ForceController::updatePID(int id, PIDParameters parameters) {
-    SPDLOG_INFO("ForceController: updatePID()");
+    SPDLOG_INFO("ForceController: updatePID({} {} {} {} {})", id, parameters.Timestep, parameters.P,
+                parameters.I, parameters.D);
     _balanceForceComponent.updatePID(id, parameters);
 }
 
 void ForceController::resetPID(int id) {
-    SPDLOG_INFO("ForceController: resetPID()");
+    SPDLOG_INFO("ForceController: resetPID({})", id);
     _balanceForceComponent.resetPID(id);
 }
 
@@ -453,6 +456,9 @@ void ForceController::enableDisableForceComponent(int forceComponentEnum, bool e
             break;
         case MTM1M3::enableDisableForceComponent_AzimuthForce:
             forceComponent = &_azimuthForceComponent;
+            break;
+        case MTM1M3::enableDisableForceComponent_BalanceForce:
+            forceComponent = &_balanceForceComponent;
             break;
         case MTM1M3::enableDisableForceComponent_OffsetForce:
             forceComponent = &_offsetForceComponent;
@@ -628,7 +634,7 @@ bool ForceController::_checkNearNeighbors() {
     string failed;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
-        if (Model::get().getILC()->isDisabled(
+        if (Model::instance().getILC()->isDisabled(
                     SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
                             zIndex))) {
             continue;
@@ -702,7 +708,7 @@ bool ForceController::_checkFarNeighbors() {
     _forceSetpointWarning->anyFarNeighborWarning = false;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
-        if (Model::get().getILC()->isDisabled(
+        if (Model::instance().getILC()->isDisabled(
                     SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
                             zIndex))) {
             continue;

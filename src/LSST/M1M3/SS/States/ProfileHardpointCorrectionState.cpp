@@ -37,20 +37,20 @@ ProfileHardpointCorrectionState::ProfileHardpointCorrectionState()
 
 States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command) {
     SPDLOG_TRACE("ProfileHardpointCorrectionState: update()");
-    MirrorForceProfileRecord force = Model::get().getProfileController()->getMirrorForceProfileData();
-    Model::get().getForceController()->applyOffsetForcesByMirrorForces(
+    MirrorForceProfileRecord force = Model::instance().getProfileController()->getMirrorForceProfileData();
+    Model::instance().getForceController()->applyOffsetForcesByMirrorForces(
             force.XForce, force.YForce, force.ZForce, force.XMoment, force.YMoment, force.ZMoment);
     sendTelemetry();
-    if (Model::get().getProfileController()->incMirrorForceProfile()) {
-        return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
+    if (Model::instance().getProfileController()->incMirrorForceProfile()) {
+        return Model::instance().getSafetyController()->checkSafety(States::ActiveEngineeringState);
     }
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ProfileHardpointCorrectionState::abortProfile(AbortProfileCommand* command) {
     SPDLOG_INFO("ProfileHardpointCorrectionState: abortProfile()");
-    Model::get().getForceController()->zeroOffsetForces();
-    return Model::get().getSafetyController()->checkSafety(States::ActiveEngineeringState);
+    Model::instance().getForceController()->zeroOffsetForces();
+    return Model::instance().getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }
 
 } /* namespace SS */

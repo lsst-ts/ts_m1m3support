@@ -52,49 +52,49 @@ States::Type ParkedEngineeringState::update(UpdateCommand* command) {
     sendTelemetry();
 
     // check & run tests
-    Model::get().getBumpTestController()->runLoop();
-    Model::get().getHardpointTestController()->runLoop();
+    Model::instance().getBumpTestController()->runLoop();
+    Model::instance().getHardpointTestController()->runLoop();
 
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::raiseM1M3(RaiseM1M3Command* command) {
     SPDLOG_INFO("ParkedEngineeringState: raiseM1M3()");
 
-    Model::get().getBumpTestController()->stopAll(true);
-    Model::get().getHardpointTestController()->killHardpointTest(-1);
+    Model::instance().getBumpTestController()->stopAll(true);
+    Model::instance().getHardpointTestController()->killHardpointTest(-1);
     BoosterValveStatus::instance().setUserTriggered(false);
 
-    Model::get().getMirrorRaiseController()->start(command->getData()->bypassReferencePosition);
-    return Model::get().getSafetyController()->checkSafety(States::RaisingEngineeringState);
+    Model::instance().getMirrorRaiseController()->start(command->getData()->bypassReferencePosition);
+    return Model::instance().getSafetyController()->checkSafety(States::RaisingEngineeringState);
 }
 
 States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: exitEngineering()");
 
-    Model::get().getBumpTestController()->stopAll(true);
-    Model::get().getHardpointTestController()->killHardpointTest(-1);
+    Model::instance().getBumpTestController()->stopAll(true);
+    Model::instance().getHardpointTestController()->killHardpointTest(-1);
 
-    Model::get().getDigitalInputOutput()->turnAirOn();
-    Model::get().getPositionController()->stopMotion();
-    Model::get().getForceController()->zeroOffsetForces();
-    Model::get().getForceController()->processAppliedForces();
-    Model::get().getDigitalInputOutput()->turnCellLightsOff();
+    Model::instance().getDigitalInputOutput()->turnAirOn();
+    Model::instance().getPositionController()->stopMotion();
+    Model::instance().getForceController()->zeroOffsetForces();
+    Model::instance().getForceController()->processAppliedForces();
+    Model::instance().getDigitalInputOutput()->turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
-    Model::get().getPowerController()->setAllPowerNetworks(true);
+    Model::instance().getPowerController()->setAllPowerNetworks(true);
     BoosterValveStatus::instance().setUserTriggered(false);
-    return Model::get().getSafetyController()->checkSafety(States::ParkedState);
+    return Model::instance().getSafetyController()->checkSafety(States::ParkedState);
 }
 
 States::Type ParkedEngineeringState::disable(DisableCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: disable()");
 
-    Model::get().getBumpTestController()->stopAll(true);
-    Model::get().getHardpointTestController()->killHardpointTest(-1);
+    Model::instance().getBumpTestController()->stopAll(true);
+    Model::instance().getHardpointTestController()->killHardpointTest(-1);
 
     // Stop any existing motion (chase and move commands)
-    Model::get().getPositionController()->stopMotion();
-    Model::get().getForceController()->reset();
+    Model::instance().getPositionController()->stopMotion();
+    Model::instance().getForceController()->reset();
 
     return EnabledState::disableMirror();
 }
@@ -102,26 +102,28 @@ States::Type ParkedEngineeringState::disable(DisableCommand* command) {
 States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: forceActuatorBumpTest({}, {}, {})", command->getData()->actuatorId,
                 command->getData()->testPrimary, command->getData()->testSecondary);
-    Model::get().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
-                                                              command->getData()->testPrimary,
-                                                              command->getData()->testSecondary);
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::instance().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
+                                                                   command->getData()->testPrimary,
+                                                                   command->getData()->testSecondary);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: killForceActuatorBumpTest()");
-    Model::get().getBumpTestController()->stopAll(false);
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::instance().getBumpTestController()->stopAll(false);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::testHardpoint(TestHardpointCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: testHardpoint({})", command->getData()->hardpointActuator);
-    Model::get().getHardpointTestController()->startHardpointTest(command->getData()->hardpointActuator - 1);
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::instance().getHardpointTestController()->startHardpointTest(command->getData()->hardpointActuator -
+                                                                       1);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ParkedEngineeringState::killHardpointTest(KillHardpointTestCommand* command) {
     SPDLOG_INFO("ParkedEngineeringState: KillHardpointTest({})", command->getData()->hardpointActuator);
-    Model::get().getHardpointTestController()->killHardpointTest(command->getData()->hardpointActuator - 1);
-    return Model::get().getSafetyController()->checkSafety(States::NoStateTransition);
+    Model::instance().getHardpointTestController()->killHardpointTest(command->getData()->hardpointActuator -
+                                                                      1);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }

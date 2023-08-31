@@ -46,7 +46,7 @@ bool DisableForceActuatorCommand::validate() {
     }
 
     // neighbor check
-    uint32_t farID = Model::get().getILC()->hasDisabledFarNeighbor(actuatorIndex);
+    uint32_t farID = Model::instance().getILC()->hasDisabledFarNeighbor(actuatorIndex);
     if (farID > 0) {
         M1M3SSPublisher::instance().commandFailed(
                 "DisableForceActuatorCommand", "Actuator ID {} is far neighbor of already disabled FA ID {}",

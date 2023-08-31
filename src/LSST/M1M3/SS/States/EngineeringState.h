@@ -52,9 +52,10 @@ public:
     virtual States::Type turnLightsOff(TurnLightsOffCommand* command) override;
     virtual States::Type turnPowerOn(TurnPowerOnCommand* command) override;
     virtual States::Type turnPowerOff(TurnPowerOffCommand* command) override;
-    virtual States::Type disableForceActuator(DisableForceActuatorCommand* command);
-    virtual States::Type enableForceActuator(EnableForceActuatorCommand* command);
-    virtual States::Type enableAllForceActuators(EnableAllForceActuatorsCommand* command);
+    virtual States::Type disableForceActuator(DisableForceActuatorCommand* command) override;
+    virtual States::Type enableForceActuator(EnableForceActuatorCommand* command) override;
+    virtual States::Type enableAllForceActuators(EnableAllForceActuatorsCommand* command) override;
+    virtual States::Type setSlewControllerSettings(SetSlewControllerSettingsCommand* command) override;
 };
 
 } /* namespace SS */

@@ -61,6 +61,7 @@
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
+#include <SetSlewControllerSettingsCommand.h>
 #include <SetSlewFlagCommand.h>
 #include <StandbyCommand.h>
 #include <StartCommand.h>
@@ -160,6 +161,7 @@ public:
     virtual States::Type enableForceActuator(EnableForceActuatorCommand* command);
     virtual States::Type enableAllForceActuators(EnableAllForceActuatorsCommand* command);
     virtual States::Type enableDisableForceComponent(EnableDisableForceComponentCommand* command);
+    virtual States::Type setSlewControllerSettings(SetSlewControllerSettingsCommand* command);
 
 protected:
     std::string name;

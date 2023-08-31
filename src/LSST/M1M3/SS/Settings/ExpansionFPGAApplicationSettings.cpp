@@ -41,7 +41,7 @@ void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
 
         IExpansionFPGA::get().setResource(Enabled, Resource);
         if (Enabled) {
-            auto digitalInputOutput = Model::get().getDigitalInputOutput();
+            auto digitalInputOutput = Model::instance().getDigitalInputOutput();
 
             digitalInputOutput->tryToggleHeartbeat();
             IExpansionFPGA::get().close();

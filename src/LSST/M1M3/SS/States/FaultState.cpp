@@ -41,18 +41,18 @@ FaultState::FaultState(std::string name) : State(name) {}
 States::Type FaultState::update(UpdateCommand* command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("FaultState: update()");
-    ILC* ilc = Model::get().getILC();
+    ILC* ilc = Model::instance().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
     std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
-    Model::get().getAccelerometer()->processData();
-    Model::get().getDigitalInputOutput()->processData();
-    Model::get().getDisplacement()->processData();
-    Model::get().getGyro()->processData();
-    Model::get().getInclinometer()->processData();
-    Model::get().getPowerController()->processData();
+    Model::instance().getAccelerometer()->processData();
+    Model::instance().getDigitalInputOutput()->processData();
+    Model::instance().getDisplacement()->processData();
+    Model::instance().getGyro()->processData();
+    Model::instance().getInclinometer()->processData();
+    Model::instance().getPowerController()->processData();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     ilc->calculateHPPostion();
@@ -70,18 +70,18 @@ States::Type FaultState::update(UpdateCommand* command) {
 
 States::Type FaultState::standby(StandbyCommand* command) {
     SPDLOG_TRACE("FaultState: standby()");
-    Model::get().getILC()->writeSetModeStandbyBuffer();
-    Model::get().getILC()->triggerModbus();
-    Model::get().getILC()->waitForAllSubnets(5000);
-    Model::get().getILC()->readAll();
-    Model::get().getILC()->verifyResponses();
-    Model::get().getPowerController()->setAllPowerNetworks(false);
+    Model::instance().getILC()->writeSetModeStandbyBuffer();
+    Model::instance().getILC()->triggerModbus();
+    Model::instance().getILC()->waitForAllSubnets(5000);
+    Model::instance().getILC()->readAll();
+    Model::instance().getILC()->verifyResponses();
+    Model::instance().getPowerController()->setAllPowerNetworks(false);
     RaisingLoweringInfo::instance().zeroSupportPercentage();
-    Model::get().getSafetyController()->clearErrorCode();
-    Model::get().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
+    Model::instance().getSafetyController()->clearErrorCode();
+    Model::instance().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
 
-    Model::get().getSlewController()->reset();
-    Model::get().getForceController()->reset();
+    Model::instance().getSlewController()->reset();
+    Model::instance().getForceController()->reset();
 
     return States::StandbyState;
 }

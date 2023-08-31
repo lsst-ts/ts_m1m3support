@@ -4,6 +4,13 @@
 Version History
 ===============
 
+v2.14.0
+-------
+
+* SlewController settings
+* Command to chaneg SlewController settings on-fly
+* Reorganized booster valve management
+
 v2.13.0
 -------
 

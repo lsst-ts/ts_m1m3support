@@ -32,6 +32,7 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
+#include <PIDSettings.h>
 #include <SafetyControllerSettings.h>
 
 namespace LSST {
@@ -89,6 +90,8 @@ public:
 
     SafetyControllerSettings* getSafetyControllerSettings() { return &_safetyControllerSettings; }
 
+    PIDSettings& getPIDSettings(bool slew);
+
 private:
     SettingReader& operator=(const SettingReader&) = delete;
     SettingReader(const SettingReader&) = delete;
@@ -102,6 +105,9 @@ private:
 
     std::string _rootPath;
     std::string _currentSet;
+
+    PIDSettings _slewPID;
+    PIDSettings _trackingPID;
 };
 
 } /* namespace SS */

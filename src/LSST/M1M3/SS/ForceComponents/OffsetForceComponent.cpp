@@ -40,7 +40,7 @@ namespace SS {
 
 OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
         : ForceComponent("Offset", ForceActuatorSettings::instance().OffsetComponentSettings) {
-    _safetyController = Model::get().getSafetyController();
+    _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::instance().getEventAppliedOffsetForces();

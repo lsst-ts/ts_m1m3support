@@ -44,7 +44,6 @@
 #include <LimitTrigger.h>
 #include <OffsetForceComponent.h>
 #include <PID.h>
-#include <PIDSettings.h>
 #include <SafetyController.h>
 #include <StaticForceComponent.h>
 #include <ThermalForceComponent.h>
@@ -174,10 +173,20 @@ public:
     void updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData);
     void zeroAzimuthForces();
 
-    void applyBalanceForces();
-    void zeroBalanceForces();
+    bool applyBalanceForces();
+    bool zeroBalanceForces();
     void updatePID(int id, PIDParameters parameters);
+
+    /**
+     * Reset given PID settings to system default (tracking).
+     *
+     * @param id PID id (0 based, 0-5)
+     */
     void resetPID(int id);
+
+    /**
+     * Resets all PIDs to initial (tracking) settings.
+     */
     void resetPIDs();
 
     void applyElevationForces();
@@ -219,7 +228,6 @@ private:
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
     ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    PIDSettings* _pidSettings;
     SafetyController* _safetyController;
 
     AccelerationForceComponent _accelerationForceComponent;

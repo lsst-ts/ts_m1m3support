@@ -330,15 +330,23 @@ void Context::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
 }
 
 void Context::enableDisableForceComponent(EnableDisableForceComponentCommand* command) {
-    SPDLOG_DEBUG("Context: enableDisableForceComponent()");
+    SPDLOG_DEBUG("Context: enableDisableForceComponent({} {})", command->getData()->forceComponent,
+                 command->getData()->enable);
     State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enableDisableForceComponent(command));
+}
+
+void Context::setSlewControllerSettings(SetSlewControllerSettingsCommand* command) {
+    SPDLOG_DEBUG("Context: slewControllerSettings({} {})", command->getData()->slewSettings,
+                 command->getData()->enableSlewManagement);
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->setSlewControllerSettings(command));
 }
 
 void Context::_updateCurrentStateIfRequired(States::Type potentialNewState) {
     if (potentialNewState != States::NoStateTransition) {
         _currentState = potentialNewState;
-        Model::get().publishStateChange(potentialNewState);
+        Model::instance().publishStateChange(potentialNewState);
     }
 }
 

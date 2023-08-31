@@ -43,10 +43,10 @@ States::Type LoweringFaultState::update(UpdateCommand* command) {
 
 void LoweringFaultState::ensureFaulted() {
     SPDLOG_TRACE("LoweringFaultState: ensureFaulted()");
-    Model::get().getPowerController()->setAllAuxPowerNetworks(false);
+    Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
     // TODO: Uncomment when its not so hot out
-    // Model::get().getDigitalInputOutput()->turnAirOff();
-    Model::get().getForceController()->reset();
+    // Model::instance().getDigitalInputOutput()->turnAirOff();
+    Model::instance().getForceController()->reset();
 }
 
 } /* namespace SS */

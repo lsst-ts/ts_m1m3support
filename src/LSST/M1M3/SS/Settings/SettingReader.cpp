@@ -38,9 +38,9 @@
 #include <ILCApplicationSettings.h>
 #include <InclinometerSettings.h>
 #include <HardpointActuatorSettings.h>
-#include <PIDSettings.h>
 #include <PositionControllerSettings.h>
 #include <SettingReader.h>
+#include <SlewControllerSettings.h>
 
 extern const char* CONFIG_SCHEMA_VERSION;
 
@@ -112,16 +112,28 @@ void SettingReader::load() {
         HardpointActuatorSettings::instance().load(settings["HardpointActuatorSettings"]);
         _safetyControllerSettings.load(settings["SafetyControllerSettings"]);
         PositionControllerSettings::instance().load(settings["PositionControllerSettings"]);
+        SlewControllerSettings::instance().load(settings["SlewControllerSettings"]);
+
         AccelerometerSettings::instance().load(settings["AccelerometerSettings"]);
         DisplacementSensorSettings::instance().load(settings["DisplacementSensorSettings"]);
         GyroSettings::instance().load(settings["GyroSettings"]);
         ILCApplicationSettings::instance().load(settings["ILCApplicationSettings"]);
         ExpansionFPGAApplicationSettings::instance().load(settings["ExpansionFPGAApplicationSettings"]);
-        PIDSettings::instance().load(settings["PIDSettings"]);
+
+        _slewPID.load(settings["PIDSettings"], "Slewing");
+        _trackingPID.load(settings["PIDSettings"], "Tracking");
+
         InclinometerSettings::instance().load(settings["InclinometerSettings"]);
     } catch (YAML::Exception& ex) {
         throw runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
     }
+}
+
+PIDSettings& SettingReader::getPIDSettings(bool slew) {
+    if (slew) {
+        return _slewPID;
+    }
+    return _trackingPID;
 }
 
 std::string SettingReader::_getSetPath(std::string file) {
