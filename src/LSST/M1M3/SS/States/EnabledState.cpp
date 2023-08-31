@@ -30,9 +30,11 @@
 
 #include <Accelerometer.h>
 #include <BoosterValveController.h>
+#include <DigitalInputOutput.h>
 #include <EnabledState.h>
 #include <ForceActuatorData.h>
 #include <HardpointActuatorWarning.h>
+#include <Heartbeat.h>
 #include <ILC.h>
 #include <Model.h>
 #include <TMA.h>
@@ -66,11 +68,11 @@ void EnabledState::runLoop() {
     Model::instance().getForceController()->processAppliedForces();
     ilc->writeControlListBuffer();
     ilc->triggerModbus();
-    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
+    Heartbeat::instance().tryToggle();
     std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     Model::instance().getAccelerometer()->processData();
-    Model::instance().getDigitalInputOutput()->processData();
+    DigitalInputOutput::instance().processData();
     Model::instance().getDisplacement()->processData();
     Model::instance().getGyro()->processData();
     Model::instance().getInclinometer()->processData();
@@ -124,7 +126,7 @@ States::Type EnabledState::disableMirror() {
     Model::instance().getILC()->readAll();
     Model::instance().getILC()->verifyResponses();
     Model::instance().getForceController()->reset();
-    Model::instance().getDigitalInputOutput()->turnAirOff();
+    DigitalInputOutput::instance().turnAirOff();
     Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
     return Model::instance().getSafetyController()->checkSafety(States::DisabledState);
 }

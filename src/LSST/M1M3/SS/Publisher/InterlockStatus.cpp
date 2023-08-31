@@ -21,31 +21,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringFaultState.h>
-#include <Model.h>
-#include <PowerController.h>
-#include <ForceController.h>
-#include <spdlog/spdlog.h>
+#include <InterlockStatus.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
-
-States::Type LoweringFaultState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("LoweringFaultState: update()");
-    ensureFaulted();
-    FaultState::update(command);
-    return States::FaultState;
+InterlockStatus::InterlockStatus(token) {
+    timestamp = NAN;
+    heartbeatCommandedState = false;
+    heartbeatOutputState = false;
 }
-
-void LoweringFaultState::ensureFaulted() {
-    SPDLOG_TRACE("LoweringFaultState: ensureFaulted()");
-    Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
-    Model::instance().getForceController()->reset();
-}
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

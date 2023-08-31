@@ -75,11 +75,11 @@ States::Type ParkedEngineeringState::exitEngineering(ExitEngineeringCommand* com
     Model::instance().getBumpTestController()->stopAll(true);
     Model::instance().getHardpointTestController()->killHardpointTest(-1);
 
-    Model::instance().getDigitalInputOutput()->turnAirOn();
+    DigitalInputOutput::instance().turnAirOn();
     Model::instance().getPositionController()->stopMotion();
     Model::instance().getForceController()->zeroOffsetForces();
     Model::instance().getForceController()->processAppliedForces();
-    Model::instance().getDigitalInputOutput()->turnCellLightsOff();
+    DigitalInputOutput::instance().turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     Model::instance().getPowerController()->setAllPowerNetworks(true);
     BoosterValveStatus::instance().setUserTriggered(false);

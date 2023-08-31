@@ -26,9 +26,10 @@
 #include <DisabledState.h>
 #include <Displacement.h>
 #include <ForceActuatorData.h>
+#include <HardpointActuatorWarning.h>
+#include <Heartbeat.h>
 #include <ILC.h>
 #include <Inclinometer.h>
-#include <HardpointActuatorWarning.h>
 #include <Model.h>
 #include <SafetyController.h>
 #include <PowerController.h>
@@ -53,11 +54,11 @@ States::Type DisabledState::update(UpdateCommand* command) {
     ILC* ilc = Model::instance().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
-    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
+    Heartbeat::instance().tryToggle();
     std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     Model::instance().getAccelerometer()->processData();
-    Model::instance().getDigitalInputOutput()->processData();
+    DigitalInputOutput::instance().processData();
     Model::instance().getDisplacement()->processData();
     Model::instance().getGyro()->processData();
     Model::instance().getInclinometer()->processData();
@@ -85,7 +86,7 @@ States::Type DisabledState::enable(EnableCommand* command) {
     Model::instance().getILC()->waitForAllSubnets(5000);
     Model::instance().getILC()->readAll();
     Model::instance().getILC()->verifyResponses();
-    Model::instance().getDigitalInputOutput()->turnAirOn();
+    DigitalInputOutput::instance().turnAirOn();
     Model::instance().getPowerController()->setAllAuxPowerNetworks(true);
     return Model::instance().getSafetyController()->checkSafety(States::ParkedState);
 }

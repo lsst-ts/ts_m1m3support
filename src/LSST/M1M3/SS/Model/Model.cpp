@@ -140,7 +140,7 @@ void Model::loadSettings(std::string settingsToApply) {
     _forceController = new ForceController(forceActuatorApplicationSettings);
 
     SPDLOG_INFO("Model: Updating digital input output");
-    _digitalInputOutput.setSafetyController(_safetyController);
+    DigitalInputOutput::instance().setSafetyController(_safetyController);
 
     delete _accelerometer;
     SPDLOG_INFO("Model: Creating accelerometer");

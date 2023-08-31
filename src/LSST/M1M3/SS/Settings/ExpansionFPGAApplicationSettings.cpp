@@ -25,8 +25,8 @@
 #include <yaml-cpp/yaml.h>
 
 #include <ExpansionFPGAApplicationSettings.h>
+#include <Heartbeat.h>
 #include <IExpansionFPGA.h>
-#include <Model.h>
 
 using namespace LSST::M1M3::SS;
 
@@ -41,11 +41,11 @@ void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
 
         IExpansionFPGA::get().setResource(Enabled, Resource);
         if (Enabled) {
-            auto digitalInputOutput = Model::instance().getDigitalInputOutput();
+            auto& heartbeat = Heartbeat::instance();
 
-            digitalInputOutput->tryToggleHeartbeat();
+            heartbeat.tryToggle();
             IExpansionFPGA::get().close();
-            digitalInputOutput->tryToggleHeartbeat();
+            heartbeat.tryToggle();
 
             SPDLOG_INFO("Opening expansion FPGA: {}", Resource);
             IExpansionFPGA::get().open();
@@ -54,14 +54,14 @@ void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
             // finish initialization
 
             for (int i = 0; i < 50; i++) {
-                digitalInputOutput->tryToggleHeartbeat();
+                heartbeat.tryToggle();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
 
-            digitalInputOutput->tryToggleHeartbeat();
+            heartbeat.tryToggle();
         }
 
-    } catch (YAML::Exception &ex) {
+    } catch (YAML::Exception& ex) {
         throw std::runtime_error(fmt::format("YAML Loading ExpansionFPGAApplicationSettings: {}", ex.what()));
     }
 }
