@@ -51,11 +51,11 @@ void ExpansionFPGA::initialize() {
     if (_disabled) {
         return;
     }
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
 
     NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
 
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
 }
 
 void ExpansionFPGA::open() {
@@ -66,19 +66,19 @@ void ExpansionFPGA::open() {
     NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(), 0,
            &(_session));
 
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
 
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
 
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
 
-    Model::get().getDigitalInputOutput()->tryToggleHeartbeat();
+    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
 }

@@ -124,6 +124,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_raisingLoweringInfo");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_slewControllerSettings");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
     _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
@@ -1012,29 +1013,7 @@ void M1M3SSPublisher::newLogLevel(int newLevel) {
     _m1m3SAL->logEvent_logLevel(&logLevel, 0);
 }
 
-void M1M3SSPublisher::logPIDInfo() {
-    _m1m3SAL->logEvent_pidInfo(&_eventPIDInfo, 0);
-    _previousEventPIDInfo = _eventPIDInfo;
-}
-
-void M1M3SSPublisher::tryLogPIDInfo() {
-    bool changeDetected = false;
-    for (int i = 0; i < 6 && !changeDetected; ++i) {
-        changeDetected = changeDetected || _eventPIDInfo.timestep[i] != _previousEventPIDInfo.timestep[i] ||
-                         _eventPIDInfo.p[i] != _previousEventPIDInfo.p[i] ||
-                         _eventPIDInfo.i[i] != _previousEventPIDInfo.i[i] ||
-                         _eventPIDInfo.d[i] != _previousEventPIDInfo.d[i] ||
-                         _eventPIDInfo.n[i] != _previousEventPIDInfo.n[i] ||
-                         _eventPIDInfo.calculatedA[i] != _previousEventPIDInfo.calculatedA[i] ||
-                         _eventPIDInfo.calculatedB[i] != _previousEventPIDInfo.calculatedB[i] ||
-                         _eventPIDInfo.calculatedC[i] != _previousEventPIDInfo.calculatedC[i] ||
-                         _eventPIDInfo.calculatedD[i] != _previousEventPIDInfo.calculatedD[i] ||
-                         _eventPIDInfo.calculatedE[i] != _previousEventPIDInfo.calculatedE[i];
-    }
-    if (changeDetected) {
-        logPIDInfo();
-    }
-}
+void M1M3SSPublisher::logPIDInfo() { _m1m3SAL->logEvent_pidInfo(&_eventPIDInfo, 0); }
 
 void M1M3SSPublisher::logPowerStatus() {
     _m1m3SAL->logEvent_powerStatus(&_eventPowerStatus, 0);
@@ -1402,6 +1381,7 @@ ACK_COMMAND(disableForceActuator)
 ACK_COMMAND(enableForceActuator)
 ACK_COMMAND(enableAllForceActuators)
 ACK_COMMAND(enableDisableForceComponent)
+ACK_COMMAND(setSlewControllerSettings)
 
 } /* namespace SS */
 } /* namespace M1M3 */

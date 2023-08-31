@@ -58,6 +58,7 @@
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
+#include <SetSlewControllerSettingsCommand.h>
 #include <SetSlewFlagCommand.h>
 #include <StandbyCommand.h>
 #include <StartCommand.h>
@@ -155,6 +156,7 @@ public:
     void enableForceActuator(EnableForceActuatorCommand* command);
     void enableAllForceActuators(EnableAllForceActuatorsCommand* command);
     void enableDisableForceComponent(EnableDisableForceComponentCommand* command);
+    void setSlewControllerSettings(SetSlewControllerSettingsCommand* command);
 
 private:
     Context& operator=(const Context&) = delete;

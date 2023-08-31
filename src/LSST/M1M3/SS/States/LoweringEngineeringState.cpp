@@ -36,10 +36,10 @@ LoweringEngineeringState::LoweringEngineeringState() : EnabledState("LoweringEng
 States::Type LoweringEngineeringState::update(UpdateCommand* command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("LoweringEngineeringState: update()");
-    Model::get().getMirrorLowerController()->runLoop();
+    Model::instance().getMirrorLowerController()->runLoop();
     runLoop();
-    return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedEngineeringState
-                                                                            : States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(
+            lowerCompleted() ? States::ParkedEngineeringState : States::NoStateTransition);
 }
 
 } /* namespace SS */

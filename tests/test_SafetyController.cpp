@@ -74,7 +74,7 @@ void init_logger() {
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
     SettingReader::instance().setRootPath("../SettingFiles/");
-    REQUIRE_NOTHROW(Model::get().loadSettings("Default"));
+    REQUIRE_NOTHROW(Model::instance().loadSettings("Default"));
 
     auto logger = std::make_shared<spdlog::logger>("Test", std::make_shared<check_sink_st>());
     spdlog::set_default_logger(logger);

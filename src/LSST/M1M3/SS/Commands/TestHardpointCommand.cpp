@@ -39,7 +39,7 @@ bool TestHardpointCommand::validate() {
     if (!(_data.hardpointActuator >= 1 && _data.hardpointActuator <= 6)) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "TestHardpoint", "The field HardpointActuator must be in range [1, 6].");
-    } else if (Model::get().getHardpointTestController()->isTested(_data.hardpointActuator - 1)) {
+    } else if (Model::instance().getHardpointTestController()->isTested(_data.hardpointActuator - 1)) {
         M1M3SSPublisher::instance().logCommandRejectionWarning("TestHardpoint",
                                                                "Hardpoint is already being tested.");
     } else {

@@ -86,6 +86,7 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableForceActuator());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableAllForceActuators());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnableDisableForceComponent());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandSetSlewControllerSettings());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAAzimuth());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAElevation());
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

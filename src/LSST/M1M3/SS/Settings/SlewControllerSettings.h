@@ -21,33 +21,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <RaisingState.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <ModelPublisher.h>
-#include <spdlog/spdlog.h>
+#ifndef SLEWCONTROLLERSETTINGS_H_
+#define SLEWCONTROLLERSETTINGS_H_
+
+#include <string>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
+#include <DataTypes.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-RaisingState::RaisingState() : EnabledState("RaisingState") {}
+/**
+ * Settings used during slewing.
+ */
+class SlewControllerSettings : public MTM1M3_logevent_slewControllerSettingsC,
+                               public cRIO::Singleton<SlewControllerSettings> {
+public:
+    SlewControllerSettings(token);
 
-States::Type RaisingState::update(UpdateCommand* command) {
-    ModelPublisher publishIt{};
-    SPDLOG_TRACE("RaisingState: update()");
-    Model::instance().getMirrorRaiseController()->runLoop();
-    runLoop();
-    return Model::instance().getSafetyController()->checkSafety(raiseCompleted() ? States::ActiveState
-                                                                                 : States::NoStateTransition);
-}
+    void load(YAML::Node doc);
 
-States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
-    SPDLOG_INFO("RaisingState: abortRaiseM1M3()");
-    Model::instance().getMirrorLowerController()->abortRaiseM1M3();
-    return Model::instance().getSafetyController()->checkSafety(States::LoweringState);
-}
+    void log() { M1M3SSPublisher::instance().logSlewControllerSettings(this); }
+
+    void set(int slewSettings, bool enableSlewManagement);
+};
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
+
+#endif /* SLEWCONTROLLERSETTINGS_H_ */

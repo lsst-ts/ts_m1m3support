@@ -36,10 +36,10 @@ LoweringState::LoweringState() : EnabledState("LoweringState") {}
 States::Type LoweringState::update(UpdateCommand* command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("LoweringState: update()");
-    Model::get().getMirrorLowerController()->runLoop();
+    Model::instance().getMirrorLowerController()->runLoop();
     runLoop();
-    return Model::get().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedState
-                                                                            : States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(lowerCompleted() ? States::ParkedState
+                                                                                 : States::NoStateTransition);
 }
 
 } /* namespace SS */
