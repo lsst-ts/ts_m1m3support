@@ -1314,9 +1314,10 @@ void M1M3SSPublisher::tryLogSummaryState() {
 }
 
 // macro generating ackCommand method
-#define ACK_COMMAND(command)                                                                                 \
-    void M1M3SSPublisher::ackCommand##command(int32_t commandID, int32_t ackCode, std::string description) { \
-        _m1m3SAL->ackCommand_##command(commandID, ackCode, 0, (char*)description.c_str());                   \
+#define ACK_COMMAND(command)                                                                               \
+    void M1M3SSPublisher::ackCommand##command(int32_t commandID, int32_t ackCode, std::string description, \
+                                              double timeout) {                                            \
+        _m1m3SAL->ackCommand_##command(commandID, ackCode, 0, (char*)description.c_str(), timeout);        \
     }
 
 ACK_COMMAND(setLogLevel)

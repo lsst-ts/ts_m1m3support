@@ -33,9 +33,9 @@ ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(int32_t commandID) 
 
 void ClearActiveOpticForcesCommand::execute() { Context::get().clearActiveOpticForces(this); }
 
-void ClearActiveOpticForcesCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandclearActiveOpticForces(getCommandID(), ACK_INPROGRESS,
-                                                                 "In-Progress");
+void ClearActiveOpticForcesCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandclearActiveOpticForces(getCommandID(), ACK_INPROGRESS, description,
+                                                                 timeout);
 }
 
 void ClearActiveOpticForcesCommand::ackComplete() {

@@ -34,8 +34,8 @@ TurnLightsOnCommand::TurnLightsOnCommand(int32_t commandID, MTM1M3_command_turnL
 
 void TurnLightsOnCommand::execute() { Context::get().turnLightsOn(this); }
 
-void TurnLightsOnCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandturnLightsOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void TurnLightsOnCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandturnLightsOn(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void TurnLightsOnCommand::ackComplete() {

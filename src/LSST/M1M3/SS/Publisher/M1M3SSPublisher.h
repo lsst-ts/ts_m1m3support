@@ -370,63 +370,66 @@ public:
         _m1m3SAL->logEvent_raisingLoweringInfo(data, 0);
     }
 
-    void ackCommandsetLogLevel(int32_t commandID, int32_t ackCode, std::string description);
-
     /**
      * @brief Acknowledges start command.
      *
      * @param commandID
      * @param ackCode acknowledgement code. Either ACK_INPROGRESS, ACK_FAILED or ACK_COMPLETE
      * @param description string collected during command execution
+     * @param timeout reported command timeout. Should be used for only for ACK_INPROGRESS acknowledgement
      */
-    void ackCommandstart(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandenable(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommanddisable(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandstandby(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandexitControl(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandpanic(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandsetSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandclearSlewFlag(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandturnAirOn(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandturnAirOff(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandclearOffsetForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandraiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandlowerM1M3(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandclearActiveOpticForces(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandenterEngineering(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandexitEngineering(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandboosterValveOpen(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandboosterValveClose(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandtestHardpoint(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandkillHardpointTest(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandmoveHardpointActuators(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandenableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommanddisableHardpointChase(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandabortRaiseM1M3(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandtranslateM1M3(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandstopHardpointMotion(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandpositionM1M3(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandturnLightsOn(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandturnLightsOff(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandturnPowerOn(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandturnPowerOff(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandenableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommanddisableHardpointCorrections(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandrunMirrorForceProfile(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandabortProfile(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandapplyOffsetForcesByMirrorForce(int32_t commandID, int32_t ackCode,
-                                                  std::string description);
-    void ackCommandupdatePID(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandresetPID(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandforceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandkillForceActuatorBumpTest(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommanddisableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandenableForceActuator(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandenableAllForceActuators(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandenableDisableForceComponent(int32_t commandID, int32_t ackCode, std::string description);
-    void ackCommandsetSlewControllerSettings(int32_t commandID, int32_t ackCode, std::string description);
+#define ACK_COMMAND_H(command)                                                            \
+    void ackCommand##command(int32_t commandID, int32_t ackCode, std::string description, \
+                             double timeout = 0.0);
+
+    ACK_COMMAND_H(setLogLevel)
+    ACK_COMMAND_H(start)
+    ACK_COMMAND_H(enable)
+    ACK_COMMAND_H(disable)
+    ACK_COMMAND_H(standby)
+    ACK_COMMAND_H(exitControl)
+    ACK_COMMAND_H(panic)
+    ACK_COMMAND_H(setSlewFlag)
+    ACK_COMMAND_H(clearSlewFlag)
+    ACK_COMMAND_H(turnAirOn)
+    ACK_COMMAND_H(turnAirOff)
+    ACK_COMMAND_H(applyOffsetForces)
+    ACK_COMMAND_H(clearOffsetForces)
+    ACK_COMMAND_H(raiseM1M3)
+    ACK_COMMAND_H(lowerM1M3)
+    ACK_COMMAND_H(applyActiveOpticForces)
+    ACK_COMMAND_H(clearActiveOpticForces)
+    ACK_COMMAND_H(enterEngineering)
+    ACK_COMMAND_H(exitEngineering)
+    ACK_COMMAND_H(boosterValveOpen)
+    ACK_COMMAND_H(boosterValveClose)
+    ACK_COMMAND_H(testHardpoint)
+    ACK_COMMAND_H(killHardpointTest)
+    ACK_COMMAND_H(moveHardpointActuators)
+    ACK_COMMAND_H(enableHardpointChase)
+    ACK_COMMAND_H(disableHardpointChase)
+    ACK_COMMAND_H(abortRaiseM1M3)
+    ACK_COMMAND_H(translateM1M3)
+    ACK_COMMAND_H(stopHardpointMotion)
+    ACK_COMMAND_H(positionM1M3)
+    ACK_COMMAND_H(turnLightsOn)
+    ACK_COMMAND_H(turnLightsOff)
+    ACK_COMMAND_H(turnPowerOn)
+    ACK_COMMAND_H(turnPowerOff)
+    ACK_COMMAND_H(enableHardpointCorrections)
+    ACK_COMMAND_H(disableHardpointCorrections)
+    ACK_COMMAND_H(runMirrorForceProfile)
+    ACK_COMMAND_H(abortProfile)
+    ACK_COMMAND_H(applyOffsetForcesByMirrorForce)
+    ACK_COMMAND_H(updatePID)
+    ACK_COMMAND_H(resetPID)
+    ACK_COMMAND_H(forceActuatorBumpTest)
+    ACK_COMMAND_H(killForceActuatorBumpTest)
+    ACK_COMMAND_H(disableForceActuator)
+    ACK_COMMAND_H(enableForceActuator)
+    ACK_COMMAND_H(enableAllForceActuators)
+    ACK_COMMAND_H(enableDisableForceComponent)
+    ACK_COMMAND_H(setSlewControllerSettings)
 
 private:
     M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;

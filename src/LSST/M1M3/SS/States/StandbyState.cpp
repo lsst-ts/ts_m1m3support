@@ -61,10 +61,13 @@ States::Type StandbyState::start(StartCommand* command) {
     RaisingLoweringInfo::instance().sendUpdates(true);
 
     SPDLOG_INFO("Loading settings");
+    command->ackInProgress("Loading settings", 12.1);
 
-    Model::instance().loadSettings(command->getConfigurationOverride());
+    Model::instance().loadSettings(command->getConfigurationOverride().c_str());
+    Model::instance().initialize(command);
 
     SPDLOG_INFO("Done loading settings");
+    command->ackInProgress("Applying settings", 1.3);
 
     auto configurationApplied = M1M3SSPublisher::instance().getEventConfigurationApplied();
     configurationApplied->configurations = "_init.yaml";

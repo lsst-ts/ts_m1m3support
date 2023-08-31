@@ -51,9 +51,9 @@ bool SetSlewControllerSettingsCommand::validate() {
 
 void SetSlewControllerSettingsCommand::execute() { Context::get().setSlewControllerSettings(this); }
 
-void SetSlewControllerSettingsCommand::ackInProgress() {
+void SetSlewControllerSettingsCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandsetSlewControllerSettings(getCommandID(), ACK_INPROGRESS,
-                                                                    "In-Progress");
+                                                                    description, timeout);
 }
 
 void SetSlewControllerSettingsCommand::ackComplete() {

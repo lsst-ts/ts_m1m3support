@@ -51,6 +51,7 @@
 #include <ProfileController.h>
 #include <SafetyController.h>
 #include <SlewController.h>
+#include <StartCommand.h>
 #include <StateTypes.h>
 
 namespace LSST {
@@ -87,9 +88,8 @@ public:
     void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
     double getCachedTimestamp() { return _cachedTimestamp; }
 
-    void loadSettings(std::string settingsToApply);
-
-    void queryFPGAData();
+    void loadSettings(const char* settingsToApply);
+    void initialize(StartCommand* command);
 
     void publishStateChange(States::Type newState);
     void publishRecommendedSettings();

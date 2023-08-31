@@ -45,8 +45,8 @@ bool PanicCommand::validate() {
 
 void PanicCommand::execute() { Model::instance().getSafetyController()->userPanic(); }
 
-void PanicCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandpanic(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void PanicCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandpanic(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void PanicCommand::ackComplete() {

@@ -37,7 +37,7 @@ public:
     DisableHardpointChaseCommand(int32_t commandID, MTM1M3_command_disableHardpointChaseC* data);
 
     void execute() override;
-    void ackInProgress() override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 };

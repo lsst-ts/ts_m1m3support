@@ -35,33 +35,37 @@ ExpansionFPGAApplicationSettings::ExpansionFPGAApplicationSettings(token){};
 void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
     try {
         SPDLOG_INFO("Loading ExpansionFPGAApplicationSettings");
-
         Enabled = doc["Enabled"].as<bool>();
         Resource = doc["Resource"].as<std::string>();
-
-        IExpansionFPGA::get().setResource(Enabled, Resource);
-        if (Enabled) {
-            auto& heartbeat = Heartbeat::instance();
-
-            heartbeat.tryToggle();
-            IExpansionFPGA::get().close();
-            heartbeat.tryToggle();
-
-            SPDLOG_INFO("Opening expansion FPGA: {}", Resource);
-            IExpansionFPGA::get().open();
-
-            // TODO replace that with wait for IRQ from the expansion FPGA, being raised in FPGA after it
-            // finish initialization
-
-            for (int i = 0; i < 50; i++) {
-                heartbeat.tryToggle();
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            }
-
-            heartbeat.tryToggle();
-        }
-
     } catch (YAML::Exception& ex) {
         throw std::runtime_error(fmt::format("YAML Loading ExpansionFPGAApplicationSettings: {}", ex.what()));
+    }
+}
+
+void ExpansionFPGAApplicationSettings::initialize(StartCommand* command) {
+    IExpansionFPGA::get().setResource(Enabled, Resource);
+    if (Enabled) {
+        auto& heartbeat = Heartbeat::instance();
+
+        heartbeat.tryToggle();
+        IExpansionFPGA::get().close();
+        heartbeat.tryToggle();
+
+        SPDLOG_INFO("Opening expansion FPGA: {}", Resource);
+        command->ackInProgress("Opening expansion FPGA", 12);
+        IExpansionFPGA::get().open();
+
+        // TODO replace that with wait for IRQ from the expansion FPGA, being raised in FPGA after it
+        // finish initialization
+
+        for (int i = 0; i < 50; i++) {
+            heartbeat.tryToggle();
+            command->ackInProgress("Waiting for Expansion FPGA", 11.5 - (i * 0.2f));
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
+
+        command->ackInProgress("Expansion FPGA opened", 1.4);
+
+        heartbeat.tryToggle();
     }
 }

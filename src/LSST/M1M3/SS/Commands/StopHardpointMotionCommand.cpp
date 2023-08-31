@@ -35,8 +35,9 @@ StopHardpointMotionCommand::StopHardpointMotionCommand(int32_t commandID,
 
 void StopHardpointMotionCommand::execute() { Context::get().stopHardpointMotion(this); }
 
-void StopHardpointMotionCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandstopHardpointMotion(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void StopHardpointMotionCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandstopHardpointMotion(getCommandID(), ACK_INPROGRESS, description,
+                                                              timeout);
 }
 
 void StopHardpointMotionCommand::ackComplete() {
