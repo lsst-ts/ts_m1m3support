@@ -134,7 +134,6 @@ public:
     MTM1M3_logevent_inclinometerSensorWarningC* getEventInclinometerSensorWarning() {
         return &_eventInclinometerSensorWarning;
     }
-    MTM1M3_logevent_interlockStatusC* getEventInterlockStatus() { return &_eventInterlockStatus; }
     MTM1M3_logevent_interlockWarningC* getEventInterlockWarning() { return &_eventInterlockWarning; }
     MTM1M3_logevent_pidInfoC* getEventPIDInfo() { return &_eventPIDInfo; }
     MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &_eventPowerStatus; }
@@ -319,7 +318,7 @@ public:
     void logHardpointTestStatus(MTM1M3_logevent_hardpointTestStatusC* data) {
         _m1m3SAL->logEvent_hardpointTestStatus(data, 0);
     }
-    void logHeartbeat();
+    void logHeartbeat(MTM1M3_logevent_heartbeatC* data) { _m1m3SAL->logEvent_heartbeat(data, 0); }
     void logILCWarning();
     void tryLogILCWarning();
     void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC* data) {
@@ -327,8 +326,9 @@ public:
     }
     void logInclinometerSensorWarning();
     void tryLogInclinometerSensorWarning();
-    void logInterlockStatus();
-    void tryLogInterlockStatus();
+    void logInterlockStatus(MTM1M3_logevent_interlockStatusC* data) {
+        _m1m3SAL->logEvent_interlockStatus(data, 0);
+    }
     void logInterlockWarning(MTM1M3_logevent_interlockWarningC* data) {
         _m1m3SAL->logEvent_interlockWarning(data, 0);
     };
@@ -476,10 +476,8 @@ private:
     MTM1M3_logevent_hardpointMonitorInfoC _eventHardpointMonitorInfo;
     MTM1M3_logevent_hardpointMonitorStateC _eventHardpointMonitorState;
     MTM1M3_logevent_hardpointMonitorWarningC _eventHardpointMonitorWarning;
-    MTM1M3_logevent_heartbeatC _eventHeartbeat;
     MTM1M3_logevent_ilcWarningC _eventILCWarning;
     MTM1M3_logevent_inclinometerSensorWarningC _eventInclinometerSensorWarning;
-    MTM1M3_logevent_interlockStatusC _eventInterlockStatus;
     MTM1M3_logevent_interlockWarningC _eventInterlockWarning;
     MTM1M3_logevent_pidInfoC _eventPIDInfo;
     MTM1M3_logevent_powerStatusC _eventPowerStatus;
@@ -522,7 +520,6 @@ private:
     MTM1M3_logevent_hardpointMonitorWarningC _previousEventHardpointMonitorWarning;
     MTM1M3_logevent_ilcWarningC _previousEventILCWarning;
     MTM1M3_logevent_inclinometerSensorWarningC _previousEventInclinometerSensorWarning;
-    MTM1M3_logevent_interlockStatusC _previousEventInterlockStatus;
     MTM1M3_logevent_interlockWarningC _previousEventInterlockWarning;
     MTM1M3_logevent_powerStatusC _previousEventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _previousEventPowerSupplyStatus;

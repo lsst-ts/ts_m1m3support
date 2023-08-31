@@ -26,9 +26,12 @@
 
 #include <chrono>
 
+#include <cRIO/Singleton.h>
+
 #include <AirSupplyStatus.h>
 #include <DataTypes.h>
 #include <IFPGA.h>
+#include <InterlockStatus.h>
 #include <SafetyController.h>
 
 struct MTM1M3_logevent_airSupplyStatusC;
@@ -45,12 +48,12 @@ namespace SS {
 /*!
  * The class used to process digital inputs and outputs.
  */
-class DigitalInputOutput {
+class DigitalInputOutput : public cRIO::Singleton<DigitalInputOutput> {
 public:
     /*!
      * Instantiates the accelerometer.
      */
-    DigitalInputOutput();
+    DigitalInputOutput(token);
 
     /*!
      * Sets the safety controller.
@@ -64,12 +67,9 @@ public:
     void processData();
 
     /**
-     * @brief Toggles the heartbeat signal if a configured amount of time has passed.
-     *
-     * Both Global Interlock System and software (logevent) heartbeats are
-     * triggered.
+     * Toggles the global interlock heartbeat signal.
      */
-    void tryToggleHeartbeat();
+    void toggleHeartbeat(double globalTimestamp);
 
     /**
      * Sets CH1 trigger for crtitical fult to safety controller.
@@ -110,14 +110,11 @@ private:
     MTM1M3_logevent_airSupplyWarningC* _airSupplyWarning;
     MTM1M3_logevent_cellLightStatusC* _cellLightStatus;
     MTM1M3_logevent_cellLightWarningC* _cellLightWarning;
-    MTM1M3_logevent_interlockStatusC* _interlockStatus;
+    InterlockStatus* _interlockStatus;
 
     uint64_t _lastDOTimestamp;
     uint64_t _lastDITimestamp;
 
-    double _lastToggleTimestamp;
-
-    std::chrono::steady_clock::time_point _airToggledTime;
     std::chrono::steady_clock::time_point _lightToggledTime;
 };
 

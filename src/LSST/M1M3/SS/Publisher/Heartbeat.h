@@ -21,31 +21,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringFaultState.h>
-#include <Model.h>
-#include <PowerController.h>
-#include <ForceController.h>
-#include <spdlog/spdlog.h>
+#ifndef LSST_HEARTBEAT_H
+#define LSST_HEARTBEAT_H
+
+#include <chrono>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
+/**
+ * Wrapper object for MTM1M3_logevent_heartbeatStatusC.
+ */
+class Heartbeat : public MTM1M3_logevent_heartbeatC, public cRIO::Singleton<Heartbeat> {
+public:
+    /**
+     * Construct new InterlockStatus
+     */
+    Heartbeat(token);
 
-States::Type LoweringFaultState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("LoweringFaultState: update()");
-    ensureFaulted();
-    FaultState::update(command);
-    return States::FaultState;
-}
+    /**
+     * Sets heartbeat, publish data if the last heartbeat was send more than 500ms in past.
+     */
+    void tryToggle();
 
-void LoweringFaultState::ensureFaulted() {
-    SPDLOG_TRACE("LoweringFaultState: ensureFaulted()");
-    Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
-    Model::instance().getForceController()->reset();
-}
+private:
+    double _lastToggleTimestamp;
+};
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
+
+#endif  // LSST_INTERLOCKSTATUS_H

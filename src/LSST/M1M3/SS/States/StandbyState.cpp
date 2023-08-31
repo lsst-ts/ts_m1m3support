@@ -29,6 +29,7 @@
 #include <DigitalInputOutput.h>
 #include <ForceControllerState.h>
 #include <Gyro.h>
+#include <Heartbeat.h>
 #include <ILC.h>
 #include <Model.h>
 #include <PowerController.h>
@@ -47,7 +48,7 @@ StandbyState::StandbyState() : State("StandbyState") {}
 
 States::Type StandbyState::update(UpdateCommand* command) {
     SPDLOG_TRACE("StandbyState: update()");
-    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
+    Heartbeat::instance().tryToggle();
     return States::NoStateTransition;
 }
 
@@ -84,17 +85,17 @@ States::Type StandbyState::start(StartCommand* command) {
 
     PowerController* powerController = Model::instance().getPowerController();
     ILC* ilc = Model::instance().getILC();
-    DigitalInputOutput* digitalInputOutput = Model::instance().getDigitalInputOutput();
     Gyro* gyro = Model::instance().getGyro();
 
     BoosterValveStatus::instance().reset();
 
-    digitalInputOutput->tryToggleHeartbeat();
+    auto& heartbeat = Heartbeat::instance();
+    heartbeat.tryToggle();
     std::this_thread::sleep_for(1ms);  // wait for GIS to sense heartbeat
 
     IFPGA::get().pullTelemetry();
 
-    digitalInputOutput->processData();
+    DigitalInputOutput::instance().processData();
 
     powerController->processData();
 
@@ -102,57 +103,57 @@ States::Type StandbyState::start(StartCommand* command) {
     powerController->setAllPowerNetworks(true);
 
     for (int i = 0; i < 2; i++) {
-        digitalInputOutput->tryToggleHeartbeat();
+        heartbeat.tryToggle();
         std::this_thread::sleep_for(500ms);  // wait 2*0.5=1 second for ILCs to power on
     }
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
 
     ilc->flushAll();
     ilc->writeSetModeClearFaultsBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeReportServerIDBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeReportServerStatusBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeReportADCScanRateBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeReadCalibrationDataBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeReadBoostValveDCAGainBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeReportDCAIDBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeReportDCAStatusBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     ilc->writeSetModeDisableBuffer();
     ilc->triggerModbus();
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     M1M3SSPublisher::instance().getEnabledForceActuators()->log();
     M1M3SSPublisher::instance().tryLogForceActuatorState();
     std::this_thread::sleep_for(20ms);
@@ -168,7 +169,7 @@ States::Type StandbyState::start(StartCommand* command) {
     gyro->setRotationUnitsRadians();
     gyro->exitConfigurationMode();
     gyro->bit();
-    digitalInputOutput->tryToggleHeartbeat();
+    heartbeat.tryToggle();
     return Model::instance().getSafetyController()->checkSafety(States::DisabledState);
 }
 

@@ -21,31 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringFaultState.h>
-#include <Model.h>
-#include <PowerController.h>
-#include <ForceController.h>
-#include <spdlog/spdlog.h>
+#ifndef LSST_INTERLOCKSTATUS_H
+#define LSST_INTERLOCKSTATUS_H
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
+/**
+ * Wrapper object for MTM1M3_logevent_interlockStatusC.
+ */
+class InterlockStatus : public MTM1M3_logevent_interlockStatusC, public cRIO::Singleton<InterlockStatus> {
+public:
+    /**
+     * Construct new InterlockStatus
+     */
+    InterlockStatus(token);
 
-States::Type LoweringFaultState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("LoweringFaultState: update()");
-    ensureFaulted();
-    FaultState::update(command);
-    return States::FaultState;
-}
+    void log() { M1M3SSPublisher::instance().logInterlockStatus(this); }
+};
 
-void LoweringFaultState::ensureFaulted() {
-    SPDLOG_TRACE("LoweringFaultState: ensureFaulted()");
-    Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
-    Model::instance().getForceController()->reset();
-}
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+#endif  // LSST_INTERLOCKSTATUS_H

@@ -21,31 +21,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringFaultState.h>
-#include <Model.h>
-#include <PowerController.h>
-#include <ForceController.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <DigitalInputOutput.h>
+#include <Heartbeat.h>
 
-LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
+using namespace LSST::M1M3::SS;
 
-States::Type LoweringFaultState::update(UpdateCommand* command) {
-    SPDLOG_TRACE("LoweringFaultState: update()");
-    ensureFaulted();
-    FaultState::update(command);
-    return States::FaultState;
+const float HEARTBEAT_PERIOD = 1.0;  //* Heartbeat period in seconds
+
+Heartbeat::Heartbeat(token) { _lastToggleTimestamp = 0; }
+
+void Heartbeat::tryToggle() {
+    SPDLOG_TRACE("Trying to toggle heartbeat");
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
+    if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
+        SPDLOG_DEBUG("Toggling heartbeat");
+        auto lag = timestamp - _lastToggleTimestamp;
+        if (_lastToggleTimestamp != 0 && lag > HEARTBEAT_PERIOD * 1.1) {
+            SPDLOG_WARN("Toggling heartbeat after {:0.03f} seconds!", lag);
+        }
+
+        heartbeat = !heartbeat;
+
+        DigitalInputOutput::instance().toggleHeartbeat(timestamp);
+
+        // sends software heartbeat
+        M1M3SSPublisher::instance().logHeartbeat(this);
+
+        _lastToggleTimestamp = timestamp;
+    }
 }
-
-void LoweringFaultState::ensureFaulted() {
-    SPDLOG_TRACE("LoweringFaultState: ensureFaulted()");
-    Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
-    Model::instance().getForceController()->reset();
-}
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
