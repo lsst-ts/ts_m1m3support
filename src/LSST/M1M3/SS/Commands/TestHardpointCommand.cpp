@@ -50,8 +50,8 @@ bool TestHardpointCommand::validate() {
 
 void TestHardpointCommand::execute() { Context::get().testHardpoint(this); }
 
-void TestHardpointCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandtestHardpoint(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void TestHardpointCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandtestHardpoint(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void TestHardpointCommand::ackComplete() {

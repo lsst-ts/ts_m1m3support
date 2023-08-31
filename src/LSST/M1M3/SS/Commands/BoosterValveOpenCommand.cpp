@@ -31,8 +31,9 @@ BoosterValveOpenCommand::BoosterValveOpenCommand(int32_t commandID) : Command(co
 
 void BoosterValveOpenCommand::execute() { Context::get().boosterValveOpen(this); }
 
-void BoosterValveOpenCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void BoosterValveOpenCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_INPROGRESS, description,
+                                                           timeout);
 }
 
 void BoosterValveOpenCommand::ackComplete() {

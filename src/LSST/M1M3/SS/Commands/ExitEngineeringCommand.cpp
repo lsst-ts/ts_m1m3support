@@ -46,8 +46,9 @@ bool ExitEngineeringCommand::validate() {
 
 void ExitEngineeringCommand::execute() { Context::get().exitEngineering(this); }
 
-void ExitEngineeringCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandexitEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void ExitEngineeringCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandexitEngineering(getCommandID(), ACK_INPROGRESS, description,
+                                                          timeout);
 }
 
 void ExitEngineeringCommand::ackComplete() {

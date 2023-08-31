@@ -48,8 +48,8 @@ bool UpdatePIDCommand::validate() {
 
 void UpdatePIDCommand::execute() { Context::get().updatePID(this); }
 
-void UpdatePIDCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandupdatePID(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void UpdatePIDCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandupdatePID(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void UpdatePIDCommand::ackComplete() {

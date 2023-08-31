@@ -55,8 +55,8 @@ bool TurnPowerOnCommand::validate() {
 
 void TurnPowerOnCommand::execute() { Context::get().turnPowerOn(this); }
 
-void TurnPowerOnCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void TurnPowerOnCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void TurnPowerOnCommand::ackComplete() {

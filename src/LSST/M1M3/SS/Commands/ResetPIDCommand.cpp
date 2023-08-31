@@ -43,8 +43,8 @@ bool ResetPIDCommand::validate() {
 
 void ResetPIDCommand::execute() { Context::get().resetPID(this); }
 
-void ResetPIDCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void ResetPIDCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void ResetPIDCommand::ackComplete() {

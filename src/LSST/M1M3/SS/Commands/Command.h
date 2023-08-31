@@ -25,6 +25,7 @@
 #define COMMAND_H_
 
 #include <string>
+
 #include <DataTypes.h>
 
 namespace LSST {
@@ -43,28 +44,39 @@ public:
     Command(int32_t commandID) : _commandID(commandID) {}
     virtual ~Command();
 
-    /*!
+    /**
      * Gets the command ID.
      */
     inline int32_t getCommandID() { return _commandID; }
 
-    /*!
+    virtual double getDefaultTimeout();
+
+    /**
      * Validates the command.
      */
     virtual bool validate();
-    /*!
+
+    /**
      * Executes the command.
      */
     virtual void execute();
-    /*!
+
+    virtual void ackInProgress() { ackInProgress("In-Progress", getDefaultTimeout()); }
+
+    /**
      * Acknowledges the command is in progress.
+     *
+     * @param description Textual description send with the command.
+     * @param timeout
      */
-    virtual void ackInProgress();
-    /*!
+    virtual void ackInProgress(const char* description, double timeout);
+
+    /**
      * Acknowledges the command has completed successfully.
      */
     virtual void ackComplete();
-    /*!
+
+    /**
      * Acknowledges the command has failed.
      * @param[in] reason The reason why the command has failed.
      */

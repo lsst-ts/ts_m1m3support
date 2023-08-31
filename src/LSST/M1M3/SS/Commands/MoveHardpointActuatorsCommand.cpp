@@ -50,9 +50,9 @@ bool MoveHardpointActuatorsCommand::validate() {
 
 void MoveHardpointActuatorsCommand::execute() { Context::get().moveHardpointActuators(this); }
 
-void MoveHardpointActuatorsCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandmoveHardpointActuators(getCommandID(), ACK_INPROGRESS,
-                                                                 "In-Progress");
+void MoveHardpointActuatorsCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandmoveHardpointActuators(getCommandID(), ACK_INPROGRESS, description,
+                                                                 timeout);
 }
 
 void MoveHardpointActuatorsCommand::ackComplete() {

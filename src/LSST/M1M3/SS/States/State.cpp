@@ -32,89 +32,83 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-State::State(std::string name) { this->name = name; }
+State::State(std::string name) { name = name; }
 
 State::~State() {}
 
 States::Type State::enterControl(EnterControlCommand* command) { return States::NoStateTransition; }
-States::Type State::start(StartCommand* command) { return this->rejectCommandInvalidState(command, "Start"); }
-States::Type State::enable(EnableCommand* command) {
-    return this->rejectCommandInvalidState(command, "Enable");
-}
-States::Type State::disable(DisableCommand* command) {
-    return this->rejectCommandInvalidState(command, "Disable");
-}
-States::Type State::standby(StandbyCommand* command) {
-    return this->rejectCommandInvalidState(command, "Standby");
-}
+States::Type State::start(StartCommand* command) { return rejectCommandInvalidState(command, "Start"); }
+States::Type State::enable(EnableCommand* command) { return rejectCommandInvalidState(command, "Enable"); }
+States::Type State::disable(DisableCommand* command) { return rejectCommandInvalidState(command, "Disable"); }
+States::Type State::standby(StandbyCommand* command) { return rejectCommandInvalidState(command, "Standby"); }
 States::Type State::exitControl(ExitControlCommand* command) {
-    return this->rejectCommandInvalidState(command, "ExitControl");
+    return rejectCommandInvalidState(command, "ExitControl");
 }
 States::Type State::setSlewFlag(SetSlewFlagCommand* command) {
-    return this->rejectCommandInvalidState(command, "SetSlewFlag");
+    return rejectCommandInvalidState(command, "SetSlewFlag");
 }
 States::Type State::clearSlewFlag(ClearSlewFlagCommand* command) {
-    return this->rejectCommandInvalidState(command, "ClearSlewFlag");
+    return rejectCommandInvalidState(command, "ClearSlewFlag");
 }
 States::Type State::turnAirOn(TurnAirOnCommand* command) {
-    return this->rejectCommandInvalidState(command, "TurnAirOn");
+    return rejectCommandInvalidState(command, "TurnAirOn");
 }
 States::Type State::turnAirOff(TurnAirOffCommand* command) {
-    return this->rejectCommandInvalidState(command, "TurnAirOff");
+    return rejectCommandInvalidState(command, "TurnAirOff");
 }
 States::Type State::boosterValveOpen(BoosterValveOpenCommand* command) {
-    return this->rejectCommandInvalidState(command, "BoosterValveOpen");
+    return rejectCommandInvalidState(command, "BoosterValveOpen");
 }
 States::Type State::boosterValveClose(BoosterValveCloseCommand* command) {
-    return this->rejectCommandInvalidState(command, "BoosterValveClose");
+    return rejectCommandInvalidState(command, "BoosterValveClose");
 }
 States::Type State::applyOffsetForces(ApplyOffsetForcesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ApplyOffsetForces");
+    return rejectCommandInvalidState(command, "ApplyOffsetForces");
 }
 States::Type State::clearOffsetForces(ClearOffsetForcesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ClearOffsetForces");
+    return rejectCommandInvalidState(command, "ClearOffsetForces");
 }
 States::Type State::raiseM1M3(RaiseM1M3Command* command) {
-    return this->rejectCommandInvalidState(command, "RaiseM1M3");
+    return rejectCommandInvalidState(command, "RaiseM1M3");
 }
 States::Type State::lowerM1M3(LowerM1M3Command* command) {
-    return this->rejectCommandInvalidState(command, "LowerM1M3");
+    return rejectCommandInvalidState(command, "LowerM1M3");
 }
 States::Type State::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ApplyActiveOpticForces");
+    return rejectCommandInvalidState(command, "ApplyActiveOpticForces");
 }
 States::Type State::clearActiveOpticForces(ClearActiveOpticForcesCommand* command) {
-    return this->rejectCommandInvalidState(command, "ClearActiveOpticForces");
+    return rejectCommandInvalidState(command, "ClearActiveOpticForces");
 }
 States::Type State::enterEngineering(EnterEngineeringCommand* command) {
-    return this->rejectCommandInvalidState(command, "EnterEngineering");
+    return rejectCommandInvalidState(command, "EnterEngineering");
 }
 States::Type State::exitEngineering(ExitEngineeringCommand* command) {
-    return this->rejectCommandInvalidState(command, "ExitEngineering");
+    return rejectCommandInvalidState(command, "ExitEngineering");
 }
 States::Type State::testHardpoint(TestHardpointCommand* command) {
-    return this->rejectCommandInvalidState(command, "TestHardpoint");
+    return rejectCommandInvalidState(command, "TestHardpoint");
 }
 States::Type State::killHardpointTest(KillHardpointTestCommand* command) {
-    return this->rejectCommandInvalidState(command, "KillHardpointTest");
+    return rejectCommandInvalidState(command, "KillHardpointTest");
 }
 States::Type State::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
-    return this->rejectCommandInvalidState(command, "MoveHardpointActuators");
+    return rejectCommandInvalidState(command, "MoveHardpointActuators");
 }
 States::Type State::enableHardpointChase(EnableHardpointChaseCommand* command) {
-    return this->rejectCommandInvalidState(command, "EnableHardpointChase");
+    return rejectCommandInvalidState(command, "EnableHardpointChase");
 }
 States::Type State::disableHardpointChase(DisableHardpointChaseCommand* command) {
-    return this->rejectCommandInvalidState(command, "DisableHardpointChase");
+    return rejectCommandInvalidState(command, "DisableHardpointChase");
 }
 States::Type State::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
-    return this->rejectCommandInvalidState(command, "AbortRaiseM1M3");
+    return rejectCommandInvalidState(command, "AbortRaiseM1M3");
 }
 States::Type State::translateM1M3(TranslateM1M3Command* command) {
-    return this->rejectCommandInvalidState(command, "TranslateM1M3");
+    return rejectCommandInvalidState(command, "TranslateM1M3");
 }
 States::Type State::stopHardpointMotion(StopHardpointMotionCommand* command) {
-    return this->rejectCommandInvalidState(command, "StopHardpointMotion");
+    return rejectCommandInvalidState(command, "StopHardpointMotion");
 }
 States::Type State::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     return States::NoStateTransition;
@@ -123,46 +117,46 @@ States::Type State::storeTMAElevationSample(TMAElevationSampleCommand* command) 
     return States::NoStateTransition;
 }
 States::Type State::positionM1M3(PositionM1M3Command* command) {
-    return this->rejectCommandInvalidState(command, "PositionM1M3");
+    return rejectCommandInvalidState(command, "PositionM1M3");
 }
 States::Type State::turnLightsOn(TurnLightsOnCommand* command) {
-    return this->rejectCommandInvalidState(command, "TurnLightsOn");
+    return rejectCommandInvalidState(command, "TurnLightsOn");
 }
 States::Type State::turnLightsOff(TurnLightsOffCommand* command) {
-    return this->rejectCommandInvalidState(command, "TurnLightsOff");
+    return rejectCommandInvalidState(command, "TurnLightsOff");
 }
 States::Type State::turnPowerOn(TurnPowerOnCommand* command) {
-    return this->rejectCommandInvalidState(command, "TurnPowerOn");
+    return rejectCommandInvalidState(command, "TurnPowerOn");
 }
 States::Type State::turnPowerOff(TurnPowerOffCommand* command) {
-    return this->rejectCommandInvalidState(command, "TurnPowerOff");
+    return rejectCommandInvalidState(command, "TurnPowerOff");
 }
 States::Type State::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
-    return this->rejectCommandInvalidState(command, "EnableHardpointCorrections");
+    return rejectCommandInvalidState(command, "EnableHardpointCorrections");
 }
 States::Type State::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) {
-    return this->rejectCommandInvalidState(command, "DisableHardpointCorrections");
+    return rejectCommandInvalidState(command, "DisableHardpointCorrections");
 }
 States::Type State::runMirrorForceProfile(RunMirrorForceProfileCommand* command) {
-    return this->rejectCommandInvalidState(command, "RunMirrorForceProfile");
+    return rejectCommandInvalidState(command, "RunMirrorForceProfile");
 }
 States::Type State::abortProfile(AbortProfileCommand* command) {
-    return this->rejectCommandInvalidState(command, "AbortProfile");
+    return rejectCommandInvalidState(command, "AbortProfile");
 }
 States::Type State::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command) {
-    return this->rejectCommandInvalidState(command, "ApplyOffsetForcesByMirrorForce");
+    return rejectCommandInvalidState(command, "ApplyOffsetForcesByMirrorForce");
 }
 States::Type State::updatePID(UpdatePIDCommand* command) {
-    return this->rejectCommandInvalidState(command, "UpdatePID");
+    return rejectCommandInvalidState(command, "UpdatePID");
 }
 States::Type State::resetPID(ResetPIDCommand* command) {
-    return this->rejectCommandInvalidState(command, "ResetPID");
+    return rejectCommandInvalidState(command, "ResetPID");
 }
 States::Type State::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
-    return this->rejectCommandInvalidState(command, "ForceActuatorBumpTest");
+    return rejectCommandInvalidState(command, "ForceActuatorBumpTest");
 }
 States::Type State::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
-    return this->rejectCommandInvalidState(command, "KillForceActuatorBumpTest");
+    return rejectCommandInvalidState(command, "KillForceActuatorBumpTest");
 }
 States::Type State::disableForceActuator(DisableForceActuatorCommand* command) {
     return rejectCommandInvalidState(command, "DisableForceActuator");
@@ -181,7 +175,7 @@ States::Type State::setSlewControllerSettings(SetSlewControllerSettingsCommand* 
 }
 
 States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_name) {
-    std::string reason = "The command " + cmd_name + " is not valid in the " + this->name + ".";
+    std::string reason = "The command " + cmd_name + " is not valid in the " + name + ".";
     SPDLOG_WARN(reason);
     M1M3SSPublisher::instance().logCommandRejectionWarning(cmd_name, reason);
     command->ackFailed(reason);

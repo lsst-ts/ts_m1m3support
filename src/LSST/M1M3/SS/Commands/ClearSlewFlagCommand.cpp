@@ -33,8 +33,8 @@ ClearSlewFlagCommand::ClearSlewFlagCommand(int32_t commandID) : Command(commandI
 
 void ClearSlewFlagCommand::execute() { Context::get().clearSlewFlag(this); }
 
-void ClearSlewFlagCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandclearSlewFlag(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void ClearSlewFlagCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandclearSlewFlag(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void ClearSlewFlagCommand::ackComplete() {

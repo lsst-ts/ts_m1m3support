@@ -47,8 +47,9 @@ bool EnableForceActuatorCommand::validate() {
 
 void EnableForceActuatorCommand::execute() { Context::get().enableForceActuator(this); }
 
-void EnableForceActuatorCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandenableForceActuator(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void EnableForceActuatorCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandenableForceActuator(getCommandID(), ACK_INPROGRESS, description,
+                                                              timeout);
 }
 
 void EnableForceActuatorCommand::ackComplete() {
