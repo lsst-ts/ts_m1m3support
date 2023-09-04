@@ -10,6 +10,7 @@ v2.14.0
 * SlewController settings
 * Command to chaneg SlewController settings on-fly
 * Reorganized booster valve management
+* m1m3sscli command to read LVDTs
 
 v2.13.0
 -------
