@@ -73,6 +73,8 @@ protected:
     void processHardpointForceStatus(uint8_t address, uint8_t status, int32_t encoderPostion,
                                      float loadCellForce) override;
 
+    virtual void processHardpointLVDT(uint8_t address, float breakawayLVDT, float displacementLVDT) override;
+
     virtual void processSAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce) override;
     virtual void processDAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce,
                                        float secondaryLoadCellForce) override;
@@ -137,6 +139,13 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
                         u.second);
             },
             "Read hardpoint info");
+
+    addILCCommand(
+            "lvdt",
+            [](ILCUnit u) {
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportHardpointLVDT(u.second);
+            },
+            "Read LVDT info");
 
     addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",
                NEED_FPGA, "<primary> <ILC..>", "Set ILC primary force offset");
@@ -410,6 +419,14 @@ void PrintElectromechanical::processHardpointForceStatus(uint8_t address, uint8_
     std::cout << "Encoder Position: " << encoderPostion << std::endl;
     std::cout << "Load Cell Force: " << std::setprecision(2) << std::fixed << loadCellForce << " N"
               << std::endl;
+}
+
+void PrintElectromechanical::processHardpointLVDT(uint8_t address, float breakawayLVDT,
+                                                  float displacementLVDT) {
+    _printSepline();
+
+    std::cout << "Breakaway LVDT: " << std::setprecision(5) << std::fixed << breakawayLVDT << std::endl
+              << "Displacement LVDT: " << std::setprecision(5) << std::fixed << displacementLVDT << std::endl;
 }
 
 void PrintElectromechanical::processSAAForceStatus(uint8_t address, uint8_t status,
