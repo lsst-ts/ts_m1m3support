@@ -11,6 +11,7 @@ v2.14.0
 * Command to chaneg SlewController settings on-fly
 * Reorganized booster valve management
 * m1m3sscli command to read LVDTs
+* pre-commit hooks
 
 v2.13.0
 -------
