@@ -21,34 +21,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BOOSTERVALVECLOSECOMMAND_H_
-#define BOOSTERVALVECLOSECOMMAND_H_
+#ifndef LSST_HEARTBEAT_H
+#define LSST_HEARTBEAT_H
 
-#include <SAL_MTM1M3C.h>
+#include <chrono>
 
-#include <Command.h>
-#include <DataTypes.h>
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/Singleton.h>
+
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Sets slew flag for force actuators. Should be used for testing booster
- * valves - slew flag operates booster valves.
+ * Wrapper object for MTM1M3_logevent_heartbeatStatusC.
  */
-class BoosterValveCloseCommand : public Command {
+class Heartbeat : public MTM1M3_logevent_heartbeatC, public cRIO::Singleton<Heartbeat> {
 public:
-    BoosterValveCloseCommand(int32_t commandID);
+    /**
+     * Construct new InterlockStatus
+     */
+    Heartbeat(token);
 
-    void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+    /**
+     * Sets heartbeat, publish data if the last heartbeat was send more than 500ms in past.
+     */
+    void tryToggle();
+
+private:
+    double _lastToggleTimestamp;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif  // !BOOSTERVALVECLOSECOMMAND_H_
+#endif  // LSST_INTERLOCKSTATUS_H

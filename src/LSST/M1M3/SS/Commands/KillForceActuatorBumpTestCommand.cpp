@@ -35,9 +35,9 @@ KillForceActuatorBumpTestCommand::KillForceActuatorBumpTestCommand(
 
 void KillForceActuatorBumpTestCommand::execute() { Context::get().killForceActuatorBumpTest(this); }
 
-void KillForceActuatorBumpTestCommand::ackInProgress() {
+void KillForceActuatorBumpTestCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandkillForceActuatorBumpTest(getCommandID(), ACK_INPROGRESS,
-                                                                    "In-Progress");
+                                                                    description, timeout);
 }
 
 void KillForceActuatorBumpTestCommand::ackComplete() {

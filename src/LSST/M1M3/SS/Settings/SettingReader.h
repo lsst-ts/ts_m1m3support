@@ -34,6 +34,7 @@
 #include <HardpointMonitorApplicationSettings.h>
 #include <PIDSettings.h>
 #include <SafetyControllerSettings.h>
+#include <StartCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -75,6 +76,7 @@ public:
     /**
      * Loads all settings.
      */
+    // TODO will need settingsToApply to load correct configuration set
     void load();
 
     ForceActuatorApplicationSettings* getForceActuatorApplicationSettings() {

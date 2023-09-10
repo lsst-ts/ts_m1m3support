@@ -52,9 +52,11 @@ States::Type OfflineState::enterControl(EnterControlCommand* command) {
     SimulationMode::instance().setSimulationMode(0);
 #endif
     Model::instance().publishRecommendedSettings();
-    Model::instance().getDigitalInputOutput()->turnAirOff();
-    Model::instance().getDigitalInputOutput()->turnCellLightsOff();
-    Model::instance().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
+
+    auto& digitalInputOutput = DigitalInputOutput::instance();
+    digitalInputOutput.turnAirOff();
+    digitalInputOutput.turnCellLightsOff();
+    digitalInputOutput.clearCriticalFailureToSafetyController();
     return States::StandbyState;
 }
 

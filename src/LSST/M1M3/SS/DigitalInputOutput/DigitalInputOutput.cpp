@@ -42,9 +42,7 @@
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
 
-const float HEARTBEAT_PERIOD = 1.0;  //* Heartbeat period in seconds
-
-DigitalInputOutput::DigitalInputOutput() {
+DigitalInputOutput::DigitalInputOutput(token) {
     SPDLOG_DEBUG("DigitalInputOutput: DigitalInputOutput()");
     _safetyController = 0;
 
@@ -52,18 +50,16 @@ DigitalInputOutput::DigitalInputOutput() {
     _airSupplyWarning = M1M3SSPublisher::instance().getEventAirSupplyWarning();
     _cellLightStatus = M1M3SSPublisher::instance().getEventCellLightStatus();
     _cellLightWarning = M1M3SSPublisher::instance().getEventCellLightWarning();
-    _interlockStatus = M1M3SSPublisher::instance().getEventInterlockStatus();
+    _interlockStatus = &InterlockStatus::instance();
 
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
-    _lastToggleTimestamp = 0;
 
     _lightToggledTime = std::chrono::steady_clock::now();
 
     memset(_airSupplyWarning, 0, sizeof(MTM1M3_logevent_airSupplyWarningC));
     memset(_cellLightStatus, 0, sizeof(MTM1M3_logevent_cellLightStatusC));
     memset(_cellLightWarning, 0, sizeof(MTM1M3_logevent_cellLightWarningC));
-    memset(_interlockStatus, 0, sizeof(MTM1M3_logevent_interlockStatusC));
 }
 
 void DigitalInputOutput::setSafetyController(SafetyController* safetyController) {
@@ -103,6 +99,7 @@ void DigitalInputOutput::processData() {
         _interlockStatus->timestamp = timestamp;
         _interlockStatus->heartbeatOutputState =
                 (fpgaData->DigitalOutputStates & DigitalOutputs::HeartbeatOutputState) != 0;
+        _interlockStatus->log();
 
         InterlockWarning::instance().setHearbeatOutputMismatch(
                 timestamp,
@@ -164,29 +161,17 @@ void DigitalInputOutput::processData() {
         M1M3SSPublisher::instance().tryLogAirSupplyWarning();
         M1M3SSPublisher::instance().tryLogCellLightStatus();
         M1M3SSPublisher::instance().tryLogCellLightWarning();
-        M1M3SSPublisher::instance().tryLogInterlockStatus();
     }
 }
 
-void DigitalInputOutput::tryToggleHeartbeat() {
-    SPDLOG_TRACE("DigitalInputOutput: tryToggleHeartbeat()");
-    double timestamp = M1M3SSPublisher::instance().getTimestamp();
-    if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
-        SPDLOG_DEBUG("DigitalInputOutput: toggleHeartbeat()");
-        auto lag = timestamp - _lastToggleTimestamp;
-        if (_lastToggleTimestamp != 0 && lag > HEARTBEAT_PERIOD * 1.5) {
-            SPDLOG_WARN("Toggling heartbeat after {:0.03f} seconds!", lag);
-        }
-        _lastToggleTimestamp = timestamp;
-        _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
-        uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
-                              (uint16_t)_interlockStatus->heartbeatCommandedState};
-        IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+void DigitalInputOutput::toggleHeartbeat(double globalTimestamp) {
+    _interlockStatus->timestamp = globalTimestamp;
+    _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
+    uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
+                          (uint16_t)_interlockStatus->heartbeatCommandedState};
+    IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 
-        // sends software heartbeat
-        M1M3SSPublisher::instance().logHeartbeat();
-        M1M3SSPublisher::instance().logInterlockStatus();
-    }
+    _interlockStatus->log();
 }
 
 void DigitalInputOutput::setCriticalFailureToSafetyController() {

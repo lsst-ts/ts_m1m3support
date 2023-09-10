@@ -33,8 +33,8 @@ TurnAirOnCommand::TurnAirOnCommand(int32_t commandID) : Command(commandID) {}
 
 void TurnAirOnCommand::execute() { Context::get().turnAirOn(this); }
 
-void TurnAirOnCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandturnAirOn(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void TurnAirOnCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandturnAirOn(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void TurnAirOnCommand::ackComplete() {

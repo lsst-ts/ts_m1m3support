@@ -33,8 +33,8 @@ StandbyCommand::StandbyCommand(int32_t commandID) : Command(commandID) {}
 
 void StandbyCommand::execute() { Context::get().standby(this); }
 
-void StandbyCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandstandby(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void StandbyCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandstandby(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void StandbyCommand::ackComplete() {

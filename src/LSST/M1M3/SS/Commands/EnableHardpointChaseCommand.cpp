@@ -35,8 +35,9 @@ EnableHardpointChaseCommand::EnableHardpointChaseCommand(int32_t commandID,
 
 void EnableHardpointChaseCommand::execute() { Context::get().enableHardpointChase(this); }
 
-void EnableHardpointChaseCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandenableHardpointChase(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void EnableHardpointChaseCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandenableHardpointChase(getCommandID(), ACK_INPROGRESS, description,
+                                                               timeout);
 }
 
 void EnableHardpointChaseCommand::ackComplete() {

@@ -34,8 +34,8 @@ AbortProfileCommand::AbortProfileCommand(int32_t commandID, MTM1M3_command_abort
 
 void AbortProfileCommand::execute() { Context::get().abortProfile(this); }
 
-void AbortProfileCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandabortProfile(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void AbortProfileCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandabortProfile(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void AbortProfileCommand::ackComplete() {

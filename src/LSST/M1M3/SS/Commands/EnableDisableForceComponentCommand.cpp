@@ -52,9 +52,9 @@ bool EnableDisableForceComponentCommand::validate() {
 
 void EnableDisableForceComponentCommand::execute() { Context::get().enableDisableForceComponent(this); }
 
-void EnableDisableForceComponentCommand::ackInProgress() {
+void EnableDisableForceComponentCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandenableDisableForceComponent(getCommandID(), ACK_INPROGRESS,
-                                                                      "In-Progress");
+                                                                      description, timeout);
 }
 
 void EnableDisableForceComponentCommand::ackComplete() {

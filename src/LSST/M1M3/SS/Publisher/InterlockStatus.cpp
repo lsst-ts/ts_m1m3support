@@ -21,34 +21,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BOOSTERVALVECLOSECOMMAND_H_
-#define BOOSTERVALVECLOSECOMMAND_H_
+#include <InterlockStatus.h>
 
-#include <SAL_MTM1M3C.h>
+using namespace LSST::M1M3::SS;
 
-#include <Command.h>
-#include <DataTypes.h>
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
-
-/**
- * Sets slew flag for force actuators. Should be used for testing booster
- * valves - slew flag operates booster valves.
- */
-class BoosterValveCloseCommand : public Command {
-public:
-    BoosterValveCloseCommand(int32_t commandID);
-
-    void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
-};
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif  // !BOOSTERVALVECLOSECOMMAND_H_
+InterlockStatus::InterlockStatus(token) {
+    timestamp = NAN;
+    heartbeatCommandedState = false;
+    heartbeatOutputState = false;
+}
