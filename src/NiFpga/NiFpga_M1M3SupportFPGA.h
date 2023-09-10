@@ -6,7 +6,7 @@
 #define __NiFpga_M1M3SupportFPGA_h__
 
 #ifndef NiFpga_Version
-   #define NiFpga_Version 190
+#define NiFpga_Version 190
 #endif
 
 #include "NiFpga.h"
@@ -26,42 +26,34 @@
 static const char* const NiFpga_M1M3SupportFPGA_Signature = "16922763B1DC6A8D1676BFF8A5958584";
 
 #if NiFpga_Cpp
-extern "C"
-{
+extern "C" {
 #endif
 
-typedef enum
-{
-   NiFpga_M1M3SupportFPGA_ControlU32_TabControl = 0x18000,
+typedef enum {
+    NiFpga_M1M3SupportFPGA_ControlU32_TabControl = 0x18000,
 } NiFpga_M1M3SupportFPGA_ControlU32;
 
-typedef enum
-{
-   NiFpga_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO = 0,
+typedef enum {
+    NiFpga_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO = 0,
 } NiFpga_M1M3SupportFPGA_TargetToHostFifoU8;
 
-typedef enum
-{
-   NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO = 1,
+typedef enum {
+    NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO = 1,
 } NiFpga_M1M3SupportFPGA_TargetToHostFifoU16;
 
-typedef enum
-{
-   NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO = 4,
+typedef enum {
+    NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO = 4,
 } NiFpga_M1M3SupportFPGA_TargetToHostFifoU64;
 
-typedef enum
-{
-   NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO = 6,
-   NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_HealthAndStatusControlFIFO = 5,
-   NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO = 3,
+typedef enum {
+    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO = 6,
+    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_HealthAndStatusControlFIFO = 5,
+    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO = 3,
 } NiFpga_M1M3SupportFPGA_HostToTargetFifoU16;
 
-typedef enum
-{
-   NiFpga_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO = 2,
+typedef enum {
+    NiFpga_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO = 2,
 } NiFpga_M1M3SupportFPGA_HostToTargetFifoU64;
-
 
 #if NiFpga_Cpp
 }
