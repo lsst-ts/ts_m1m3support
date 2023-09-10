@@ -77,12 +77,12 @@ States::Type ActiveEngineeringState::clearSlewFlag(ClearSlewFlagCommand* command
 States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
     SPDLOG_INFO("ActiveEngineeringState: exitEngineering()");
     Model::instance().getForceController()->resetPIDs();
-    Model::instance().getDigitalInputOutput()->turnAirOn();
+    DigitalInputOutput::instance().turnAirOn();
     Model::instance().getPositionController()->stopMotion();
     Model::instance().getForceController()->applyBalanceForces();
     Model::instance().getForceController()->zeroOffsetForces();
     Model::instance().getForceController()->processAppliedForces();
-    Model::instance().getDigitalInputOutput()->turnCellLightsOff();
+    DigitalInputOutput::instance().turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     Model::instance().getPowerController()->setAllPowerNetworks(true);
     BoosterValveStatus::instance().setUserTriggered(false);

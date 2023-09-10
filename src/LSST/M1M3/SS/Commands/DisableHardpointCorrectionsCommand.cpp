@@ -35,9 +35,9 @@ DisableHardpointCorrectionsCommand::DisableHardpointCorrectionsCommand(
 
 void DisableHardpointCorrectionsCommand::execute() { Context::get().disableHardpointCorrections(this); }
 
-void DisableHardpointCorrectionsCommand::ackInProgress() {
+void DisableHardpointCorrectionsCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommanddisableHardpointCorrections(getCommandID(), ACK_INPROGRESS,
-                                                                      "In-Progress");
+                                                                      description, timeout);
 }
 
 void DisableHardpointCorrectionsCommand::ackComplete() {

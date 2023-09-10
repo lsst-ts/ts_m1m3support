@@ -26,9 +26,11 @@
 
 #include <spdlog/spdlog.h>
 
-#include <ILC.h>
+#include <DigitalInputOutput.h>
 #include <FaultState.h>
 #include <ForceActuatorData.h>
+#include <Heartbeat.h>
+#include <ILC.h>
 #include <Model.h>
 #include <ModelPublisher.h>
 #include <RaisingLoweringInfo.h>
@@ -44,11 +46,11 @@ States::Type FaultState::update(UpdateCommand* command) {
     ILC* ilc = Model::instance().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
-    Model::instance().getDigitalInputOutput()->tryToggleHeartbeat();
+    Heartbeat::instance().tryToggle();
     std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     Model::instance().getAccelerometer()->processData();
-    Model::instance().getDigitalInputOutput()->processData();
+    DigitalInputOutput::instance().processData();
     Model::instance().getDisplacement()->processData();
     Model::instance().getGyro()->processData();
     Model::instance().getInclinometer()->processData();
@@ -78,7 +80,7 @@ States::Type FaultState::standby(StandbyCommand* command) {
     Model::instance().getPowerController()->setAllPowerNetworks(false);
     RaisingLoweringInfo::instance().zeroSupportPercentage();
     Model::instance().getSafetyController()->clearErrorCode();
-    Model::instance().getDigitalInputOutput()->clearCriticalFailureToSafetyController();
+    DigitalInputOutput::instance().clearCriticalFailureToSafetyController();
 
     Model::instance().getSlewController()->reset();
     Model::instance().getForceController()->reset();

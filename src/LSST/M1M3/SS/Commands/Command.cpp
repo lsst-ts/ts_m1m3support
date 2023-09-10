@@ -23,18 +23,16 @@
 
 #include <Command.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
+
+const double DEFAULT_CMD_TIMEOUT = 0.020;
 
 Command::~Command() {}
 
+double Command::getDefaultTimeout() { return DEFAULT_CMD_TIMEOUT; }
+
 bool Command::validate() { return true; }
 void Command::execute() {}
-void Command::ackInProgress() {}
+void Command::ackInProgress(const char* description, double timeout) {}
 void Command::ackComplete() {}
 void Command::ackFailed(std::string reason) {}
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

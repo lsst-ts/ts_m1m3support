@@ -40,7 +40,7 @@ public:
 
     bool validate();
     void execute();
-    void ackInProgress();
+    void ackInProgress(const char* description, double timeout);
     void ackComplete();
     void ackFailed(std::string reason);
 

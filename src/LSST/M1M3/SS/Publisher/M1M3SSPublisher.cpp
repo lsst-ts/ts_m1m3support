@@ -936,8 +936,6 @@ void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
     }
 }
 
-void M1M3SSPublisher::logHeartbeat() { _m1m3SAL->logEvent_heartbeat(&_eventHeartbeat, 0); }
-
 void M1M3SSPublisher::logILCWarning() {
     _eventILCWarning.anyWarning = _eventILCWarning.responseTimeout || _eventILCWarning.invalidCRC ||
                                   _eventILCWarning.illegalFunction || _eventILCWarning.illegalDataValue ||
@@ -991,19 +989,6 @@ void M1M3SSPublisher::tryLogInclinometerSensorWarning() {
         _eventInclinometerSensorWarning.unknownProblem !=
                 _previousEventInclinometerSensorWarning.unknownProblem) {
         logInclinometerSensorWarning();
-    }
-}
-
-void M1M3SSPublisher::logInterlockStatus() {
-    _m1m3SAL->logEvent_interlockStatus(&_eventInterlockStatus, 0);
-    _previousEventInterlockStatus = _eventInterlockStatus;
-}
-
-void M1M3SSPublisher::tryLogInterlockStatus() {
-    if (_eventInterlockStatus.heartbeatCommandedState !=
-                _previousEventInterlockStatus.heartbeatCommandedState ||
-        _eventInterlockStatus.heartbeatOutputState != _previousEventInterlockStatus.heartbeatOutputState) {
-        logInterlockStatus();
     }
 }
 
@@ -1329,9 +1314,10 @@ void M1M3SSPublisher::tryLogSummaryState() {
 }
 
 // macro generating ackCommand method
-#define ACK_COMMAND(command)                                                                                 \
-    void M1M3SSPublisher::ackCommand##command(int32_t commandID, int32_t ackCode, std::string description) { \
-        _m1m3SAL->ackCommand_##command(commandID, ackCode, 0, (char*)description.c_str());                   \
+#define ACK_COMMAND(command)                                                                               \
+    void M1M3SSPublisher::ackCommand##command(int32_t commandID, int32_t ackCode, std::string description, \
+                                              double timeout) {                                            \
+        _m1m3SAL->ackCommand_##command(commandID, ackCode, 0, (char*)description.c_str(), timeout);        \
     }
 
 ACK_COMMAND(setLogLevel)

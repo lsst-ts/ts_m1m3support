@@ -91,23 +91,23 @@ Model::~Model() {
     delete _gyro;
 }
 
-void Model::loadSettings(std::string settingsToApply) {
+void Model::loadSettings(const char* settingsToApply) {
     SPDLOG_INFO("Model: loadSettings({})", settingsToApply);
 
-    SettingReader* _settingReader = &SettingReader::instance();
+    auto& _settingReader = SettingReader::instance();
 
-    _settingReader->configure(settingsToApply);
+    _settingReader.configure(settingsToApply);
 
     M1M3SSPublisher::instance().reset();
 
-    _settingReader->load();
+    _settingReader.load();
 
     ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
-            _settingReader->getForceActuatorApplicationSettings();
+            _settingReader.getForceActuatorApplicationSettings();
     HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
-            _settingReader->getHardpointActuatorApplicationSettings();
+            _settingReader.getHardpointActuatorApplicationSettings();
     HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
-            _settingReader->getHardpointMonitorApplicationSettings();
+            _settingReader.getHardpointMonitorApplicationSettings();
 
     ForceActuatorInfo::instance().populate(forceActuatorApplicationSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings);
@@ -140,7 +140,7 @@ void Model::loadSettings(std::string settingsToApply) {
     _forceController = new ForceController(forceActuatorApplicationSettings);
 
     SPDLOG_INFO("Model: Updating digital input output");
-    _digitalInputOutput.setSafetyController(_safetyController);
+    DigitalInputOutput::instance().setSafetyController(_safetyController);
 
     delete _accelerometer;
     SPDLOG_INFO("Model: Creating accelerometer");
@@ -178,7 +178,9 @@ void Model::loadSettings(std::string settingsToApply) {
     SPDLOG_INFO("Model: Settings applied");
 }
 
-void Model::queryFPGAData() {}
+void Model::initialize(StartCommand* command) {
+    ExpansionFPGAApplicationSettings::instance().initialize(command);
+}
 
 void Model::publishStateChange(States::Type newState) {
     SPDLOG_DEBUG("Model: publishStateChange({:d})", newState);

@@ -46,9 +46,11 @@ public:
 
     std::string getConfigurationOverride() { return _data.configurationOverride; }
 
+    virtual double getDefaultTimeout() override;
+
     bool validate() override;
     void execute() override;
-    void ackInProgress() override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

@@ -28,9 +28,7 @@
 
 using namespace std::chrono_literals;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ControllerThread::ControllerThread() : _keepRunning(true) {
     SPDLOG_DEBUG("ControllerThread: ControllerThread()");
@@ -99,7 +97,3 @@ void ControllerThread::_execute(Command* command) {
 
     delete command;
 }
-
-} /* namespace SS */
-}  // namespace M1M3
-}  // namespace LSST

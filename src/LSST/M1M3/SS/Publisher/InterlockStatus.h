@@ -21,34 +21,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BOOSTERVALVECLOSECOMMAND_H_
-#define BOOSTERVALVECLOSECOMMAND_H_
+#ifndef LSST_INTERLOCKSTATUS_H
+#define LSST_INTERLOCKSTATUS_H
 
-#include <SAL_MTM1M3C.h>
+#include <SAL_MTM1M3.h>
 
-#include <Command.h>
-#include <DataTypes.h>
+#include <cRIO/Singleton.h>
+#include <M1M3SSPublisher.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 /**
- * Sets slew flag for force actuators. Should be used for testing booster
- * valves - slew flag operates booster valves.
+ * Wrapper object for MTM1M3_logevent_interlockStatusC.
  */
-class BoosterValveCloseCommand : public Command {
+class InterlockStatus : public MTM1M3_logevent_interlockStatusC, public cRIO::Singleton<InterlockStatus> {
 public:
-    BoosterValveCloseCommand(int32_t commandID);
+    /**
+     * Construct new InterlockStatus
+     */
+    InterlockStatus(token);
 
-    void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+    void log() { M1M3SSPublisher::instance().logInterlockStatus(this); }
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif  // !BOOSTERVALVECLOSECOMMAND_H_
+#endif  // LSST_INTERLOCKSTATUS_H

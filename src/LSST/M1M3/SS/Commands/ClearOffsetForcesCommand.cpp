@@ -33,8 +33,9 @@ ClearOffsetForcesCommand::ClearOffsetForcesCommand(int32_t commandID) : Command(
 
 void ClearOffsetForcesCommand::execute() { Context::get().clearOffsetForces(this); }
 
-void ClearOffsetForcesCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandclearOffsetForces(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void ClearOffsetForcesCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandclearOffsetForces(getCommandID(), ACK_INPROGRESS, description,
+                                                            timeout);
 }
 
 void ClearOffsetForcesCommand::ackComplete() {

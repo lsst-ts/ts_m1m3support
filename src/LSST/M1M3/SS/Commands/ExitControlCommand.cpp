@@ -32,8 +32,8 @@ ExitControlCommand::ExitControlCommand(int32_t commandID) : Command(commandID) {
 
 void ExitControlCommand::execute() { Context::get().exitControl(this); }
 
-void ExitControlCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandexitControl(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void ExitControlCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandexitControl(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void ExitControlCommand::ackComplete() {

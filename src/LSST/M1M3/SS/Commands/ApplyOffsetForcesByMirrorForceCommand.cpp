@@ -42,9 +42,9 @@ ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
 
 void ApplyOffsetForcesByMirrorForceCommand::execute() { Context::get().applyOffsetForcesByMirrorForce(this); }
 
-void ApplyOffsetForcesByMirrorForceCommand::ackInProgress() {
+void ApplyOffsetForcesByMirrorForceCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_INPROGRESS,
-                                                                         "In-Progress");
+                                                                         description, timeout);
 }
 
 void ApplyOffsetForcesByMirrorForceCommand::ackComplete() {

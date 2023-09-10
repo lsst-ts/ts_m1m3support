@@ -33,8 +33,9 @@ EnterEngineeringCommand::EnterEngineeringCommand(int32_t commandID) : Command(co
 
 void EnterEngineeringCommand::execute() { Context::get().enterEngineering(this); }
 
-void EnterEngineeringCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandenterEngineering(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void EnterEngineeringCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandenterEngineering(getCommandID(), ACK_INPROGRESS, description,
+                                                           timeout);
 }
 
 void EnterEngineeringCommand::ackComplete() {

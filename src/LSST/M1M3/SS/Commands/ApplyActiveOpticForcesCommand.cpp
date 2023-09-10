@@ -39,9 +39,9 @@ ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
 
 void ApplyActiveOpticForcesCommand::execute() { Context::get().applyActiveOpticForces(this); }
 
-void ApplyActiveOpticForcesCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandapplyActiveOpticForces(getCommandID(), ACK_INPROGRESS,
-                                                                 "In-Progress");
+void ApplyActiveOpticForcesCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandapplyActiveOpticForces(getCommandID(), ACK_INPROGRESS, description,
+                                                                 timeout);
 }
 
 void ApplyActiveOpticForcesCommand::ackComplete() {

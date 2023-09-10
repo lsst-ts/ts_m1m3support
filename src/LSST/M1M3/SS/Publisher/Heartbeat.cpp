@@ -21,34 +21,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BOOSTERVALVECLOSECOMMAND_H_
-#define BOOSTERVALVECLOSECOMMAND_H_
+#include <spdlog/spdlog.h>
 
-#include <SAL_MTM1M3C.h>
+#include <DigitalInputOutput.h>
+#include <Heartbeat.h>
 
-#include <Command.h>
-#include <DataTypes.h>
+using namespace LSST::M1M3::SS;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+const float HEARTBEAT_PERIOD = 1.0;  //* Heartbeat period in seconds
 
-/**
- * Sets slew flag for force actuators. Should be used for testing booster
- * valves - slew flag operates booster valves.
- */
-class BoosterValveCloseCommand : public Command {
-public:
-    BoosterValveCloseCommand(int32_t commandID);
+Heartbeat::Heartbeat(token) { _lastToggleTimestamp = 0; }
 
-    void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
-};
+void Heartbeat::tryToggle() {
+    SPDLOG_TRACE("Trying to toggle heartbeat");
+    double timestamp = M1M3SSPublisher::instance().getTimestamp();
+    if (timestamp >= (_lastToggleTimestamp + HEARTBEAT_PERIOD)) {
+        SPDLOG_DEBUG("Toggling heartbeat");
+        auto lag = timestamp - _lastToggleTimestamp;
+        if (_lastToggleTimestamp != 0 && lag > HEARTBEAT_PERIOD * 1.1) {
+            SPDLOG_WARN("Toggling heartbeat after {:0.03f} seconds!", lag);
+        }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+        heartbeat = !heartbeat;
 
-#endif  // !BOOSTERVALVECLOSECOMMAND_H_
+        DigitalInputOutput::instance().toggleHeartbeat(timestamp);
+
+        // sends software heartbeat
+        M1M3SSPublisher::instance().logHeartbeat(this);
+
+        _lastToggleTimestamp = timestamp;
+    }
+}

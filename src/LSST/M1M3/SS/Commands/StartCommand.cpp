@@ -28,13 +28,13 @@
 
 #include <SAL_defines.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) : Command(commandID) {
     _data.configurationOverride = data->configurationOverride;
 }
+
+double StartCommand::getDefaultTimeout() { return 13.0; }
 
 bool StartCommand::validate() {
     if (_data.configurationOverride.empty()) {
@@ -50,8 +50,8 @@ bool StartCommand::validate() {
 
 void StartCommand::execute() { Context::get().start(this); }
 
-void StartCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void StartCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void StartCommand::ackComplete() {
@@ -61,7 +61,3 @@ void StartCommand::ackComplete() {
 void StartCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

@@ -24,7 +24,6 @@
 #include <LoweringFaultState.h>
 #include <Model.h>
 #include <PowerController.h>
-#include <DigitalInputOutput.h>
 #include <ForceController.h>
 #include <spdlog/spdlog.h>
 
@@ -44,8 +43,6 @@ States::Type LoweringFaultState::update(UpdateCommand* command) {
 void LoweringFaultState::ensureFaulted() {
     SPDLOG_TRACE("LoweringFaultState: ensureFaulted()");
     Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
-    // TODO: Uncomment when its not so hot out
-    // Model::instance().getDigitalInputOutput()->turnAirOff();
     Model::instance().getForceController()->reset();
 }
 

@@ -33,8 +33,8 @@ SetSlewFlagCommand::SetSlewFlagCommand(int32_t commandID) : Command(commandID) {
 
 void SetSlewFlagCommand::execute() { Context::get().setSlewFlag(this); }
 
-void SetSlewFlagCommand::ackInProgress() {
-    M1M3SSPublisher::instance().ackCommandsetSlewFlag(getCommandID(), ACK_INPROGRESS, "In-Progress");
+void SetSlewFlagCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandsetSlewFlag(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 
 void SetSlewFlagCommand::ackComplete() {

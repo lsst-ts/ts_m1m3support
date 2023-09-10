@@ -26,6 +26,7 @@
 
 #include <SAL_MTM1M3C.h>
 
+#include <DigitalInputOutput.h>
 #include <ForceActuatorForceWarning.h>
 #include <LoweringFaultState.h>
 #include <M1M3SSPublisher.h>
@@ -670,7 +671,7 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
         // shall first make sure mirror is faulted, before performing anything else (logging,..)
         LoweringFaultState::ensureFaulted();
         M1M3SSPublisher::instance().logErrorCode();
-        Model::instance().getDigitalInputOutput()->setCriticalFailureToSafetyController();
+        DigitalInputOutput::instance().setCriticalFailureToSafetyController();
         SPDLOG_ERROR("Faulted ({}): {}", _errorCodeData->errorCode, _errorCodeData->errorReport);
         _clearError();
         return States::LoweringFaultState;

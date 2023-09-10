@@ -46,13 +46,13 @@ using namespace LSST::M1M3::SS;
 
 States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command) {
     SPDLOG_INFO("{}: turnAirOn()", this->name);
-    Model::instance().getDigitalInputOutput()->turnAirOn();
+    DigitalInputOutput::instance().turnAirOn();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnAirOff(TurnAirOffCommand* command) {
     SPDLOG_INFO("{}: turnAirOff()", this->name);
-    Model::instance().getDigitalInputOutput()->turnAirOff();
+    DigitalInputOutput::instance().turnAirOff();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
@@ -127,13 +127,13 @@ States::Type EngineeringState::clearOffsetForces(ClearOffsetForcesCommand* comma
 
 States::Type EngineeringState::turnLightsOn(TurnLightsOnCommand* command) {
     SPDLOG_INFO("{}: turnLightsOn()", this->name);
-    Model::instance().getDigitalInputOutput()->turnCellLightsOn();
+    DigitalInputOutput::instance().turnCellLightsOn();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type EngineeringState::turnLightsOff(TurnLightsOffCommand* command) {
     SPDLOG_INFO("{}: turnLightsOff()", this->name);
-    Model::instance().getDigitalInputOutput()->turnCellLightsOff();
+    DigitalInputOutput::instance().turnCellLightsOff();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

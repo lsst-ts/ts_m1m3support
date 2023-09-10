@@ -34,7 +34,6 @@
 #include <MirrorRaiseController.h>
 #include <MirrorLowerController.h>
 #include <BumpTestController.h>
-#include <DigitalInputOutput.h>
 #include <Displacement.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceController.h>
@@ -52,6 +51,7 @@
 #include <ProfileController.h>
 #include <SafetyController.h>
 #include <SlewController.h>
+#include <StartCommand.h>
 #include <StateTypes.h>
 
 namespace LSST {
@@ -69,7 +69,6 @@ public:
     Model(token);
     virtual ~Model();
 
-    inline DigitalInputOutput* getDigitalInputOutput() { return &_digitalInputOutput; }
     inline Displacement* getDisplacement() { return _displacement; }
     inline Inclinometer* getInclinometer() { return _inclinometer; }
     inline ILC* getILC() { return _ilc; }
@@ -89,9 +88,8 @@ public:
     void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
     double getCachedTimestamp() { return _cachedTimestamp; }
 
-    void loadSettings(std::string settingsToApply);
-
-    void queryFPGAData();
+    void loadSettings(const char* settingsToApply);
+    void initialize(StartCommand* command);
 
     void publishStateChange(States::Type newState);
     void publishRecommendedSettings();
@@ -109,7 +107,6 @@ private:
     void _populateHardpointMonitorInfo(
             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
-    DigitalInputOutput _digitalInputOutput;
     Displacement* _displacement;
     Inclinometer* _inclinometer;
     ILC* _ilc;
