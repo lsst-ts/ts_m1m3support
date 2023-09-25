@@ -33,9 +33,7 @@
 #include <RaisingLoweringInfo.h>
 #include <SafetyController.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 MirrorRaiseController::MirrorRaiseController(PositionController* positionController,
                                              ForceController* forceController,
@@ -50,6 +48,7 @@ MirrorRaiseController::MirrorRaiseController(PositionController* positionControl
     _bypassMoveToReference = false;
     _lastForceFilled = false;
     _lastPositionCompleted = false;
+    _raisingPaused = false;
 }
 
 void MirrorRaiseController::start(bool bypassMoveToReference) {
@@ -58,6 +57,8 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _lastForceFilled = false;
     _lastPositionCompleted = false;
     _raisePauseReported = false;
+
+    _raisingPaused = false;
 
     _safetyController->raiseOperationTimeout(false);
     _positionController->startRaise();
@@ -83,6 +84,9 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
 }
 
 void MirrorRaiseController::runLoop() {
+    if (_raisingPaused == true) {
+        return;
+    }
     SPDLOG_TRACE("MirrorRaiseController: runLoop() {}",
                  RaisingLoweringInfo::instance().weightSupportedPercent);
     auto raiseInfo = &RaisingLoweringInfo::instance();
@@ -172,6 +176,6 @@ void MirrorRaiseController::timeout() {
     _safetyController->raiseOperationTimeout(true);
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+void MirrorRaiseController::pauseM1M3Raising() { _raisingPaused = true; }
+
+void MirrorRaiseController::resumeM1M3Raising() { _raisingPaused = false; }

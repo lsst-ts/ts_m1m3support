@@ -21,12 +21,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <StaticStateFactory.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <StaticStateFactory.h>
+
+using namespace LSST::M1M3::SS;
 
 StaticStateFactory::StaticStateFactory()
         : _offlineState(),
@@ -42,7 +41,11 @@ StaticStateFactory::StaticStateFactory()
           _loweringEngineeringState(),
           _faultState(),
           _loweringFaultState(),
-          _profileHardpointCorrectionState() {
+          _profileHardpointCorrectionState(),
+          _pausedRaisingState(),
+          _pausedRaisingEngineeringState(),
+          _pausedLoweringState(),
+          _pausedLoweringEngineeringState() {
     SPDLOG_DEBUG("StaticStateFactory: StaticStateFactor()");
 }
 
@@ -81,11 +84,15 @@ State* StaticStateFactory::create(States::Type state) {
             return &_loweringFaultState;
         case States::ProfileHardpointCorrectionState:
             return &_profileHardpointCorrectionState;
+        case States::PausedRaisingState:
+            return &_pausedRaisingState;
+        case States::PausedRaisingEngineeringState:
+            return &_pausedRaisingEngineeringState;
+        case States::PausedLoweringState:
+            return &_pausedLoweringState;
+        case States::PausedLoweringEngineeringState:
+            return &_pausedLoweringEngineeringState;
         default:
             return 0;
     }
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

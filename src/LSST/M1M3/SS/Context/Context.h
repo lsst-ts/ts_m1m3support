@@ -54,9 +54,11 @@
 #include <LowerM1M3Command.h>
 #include <Model.h>
 #include <MoveHardpointActuatorsCommand.h>
+#include <PauseM1M3RaisingLoweringCommand.h>
 #include <PositionM1M3Command.h>
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
+#include <ResumeM1M3RaisingLoweringCommand.h>
 #include <RunMirrorForceProfileCommand.h>
 #include <SetSlewControllerSettingsCommand.h>
 #include <SetSlewFlagCommand.h>
@@ -122,6 +124,8 @@ public:
     void clearOffsetForces(ClearOffsetForcesCommand* command);
     void raiseM1M3(RaiseM1M3Command* command);
     void lowerM1M3(LowerM1M3Command* command);
+    void pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command);
+    void resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command);
     void applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
     void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     void enterEngineering(EnterEngineeringCommand* command);

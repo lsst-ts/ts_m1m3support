@@ -76,7 +76,9 @@ public:
     void writeMPUFIFO(cRIO::MPU& mpu) override {}
     void readMPUFIFO(cRIO::MPU& mpu) override {}
 
-    void waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered = NULL) override {}
+    void waitOnIrqs(uint32_t irqs, uint32_t timeout, bool& timedout, uint32_t* triggered = NULL) override {
+        timedout = false;
+    }
     void ackIrqs(uint32_t irqs) override {}
     uint32_t getIrq(uint8_t bus) override { return 0; }
 

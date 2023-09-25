@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ENABLEDACTIVESTATE_H_
-#define ENABLEDACTIVESTATE_H_
+#ifndef PAUSEDRAISINGSTATE_H_
+#define PAUSEDRAISINGSTATE_H_
 
 #include <EnabledState.h>
 
@@ -31,23 +31,23 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Enabled active state. Abstract class implementing commands valid both in
- * ActiveState and ActiveEngineeringState.
+ * Raises mirror in engineering state. Transition to ActiveEngineering on raise
+ * completed, or Lowering Engineering state on abort.
+ *
+ * Just passes calls. Raising is controlled through MirrorRaiseController.
+ *
+ * @see MirrorRaiseController
  */
-class EnabledActiveState : public virtual EnabledState {
+class PausedRaisingState : public EnabledState {
 public:
-    States::Type lowerM1M3(LowerM1M3Command* command) override;
-    States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
-    States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
-    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
-    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
+    PausedRaisingState();
 
-protected:
-    virtual States::Type getLoweringState() = 0;
+    States::Type update(UpdateCommand* command) override;
+    States::Type resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command) override;
 };
 
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
+} /* namespace SS */
+} /* namespace M1M3 */
+} /* namespace LSST */
 
-#endif /* ENABLEDACTIVESTATE_H_ */
+#endif /* PAUSEDRAISINGSTATE_H_ */

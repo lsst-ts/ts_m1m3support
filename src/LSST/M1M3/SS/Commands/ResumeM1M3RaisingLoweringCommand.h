@@ -21,33 +21,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ENABLEDACTIVESTATE_H_
-#define ENABLEDACTIVESTATE_H_
+#ifndef RESUMEM1M3RAISINGLOWERINGCOMMAND_H_
+#define RESUMEM1M3RAISINGLOWERINGCOMMAND_H_
 
-#include <EnabledState.h>
+#include <Command.h>
+#include <DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/**
- * Enabled active state. Abstract class implementing commands valid both in
- * ActiveState and ActiveEngineeringState.
- */
-class EnabledActiveState : public virtual EnabledState {
+class ResumeM1M3RaisingLoweringCommand : public Command {
 public:
-    States::Type lowerM1M3(LowerM1M3Command* command) override;
-    States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
-    States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
-    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
-    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
+    ResumeM1M3RaisingLoweringCommand(int32_t commandID);
 
-protected:
-    virtual States::Type getLoweringState() = 0;
+    void execute() override;
+    void ackInProgress(const char* description, double timeout) override;
+    void ackComplete() override;
+    void ackFailed(std::string reason) override;
 };
 
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
+} /* namespace SS */
+} /* namespace M1M3 */
+} /* namespace LSST */
 
-#endif /* ENABLEDACTIVESTATE_H_ */
+#endif /* RESUMEM1M3RAISINGLOWERINGCOMMAND_H_ */
