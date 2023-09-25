@@ -28,9 +28,7 @@
 #include <State.h>
 #include <Timestamp.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 State::State(std::string name) { name = name; }
 
@@ -73,6 +71,12 @@ States::Type State::raiseM1M3(RaiseM1M3Command* command) {
 }
 States::Type State::lowerM1M3(LowerM1M3Command* command) {
     return rejectCommandInvalidState(command, "LowerM1M3");
+}
+States::Type State::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
+    return rejectCommandInvalidState(command, "PauseM1M3RaisingLowering");
+}
+States::Type State::resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command) {
+    return rejectCommandInvalidState(command, "ResumeM1M3RaisingLowering");
 }
 States::Type State::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
     return rejectCommandInvalidState(command, "ApplyActiveOpticForces");
@@ -181,7 +185,3 @@ States::Type State::rejectCommandInvalidState(Command* command, std::string cmd_
     command->ackFailed(reason);
     return States::NoStateTransition;
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

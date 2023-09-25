@@ -27,9 +27,7 @@
 #include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 RaisingState::RaisingState() : EnabledState("RaisingState") {}
 
@@ -48,6 +46,8 @@ States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     return Model::instance().getSafetyController()->checkSafety(States::LoweringState);
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+States::Type RaisingState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
+    SPDLOG_INFO("Pausing M1M3 raising");
+    Model::instance().getMirrorRaiseController()->pauseM1M3Raising();
+    return Model::instance().getSafetyController()->checkSafety(States::PausedRaisingState);
+}

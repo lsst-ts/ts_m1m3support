@@ -44,6 +44,8 @@ MirrorLowerController::MirrorLowerController(PositionController* positionControl
     _powerController = powerController;
     _cachedTimestamp = 0;
     _movedToLowerPosition = false;
+
+    _loweringPaused = false;
 }
 
 void MirrorLowerController::start() {
@@ -52,6 +54,8 @@ void MirrorLowerController::start() {
     _positionController->startLower();
 
     _movedToLowerPosition = false;
+    _loweringPaused = false;
+
     if (_positionController->moveToLowerPosition() == false) {
         throw std::runtime_error("Cannot move to lower position before starting lowering the mirror");
     }
@@ -71,6 +75,9 @@ void MirrorLowerController::start() {
 }
 
 void MirrorLowerController::runLoop() {
+    if (_loweringPaused == true) {
+        return;
+    }
     SPDLOG_TRACE("MirrorLowerController: runLoop() {}",
                  RaisingLoweringInfo::instance().weightSupportedPercent);
     if (_movedToLowerPosition == false) {
@@ -146,3 +153,7 @@ void MirrorLowerController::abortRaiseM1M3() {
 
     setStartTimestamp();
 }
+
+void MirrorLowerController::pauseM1M3Lowering() { _loweringPaused = true; }
+
+void MirrorLowerController::resumeM1M3Lowering() { _loweringPaused = false; }

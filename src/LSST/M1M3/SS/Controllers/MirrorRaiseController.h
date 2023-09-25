@@ -71,7 +71,8 @@ public:
     bool checkTimeout();
     void timeout();
 
-    void abortRaiseM1M3();
+    void pauseM1M3Raising();
+    void resumeM1M3Raising();
 
 private:
     PositionController* _positionController;
@@ -85,6 +86,8 @@ private:
     bool _lastPositionCompleted;
     bool _airPressureWaitReported;
     bool _raisePauseReported;
+
+    bool _raisingPaused;
 };
 
 } /* namespace SS */

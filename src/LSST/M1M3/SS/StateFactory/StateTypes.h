@@ -59,6 +59,16 @@ struct States {
         ProfileHardpointCorrectionState =
                 (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
                 ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_ProfileHardpointCorrectionState),
+        PausedRaisingState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
+                             ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_PausedRaisingState),
+        PausedRaisingEngineeringState =
+                (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
+                ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_PausedRaisingEngineeringState),
+        PausedLoweringState = (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
+                              ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_PausedLoweringState),
+        PausedLoweringEngineeringState =
+                (((uint64_t)MTM1M3::MTM1M3_shared_SummaryStates_EnabledState) << 32) |
+                ((uint64_t)MTM1M3::MTM1M3_shared_DetailedStates_PausedLoweringEngineeringState),
         NoStateTransition = 0xFFFFFFFFFFFFFFFF
     };
 };

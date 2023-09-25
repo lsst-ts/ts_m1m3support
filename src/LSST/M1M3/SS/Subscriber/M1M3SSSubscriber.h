@@ -80,6 +80,8 @@ public:
     Command* tryAcceptCommandClearOffsetForces();
     Command* tryAcceptCommandRaiseM1M3();
     Command* tryAcceptCommandLowerM1M3();
+    Command* tryAcceptCommandPauseM1M3RaisingLowering();
+    Command* tryAcceptCommandResumeM1M3RaisingLowering();
     Command* tryAcceptCommandApplyActiveOpticForces();
     Command* tryAcceptCommandClearActiveOpticForces();
     Command* tryAcceptCommandEnterEngineering();

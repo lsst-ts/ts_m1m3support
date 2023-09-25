@@ -21,33 +21,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ENABLEDACTIVESTATE_H_
-#define ENABLEDACTIVESTATE_H_
+#include <spdlog/spdlog.h>
 
-#include <EnabledState.h>
+#include <Model.h>
+#include <ModelPublisher.h>
+#include <PausedRaisingState.h>
+#include <SafetyController.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-/**
- * Enabled active state. Abstract class implementing commands valid both in
- * ActiveState and ActiveEngineeringState.
- */
-class EnabledActiveState : public virtual EnabledState {
-public:
-    States::Type lowerM1M3(LowerM1M3Command* command) override;
-    States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
-    States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
-    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
-    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
+PausedRaisingState::PausedRaisingState() : EnabledState("PausedRaisingState") {}
 
-protected:
-    virtual States::Type getLoweringState() = 0;
-};
+States::Type PausedRaisingState::update(UpdateCommand* command) {
+    ModelPublisher publishModel{};
+    SPDLOG_TRACE("PausedRaisingState: update()");
+    Model::instance().getMirrorRaiseController()->runLoop();
+    runLoop();
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
+}
 
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
-
-#endif /* ENABLEDACTIVESTATE_H_ */
+States::Type PausedRaisingState::resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command) {
+    SPDLOG_INFO("Resuming M1M3 raising");
+    Model::instance().getMirrorRaiseController()->resumeM1M3Raising();
+    return Model::instance().getSafetyController()->checkSafety(States::RaisingState);
+}

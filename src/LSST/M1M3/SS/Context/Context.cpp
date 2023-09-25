@@ -21,11 +21,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <Context.h>
-#include <StaticStateFactory.h>
 #include <Model.h>
 #include <State.h>
-#include <spdlog/spdlog.h>
+#include <StaticStateFactory.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -129,6 +130,18 @@ void Context::lowerM1M3(LowerM1M3Command* command) {
     SPDLOG_DEBUG("Context: lowerM1M3()");
     State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->lowerM1M3(command));
+}
+
+void Context::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
+    SPDLOG_DEBUG("Context: pauseM1M3RaisingLowering()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->pauseM1M3RaisingLowering(command));
+}
+
+void Context::resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command) {
+    SPDLOG_DEBUG("Context: resumeRaisingLowering()");
+    State* state = StaticStateFactory::get().create(_currentState);
+    _updateCurrentStateIfRequired(state->resumeM1M3RaisingLowering(command));
 }
 
 void Context::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {

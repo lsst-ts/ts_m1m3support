@@ -62,6 +62,8 @@ public:
     void timeout();
 
     void abortRaiseM1M3();
+    void pauseM1M3Lowering();
+    void resumeM1M3Lowering();
 
 protected:
     /**
@@ -76,6 +78,8 @@ private:
     PowerController* _powerController;
     double _cachedTimestamp;
     bool _movedToLowerPosition;
+
+    bool _loweringPaused;
 };
 
 } /* namespace SS */

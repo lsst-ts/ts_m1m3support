@@ -56,6 +56,8 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearOffsetForces());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandRaiseM1M3());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandLowerM1M3());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandPauseM1M3RaisingLowering());
+        _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandResumeM1M3RaisingLowering());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandApplyActiveOpticForces());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandClearActiveOpticForces());
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryAcceptCommandEnterEngineering());

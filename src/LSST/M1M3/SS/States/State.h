@@ -57,8 +57,10 @@
 #include <KillHardpointTestCommand.h>
 #include <LowerM1M3Command.h>
 #include <MoveHardpointActuatorsCommand.h>
+#include <PauseM1M3RaisingLoweringCommand.h>
 #include <PositionM1M3Command.h>
 #include <RaiseM1M3Command.h>
+#include <ResumeM1M3RaisingLoweringCommand.h>
 #include <ResetPIDCommand.h>
 #include <RunMirrorForceProfileCommand.h>
 #include <SetSlewControllerSettingsCommand.h>
@@ -129,6 +131,8 @@ public:
     virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command);
     virtual States::Type raiseM1M3(RaiseM1M3Command* command);
     virtual States::Type lowerM1M3(LowerM1M3Command* command);
+    virtual States::Type pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command);
+    virtual States::Type resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command);
     virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
     virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
     virtual States::Type enterEngineering(EnterEngineeringCommand* command);

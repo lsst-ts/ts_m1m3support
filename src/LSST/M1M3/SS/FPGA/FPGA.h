@@ -72,7 +72,7 @@ public:
     void readMPUFIFO(cRIO::MPU& mpu) override {}
     void writeMPUFIFO(cRIO::MPU& mpu) override {}
 
-    void waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered = NULL) override;
+    void waitOnIrqs(uint32_t irqs, uint32_t timeout, bool& timedout, uint32_t* triggered = NULL) override;
     void ackIrqs(uint32_t irqs) override;
 
     void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) override;

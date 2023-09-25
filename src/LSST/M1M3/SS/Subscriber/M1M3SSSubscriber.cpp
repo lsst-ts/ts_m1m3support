@@ -21,6 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
 #include <M1M3SSPublisher.h>
 #include <M1M3SSSubscriber.h>
 #include <SAL_MTM1M3.h>
@@ -31,6 +33,8 @@
 #include <ApplyActiveOpticForcesCommand.h>
 #include <ApplyOffsetForcesCommand.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <BoosterValveOpenCommand.h>
+#include <BoosterValveCloseCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <ClearOffsetForcesCommand.h>
 #include <ClearSlewFlagCommand.h>
@@ -53,17 +57,17 @@
 #include <LowerM1M3Command.h>
 #include <MoveHardpointActuatorsCommand.h>
 #include <PanicCommand.h>
+#include <PauseM1M3RaisingLoweringCommand.h>
 #include <PositionM1M3Command.h>
 #include <RaiseM1M3Command.h>
 #include <ResetPIDCommand.h>
+#include <ResumeM1M3RaisingLoweringCommand.h>
 #include <RunMirrorForceProfileCommand.h>
 #include <SetSlewControllerSettingsCommand.h>
 #include <SetSlewFlagCommand.h>
 #include <StandbyCommand.h>
 #include <StartCommand.h>
 #include <StopHardpointMotionCommand.h>
-#include <BoosterValveOpenCommand.h>
-#include <BoosterValveCloseCommand.h>
 #include <TestHardpointCommand.h>
 #include <TranslateM1M3Command.h>
 #include <TurnAirOnCommand.h>
@@ -76,11 +80,7 @@
 #include <TMAElevationSampleCommand.h>
 #include <UpdatePIDCommand.h>
 
-#include <spdlog/spdlog.h>
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 M1M3SSSubscriber::M1M3SSSubscriber() { SPDLOG_DEBUG("M1M3SSSubscriber: M1M3SSSubscriber()"); }
 
@@ -109,6 +109,8 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearOffsetForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_raiseM1M3");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_lowerM1M3");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_pauseM1M3RaisingLowering");
+    _m1m3SAL->salProcessor((char*)"MTM1M3_command_resumeM1M3RaisingLowering");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActiveOpticForces");
     _m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
@@ -205,6 +207,9 @@ COMMAND_NOPARS(ClearOffsetForces, clearOffsetForces)
 COMMAND(RaiseM1M3, raiseM1M3)
 COMMAND_NOPARS(LowerM1M3, lowerM1M3)
 
+COMMAND_NOPARS(PauseM1M3RaisingLowering, pauseM1M3RaisingLowering)
+COMMAND_NOPARS(ResumeM1M3RaisingLowering, resumeM1M3RaisingLowering)
+
 COMMAND(ApplyActiveOpticForces, applyActiveOpticForces)
 COMMAND_NOPARS(ClearActiveOpticForces, clearActiveOpticForces)
 
@@ -269,7 +274,3 @@ Command* M1M3SSSubscriber::tryGetSampleTMAElevation() {
     }
     return 0;
 }
-
-}  // namespace SS
-}  // namespace M1M3
-}  // namespace LSST
