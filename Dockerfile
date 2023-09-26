@@ -30,6 +30,7 @@ RUN source ~/.crio_setup.sh \
     && cd $TS_SAL_DIR && ~/.checkout_repo.sh davemills/DM-40558 develop \
     && cd $TS_XML_DIR \
     && git fetch && git checkout $XML_BRANCH && git pull \
+    && make_idl_files.py MTM1M3 \
     && salgenerator generate cpp MTM1M3 \
     && salgenerator generate cpp MTMount
 
