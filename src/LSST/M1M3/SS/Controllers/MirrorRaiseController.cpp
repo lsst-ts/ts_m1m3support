@@ -46,7 +46,7 @@ MirrorRaiseController::MirrorRaiseController(PositionController* positionControl
     _powerController = powerController;
     _cachedStartTime = 0;
     _remaininingTimedout = 0;
-    RaisingLoweringInfo::instance().timeTimeout = 0;
+    RaisingLoweringInfo::instance().setTimeTimeout(0);
     _bypassMoveToReference = false;
     _lastForceFilled = false;
     _lastPositionCompleted = false;
@@ -76,7 +76,7 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     RaisingLoweringInfo::instance().zeroSupportPercentage();
     _cachedStartTime = M1M3SSPublisher::instance().getTimestamp();
     _remaininingTimedout = _positionController->getRaiseTimeout();
-    RaisingLoweringInfo::instance().timeTimeout = _cachedStartTime + _remaininingTimedout;
+    RaisingLoweringInfo::instance().setTimeTimeout(_cachedStartTime + _remaininingTimedout);
 
     RaisingLoweringInfo::instance().setWaitAirPressure(false);
 
@@ -185,11 +185,11 @@ void MirrorRaiseController::timeout() {
 void MirrorRaiseController::pauseM1M3Raising() {
     _raisingPaused = true;
     _remaininingTimedout -= (M1M3SSPublisher::instance().getTimestamp() - _cachedStartTime);
-    RaisingLoweringInfo::instance().timeTimeout = NAN;
+    RaisingLoweringInfo::instance().setTimeTimeout(NAN);
 }
 
 void MirrorRaiseController::resumeM1M3Raising() {
     _raisingPaused = false;
-    RaisingLoweringInfo::instance().timeTimeout =
-            M1M3SSPublisher::instance().getTimestamp() + _remaininingTimedout;
+    RaisingLoweringInfo::instance().setTimeTimeout(M1M3SSPublisher::instance().getTimestamp() +
+                                                   _remaininingTimedout);
 }

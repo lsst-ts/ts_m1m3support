@@ -89,7 +89,7 @@ node {
                     export LSST_DDS_PARTITION_PREFIX=test
     
                     cd $WORKSPACE/ts_m1m3support
-                    ./ts-M1M3supportd -c SettingFiles &
+                    ./ts-M1M3supportd -c SettingFiles -f &
     
                     echo "Waiting for 15 seconds"
                     sleep 15

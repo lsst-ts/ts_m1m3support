@@ -86,6 +86,13 @@ bool RaisingLoweringInfo::supportPercentageFilled() { return weightSupportedPerc
 
 bool RaisingLoweringInfo::supportPercentageZeroed() { return weightSupportedPercent <= 0; }
 
+void RaisingLoweringInfo::setTimeTimeout(double new_timeTimeout) {
+    if (timeTimeout != new_timeTimeout) {
+        _updated = true;
+        timeTimeout = new_timeTimeout;
+    }
+}
+
 void RaisingLoweringInfo::setHPWait(size_t hpIndex, bool newWait) {
     if (waitHardpoint[hpIndex] != newWait) {
         _updated = true;

@@ -45,7 +45,7 @@ MirrorLowerController::MirrorLowerController(PositionController* positionControl
 
     _cachedStartTime = 0;
     _remaininingTimedout = 0;
-    RaisingLoweringInfo::instance().timeTimeout = 0;
+    RaisingLoweringInfo::instance().setTimeTimeout(0);
 
     _movedToLowerPosition = false;
 
@@ -163,17 +163,17 @@ void MirrorLowerController::abortRaiseM1M3() {
 void MirrorLowerController::pauseM1M3Lowering() {
     _loweringPaused = true;
     _remaininingTimedout -= (M1M3SSPublisher::instance().getTimestamp() - _cachedStartTime);
-    RaisingLoweringInfo::instance().timeTimeout = NAN;
+    RaisingLoweringInfo::instance().setTimeTimeout(NAN);
 }
 
 void MirrorLowerController::resumeM1M3Lowering() {
     _loweringPaused = false;
-    RaisingLoweringInfo::instance().timeTimeout =
-            M1M3SSPublisher::instance().getTimestamp() + _remaininingTimedout;
+    RaisingLoweringInfo::instance().setTimeTimeout(M1M3SSPublisher::instance().getTimestamp() +
+                                                   _remaininingTimedout);
 }
 
 void MirrorLowerController::setStartTimestamp() {
     _cachedStartTime = M1M3SSPublisher::instance().getTimestamp();
     _remaininingTimedout = _positionController->getLowerTimeout();
-    RaisingLoweringInfo::instance().timeTimeout = _cachedStartTime + _remaininingTimedout;
+    RaisingLoweringInfo::instance().setTimeTimeout(_cachedStartTime + _remaininingTimedout);
 }
