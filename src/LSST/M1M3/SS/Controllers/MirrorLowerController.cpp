@@ -42,7 +42,11 @@ MirrorLowerController::MirrorLowerController(PositionController* positionControl
     _forceController = forceController;
     _safetyController = safetyController;
     _powerController = powerController;
-    _cachedTimestamp = 0;
+
+    _cachedStartTime = 0;
+    _remaininingTimedout = 0;
+    RaisingLoweringInfo::instance().timeTimeout = 0;
+
     _movedToLowerPosition = false;
 
     _loweringPaused = false;
@@ -60,6 +64,8 @@ void MirrorLowerController::start() {
         throw std::runtime_error("Cannot move to lower position before starting lowering the mirror");
     }
 
+    setStartTimestamp();
+
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->zeroAzimuthForces();
@@ -70,8 +76,6 @@ void MirrorLowerController::start() {
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
     RaisingLoweringInfo::instance().fillSupportPercentage();
-
-    setStartTimestamp();
 }
 
 void MirrorLowerController::runLoop() {
@@ -123,8 +127,10 @@ void MirrorLowerController::complete() {
 }
 
 bool MirrorLowerController::checkTimeout() {
-    return M1M3SSPublisher::instance().getTimestamp() >=
-           (_cachedTimestamp + _positionController->getLowerTimeout());
+    if (isnan(RaisingLoweringInfo::instance().timeTimeout)) {
+        return false;
+    }
+    return M1M3SSPublisher::instance().getTimestamp() >= RaisingLoweringInfo::instance().timeTimeout;
 }
 
 void MirrorLowerController::timeout() {
@@ -154,6 +160,20 @@ void MirrorLowerController::abortRaiseM1M3() {
     setStartTimestamp();
 }
 
-void MirrorLowerController::pauseM1M3Lowering() { _loweringPaused = true; }
+void MirrorLowerController::pauseM1M3Lowering() {
+    _loweringPaused = true;
+    _remaininingTimedout -= (M1M3SSPublisher::instance().getTimestamp() - _cachedStartTime);
+    RaisingLoweringInfo::instance().timeTimeout = NAN;
+}
 
-void MirrorLowerController::resumeM1M3Lowering() { _loweringPaused = false; }
+void MirrorLowerController::resumeM1M3Lowering() {
+    _loweringPaused = false;
+    RaisingLoweringInfo::instance().timeTimeout =
+            M1M3SSPublisher::instance().getTimestamp() + _remaininingTimedout;
+}
+
+void MirrorLowerController::setStartTimestamp() {
+    _cachedStartTime = M1M3SSPublisher::instance().getTimestamp();
+    _remaininingTimedout = _positionController->getLowerTimeout();
+    RaisingLoweringInfo::instance().timeTimeout = _cachedStartTime + _remaininingTimedout;
+}
