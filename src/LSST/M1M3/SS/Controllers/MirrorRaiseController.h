@@ -79,7 +79,11 @@ private:
     ForceController* _forceController;
     SafetyController* _safetyController;
     PowerController* _powerController;
-    double _cachedTimestamp;
+
+    // time spend in paused state doesn't count to timeout
+    double _cachedStartTime;
+    double _remaininingTimedout;
+
     bool _bypassMoveToReference;
 
     bool _lastForceFilled;

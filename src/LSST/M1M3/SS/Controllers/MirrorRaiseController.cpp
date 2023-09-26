@@ -44,7 +44,9 @@ MirrorRaiseController::MirrorRaiseController(PositionController* positionControl
     _forceController = forceController;
     _safetyController = safetyController;
     _powerController = powerController;
-    _cachedTimestamp = 0;
+    _cachedStartTime = 0;
+    _remaininingTimedout = 0;
+    RaisingLoweringInfo::instance().timeTimeout = 0;
     _bypassMoveToReference = false;
     _lastForceFilled = false;
     _lastPositionCompleted = false;
@@ -72,7 +74,9 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
     _forceController->zeroThermalForces();
     _forceController->zeroVelocityForces();
     RaisingLoweringInfo::instance().zeroSupportPercentage();
-    _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp();
+    _cachedStartTime = M1M3SSPublisher::instance().getTimestamp();
+    _remaininingTimedout = _positionController->getRaiseTimeout();
+    RaisingLoweringInfo::instance().timeTimeout = _cachedStartTime + _remaininingTimedout;
 
     RaisingLoweringInfo::instance().setWaitAirPressure(false);
 
@@ -167,8 +171,10 @@ void MirrorRaiseController::complete() {
 }
 
 bool MirrorRaiseController::checkTimeout() {
-    return M1M3SSPublisher::instance().getTimestamp() >=
-           (_cachedTimestamp + _positionController->getRaiseTimeout());
+    if (isnan(RaisingLoweringInfo::instance().timeTimeout)) {
+        return false;
+    }
+    return M1M3SSPublisher::instance().getTimestamp() >= RaisingLoweringInfo::instance().timeTimeout;
 }
 
 void MirrorRaiseController::timeout() {
@@ -176,6 +182,14 @@ void MirrorRaiseController::timeout() {
     _safetyController->raiseOperationTimeout(true);
 }
 
-void MirrorRaiseController::pauseM1M3Raising() { _raisingPaused = true; }
+void MirrorRaiseController::pauseM1M3Raising() {
+    _raisingPaused = true;
+    _remaininingTimedout -= (M1M3SSPublisher::instance().getTimestamp() - _cachedStartTime);
+    RaisingLoweringInfo::instance().timeTimeout = NAN;
+}
 
-void MirrorRaiseController::resumeM1M3Raising() { _raisingPaused = false; }
+void MirrorRaiseController::resumeM1M3Raising() {
+    _raisingPaused = false;
+    RaisingLoweringInfo::instance().timeTimeout =
+            M1M3SSPublisher::instance().getTimestamp() + _remaininingTimedout;
+}
