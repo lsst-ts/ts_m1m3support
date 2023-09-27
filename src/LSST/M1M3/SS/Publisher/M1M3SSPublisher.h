@@ -397,6 +397,8 @@ public:
     ACK_COMMAND_H(clearOffsetForces)
     ACK_COMMAND_H(raiseM1M3)
     ACK_COMMAND_H(lowerM1M3)
+    ACK_COMMAND_H(pauseM1M3RaisingLowering)
+    ACK_COMMAND_H(resumeM1M3RaisingLowering)
     ACK_COMMAND_H(applyActiveOpticForces)
     ACK_COMMAND_H(clearActiveOpticForces)
     ACK_COMMAND_H(enterEngineering)

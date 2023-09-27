@@ -22,7 +22,7 @@ node {
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
     // branches requiring changes in XML from default develop branch
-    def XML_BRANCH = BRANCH in ["main", "tickets/DM-40438"] ? BRANCH : "develop"
+    def XML_BRANCH = BRANCH in ["main", "tickets/DM-39576"] ? BRANCH : "develop"
     def CRIO_BRANCH = BRANCH in ["main", "tickets/DM-38668"] ? BRANCH : "develop"
     stage('Cloning sources')
     {
@@ -89,7 +89,7 @@ node {
                     export LSST_DDS_PARTITION_PREFIX=test
     
                     cd $WORKSPACE/ts_m1m3support
-                    ./ts-M1M3supportd -c SettingFiles &
+                    ./ts-M1M3supportd -c SettingFiles -f &
     
                     echo "Waiting for 15 seconds"
                     sleep 15

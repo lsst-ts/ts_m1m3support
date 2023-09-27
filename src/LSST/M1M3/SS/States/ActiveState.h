@@ -39,10 +39,10 @@ class ActiveState : public EnabledActiveState {
 public:
     ActiveState();
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type setSlewFlag(SetSlewFlagCommand* command) override;
-    virtual States::Type clearSlewFlag(ClearSlewFlagCommand* command) override;
-    virtual States::Type enterEngineering(EnterEngineeringCommand* command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type setSlewFlag(SetSlewFlagCommand* command) override;
+    States::Type clearSlewFlag(ClearSlewFlagCommand* command) override;
+    States::Type enterEngineering(EnterEngineeringCommand* command) override;
 
 protected:
     States::Type getLoweringState() override { return States::LoweringState; }

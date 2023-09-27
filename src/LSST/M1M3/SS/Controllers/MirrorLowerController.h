@@ -62,20 +62,27 @@ public:
     void timeout();
 
     void abortRaiseM1M3();
+    void pauseM1M3Lowering();
+    void resumeM1M3Lowering();
 
 protected:
     /**
      * Sets operation start timestamp to current time.
      */
-    void setStartTimestamp() { _cachedTimestamp = M1M3SSPublisher::instance().getTimestamp(); }
+    void setStartTimestamp();
 
 private:
     PositionController* _positionController;
     ForceController* _forceController;
     SafetyController* _safetyController;
     PowerController* _powerController;
-    double _cachedTimestamp;
+
+    double _cachedStartTime;
+    double _remaininingTimedout;
+
     bool _movedToLowerPosition;
+
+    bool _loweringPaused;
 };
 
 } /* namespace SS */

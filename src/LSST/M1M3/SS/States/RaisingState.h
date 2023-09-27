@@ -42,8 +42,9 @@ class RaisingState : public EnabledState {
 public:
     RaisingState();
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command) override;
+    States::Type pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) override;
 };
 
 } /* namespace SS */

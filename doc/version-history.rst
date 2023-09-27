@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.15.0
+=======
+
+* Raising and lowering can be paused and resumed
+
 v2.14.0
 -------
 

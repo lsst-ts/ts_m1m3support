@@ -39,9 +39,9 @@ class DisabledState : public State {
 public:
     DisabledState();
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type enable(EnableCommand* command) override;
-    virtual States::Type standby(StandbyCommand* command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type enable(EnableCommand* command) override;
+    States::Type standby(StandbyCommand* command) override;
 };
 
 } /* namespace SS */

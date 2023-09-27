@@ -24,20 +24,24 @@
 #ifndef STATICSTATEFACTORY_H_
 #define STATICSTATEFACTORY_H_
 
-#include <OfflineState.h>
-#include <StandbyState.h>
-#include <DisabledState.h>
-#include <ParkedState.h>
-#include <RaisingState.h>
-#include <ActiveState.h>
-#include <LoweringState.h>
-#include <ParkedEngineeringState.h>
-#include <RaisingEngineeringState.h>
 #include <ActiveEngineeringState.h>
-#include <LoweringEngineeringState.h>
+#include <ActiveState.h>
+#include <DisabledState.h>
 #include <FaultState.h>
+#include <LoweringEngineeringState.h>
 #include <LoweringFaultState.h>
+#include <LoweringState.h>
+#include <OfflineState.h>
+#include <ParkedEngineeringState.h>
+#include <ParkedState.h>
+#include <PausedLoweringState.h>
+#include <PausedLoweringEngineeringState.h>
+#include <PausedRaisingState.h>
+#include <PausedRaisingEngineeringState.h>
 #include <ProfileHardpointCorrectionState.h>
+#include <RaisingEngineeringState.h>
+#include <RaisingState.h>
+#include <StandbyState.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -69,6 +73,10 @@ private:
     FaultState _faultState;
     LoweringFaultState _loweringFaultState;
     ProfileHardpointCorrectionState _profileHardpointCorrectionState;
+    PausedRaisingState _pausedRaisingState;
+    PausedRaisingEngineeringState _pausedRaisingEngineeringState;
+    PausedLoweringState _pausedLoweringState;
+    PausedLoweringEngineeringState _pausedLoweringEngineeringState;
 };
 
 } /* namespace SS */

@@ -42,6 +42,12 @@ States::Type LoweringState::update(UpdateCommand* command) {
                                                                                  : States::NoStateTransition);
 }
 
+States::Type LoweringState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
+    SPDLOG_INFO("Pausing M1M3 lowering");
+    Model::instance().getMirrorLowerController()->pauseM1M3Lowering();
+    return Model::instance().getSafetyController()->checkSafety(States::PausedLoweringState);
+}
+
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */

@@ -21,6 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <thread>
+
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 

@@ -36,26 +36,25 @@ namespace SS {
  */
 class EngineeringState : public virtual EnabledState {
 public:
-    virtual States::Type turnAirOn(TurnAirOnCommand* command) override;
-    virtual States::Type turnAirOff(TurnAirOffCommand* command) override;
-    virtual States::Type boosterValveOpen(BoosterValveOpenCommand* command) override;
-    virtual States::Type boosterValveClose(BoosterValveCloseCommand* command) override;
-    virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command) override;
-    virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command) override;
-    virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command) override;
-    virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command) override;
-    virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command) override;
-    virtual States::Type applyOffsetForcesByMirrorForce(
-            ApplyOffsetForcesByMirrorForceCommand* command) override;
-    virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command) override;
-    virtual States::Type turnLightsOn(TurnLightsOnCommand* command) override;
-    virtual States::Type turnLightsOff(TurnLightsOffCommand* command) override;
-    virtual States::Type turnPowerOn(TurnPowerOnCommand* command) override;
-    virtual States::Type turnPowerOff(TurnPowerOffCommand* command) override;
-    virtual States::Type disableForceActuator(DisableForceActuatorCommand* command) override;
-    virtual States::Type enableForceActuator(EnableForceActuatorCommand* command) override;
-    virtual States::Type enableAllForceActuators(EnableAllForceActuatorsCommand* command) override;
-    virtual States::Type setSlewControllerSettings(SetSlewControllerSettingsCommand* command) override;
+    States::Type turnAirOn(TurnAirOnCommand* command) override;
+    States::Type turnAirOff(TurnAirOffCommand* command) override;
+    States::Type boosterValveOpen(BoosterValveOpenCommand* command) override;
+    States::Type boosterValveClose(BoosterValveCloseCommand* command) override;
+    States::Type stopHardpointMotion(StopHardpointMotionCommand* command) override;
+    States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command) override;
+    States::Type enableHardpointChase(EnableHardpointChaseCommand* command) override;
+    States::Type disableHardpointChase(DisableHardpointChaseCommand* command) override;
+    States::Type applyOffsetForces(ApplyOffsetForcesCommand* command) override;
+    States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command) override;
+    States::Type clearOffsetForces(ClearOffsetForcesCommand* command) override;
+    States::Type turnLightsOn(TurnLightsOnCommand* command) override;
+    States::Type turnLightsOff(TurnLightsOffCommand* command) override;
+    States::Type turnPowerOn(TurnPowerOnCommand* command) override;
+    States::Type turnPowerOff(TurnPowerOffCommand* command) override;
+    States::Type disableForceActuator(DisableForceActuatorCommand* command) override;
+    States::Type enableForceActuator(EnableForceActuatorCommand* command) override;
+    States::Type enableAllForceActuators(EnableAllForceActuatorsCommand* command) override;
+    States::Type setSlewControllerSettings(SetSlewControllerSettingsCommand* command) override;
 };
 
 } /* namespace SS */

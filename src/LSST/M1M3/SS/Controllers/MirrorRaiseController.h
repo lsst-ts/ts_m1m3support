@@ -71,20 +71,27 @@ public:
     bool checkTimeout();
     void timeout();
 
-    void abortRaiseM1M3();
+    void pauseM1M3Raising();
+    void resumeM1M3Raising();
 
 private:
     PositionController* _positionController;
     ForceController* _forceController;
     SafetyController* _safetyController;
     PowerController* _powerController;
-    double _cachedTimestamp;
+
+    // time spend in paused state doesn't count to timeout
+    double _cachedStartTime;
+    double _remaininingTimedout;
+
     bool _bypassMoveToReference;
 
     bool _lastForceFilled;
     bool _lastPositionCompleted;
     bool _airPressureWaitReported;
     bool _raisePauseReported;
+
+    bool _raisingPaused;
 };
 
 } /* namespace SS */

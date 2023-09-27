@@ -54,6 +54,8 @@ public:
      */
     float supportRatio() { return weightSupportedPercent / 100.0; }
 
+    void setTimeTimeout(double new_timeTimeout);
+
     /**
      * Increases mirrror support percentage by RaiseIncrementPercentage setting
      * value.
