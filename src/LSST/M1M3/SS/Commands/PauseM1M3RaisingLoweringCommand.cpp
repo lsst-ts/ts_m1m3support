@@ -21,27 +21,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringEngineeringState.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
+
+#include <Context.h>
+#include <M1M3SSPublisher.h>
+#include <PauseM1M3RaisingLoweringCommand.h>
 
 using namespace LSST::M1M3::SS;
 
-LoweringEngineeringState::LoweringEngineeringState() : EnabledState("LoweringEngineeringState") {}
+PauseM1M3RaisingLoweringCommand::PauseM1M3RaisingLoweringCommand(int32_t commandID) : Command(commandID) {}
 
-States::Type LoweringEngineeringState::update(UpdateCommand* command) {
-    ModelPublisher publishIt{};
-    SPDLOG_TRACE("LoweringEngineeringState: update()");
-    Model::instance().getMirrorLowerController()->runLoop();
-    runLoop();
-    return Model::instance().getSafetyController()->checkSafety(
-            lowerCompleted() ? States::ParkedEngineeringState : States::NoStateTransition);
+void PauseM1M3RaisingLoweringCommand::execute() { Context::get().pauseM1M3RaisingLowering(this); }
+
+void PauseM1M3RaisingLoweringCommand::ackInProgress(const char* description, double timeout) {
+    M1M3SSPublisher::instance().ackCommandpauseM1M3RaisingLowering(getCommandID(), ACK_INPROGRESS,
+                                                                   description, timeout);
 }
 
-States::Type LoweringEngineeringState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
-    SPDLOG_INFO("Pausing M1M3 lowering in engineering state");
-    Model::instance().getMirrorLowerController()->pauseM1M3Lowering();
-    return Model::instance().getSafetyController()->checkSafety(States::PausedLoweringEngineeringState);
+void PauseM1M3RaisingLoweringCommand::ackComplete() {
+    M1M3SSPublisher::instance().ackCommandpauseM1M3RaisingLowering(getCommandID(), ACK_COMPLETE, "Complete");
+}
+
+void PauseM1M3RaisingLoweringCommand::ackFailed(std::string reason) {
+    M1M3SSPublisher::instance().ackCommandpauseM1M3RaisingLowering(getCommandID(), ACK_FAILED,
+                                                                   "Failed: " + reason);
 }

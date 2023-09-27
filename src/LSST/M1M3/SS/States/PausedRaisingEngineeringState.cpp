@@ -21,27 +21,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringEngineeringState.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
+
+#include <Model.h>
+#include <ModelPublisher.h>
+#include <PausedRaisingEngineeringState.h>
+#include <SafetyController.h>
 
 using namespace LSST::M1M3::SS;
 
-LoweringEngineeringState::LoweringEngineeringState() : EnabledState("LoweringEngineeringState") {}
+PausedRaisingEngineeringState::PausedRaisingEngineeringState()
+        : EnabledState("PausedRaisingEngineeringState") {}
 
-States::Type LoweringEngineeringState::update(UpdateCommand* command) {
-    ModelPublisher publishIt{};
-    SPDLOG_TRACE("LoweringEngineeringState: update()");
-    Model::instance().getMirrorLowerController()->runLoop();
+States::Type PausedRaisingEngineeringState::update(UpdateCommand* command) {
+    ModelPublisher publishModel{};
+    SPDLOG_TRACE("PauseRaisingEngineeringState: update()");
+    Model::instance().getMirrorRaiseController()->runLoop();
     runLoop();
-    return Model::instance().getSafetyController()->checkSafety(
-            lowerCompleted() ? States::ParkedEngineeringState : States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type LoweringEngineeringState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
-    SPDLOG_INFO("Pausing M1M3 lowering in engineering state");
-    Model::instance().getMirrorLowerController()->pauseM1M3Lowering();
-    return Model::instance().getSafetyController()->checkSafety(States::PausedLoweringEngineeringState);
+States::Type PausedRaisingEngineeringState::resumeM1M3RaisingLowering(
+        ResumeM1M3RaisingLoweringCommand* command) {
+    SPDLOG_INFO("Resuming M1M3 raising in engineering state");
+    Model::instance().getMirrorRaiseController()->resumeM1M3Raising();
+    return Model::instance().getSafetyController()->checkSafety(States::RaisingState);
 }

@@ -21,15 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <RaisingEngineeringState.h>
-#include <Model.h>
-#include <ModelPublisher.h>
-#include <SafetyController.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <Model.h>
+#include <ModelPublisher.h>
+#include <RaisingEngineeringState.h>
+#include <SafetyController.h>
+
+using namespace LSST::M1M3::SS;
 
 RaisingEngineeringState::RaisingEngineeringState() : EnabledState("RaisingEngineeringState") {}
 
@@ -48,6 +47,8 @@ States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* comm
     return Model::instance().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+States::Type RaisingEngineeringState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
+    SPDLOG_INFO("Pausing M1M3 raising in engineering state");
+    Model::instance().getMirrorRaiseController()->pauseM1M3Raising();
+    return Model::instance().getSafetyController()->checkSafety(States::PausedRaisingEngineeringState);
+}

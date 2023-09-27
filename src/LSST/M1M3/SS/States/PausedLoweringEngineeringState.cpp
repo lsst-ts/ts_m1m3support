@@ -21,27 +21,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <LoweringEngineeringState.h>
-#include <Model.h>
-#include <SafetyController.h>
-#include <ModelPublisher.h>
 #include <spdlog/spdlog.h>
+
+#include <Model.h>
+#include <ModelPublisher.h>
+#include <PausedLoweringEngineeringState.h>
+#include <SafetyController.h>
 
 using namespace LSST::M1M3::SS;
 
-LoweringEngineeringState::LoweringEngineeringState() : EnabledState("LoweringEngineeringState") {}
+PausedLoweringEngineeringState::PausedLoweringEngineeringState()
+        : EnabledState("PausedLoweringEngineeringState") {}
 
-States::Type LoweringEngineeringState::update(UpdateCommand* command) {
-    ModelPublisher publishIt{};
-    SPDLOG_TRACE("LoweringEngineeringState: update()");
-    Model::instance().getMirrorLowerController()->runLoop();
+States::Type PausedLoweringEngineeringState::update(UpdateCommand* command) {
+    ModelPublisher publishModel{};
+    SPDLOG_TRACE("PauseLoweringEngineeringState: update()");
+    Model::instance().getMirrorRaiseController()->runLoop();
     runLoop();
-    return Model::instance().getSafetyController()->checkSafety(
-            lowerCompleted() ? States::ParkedEngineeringState : States::NoStateTransition);
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type LoweringEngineeringState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
-    SPDLOG_INFO("Pausing M1M3 lowering in engineering state");
-    Model::instance().getMirrorLowerController()->pauseM1M3Lowering();
-    return Model::instance().getSafetyController()->checkSafety(States::PausedLoweringEngineeringState);
+States::Type PausedLoweringEngineeringState::resumeM1M3RaisingLowering(
+        ResumeM1M3RaisingLoweringCommand* command) {
+    SPDLOG_INFO("Resuming M1M3 lowering in engineering state");
+    Model::instance().getMirrorLowerController()->resumeM1M3Lowering();
+    return Model::instance().getSafetyController()->checkSafety(States::LoweringState);
 }

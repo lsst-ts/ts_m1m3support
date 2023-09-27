@@ -230,7 +230,7 @@ void FPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutIn
                                     data, length, timeoutInMs, &_remaining));
 }
 
-void FPGA::waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered) {
+void FPGA::waitOnIrqs(uint32_t irqs, uint32_t timeout, bool& timedout, uint32_t* triggered) {
     static std::hash<std::thread::id> hasher;
     size_t k = hasher(std::this_thread::get_id());
     NiFpga_IrqContext contex;
@@ -241,9 +241,10 @@ void FPGA::waitOnIrqs(uint32_t irqs, uint32_t timeout, uint32_t* triggered) {
         _contexes[k] = contex;
     }
 
-    NiFpga_Bool timeouted = false;
+    NiFpga_Bool ni_timedout = false;
     NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_WaitOnIrqs(_session, contex, irqs, timeout, triggered, &timeouted));
+                 NiFpga_WaitOnIrqs(_session, contex, irqs, timeout, triggered, &ni_timedout));
+    timedout = ni_timedout;
 }
 
 void FPGA::ackIrqs(uint32_t irqs) {

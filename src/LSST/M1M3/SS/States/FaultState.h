@@ -39,8 +39,8 @@ public:
     FaultState();
     FaultState(std::string name);
 
-    virtual States::Type update(UpdateCommand* command) override;
-    virtual States::Type standby(StandbyCommand* command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type standby(StandbyCommand* command) override;
 };
 
 } /* namespace SS */
