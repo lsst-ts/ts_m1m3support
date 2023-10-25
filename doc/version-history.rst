@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.15.1
+========
+
+* Fixed cRIOcpp version
+
 v2.15.0
 =======
 
