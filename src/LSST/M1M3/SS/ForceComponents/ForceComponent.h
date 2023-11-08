@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <ForceComponentSettings.h>
 
 namespace LSST {

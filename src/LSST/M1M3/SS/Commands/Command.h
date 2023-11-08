@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

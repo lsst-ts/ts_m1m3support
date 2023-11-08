@@ -413,6 +413,7 @@ void ILCResponseParser::verifyResponses() {
 
 void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId) {
     uint8_t exceptionCode = buffer->readU8();
+    SPDLOG_WARN("ILC Error response received - actuator {}, code {}", actuatorId, exceptionCode);
     switch (exceptionCode) {
         case 1:
             _warnIllegalFunction(timestamp, actuatorId);

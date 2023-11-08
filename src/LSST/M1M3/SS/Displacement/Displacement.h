@@ -24,7 +24,7 @@
 #ifndef DISPLACEMENT_H_
 #define DISPLACEMENT_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <DisplacementSensorSettings.h>
 #include <SafetyController.h>
 #include <SupportFPGAData.h>

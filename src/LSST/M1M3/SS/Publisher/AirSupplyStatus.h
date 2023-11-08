@@ -28,9 +28,8 @@
 
 #include <SAL_MTM1M3.h>
 
+#include <cRIO/DataTypes.h>
 #include <cRIO/Singleton.h>
-
-#include "DataTypes.h"
 
 namespace LSST {
 namespace M1M3 {

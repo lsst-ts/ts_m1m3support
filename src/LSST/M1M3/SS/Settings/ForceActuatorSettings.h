@@ -33,7 +33,7 @@
 
 #include <cRIO/Singleton.h>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorBumpTestSettings.h>

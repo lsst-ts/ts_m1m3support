@@ -24,7 +24,7 @@
 #ifndef M1M3SSPUBLISHER_H_
 #define M1M3SSPUBLISHER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <SAL_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
 #include <ccpp_sal_MTM1M3.h>

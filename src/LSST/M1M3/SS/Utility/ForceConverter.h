@@ -24,7 +24,7 @@
 #ifndef FORCECONVERTER_H_
 #define FORCECONVERTER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <cmath>
 #include <ForcesAndMoments.h>
 #include <DistributedForces.h>

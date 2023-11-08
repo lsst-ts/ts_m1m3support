@@ -26,7 +26,7 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <HardpointActuatorSettings.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>

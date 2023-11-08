@@ -32,7 +32,7 @@
 #include <rapidcsv.h>
 
 #include <Limit.h>
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <SettingReader.h>
 
 namespace LSST {

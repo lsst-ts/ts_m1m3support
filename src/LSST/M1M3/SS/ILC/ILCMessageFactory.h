@@ -24,7 +24,7 @@
 #ifndef ILCMESSAGEFACTORY_H_
 #define ILCMESSAGEFACTORY_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <ILCApplicationSettings.h>
 #include <ModbusBuffer.h>
 
