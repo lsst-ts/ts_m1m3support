@@ -936,31 +936,6 @@ void M1M3SSPublisher::tryLogHardpointMonitorWarning() {
     }
 }
 
-void M1M3SSPublisher::logILCWarning() {
-    _eventILCWarning.anyWarning = _eventILCWarning.responseTimeout || _eventILCWarning.invalidCRC ||
-                                  _eventILCWarning.illegalFunction || _eventILCWarning.illegalDataValue ||
-                                  _eventILCWarning.invalidLength || _eventILCWarning.unknownSubnet ||
-                                  _eventILCWarning.unknownAddress || _eventILCWarning.unknownFunction ||
-                                  _eventILCWarning.unknownProblem;
-    _m1m3SAL->logEvent_ilcWarning(&_eventILCWarning, 0);
-    _previousEventILCWarning = _eventILCWarning;
-}
-
-void M1M3SSPublisher::tryLogILCWarning() {
-    if (_eventILCWarning.actuatorId != _previousEventILCWarning.actuatorId ||
-        _eventILCWarning.responseTimeout != _previousEventILCWarning.responseTimeout ||
-        _eventILCWarning.invalidCRC != _previousEventILCWarning.invalidCRC ||
-        _eventILCWarning.illegalFunction != _previousEventILCWarning.illegalFunction ||
-        _eventILCWarning.illegalDataValue != _previousEventILCWarning.illegalDataValue ||
-        _eventILCWarning.invalidLength != _previousEventILCWarning.invalidLength ||
-        _eventILCWarning.unknownSubnet != _previousEventILCWarning.unknownSubnet ||
-        _eventILCWarning.unknownAddress != _previousEventILCWarning.unknownAddress ||
-        _eventILCWarning.unknownFunction != _previousEventILCWarning.unknownFunction ||
-        _eventILCWarning.unknownProblem != _previousEventILCWarning.unknownProblem) {
-        logILCWarning();
-    }
-}
-
 void M1M3SSPublisher::logInclinometerSensorWarning() {
     _eventInclinometerSensorWarning.anyWarning =
             _eventInclinometerSensorWarning.sensorReportsIllegalFunction ||
