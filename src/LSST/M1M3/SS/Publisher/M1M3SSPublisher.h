@@ -319,8 +319,7 @@ public:
         _m1m3SAL->logEvent_hardpointTestStatus(data, 0);
     }
     void logHeartbeat(MTM1M3_logevent_heartbeatC* data) { _m1m3SAL->logEvent_heartbeat(data, 0); }
-    void logILCWarning();
-    void tryLogILCWarning();
+    void logILCWarning(MTM1M3_logevent_ilcWarningC* data) { _m1m3SAL->logEvent_ilcWarning(data, 0); }
     void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC* data) {
         _m1m3SAL->logEvent_inclinometerSettings(data, 0);
     }

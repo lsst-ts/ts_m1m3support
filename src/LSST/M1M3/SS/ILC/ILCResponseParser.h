@@ -124,8 +124,6 @@ private:
     MTM1M3_logevent_hardpointMonitorWarningC* _hardpointMonitorWarning;
     MTM1M3_hardpointMonitorDataC* _hardpointMonitorData;
 
-    MTM1M3_logevent_ilcWarningC* _ilcWarning;
-
     MTM1M3_outerLoopDataC* _outerLoopData;
 };
 
