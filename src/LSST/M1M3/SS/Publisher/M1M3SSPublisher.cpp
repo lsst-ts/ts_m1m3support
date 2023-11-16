@@ -27,9 +27,7 @@
 
 extern const char* VERSION;
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 M1M3SSPublisher::M1M3SSPublisher(token) : _m1m3SAL(NULL) {
     SPDLOG_DEBUG("M1M3SSPublisher: M1M3SSPublisher()");
@@ -1345,7 +1343,3 @@ ACK_COMMAND(enableForceActuator)
 ACK_COMMAND(enableAllForceActuators)
 ACK_COMMAND(enableDisableForceComponent)
 ACK_COMMAND(setSlewControllerSettings)
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

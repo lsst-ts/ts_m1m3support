@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <TurnAirOffCommand.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 TurnAirOffCommand::TurnAirOffCommand(int32_t commandID) : Command(commandID) {}
 
@@ -44,7 +45,3 @@ void TurnAirOffCommand::ackComplete() {
 void TurnAirOffCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandturnAirOff(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

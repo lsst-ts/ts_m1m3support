@@ -183,7 +183,7 @@ void Model::initialize(StartCommand* command) {
 }
 
 void Model::publishStateChange(States::Type newState) {
-    SPDLOG_DEBUG("Model: publishStateChange({:d})", newState);
+    SPDLOG_DEBUG("Model: publishStateChange({:d})", static_cast<int>(newState));
     uint64_t state = (uint64_t)newState;
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
     MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::instance().getEventSummaryState();

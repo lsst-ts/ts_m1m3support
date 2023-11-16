@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <UpdatePIDCommand.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 UpdatePIDCommand::UpdatePIDCommand(int32_t commandID, MTM1M3_command_updatePIDC* data) : Command(commandID) {
     _data.pid = data->pid;
@@ -59,7 +60,3 @@ void UpdatePIDCommand::ackComplete() {
 void UpdatePIDCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandupdatePID(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

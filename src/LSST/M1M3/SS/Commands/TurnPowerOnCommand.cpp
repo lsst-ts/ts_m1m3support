@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <TurnPowerOnCommand.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 TurnPowerOnCommand::TurnPowerOnCommand(int32_t commandID, MTM1M3_command_turnPowerOnC* data)
         : Command(commandID) {
@@ -66,7 +67,3 @@ void TurnPowerOnCommand::ackComplete() {
 void TurnPowerOnCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

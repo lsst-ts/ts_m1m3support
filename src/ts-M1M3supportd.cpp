@@ -37,6 +37,9 @@
 #include <spdlog/sinks/syslog_sink.h>
 #include <SALSink.h>
 
+#include <SAL_MTM1M3.h>
+#include <SAL_MTMount.h>
+
 #include <EnterControlCommand.h>
 #include <ExitControlCommand.h>
 #include <Context.h>

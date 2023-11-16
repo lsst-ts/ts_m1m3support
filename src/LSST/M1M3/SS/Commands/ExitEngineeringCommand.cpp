@@ -21,15 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <ExitEngineeringCommand.h>
 #include <M1M3SSPublisher.h>
 
-#include <spdlog/spdlog.h>
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID) : Command(commandID) {}
 
@@ -58,7 +59,3 @@ void ExitEngineeringCommand::ackComplete() {
 void ExitEngineeringCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandexitEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

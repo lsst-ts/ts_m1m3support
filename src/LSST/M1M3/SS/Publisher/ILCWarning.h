@@ -26,6 +26,7 @@
 
 #include <SAL_MTM1M3.h>
 
+#include <cRIO/DataTypes.h>
 #include <cRIO/Singleton.h>
 
 namespace LSST {
@@ -45,6 +46,9 @@ public:
     void warnUnknownAddress(double _timestamp, int32_t _actuatorId);
     void warnUnknownFunction(double _timestamp, int32_t _actuatorId);
     void warnUnknownProblem(double _timestamp, int32_t _actuatorId);
+
+private:
+    double _responseTimeout[FA_COUNT];
 };
 
 }  // namespace SS

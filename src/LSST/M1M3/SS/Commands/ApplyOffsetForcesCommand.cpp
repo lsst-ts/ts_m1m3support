@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <ApplyOffsetForcesCommand.h>
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_command_applyOffsetForcesC* data)
         : Command(commandID) {
@@ -58,7 +59,3 @@ void ApplyOffsetForcesCommand::ackComplete() {
 void ApplyOffsetForcesCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandapplyOffsetForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

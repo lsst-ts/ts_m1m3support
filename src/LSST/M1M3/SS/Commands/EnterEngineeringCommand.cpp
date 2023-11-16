@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <EnterEngineeringCommand.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 EnterEngineeringCommand::EnterEngineeringCommand(int32_t commandID) : Command(commandID) {}
 
@@ -45,7 +46,3 @@ void EnterEngineeringCommand::ackComplete() {
 void EnterEngineeringCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandenterEngineering(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

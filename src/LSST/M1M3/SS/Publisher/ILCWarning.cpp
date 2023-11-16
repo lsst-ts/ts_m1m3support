@@ -38,6 +38,8 @@ ILCWarning::ILCWarning(token) {
     unknownAddress = false;
     unknownFunction = false;
     unknownProblem = false;
+
+    memset(_responseTimeout, 0, sizeof(_responseTimeout));
 }
 
 void ILCWarning::warnResponseTimeout(double _timestamp, int32_t _actuatorId) {

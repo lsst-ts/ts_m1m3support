@@ -21,12 +21,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <spdlog/spdlog.h>
+#include <cRIO/SAL/Command.h>
 
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 #include <PauseM1M3RaisingLoweringCommand.h>
 
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 PauseM1M3RaisingLoweringCommand::PauseM1M3RaisingLoweringCommand(int32_t commandID) : Command(commandID) {}

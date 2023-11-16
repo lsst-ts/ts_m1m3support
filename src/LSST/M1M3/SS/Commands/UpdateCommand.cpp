@@ -24,9 +24,7 @@
 #include <Context.h>
 #include <UpdateCommand.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 UpdateCommand::UpdateCommand(std::mutex* updateMutex) : Command(-1) {
     _updateMutex = updateMutex;
@@ -43,7 +41,3 @@ UpdateCommand::~UpdateCommand() {
 }
 
 void UpdateCommand::execute() { Context::get().update(this); }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

@@ -28,6 +28,8 @@
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 
+#include <cRIO/SAL/Command.h>
+
 #include <AbortProfileCommand.h>
 #include <AbortRaiseM1M3Command.h>
 #include <ApplyActiveOpticForcesCommand.h>
@@ -80,6 +82,7 @@
 #include <TMAElevationSampleCommand.h>
 #include <UpdatePIDCommand.h>
 
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 M1M3SSSubscriber::M1M3SSSubscriber() { SPDLOG_DEBUG("M1M3SSSubscriber: M1M3SSSubscriber()"); }

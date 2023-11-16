@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <ResetPIDCommand.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 ResetPIDCommand::ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* data) : Command(commandID) {
     _data.pid = data->pid;
@@ -54,7 +55,3 @@ void ResetPIDCommand::ackComplete() {
 void ResetPIDCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

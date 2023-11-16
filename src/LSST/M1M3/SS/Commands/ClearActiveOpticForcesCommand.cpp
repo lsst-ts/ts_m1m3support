@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <ClearActiveOpticForcesCommand.h>
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(int32_t commandID) : Command(commandID) {}
 
@@ -46,7 +47,3 @@ void ClearActiveOpticForcesCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandclearActiveOpticForces(getCommandID(), ACK_FAILED,
                                                                  "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
