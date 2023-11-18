@@ -14,11 +14,11 @@ src/libM1M3SS.a: FORCE
 # Tool invocations
 ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
-	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a
+	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(CRIOCPP)/lib/libcRIOcpp.a $(LIBS)
 
 m1m3sscli: src/m1m3sscli.cpp.o src/libM1M3SS.a $(CRIOCPP)/lib/libcRIOcpp.a
 	@echo '[LD ] $@'
-	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a -lreadline
+	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(CRIOCPP)/lib/libcRIOcpp.a $(LIBS) -lreadline
 
 # Other Targets
 clean:

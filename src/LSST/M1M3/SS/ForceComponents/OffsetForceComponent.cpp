@@ -39,7 +39,7 @@ namespace M1M3 {
 namespace SS {
 
 OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
-        : ForceComponent("Offset", ForceActuatorSettings::instance().OffsetComponentSettings) {
+        : ForceComponent("Offset", &ForceActuatorSettings::instance().OffsetComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();

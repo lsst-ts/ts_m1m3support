@@ -14,12 +14,12 @@ else
   c_opts += -O3
 endif
 
-CPP := g++ -std=c++14 -Wall -fPIE ${c_opts}
+CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
 
 # compile x86 simulator or real cRIO stuff
 ifdef SIMULATOR
   C := gcc -Wall ${c_opts}
-  CPP += -pedantic  -DSIMULATOR
+  CPP += -pedantic -DSIMULATOR
 else
   C := gcc -Wall -fmessage-length=0 ${c_opts}
   CPP += -fmessage-length=0
@@ -29,8 +29,8 @@ CRIOCPP := ../ts_cRIOcpp/
 
 PKG_CPPFLAGS := \
 	$(shell pkg-config yaml-cpp --cflags $(silence)) \
-	$(shell pkg-config fmt --cflags $(silence)) \
-	$(shell pkg-config spdlog --cflags $(silence))
+	$(shell pkg-config spdlog --cflags $(silence)) \
+	$(shell pkg-config fmt --cflags $(silence))
 
 SAL_CPPFLAGS += $(PKG_CPPFLAGS) \
 	-I${OSPL_HOME}/include -I${OSPL_HOME}/include/sys -I${OSPL_HOME}/include/dcps/C++/SACPP \
@@ -39,8 +39,8 @@ SAL_CPPFLAGS += $(PKG_CPPFLAGS) \
 
 PKG_LIBS := \
 	$(shell pkg-config yaml-cpp --libs $(silence)) \
-	$(shell pkg-config fmt --libs $(silence)) \
-	$(shell pkg-config spdlog --libs $(silence))
+	$(shell pkg-config spdlog --libs $(silence) | sed -E 's/-l([a-z0-9]*)/-l:lib\1.a/g') \
+	$(shell pkg-config fmt --libs $(silence))
 
 LIBS += $(PKG_LIBS) -ldl -ldcpssacpp -ldcpsgapi -lddsuser -lddskernel \
 	-lpthread -lddsserialization -lddsconfparser -lddsconf -lddsdatabase \
