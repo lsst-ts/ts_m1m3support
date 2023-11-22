@@ -121,9 +121,9 @@ void TMA::getMirrorAngularVelocities(double &x, double &y, double &z) {
 void TMA::getMirrorAngularAccelerations(double &ax, double &ay, double &az) {
     if (ForceActuatorSettings::instance().useAccelerometers) {
         auto accelerometer = M1M3SSPublisher::instance().getAccelerometerData();
-        ax = accelerometer->angularAccelerationX;
-        ay = accelerometer->angularAccelerationY;
-        az = accelerometer->angularAccelerationZ;
+        ax = accelerometer->angularAccelerationX * D2RAD;
+        ay = accelerometer->angularAccelerationY * D2RAD;
+        az = accelerometer->angularAccelerationZ * D2RAD;
     } else {
         if (isnan(_azimuth_actual_acceleration)) {
             throw std::runtime_error("No TMA azimuth data received, cannot calculate acceleration.");
