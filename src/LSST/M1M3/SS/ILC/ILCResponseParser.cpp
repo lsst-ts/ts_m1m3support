@@ -154,7 +154,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                         _faExpectedResponses[dataIndex]--;
                         switch (function) {
                             case 17:
-                                _parseReportFAServerIDResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseServerIDResponse(buffer, dataIndex);
                                 break;
                             case 18:
                                 _parseReportFAServerStatusResponse(buffer, map);
@@ -166,7 +166,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 _parseSetBoostValveDCAGainsResponse(buffer, map);
                                 break;
                             case 74:
-                                _parseReadBoostValveDCAGainsResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseBoosterValveDCAGains(buffer, dataIndex);
                                 break;
                             case 75:
                                 _parseForceDemandResponse(buffer, address, map);
@@ -175,7 +175,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 _parsePneumaticForceStatusResponse(buffer, address, map);
                                 break;
                             case 80:
-                                _parseSetFAADCScanRateResponse(buffer, map);
+    				ForceActuatorInfo::instance().parseFAADCScanRate(buffer, map.DataIndex);
                                 break;
                             case 81:
                                 _parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map);
@@ -190,7 +190,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 _parseReadDCAPressureValuesResponse(buffer, map);
                                 break;
                             case 120:
-                                _parseReportDCAIDResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseSetDCAID(buffer, dataIndex);
                                 break;
                             case 121:
                                 _parseReportDCAStatusResponse(buffer, map);
@@ -439,15 +439,6 @@ void ILCResponseParser::_parseReportHPServerIDResponse(ModbusBuffer* buffer, ILC
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
-    uint8_t length = buffer->readU8();
-    ForceActuatorInfo::instance().serverIDResponse(map.DataIndex, buffer->readU48(), buffer->readU8(),
-                                                   buffer->readU8(), buffer->readU8(), buffer->readU8(),
-                                                   buffer->readU8(), buffer->readU8());
-    buffer->incIndex(length - 12);
-    buffer->skipToNextFrame();
-}
-
 void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     uint8_t length = buffer->readU8();
@@ -465,7 +456,7 @@ void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer* buffer, ILC
 void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointActuatorState->ilcState[dataIndex] = buffer->readU8();
-    HardpointActuatorWarning::instance().setIlcStatus(dataIndex, buffer->readU16(), buffer->readU16());
+    HardpointActuatorWarning::instance().parseIlcStatus(buffer, dataIndex);
     buffer->skipToNextFrame();
 }
 
@@ -564,11 +555,6 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
 }
 
 void ILCResponseParser::_parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
-    buffer->skipToNextFrame();
-}
-
-void ILCResponseParser::_parseReadBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
-    ForceActuatorInfo::instance().boosterValveDCAGains(map.DataIndex, buffer->readSGL(), buffer->readSGL());
     buffer->skipToNextFrame();
 }
 
@@ -713,11 +699,6 @@ void ILCResponseParser::_parseSetHPADCScanRateResponse(ModbusBuffer* buffer, ILC
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseSetFAADCScanRateResponse(ModbusBuffer* buffer, ILCMap map) {
-    ForceActuatorInfo::instance().parseFAADCScanRate(map.DataIndex, buffer);
-    buffer->skipToNextFrame();
-}
-
 void ILCResponseParser::_parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, ILCMap map) {
     buffer->skipToNextFrame();
 }
@@ -782,12 +763,6 @@ void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer* buffer,
     _hardpointMonitorData->breakawayPressure[dataIndex] = buffer->readSGL();
     buffer->skipToNextFrame();
     _checkHardpointActuatorAirPressure(dataIndex);
-}
-
-void ILCResponseParser::_parseReportDCAIDResponse(ModbusBuffer* buffer, ILCMap map) {
-    ForceActuatorInfo::instance().setDCAID(map.DataIndex, buffer->readU48(), buffer->readU8(),
-                                           buffer->readU8(), buffer->readU8());
-    buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::_parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, ILCMap map) {

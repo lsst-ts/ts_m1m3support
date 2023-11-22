@@ -87,7 +87,8 @@ public:
     void log();
 
 private:
-    uint16_t _lastFAServerStatusResponse[FA_COUNT];
+    uint16_t _lastFAILCStatusResponse[FA_COUNT];
+    uint16_t _lastFAILCFaultsResponse[FA_COUNT];
     uint8_t _lastForceDemandResponse[FA_COUNT];
     uint16_t _lastDCAStatus[FA_COUNT];
     bool _shouldSend;
