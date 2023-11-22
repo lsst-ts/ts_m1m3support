@@ -14,17 +14,6 @@ else
   c_opts += -O3
 endif
 
-CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
-
-# compile x86 simulator or real cRIO stuff
-ifdef SIMULATOR
-  C := gcc -Wall ${c_opts}
-  CPP += -pedantic -DSIMULATOR
-else
-  C := gcc -Wall -fmessage-length=0 ${c_opts}
-  CPP += -fmessage-length=0
-endif
-
 CRIOCPP := ../ts_cRIOcpp/
 
 PKG_CPPFLAGS := \
@@ -38,16 +27,27 @@ SAL_CPPFLAGS += $(PKG_CPPFLAGS) \
 	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include
 
 PKG_LIBS := \
-	$(shell pkg-config yaml-cpp --libs $(silence)) \
-	$(shell pkg-config spdlog --libs $(silence) | sed -E 's/-l([a-z0-9]*)/-l:lib\1.a/g') \
-	$(shell pkg-config fmt --libs $(silence))
+	$(shell pkg-config yaml-cpp --libs $(silence))
+
+CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
+
+# compile x86 simulator or real cRIO stuff
+ifdef SIMULATOR
+  C := gcc -Wall ${c_opts}
+  CPP += -pedantic -DSIMULATOR
+  PKG_LIBS += $(shell pkg-config spdlog --libs $(silence))
+else
+  C := gcc -Wall -fmessage-length=0 ${c_opts}
+  CPP += -fmessage-length=0
+  PKG_LIBS += $(shell pkg-config spdlog --libs $(silence) | sed -E 's/-l([a-z0-9]*)/-l:lib\1.a/g')
+endif
 
 LIBS += $(PKG_LIBS) -ldl -ldcpssacpp -ldcpsgapi -lddsuser -lddskernel \
 	-lpthread -lddsserialization -lddsconfparser -lddsconf -lddsdatabase \
 	-lddsutil -lddsos \
 	${SAL_WORK_DIR}/lib/libSAL_MTM1M3.a ${SAL_WORK_DIR}/lib/libSAL_MTMount.a
 
-LIBS_FLAGS += -L"${OSPL_HOME}/lib" -L"${LSST_SDK_INSTALL}/lib"
+LIBS_FLAGS += -L${OSPL_HOME}/lib -L${LSST_SDK_INSTALL}/lib
 
 VERSION := $(shell git describe --tags --dirty 2>/dev/null || echo "unknown:non-git")
 GIT_HASH := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown-non-git")
