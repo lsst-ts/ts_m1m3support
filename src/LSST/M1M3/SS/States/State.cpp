@@ -30,7 +30,7 @@
 
 using namespace LSST::M1M3::SS;
 
-State::State(std::string name) { name = name; }
+State::State(std::string _name) { name = _name; }
 
 State::~State() {}
 

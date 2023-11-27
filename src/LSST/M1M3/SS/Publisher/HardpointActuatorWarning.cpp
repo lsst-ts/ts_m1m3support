@@ -157,7 +157,7 @@ void HardpointActuatorWarning::setStatus(int32_t hpIndex, double _timestamp, uin
 void HardpointActuatorWarning::parseIlcStatus(ModbusBuffer* buffer, int32_t hpIndex) {
     uint16_t ilcStatus = buffer->readU16();
     uint16_t ilcFaults = buffer->readU16();
- 
+
     if (_ilcOldStatus[hpIndex] == ilcStatus && _ilcOldFaults[hpIndex] == ilcFaults) {
         return;
     }
@@ -182,7 +182,7 @@ void HardpointActuatorWarning::parseIlcStatus(ModbusBuffer* buffer, int32_t hpIn
     // 0x2000 is DCA (FA only)
     // 0x4000 is DCA (FA only)
     // 0x8000 is reserved
-        
+
     _ilcOldFaults[hpIndex] = ilcFaults;
 
     uniqueIdCRCError[hpIndex] = (ilcFaults & 0x0001) != 0;

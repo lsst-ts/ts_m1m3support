@@ -43,14 +43,14 @@ public:
 
     void log() { M1M3SSPublisher::instance().logForceActuatorInfo(this); }
 
-    void populate(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    void populate(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
     void parseServerIDResponse(ModbusBuffer *buffer, int32_t dataIndex);
 
     void parseBoosterValveDCAGains(ModbusBuffer *buffer, int32_t dataIndex);
 
     void setFACalibration(int32_t dataIndex, uint8_t _adcScanRate);
-    void parseFAADCScanRate(ModbusBuffer* buffer, int32_t dataIndex);
+    void parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataIndex);
     void parseSetDCAID(ModbusBuffer *buffer, int32_t dataIndex);
 };
 

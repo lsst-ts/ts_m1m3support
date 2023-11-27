@@ -100,9 +100,7 @@ void sigKill(int signal) {
     ControllerThread::get().enqueue(new ExitControlCommand(-1));
 }
 
-void sigUsr1(int signal) {
-    ControllerThread::get().enqueue(new ReloadConfigurationCommand());
-}
+void sigUsr1(int signal) { ControllerThread::get().enqueue(new ReloadConfigurationCommand()); }
 
 std::vector<spdlog::sink_ptr> sinks;
 int enabledSinks = 0x10;

@@ -22,8 +22,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
+import time
 
 from lsst.ts.salobj import Domain, Remote
+from lsst.ts.xml.enums.MTM1M3 import DetailedStates
 
 
 async def run() -> None:
@@ -35,6 +37,13 @@ async def run() -> None:
             await m1m3.cmd_raiseM1M3.start()
             await asyncio.sleep(3)
             await m1m3.cmd_abortRaiseM1M3.start()
+            abort_timeout = time.time() + 3
+            while time.time() < abort_timeout:
+                if m1m3.evt_detailedState.get().detailedState == DetailedStates.PARKED:
+                    break
+                await asyncio.sleep(0.5)
+            assert m1m3.evt_detailedState.get().detailedState == DetailedStates.PARKED
+            assert m1m3.evt_raisingLoweringInfo.get().weightSupportedPercent == 0
             await m1m3.cmd_disable.start()
             await m1m3.cmd_standby.start()
             await m1m3.cmd_exitControl.start()

@@ -38,20 +38,20 @@ deploy: ts-M1M3supportd m1m3cli
 	${co}scp Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx admin@${CRIO_IP}:Bitfiles
 
 tests: tests/Makefile tests/*.cpp
-	@${MAKE} -C tests SIMULATOR=1
+	@${MAKE} SIMULATOR=1 -C tests
 
 run_tests: tests
 	@${MAKE} -C tests run
 
 junit: tests
-	@${MAKE} -C tests junit SIMULATOR=1
+	@${MAKE} SIMULATOR=1 -C tests junit
 
 doc:
 	${co}doxygen Doxyfile
 
 simulator:
-	${co}${MAKE} -C . SIMULATOR=1 DEBUG=1
-	@${MAKE} -C . SIMULATOR=1 DEBUG=1
+	${co}${MAKE} SIMULATOR=1 DEBUG=1 -C .
+	@${MAKE} SIMULATOR=1 DEBUG=1 -C .
 
 ipk: ts-M1M3supportd m1m3sscli ts-M1M3support_${VERSION}_x64.ipk
 

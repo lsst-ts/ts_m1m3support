@@ -40,7 +40,8 @@ void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int
     uint16_t ilcStatus = buffer->readU16();
     uint16_t ilcFaults = buffer->readU16();
 
-    if (_lastFAILCStatusResponse[dataIndex] == ilcStatus && _lastFAILCFaultsResponse[dataIndex] == ilcFaults) {
+    if (_lastFAILCStatusResponse[dataIndex] == ilcStatus &&
+        _lastFAILCFaultsResponse[dataIndex] == ilcFaults) {
         return;
     }
     majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;

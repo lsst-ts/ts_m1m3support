@@ -175,7 +175,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 _parsePneumaticForceStatusResponse(buffer, address, map);
                                 break;
                             case 80:
-    				ForceActuatorInfo::instance().parseFAADCScanRate(buffer, map.DataIndex);
+                                ForceActuatorInfo::instance().parseFAADCScanRate(buffer, map.DataIndex);
                                 break;
                             case 81:
                                 _parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map);
