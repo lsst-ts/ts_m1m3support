@@ -21,8 +21,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <sal_MTM1M3.h>
 #include <spdlog/spdlog.h>
+
+#include <sal_MTM1M3.h>
 
 #include <BoosterValveStatus.h>
 #include <ForceControllerState.h>

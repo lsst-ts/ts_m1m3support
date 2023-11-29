@@ -30,10 +30,8 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ForceComponent::ForceComponent(const char *name, const ForceComponentSettings &forceComponentSettings)
-        : _name(name),
-          _maxRateOfChange(forceComponentSettings.MaxRateOfChange),
-          _nearZeroValue(forceComponentSettings.NearZeroValue) {
+ForceComponent::ForceComponent(const char *name, ForceComponentSettings *forceComponentSettings)
+        : _forceComponentSettings(forceComponentSettings) {
     _state = INITIALISING;
 
     _zeroAll();
@@ -64,14 +62,14 @@ void ForceComponent::update() {
         bool nearZero = true;
         for (int i = 0; i < FA_COUNT && nearZero; ++i) {
             if (i < FA_X_COUNT) {
-                nearZero = nearZero && fabs(xCurrent[i]) < _nearZeroValue;
+                nearZero = nearZero && fabs(xCurrent[i]) < _forceComponentSettings->NearZeroValue;
             }
 
             if (i < FA_Y_COUNT) {
-                nearZero = nearZero && fabs(yCurrent[i]) < _nearZeroValue;
+                nearZero = nearZero && fabs(yCurrent[i]) < _forceComponentSettings->NearZeroValue;
             }
 
-            nearZero = nearZero && fabs(zCurrent[i]) < _nearZeroValue;
+            nearZero = nearZero && fabs(zCurrent[i]) < _forceComponentSettings->NearZeroValue;
         }
         if (nearZero) {
             SPDLOG_DEBUG("{}ForceComponent: disabled()", _name);
@@ -116,7 +114,7 @@ void ForceComponent::update() {
         // Determine how many outer loop cycles it will take to drive the
         // largest delta to 0N and use that as a scalar for all other
         // actuator deltas.
-        float scalar = largestDelta / _maxRateOfChange;
+        float scalar = largestDelta / _forceComponentSettings->MaxRateOfChange;
         if (scalar > 1) {
             // If it is more than 1 outer loop cycle keep working, we aren't
             // then we need to keep working!

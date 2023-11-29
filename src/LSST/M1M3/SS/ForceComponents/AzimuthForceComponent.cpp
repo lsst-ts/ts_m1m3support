@@ -40,7 +40,7 @@ namespace SS {
 
 AzimuthForceComponent::AzimuthForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
-        : ForceComponent("Azimuth", ForceActuatorSettings::instance().AzimuthComponentSettings) {
+        : ForceComponent("Azimuth", &ForceActuatorSettings::instance().AzimuthComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();

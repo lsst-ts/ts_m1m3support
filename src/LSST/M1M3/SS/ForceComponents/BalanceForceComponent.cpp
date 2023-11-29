@@ -40,7 +40,7 @@ namespace SS {
 
 BalanceForceComponent::BalanceForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
-        : ForceComponent("Balance", ForceActuatorSettings::instance().BalanceComponentSettings),
+        : ForceComponent("Balance", &ForceActuatorSettings::instance().BalanceComponentSettings),
           _fx(0, SettingReader::instance().getPIDSettings(false).getParameters(0)),
           _fy(1, SettingReader::instance().getPIDSettings(false).getParameters(1)),
           _fz(2, SettingReader::instance().getPIDSettings(false).getParameters(2)),

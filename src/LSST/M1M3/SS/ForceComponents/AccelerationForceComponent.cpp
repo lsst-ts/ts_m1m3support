@@ -39,7 +39,7 @@ namespace SS {
 
 AccelerationForceComponent::AccelerationForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
-        : ForceComponent("Acceleration", ForceActuatorSettings::instance().AccelerationComponentSettings) {
+        : ForceComponent("Acceleration", &ForceActuatorSettings::instance().AccelerationComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();

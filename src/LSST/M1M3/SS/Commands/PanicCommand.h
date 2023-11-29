@@ -25,7 +25,7 @@
 #define PANICCOMMAND_H_
 
 #include <Command.h>
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

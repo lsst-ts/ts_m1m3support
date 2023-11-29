@@ -25,10 +25,13 @@
 
 #include <SAL_MTM1M3C.h>
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 #include <SetSlewControllerSettingsCommand.h>
 
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 SetSlewControllerSettingsCommand::SetSlewControllerSettingsCommand(

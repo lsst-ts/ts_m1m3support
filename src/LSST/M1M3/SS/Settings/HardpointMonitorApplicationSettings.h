@@ -24,7 +24,7 @@
 #ifndef HARDPOINTMONITORAPPLICATIONSETTINGS_H_
 #define HARDPOINTMONITORAPPLICATIONSETTINGS_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

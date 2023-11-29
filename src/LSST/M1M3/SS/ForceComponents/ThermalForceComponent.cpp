@@ -40,7 +40,7 @@ namespace SS {
 
 ThermalForceComponent::ThermalForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
-        : ForceComponent("Thermal", ForceActuatorSettings::instance().ThermalComponentSettings) {
+        : ForceComponent("Thermal", &ForceActuatorSettings::instance().ThermalComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();

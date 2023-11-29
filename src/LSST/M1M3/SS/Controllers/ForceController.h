@@ -34,7 +34,7 @@
 #include <ActiveOpticForceComponent.h>
 #include <AzimuthForceComponent.h>
 #include <BalanceForceComponent.h>
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <DistributedForces.h>
 #include <ElevationForceComponent.h>
 #include <FinalForceComponent.h>

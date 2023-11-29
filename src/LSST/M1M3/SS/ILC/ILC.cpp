@@ -30,7 +30,7 @@
 #include <SAL_MTM1M3C.h>
 
 #include <BusList.h>
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
 #include <ForceActuatorFollowingErrorCounter.h>

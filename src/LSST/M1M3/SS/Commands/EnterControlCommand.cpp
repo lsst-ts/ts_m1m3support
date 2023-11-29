@@ -24,14 +24,8 @@
 #include <Context.h>
 #include <EnterControlCommand.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 EnterControlCommand::EnterControlCommand() : Command(-1) {}
 
 void EnterControlCommand::execute() { Context::get().enterControl(this); }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

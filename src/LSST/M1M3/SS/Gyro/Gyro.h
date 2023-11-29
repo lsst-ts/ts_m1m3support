@@ -24,7 +24,7 @@
 #ifndef GYRO_H_
 #define GYRO_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <GyroSettings.h>
 #include <SupportFPGAData.h>
 #include <string>

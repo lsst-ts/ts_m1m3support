@@ -32,6 +32,7 @@
 #include <ILCDataTypes.h>
 #include <ILCResponseParser.h>
 #include <ILCSubnetData.h>
+#include "ILCWarning.h"
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
 #include <ForceActuatorInfo.h>
@@ -62,7 +63,6 @@ ILCResponseParser::ILCResponseParser() {
     _hardpointMonitorState = 0;
     _hardpointMonitorWarning = 0;
     _hardpointMonitorData = 0;
-    _ilcWarning = 0;
     _outerLoopData = 0;
     _detailedState = 0;
 }
@@ -81,23 +81,10 @@ ILCResponseParser::ILCResponseParser(ILCSubnetData* subnetData, SafetyController
     _hardpointMonitorState = M1M3SSPublisher::instance().getEventHardpointMonitorState();
     _hardpointMonitorWarning = M1M3SSPublisher::instance().getEventHardpointMonitorWarning();
     _hardpointMonitorData = M1M3SSPublisher::instance().getHardpointMonitorData();
-    _ilcWarning = M1M3SSPublisher::instance().getEventILCWarning();
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
     _detailedState = M1M3SSPublisher::instance().getEventDetailedState();
 
     ForceActuatorForceWarning::instance().reset();
-
-    _ilcWarning->timestamp = 0;
-    _ilcWarning->actuatorId = -1;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
 
     memset(_faExpectedResponses, 0, sizeof(_faExpectedResponses));
     memset(_hpExpectedResponses, 0, sizeof(_hpExpectedResponses));
@@ -155,7 +142,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                         "calculated {:04X}, "
                         "address {:02X}, function {:02X}, data [{}]",
                         subnet, receivedCRC, calculatedCRC, data[0], data[1], data_buf.str());
-            _warnInvalidCRC(timestamp);
+            ILCWarning::instance().warnInvalidCRC(timestamp);
         } else {
             if (subnet >= 1 && subnet <= 5) {
                 uint8_t address = buffer->readU8();
@@ -167,7 +154,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                         _faExpectedResponses[dataIndex]--;
                         switch (function) {
                             case 17:
-                                _parseReportFAServerIDResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseServerIDResponse(buffer, dataIndex);
                                 break;
                             case 18:
                                 _parseReportFAServerStatusResponse(buffer, map);
@@ -179,7 +166,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 _parseSetBoostValveDCAGainsResponse(buffer, map);
                                 break;
                             case 74:
-                                _parseReadBoostValveDCAGainsResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseBoosterValveDCAGains(buffer, dataIndex);
                                 break;
                             case 75:
                                 _parseForceDemandResponse(buffer, address, map);
@@ -188,7 +175,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 _parsePneumaticForceStatusResponse(buffer, address, map);
                                 break;
                             case 80:
-                                _parseSetFAADCScanRateResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseFAADCScanRate(buffer, map.DataIndex);
                                 break;
                             case 81:
                                 _parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map);
@@ -203,7 +190,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 _parseReadDCAPressureValuesResponse(buffer, map);
                                 break;
                             case 120:
-                                _parseReportDCAIDResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseSetDCAID(buffer, dataIndex);
                                 break;
                             case 121:
                                 _parseReportDCAStatusResponse(buffer, map);
@@ -229,7 +216,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                         "ILCResponseParser: Unknown FA function on subnet {:d} function "
                                         "{:d}",
                                         (int)function, subnet);
-                                _warnUnknownFunction(timestamp, map.ActuatorId);
+                                ILCWarning::instance().warnUnknownFunction(timestamp, map.ActuatorId);
                                 break;
                         }
                         break;
@@ -275,7 +262,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                             default:
                                 SPDLOG_WARN("ILCResponseParser: Unknown HP function {:d} on subnet {:d}",
                                             (int)function, subnet);
-                                _warnUnknownFunction(timestamp, map.ActuatorId);
+                                ILCWarning::instance().warnUnknownFunction(timestamp, map.ActuatorId);
                                 break;
                         }
                         break;
@@ -319,7 +306,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                             default:
                                 SPDLOG_WARN("ILCResponseParser: Unknown HM function {:d} on subnet {:d}",
                                             (int)function, subnet);
-                                _warnUnknownFunction(timestamp, map.ActuatorId);
+                                ILCWarning::instance().warnUnknownFunction(timestamp, map.ActuatorId);
                                 break;
                         }
                         break;
@@ -328,12 +315,12 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 "ILCResponseParser: Unknown address {:d} on subnet {:d} for function "
                                 "code {:d}",
                                 (int)address, (int)subnet, (int)function);
-                        _warnUnknownAddress(timestamp, map.ActuatorId);
+                        ILCWarning::instance().warnUnknownAddress(timestamp, map.ActuatorId);
                         break;
                 }
             } else {
                 SPDLOG_WARN("ILCResponseParser: Unknown subnet {:d}", subnet);
-                _warnUnknownSubnet(timestamp);
+                ILCWarning::instance().warnUnknownSubnet(timestamp);
             }
         }
     }
@@ -374,7 +361,7 @@ void ILCResponseParser::verifyResponses() {
             auto& _forceActuatorInfo = ForceActuatorInfo::instance();
             TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
                         _forceActuatorInfo.referenceId[i]);
-            _warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i]);
+            ILCWarning::instance().warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i]);
             _faExpectedResponses[i] = 0;
         }
     }
@@ -385,7 +372,7 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < HP_COUNT; i++) {
         if (_hpExpectedResponses[i] != 0) {
             warn = true;
-            _warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
+            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
             _hpExpectedResponses[i] = 0;
             TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) actuator response timeout", i + 1,
                         _hardpointActuatorInfo->referenceId[i]);
@@ -398,7 +385,7 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < HP_COUNT; ++i) {
         if (_hmExpectedResponses[i] != 0) {
             warn = true;
-            _warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
+            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
             _hmExpectedResponses[i] = 0;
             TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) monitor response timeout", i + 1,
                         _hardpointMonitorInfo->referenceId[i]);
@@ -413,13 +400,14 @@ void ILCResponseParser::verifyResponses() {
 
 void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId) {
     uint8_t exceptionCode = buffer->readU8();
+    SPDLOG_WARN("ILC Error response received - actuator {}, code {}", actuatorId, exceptionCode);
     switch (exceptionCode) {
         case 1:
-            _warnIllegalFunction(timestamp, actuatorId);
+            ILCWarning::instance().warnIllegalFunction(timestamp, actuatorId);
             break;
         // case 2:	break; // Illegal Data Address
         case 3:
-            _warnIllegalDataValue(timestamp, actuatorId);
+            ILCWarning::instance().warnIllegalDataValue(timestamp, actuatorId);
             break;
         // case 4: break; // Slave Device Failure
         // case 5: break; // Acknowledge
@@ -431,7 +419,7 @@ void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timesta
         default:
             SPDLOG_WARN("ILCResponseParser: Actuator {:d} received exception code {:d}", actuatorId,
                         (int32_t)exceptionCode);
-            _warnUnknownProblem(timestamp, actuatorId);
+            ILCWarning::instance().warnUnknownProblem(timestamp, actuatorId);
             break;
     }
     buffer->skipToNextFrame();
@@ -447,15 +435,6 @@ void ILCResponseParser::_parseReportHPServerIDResponse(ModbusBuffer* buffer, ILC
     _hardpointActuatorInfo->networkNodeOptions[dataIndex] = buffer->readU8();
     _hardpointActuatorInfo->majorRevision[dataIndex] = buffer->readU8();
     _hardpointActuatorInfo->minorRevision[dataIndex] = buffer->readU8();
-    buffer->incIndex(length - 12);
-    buffer->skipToNextFrame();
-}
-
-void ILCResponseParser::_parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
-    uint8_t length = buffer->readU8();
-    ForceActuatorInfo::instance().serverIDResponse(map.DataIndex, buffer->readU48(), buffer->readU8(),
-                                                   buffer->readU8(), buffer->readU8(), buffer->readU8(),
-                                                   buffer->readU8(), buffer->readU8());
     buffer->incIndex(length - 12);
     buffer->skipToNextFrame();
 }
@@ -477,7 +456,7 @@ void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer* buffer, ILC
 void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointActuatorState->ilcState[dataIndex] = buffer->readU8();
-    HardpointActuatorWarning::instance().setIlcStatus(dataIndex, buffer->readU16(), buffer->readU16());
+    HardpointActuatorWarning::instance().parseIlcStatus(buffer, dataIndex);
     buffer->skipToNextFrame();
 }
 
@@ -576,11 +555,6 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
 }
 
 void ILCResponseParser::_parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
-    buffer->skipToNextFrame();
-}
-
-void ILCResponseParser::_parseReadBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
-    ForceActuatorInfo::instance().boosterValveDCAGains(map.DataIndex, buffer->readSGL(), buffer->readSGL());
     buffer->skipToNextFrame();
 }
 
@@ -725,11 +699,6 @@ void ILCResponseParser::_parseSetHPADCScanRateResponse(ModbusBuffer* buffer, ILC
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseSetFAADCScanRateResponse(ModbusBuffer* buffer, ILCMap map) {
-    ForceActuatorInfo::instance().parseFAADCScanRate(map.DataIndex, buffer);
-    buffer->skipToNextFrame();
-}
-
 void ILCResponseParser::_parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, ILCMap map) {
     buffer->skipToNextFrame();
 }
@@ -794,12 +763,6 @@ void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer* buffer,
     _hardpointMonitorData->breakawayPressure[dataIndex] = buffer->readSGL();
     buffer->skipToNextFrame();
     _checkHardpointActuatorAirPressure(dataIndex);
-}
-
-void ILCResponseParser::_parseReportDCAIDResponse(ModbusBuffer* buffer, ILCMap map) {
-    ForceActuatorInfo::instance().setDCAID(map.DataIndex, buffer->readU48(), buffer->readU8(),
-                                           buffer->readU8(), buffer->readU8());
-    buffer->skipToNextFrame();
 }
 
 void ILCResponseParser::_parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, ILCMap map) {
@@ -960,139 +923,4 @@ void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
 
     HardpointActuatorWarning::instance().setAirPressure(actuatorId, (airPressure < minPressure),
                                                         (airPressure > maxPressure), airPressure);
-}
-
-void ILCResponseParser::_warnResponseTimeout(double timestamp, int32_t actuatorId) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = actuatorId;
-    _ilcWarning->responseTimeout = true;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnInvalidCRC(double timestamp) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = -1;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = true;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnIllegalFunction(double timestamp, int32_t actuatorId) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = actuatorId;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = true;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnIllegalDataValue(double timestamp, int32_t actuatorId) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = actuatorId;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = true;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnInvalidLength(double timestamp, int32_t actuatorId) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = actuatorId;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = true;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnUnknownSubnet(double timestamp) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = -1;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = true;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnUnknownAddress(double timestamp, int32_t actuatorId) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = actuatorId;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = true;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnUnknownFunction(double timestamp, int32_t actuatorId) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = actuatorId;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = true;
-    _ilcWarning->unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning();
-}
-
-void ILCResponseParser::_warnUnknownProblem(double timestamp, int32_t actuatorId) {
-    _ilcWarning->timestamp = timestamp;
-    _ilcWarning->actuatorId = actuatorId;
-    _ilcWarning->responseTimeout = false;
-    _ilcWarning->invalidCRC = false;
-    _ilcWarning->illegalFunction = false;
-    _ilcWarning->illegalDataValue = false;
-    _ilcWarning->invalidLength = false;
-    _ilcWarning->unknownSubnet = false;
-    _ilcWarning->unknownAddress = false;
-    _ilcWarning->unknownFunction = false;
-    _ilcWarning->unknownProblem = true;
-    M1M3SSPublisher::instance().logILCWarning();
 }

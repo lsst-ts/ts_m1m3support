@@ -21,10 +21,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <BoosterValveCloseCommand.h>
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 BoosterValveCloseCommand::BoosterValveCloseCommand(int32_t commandID) : Command(commandID) {}

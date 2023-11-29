@@ -24,7 +24,7 @@
 #ifndef TIMESTAMP_H_
 #define TIMESTAMP_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <sys/time.h>
 
 namespace LSST {

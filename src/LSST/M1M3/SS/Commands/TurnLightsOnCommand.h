@@ -26,7 +26,7 @@
 
 #include <Command.h>
 #include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

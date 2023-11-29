@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <ClearOffsetForcesCommand.h>
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 ClearOffsetForcesCommand::ClearOffsetForcesCommand(int32_t commandID) : Command(commandID) {}
 
@@ -45,7 +46,3 @@ void ClearOffsetForcesCommand::ackComplete() {
 void ClearOffsetForcesCommand::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandclearOffsetForces(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

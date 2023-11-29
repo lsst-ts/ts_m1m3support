@@ -37,6 +37,9 @@
 #include <spdlog/sinks/syslog_sink.h>
 #include <SALSink.h>
 
+#include <SAL_MTM1M3.h>
+#include <SAL_MTMount.h>
+
 #include <EnterControlCommand.h>
 #include <ExitControlCommand.h>
 #include <Context.h>
@@ -47,6 +50,7 @@
 #include <Model.h>
 #include <OuterLoopClockThread.h>
 #include <PPSThread.h>
+#include <ReloadConfigurationCommand.h>
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 #include <SettingReader.h>
@@ -95,6 +99,8 @@ void sigKill(int signal) {
     SPDLOG_DEBUG("Kill/int signal received");
     ControllerThread::get().enqueue(new ExitControlCommand(-1));
 }
+
+void sigUsr1(int signal) { ControllerThread::get().enqueue(new ReloadConfigurationCommand()); }
 
 std::vector<spdlog::sink_ptr> sinks;
 int enabledSinks = 0x10;
@@ -186,6 +192,8 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     signal(SIGKILL, sigKill);
     signal(SIGINT, sigKill);
     signal(SIGTERM, sigKill);
+
+    signal(SIGUSR1, sigUsr1);
 
     try {
         SPDLOG_INFO("Main: Starting pps thread");

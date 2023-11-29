@@ -21,41 +21,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISPLACEMENTSENSORSETTINGS_H_
-#define DISPLACEMENTSENSORSETTINGS_H_
+#include <spdlog/spdlog.h>
 
-#include <string>
-#include <vector>
+#include <ReloadConfigurationCommand.h>
+#include <SettingReader.h>
 
-#include <yaml-cpp/yaml.h>
+using namespace LSST::M1M3::SS;
 
-#include <SAL_MTM1M3.h>
+ReloadConfigurationCommand::ReloadConfigurationCommand() : Command(-1) {}
 
-#include <cRIO/Singleton.h>
+ReloadConfigurationCommand::~ReloadConfigurationCommand() {}
 
-#include <cRIO/DataTypes.h>
-#include <M1M3SSPublisher.h>
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
-
-class DisplacementSensorSettings : public MTM1M3_logevent_displacementSensorSettingsC,
-                                   public cRIO::Singleton<DisplacementSensorSettings> {
-public:
-    std::vector<double> ConverterMatrix;
-    std::vector<int32_t> NPorts;
-    std::vector<double> NOffsets;
-
-    DisplacementSensorSettings(token) : NPorts(8), NOffsets(8) {}
-
-    void load(YAML::Node doc);
-
-    void log() { M1M3SSPublisher::instance().logDisplacementSensorSettings(this); }
-};
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif /* DISPLACEMENTSENSORSETTINGS_H_ */
+void ReloadConfigurationCommand::execute() {
+    SPDLOG_WARN("Reloading configuration");
+    SettingReader::instance().load();
+}

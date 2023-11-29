@@ -27,9 +27,7 @@
 #include <LimitLog.h>
 #include <cstring>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) : Command(-1) {
     memcpy(&_data, data, sizeof(MTMount_azimuthC));
@@ -45,7 +43,3 @@ void TMAAzimuthSampleCommand::execute() {
     }
     Context::get().storeTMAAzimuthSample(this);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

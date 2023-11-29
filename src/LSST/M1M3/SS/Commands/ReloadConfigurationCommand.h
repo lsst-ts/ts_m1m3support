@@ -21,41 +21,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISPLACEMENTSENSORSETTINGS_H_
-#define DISPLACEMENTSENSORSETTINGS_H_
+#ifndef RELOADCOMMAND_H_
+#define RELOADCOMMAND_H_
 
-#include <string>
-#include <vector>
-
-#include <yaml-cpp/yaml.h>
-
-#include <SAL_MTM1M3.h>
-
-#include <cRIO/Singleton.h>
-
-#include <cRIO/DataTypes.h>
-#include <M1M3SSPublisher.h>
+#include <Command.h>
+#include <mutex>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class DisplacementSensorSettings : public MTM1M3_logevent_displacementSensorSettingsC,
-                                   public cRIO::Singleton<DisplacementSensorSettings> {
+/*!
+ * Reloading configuration.
+ */
+class ReloadConfigurationCommand : public Command {
 public:
-    std::vector<double> ConverterMatrix;
-    std::vector<int32_t> NPorts;
-    std::vector<double> NOffsets;
+    ReloadConfigurationCommand();
+    ~ReloadConfigurationCommand();
 
-    DisplacementSensorSettings(token) : NPorts(8), NOffsets(8) {}
-
-    void load(YAML::Node doc);
-
-    void log() { M1M3SSPublisher::instance().logDisplacementSensorSettings(this); }
+    void execute() override;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* DISPLACEMENTSENSORSETTINGS_H_ */
+#endif /* RELOADCOMMAND_H_ */

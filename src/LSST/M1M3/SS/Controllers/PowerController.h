@@ -24,7 +24,7 @@
 #ifndef POWERCONTROLLER_H_
 #define POWERCONTROLLER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <IFPGA.h>
 #include <IExpansionFPGA.h>
 #include <SupportFPGAData.h>

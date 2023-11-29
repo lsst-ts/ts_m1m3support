@@ -26,7 +26,7 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <HardpointActuatorSettings.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorSettings.h>
@@ -52,7 +52,6 @@ public:
 private:
     void _parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId);
     void _parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCMap map);
-    void _parseReportFAServerIDResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportHMServerIDResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportHPServerStatusResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportFAServerStatusResponse(ModbusBuffer* buffer, ILCMap map);
@@ -62,7 +61,6 @@ private:
     void _parseChangeHMILCModeResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map, double timestamp);
     void _parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map);
-    void _parseReadBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseForceDemandResponse(ModbusBuffer* buffer, uint8_t address, ILCMap map);
     void _parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseDualAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map);
@@ -70,7 +68,6 @@ private:
     void _parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseDualAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseSetHPADCScanRateResponse(ModbusBuffer* buffer, ILCMap map);
-    void _parseSetFAADCScanRateResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseHPResetResponse(ModbusBuffer* buffer, ILCMap map);
@@ -80,7 +77,6 @@ private:
     void _parseReadFACalibrationResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReadHMPressureValuesResponse(ModbusBuffer* buffer, ILCMap map);
-    void _parseReportDCAIDResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportDCAStatusResponse(ModbusBuffer* buffer, ILCMap map);
     void _parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, ILCMap map);
@@ -123,8 +119,6 @@ private:
     MTM1M3_logevent_hardpointMonitorStateC* _hardpointMonitorState;
     MTM1M3_logevent_hardpointMonitorWarningC* _hardpointMonitorWarning;
     MTM1M3_hardpointMonitorDataC* _hardpointMonitorData;
-
-    MTM1M3_logevent_ilcWarningC* _ilcWarning;
 
     MTM1M3_outerLoopDataC* _outerLoopData;
 };

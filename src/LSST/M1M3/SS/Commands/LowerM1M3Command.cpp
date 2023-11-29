@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <LowerM1M3Command.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 LowerM1M3Command::LowerM1M3Command(int32_t commandID) : Command(commandID) {}
 
@@ -44,7 +45,3 @@ void LowerM1M3Command::ackComplete() {
 void LowerM1M3Command::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandlowerM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

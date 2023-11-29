@@ -28,7 +28,7 @@
 
 #include <cRIO/Singleton.h>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <StartCommand.h>
 
 namespace LSST {

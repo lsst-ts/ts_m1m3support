@@ -21,11 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <EnableForceActuatorCommand.h>
 #include <M1M3SSPublisher.h>
 #include <SettingReader.h>
 
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t commandID,

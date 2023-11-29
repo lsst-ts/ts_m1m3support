@@ -26,10 +26,9 @@
 
 #include <SAL_MTM1M3.h>
 
+#include <cRIO/DataTypes.h>
 #include <cRIO/Singleton.h>
 #include <M1M3SSPublisher.h>
-
-#include "DataTypes.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -43,7 +42,7 @@ public:
     void send();
 
     void setStatus(int32_t hpIndex, double _timestamp, uint8_t status, int broadcastCounter);
-    void setIlcStatus(int32_t hpIndex, uint16_t ilcStatus, uint16_t ilcFaults);
+    void parseIlcStatus(ModbusBuffer* buffer, int32_t hpIndex);
     void setProximityWarning(int32_t hpIndex, bool lowWarning, bool highWarning);
     void setAirPressure(int32_t hpIndex, bool lowFault, bool highFault, float airPressure);
 

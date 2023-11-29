@@ -29,7 +29,8 @@ namespace M1M3 {
 namespace SS {
 
 ForceActuatorWarning::ForceActuatorWarning() {
-    memset(_lastFAServerStatusResponse, 0xFF, sizeof(_lastFAServerStatusResponse));
+    memset(_lastFAILCStatusResponse, 0xFF, sizeof(_lastFAILCStatusResponse));
+    memset(_lastFAILCFaultsResponse, 0xFF, sizeof(_lastFAILCStatusResponse));
     memset(_lastForceDemandResponse, 0xFF, sizeof(_lastForceDemandResponse));
     memset(_lastDCAStatus, 0xFF, sizeof(_lastDCAStatus));
     _shouldSend = false;
@@ -37,7 +38,10 @@ ForceActuatorWarning::ForceActuatorWarning() {
 
 void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
     uint16_t ilcStatus = buffer->readU16();
-    if (_lastFAServerStatusResponse[dataIndex] == ilcStatus) {
+    uint16_t ilcFaults = buffer->readU16();
+
+    if (_lastFAILCStatusResponse[dataIndex] == ilcStatus &&
+        _lastFAILCFaultsResponse[dataIndex] == ilcFaults) {
         return;
     }
     majorFault[dataIndex] = (ilcStatus & 0x0001) != 0;
@@ -56,7 +60,6 @@ void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int
     mezzanineError[dataIndex] = (ilcStatus & 0x2000) != 0;
     mezzanineBootloaderActive[dataIndex] = (ilcStatus & 0x4000) != 0;
     // 0x8000 is reserved
-    uint16_t ilcFaults = buffer->readU16();
     uniqueIdCRCError[dataIndex] = (ilcFaults & 0x0001) != 0;
     applicationTypeMismatch[dataIndex] = (ilcFaults & 0x0002) != 0;
     applicationMissing[dataIndex] = (ilcFaults & 0x0004) != 0;
@@ -73,13 +76,15 @@ void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int
     auxPowerFault[dataIndex] = (ilcFaults & 0x2000) != 0;
     // 0x4000 is SMC Power (HP only)
     // 0x8000 is reserved
-    _lastFAServerStatusResponse[dataIndex] = ilcStatus;
+    _lastFAILCStatusResponse[dataIndex] = ilcStatus;
+    _lastFAILCFaultsResponse[dataIndex] = ilcFaults;
     _shouldSend = true;
 }
 
 void ForceActuatorWarning::parseStatus(ModbusBuffer* buffer, const int32_t dataIndex,
                                        DDS::Short broadcastCounter) {
     uint8_t ilcStatus = buffer->readU8();
+
     bool brCntWarning = broadcastCounter != ((ilcStatus & 0xF0) >> 4);
     // bit 0x10 becomes brCntWarning
     ilcStatus = (ilcStatus & ~0xF0) | (brCntWarning ? 0x10 : 0x00);

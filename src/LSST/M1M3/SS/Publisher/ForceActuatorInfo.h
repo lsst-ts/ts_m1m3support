@@ -43,19 +43,15 @@ public:
 
     void log() { M1M3SSPublisher::instance().logForceActuatorInfo(this); }
 
-    void populate(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    void populate(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
-    void serverIDResponse(int32_t dataIndex, uint64_t _ilcUniqueId, uint8_t _ilcApplicationType,
-                          uint8_t _networkNodeType, uint8_t _ilcSelectedOptions, uint8_t _networkNodeOptions,
-                          uint8_t _majorRevision, uint8_t _minorRevision);
+    void parseServerIDResponse(ModbusBuffer *buffer, int32_t dataIndex);
 
-    void boosterValveDCAGains(int32_t dataIndex, float _mezzaninePrimaryCylinderGain,
-                              float _mezzanineSecondaryCylinderGain);
+    void parseBoosterValveDCAGains(ModbusBuffer *buffer, int32_t dataIndex);
 
     void setFACalibration(int32_t dataIndex, uint8_t _adcScanRate);
-    void parseFAADCScanRate(int32_t dataIndex, ModbusBuffer* buffer);
-    void setDCAID(int32_t dataIndex, uint32_t _mezzanineUniqueId, uint8_t _mezzanineFirmwareType,
-                  uint8_t _mezzanineMajorRevision, uint8_t _mezzanineMinorRevision);
+    void parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataIndex);
+    void parseSetDCAID(ModbusBuffer *buffer, int32_t dataIndex);
 };
 
 }  // namespace SS

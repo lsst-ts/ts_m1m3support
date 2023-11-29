@@ -32,10 +32,10 @@
 #include <M1M3SSPublisher.h>
 #include <SupportFPGAData.h>
 #include <Timestamp.h>
+#include <TMA.h>
+#include <Units.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 Accelerometer::Accelerometer() {
     SPDLOG_DEBUG("Accelerometer: Accelerometer()");
@@ -64,19 +64,26 @@ void Accelerometer::processData() {
                                 accelerometerSettings.scalar[i] +
                         accelerometerSettings.accelerometerOffset[i]);
     }
+
+    double elevation = TMA::instance().getElevation();
+
     _accelerometerData->angularAccelerationX =
-            (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
-            accelerometerSettings.angularAccelerationDistance[0];
+            (RAD2D * (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
+             accelerometerSettings.angularAccelerationDistance[0]) +
+            ((90 - elevation) * 0.5347058823529413);
     _accelerometerData->angularAccelerationY =
-            (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
-            accelerometerSettings.angularAccelerationDistance[1];
+            (RAD2D * (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
+             accelerometerSettings.angularAccelerationDistance[1]) +
+            ((90 - elevation) * 2.069176470588235);
+
     _accelerometerData->angularAccelerationZ =
-            (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
+            (RAD2D * (_accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[0]) /
+             (accelerometerSettings.angularAccelerationDistance[2])) +
+            ((90 - elevation) * 0.25058823529411767);
+
+    /** _accelerometerData->angularAccelerationZ =
+            RAD2D * (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
              _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
-            (accelerometerSettings.angularAccelerationDistance[2] * 2);
+            (accelerometerSettings.angularAccelerationDistance[2] * 2); */
     M1M3SSPublisher::instance().putAccelerometerData();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

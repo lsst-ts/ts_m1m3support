@@ -21,41 +21,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DISPLACEMENTSENSORSETTINGS_H_
-#define DISPLACEMENTSENSORSETTINGS_H_
-
-#include <string>
-#include <vector>
-
-#include <yaml-cpp/yaml.h>
+#ifndef __ILCWarnign_h__
+#define __ILCWarnign_h__
 
 #include <SAL_MTM1M3.h>
 
-#include <cRIO/Singleton.h>
-
 #include <cRIO/DataTypes.h>
-#include <M1M3SSPublisher.h>
+#include <cRIO/Singleton.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class DisplacementSensorSettings : public MTM1M3_logevent_displacementSensorSettingsC,
-                                   public cRIO::Singleton<DisplacementSensorSettings> {
+class ILCWarning : public MTM1M3_logevent_ilcWarningC, public cRIO::Singleton<ILCWarning> {
 public:
-    std::vector<double> ConverterMatrix;
-    std::vector<int32_t> NPorts;
-    std::vector<double> NOffsets;
+    ILCWarning(token);
 
-    DisplacementSensorSettings(token) : NPorts(8), NOffsets(8) {}
+    void warnResponseTimeout(double _timestamp, int32_t _actuatorId);
+    void warnInvalidCRC(double _timestamp);
+    void warnIllegalFunction(double _timestamp, int32_t _actuatorId);
+    void warnIllegalDataValue(double _timestamp, int32_t _actuatorId);
+    void warnInvalidLength(double _timestamp, int32_t _actuatorId);
+    void warnUnknownSubnet(double _timestamp);
+    void warnUnknownAddress(double _timestamp, int32_t _actuatorId);
+    void warnUnknownFunction(double _timestamp, int32_t _actuatorId);
+    void warnUnknownProblem(double _timestamp, int32_t _actuatorId);
 
-    void load(YAML::Node doc);
-
-    void log() { M1M3SSPublisher::instance().logDisplacementSensorSettings(this); }
+private:
+    double _responseTimeout[FA_COUNT];
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* DISPLACEMENTSENSORSETTINGS_H_ */
+#endif /* __ILCWarnign_h__ */

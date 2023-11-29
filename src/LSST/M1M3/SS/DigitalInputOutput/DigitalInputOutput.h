@@ -29,7 +29,7 @@
 #include <cRIO/Singleton.h>
 
 #include <AirSupplyStatus.h>
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <IFPGA.h>
 #include <InterlockStatus.h>
 #include <SafetyController.h>

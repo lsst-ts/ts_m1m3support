@@ -24,7 +24,7 @@
 #ifndef SLEWCONTROLLER_H_
 #define SLEWCONTROLLER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

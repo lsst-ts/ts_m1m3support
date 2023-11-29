@@ -24,7 +24,7 @@
 #ifndef CRC_H_
 #define CRC_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

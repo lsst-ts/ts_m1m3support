@@ -24,7 +24,7 @@
 #ifndef BUMPTESTCONTROLLER_H_
 #define BUMPTESTCONTROLLER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
