@@ -47,9 +47,16 @@ public:
      */
     void processData();
 
+    /*!
+     * Record raw data.
+     */
+    void recordRaw();
+
 private:
     MTM1M3_accelerometerDataC* _accelerometerData;
     MTM1M3_logevent_accelerometerWarningC* _accelerometerWarning;
+
+    std::atomic_bool _recordRaw;
 };
 
 } /* namespace SS */
