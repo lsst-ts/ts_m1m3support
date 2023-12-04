@@ -972,6 +972,12 @@ void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint3
     }
 }
 
+void SimulatedFPGA::readRawAccelerometerFIFO(double* data) {
+    for (int i = 0; i < 8; i++) {
+        data[i] = getRndPM1() * 0.01;
+    }
+}
+
 void SimulatedFPGA::_monitorElevation(void) {
     MTMount_elevationC mountElevationInstance;
 

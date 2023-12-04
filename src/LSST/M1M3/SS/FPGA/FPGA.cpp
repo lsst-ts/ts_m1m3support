@@ -34,9 +34,7 @@
 
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 FPGA::FPGA() {
     SPDLOG_DEBUG("FPGA: FPGA()");
@@ -266,6 +264,18 @@ void FPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeo
                                data, length, timeoutInMs, &_remaining));
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+void FPGA::readRawAccelerometerFIFO(double* data) {
+    uint64_t raw[8];
+
+    size_t _rawRemaining = 0;
+
+    NiThrowError(
+            __PRETTY_FUNCTION__,
+            NiFpga_ReadFifoU64(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_Resource,
+                               raw, 8, NiFpga_InfiniteTimeout, &_rawRemaining));
+
+    for (int i = 0; i < 8; i++) {
+        data[i] = NiFpga_ConvertFromFxpToFloat(
+                NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo, raw[i]);
+    }
+}
