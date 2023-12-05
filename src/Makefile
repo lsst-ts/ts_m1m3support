@@ -5,9 +5,11 @@ all: libM1M3SS.a
 .PHONY: DEPS clean force
 
 version.c: force
-	${co}grep -qsF "VERSION=\"$(VERSION)\"" version.c \
-	|| echo "[VER] version $(VERSION) git hash $(GIT_HASH)" && \
-	printf >version.c 'const char *VERSION="%s";\nconst char *GIT_HASH="%s";\nconst char *CONFIG_URL="https://github.com/lsst-ts/ts_m1m3support/SettingFiles/v1";\nconst char *CONFIG_SCHEMA_VERSION="v1";' $(VERSION) $(GIT_HASH)
+	${co}(grep -qsF "VERSION=\"$(VERSION)\"" version.c == 0 && echo "[VER] version.c $(VERSION) OK") || \
+	( \
+	   echo "[VER] version $(VERSION) git hash $(GIT_HASH)" && \
+	   printf >version.c 'const char *VERSION="%s";\nconst char *GIT_HASH="%s";\nconst char *CONFIG_URL="https://github.com/lsst-ts/ts_config_mttcs/MTM1M3/v1";\nconst char *CONFIG_SCHEMA_VERSION="v1";' $(VERSION) $(GIT_HASH) \
+        )
 
 C_SRCS = $(shell find LSST NiFpga -name '*.c')
 LIB_CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
