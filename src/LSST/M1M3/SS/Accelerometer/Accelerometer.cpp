@@ -47,7 +47,6 @@ Accelerometer::Accelerometer() {
 
     memset(_accelerometerData, 0, sizeof(MTM1M3_accelerometerDataC));
     memset(_accelerometerWarning, 0, sizeof(MTM1M3_logevent_accelerometerWarningC));
-    _recordRaw = false;
 }
 
 void Accelerometer::processData() {
@@ -84,11 +83,4 @@ void Accelerometer::processData() {
              _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
             (accelerometerSettings.angularAccelerationDistance[2] * 2); */
     M1M3SSPublisher::instance().putAccelerometerData();
-}
-
-void Accelerometer::recordRaw() {
-    while (_recordRaw) {
-        double data[8];
-        IFPGA::get().readRawAccelerometerFIFO(data);
-    }
 }

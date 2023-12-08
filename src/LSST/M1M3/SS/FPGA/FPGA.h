@@ -78,7 +78,7 @@ public:
     void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) override;
     void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) override;
 
-    void readRawAccelerometerFIFO(double* data) override;
+    void readRawAccelerometerFIFO(uint64_t* raw, size_t samples) override;
 
 private:
     uint32_t _session;

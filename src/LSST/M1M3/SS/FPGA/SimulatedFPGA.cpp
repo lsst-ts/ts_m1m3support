@@ -972,9 +972,9 @@ void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint3
     }
 }
 
-void SimulatedFPGA::readRawAccelerometerFIFO(double* data) {
-    for (int i = 0; i < 8; i++) {
-        data[i] = getRndPM1() * 0.01;
+void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t* raw, size_t samples) {
+    for (size_t i = 0; i < samples * 8; i++) {
+        raw[i] = htobe64(random());
     }
 }
 

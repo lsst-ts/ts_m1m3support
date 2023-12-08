@@ -192,9 +192,12 @@ public:
     /**
      * Reads raw accelerometer FIFO. Waits for new data if no data are available.
      *
-     * @param data 8 raw accelerometer values
+     * @param raw 8 raw accelerometer values. Data are stored as 24 bits fixed
+     * points (5 bits integer part) in uint64_t. So actually on 3 bytes out of
+     * 64 are used - that copies NI interface for accessing fixed points
+     * @param samples number of samples
      */
-    virtual void readRawAccelerometerFIFO(double* data) = 0;
+    virtual void readRawAccelerometerFIFO(uint64_t* raw, size_t samples) = 0;
 
     /**
      * Sets all auxiliary and network buses power (A-D).

@@ -44,6 +44,7 @@
 #include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <NiFpga_M1M3SupportFPGA.h>
 
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
@@ -280,13 +281,17 @@ void signal_stop_dump(int signal) {
 }
 
 void ReadRawAccelerometer::run(std::unique_lock<std::mutex>& lock) {
-    double data[8];
+    uint64_t raw[8];
     while (keepRunning) {
         runCondition.wait_for(lock, 1ms);
         for (int meas = 0; meas < 100; meas++) {
-            fpga->readRawAccelerometerFIFO(data);
+            fpga->readRawAccelerometerFIFO(raw, 1);
             for (int i = 0; i < 8; i++) {
-                std::cout << std::fixed << std::setw(10) << std::setprecision(2) << data[i] * 500 << " ";
+                std::cout << std::fixed << std::setw(10) << std::setprecision(2)
+                          << NiFpga_ConvertFromFxpToFloat(
+                                     NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo,
+                                     raw[i]) *
+                                     500;
             }
             std::cout << std::endl;
         }

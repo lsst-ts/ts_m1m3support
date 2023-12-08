@@ -264,18 +264,11 @@ void FPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeo
                                data, length, timeoutInMs, &_remaining));
 }
 
-void FPGA::readRawAccelerometerFIFO(double* data) {
-    uint64_t raw[8];
-
+void FPGA::readRawAccelerometerFIFO(uint64_t* raw, size_t samples) {
     size_t _rawRemaining = 0;
 
     NiThrowError(
             __PRETTY_FUNCTION__,
             NiFpga_ReadFifoU64(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_Resource,
-                               raw, 8, NiFpga_InfiniteTimeout, &_rawRemaining));
-
-    for (int i = 0; i < 8; i++) {
-        data[i] = NiFpga_ConvertFromFxpToFloat(
-                NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo, raw[i]);
-    }
+                               raw, 8 * samples, NiFpga_InfiniteTimeout, &_rawRemaining));
 }

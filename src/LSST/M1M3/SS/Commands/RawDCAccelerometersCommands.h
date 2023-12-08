@@ -21,39 +21,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ACCELEROMETER_H_
-#define ACCELEROMETER_H_
+#ifndef RECORDRAWDCACCELEROMETERSCOMMANDS_H_
+#define RECORDRAWDCACCELEROMETERSCOMMANDS_H_
 
-#include <atomic>
-
-#include <SAL_MTM1M3.h>
+#include <Command.h>
+#include <mutex>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/*!
- * The class used to process accelerometer data.
+/**
+ * Start collecting of the DC raw accelerometer data. Virtual command, so far
+ * isn't mapped to SAL/DDS.
  */
-class Accelerometer {
+class RecordRawDCAccelerometersCommand : public Command {
 public:
-    /*!
-     * Instantiates the accelerometer.
-     */
-    Accelerometer();
+    RecordRawDCAccelerometersCommand();
 
-    /*!
-     * Processes currently available accelerometer data and publish it.
-     */
-    void processData();
+    void execute() override;
+};
 
-private:
-    MTM1M3_accelerometerDataC* _accelerometerData;
-    MTM1M3_logevent_accelerometerWarningC* _accelerometerWarning;
+/**
+ * Stop raw DC accelerometer data recording. Virtual command, isn't mapped to SAL/DDS.
+ */
+class StopRawDCAccelerometersCommand : public Command {
+public:
+    StopRawDCAccelerometersCommand();
+
+    void execute() override;
 };
 
 } /* namespace SS */
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* ACCELEROMETER_H_ */
+#endif /* RECORDRAWDCACCELEROMETERSCOMMANDS_H_ */
