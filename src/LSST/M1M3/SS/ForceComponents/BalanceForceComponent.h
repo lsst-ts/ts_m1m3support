@@ -55,7 +55,7 @@ class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyBalanceForces(float* x, float* y, float* z);
+    void applyBalanceForces(float* x, float* y, float* z, bool check = true);
 
     /**
      * Called from ForceController::updateAppliedForces. Feeds in hardpoint
@@ -71,6 +71,7 @@ public:
      */
     void applyBalanceForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                           float yMoment, float zMoment);
+    bool applyFreezedForces();
 
     void updatePID(int id, PIDParameters parameters);
     void resetPID(int id);

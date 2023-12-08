@@ -211,8 +211,15 @@ void ForceController::updateAppliedForces() {
             _balanceForceComponent.applyBalanceForcesByMirrorForces(
                     _hardpointActuatorData->fx, _hardpointActuatorData->fy, _hardpointActuatorData->fz,
                     _hardpointActuatorData->mx, _hardpointActuatorData->my, _hardpointActuatorData->mz);
+        } else {
+            _balanceForceComponent.applyFreezedForces();
         }
         _balanceForceComponent.update();
+    } else {
+        bool changed = _balanceForceComponent.applyFreezedForces();
+        if (changed) {
+            _balanceForceComponent.update();
+        }
     }
     if (_elevationForceComponent.isActive()) {
         if (_elevationForceComponent.isEnabled()) {
@@ -343,7 +350,7 @@ void ForceController::resetPIDs() {
     _balanceForceComponent.resetPIDs();
 }
 
-void ForceController::freeezePIDs() {
+void ForceController::freezePIDs() {
     SPDLOG_INFO("ForceController: freezePIDs()");
     _balanceForceComponent.freezePIDs();
 }

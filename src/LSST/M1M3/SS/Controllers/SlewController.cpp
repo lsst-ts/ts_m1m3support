@@ -61,7 +61,6 @@ void SlewController::enterSlew() {
     } else {
         _balanceForcesEnabled = Model::instance().getForceController()->zeroBalanceForces();
     }
-    for (int i = 0;
 }
 
 void SlewController::exitSlew() {

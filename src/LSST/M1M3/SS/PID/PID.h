@@ -80,6 +80,8 @@ public:
      */
     void thaw() { _frozen = false; }
 
+    double getOffset(bool* changed);
+
     void publishTelemetry();
 
 private:

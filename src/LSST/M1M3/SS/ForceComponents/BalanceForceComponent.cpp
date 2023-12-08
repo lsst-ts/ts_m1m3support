@@ -54,10 +54,10 @@ BalanceForceComponent::BalanceForceComponent(
     _preclippedBalanceForces = M1M3SSPublisher::instance().getEventPreclippedBalanceForces();
 }
 
-void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z) {
+void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z, bool check) {
     SPDLOG_TRACE("BalanceForceComponent: applyBalanceForces()");
 
-    if (!isEnabled()) {
+    if (check && !isEnabled()) {
         SPDLOG_ERROR("BalanceForceComponent: applyBalanceForces() called when the component is not applied");
         return;
     }
@@ -107,6 +107,35 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
         zForces[zIndex] = forces.ZForces[zIndex];
     }
     applyBalanceForces(xForces, yForces, zForces);
+}
+
+bool BalanceForceComponent::applyFreezedForces() {
+    bool changed = false;
+    float fx = _fx.getOffset(&changed);
+    float fy = _fy.getOffset(&changed);
+    float fz = _fz.getOffset(&changed);
+    float mx = _mx.getOffset(&changed);
+    float my = _my.getOffset(&changed);
+    float mz = _mz.getOffset(&changed);
+    DistributedForces forces =
+            ForceActuatorSettings::instance().calculateForceDistribution(fx, fy, fz, mx, my, mz);
+    float xForces[FA_X_COUNT];
+    float yForces[FA_Y_COUNT];
+    float zForces[FA_Z_COUNT];
+    for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
+        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
+        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+
+        if (xIndex != -1) {
+            xForces[xIndex] = forces.XForces[zIndex];
+        }
+        if (yIndex != -1) {
+            yForces[yIndex] = forces.YForces[zIndex];
+        }
+        zForces[zIndex] = forces.ZForces[zIndex];
+    }
+    applyBalanceForces(xForces, yForces, zForces, false);
+    return changed;
 }
 
 void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
