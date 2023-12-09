@@ -76,6 +76,7 @@ void DumpRawAccelerometer::run(std::unique_lock<std::mutex>& lock) {
             char data[samples * 8 * 3];
             IFPGA::get().readRawAccelerometerFIFO(raw, samples);
             for (size_t i = 0; i < samples * 8; i++) {
+                raw[i] = htobe64(raw[i]);
                 memcpy(data + (i * 3), (reinterpret_cast<char*>(raw + i)) + 5, 3);
             }
             _file.write(data, samples * 8 * 3);
