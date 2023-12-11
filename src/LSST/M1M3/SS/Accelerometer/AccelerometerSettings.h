@@ -46,6 +46,10 @@ public:
     void load(YAML::Node doc);
 
     void log() { M1M3SSPublisher::instance().logAccelerometerSettings(this); }
+
+    double xElevationPoly[3];
+    double yElevationPoly[3];
+    double zElevationPoly[3];
 };
 
 } /* namespace SS */

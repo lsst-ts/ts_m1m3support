@@ -99,6 +99,12 @@ class DCAccelerometersElevation:
         if plot:
             self.plot_fit()
 
+        print("Copy to settings:")
+        print(f"  # fit from ./utils/dcelevation {start.isot} {end.isot}")
+        print(f"  XElevationPoly: [{','.join(map(str, self.coefficients['X'].coef))}]")
+        print(f"  YElevationPoly: [{','.join(map(str, self.coefficients['Y'].coef))}]")
+        print(f"  ZElevationPoly: [{','.join(map(str, self.coefficients['Z'].coef))}]")
+
     async def load_dcaccelerometers(self, start: Time, end: Time) -> pd.DataFrame:
         """Load DC accelerometers table.
 
