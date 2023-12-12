@@ -65,16 +65,11 @@ class DCAccelerometersElevation:
                 self.interpolated.to_hdf(hd5_debug, "interpolated")
 
         self.coefficients = {}
-        self.residuals = {}
+        self.stats = {}
 
         for axis in "XYZ":
             logging.info(f"Fitting axis {axis}.")
-            self.coefficients[axis], (
-                self.residuals[axis],
-                rank,
-                s,
-                rcond,
-            ) = Polynomial.fit(
+            self.coefficients[axis], self.stats[axis] = Polynomial.fit(
                 self.interpolated["inclinometerAngle"],
                 -1 * self.interpolated[f"angularAcceleration{axis}"],
                 deg,
@@ -83,6 +78,8 @@ class DCAccelerometersElevation:
             logging.info(f"{axis} fit: {self.coefficients[axis]}")
 
             poly = self.coefficients[axis]
+
+            print(f"{axis}: {poly.convert()}")
 
             def f(x: float) -> float:
                 return poly(x)
@@ -101,9 +98,15 @@ class DCAccelerometersElevation:
 
         print("Copy to settings:")
         print(f"  # fit from ./utils/dcelevation {start.isot} {end.isot}")
-        print(f"  XElevationPoly: [{','.join(map(str, self.coefficients['X'].coef))}]")
-        print(f"  YElevationPoly: [{','.join(map(str, self.coefficients['Y'].coef))}]")
-        print(f"  ZElevationPoly: [{','.join(map(str, self.coefficients['Z'].coef))}]")
+        print(
+            f"  XElevationPoly: [{','.join(map(str, self.coefficients['X'].convert().coef))}]"
+        )
+        print(
+            f"  YElevationPoly: [{','.join(map(str, self.coefficients['Y'].convert().coef))}]"
+        )
+        print(
+            f"  ZElevationPoly: [{','.join(map(str, self.coefficients['Z'].convert().coef))}]"
+        )
 
     async def load_dcaccelerometers(self, start: Time, end: Time) -> pd.DataFrame:
         """Load DC accelerometers table.

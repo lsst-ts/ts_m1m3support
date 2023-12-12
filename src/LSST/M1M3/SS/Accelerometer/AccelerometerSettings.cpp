@@ -56,12 +56,15 @@ void AccelerometerSettings::load(YAML::Node doc) {
             accelerometerOffset[i] = accNode["Offset"].as<float>();
             scalar[i] = accNode["Scalar"].as<float>();
         }
-        auto loadElevationPoly = [doc](std::string axis, double poly[3]) {
+        auto loadElevationPoly = [doc](std::string axis, double *poly) {
             std::string name = axis + "ElevationPoly";
             auto vect = doc[name].as<std::vector<float>>();
             if (vect.size() != 3) {
                 throw std::runtime_error(fmt::format("Invalid number of coefficients in {}ElevatioPoly: {}",
                                                      axis, doc[name].as<std::string>()));
+            }
+            for (int i = 0; i < 3; i++) {
+                poly[i] = vect[i];
             }
         };
         loadElevationPoly("X", xElevationPoly);
