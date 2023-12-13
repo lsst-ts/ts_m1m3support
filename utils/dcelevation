@@ -58,7 +58,7 @@ class DCAccelerometersElevation:
                 inclinometer, how="outer", left_index=True, right_index=True
             )
             self.interpolated = raw.interpolate(method="time")
-            self.interpolated.bfill(inplace=True)
+            self.interpolated.dropna(inplace=True)
 
             if hd5_debug is not None:
                 logging.debug(f"Saving to {hd5_debug}")
@@ -123,7 +123,7 @@ class DCAccelerometersElevation:
         ret = await self.client.select_time_series(
             "lsst.sal.MTM1M3.accelerometerData",
             ["timestamp"]
-            + [f"rawAcccelerometer{acc}" for acc in range(8)]
+            + [f"rawAccelerometer{acc}" for acc in range(8)]
             + [f"accelerometer{acc}" for acc in range(8)]
             + [f"angularAcceleration{a}" for a in "XYZ"],
             start,
@@ -222,7 +222,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--deg",
-        default=3,
+        default=2,
         type=int,
         choices=range(1, 6),
         help="Polynomial degrees to fit",

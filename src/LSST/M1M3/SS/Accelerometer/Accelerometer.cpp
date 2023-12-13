@@ -75,7 +75,7 @@ void Accelerometer::processData() {
     };
 
     _accelerometerData->angularAccelerationX =
-            (RAD2D * (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
+            (RAD2D * (_accelerometerData->accelerometer[5] - _accelerometerData->accelerometer[7]) /
              accelerometerSettings.angularAccelerationDistance[0]) +
             applyPoly(accelerometerSettings.xElevationPoly, elevation);
 
