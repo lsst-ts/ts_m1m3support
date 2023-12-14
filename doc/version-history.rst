@@ -16,6 +16,7 @@ v2.15.1
 * Use cRIO/SAL/Command.h ACK_ constants
 * ReloadConfigurationCommand, fix ForceComponent's settings reloading
 * Fix DC accelerometer unit - it's in degrees, needs to be feed as radians to acceleration force calculation
+* Fix X DC accelerometer angular acceleration sign
 * Fixed Makefiles
 
 v2.15.0
