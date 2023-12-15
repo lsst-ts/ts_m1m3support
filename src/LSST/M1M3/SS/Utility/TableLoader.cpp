@@ -37,7 +37,8 @@ void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data,
                                  const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
-        rapidcsv::Document limitTable(fullPath);
+        rapidcsv::Document limitTable(fullPath, rapidcsv::LabelParams(), rapidcsv::SeparatorParams(),
+                                      rapidcsv::ConverterParams(), rapidcsv::LineReaderParams(true, '#'));
         data->clear();
         if (columnsToSkip + 4 != limitTable.GetColumnCount()) {
             throw std::runtime_error(fmt::format("CSV {} has {} columns, expected {}", fullPath,
@@ -65,7 +66,8 @@ void TableLoader::loadForceLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUN
                                       float xHigh[FA_X_COUNT], const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
-        rapidcsv::Document limitTable(fullPath);
+        rapidcsv::Document limitTable(fullPath, rapidcsv::LabelParams(), rapidcsv::SeparatorParams(),
+                                      rapidcsv::ConverterParams(), rapidcsv::LineReaderParams(true, '#'));
         if (columnsToSkip + 6 != limitTable.GetColumnCount()) {
             throw std::runtime_error(fmt::format("CSV {} has {} columns, expected {}", fullPath,
                                                  limitTable.GetColumnCount(), columnsToSkip + 6));
