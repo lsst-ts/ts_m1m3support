@@ -72,21 +72,21 @@ case "$1" in
   reload)
 	pid=$(cat $PIDFILE)
 	if [ -z $pid ]; then
-		echo "M1M3 SS M1M3 isn't running."
+		echo "M1M3 Support System CSC isn't running."
 	else
-		echo -n "Reloading SS M1M3 ${pid}"
+		echo -n "Triggering M1M3 Support System configuration reload - pid ${pid}"
 		/bin/kill -SIGUSR1 ${pid}
-		echo "..$? done"
+		echo "..$? done. Check M1M3 log for confirmation!"
 	fi
 	;;
   reload)
 	pid=$(cat $PIDFILE)
 	if [ -z $pid ]; then
-		echo "SS M1M3 isn't running."
+		echo "M1M3 Support System CSC isn't running."
 	else
-		echo -n "Flippign SS Raw DC Accelerometers recording ${pid}"
+		echo -n "Flipping M1M3 Support System Raw DC Accelerometers recording - pid ${pid}"
 		/bin/kill -SIGUSR2 ${pid}
-		echo "..$? done"
+		echo "..$? done. Check M1M3 log for confirmation!"
 	fi
 	;;
   status)
