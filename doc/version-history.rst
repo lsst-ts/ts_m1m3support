@@ -7,6 +7,7 @@ Version History
 v2.15.2
 -------
 
+* utils dcelevation, dcrawdump utilities
 * Read and store raw DC accelerometer data
 
 v2.15.1
