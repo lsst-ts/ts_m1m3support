@@ -25,6 +25,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <NiFpga_M1M3SupportFPGA.h>
+
 #include <Accelerometer.h>
 #include <AccelerometerSettings.h>
 #include <Conversion.h>
@@ -59,27 +61,22 @@ void Accelerometer::processData() {
     for (int i = 0; i < 8; i++) {
         _accelerometerData->rawAccelerometer[i] = fpgaData->AccelerometerRaw[i];
         _accelerometerData->accelerometer[i] =
-                G2M_S_2(((_accelerometerData->rawAccelerometer[i] - accelerometerSettings.bias[i]) *
+                G2M_S_2(((_accelerometerData->rawAccelerometer[i] - accelerometerSettings.bias[i]) /
                          accelerometerSettings.sensitivity[i]) *
                                 accelerometerSettings.scalar[i] +
                         accelerometerSettings.accelerometerOffset[i]);
     }
 
-    double elevation = TMA::instance().getElevation();
-
     _accelerometerData->angularAccelerationX =
             (RAD2D * (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
-             accelerometerSettings.angularAccelerationDistance[0]) +
-            ((90 - elevation) * 0.5347058823529413);
+             accelerometerSettings.angularAccelerationDistance[0]);
     _accelerometerData->angularAccelerationY =
             (RAD2D * (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
-             accelerometerSettings.angularAccelerationDistance[1]) +
-            ((90 - elevation) * 2.069176470588235);
+             accelerometerSettings.angularAccelerationDistance[1]);
 
     _accelerometerData->angularAccelerationZ =
             (RAD2D * (_accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[0]) /
-             (accelerometerSettings.angularAccelerationDistance[2])) +
-            ((90 - elevation) * 0.25058823529411767);
+             (accelerometerSettings.angularAccelerationDistance[2]));
 
     /** _accelerometerData->angularAccelerationZ =
             RAD2D * (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -

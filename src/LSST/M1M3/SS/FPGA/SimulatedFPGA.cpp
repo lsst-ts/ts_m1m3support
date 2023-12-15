@@ -37,6 +37,7 @@
 #include <ForceActuatorSettings.h>
 #include <FPGAAddresses.h>
 #include <M1M3SSPublisher.h>
+#include <NiFpga_M1M3SupportFPGA.h>
 #include <RaisingLoweringInfo.h>
 #include <SettingReader.h>
 #include <SimulatedFPGA.h>
@@ -969,6 +970,13 @@ void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {
 void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length; i++) {
         data[i] = i;
+    }
+}
+
+void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t* raw, size_t samples) {
+    for (size_t i = 0; i < samples * 8; i++) {
+        raw[i] = NiFpga_ConvertFromFloatToFxp(
+                NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo, -1 + (0.01f * i));
     }
 }
 

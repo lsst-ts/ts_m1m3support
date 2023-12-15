@@ -288,9 +288,10 @@ public:
     }
     void logForceActuatorState();
     void tryLogForceActuatorState();
-    void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {
-        _m1m3SAL->logEvent_forceActuatorWarning(data, 0);
-    }
+    void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {}
+    ///        _m1m3SAL->logEvent_forceActuatorWarning(data, 0);
+    ///    }
+
     void logForceControllerState(MTM1M3_logevent_forceControllerStateC* data) {
         _m1m3SAL->logEvent_forceControllerState(data, 0);
     }

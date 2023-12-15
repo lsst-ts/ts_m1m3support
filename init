@@ -63,7 +63,7 @@ case "$1" in
 	startdaemon
 	;;
   stop)
-  	stopdaemon
+	stopdaemon
 	;;
   restart)
 	stopdaemon
@@ -72,13 +72,23 @@ case "$1" in
   reload)
 	pid=$(cat $PIDFILE)
 	if [ -z $pid ]; then
-		echo "TS M1M3 isn't running."
+		echo "M1M3 Support System CSC isn't running."
 	else
-		echo -n "Reloading TS M1M3 ${pid}"
+		echo -n "Triggering M1M3 Support System configuration reload - pid ${pid}"
 		/bin/kill -SIGUSR1 ${pid}
-		echo "..$? done"
+		echo "..$? done. Check M1M3 log for confirmation!"
 	fi
-        ;;
+	;;
+  reload)
+	pid=$(cat $PIDFILE)
+	if [ -z $pid ]; then
+		echo "M1M3 Support System CSC isn't running."
+	else
+		echo -n "Flipping M1M3 Support System Raw DC Accelerometers recording - pid ${pid}"
+		/bin/kill -SIGUSR2 ${pid}
+		echo "..$? done. Check M1M3 log for confirmation!"
+	fi
+	;;
   status)
 	sudo -E -u m1m3 -g m1m3 LD_LIBRARY_PATH=$OSPL_HOME/lib PATH=$PATH:$OSPL_HOME/bin $OSPL_HOME/bin/ospl status
 	status $DAEMON

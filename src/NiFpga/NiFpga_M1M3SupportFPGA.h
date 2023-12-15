@@ -23,15 +23,11 @@
 /**
  * The signature of the FPGA bitfile.
  */
-static const char* const NiFpga_M1M3SupportFPGA_Signature = "16922763B1DC6A8D1676BFF8A5958584";
+static const char* const NiFpga_M1M3SupportFPGA_Signature = "9CE425C0BB80444C6990452D57D25D48";
 
 #if NiFpga_Cpp
 extern "C" {
 #endif
-
-typedef enum {
-    NiFpga_M1M3SupportFPGA_ControlU32_TabControl = 0x18000,
-} NiFpga_M1M3SupportFPGA_ControlU32;
 
 typedef enum {
     NiFpga_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO = 0,
@@ -42,18 +38,34 @@ typedef enum {
 } NiFpga_M1M3SupportFPGA_TargetToHostFifoU16;
 
 typedef enum {
-    NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO = 4,
+    NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO = 5,
 } NiFpga_M1M3SupportFPGA_TargetToHostFifoU64;
 
 typedef enum {
-    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO = 6,
-    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_HealthAndStatusControlFIFO = 5,
+    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO = 7,
+    NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_HealthAndStatusControlFIFO = 6,
     NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO = 3,
 } NiFpga_M1M3SupportFPGA_HostToTargetFifoU16;
 
 typedef enum {
     NiFpga_M1M3SupportFPGA_HostToTargetFifoU64_TimestampControlFIFO = 2,
 } NiFpga_M1M3SupportFPGA_HostToTargetFifoU64;
+
+#if !NiFpga_VxWorks
+
+/* Indicator: Meantemperature */
+const NiFpga_FxpTypeInfo NiFpga_M1M3SupportFPGA_IndicatorFxp_Meantemperature_TypeInfo = {1, 16, 10};
+
+/* Use NiFpga_ReadU16() to access Meantemperature */
+const uint32_t NiFpga_M1M3SupportFPGA_IndicatorFxp_Meantemperature_Resource = 0x18002;
+
+/* FIFO: RawAccelerometer */
+const NiFpga_FxpTypeInfo NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo = {1, 24, 5};
+
+/* Use NiFpga_ReadFifoU64() to access RawAccelerometer */
+const uint32_t NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_Resource = 4;
+
+#endif /* !NiFpga_VxWorks */
 
 #if NiFpga_Cpp
 }

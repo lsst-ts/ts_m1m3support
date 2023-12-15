@@ -20,6 +20,7 @@
  * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <csignal>
 #include <iostream>
 #include <iomanip>
 
@@ -27,9 +28,10 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include <cRIO/FPGACliApp.h>
 #include <cRIO/ElectromechanicalPneumaticILC.h>
+#include <cRIO/FPGACliApp.h>
 #include <cRIO/PrintILC.h>
+#include <cRIO/Thread.h>
 
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
@@ -42,10 +44,12 @@
 #include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <NiFpga_M1M3SupportFPGA.h>
 
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
+using namespace std::chrono_literals;
 
 #define MAX_FORCE 50
 
@@ -57,6 +61,8 @@ public:
     int setLights(command_vec cmds);
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
+
+    int dumpAccelerometer(command_vec cmds);
 
 protected:
     virtual LSST::cRIO::FPGA* newFPGA(const char* dir) override;
@@ -106,6 +112,9 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
 
     addCommand("air", std::bind(&M1M3SScli::setAir, this, std::placeholders::_1), "b", NEED_FPGA, "<0|1>",
                "Turns air valve off/on");
+
+    addCommand("accelerometer", std::bind(&M1M3SScli::dumpAccelerometer, this, std::placeholders::_1), "",
+               NEED_FPGA, NULL, "Dumps raw accelerometer data");
 
     addCommand("lights", std::bind(&M1M3SScli::setLights, this, std::placeholders::_1), "b", NEED_FPGA,
                "<0|1>", "Turns lights off/on");
@@ -249,6 +258,65 @@ int M1M3SScli::setDAAOffset(command_vec cmds) {
                                                                                       primary, secondary);
     }
     runILCCommands();
+    return 0;
+}
+
+class ReadRawAccelerometer : public Thread {
+public:
+    ReadRawAccelerometer(FPGAClass* _fpga) { fpga = _fpga; }
+    void run(std::unique_lock<std::mutex>& lock) override;
+
+    FPGAClass* fpga;
+};
+
+static ReadRawAccelerometer* rawThread = NULL;
+
+void signal_stop_dump(int signal) {
+    if (rawThread == NULL) {
+        std::cerr << "Invalid call to stop dump signal handle." << std::endl;
+        return;
+    }
+    rawThread->stop(10s);
+    std::cerr << "End dumping data." << std::endl;
+}
+
+void ReadRawAccelerometer::run(std::unique_lock<std::mutex>& lock) {
+    uint64_t raw[8];
+    while (keepRunning) {
+        runCondition.wait_for(lock, 1ms);
+        for (int meas = 0; meas < 100; meas++) {
+            fpga->readRawAccelerometerFIFO(raw, 1);
+            for (int i = 0; i < 8; i++) {
+                std::cout << std::fixed << std::setw(10) << std::setprecision(2)
+                          << NiFpga_ConvertFromFxpToFloat(
+                                     NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo,
+                                     raw[i]) *
+                                     500;
+            }
+            std::cout << std::endl;
+        }
+    }
+}
+
+int M1M3SScli::dumpAccelerometer(command_vec cmds) {
+    std::cerr << "Press Ctr+c to end dump." << std::endl;
+
+    rawThread = new ReadRawAccelerometer(dynamic_cast<FPGAClass*>(getFPGA()));
+    std::signal(SIGINT, &signal_stop_dump);
+
+    std::this_thread::sleep_for(500ms);
+    rawThread->start();
+
+    while (rawThread->isRunning()) {
+        std::unique_lock<std::mutex> lock;
+        std::this_thread::sleep_for(100ms);
+    }
+
+    std::signal(SIGINT, SIG_DFL);
+
+    delete rawThread;
+    rawThread = NULL;
+
     return 0;
 }
 

@@ -50,6 +50,7 @@
 #include <Model.h>
 #include <OuterLoopClockThread.h>
 #include <PPSThread.h>
+#include <RawDCAccelerometersCommands.h>
 #include <ReloadConfigurationCommand.h>
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
@@ -101,6 +102,17 @@ void sigKill(int signal) {
 }
 
 void sigUsr1(int signal) { ControllerThread::get().enqueue(new ReloadConfigurationCommand()); }
+
+bool dcAccelerometersRaw = false;
+
+void sigUsr2(int signal) {
+    dcAccelerometersRaw = !dcAccelerometersRaw;
+    if (dcAccelerometersRaw) {
+        ControllerThread::get().enqueue(new RecordRawDCAccelerometersCommand());
+    } else {
+        ControllerThread::get().enqueue(new StopRawDCAccelerometersCommand());
+    }
+}
 
 std::vector<spdlog::sink_ptr> sinks;
 int enabledSinks = 0x10;
@@ -194,6 +206,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
     signal(SIGTERM, sigKill);
 
     signal(SIGUSR1, sigUsr1);
+    signal(SIGUSR2, sigUsr2);
 
     try {
         SPDLOG_INFO("Main: Starting pps thread");

@@ -24,6 +24,8 @@
 #ifndef ACCELEROMETER_H_
 #define ACCELEROMETER_H_
 
+#include <atomic>
+
 #include <SAL_MTM1M3.h>
 
 namespace LSST {
