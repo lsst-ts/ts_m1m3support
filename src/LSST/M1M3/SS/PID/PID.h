@@ -24,9 +24,12 @@
 #ifndef PID_H_
 #define PID_H_
 
-#include <PIDParameters.h>
-#include <M1M3SSPublisher.h>
+#include <atomic>
+
 #include <SAL_MTM1M3C.h>
+
+#include <M1M3SSPublisher.h>
+#include <PIDParameters.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -67,6 +70,16 @@ public:
      */
     double process(double setpoint, double measurement);
 
+    /**
+     * Keep constant PID output. Used during slews.
+     */
+    void freeze();
+
+    /**
+     * Remove PID freeze flag.
+     */
+    void thaw() { _frozen = false; }
+
     void publishTelemetry();
 
 private:
@@ -79,6 +92,9 @@ private:
 
     void _calculateIntermediateValues();
     void _publishInfo();
+
+    std::atomic_bool _frozen;
+    double _offset;
 };
 
 } /* namespace SS */

@@ -135,6 +135,26 @@ void BalanceForceComponent::resetPIDs() {
     _mz.restoreInitialParameters();
 }
 
+void BalanceForceComponent::freezePIDs() {
+    SPDLOG_INFO("BalanceForceComponent: freezePIDs()");
+    _fx.freeze();
+    _fy.freeze();
+    _fz.freeze();
+    _mx.freeze();
+    _my.freeze();
+    _mz.freeze();
+}
+
+void BalanceForceComponent::thawPIDs() {
+    SPDLOG_INFO("BalanceForceComponent: thawPIDs()");
+    _fx.thaw();
+    _fy.thaw();
+    _fz.thaw();
+    _mx.thaw();
+    _my.thaw();
+    _mz.thaw();
+}
+
 void BalanceForceComponent::postEnableDisableActions() {
     SPDLOG_DEBUG("BalanceForceComponent: postEnableDisableActions()");
 

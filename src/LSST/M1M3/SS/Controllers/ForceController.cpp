@@ -343,6 +343,16 @@ void ForceController::resetPIDs() {
     _balanceForceComponent.resetPIDs();
 }
 
+void ForceController::freeezePIDs() {
+    SPDLOG_INFO("ForceController: freezePIDs()");
+    _balanceForceComponent.freezePIDs();
+}
+
+void ForceController::thawPIDs() {
+    SPDLOG_INFO("ForceController: thawPIDs()");
+    _balanceForceComponent.thawPIDs();
+}
+
 void ForceController::applyElevationForces() {
     SPDLOG_INFO("ForceController: applyElevationForces()");
     if (!_elevationForceComponent.isEnabled()) {

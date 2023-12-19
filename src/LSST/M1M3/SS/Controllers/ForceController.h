@@ -189,6 +189,9 @@ public:
      */
     void resetPIDs();
 
+    void freezePIDs();
+    void thawPIDs();
+
     void applyElevationForces();
     void zeroElevationForces();
 
