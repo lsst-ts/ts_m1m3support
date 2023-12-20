@@ -21,6 +21,71 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#if (defined(_WIN16) || defined(_WIN32) || defined(_WIN64)) && !defined(__WINDOWS__)
+
+#define __WINDOWS__
+
+#endif
+
+#if defined(__linux__) || defined(__CYGWIN__)
+
+#include <endian.h>
+
+#elif defined(__APPLE__)
+
+#include <libkern/OSByteOrder.h>
+
+#define be64toh(x) OSSwapBigToHostInt64(x)
+
+#define __BYTE_ORDER BYTE_ORDER
+#define __BIG_ENDIAN BIG_ENDIAN
+#define __LITTLE_ENDIAN LITTLE_ENDIAN
+#define __PDP_ENDIAN PDP_ENDIAN
+
+#elif defined(__OpenBSD__)
+
+#include <sys/endian.h>
+
+#elif defined(__NetBSD__) || defined(__FreeBSD__) || defined(__DragonFly__)
+
+#include <sys/endian.h>
+
+#define be64toh(x) betoh64(x)
+
+#elif defined(__WINDOWS__)
+
+#include <windows.h>
+
+#if BYTE_ORDER == LITTLE_ENDIAN
+
+#if defined(_MSC_VER)
+#include <stdlib.h>
+#define be64toh(x) _byteswap_uint64(x)
+
+#elif defined(__GNUC__) || defined(__clang__)
+
+#define be64toh(x) __builtin_bswap64(x)
+#else
+#error platform not supported
+#endif
+
+#else
+
+#error byte order not supported
+
+#endif
+
+#define __BYTE_ORDER BYTE_ORDER
+#define __BIG_ENDIAN BIG_ENDIAN
+#define __LITTLE_ENDIAN LITTLE_ENDIAN
+#define __PDP_ENDIAN PDP_ENDIAN
+
+#else
+
+#error platform not supported
+
+#endif
+
 #include <fstream>
 #include <iostream>
 
