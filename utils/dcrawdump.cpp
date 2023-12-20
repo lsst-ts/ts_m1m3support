@@ -33,6 +33,15 @@ int main(int argc, char** argv) {
     }
     std::ifstream file;
 
+    for (int i = 1; i <= 8; i++) {
+        std::cout << "Acc" << +i;
+        if (i < 8) {
+            std::cout << ",";
+        }
+    }
+
+    std::cout << std::endl;
+
     for (int i = 1; i < argc; i++) {
         try {
             // auto file = std::ifstream(argv[i], std::ifstream::in | std::fstream::binary);
