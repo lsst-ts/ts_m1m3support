@@ -27,7 +27,7 @@ SAL_CPPFLAGS += $(PKG_CPPFLAGS) \
 	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include
 
 PKG_LIBS := \
-	$(shell pkg-config yaml-cpp --libs $(silence))
+	$(shell pkg-config yaml-cpp --libs $(silence)) -lstdc++fs
 
 CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
 

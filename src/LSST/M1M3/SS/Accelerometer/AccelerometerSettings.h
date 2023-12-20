@@ -50,6 +50,8 @@ public:
     double xElevationPoly[3];
     double yElevationPoly[3];
     double zElevationPoly[3];
+
+    std::string dump_path;
 };
 
 } /* namespace SS */

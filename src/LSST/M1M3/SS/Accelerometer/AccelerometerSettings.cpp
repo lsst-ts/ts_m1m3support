@@ -40,6 +40,8 @@ AccelerometerSettings::AccelerometerSettings(token) {
     memset(xElevationPoly, 0, sizeof(xElevationPoly));
     memset(yElevationPoly, 0, sizeof(xElevationPoly));
     memset(zElevationPoly, 0, sizeof(xElevationPoly));
+
+    dump_path = "/tmp/rawdc_%FT%T.bin";
 }
 
 void AccelerometerSettings::load(YAML::Node doc) {
@@ -70,6 +72,7 @@ void AccelerometerSettings::load(YAML::Node doc) {
         loadElevationPoly("X", xElevationPoly);
         loadElevationPoly("Y", yElevationPoly);
         loadElevationPoly("Z", zElevationPoly);
+        dump_path = doc["RawDumpPath"].as<std::string>(dump_path);
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading AccelerometerSettings: {}", ex.what()));
     }

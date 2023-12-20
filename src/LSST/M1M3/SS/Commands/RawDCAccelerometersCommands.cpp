@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <filesystem>
 #include <fstream>
 #include <time.h>
 
@@ -28,6 +29,7 @@
 
 #include <cRIO/Thread.h>
 
+#include <AccelerometerSettings.h>
 #include <IFPGA.h>
 #include <RawDCAccelerometersCommands.h>
 
@@ -36,7 +38,7 @@ using namespace LSST::M1M3::SS;
 
 class DumpRawAccelerometer : public LSST::cRIO::Thread {
 public:
-    void open(const std::string& filename);
+    void open(std::filesystem::path dump_path);
     void close();
     void run(std::unique_lock<std::mutex>& lock) override;
 
@@ -45,17 +47,18 @@ private:
     size_t _sync_counter = 0;
 };
 
-void DumpRawAccelerometer::open(const std::string& filename) {
+void DumpRawAccelerometer::open(std::filesystem::path dump_path) {
     try {
         if (_file.is_open()) {
             close();
         }
-        _file.open(filename, std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
+        std::filesystem::create_directories(dump_path.parent_path());
+        _file.open(dump_path, std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
         _file.exceptions(std::ios::badbit | std::ios::failbit);
         _sync_counter = 0;
-        SPDLOG_INFO("Recording raw DC accelerometer data to {}", filename);
+        SPDLOG_INFO("Recording raw DC accelerometer data to {}", dump_path.string());
     } catch (const std::ios_base::failure& e) {
-        SPDLOG_ERROR("Cannot open raw DC accelerometer file {}: {}", filename, e.what());
+        SPDLOG_ERROR("Cannot open raw DC accelerometer file {}: {}", dump_path.string(), e.what());
     }
 }
 
@@ -100,10 +103,10 @@ RecordRawDCAccelerometersCommand::RecordRawDCAccelerometersCommand() : Command(-
 
 void RecordRawDCAccelerometersCommand::execute() {
     SPDLOG_INFO("Starting Raw DC Accelerometers recording");
-    char buf[100];
+    char buf[200];
     time_t now;
     time(&now);
-    strftime(buf, 100, "/tmp/rawdc_%FT%T.bin", gmtime(&now));
+    strftime(buf, 200, AccelerometerSettings::instance().dump_path.c_str(), gmtime(&now));
     rawThread.open(buf);
     rawThread.start();
 }

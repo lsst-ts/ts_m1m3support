@@ -62,6 +62,7 @@ AccelerometerSettings:
       WarningLow: -9000
       WarningHigh: 9000
       FaultHigh: 9000
+  RawDumpPath: "/tmp/rawdc_%FT%T.bin"
 DisplacementSensorSettings:
   PositionTablePath: DisplacementSensorTable.csv
   NPorts: [0, 1, 2, 3, 4, 5, 6, 7]
