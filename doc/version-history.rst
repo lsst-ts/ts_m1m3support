@@ -9,6 +9,7 @@ v2.15.2
 
 * utils dcelevation, dcrawdump utilities
 * Read and store raw DC accelerometer data
+* Reject requests to change slew controller settings if slew flags is active
 
 v2.15.1
 -------
