@@ -23,9 +23,11 @@
 import argparse
 import asyncio
 import logging
+import os
 from pathlib import Path
 
 import pandas as pd
+import yaml
 from astropy.time import Time
 from lsst_efd_client import EfdClient
 from numpy.polynomial import Polynomial
@@ -41,10 +43,16 @@ class DCAccelerometersElevation:
         start: Time,
         end: Time,
         deg: int,
+        config: str,
+        set_new: bool,
         plot: bool,
         hd5_debug: Path | None = None,
         load: Path | None = None,
     ) -> None:
+        if set_new is False:
+            with open(Path(config) / "_init.yaml") as cfile:
+                configuration = yaml.safe_load(cfile)
+
         if load is not None:
             logging.info(f"Loading data from {load}")
             self.interpolated = pd.read_hdf(load, "interpolated")
@@ -96,17 +104,24 @@ class DCAccelerometersElevation:
         if plot:
             self.plot_fit()
 
+        coef = {}
+        for ax in "XYZ":
+            coef[ax] = self.coefficients[ax].convert().coef
+
+        if set_new is False:
+            for ax in "XYZ":
+                conf = configuration["AccelerometerSettings"][ax + "ElevationPoly"]
+                logging.info(f"{ax} configuration: {conf}")
+                logging.info(f"{ax} calculated: {coef[ax]}")
+                coef[ax] += conf
+
         print("Copy to settings:")
-        print(f"  # fit from ./utils/dcelevation {start.isot} {end.isot}")
         print(
-            f"  XElevationPoly: [{','.join(map(str, self.coefficients['X'].convert().coef))}]"
+            f"  #{' ' if set_new else ' added '}fit from ./utils/dcelevation {start.isot} {end.isot}"
         )
-        print(
-            f"  YElevationPoly: [{','.join(map(str, self.coefficients['Y'].convert().coef))}]"
-        )
-        print(
-            f"  ZElevationPoly: [{','.join(map(str, self.coefficients['Z'].convert().coef))}]"
-        )
+        print(f"  XElevationPoly: [{','.join(map(str, coef['X']))}]")
+        print(f"  YElevationPoly: [{','.join(map(str, coef['Y']))}]")
+        print(f"  ZElevationPoly: [{','.join(map(str, coef['Z']))}]")
 
     async def load_dcaccelerometers(self, start: Time, end: Time) -> pd.DataFrame:
         """Load DC accelerometers table.
@@ -165,7 +180,7 @@ class DCAccelerometersElevation:
 
         import matplotlib.pyplot as plt
 
-        fig, axes = plt.subplots(nrows=7, ncols=1)
+        fig, axes = plt.subplots(nrows=7, ncols=1, sharex=True)
 
         self.interpolated.plot(y="inclinometerAngle", ax=axes[0], style="x")
 
@@ -209,6 +224,19 @@ def parse_arguments() -> argparse.Namespace:
         "--plot", default=False, action="store_true", help="Plot graphs during"
     )
     parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path(os.environ["TS_CONFIG_MTTCS_DIR"]) / "MTM1M3" / "v1",
+        help="M1M3 configuration directory",
+    )
+    parser.add_argument(
+        "--set-new",
+        default=False,
+        action="store_true",
+        help="Don't add to existing fit, assume DC accelerometers values were"
+        "acquired with 0 for elevation corrections",
+    )
+    parser.add_argument(
         "--hd5-debug",
         type=Path,
         default=None,
@@ -249,7 +277,14 @@ async def run_loop() -> None:
 
     dce = DCAccelerometersElevation(args.efd)
     await dce.fit_dcaccelerometers(
-        args.start_time, args.end_time, args.deg, args.plot, args.hd5_debug, args.load
+        args.start_time,
+        args.end_time,
+        args.deg,
+        args.config,
+        args.set_new,
+        args.plot,
+        args.hd5_debug,
+        args.load,
     )
 
 
