@@ -63,13 +63,6 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* co
 
 void EnabledState::runLoop() {
     SPDLOG_TRACE("EnabledState: runLoop()");
-    ILC* ilc = Model::instance().getILC();
-    Model::instance().getForceController()->updateAppliedForces();
-    Model::instance().getForceController()->processAppliedForces();
-    ilc->writeControlListBuffer();
-    ilc->triggerModbus();
-    Heartbeat::instance().tryToggle();
-    std::this_thread::sleep_for(1ms);
     IFPGA::get().pullTelemetry();
     Model::instance().getAccelerometer()->processData();
     DigitalInputOutput::instance().processData();
@@ -77,6 +70,15 @@ void EnabledState::runLoop() {
     Model::instance().getGyro()->processData();
     Model::instance().getInclinometer()->processData();
     Model::instance().getPowerController()->processData();
+
+    Heartbeat::instance().tryToggle();
+
+    ILC* ilc = Model::instance().getILC();
+    Model::instance().getForceController()->updateAppliedForces();
+    Model::instance().getForceController()->processAppliedForces();
+    ilc->writeControlListBuffer();
+    ilc->triggerModbus();
+    std::this_thread::sleep_for(1ms);
     ilc->waitForAllSubnets(5000);
     ilc->readAll();
     ilc->calculateHPPostion();
