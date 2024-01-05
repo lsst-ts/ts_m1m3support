@@ -49,7 +49,7 @@ class DCAccelerometersElevation:
         hd5_debug: Path | None = None,
         load: Path | None = None,
     ) -> None:
-        if set_new is False:
+        if not set_new:
             with open(Path(config) / "_init.yaml") as cfile:
                 configuration = yaml.safe_load(cfile)
 
@@ -108,7 +108,7 @@ class DCAccelerometersElevation:
         for ax in "XYZ":
             coef[ax] = self.coefficients[ax].convert().coef
 
-        if set_new is False:
+        if not set_new:
             for ax in "XYZ":
                 conf = configuration["AccelerometerSettings"][ax + "ElevationPoly"]
                 logging.info(f"{ax} configuration: {conf}")
