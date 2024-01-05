@@ -79,7 +79,7 @@ case "$1" in
 		echo "..$? done. Check M1M3 log for confirmation!"
 	fi
 	;;
-  reload)
+  rawdc)
 	pid=$(cat $PIDFILE)
 	if [ -z $pid ]; then
 		echo "M1M3 Support System CSC isn't running."

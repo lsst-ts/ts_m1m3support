@@ -72,7 +72,7 @@ public:
     /*!
      * Commands the gyro to set its rotation units to radians.
      */
-    void setRotationUnitsRadians();
+    void setRotationUnitsDegrees();
     /*!
      * Commands the gyro to set its axis configuration.
      */

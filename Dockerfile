@@ -38,7 +38,7 @@ FROM crio-develop
 
 ARG cRIO_CPP=v1.10.0
 ARG M1M3_SUPPORT=develop
-ARG TARGET=simulator
+ARG TARGET="SIMULATOR=1"
 
 RUN cd repos && git clone --branch $cRIO_CPP https://github.com/lsst-ts/ts_cRIOcpp
 RUN source ~/.crio_setup.sh && cd repos/ts_cRIOcpp && make

@@ -58,7 +58,8 @@ void TableLoader::loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vec
                             const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
-        rapidcsv::Document table(fullPath);
+        rapidcsv::Document table(fullPath, rapidcsv::LabelParams(), rapidcsv::SeparatorParams(),
+                                 rapidcsv::ConverterParams(), rapidcsv::LineReaderParams(true, '#'));
         data->clear();
         if (columnsToSkip + columnsToKeep != table.GetColumnCount()) {
             throw std::runtime_error(fmt::format("CSV {} has {} columns, expected {}", fullPath,

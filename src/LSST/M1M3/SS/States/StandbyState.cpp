@@ -169,7 +169,7 @@ States::Type StandbyState::start(StartCommand* command) {
     gyro->setAxis();
     gyro->setDataRate();
     gyro->setRotationFormatRate();
-    gyro->setRotationUnitsRadians();
+    gyro->setRotationUnitsDegrees();
     gyro->exitConfigurationMode();
     gyro->bit();
     heartbeat.tryToggle();

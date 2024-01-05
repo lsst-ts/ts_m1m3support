@@ -51,7 +51,7 @@ using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
 using namespace std::chrono_literals;
 
-#define MAX_FORCE 50
+#define MAX_FORCE 2000
 
 class M1M3SScli : public FPGACliApp {
 public:
@@ -61,6 +61,7 @@ public:
     int setLights(command_vec cmds);
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
+    int setCalibration(command_vec cmds);
 
     int dumpAccelerometer(command_vec cmds);
 
@@ -162,6 +163,9 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
     addCommand("daa-offset", std::bind(&M1M3SScli::setDAAOffset, this, std::placeholders::_1), "DDs?",
                NEED_FPGA, "<primary> <secondary> <ILC..>", "Set ILC primary and secondary force offsets");
 
+    addCommand("set-calibration", std::bind(&M1M3SScli::setCalibration, this, std::placeholders::_1), "IDDS",
+               NEED_FPGA, "<channel> <offset> <sensitivity> <ILC>", "Write calibration data");
+
     addILC(std::make_shared<PrintElectromechanical>(1));
     addILC(std::make_shared<PrintElectromechanical>(2));
     addILC(std::make_shared<PrintElectromechanical>(3));
@@ -256,6 +260,32 @@ int M1M3SScli::setDAAOffset(command_vec cmds) {
     for (auto u : ilcs) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDAAForceOffset(u.second, false,
                                                                                       primary, secondary);
+    }
+    runILCCommands();
+    return 0;
+}
+
+int M1M3SScli::setCalibration(command_vec cmds) {
+    uint8_t channel = stod(cmds[0]);
+    float offset = stof(cmds[1]);
+    float sensitivity = stof(cmds[2]);
+
+    if (channel > 3) {
+        std::cerr << "Channel should be 0-3, was commanded as " << +channel << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 3);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    if (ilcs.size() != 1) {
+        std::cerr << "Calibration data can be set only for a single ILC." << std::endl;
+        return -1;
+    }
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setOffsetAndSensitivity(
+                u.second, channel, offset, sensitivity);
     }
     runILCCommands();
     return 0;
@@ -581,18 +611,5 @@ void PrintSSFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t ti
     FPGAClass::readU16ResponseFIFO(data, length, timeout);
     _printBuffer("R< ", data, length);
 }
-
-#if 0
-
-int calSet(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        uint8_t channel = std::stoi(*(++c));
-        float offset = std::stof(*(++c));
-        float sensitivity = std::stof(*(++c));
-        return ilcs[bus].setOffsetAndSensitivity(address, channel, offset, sensitivity);
-    });
-}
-
-#endif
 
 int main(int argc, char* const argv[]) { return cli.run(argc, argv); }

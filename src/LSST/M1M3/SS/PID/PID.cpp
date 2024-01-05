@@ -22,13 +22,12 @@
  */
 
 #include <PID.h>
-#include <SAL_MTM1M3C.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-PID::PID(int id, PIDParameters parameters) {
+constexpr double THAW_STEP = 50;
+
+PID::PID(int id, PIDParameters parameters) : _frozen(false), _offset(0) {
     _id = id;
     _initialParameters = parameters;
 
@@ -86,7 +85,26 @@ double PID::process(double setpoint, double measurement) {
     double u1 = _pidData->controlT1[_id];
     double u2 = _pidData->controlT2[_id];
     _pidData->control[_id] = D * u1 + E * u2 + A * e + B * e1 + C * e2;
-    return _pidData->control[_id];
+    return _pidData->control[_id] + getOffset(nullptr);
+}
+
+void PID::freeze() {
+    _offset = _pidData->control[_id];
+    _frozen = true;
+}
+
+double PID::getOffset(bool *changed) {
+    if (abs(_offset) > 0 && _frozen == false) {
+        if (abs(_offset) < (THAW_STEP + 1)) {
+            _offset = 0;
+        } else {
+            _offset -= _offset > 0 ? THAW_STEP : -THAW_STEP;
+        }
+        if (changed != nullptr) {
+            *changed = true;
+        }
+    }
+    return _offset;
 }
 
 void PID::publishTelemetry() {
@@ -112,7 +130,3 @@ void PID::_publishInfo() {
     _pidInfo->timestamp = M1M3SSPublisher::instance().getTimestamp();
     M1M3SSPublisher::instance().logPIDInfo();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

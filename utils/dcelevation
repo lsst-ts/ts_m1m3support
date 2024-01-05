@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+# Fit DC accelerometers raw values.
+#
+# Developed for the LSST Telescope & Site.
+# This product includes software developed by the LSST Project
+# (https://www.lsst.org).
+# See the COPYRIGHT file at the top-level directory of this distribution
+# for details of code ownership.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import argparse
+import asyncio
+import logging
+import os
+from pathlib import Path
+
+import pandas as pd
+import yaml
+from astropy.time import Time
+from lsst_efd_client import EfdClient
+from numpy.polynomial import Polynomial
+
+
+class DCAccelerometersElevation:
+    def __init__(self, efd_name: str):
+        self.client = EfdClient(efd_name)
+        self.fits = [[0.0, 1.0, [0.0]]]
+
+    async def fit_dcaccelerometers(
+        self,
+        start: Time,
+        end: Time,
+        deg: int,
+        config: str,
+        set_new: bool,
+        plot: bool,
+        hd5_debug: Path | None = None,
+        load: Path | None = None,
+    ) -> None:
+        if not set_new:
+            with open(Path(config) / "_init.yaml") as cfile:
+                configuration = yaml.safe_load(cfile)
+
+        if load is not None:
+            logging.info(f"Loading data from {load}")
+            self.interpolated = pd.read_hdf(load, "interpolated")
+            logging.info(f"Loaded {len(self.interpolated.index)}")
+        else:
+            logging.info(f"Retrieving data {start.isot} - {end.isot}.")
+            accelerometers = await self.load_dcaccelerometers(start, end)
+            inclinometer = await self.load_inclinometer(start, end)
+
+            raw = accelerometers.merge(
+                inclinometer, how="outer", left_index=True, right_index=True
+            )
+            self.interpolated = raw.interpolate(method="time")
+            self.interpolated.dropna(inplace=True)
+
+            if hd5_debug is not None:
+                logging.debug(f"Saving to {hd5_debug}")
+                self.interpolated.to_hdf(hd5_debug, "interpolated")
+
+        self.coefficients = {}
+        self.stats = {}
+
+        for axis in "XYZ":
+            logging.info(f"Fitting axis {axis}.")
+            self.coefficients[axis], self.stats[axis] = Polynomial.fit(
+                self.interpolated["inclinometerAngle"],
+                -1 * self.interpolated[f"angularAcceleration{axis}"],
+                deg,
+                full=True,
+            )
+            logging.info(f"{axis} fit: {self.coefficients[axis]}")
+
+            poly = self.coefficients[axis]
+
+            print(f"{axis}: {poly.convert()}")
+
+            def f(x: float) -> float:
+                return poly(x)
+
+            self.interpolated[f"fit{axis}"] = self.interpolated[
+                "inclinometerAngle"
+            ].apply(f)
+            self.interpolated[f"residuals{axis}"] = (
+                self.interpolated[f"angularAcceleration{axis}"]
+                + self.interpolated[f"fit{axis}"]
+            )
+            print(self.interpolated[f"residuals{axis}"].describe())
+
+        if plot:
+            self.plot_fit()
+
+        coef = {}
+        for ax in "XYZ":
+            coef[ax] = self.coefficients[ax].convert().coef
+
+        if not set_new:
+            for ax in "XYZ":
+                conf = configuration["AccelerometerSettings"][ax + "ElevationPoly"]
+                logging.info(f"{ax} configuration: {conf}")
+                logging.info(f"{ax} calculated: {coef[ax]}")
+                coef[ax] += conf
+
+        print("Copy to settings:")
+        print(
+            f"  #{' ' if set_new else ' added '}fit from ./utils/dcelevation {start.isot} {end.isot}"
+        )
+        print(f"  XElevationPoly: [{','.join(map(str, coef['X']))}]")
+        print(f"  YElevationPoly: [{','.join(map(str, coef['Y']))}]")
+        print(f"  ZElevationPoly: [{','.join(map(str, coef['Z']))}]")
+
+    async def load_dcaccelerometers(self, start: Time, end: Time) -> pd.DataFrame:
+        """Load DC accelerometers table.
+
+        Parameters
+        ----------
+        start : `Time`
+        end : `Time`
+
+        Returns
+        -------
+
+        """
+        ret = await self.client.select_time_series(
+            "lsst.sal.MTM1M3.accelerometerData",
+            ["timestamp"]
+            + [f"rawAccelerometer{acc}" for acc in range(8)]
+            + [f"accelerometer{acc}" for acc in range(8)]
+            + [f"angularAcceleration{a}" for a in "XYZ"],
+            start,
+            end,
+        )
+        if ret.empty:
+            raise RuntimeError(
+                f"Cannot find any accelerometer data in {start.isot} - {end.isot} range."
+            )
+        return ret
+
+    async def load_inclinometer(self, start: Time, end: Time) -> pd.DataFrame:
+        """Load M1M3 inclinometer table.
+
+        Parameters
+        ----------
+        start : `Time`
+        end : `Time`
+
+        Returns
+        -------
+
+        """
+        ret = await self.client.select_time_series(
+            "lsst.sal.MTM1M3.inclinometerData",
+            ["timestamp", "inclinometerAngle"],
+            start,
+            end,
+        )
+        if ret.empty:
+            raise RuntimeError(
+                f"Cannot find any inclinometer data in {start.isot} - {end.isot} range."
+            )
+        return ret
+
+    def plot_fit(self) -> None:
+        assert self.interpolated is not None
+        assert self.coefficients is not None
+
+        import matplotlib.pyplot as plt
+
+        fig, axes = plt.subplots(nrows=7, ncols=1, sharex=True)
+
+        self.interpolated.plot(y="inclinometerAngle", ax=axes[0], style="x")
+
+        for i, ax in enumerate("XYZ"):
+            self.interpolated.plot(
+                y=f"angularAcceleration{ax}", ax=axes[1 + i * 2], style="."
+            )
+            self.interpolated.plot(
+                y=f"residuals{ax}", ax=axes[1 + i * 2 + 1], style="."
+            )
+
+        plt.show()
+
+
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Update dependency of DC accelerometers versus elevation"
+    )
+    parser.add_argument(
+        "start_time",
+        type=Time,
+        default=None,
+        nargs="?",
+        help="Start time in a valid format: 'YYYY-MM-DD HH:MM:SSZ'",
+    )
+    parser.add_argument(
+        "end_time",
+        type=Time,
+        default=None,
+        nargs="?",
+        help="End time in a valid format: 'YYYY-MM-DD HH:MM:SSZ'",
+    )
+
+    parser.add_argument(
+        "--efd",
+        default="usdf_efd",
+        help="EFD name. Defaults to usdf_efd",
+    )
+    parser.add_argument(
+        "--plot", default=False, action="store_true", help="Plot graphs during"
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path(os.environ["TS_CONFIG_MTTCS_DIR"]) / "MTM1M3" / "v1",
+        help="M1M3 configuration directory",
+    )
+    parser.add_argument(
+        "--set-new",
+        default=False,
+        action="store_true",
+        help="Don't add to existing fit, assume DC accelerometers values were"
+        "acquired with 0 for elevation corrections",
+    )
+    parser.add_argument(
+        "--hd5-debug",
+        type=Path,
+        default=None,
+        help="save debug outputs as provided HDF5 file.",
+    )
+    parser.add_argument(
+        "--load",
+        type=Path,
+        default=None,
+        help="Load data from given HD5 file.",
+    )
+    parser.add_argument(
+        "--deg",
+        default=2,
+        type=int,
+        choices=range(1, 6),
+        help="Polynomial degrees to fit",
+    )
+    parser.add_argument(
+        "-d",
+        default=False,
+        action="store_true",
+        help="Print debug messages",
+    )
+
+    return parser.parse_args()
+
+
+async def run_loop() -> None:
+    args = parse_arguments()
+
+    level = logging.INFO
+
+    if args.d:
+        level = logging.DEBUG
+
+    logging.basicConfig(format="%(asctime)s %(message)s", level=level)
+
+    dce = DCAccelerometersElevation(args.efd)
+    await dce.fit_dcaccelerometers(
+        args.start_time,
+        args.end_time,
+        args.deg,
+        args.config,
+        args.set_new,
+        args.plot,
+        args.hd5_debug,
+        args.load,
+    )
+
+
+def run() -> None:
+    asyncio.run(run_loop())
+
+
+if __name__ == "__main__":
+    run()

@@ -67,16 +67,27 @@ void Accelerometer::processData() {
                         accelerometerSettings.accelerometerOffset[i]);
     }
 
+    double elevation = TMA::instance().getElevation();
+
+    auto applyPoly = [](double coeff[3], float x) -> float {
+        double x_2 = x * x;
+        return coeff[0] + coeff[1] * x + coeff[2] * x_2;
+    };
+
     _accelerometerData->angularAccelerationX =
-            (RAD2D * (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
-             accelerometerSettings.angularAccelerationDistance[0]);
+            (RAD2D * (_accelerometerData->accelerometer[5] - _accelerometerData->accelerometer[7]) /
+             accelerometerSettings.angularAccelerationDistance[0]) +
+            applyPoly(accelerometerSettings.xElevationPoly, elevation);
+
     _accelerometerData->angularAccelerationY =
             (RAD2D * (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
-             accelerometerSettings.angularAccelerationDistance[1]);
+             accelerometerSettings.angularAccelerationDistance[1]) +
+            applyPoly(accelerometerSettings.yElevationPoly, elevation);
 
     _accelerometerData->angularAccelerationZ =
             (RAD2D * (_accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[0]) /
-             (accelerometerSettings.angularAccelerationDistance[2]));
+             (accelerometerSettings.angularAccelerationDistance[2])) +
+            applyPoly(accelerometerSettings.zElevationPoly, elevation);
 
     /** _accelerometerData->angularAccelerationZ =
             RAD2D * (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
