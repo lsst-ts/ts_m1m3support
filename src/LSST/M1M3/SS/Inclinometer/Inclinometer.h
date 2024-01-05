@@ -24,7 +24,7 @@
 #ifndef INCLINOMETER_H_
 #define INCLINOMETER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <InclinometerSettings.h>
 #include <SupportFPGAData.h>
 #include <SafetyController.h>

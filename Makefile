@@ -14,11 +14,11 @@ src/libM1M3SS.a: FORCE
 # Tool invocations
 ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
-	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a
+	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(CRIOCPP)/lib/libcRIOcpp.a $(LIBS) $(SAL_LIBS)
 
 m1m3sscli: src/m1m3sscli.cpp.o src/libM1M3SS.a $(CRIOCPP)/lib/libcRIOcpp.a
 	@echo '[LD ] $@'
-	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(LIBS) $(CRIOCPP)/lib/libcRIOcpp.a -lreadline
+	${co}$(CPP) $(LIBS_FLAGS) -o $@ $^ $(CRIOCPP)/lib/libcRIOcpp.a $(LIBS) $(SAL_LIBS) $(shell pkg-config --libs readline) -lreadline
 
 # Other Targets
 clean:
@@ -38,19 +38,20 @@ deploy: ts-M1M3supportd m1m3cli
 	${co}scp Bitfiles/NiFpga_M1M3SupportFPGA.lvbitx admin@${CRIO_IP}:Bitfiles
 
 tests: tests/Makefile tests/*.cpp
-	@${MAKE} -C tests
+	@${MAKE} SIMULATOR=1 -C tests
 
 run_tests: tests
 	@${MAKE} -C tests run
 
 junit: tests
-	@${MAKE} -C tests junit
+	@${MAKE} SIMULATOR=1 -C tests junit
 
 doc:
 	${co}doxygen Doxyfile
 
 simulator:
-	@${MAKE} SIMULATOR=1 DEBUG=1
+	${co}${MAKE} SIMULATOR=1 DEBUG=1 -C .
+	@${MAKE} SIMULATOR=1 DEBUG=1 -C .
 
 ipk: ts-M1M3supportd m1m3sscli ts-M1M3support_${VERSION}_x64.ipk
 

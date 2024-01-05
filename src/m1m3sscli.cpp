@@ -20,6 +20,7 @@
  * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <csignal>
 #include <iostream>
 #include <iomanip>
 
@@ -27,9 +28,10 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include <cRIO/FPGACliApp.h>
 #include <cRIO/ElectromechanicalPneumaticILC.h>
+#include <cRIO/FPGACliApp.h>
 #include <cRIO/PrintILC.h>
+#include <cRIO/Thread.h>
 
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
@@ -42,12 +44,14 @@
 #include <FPGA.h>
 #include <FPGAAddresses.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <NiFpga_M1M3SupportFPGA.h>
 
 using namespace LSST::cRIO;
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
+using namespace std::chrono_literals;
 
-#define MAX_FORCE 50
+#define MAX_FORCE 2000
 
 class M1M3SScli : public FPGACliApp {
 public:
@@ -57,6 +61,9 @@ public:
     int setLights(command_vec cmds);
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
+    int setCalibration(command_vec cmds);
+
+    int dumpAccelerometer(command_vec cmds);
 
 protected:
     virtual LSST::cRIO::FPGA* newFPGA(const char* dir) override;
@@ -107,6 +114,9 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
     addCommand("air", std::bind(&M1M3SScli::setAir, this, std::placeholders::_1), "b", NEED_FPGA, "<0|1>",
                "Turns air valve off/on");
 
+    addCommand("accelerometer", std::bind(&M1M3SScli::dumpAccelerometer, this, std::placeholders::_1), "",
+               NEED_FPGA, NULL, "Dumps raw accelerometer data");
+
     addCommand("lights", std::bind(&M1M3SScli::setLights, this, std::placeholders::_1), "b", NEED_FPGA,
                "<0|1>", "Turns lights off/on");
 
@@ -152,6 +162,9 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
 
     addCommand("daa-offset", std::bind(&M1M3SScli::setDAAOffset, this, std::placeholders::_1), "DDs?",
                NEED_FPGA, "<primary> <secondary> <ILC..>", "Set ILC primary and secondary force offsets");
+
+    addCommand("set-calibration", std::bind(&M1M3SScli::setCalibration, this, std::placeholders::_1), "IDDS",
+               NEED_FPGA, "<channel> <offset> <sensitivity> <ILC>", "Write calibration data");
 
     addILC(std::make_shared<PrintElectromechanical>(1));
     addILC(std::make_shared<PrintElectromechanical>(2));
@@ -249,6 +262,91 @@ int M1M3SScli::setDAAOffset(command_vec cmds) {
                                                                                       primary, secondary);
     }
     runILCCommands();
+    return 0;
+}
+
+int M1M3SScli::setCalibration(command_vec cmds) {
+    uint8_t channel = stod(cmds[0]);
+    float offset = stof(cmds[1]);
+    float sensitivity = stof(cmds[2]);
+
+    if (channel > 3) {
+        std::cerr << "Channel should be 0-3, was commanded as " << +channel << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 3);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    if (ilcs.size() != 1) {
+        std::cerr << "Calibration data can be set only for a single ILC." << std::endl;
+        return -1;
+    }
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setOffsetAndSensitivity(
+                u.second, channel, offset, sensitivity);
+    }
+    runILCCommands();
+    return 0;
+}
+
+class ReadRawAccelerometer : public Thread {
+public:
+    ReadRawAccelerometer(FPGAClass* _fpga) { fpga = _fpga; }
+    void run(std::unique_lock<std::mutex>& lock) override;
+
+    FPGAClass* fpga;
+};
+
+static ReadRawAccelerometer* rawThread = NULL;
+
+void signal_stop_dump(int signal) {
+    if (rawThread == NULL) {
+        std::cerr << "Invalid call to stop dump signal handle." << std::endl;
+        return;
+    }
+    rawThread->stop(10s);
+    std::cerr << "End dumping data." << std::endl;
+}
+
+void ReadRawAccelerometer::run(std::unique_lock<std::mutex>& lock) {
+    uint64_t raw[8];
+    while (keepRunning) {
+        runCondition.wait_for(lock, 1ms);
+        for (int meas = 0; meas < 100; meas++) {
+            fpga->readRawAccelerometerFIFO(raw, 1);
+            for (int i = 0; i < 8; i++) {
+                std::cout << std::fixed << std::setw(10) << std::setprecision(2)
+                          << NiFpga_ConvertFromFxpToFloat(
+                                     NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo,
+                                     raw[i]) *
+                                     500;
+            }
+            std::cout << std::endl;
+        }
+    }
+}
+
+int M1M3SScli::dumpAccelerometer(command_vec cmds) {
+    std::cerr << "Press Ctr+c to end dump." << std::endl;
+
+    rawThread = new ReadRawAccelerometer(dynamic_cast<FPGAClass*>(getFPGA()));
+    std::signal(SIGINT, &signal_stop_dump);
+
+    std::this_thread::sleep_for(500ms);
+    rawThread->start();
+
+    while (rawThread->isRunning()) {
+        std::unique_lock<std::mutex> lock;
+        std::this_thread::sleep_for(100ms);
+    }
+
+    std::signal(SIGINT, SIG_DFL);
+
+    delete rawThread;
+    rawThread = NULL;
+
     return 0;
 }
 
@@ -513,18 +611,5 @@ void PrintSSFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t ti
     FPGAClass::readU16ResponseFIFO(data, length, timeout);
     _printBuffer("R< ", data, length);
 }
-
-#if 0
-
-int calSet(command_vec cmds) {
-    return callFunction(cmds, [](uint8_t bus, uint8_t address, command_vec::iterator& c, command_vec cmds) {
-        uint8_t channel = std::stoi(*(++c));
-        float offset = std::stof(*(++c));
-        float sensitivity = std::stof(*(++c));
-        return ilcs[bus].setOffsetAndSensitivity(address, channel, offset, sensitivity);
-    });
-}
-
-#endif
 
 int main(int argc, char* const argv[]) { return cli.run(argc, argv); }

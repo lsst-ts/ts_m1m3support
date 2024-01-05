@@ -24,7 +24,7 @@
 #ifndef DISTRIBUTEDFORCES_H_
 #define DISTRIBUTEDFORCES_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

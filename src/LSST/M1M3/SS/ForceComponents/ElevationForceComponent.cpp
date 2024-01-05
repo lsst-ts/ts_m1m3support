@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 
 ElevationForceComponent::ElevationForceComponent(
         ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
-        : ForceComponent("Elevation", ForceActuatorSettings::instance().ElevationComponentSettings) {
+        : ForceComponent("Elevation", &ForceActuatorSettings::instance().ElevationComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();

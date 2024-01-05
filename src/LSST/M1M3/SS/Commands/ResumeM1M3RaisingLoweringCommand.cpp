@@ -23,10 +23,13 @@
 
 #include <spdlog/spdlog.h>
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 #include <ResumeM1M3RaisingLoweringCommand.h>
 
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 ResumeM1M3RaisingLoweringCommand::ResumeM1M3RaisingLoweringCommand(int32_t commandID) : Command(commandID) {}

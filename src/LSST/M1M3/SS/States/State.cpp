@@ -23,14 +23,14 @@
 
 #include <spdlog/spdlog.h>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <M1M3SSPublisher.h>
 #include <State.h>
 #include <Timestamp.h>
 
 using namespace LSST::M1M3::SS;
 
-State::State(std::string name) { name = name; }
+State::State(std::string _name) { name = _name; }
 
 State::~State() {}
 

@@ -24,9 +24,11 @@
 #ifndef ABORTRAISEM1M3COMMAND_H_
 #define ABORTRAISEM1M3COMMAND_H_
 
-#include <Command.h>
 #include <SAL_MTM1M3C.h>
-#include <DataTypes.h>
+
+#include <cRIO/DataTypes.h>
+
+#include <Command.h>
 
 namespace LSST {
 namespace M1M3 {

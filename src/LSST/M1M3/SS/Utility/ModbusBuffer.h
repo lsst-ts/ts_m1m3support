@@ -24,7 +24,7 @@
 #ifndef MODBUSBUFFER_H_
 #define MODBUSBUFFER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <string>
 #include <vector>
 

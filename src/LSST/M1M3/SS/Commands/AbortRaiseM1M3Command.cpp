@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <AbortRaiseM1M3Command.h>
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 AbortRaiseM1M3Command::AbortRaiseM1M3Command(int32_t commandID, MTM1M3_command_abortRaiseM1M3C*)
         : Command(commandID) {}
@@ -46,7 +47,3 @@ void AbortRaiseM1M3Command::ackComplete() {
 void AbortRaiseM1M3Command::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandabortRaiseM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

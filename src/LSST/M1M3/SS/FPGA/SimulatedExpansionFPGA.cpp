@@ -26,9 +26,7 @@
 #include <cstdlib>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 SimulatedExpansionFPGA::SimulatedExpansionFPGA() {
     SPDLOG_DEBUG("SimulatedExpansionFPGA: SimulatedExpansionFPGA()");
@@ -54,7 +52,3 @@ void SimulatedExpansionFPGA::readSlot1(float* data) {
 }
 
 void SimulatedExpansionFPGA::readSlot2(uint32_t* data) {}
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

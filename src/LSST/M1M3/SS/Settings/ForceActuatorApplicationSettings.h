@@ -26,7 +26,7 @@
 
 #include <vector>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorTypes.h>
 

@@ -24,7 +24,7 @@
 #ifndef SUPPORTFPGADATA_H_
 #define SUPPORTFPGADATA_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

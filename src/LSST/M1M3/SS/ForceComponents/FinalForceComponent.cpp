@@ -41,7 +41,7 @@ namespace M1M3 {
 namespace SS {
 
 FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
-        : ForceComponent("Final", ForceActuatorSettings::instance().FinalComponentSettings) {
+        : ForceComponent("Final", &ForceActuatorSettings::instance().FinalComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _enabledForceActuators = M1M3SSPublisher::instance().getEnabledForceActuators();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;

@@ -24,7 +24,7 @@
 #ifndef OUTERLOOPCLOCKTHREAD_H_
 #define OUTERLOOPCLOCKTHREAD_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <mutex>
 
 namespace LSST {

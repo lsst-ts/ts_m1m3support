@@ -25,6 +25,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <NiFpga_M1M3SupportFPGA.h>
+
 #include <Accelerometer.h>
 #include <AccelerometerSettings.h>
 #include <Conversion.h>
@@ -32,10 +34,10 @@
 #include <M1M3SSPublisher.h>
 #include <SupportFPGAData.h>
 #include <Timestamp.h>
+#include <TMA.h>
+#include <Units.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 Accelerometer::Accelerometer() {
     SPDLOG_DEBUG("Accelerometer: Accelerometer()");
@@ -59,24 +61,37 @@ void Accelerometer::processData() {
     for (int i = 0; i < 8; i++) {
         _accelerometerData->rawAccelerometer[i] = fpgaData->AccelerometerRaw[i];
         _accelerometerData->accelerometer[i] =
-                G2M_S_2(((_accelerometerData->rawAccelerometer[i] - accelerometerSettings.bias[i]) *
+                G2M_S_2(((_accelerometerData->rawAccelerometer[i] - accelerometerSettings.bias[i]) /
                          accelerometerSettings.sensitivity[i]) *
                                 accelerometerSettings.scalar[i] +
                         accelerometerSettings.accelerometerOffset[i]);
     }
+
+    double elevation = TMA::instance().getElevation();
+
+    auto applyPoly = [](double coeff[3], float x) -> float {
+        double x_2 = x * x;
+        return coeff[0] + coeff[1] * x + coeff[2] * x_2;
+    };
+
     _accelerometerData->angularAccelerationX =
-            (_accelerometerData->accelerometer[7] - _accelerometerData->accelerometer[5]) /
-            accelerometerSettings.angularAccelerationDistance[0];
+            (RAD2D * (_accelerometerData->accelerometer[5] - _accelerometerData->accelerometer[7]) /
+             accelerometerSettings.angularAccelerationDistance[0]) +
+            applyPoly(accelerometerSettings.xElevationPoly, elevation);
+
     _accelerometerData->angularAccelerationY =
-            (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
-            accelerometerSettings.angularAccelerationDistance[1];
+            (RAD2D * (_accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[0]) /
+             accelerometerSettings.angularAccelerationDistance[1]) +
+            applyPoly(accelerometerSettings.yElevationPoly, elevation);
+
     _accelerometerData->angularAccelerationZ =
-            (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
+            (RAD2D * (_accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[0]) /
+             (accelerometerSettings.angularAccelerationDistance[2])) +
+            applyPoly(accelerometerSettings.zElevationPoly, elevation);
+
+    /** _accelerometerData->angularAccelerationZ =
+            RAD2D * (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
              _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
-            (accelerometerSettings.angularAccelerationDistance[2] * 2);
+            (accelerometerSettings.angularAccelerationDistance[2] * 2); */
     M1M3SSPublisher::instance().putAccelerometerData();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

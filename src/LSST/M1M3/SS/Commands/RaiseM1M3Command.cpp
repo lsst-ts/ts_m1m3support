@@ -21,15 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <spdlog/spdlog.h>
+
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <RaiseM1M3Command.h>
 #include <M1M3SSPublisher.h>
 
-#include <spdlog/spdlog.h>
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO::SAL;
+using namespace LSST::M1M3::SS;
 
 RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data) : Command(commandID) {
     _data.bypassReferencePosition = data->bypassReferencePosition;
@@ -59,7 +60,3 @@ void RaiseM1M3Command::ackComplete() {
 void RaiseM1M3Command::ackFailed(std::string reason) {
     M1M3SSPublisher::instance().ackCommandraiseM1M3(getCommandID(), ACK_FAILED, "Failed: " + reason);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

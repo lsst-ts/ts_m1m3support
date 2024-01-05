@@ -24,7 +24,7 @@
 #ifndef U8ARRAYUTILITIES_H_
 #define U8ARRAYUTILITIES_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <string>
 #include <cstring>
 

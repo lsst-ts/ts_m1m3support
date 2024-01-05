@@ -21,8 +21,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <yaml-cpp/yaml.h>
+#include <vector>
+
 #include <spdlog/spdlog.h>
+#include <yaml-cpp/yaml.h>
 
 #include <AccelerometerSettings.h>
 
@@ -34,6 +36,12 @@ AccelerometerSettings::AccelerometerSettings(token) {
     memset(sensitivity, 0, sizeof(sensitivity));
     memset(accelerometerOffset, 0, sizeof(accelerometerOffset));
     memset(scalar, 0, sizeof(scalar));
+
+    memset(xElevationPoly, 0, sizeof(xElevationPoly));
+    memset(yElevationPoly, 0, sizeof(xElevationPoly));
+    memset(zElevationPoly, 0, sizeof(xElevationPoly));
+
+    dump_path = "/tmp/rawdc_%FT%T.bin";
 }
 
 void AccelerometerSettings::load(YAML::Node doc) {
@@ -50,6 +58,21 @@ void AccelerometerSettings::load(YAML::Node doc) {
             accelerometerOffset[i] = accNode["Offset"].as<float>();
             scalar[i] = accNode["Scalar"].as<float>();
         }
+        auto loadElevationPoly = [doc](std::string axis, double *poly) {
+            std::string name = axis + "ElevationPoly";
+            auto vect = doc[name].as<std::vector<float>>();
+            if (vect.size() != 3) {
+                throw std::runtime_error(fmt::format("Invalid number of coefficients in {}ElevatioPoly: {}",
+                                                     axis, doc[name].as<std::string>()));
+            }
+            for (int i = 0; i < 3; i++) {
+                poly[i] = vect[i];
+            }
+        };
+        loadElevationPoly("X", xElevationPoly);
+        loadElevationPoly("Y", yElevationPoly);
+        loadElevationPoly("Z", zElevationPoly);
+        dump_path = doc["RawDumpPath"].as<std::string>(dump_path);
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading AccelerometerSettings: {}", ex.what()));
     }

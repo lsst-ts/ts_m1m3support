@@ -86,9 +86,9 @@ void Gyro::setRotationFormatRate() {
     std::this_thread::sleep_for(10ms);
 }
 
-void Gyro::setRotationUnitsRadians() {
-    SPDLOG_INFO("Gyro: setRotationUnitsRadians()");
-    this->writeCommand("=ROTUNITS,RAD\r\n");
+void Gyro::setRotationUnitsDegrees() {
+    SPDLOG_INFO("Setting gyroscope to degrees.");
+    this->writeCommand("=ROTUNITS,DEG\r\n");
     std::this_thread::sleep_for(10ms);
 }
 

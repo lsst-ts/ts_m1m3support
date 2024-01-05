@@ -24,7 +24,7 @@
 #ifndef GYRO_H_
 #define GYRO_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <GyroSettings.h>
 #include <SupportFPGAData.h>
 #include <string>
@@ -72,7 +72,7 @@ public:
     /*!
      * Commands the gyro to set its rotation units to radians.
      */
-    void setRotationUnitsRadians();
+    void setRotationUnitsDegrees();
     /*!
      * Commands the gyro to set its axis configuration.
      */

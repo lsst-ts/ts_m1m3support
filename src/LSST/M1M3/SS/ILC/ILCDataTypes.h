@@ -24,7 +24,7 @@
 #ifndef ILCDATATYPES_H_
 #define ILCDATATYPES_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <vector>
 #include <string>
 

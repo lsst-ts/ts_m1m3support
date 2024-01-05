@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <ForceComponentSettings.h>
 
 namespace LSST {
@@ -70,7 +70,7 @@ public:
      * @param name force component name
      * @param forceComponentSettings
      */
-    ForceComponent(const char *name, const ForceComponentSettings &forceComponentSettings);
+    ForceComponent(const char *name, ForceComponentSettings *forceComponentSettings);
     virtual ~ForceComponent();
 
     /**
@@ -162,9 +162,9 @@ protected:
     float zOffset[FA_Z_COUNT];
 
 private:
+    ForceComponentSettings *_forceComponentSettings;
+
     const char *_name;
-    float _maxRateOfChange;
-    float _nearZeroValue;
 
     ForceComponentState _state;
 

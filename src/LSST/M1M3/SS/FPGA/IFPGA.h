@@ -190,6 +190,16 @@ public:
     virtual void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) = 0;
 
     /**
+     * Reads raw accelerometer FIFO. Waits for new data if no data are available.
+     *
+     * @param raw 8 raw accelerometer values. Data are stored as 24 bits fixed
+     * points (5 bits integer part) in uint64_t. So actually on 3 bytes out of
+     * 64 are used - that copies NI interface for accessing fixed points
+     * @param samples number of samples
+     */
+    virtual void readRawAccelerometerFIFO(uint64_t* raw, size_t samples) = 0;
+
+    /**
      * Sets all auxiliary and network buses power (A-D).
      *
      * @param aux auxiliary buses power (true = on)

@@ -25,10 +25,14 @@
 
 #include <SAL_MTM1M3C.h>
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
+#include <ForceControllerState.h>
 #include <M1M3SSPublisher.h>
 #include <SetSlewControllerSettingsCommand.h>
 
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 SetSlewControllerSettingsCommand::SetSlewControllerSettingsCommand(
@@ -44,6 +48,12 @@ bool SetSlewControllerSettingsCommand::validate() {
                 "SetSlewControllerSettings", fmt::format("The slewSettings field must be in range [{}, {}].",
                                                          MTM1M3::setSlewControllerSettings_AccelerationForces,
                                                          MTM1M3::setSlewControllerSettings_VelocityForces));
+        return false;
+    }
+    if (ForceControllerState::instance().slewFlag == true) {
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
+                "SetSlewControllerSettings",
+                "Cannot modify slew controller settings while slew flag is active.");
         return false;
     }
     return true;

@@ -50,6 +50,7 @@ startdaemon(){
 	start-stop-daemon --start --oknodo --pidfile ${PIDFILE} --startas $DAEMON -- -p ${PIDFILE} ${OPTS}
 	echo "done"
 }
+
 stopdaemon(){
 	echo -n "Stopping TS M1M3 support:"
 	start-stop-daemon --stop --oknodo --remove-pidfile --retry 5 -p ${PIDFILE}
@@ -62,11 +63,31 @@ case "$1" in
 	startdaemon
 	;;
   stop)
-  	stopdaemon
+	stopdaemon
 	;;
   restart)
 	stopdaemon
 	startdaemon
+	;;
+  reload)
+	pid=$(cat $PIDFILE)
+	if [ -z $pid ]; then
+		echo "M1M3 Support System CSC isn't running."
+	else
+		echo -n "Triggering M1M3 Support System configuration reload - pid ${pid}"
+		/bin/kill -SIGUSR1 ${pid}
+		echo "..$? done. Check M1M3 log for confirmation!"
+	fi
+	;;
+  rawdc)
+	pid=$(cat $PIDFILE)
+	if [ -z $pid ]; then
+		echo "M1M3 Support System CSC isn't running."
+	else
+		echo -n "Flipping M1M3 Support System Raw DC Accelerometers recording - pid ${pid}"
+		/bin/kill -SIGUSR2 ${pid}
+		echo "..$? done. Check M1M3 log for confirmation!"
+	fi
 	;;
   status)
 	sudo -E -u m1m3 -g m1m3 LD_LIBRARY_PATH=$OSPL_HOME/lib PATH=$PATH:$OSPL_HOME/bin $OSPL_HOME/bin/ospl status

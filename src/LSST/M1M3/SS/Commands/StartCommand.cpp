@@ -21,13 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cRIO/SAL/Command.h>
+
 #include <Context.h>
 #include <StartCommand.h>
 #include <SettingReader.h>
 #include <M1M3SSPublisher.h>
 
-#include <SAL_defines.h>
-
+using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) : Command(commandID) {

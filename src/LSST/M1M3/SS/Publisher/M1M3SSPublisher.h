@@ -24,7 +24,7 @@
 #ifndef M1M3SSPUBLISHER_H_
 #define M1M3SSPUBLISHER_H_
 
-#include <DataTypes.h>
+#include <cRIO/DataTypes.h>
 #include <SAL_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
 #include <ccpp_sal_MTM1M3.h>
@@ -288,9 +288,10 @@ public:
     }
     void logForceActuatorState();
     void tryLogForceActuatorState();
-    void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {
-        _m1m3SAL->logEvent_forceActuatorWarning(data, 0);
-    }
+    void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {}
+    ///        _m1m3SAL->logEvent_forceActuatorWarning(data, 0);
+    ///    }
+
     void logForceControllerState(MTM1M3_logevent_forceControllerStateC* data) {
         _m1m3SAL->logEvent_forceControllerState(data, 0);
     }
@@ -319,8 +320,7 @@ public:
         _m1m3SAL->logEvent_hardpointTestStatus(data, 0);
     }
     void logHeartbeat(MTM1M3_logevent_heartbeatC* data) { _m1m3SAL->logEvent_heartbeat(data, 0); }
-    void logILCWarning();
-    void tryLogILCWarning();
+    void logILCWarning(MTM1M3_logevent_ilcWarningC* data) { _m1m3SAL->logEvent_ilcWarning(data, 0); }
     void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC* data) {
         _m1m3SAL->logEvent_inclinometerSettings(data, 0);
     }

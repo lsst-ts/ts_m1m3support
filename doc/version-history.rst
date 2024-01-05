@@ -4,13 +4,26 @@
 Version History
 ===============
 
-v2.15.1
-========
+v2.15.2
+-------
 
+* utils dcelevation, dcrawdump utilities
+* Read and store raw DC accelerometer data
+* Reject requests to change slew controller settings if slew flags is active
+
+v2.15.1
+-------
+
+* Moved DataTypes to cRIOcpp, ILCWarning singleton
+* Use cRIO/SAL/Command.h ACK_ constants
+* ReloadConfigurationCommand, fix ForceComponent's settings reloading
+* Fix DC accelerometer unit - it's in degrees, needs to be feed as radians to acceleration force calculation
+* Fix X DC accelerometer angular acceleration sign
+* Fixed Makefiles
 * Fixed cRIOcpp version
 
 v2.15.0
-=======
+-------
 
 * Raising and lowering can be paused and resumed
 

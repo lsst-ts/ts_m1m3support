@@ -154,48 +154,52 @@ void HardpointActuatorWarning::setStatus(int32_t hpIndex, double _timestamp, uin
     broadcastCounterWarning[hpIndex] = broadcastCounter != ((status & 0xF0) >> 4);
 }
 
-void HardpointActuatorWarning::setIlcStatus(int32_t hpIndex, uint16_t ilcStatus, uint16_t ilcFaults) {
-    if (_ilcOldStatus[hpIndex] != ilcStatus) {
-        _updated = true;
-        _ilcOldStatus[hpIndex] = ilcStatus;
-        majorFault[hpIndex] = (ilcStatus & 0x0001) != 0;
-        minorFault[hpIndex] = (ilcStatus & 0x0002) != 0;
-        // 0x0004 is reserved
-        faultOverride[hpIndex] = (ilcStatus & 0x0008) != 0;
-        mainCalibrationError[hpIndex] = (ilcStatus & 0x0010) != 0;
-        backupCalibrationError[hpIndex] = (ilcStatus & 0x0020) != 0;
-        // 0x0040 is reserved
-        // 0x0080 is reserved
-        limitSwitch1Operated[hpIndex] = (ilcStatus & 0x0100) != 0;
-        limitSwitch2Operated[hpIndex] = (ilcStatus & 0x0200) != 0;
-        // 0x0400 is reserved
-        // 0x0800 is reserved
-        // 0x1000 is reserved
-        // 0x2000 is DCA (FA only)
-        // 0x4000 is DCA (FA only)
-        // 0x8000 is reserved
+void HardpointActuatorWarning::parseIlcStatus(ModbusBuffer* buffer, int32_t hpIndex) {
+    uint16_t ilcStatus = buffer->readU16();
+    uint16_t ilcFaults = buffer->readU16();
+
+    if (_ilcOldStatus[hpIndex] == ilcStatus && _ilcOldFaults[hpIndex] == ilcFaults) {
+        return;
     }
 
-    if (_ilcOldFaults[hpIndex] != ilcFaults) {
-        _updated = true;
-        _ilcOldFaults[hpIndex] = ilcFaults;
+    _updated = true;
 
-        uniqueIdCRCError[hpIndex] = (ilcFaults & 0x0001) != 0;
-        applicationTypeMismatch[hpIndex] = (ilcFaults & 0x0002) != 0;
-        applicationMissing[hpIndex] = (ilcFaults & 0x0004) != 0;
-        applicationCRCMismatch[hpIndex] = (ilcFaults & 0x0008) != 0;
-        oneWireMissing[hpIndex] = (ilcFaults & 0x0010) != 0;
-        oneWire1Mismatch[hpIndex] = (ilcFaults & 0x0020) != 0;
-        oneWire2Mismatch[hpIndex] = (ilcFaults & 0x0040) != 0;
-        // 0x0080 is reserved
-        watchdogReset[hpIndex] = (ilcFaults & 0x0100) != 0;
-        brownOut[hpIndex] = (ilcFaults & 0x0200) != 0;
-        eventTrapReset[hpIndex] = (ilcFaults & 0x0400) != 0;
-        motorDriverFault[hpIndex] = (ilcFaults & 0x0800) != 0;
-        ssrPowerFault[hpIndex] = (ilcFaults & 0x1000) != 0;
-        auxPowerFault[hpIndex] = (ilcFaults & 0x2000) != 0;
-        smcPowerFault[hpIndex] = (ilcFaults & 0x4000) != 0;
-    }
+    _ilcOldStatus[hpIndex] = ilcStatus;
+
+    majorFault[hpIndex] = (ilcStatus & 0x0001) != 0;
+    minorFault[hpIndex] = (ilcStatus & 0x0002) != 0;
+    // 0x0004 is reserved
+    faultOverride[hpIndex] = (ilcStatus & 0x0008) != 0;
+    mainCalibrationError[hpIndex] = (ilcStatus & 0x0010) != 0;
+    backupCalibrationError[hpIndex] = (ilcStatus & 0x0020) != 0;
+    // 0x0040 is reserved
+    // 0x0080 is reserved
+    limitSwitch1Operated[hpIndex] = (ilcStatus & 0x0100) != 0;
+    limitSwitch2Operated[hpIndex] = (ilcStatus & 0x0200) != 0;
+    // 0x0400 is reserved
+    // 0x0800 is reserved
+    // 0x1000 is reserved
+    // 0x2000 is DCA (FA only)
+    // 0x4000 is DCA (FA only)
+    // 0x8000 is reserved
+
+    _ilcOldFaults[hpIndex] = ilcFaults;
+
+    uniqueIdCRCError[hpIndex] = (ilcFaults & 0x0001) != 0;
+    applicationTypeMismatch[hpIndex] = (ilcFaults & 0x0002) != 0;
+    applicationMissing[hpIndex] = (ilcFaults & 0x0004) != 0;
+    applicationCRCMismatch[hpIndex] = (ilcFaults & 0x0008) != 0;
+    oneWireMissing[hpIndex] = (ilcFaults & 0x0010) != 0;
+    oneWire1Mismatch[hpIndex] = (ilcFaults & 0x0020) != 0;
+    oneWire2Mismatch[hpIndex] = (ilcFaults & 0x0040) != 0;
+    // 0x0080 is reserved
+    watchdogReset[hpIndex] = (ilcFaults & 0x0100) != 0;
+    brownOut[hpIndex] = (ilcFaults & 0x0200) != 0;
+    eventTrapReset[hpIndex] = (ilcFaults & 0x0400) != 0;
+    motorDriverFault[hpIndex] = (ilcFaults & 0x0800) != 0;
+    ssrPowerFault[hpIndex] = (ilcFaults & 0x1000) != 0;
+    auxPowerFault[hpIndex] = (ilcFaults & 0x2000) != 0;
+    smcPowerFault[hpIndex] = (ilcFaults & 0x4000) != 0;
 }
 
 void HardpointActuatorWarning::setProximityWarning(int32_t hpIndex, bool lowWarning, bool highWarning) {
