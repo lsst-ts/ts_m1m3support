@@ -59,6 +59,7 @@ public:
     int setPower(command_vec cmds);
     int setAir(command_vec cmds);
     int setLights(command_vec cmds);
+    int setDCAGain(command_vec cmds);
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
     int setCalibration(command_vec cmds);
@@ -80,11 +81,13 @@ protected:
     void processHardpointForceStatus(uint8_t address, uint8_t status, int32_t encoderPostion,
                                      float loadCellForce) override;
 
-    virtual void processHardpointLVDT(uint8_t address, float breakawayLVDT, float displacementLVDT) override;
+    void processDCAGain(uint8_t address, float primaryGain, float secondaryGain) override;
 
-    virtual void processSAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce) override;
-    virtual void processDAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce,
-                                       float secondaryLoadCellForce) override;
+    void processHardpointLVDT(uint8_t address, float breakawayLVDT, float displacementLVDT) override;
+
+    void processSAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce) override;
+    void processDAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce,
+                               float secondaryLoadCellForce) override;
 
     void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                 float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
@@ -151,11 +154,21 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
             "Read hardpoint info");
 
     addILCCommand(
+            "dca-gain",
+            [](ILCUnit u) {
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportDCAGain(u.second);
+            },
+            "Read booster valve DCA Gain");
+
+    addILCCommand(
             "lvdt",
             [](ILCUnit u) {
                 std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportHardpointLVDT(u.second);
             },
             "Read LVDT info");
+
+    addCommand("set-dca-gain", std::bind(&M1M3SScli::setDCAGain, this, std::placeholders::_1), "DDs?",
+               NEED_FPGA, "<axial gain> <lateral gain> <ILC..>", "Set DCA gain");
 
     addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",
                NEED_FPGA, "<primary> <ILC..>", "Set ILC primary force offset");
@@ -219,6 +232,21 @@ int M1M3SScli::setLights(command_vec cmds) {
     }
 
     _printSupportData();
+    return 0;
+}
+
+int M1M3SScli::setDCAGain(command_vec cmds) {
+    float primary = stof(cmds[0]);
+    float secondary = stof(cmds[1]);
+
+    cmds.erase(cmds.begin(), cmds.begin() + 2);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDCAGain(u.second, primary, secondary);
+    }
+    runILCCommands();
     return 0;
 }
 
@@ -517,6 +545,13 @@ void PrintElectromechanical::processHardpointForceStatus(uint8_t address, uint8_
     std::cout << "Encoder Position: " << encoderPostion << std::endl;
     std::cout << "Load Cell Force: " << std::setprecision(2) << std::fixed << loadCellForce << " N"
               << std::endl;
+}
+
+void PrintElectromechanical::processDCAGain(uint8_t address, float primaryGain, float secondaryGain) {
+    _printSepline();
+
+    std::cout << "Primary (axial) gain: " << primaryGain << std::endl;
+    std::cout << "Secondary (lateral) gain: " << secondaryGain << std::endl;
 }
 
 void PrintElectromechanical::processHardpointLVDT(uint8_t address, float breakawayLVDT,
