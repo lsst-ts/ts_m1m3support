@@ -40,50 +40,50 @@ using namespace LSST::M1M3::SS;
 FaultState::FaultState() : State("FaultState") {}
 FaultState::FaultState(std::string name) : State(name) {}
 
-States::Type FaultState::update(UpdateCommand* command) {
-    ModelPublisher publishIt{};
-    SPDLOG_TRACE("FaultState: update()");
-    ILC* ilc = Model::instance().getILC();
-    ilc->writeFreezeSensorListBuffer();
-    ilc->triggerModbus();
-    Heartbeat::instance().tryToggle();
-    std::this_thread::sleep_for(1ms);
-    IFPGA::get().pullTelemetry();
-    Model::instance().getAccelerometer()->processData();
-    DigitalInputOutput::instance().processData();
-    Model::instance().getDisplacement()->processData();
-    Model::instance().getGyro()->processData();
-    Model::instance().getInclinometer()->processData();
-    Model::instance().getPowerController()->processData();
-    ilc->waitForAllSubnets(5000);
-    ilc->readAll();
-    ilc->calculateHPPostion();
-    ilc->calculateHPMirrorForces();
-    ilc->calculateFAMirrorForces();
-    ilc->verifyResponses();
-    ilc->publishForceActuatorStatus();
-    ForceActuatorData::instance().send();
-    ilc->publishHardpointStatus();
-    ilc->publishHardpointData();
-    ilc->publishHardpointMonitorStatus();
-    ilc->publishHardpointMonitorData();
-    return States::NoStateTransition;
+States::Type FaultState::update(UpdateCommand *command) {
+  ModelPublisher publishIt{};
+  SPDLOG_TRACE("FaultState: update()");
+  ILC *ilc = Model::instance().getILC();
+  ilc->writeFreezeSensorListBuffer();
+  ilc->triggerModbus();
+  Heartbeat::instance().tryToggle();
+  std::this_thread::sleep_for(1ms);
+  IFPGA::get().pullTelemetry();
+  Model::instance().getAccelerometer()->processData();
+  DigitalInputOutput::instance().processData();
+  Model::instance().getDisplacement()->processData();
+  Model::instance().getGyro()->processData();
+  Model::instance().getInclinometer()->processData();
+  Model::instance().getPowerController()->processData();
+  ilc->waitForAllSubnets(ILC_WAIT * 1.5);
+  ilc->readAll();
+  ilc->calculateHPPostion();
+  ilc->calculateHPMirrorForces();
+  ilc->calculateFAMirrorForces();
+  ilc->verifyResponses();
+  ilc->publishForceActuatorStatus();
+  ForceActuatorData::instance().send();
+  ilc->publishHardpointStatus();
+  ilc->publishHardpointData();
+  ilc->publishHardpointMonitorStatus();
+  ilc->publishHardpointMonitorData();
+  return States::NoStateTransition;
 }
 
-States::Type FaultState::standby(StandbyCommand* command) {
-    SPDLOG_TRACE("FaultState: standby()");
-    Model::instance().getILC()->writeSetModeStandbyBuffer();
-    Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(5000);
-    Model::instance().getILC()->readAll();
-    Model::instance().getILC()->verifyResponses();
-    Model::instance().getPowerController()->setAllPowerNetworks(false);
-    RaisingLoweringInfo::instance().zeroSupportPercentage();
-    Model::instance().getSafetyController()->clearErrorCode();
-    DigitalInputOutput::instance().clearCriticalFailureToSafetyController();
+States::Type FaultState::standby(StandbyCommand *command) {
+  SPDLOG_TRACE("FaultState: standby()");
+  Model::instance().getILC()->writeSetModeStandbyBuffer();
+  Model::instance().getILC()->triggerModbus();
+  Model::instance().getILC()->waitForAllSubnets(ILC_WAIT);
+  Model::instance().getILC()->readAll();
+  Model::instance().getILC()->verifyResponses();
+  Model::instance().getPowerController()->setAllPowerNetworks(false);
+  RaisingLoweringInfo::instance().zeroSupportPercentage();
+  Model::instance().getSafetyController()->clearErrorCode();
+  DigitalInputOutput::instance().clearCriticalFailureToSafetyController();
 
-    Model::instance().getSlewController()->reset();
-    Model::instance().getForceController()->reset();
+  Model::instance().getSlewController()->reset();
+  Model::instance().getForceController()->reset();
 
-    return States::StandbyState;
+  return States::StandbyState;
 }
