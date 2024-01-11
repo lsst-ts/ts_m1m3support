@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.15.3
+-------
+
+* m1m3sscli set-dca-gain and dca-gain commands
+
 v2.15.2
 -------
 
