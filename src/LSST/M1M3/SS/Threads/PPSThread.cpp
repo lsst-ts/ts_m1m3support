@@ -21,40 +21,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PPSThread.h>
 #include <FPGA.h>
-#include <M1M3SSPublisher.h>
-#include <spdlog/spdlog.h>
-#include <Timestamp.h>
 #include <FPGAAddresses.h>
-#include <NiError.h>
+#include <M1M3SSPublisher.h>
+#include <PPSThread.h>
+#include <Timestamp.h>
+#include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 PPSThread::PPSThread() { _keepRunning = true; }
 
 void PPSThread::run() {
-    SPDLOG_INFO("PPSThread: Start");
-    while (_keepRunning) {
-        try {
-            IFPGA::get().waitForPPS(2500);
-        } catch (NiError& er) {
-            SPDLOG_WARN("PPSThread: Failed to receive pps");
-            continue;
-        }
-        IFPGA::get().ackPPS();
-        uint64_t timestamp = Timestamp::toFPGA(M1M3SSPublisher::instance().getTimestamp());
-        if (_keepRunning) {
-            IFPGA::get().writeTimestampFIFO(timestamp);
-        }
+  SPDLOG_INFO("PPSThread: Start");
+  while (_keepRunning) {
+    try {
+      IFPGA::get().waitForPPS(2500);
+    } catch (std::runtime_error &er) {
+      SPDLOG_WARN("PPSThread: Failed to receive pps: {}", er.what());
+      continue;
     }
-    SPDLOG_INFO("PPSThread: Completed");
+    IFPGA::get().ackPPS();
+    uint64_t timestamp =
+        Timestamp::toFPGA(M1M3SSPublisher::instance().getTimestamp());
+    if (_keepRunning) {
+      IFPGA::get().writeTimestampFIFO(timestamp);
+    }
+  }
+  SPDLOG_INFO("PPSThread: Completed");
 }
 
 void PPSThread::stop() { _keepRunning = false; }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
