@@ -21,45 +21,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <OuterLoopClockThread.h>
-#include <UpdateCommand.h>
+#include <spdlog/spdlog.h>
+
+#include <Command.h>
 #include <ControllerThread.h>
 #include <FPGA.h>
 #include <FPGAAddresses.h>
-#include <Command.h>
 #include <M1M3SSPublisher.h>
+#include <OuterLoopClockThread.h>
 #include <Timestamp.h>
-#include <NiError.h>
+#include <UpdateCommand.h>
 
-#include <spdlog/spdlog.h>
-
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 OuterLoopClockThread::OuterLoopClockThread() { _keepRunning = true; }
 
 void OuterLoopClockThread::run() {
-    SPDLOG_INFO("OuterLoopClockThread: Start");
-    while (_keepRunning) {
-        try {
-            IFPGA::get().waitForOuterLoopClock(1000);
-        } catch (NiError& er) {
-            SPDLOG_WARN("OuterLoopClockThread: Failed to receive outer loop clock");
-        }
-
-        if (_keepRunning) {
-            ControllerThread::get().enqueue(new UpdateCommand(&_updateMutex));
-        }
-        _updateMutex.lock();
-        _updateMutex.unlock();
-        IFPGA::get().ackOuterLoopClock();
+  SPDLOG_INFO("OuterLoopClockThread: Start");
+  while (_keepRunning) {
+    try {
+      IFPGA::get().waitForOuterLoopClock(1000);
+    } catch (std::runtime_error &er) {
+      SPDLOG_WARN(
+          "OuterLoopClockThread: Failed to receive outer loop clock: {}",
+          er.what());
     }
-    SPDLOG_INFO("OuterLoopClockThread: Completed");
+
+    if (_keepRunning) {
+      ControllerThread::get().enqueue(new UpdateCommand(&_updateMutex));
+    }
+    _updateMutex.lock();
+    _updateMutex.unlock();
+    IFPGA::get().ackOuterLoopClock();
+  }
+  SPDLOG_INFO("OuterLoopClockThread: Completed");
 }
 
 void OuterLoopClockThread::stop() { _keepRunning = false; }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

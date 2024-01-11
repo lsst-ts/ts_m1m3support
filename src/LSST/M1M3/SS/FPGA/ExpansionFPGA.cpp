@@ -26,109 +26,114 @@
 
 #include <spdlog/spdlog.h>
 
-#include <Heartbeat.h>
+#include <cRIO/NiError.h>
+
 #include <ExpansionFPGA.h>
 #include <ExpansionFPGAApplicationSettings.h>
-#include <NiError.h>
+#include <Heartbeat.h>
 #include <NiFpga_ts_M1M3SupportExpansionFPGA.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO;
+using namespace LSST::M1M3::SS;
 
 ExpansionFPGA::ExpansionFPGA() {
-    SPDLOG_DEBUG("ExpansionFPGA: ExpansionFPGA()");
-    _disabled = true;
-    _fpga_resource = "";
-    _session = 0;
-    _remaining = 0;
+  SPDLOG_DEBUG("ExpansionFPGA: ExpansionFPGA()");
+  _disabled = true;
+  _fpga_resource = "";
+  _session = 0;
+  _remaining = 0;
 }
 
 ExpansionFPGA::~ExpansionFPGA() {}
 
 void ExpansionFPGA::initialize() {
-    SPDLOG_DEBUG("ExpansionFPGA: initialize()");
-    if (_disabled) {
-        return;
-    }
-    Heartbeat::instance().tryToggle();
+  SPDLOG_DEBUG("ExpansionFPGA: initialize()");
+  if (_disabled) {
+    return;
+  }
+  Heartbeat::instance().tryToggle();
 
-    NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
+  NiThrowError(__PRETTY_FUNCTION__, NiFpga_Initialize());
 
-    Heartbeat::instance().tryToggle();
+  Heartbeat::instance().tryToggle();
 }
 
 void ExpansionFPGA::open() {
-    SPDLOG_DEBUG("ExpansionFPGA: open({})", _fpga_resource);
-    if (_disabled) {
-        return;
-    }
-    NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(), 0,
-           &(_session));
+  SPDLOG_DEBUG("ExpansionFPGA: open({})", _fpga_resource);
+  if (_disabled) {
+    return;
+  }
+  NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA,
+         _fpga_resource.c_str(), 0, &(_session));
 
-    auto& heartbeat = Heartbeat::instance();
-    heartbeat.tryToggle();
+  auto &heartbeat = Heartbeat::instance();
+  heartbeat.tryToggle();
 
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
+  NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
 
-    heartbeat.tryToggle();
+  heartbeat.tryToggle();
 
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
+  NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download",
+               NiFpga_Download(_session));
 
-    heartbeat.tryToggle();
+  heartbeat.tryToggle();
 
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
+  NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
 
-    heartbeat.tryToggle();
+  heartbeat.tryToggle();
 
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
+  NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
 }
 
 void ExpansionFPGA::close() {
-    if (_session == 0) {
-        return;
-    }
-    SPDLOG_DEBUG("ExpansionFPGA: close()");
-    if (_disabled) {
-        return;
-    }
-    NiThrowError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
-    _session = 0;
+  if (_session == 0) {
+    return;
+  }
+  SPDLOG_DEBUG("ExpansionFPGA: close()");
+  if (_disabled) {
+    return;
+  }
+  NiThrowError(__PRETTY_FUNCTION__, NiFpga_Close(_session, 0));
+  _session = 0;
 }
 
 void ExpansionFPGA::finalize() {
-    SPDLOG_DEBUG("ExpansionFPGA: finalize()");
-    if (_disabled) {
-        return;
-    }
-    NiThrowError(__PRETTY_FUNCTION__, NiFpga_Finalize());
+  SPDLOG_DEBUG("ExpansionFPGA: finalize()");
+  if (_disabled) {
+    return;
+  }
+  NiThrowError(__PRETTY_FUNCTION__, NiFpga_Finalize());
 }
 
 void ExpansionFPGA::sample() {
-    if (_disabled) {
-        return;
-    }
-    NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_WriteBool(_session, NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample, true));
+  if (_disabled) {
+    return;
+  }
+  NiThrowError(
+      __PRETTY_FUNCTION__,
+      NiFpga_WriteBool(_session,
+                       NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample,
+                       true));
 }
 
-void ExpansionFPGA::readSlot1(float* data) {
-    if (_disabled) {
-        return;
-    }
-    NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_ReadArraySgl(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1,
-                                     data, 6));
+void ExpansionFPGA::readSlot1(float *data) {
+  if (_disabled) {
+    return;
+  }
+  NiThrowError(__PRETTY_FUNCTION__,
+               NiFpga_ReadArraySgl(
+                   _session,
+                   NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorArraySgl_Slot1,
+                   data, 6));
 }
 
-void ExpansionFPGA::readSlot2(uint32_t* data) {
-    if (_disabled) {
-        return;
-    }
-    NiThrowError(__PRETTY_FUNCTION__,
-                 NiFpga_ReadU32(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorU32_Slot2, data));
+void ExpansionFPGA::readSlot2(uint32_t *data) {
+  if (_disabled) {
+    return;
+  }
+  NiThrowError(
+      __PRETTY_FUNCTION__,
+      NiFpga_ReadU32(_session,
+                     NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorU32_Slot2,
+                     data));
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
