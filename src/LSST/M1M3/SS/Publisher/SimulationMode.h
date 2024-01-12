@@ -29,8 +29,8 @@
 #include <SAL_MTM1M3.h>
 #include <spdlog/spdlog.h>
 
-#include <cRIO/Singleton.h>
 #include <M1M3SSPublisher.h>
+#include <cRIO/Singleton.h>
 
 namespace LSST {
 namespace M1M3 {

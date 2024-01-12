@@ -26,9 +26,9 @@
 
 #include <SAL_MTM1M3.h>
 
-#include <cRIO/DataTypes.h>
 #include <HardpointActuatorSettings.h>
 #include <PositionController.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -40,7 +40,7 @@ namespace SS {
  */
 class HardpointTestController : public MTM1M3_logevent_hardpointTestStatusC {
 public:
-    HardpointTestController(PositionController* positionController);
+    HardpointTestController(PositionController *positionController);
 
     /**
      * Starts hardpoint test.
@@ -60,7 +60,8 @@ public:
     /**
      * Stops hardpoint test in progress;
      *
-     * @param hardpoint_index hardpoint index (0-5), negative to stop all hardpoints
+     * @param hardpoint_index hardpoint index (0-5), negative to stop all
+     * hardpoints
      *
      * @return 0 on success, 1 on error
      */
@@ -78,10 +79,10 @@ public:
 private:
     bool _runHardpointLoop(int hardpointIndex);
 
-    PositionController* _positionController;
-    HardpointActuatorSettings* _hardpointActuatorSettings;
-    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
+    PositionController *_positionController;
+    HardpointActuatorSettings *_hardpointActuatorSettings;
+    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
+    MTM1M3_logevent_hardpointActuatorStateC *_hardpointActuatorState;
 };
 
 }  // namespace SS

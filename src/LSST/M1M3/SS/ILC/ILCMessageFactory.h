@@ -24,9 +24,9 @@
 #ifndef ILCMESSAGEFACTORY_H_
 #define ILCMESSAGEFACTORY_H_
 
-#include <cRIO/DataTypes.h>
 #include <ILCApplicationSettings.h>
 #include <ModbusBuffer.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -38,7 +38,7 @@ class ILCMessageFactory {
 public:
     ILCMessageFactory();
 
-    void reportServerID(ModbusBuffer* buffer, uint8_t address);
+    void reportServerID(ModbusBuffer *buffer, uint8_t address);
 
     /**
      * Calls ILC function 18 (0x12) (ReportServerStatus). Retrieves ILC
@@ -47,24 +47,24 @@ public:
      * @param buffer ModbusBuffer where request will be written
      * @param address ILC address
      */
-    void reportServerStatus(ModbusBuffer* buffer, uint8_t address);
-    void changeILCMode(ModbusBuffer* buffer, uint8_t address, uint16_t mode);
-    void reportILCMode(ModbusBuffer* buffer, uint8_t address);
-    void broadcastStepMotor(ModbusBuffer* buffer, uint8_t broadcastCounter, int8_t* steps);
-    void unicastStepMotor(ModbusBuffer* buffer, uint8_t address, int8_t steps);
-    void electromechanicalForceAndStatus(ModbusBuffer* buffer, uint8_t address);
-    void broadcastElectromechanicalFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter);
-    void broadcastPneumaticFreezeSensorValues(ModbusBuffer* buffer, uint8_t broadcastCounter);
-    void setBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address, float primaryGain, float secondaryGain);
-    void readBoostValveDCAGains(ModbusBuffer* buffer, uint8_t address);
-    void broadcastForceDemand(ModbusBuffer* buffer, uint8_t broadcastCounter, uint8_t boosterValves,
-                              int32_t* saaPrimarySetpoint, int32_t* daaPrimarySetpoint,
-                              int32_t* daaSecondarySetpoint);
-    void unicastForceDemand(ModbusBuffer* buffer, uint8_t address, uint8_t boosterValve,
+    void reportServerStatus(ModbusBuffer *buffer, uint8_t address);
+    void changeILCMode(ModbusBuffer *buffer, uint8_t address, uint16_t mode);
+    void reportILCMode(ModbusBuffer *buffer, uint8_t address);
+    void broadcastStepMotor(ModbusBuffer *buffer, uint8_t broadcastCounter, int8_t *steps);
+    void unicastStepMotor(ModbusBuffer *buffer, uint8_t address, int8_t steps);
+    void electromechanicalForceAndStatus(ModbusBuffer *buffer, uint8_t address);
+    void broadcastElectromechanicalFreezeSensorValues(ModbusBuffer *buffer, uint8_t broadcastCounter);
+    void broadcastPneumaticFreezeSensorValues(ModbusBuffer *buffer, uint8_t broadcastCounter);
+    void setBoostValveDCAGains(ModbusBuffer *buffer, uint8_t address, float primaryGain, float secondaryGain);
+    void readBoostValveDCAGains(ModbusBuffer *buffer, uint8_t address);
+    void broadcastForceDemand(ModbusBuffer *buffer, uint8_t broadcastCounter, uint8_t boosterValves,
+                              int32_t *saaPrimarySetpoint, int32_t *daaPrimarySetpoint,
+                              int32_t *daaSecondarySetpoint);
+    void unicastForceDemand(ModbusBuffer *buffer, uint8_t address, uint8_t boosterValve,
                             int32_t primarySetpoint, int32_t secondarySetpoint);
-    void unicastSingleAxisForceDemand(ModbusBuffer* buffer, uint8_t address, uint8_t boosterValve,
+    void unicastSingleAxisForceDemand(ModbusBuffer *buffer, uint8_t address, uint8_t boosterValve,
                                       int32_t primarySetpoint);
-    void unicastDualAxisForceDemand(ModbusBuffer* buffer, uint8_t address, uint8_t boosterValve,
+    void unicastDualAxisForceDemand(ModbusBuffer *buffer, uint8_t address, uint8_t boosterValve,
                                     int32_t primarySetpoint, int32_t secondarySetpoint);
 
     /**
@@ -74,21 +74,21 @@ public:
      * @param buffer ModbusBuffer where request will be written
      * @param address ILC address
      */
-    void pneumaticForceStatus(ModbusBuffer* buffer, uint8_t address);
-    void setADCScanRate(ModbusBuffer* buffer, uint8_t address, uint8_t rate);
-    void reportADCScanRate(ModbusBuffer* buffer, uint8_t address);
-    void setADCChannelOffsetAndSensitivity(ModbusBuffer* buffer, uint8_t address, uint8_t channel,
+    void pneumaticForceStatus(ModbusBuffer *buffer, uint8_t address);
+    void setADCScanRate(ModbusBuffer *buffer, uint8_t address, uint8_t rate);
+    void reportADCScanRate(ModbusBuffer *buffer, uint8_t address);
+    void setADCChannelOffsetAndSensitivity(ModbusBuffer *buffer, uint8_t address, uint8_t channel,
                                            float offset, float sensitivity);
-    void reset(ModbusBuffer* buffer, uint8_t address);
-    void readCalibration(ModbusBuffer* buffer, uint8_t address);
-    void reportDCAPressure(ModbusBuffer* buffer, uint8_t address);
-    void reportDCAID(ModbusBuffer* buffer, uint8_t address);
-    void reportDCAStatus(ModbusBuffer* buffer, uint8_t address);
-    void reportLVDT(ModbusBuffer* buffer, uint8_t address);
-    void nopReportLVDT(ModbusBuffer* buffer, uint8_t address);
+    void reset(ModbusBuffer *buffer, uint8_t address);
+    void readCalibration(ModbusBuffer *buffer, uint8_t address);
+    void reportDCAPressure(ModbusBuffer *buffer, uint8_t address);
+    void reportDCAID(ModbusBuffer *buffer, uint8_t address);
+    void reportDCAStatus(ModbusBuffer *buffer, uint8_t address);
+    void reportLVDT(ModbusBuffer *buffer, uint8_t address);
+    void nopReportLVDT(ModbusBuffer *buffer, uint8_t address);
 
 private:
-    ILCApplicationSettings* _ilcApplicationSettings;
+    ILCApplicationSettings *_ilcApplicationSettings;
 };
 
 } /* namespace SS */

@@ -40,17 +40,17 @@ class ActiveEngineeringState : public EngineeringState, public EnabledActiveStat
 public:
     ActiveEngineeringState();
 
-    States::Type update(UpdateCommand* command) override;
-    States::Type setSlewFlag(SetSlewFlagCommand* command) override;
-    States::Type clearSlewFlag(ClearSlewFlagCommand* command) override;
-    States::Type exitEngineering(ExitEngineeringCommand* command) override;
-    States::Type lowerM1M3(LowerM1M3Command* command) override;
-    States::Type translateM1M3(TranslateM1M3Command* command) override;
-    States::Type positionM1M3(PositionM1M3Command* command) override;
-    States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command) override;
-    States::Type updatePID(UpdatePIDCommand* command) override;
-    States::Type resetPID(ResetPIDCommand* command) override;
-    States::Type enableDisableForceComponent(EnableDisableForceComponentCommand* command) override;
+    States::Type update(UpdateCommand *command) override;
+    States::Type setSlewFlag(SetSlewFlagCommand *command) override;
+    States::Type clearSlewFlag(ClearSlewFlagCommand *command) override;
+    States::Type exitEngineering(ExitEngineeringCommand *command) override;
+    States::Type lowerM1M3(LowerM1M3Command *command) override;
+    States::Type translateM1M3(TranslateM1M3Command *command) override;
+    States::Type positionM1M3(PositionM1M3Command *command) override;
+    States::Type runMirrorForceProfile(RunMirrorForceProfileCommand *command) override;
+    States::Type updatePID(UpdatePIDCommand *command) override;
+    States::Type resetPID(ResetPIDCommand *command) override;
+    States::Type enableDisableForceComponent(EnableDisableForceComponentCommand *command) override;
 
 protected:
     States::Type getLoweringState() override { return States::LoweringEngineeringState; }

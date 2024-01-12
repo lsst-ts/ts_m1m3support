@@ -32,7 +32,7 @@ namespace SS {
 
 class ReportDCAStatusBusList : public BusList {
 public:
-    ReportDCAStatusBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+    ReportDCAStatusBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory);
 
     void buildBuffer() override;
 };

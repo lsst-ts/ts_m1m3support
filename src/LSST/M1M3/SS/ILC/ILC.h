@@ -66,11 +66,11 @@ namespace SS {
  */
 class ILC {
 public:
-    ILC(PositionController* positionController,
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-        HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-        HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
-        SafetyController* safetyController);
+    ILC(PositionController *positionController,
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+        HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+        HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
+        SafetyController *safetyController);
     virtual ~ILC();
 
     /**
@@ -169,12 +169,13 @@ public:
      *
      * @param actuatorIndex actuator index (0-155) of FA to check
      *
-     * @return disabled actuator ID (101..) or 0 when no disabled actuator was found
+     * @return disabled actuator ID (101..) or 0 when no disabled actuator was
+     * found
      */
     uint32_t hasDisabledFarNeighbor(uint32_t actuatorIndex);
 
 private:
-    SafetyController* _safetyController;
+    SafetyController *_safetyController;
     ILCSubnetData _subnetData;
     ILCMessageFactory _ilcMessageFactory;
     ILCResponseParser _responseParser;
@@ -198,11 +199,11 @@ private:
     RaisedBusList _busListRaised;
     ActiveBusList _busListActive;
 
-    HardpointActuatorSettings* _hardpointActuatorSettings;
-    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    MTM1M3_logevent_hardpointActuatorInfoC* _hardpointActuatorInfo;
-    PositionController* _positionController;
+    HardpointActuatorSettings *_hardpointActuatorSettings;
+    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
+    MTM1M3_logevent_hardpointActuatorInfoC *_hardpointActuatorInfo;
+    PositionController *_positionController;
 
     int8_t _hpStepCommand[6];
     int32_t _hpSteps[6];
@@ -214,7 +215,7 @@ private:
     uint8_t _subnetToRxAddress(uint8_t subnet);
     uint8_t _subnetToTxAddress(uint8_t subnet);
 
-    void _writeBusList(BusList* busList);
+    void _writeBusList(BusList *busList);
 
     void _updateHPSteps();
 };

@@ -29,19 +29,19 @@
 
 #include <cRIO/CliApp.h>
 
-#include <ILCDataTypes.h>
-#include <ILCResponseParser.h>
-#include <ILCSubnetData.h>
 #include "ILCWarning.h"
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
-#include <ForceActuatorInfo.h>
 #include <ForceActuatorForceWarning.h>
+#include <ForceActuatorInfo.h>
 #include <ForceActuatorSettings.h>
 #include <ForceControllerState.h>
 #include <ForceConverter.h>
 #include <HardpointActuatorSettings.h>
 #include <HardpointActuatorWarning.h>
+#include <ILCDataTypes.h>
+#include <ILCResponseParser.h>
+#include <ILCSubnetData.h>
 #include <LimitLog.h>
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
@@ -67,7 +67,7 @@ ILCResponseParser::ILCResponseParser() {
     _detailedState = 0;
 }
 
-ILCResponseParser::ILCResponseParser(ILCSubnetData* subnetData, SafetyController* safetyController) {
+ILCResponseParser::ILCResponseParser(ILCSubnetData *subnetData, SafetyController *safetyController) {
     SPDLOG_DEBUG("ILCResponseParser: ILCResponseParser()");
     _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
     _subnetData = subnetData;
@@ -91,8 +91,8 @@ ILCResponseParser::ILCResponseParser(ILCSubnetData* subnetData, SafetyController
     memset(_hmExpectedResponses, 0, sizeof(_hmExpectedResponses));
 }
 
-bool validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp, uint16_t& receivedCRC,
-                 uint16_t& calculatedCRC) {
+bool validateCRC(ModbusBuffer *buffer, uint16_t *length, double *timestamp, uint16_t &receivedCRC,
+                 uint16_t &calculatedCRC) {
     int32_t addressIndex = buffer->getIndex();
     while (!buffer->endOfFrame() && !buffer->endOfBuffer() && (buffer->readLength() & 0xF000) != 0xB000) {
     }
@@ -112,7 +112,7 @@ bool validateCRC(ModbusBuffer* buffer, uint16_t* length, double* timestamp, uint
     }
 }
 
-void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
+void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
     uint64_t a = buffer->readLength();
     uint64_t b = buffer->readLength();
     uint64_t c = buffer->readLength();
@@ -138,7 +138,8 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
             std::ostringstream data_buf;
             LSST::cRIO::CliApp::printHexBuffer(data.data(), length, data_buf);
             TG_LOG_WARN(60s,
-                        "ILCResponseParser: Invalid CRC (or extra byte) on subnet {:d} - received {:04X}, "
+                        "ILCResponseParser: Invalid CRC (or extra byte) on subnet "
+                        "{:d} - received {:04X}, "
                         "calculated {:04X}, "
                         "address {:02X}, function {:02X}, data [{}]",
                         subnet, receivedCRC, calculatedCRC, data[0], data[1], data_buf.str());
@@ -213,7 +214,8 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                                 break;
                             default:
                                 SPDLOG_WARN(
-                                        "ILCResponseParser: Unknown FA function on subnet {:d} function "
+                                        "ILCResponseParser: Unknown FA function on subnet {:d} "
+                                        "function "
                                         "{:d}",
                                         (int)function, subnet);
                                 ILCWarning::instance().warnUnknownFunction(timestamp, map.ActuatorId);
@@ -312,7 +314,8 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
                         break;
                     default:
                         SPDLOG_WARN(
-                                "ILCResponseParser: Unknown address {:d} on subnet {:d} for function "
+                                "ILCResponseParser: Unknown address {:d} on subnet {:d} "
+                                "for function "
                                 "code {:d}",
                                 (int)address, (int)subnet, (int)function);
                         ILCWarning::instance().warnUnknownAddress(timestamp, map.ActuatorId);
@@ -327,7 +330,7 @@ void ILCResponseParser::parse(ModbusBuffer* buffer, uint8_t subnet) {
     M1M3SSPublisher::getForceActuatorWarning()->log();
 }
 
-void ILCResponseParser::incExpectedResponses(int32_t* fa, int32_t* hp, int32_t* hm) {
+void ILCResponseParser::incExpectedResponses(int32_t *fa, int32_t *hp, int32_t *hm) {
     for (int i = 0; i < FA_COUNT; i++) {
         _faExpectedResponses[i] += fa[i];
     }
@@ -358,7 +361,7 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < FA_COUNT; i++) {
         if (_faExpectedResponses[i] != 0) {
             warn = true;
-            auto& _forceActuatorInfo = ForceActuatorInfo::instance();
+            auto &_forceActuatorInfo = ForceActuatorInfo::instance();
             TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
                         _forceActuatorInfo.referenceId[i]);
             ILCWarning::instance().warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i]);
@@ -398,7 +401,7 @@ void ILCResponseParser::verifyResponses() {
     _safetyController->ilcCommunicationTimeout(anyTimeout);
 }
 
-void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timestamp, int32_t actuatorId) {
+void ILCResponseParser::_parseErrorResponse(ModbusBuffer *buffer, double timestamp, int32_t actuatorId) {
     uint8_t exceptionCode = buffer->readU8();
     SPDLOG_WARN("ILC Error response received - actuator {}, code {}", actuatorId, exceptionCode);
     switch (exceptionCode) {
@@ -425,7 +428,7 @@ void ILCResponseParser::_parseErrorResponse(ModbusBuffer* buffer, double timesta
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportHPServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportHPServerIDResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     uint8_t length = buffer->readU8();
     _hardpointActuatorInfo->ilcUniqueId[dataIndex] = buffer->readU48();
@@ -439,7 +442,7 @@ void ILCResponseParser::_parseReportHPServerIDResponse(ModbusBuffer* buffer, ILC
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     uint8_t length = buffer->readU8();
     _hardpointMonitorInfo->ilcUniqueId[dataIndex] = buffer->readU48();
@@ -453,21 +456,21 @@ void ILCResponseParser::_parseReportHMServerIDResponse(ModbusBuffer* buffer, ILC
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportHPServerStatusResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointActuatorState->ilcState[dataIndex] = buffer->readU8();
     HardpointActuatorWarning::instance().parseIlcStatus(buffer, dataIndex);
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportFAServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportFAServerStatusResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _forceActuatorState->ilcState[dataIndex] = buffer->readU8();
     M1M3SSPublisher::getForceActuatorWarning()->parseFAServerStatusResponse(buffer, dataIndex);
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportHMServerStatusResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportHMServerStatusResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointMonitorState->ilcState[dataIndex] = buffer->readU8();
     uint16_t ilcStatus = buffer->readU16();
@@ -507,36 +510,36 @@ void ILCResponseParser::_parseReportHMServerStatusResponse(ModbusBuffer* buffer,
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseChangeHPILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseChangeHPILCModeResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointActuatorState->ilcState[dataIndex] = buffer->readU16();
     // buffer->readU8();
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseChangeFAILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseChangeFAILCModeResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _forceActuatorState->ilcState[dataIndex] = buffer->readU16();
     // buffer->readU8();
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseChangeHMILCModeResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseChangeHMILCModeResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointMonitorState->ilcState[dataIndex] = buffer->readU16();
     // buffer->readU8();
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuffer* buffer, ILCMap map,
+void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuffer *buffer, ILCMap map,
                                                                       double timestamp) {
     int32_t dataIndex = map.DataIndex;
     uint8_t status = buffer->readU8();
     _hardpointActuatorData->timestamp = timestamp;
     HardpointActuatorWarning::instance().setStatus(dataIndex, timestamp, status,
                                                    _outerLoopData->broadcastCounter);
-    // Encoder value needs to be swapped to keep with the theme of extension is positive
-    // retraction is negative
+    // Encoder value needs to be swapped to keep with the theme of extension is
+    // positive retraction is negative
     _hardpointActuatorData->encoder[dataIndex] =
             -buffer->readI32() + _hardpointActuatorSettings->getEncoderOffset(dataIndex);
     HardpointActuatorWarning::instance().setProximityWarning(
@@ -545,7 +548,8 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
                     ->encoder[dataIndex]<_hardpointActuatorSettings->lowProximityEncoder[dataIndex],
                                          _hardpointActuatorData->encoder[dataIndex]>
                             _hardpointActuatorSettings->highProximityEncoder[dataIndex]);
-    // Unlike the pneumatic, the electromechanical doesn't reverse compression and tension so we swap it here
+    // Unlike the pneumatic, the electromechanical doesn't reverse compression and
+    // tension so we swap it here
     _hardpointActuatorData->measuredForce[dataIndex] = -buffer->readSGL();
     _hardpointActuatorData->displacement[dataIndex] =
             (_hardpointActuatorData->encoder[dataIndex] * _hardpointActuatorSettings->micrometersPerEncoder) /
@@ -554,11 +558,11 @@ void ILCResponseParser::_parseElectromechanicalForceAndStatusResponse(ModbusBuff
     _checkHardpointActuatorMeasuredForce(dataIndex);
 }
 
-void ILCResponseParser::_parseSetBoostValveDCAGainsResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseSetBoostValveDCAGainsResponse(ModbusBuffer *buffer, ILCMap map) {
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseForceDemandResponse(ModbusBuffer* buffer, uint8_t address, ILCMap map) {
+void ILCResponseParser::_parseForceDemandResponse(ModbusBuffer *buffer, uint8_t address, ILCMap map) {
     if (address <= 16) {
         _parseSingleAxisForceDemandResponse(buffer, map);
     } else {
@@ -567,7 +571,7 @@ void ILCResponseParser::_parseForceDemandResponse(ModbusBuffer* buffer, uint8_t 
     _checkForceActuatorForces(map);
 }
 
-void ILCResponseParser::_parseSingleAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseSingleAxisForceDemandResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
                                                             _outerLoopData->broadcastCounter);
@@ -581,7 +585,7 @@ void ILCResponseParser::_parseSingleAxisForceDemandResponse(ModbusBuffer* buffer
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
     int xIndex = map.XDataIndex;
@@ -625,7 +629,7 @@ void ILCResponseParser::_parseDualAxisForceDemandResponse(ModbusBuffer* buffer, 
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer* buffer, uint8_t address,
+void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer *buffer, uint8_t address,
                                                            ILCMap map) {
     if (address <= 16) {
         _parseSingleAxisPneumaticForceStatusResponse(buffer, map);
@@ -635,7 +639,7 @@ void ILCResponseParser::_parsePneumaticForceStatusResponse(ModbusBuffer* buffer,
     _checkForceActuatorForces(map);
 }
 
-void ILCResponseParser::_parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     M1M3SSPublisher::getForceActuatorWarning()->parseStatus(buffer, dataIndex,
                                                             _outerLoopData->broadcastCounter);
@@ -649,7 +653,7 @@ void ILCResponseParser::_parseSingleAxisPneumaticForceStatusResponse(ModbusBuffe
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseDualAxisPneumaticForceStatusResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseDualAxisPneumaticForceStatusResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     int32_t secondaryDataIndex = map.SecondaryDataIndex;
     int xIndex = map.XDataIndex;
@@ -693,27 +697,27 @@ void ILCResponseParser::_parseDualAxisPneumaticForceStatusResponse(ModbusBuffer*
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseSetHPADCScanRateResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseSetHPADCScanRateResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointActuatorInfo->adcScanRate[dataIndex] = buffer->readU8();
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer *buffer, ILCMap map) {
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusBuffer *buffer, ILCMap map) {
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseHPResetResponse(ModbusBuffer* buffer, ILCMap map) { buffer->skipToNextFrame(); }
+void ILCResponseParser::_parseHPResetResponse(ModbusBuffer *buffer, ILCMap map) { buffer->skipToNextFrame(); }
 
-void ILCResponseParser::_parseFAResetResponse(ModbusBuffer* buffer, ILCMap map) { buffer->skipToNextFrame(); }
+void ILCResponseParser::_parseFAResetResponse(ModbusBuffer *buffer, ILCMap map) { buffer->skipToNextFrame(); }
 
-void ILCResponseParser::_parseHMResetResponse(ModbusBuffer* buffer, ILCMap map) { buffer->skipToNextFrame(); }
+void ILCResponseParser::_parseHMResetResponse(ModbusBuffer *buffer, ILCMap map) { buffer->skipToNextFrame(); }
 
-void ILCResponseParser::_parseReadHPCalibrationResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReadHPCalibrationResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     buffer->readSGL();  // Main Coefficient K1
     buffer->readSGL();  // Main Coefficient K2
@@ -742,12 +746,12 @@ void ILCResponseParser::_parseReadHPCalibrationResponse(ModbusBuffer* buffer, IL
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReadFACalibrationResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReadFACalibrationResponse(ModbusBuffer *buffer, ILCMap map) {
     ForceActuatorInfo::instance().setFACalibration(map.DataIndex, buffer->readU8());
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReadDCAPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReadDCAPressureValuesResponse(ModbusBuffer *buffer, ILCMap map) {
     buffer->readSGL();
     buffer->readSGL();
     buffer->readSGL();
@@ -755,7 +759,7 @@ void ILCResponseParser::_parseReadDCAPressureValuesResponse(ModbusBuffer* buffer
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointMonitorData->pressureSensor1[dataIndex] = buffer->readSGL();
     _hardpointMonitorData->pressureSensor2[dataIndex] = buffer->readSGL();
@@ -765,7 +769,7 @@ void ILCResponseParser::_parseReadHMPressureValuesResponse(ModbusBuffer* buffer,
     _checkHardpointActuatorAirPressure(dataIndex);
 }
 
-void ILCResponseParser::_parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportHMMezzanineIDResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointMonitorInfo->mezzanineUniqueId[dataIndex] = buffer->readU48();
     _hardpointMonitorInfo->mezzanineFirmwareType[dataIndex] = buffer->readU8();
@@ -774,12 +778,12 @@ void ILCResponseParser::_parseReportHMMezzanineIDResponse(ModbusBuffer* buffer, 
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportDCAStatusResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportDCAStatusResponse(ModbusBuffer *buffer, ILCMap map) {
     M1M3SSPublisher::getForceActuatorWarning()->parseDCAStatus(buffer, map.DataIndex);
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportHMMezzanineStatusResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportHMMezzanineStatusResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     uint16_t status = buffer->readU16();
     _hardpointMonitorWarning->mezzanineS1AInterface1Fault[dataIndex] = (status & 0x0001) != 0;
@@ -801,7 +805,7 @@ void ILCResponseParser::_parseReportHMMezzanineStatusResponse(ModbusBuffer* buff
     buffer->skipToNextFrame();
 }
 
-void ILCResponseParser::_parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap map) {
+void ILCResponseParser::_parseReportLVDTResponse(ModbusBuffer *buffer, ILCMap map) {
     int32_t dataIndex = map.DataIndex;
     _hardpointMonitorData->breakawayLVDT[dataIndex] = buffer->readSGL();
     _hardpointMonitorData->displacementLVDT[dataIndex] = buffer->readSGL();
@@ -811,12 +815,12 @@ void ILCResponseParser::_parseReportLVDTResponse(ModbusBuffer* buffer, ILCMap ma
 void ILCResponseParser::_checkForceActuatorForces(ILCMap map) {
     int32_t dataIndex = map.DataIndex;
 
-    auto& faData = ForceActuatorData::instance();
+    auto &faData = ForceActuatorData::instance();
 
     float primaryForce = faData.primaryCylinderForce[dataIndex];
     float primarySetpoint = _appliedCylinderForces->primaryCylinderForces[dataIndex] / 1000.0f;
 
-    auto& fafWarning = ForceActuatorForceWarning::instance();
+    auto &fafWarning = ForceActuatorForceWarning::instance();
 
     fafWarning.checkPrimary(dataIndex, map.ActuatorId, primaryForce, primarySetpoint);
 

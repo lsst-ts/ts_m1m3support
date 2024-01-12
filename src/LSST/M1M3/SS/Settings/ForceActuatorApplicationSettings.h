@@ -26,9 +26,9 @@
 
 #include <vector>
 
-#include <cRIO/DataTypes.h>
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorTypes.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -49,18 +49,19 @@ struct ForceActuatorTableRow {
     int32_t ActuatorID;
 
     /**
-     * Force actuator X (horizontal when mirror is pointed at horizon) position in m. Cartesian system with
-     * origin in mirror center.
+     * Force actuator X (horizontal when mirror is pointed at horizon) position in
+     * m. Cartesian system with origin in mirror center.
      */
     double XPosition;
 
     /**
-     * Force actuator Y (vertical when mirror is pointed at horizon) position in m. Cartesian system with
-     * origin in mirror center.
+     * Force actuator Y (vertical when mirror is pointed at horizon) position in
+     * m. Cartesian system with origin in mirror center.
      */
     double YPosition;
 
-    //* Force actuator Z (positive toward M2) position in m. Cartesian system with origin in mirror center.
+    //* Force actuator Z (positive toward M2) position in m. Cartesian system with
+    // origin in mirror center.
     double ZPosition;
 
     //* Single or double axis actuator.
@@ -91,8 +92,8 @@ public:
     ForceActuatorApplicationSettings();
 
     /**
-     * Source data. Contains force actuator position, type and orientation. Populated in
-     * ForceActuatorApplicationSettings.cpp.
+     * Source data. Contains force actuator position, type and orientation.
+     * Populated in ForceActuatorApplicationSettings.cpp.
      *
      * @snippet Settings/ForceActuatorApplicationSettings.cpp Table initialization
      *
@@ -123,7 +124,8 @@ public:
      *
      * @param actuatorId search for actuator with this ID
      *
-     * @return zIndex of the actuator with Id equal to actuatorId, -1 when not found
+     * @return zIndex of the actuator with Id equal to actuatorId, -1 when not
+     * found
      */
     const int ActuatorIdToZIndex(int actuatorId);
 
@@ -137,12 +139,12 @@ public:
     // actuator ID (first number depict quadrant), those arrays are there to
     // simplify operations where FAs in quadrant are needed, notably
     // distributing forces from disabled FAs.
-    std::vector<int> QuadrantZ[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned trivially by
-                                    /// actuator ID (first number depict quadrant).
-    std::vector<int> QuadrantY[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned trivially by
-                                    /// actuator ID (first number depict quadrant).
-    std::vector<int> QuadrantX[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned trivially by
-                                    /// actuator ID (first number depict quadrant).
+    std::vector<int> QuadrantZ[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned
+                                    /// trivially by actuator ID (first number depict quadrant).
+    std::vector<int> QuadrantY[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned
+                                    /// trivially by actuator ID (first number depict quadrant).
+    std::vector<int> QuadrantX[4];  /// indices of Z FAs in mirror quadrants. FAs are assigned
+                                    /// trivially by actuator ID (first number depict quadrant).
 
     /**
      * Returns actuator ID for given Z index.

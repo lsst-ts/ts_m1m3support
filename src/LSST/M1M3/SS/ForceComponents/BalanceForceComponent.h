@@ -53,9 +53,9 @@ namespace SS {
  */
 class BalanceForceComponent : public ForceComponent {
 public:
-    BalanceForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    BalanceForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
-    void applyBalanceForces(float* x, float* y, float* z, bool check = true);
+    void applyBalanceForces(float *x, float *y, float *z, bool check = true);
 
     /**
      * Called from ForceController::updateAppliedForces. Feeds in hardpoint
@@ -86,10 +86,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    PID* _idToPID(int id);
+    PID *_idToPID(int id);
 
-    SafetyController* _safetyController;
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    SafetyController *_safetyController;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     PID _fx;
     PID _fy;
@@ -98,9 +98,9 @@ private:
     PID _my;
     PID _mz;
 
-    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_appliedBalanceForcesC* _appliedBalanceForces;
-    MTM1M3_logevent_preclippedBalanceForcesC* _preclippedBalanceForces;
+    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_appliedBalanceForcesC *_appliedBalanceForces;
+    MTM1M3_logevent_preclippedBalanceForcesC *_preclippedBalanceForces;
 };
 
 } /* namespace SS */

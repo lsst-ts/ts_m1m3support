@@ -26,13 +26,13 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
-#include <RaiseM1M3Command.h>
 #include <M1M3SSPublisher.h>
+#include <RaiseM1M3Command.h>
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data) : Command(commandID) {
+RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C *data) : Command(commandID) {
     _data.bypassReferencePosition = data->bypassReferencePosition;
 }
 
@@ -49,7 +49,7 @@ bool RaiseM1M3Command::validate() {
 
 void RaiseM1M3Command::execute() { Context::get().raiseM1M3(this); }
 
-void RaiseM1M3Command::ackInProgress(const char* description, double timeout) {
+void RaiseM1M3Command::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandraiseM1M3(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

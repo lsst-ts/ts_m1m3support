@@ -48,9 +48,9 @@ class ILCSubnetData {
     Container subnetData[5];
 
 public:
-    ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                  HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-                  HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
+    ILCSubnetData(ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+                  HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+                  HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings);
 
     int32_t getHPCount(int32_t subnetIndex) { return this->subnetData[subnetIndex].HPIndex.size(); }
     ILCMap getHPIndex(int32_t subnetIndex, int32_t hpIndex) {
@@ -83,7 +83,7 @@ public:
     void enableAllFA();
 
 private:
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 };
 
 } /* namespace SS */

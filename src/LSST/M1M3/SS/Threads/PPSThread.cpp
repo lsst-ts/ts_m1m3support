@@ -33,22 +33,21 @@ using namespace LSST::M1M3::SS;
 PPSThread::PPSThread() { _keepRunning = true; }
 
 void PPSThread::run() {
-  SPDLOG_INFO("PPSThread: Start");
-  while (_keepRunning) {
-    try {
-      IFPGA::get().waitForPPS(2500);
-    } catch (std::runtime_error &er) {
-      SPDLOG_WARN("PPSThread: Failed to receive pps: {}", er.what());
-      continue;
+    SPDLOG_INFO("PPSThread: Start");
+    while (_keepRunning) {
+        try {
+            IFPGA::get().waitForPPS(2500);
+        } catch (std::runtime_error &er) {
+            SPDLOG_WARN("PPSThread: Failed to receive pps: {}", er.what());
+            continue;
+        }
+        IFPGA::get().ackPPS();
+        uint64_t timestamp = Timestamp::toFPGA(M1M3SSPublisher::instance().getTimestamp());
+        if (_keepRunning) {
+            IFPGA::get().writeTimestampFIFO(timestamp);
+        }
     }
-    IFPGA::get().ackPPS();
-    uint64_t timestamp =
-        Timestamp::toFPGA(M1M3SSPublisher::instance().getTimestamp());
-    if (_keepRunning) {
-      IFPGA::get().writeTimestampFIFO(timestamp);
-    }
-  }
-  SPDLOG_INFO("PPSThread: Completed");
+    SPDLOG_INFO("PPSThread: Completed");
 }
 
 void PPSThread::stop() { _keepRunning = false; }

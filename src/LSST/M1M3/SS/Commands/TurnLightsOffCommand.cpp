@@ -24,18 +24,18 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
-#include <TurnLightsOffCommand.h>
 #include <M1M3SSPublisher.h>
+#include <TurnLightsOffCommand.h>
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-TurnLightsOffCommand::TurnLightsOffCommand(int32_t commandID, MTM1M3_command_turnLightsOffC*)
+TurnLightsOffCommand::TurnLightsOffCommand(int32_t commandID, MTM1M3_command_turnLightsOffC *)
         : Command(commandID) {}
 
 void TurnLightsOffCommand::execute() { Context::get().turnLightsOff(this); }
 
-void TurnLightsOffCommand::ackInProgress(const char* description, double timeout) {
+void TurnLightsOffCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnLightsOff(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

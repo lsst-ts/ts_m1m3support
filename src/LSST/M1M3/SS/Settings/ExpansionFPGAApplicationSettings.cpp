@@ -39,15 +39,15 @@ void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
         SPDLOG_INFO("Loading ExpansionFPGAApplicationSettings");
         Enabled = doc["Enabled"].as<bool>();
         Resource = doc["Resource"].as<std::string>();
-    } catch (YAML::Exception& ex) {
+    } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading ExpansionFPGAApplicationSettings: {}", ex.what()));
     }
 }
 
-void ExpansionFPGAApplicationSettings::initialize(StartCommand* command) {
+void ExpansionFPGAApplicationSettings::initialize(StartCommand *command) {
     IExpansionFPGA::get().setResource(Enabled, Resource);
     if (Enabled) {
-        auto& heartbeat = Heartbeat::instance();
+        auto &heartbeat = Heartbeat::instance();
 
         heartbeat.tryToggle();
         IExpansionFPGA::get().close();
@@ -57,8 +57,8 @@ void ExpansionFPGAApplicationSettings::initialize(StartCommand* command) {
         command->ackInProgress("Opening expansion FPGA", 12);
         IExpansionFPGA::get().open();
 
-        // TODO replace that with wait for IRQ from the expansion FPGA, being raised in FPGA after it
-        // finish initialization
+        // TODO replace that with wait for IRQ from the expansion FPGA, being raised
+        // in FPGA after it finish initialization
 
         for (int i = 0; i < 50; i++) {
             heartbeat.tryToggle();

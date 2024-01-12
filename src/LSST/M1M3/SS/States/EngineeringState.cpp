@@ -23,8 +23,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include <ApplyOffsetForcesCommand.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
+#include <ApplyOffsetForcesCommand.h>
 #include <BoosterValveStatus.h>
 #include <DigitalInputOutput.h>
 #include <DisableHardpointChaseCommand.h>
@@ -39,68 +39,68 @@
 #include <PowerController.h>
 #include <SafetyController.h>
 #include <SlewControllerSettings.h>
-#include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
+#include <TurnPowerOnCommand.h>
 
 using namespace LSST::M1M3::SS;
 
-States::Type EngineeringState::turnAirOn(TurnAirOnCommand* command) {
+States::Type EngineeringState::turnAirOn(TurnAirOnCommand *command) {
     SPDLOG_INFO("{}: turnAirOn()", this->name);
     DigitalInputOutput::instance().turnAirOn();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::turnAirOff(TurnAirOffCommand* command) {
+States::Type EngineeringState::turnAirOff(TurnAirOffCommand *command) {
     SPDLOG_INFO("{}: turnAirOff()", this->name);
     DigitalInputOutput::instance().turnAirOff();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::boosterValveOpen(BoosterValveOpenCommand* command) {
+States::Type EngineeringState::boosterValveOpen(BoosterValveOpenCommand *command) {
     SPDLOG_INFO("{}: boosterValveOpen", name);
     BoosterValveStatus::instance().setUserTriggered(true);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::boosterValveClose(BoosterValveCloseCommand* command) {
+States::Type EngineeringState::boosterValveClose(BoosterValveCloseCommand *command) {
     SPDLOG_INFO("{}: boosterValveClose", name);
     BoosterValveStatus::instance().setUserTriggered(false);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand* command) {
+States::Type EngineeringState::stopHardpointMotion(StopHardpointMotionCommand *command) {
     SPDLOG_INFO("{}: stopHardpointMotion()", this->name);
     Model::instance().getPositionController()->stopMotion();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
+States::Type EngineeringState::moveHardpointActuators(MoveHardpointActuatorsCommand *command) {
     SPDLOG_INFO("{}: moveHardpointActuators()", this->name);
     if (!Model::instance().getPositionController()->move(command->getData()->steps)) {
-        M1M3SSPublisher::instance().logCommandRejectionWarning(
-                "MoveHardpointActuators",
-                "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+        M1M3SSPublisher::instance().logCommandRejectionWarning("MoveHardpointActuators",
+                                                               "At least one hardpoint actuator commanded "
+                                                               "to move is already MOVING or CHASING.");
     }
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand* command) {
+States::Type EngineeringState::enableHardpointChase(EnableHardpointChaseCommand *command) {
     SPDLOG_INFO("{}: enableHardpointChase()", this->name);
     if (!Model::instance().getPositionController()->enableChaseAll()) {
-        M1M3SSPublisher::instance().logCommandRejectionWarning(
-                "EnableHardpointChase",
-                "At least one hardpoint actuator commanded to chase is already MOVING or CHASING.");
+        M1M3SSPublisher::instance().logCommandRejectionWarning("EnableHardpointChase",
+                                                               "At least one hardpoint actuator commanded to "
+                                                               "chase is already MOVING or CHASING.");
     }
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::disableHardpointChase(DisableHardpointChaseCommand* command) {
+States::Type EngineeringState::disableHardpointChase(DisableHardpointChaseCommand *command) {
     SPDLOG_INFO("{}: disableHardpointChase()", this->name);
     Model::instance().getPositionController()->disableChaseAll();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* command) {
+States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand *command) {
     SPDLOG_INFO("{}: applyOffsetForces()", this->name);
     Model::instance().getForceController()->applyOffsetForces(
             command->getData()->xForces, command->getData()->yForces, command->getData()->zForces);
@@ -109,7 +109,7 @@ States::Type EngineeringState::applyOffsetForces(ApplyOffsetForcesCommand* comma
 }
 
 States::Type EngineeringState::applyOffsetForcesByMirrorForce(
-        ApplyOffsetForcesByMirrorForceCommand* command) {
+        ApplyOffsetForcesByMirrorForceCommand *command) {
     SPDLOG_INFO("{}: applyOffsetForcesByMirrorForce()", this->name);
     Model::instance().getForceController()->applyOffsetForcesByMirrorForces(
             command->getData()->xForce, command->getData()->yForce, command->getData()->zForce,
@@ -118,26 +118,26 @@ States::Type EngineeringState::applyOffsetForcesByMirrorForce(
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::clearOffsetForces(ClearOffsetForcesCommand* command) {
+States::Type EngineeringState::clearOffsetForces(ClearOffsetForcesCommand *command) {
     SPDLOG_INFO("{}: clearOffsetForces()", this->name);
     Model::instance().getForceController()->zeroOffsetForces();
     Model::instance().getForceController()->processAppliedForces();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::turnLightsOn(TurnLightsOnCommand* command) {
+States::Type EngineeringState::turnLightsOn(TurnLightsOnCommand *command) {
     SPDLOG_INFO("{}: turnLightsOn()", this->name);
     DigitalInputOutput::instance().turnCellLightsOn();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::turnLightsOff(TurnLightsOffCommand* command) {
+States::Type EngineeringState::turnLightsOff(TurnLightsOffCommand *command) {
     SPDLOG_INFO("{}: turnLightsOff()", this->name);
     DigitalInputOutput::instance().turnCellLightsOff();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command) {
+States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand *command) {
     SPDLOG_INFO("{}: turnPowerOn()", this->name);
     if (command->getData()->turnPowerNetworkAOn) {
         Model::instance().getPowerController()->setPowerNetworkA(true);
@@ -166,7 +166,7 @@ States::Type EngineeringState::turnPowerOn(TurnPowerOnCommand* command) {
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command) {
+States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand *command) {
     SPDLOG_INFO("{}: turnPowerOff()", this->name);
     if (command->getData()->turnPowerNetworkAOff) {
         Model::instance().getPowerController()->setPowerNetworkA(false);
@@ -195,25 +195,25 @@ States::Type EngineeringState::turnPowerOff(TurnPowerOffCommand* command) {
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::disableForceActuator(DisableForceActuatorCommand* command) {
+States::Type EngineeringState::disableForceActuator(DisableForceActuatorCommand *command) {
     SPDLOG_INFO("{}: disableForceActuator({}, {})", name, command->actuatorId, command->actuatorIndex);
     Model::instance().getILC()->disableFA(command->actuatorId);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::enableForceActuator(EnableForceActuatorCommand* command) {
+States::Type EngineeringState::enableForceActuator(EnableForceActuatorCommand *command) {
     SPDLOG_INFO("{}: enableForceActuator({}, {})", name, command->actuatorId, command->actuatorIndex);
     Model::instance().getILC()->enableFA(command->actuatorId);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
+States::Type EngineeringState::enableAllForceActuators(EnableAllForceActuatorsCommand *command) {
     SPDLOG_INFO("{}: enableAllForceActuators()", name);
     Model::instance().getILC()->enableAllFA();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EngineeringState::setSlewControllerSettings(SetSlewControllerSettingsCommand* command) {
+States::Type EngineeringState::setSlewControllerSettings(SetSlewControllerSettingsCommand *command) {
     SPDLOG_INFO("{}: slewControllerSettings {}, enable {}", name, command->getData()->slewSettings,
                 command->getData()->enableSlewManagement);
     SlewControllerSettings::instance().set(command->getData()->slewSettings,

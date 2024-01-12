@@ -22,8 +22,8 @@
  */
 
 #include <BoosterValveController.h>
-#include <BoosterValveStatus.h>
 #include <BoosterValveSettings.h>
+#include <BoosterValveStatus.h>
 #include <ForceActuatorData.h>
 #include <SettingReader.h>
 
@@ -67,7 +67,8 @@ void BoosterValveController::_checkFollowingErrorOpen() {
         if (fabs(primaryFE) > trigger) {
             BoosterValveStatus::instance().setFollowingErrorTriggered(true);
             SPDLOG_INFO(
-                    "Booster valve triggered to open by force actuator ID {} ({}) primary cylinder "
+                    "Booster valve triggered to open by force actuator ID {} "
+                    "({}) primary cylinder "
                     "following error (as {} > {})",
                     faApplicationSettings->ZIndexToActuatorId(i), i, primaryFE, trigger);
             break;
@@ -78,7 +79,8 @@ void BoosterValveController::_checkFollowingErrorOpen() {
             if (fabs(secondaryFE) > trigger) {
                 BoosterValveStatus::instance().setFollowingErrorTriggered(true);
                 SPDLOG_INFO(
-                        "Booster valve triggered to open by force actuator ID {} ({}) secondary cylinder "
+                        "Booster valve triggered to open by force actuator ID {} ({}) "
+                        "secondary cylinder "
                         "following error (as {} > {})",
                         faApplicationSettings->SecondaryCylinderIndexToActuatorId(i), i, primaryFE, trigger);
                 break;
@@ -109,7 +111,9 @@ void BoosterValveController::_checkFollowingErrorClose() {
 
     if (shouldClose == true) {
         BoosterValveStatus::instance().setFollowingErrorTriggered(false);
-        SPDLOG_INFO("Booster valve following error close conditions are met, booster valve can close");
+        SPDLOG_INFO(
+                "Booster valve following error close conditions are met, "
+                "booster valve can close");
     }
 }
 
@@ -122,19 +126,22 @@ void BoosterValveController::_checkAccelerometerOpen() {
     if (fabs(accelerometerData->angularAccelerationX) > triggerX) {
         BoosterValveStatus::instance().setAccelerometerTriggered(true);
         SPDLOG_INFO(
-                "Booster valves angular acceleration in X trigger conditions are met ({} > {}), booster "
+                "Booster valves angular acceleration in X trigger conditions "
+                "are met ({} > {}), booster "
                 "valves shall open",
                 accelerometerData->angularAccelerationX, triggerX);
     } else if (fabs(accelerometerData->angularAccelerationY) > triggerY) {
         BoosterValveStatus::instance().setAccelerometerTriggered(true);
         SPDLOG_INFO(
-                "Booster valves angular acceleration in Y trigger conditions are met ({} > {}), booster "
+                "Booster valves angular acceleration in Y trigger conditions "
+                "are met ({} > {}), booster "
                 "valves shall open",
                 accelerometerData->angularAccelerationY, triggerY);
     } else if (fabs(accelerometerData->angularAccelerationZ) > triggerZ) {
         BoosterValveStatus::instance().setAccelerometerTriggered(true);
         SPDLOG_INFO(
-                "Booster valves angular acceleration in Z trigger conditions are met ({} > {}), booster "
+                "Booster valves angular acceleration in Z trigger conditions "
+                "are met ({} > {}), booster "
                 "valves shall open",
                 accelerometerData->angularAccelerationZ, triggerZ);
     }
@@ -150,6 +157,8 @@ void BoosterValveController::_checkAccelerometerClose() {
         fabs(accelerometerData->angularAccelerationY) < triggerY &&
         fabs(accelerometerData->angularAccelerationZ) < triggerZ) {
         BoosterValveStatus::instance().setAccelerometerTriggered(false);
-        SPDLOG_INFO("Booster valves accelerometer trigger conditions are met, booster valves can close");
+        SPDLOG_INFO(
+                "Booster valves accelerometer trigger conditions are met, "
+                "booster valves can close");
     }
 }

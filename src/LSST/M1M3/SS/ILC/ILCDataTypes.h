@@ -25,8 +25,8 @@
 #define ILCDATATYPES_H_
 
 #include <cRIO/DataTypes.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace LSST {
 namespace M1M3 {

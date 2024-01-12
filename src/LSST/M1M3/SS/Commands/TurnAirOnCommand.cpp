@@ -24,8 +24,8 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
-#include <TurnAirOnCommand.h>
 #include <M1M3SSPublisher.h>
+#include <TurnAirOnCommand.h>
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
@@ -34,7 +34,7 @@ TurnAirOnCommand::TurnAirOnCommand(int32_t commandID) : Command(commandID) {}
 
 void TurnAirOnCommand::execute() { Context::get().turnAirOn(this); }
 
-void TurnAirOnCommand::ackInProgress(const char* description, double timeout) {
+void TurnAirOnCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnAirOn(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

@@ -33,8 +33,9 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Measure time to acquire data and publish model data. Uses RAII-like approach to measure time it takes to
- * execute an action, and pass elapsed time to Model::publishOuterLoop call.
+ * Measure time to acquire data and publish model data. Uses RAII-like approach
+ * to measure time it takes to execute an action, and pass elapsed time to
+ * Model::publishOuterLoop call.
  *
  * @see Model
  */

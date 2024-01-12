@@ -24,10 +24,10 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_ACTIVEOPTICFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_ACTIVEOPTICFORCECOMPONENT_H_
 
-#include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
-#include <SafetyController.h>
+#include <ForceComponent.h>
 #include <SAL_MTM1M3C.h>
+#include <SafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -35,9 +35,9 @@ namespace SS {
 
 class ActiveOpticForceComponent : public ForceComponent {
 public:
-    ActiveOpticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    ActiveOpticForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
-    void applyActiveOpticForces(float* z);
+    void applyActiveOpticForces(float *z);
 
     void postEnableDisableActions() override;
 
@@ -45,12 +45,12 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController* _safetyController;
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    SafetyController *_safetyController;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_appliedActiveOpticForcesC* _appliedActiveOpticForces;
-    MTM1M3_logevent_preclippedActiveOpticForcesC* _preclippedActiveOpticForces;
+    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_logevent_appliedActiveOpticForcesC *_appliedActiveOpticForces;
+    MTM1M3_logevent_preclippedActiveOpticForcesC *_preclippedActiveOpticForces;
 };
 
 } /* namespace SS */

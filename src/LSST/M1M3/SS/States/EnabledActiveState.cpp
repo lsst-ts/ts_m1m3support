@@ -28,7 +28,7 @@
 
 using namespace LSST::M1M3::SS;
 
-States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command* command) {
+States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command *command) {
     SPDLOG_INFO("EnabledActiveState: lowerM1M3()");
     Model::instance().getSlewController()->reset();
     Model::instance().getForceController()->resetPIDs();
@@ -36,27 +36,27 @@ States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command* command) {
     return Model::instance().getSafetyController()->checkSafety(getLoweringState());
 }
 
-States::Type EnabledActiveState::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
+States::Type EnabledActiveState::applyActiveOpticForces(ApplyActiveOpticForcesCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: applyActiveOpticForces()");
     Model::instance().getForceController()->applyActiveOpticForces(command->getData()->zForces);
     Model::instance().getForceController()->processAppliedForces();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledActiveState::clearActiveOpticForces(ClearActiveOpticForcesCommand* command) {
+States::Type EnabledActiveState::clearActiveOpticForces(ClearActiveOpticForcesCommand *command) {
     SPDLOG_INFO("EnabledActiveState: clearActiveOpticForces()");
     Model::instance().getForceController()->zeroActiveOpticForces();
     Model::instance().getForceController()->processAppliedForces();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
+States::Type EnabledActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand *command) {
     SPDLOG_INFO("EnabledActiveState: enableHardpointCorrections()");
     Model::instance().getForceController()->applyBalanceForces();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) {
+States::Type EnabledActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand *command) {
     SPDLOG_INFO("EnabledActiveState: disableHardpointCorrections()");
     Model::instance().getForceController()->zeroBalanceForces();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);

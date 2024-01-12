@@ -26,8 +26,8 @@
 
 #include <SAL_MTMountC.h>
 
-#include <cRIO/Singleton.h>
 #include <Units.h>
+#include <cRIO/Singleton.h>
 
 #include <cmath>
 
@@ -52,21 +52,24 @@ public:
     void checkTimestamps(bool checkAzimuth, bool checkElevation);
 
     /**
-     * Updates azimuth data to match current TMA data. Should be called on reception of new azimuth data.
+     * Updates azimuth data to match current TMA data. Should be called on
+     * reception of new azimuth data.
      *
      * @param data MTMount_azimuth data
      */
     void updateTMAAzimuth(MTMount_azimuthC *data);
 
     /**
-     * Updates elevation data to match current TMA data. Should be called on reception of new elevation data.
+     * Updates elevation data to match current TMA data. Should be called on
+     * reception of new elevation data.
      *
      * @param data MTMount_elevation data
      */
     void updateTMAElevation(MTMount_elevationC *data);
 
     /**
-     * Returns mirror elevation. Uses either telescope provided data, or internal inclinometer readout.
+     * Returns mirror elevation. Uses either telescope provided data, or internal
+     * inclinometer readout.
      *
      * @param forceTelescope if true, telescope elevation angle is provided
      *

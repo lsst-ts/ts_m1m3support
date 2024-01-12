@@ -26,8 +26,8 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <ForceComponent.h>
 #include <SafetyController.h>
 
 namespace LSST {
@@ -39,9 +39,9 @@ namespace SS {
  */
 class OffsetForceComponent : public ForceComponent {
 public:
-    OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    OffsetForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
-    void applyOffsetForces(float* x, float* y, float* z);
+    void applyOffsetForces(float *x, float *y, float *z);
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
 
@@ -54,12 +54,12 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController* _safetyController;
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    SafetyController *_safetyController;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_appliedOffsetForcesC* _appliedOffsetForces;
-    MTM1M3_logevent_preclippedOffsetForcesC* _preclippedOffsetForces;
+    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_logevent_appliedOffsetForcesC *_appliedOffsetForces;
+    MTM1M3_logevent_preclippedOffsetForcesC *_preclippedOffsetForces;
 };
 
 } /* namespace SS */

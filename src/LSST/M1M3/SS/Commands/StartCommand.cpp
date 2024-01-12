@@ -24,14 +24,14 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
-#include <StartCommand.h>
-#include <SettingReader.h>
 #include <M1M3SSPublisher.h>
+#include <SettingReader.h>
+#include <StartCommand.h>
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC* data) : Command(commandID) {
+StartCommand::StartCommand(int32_t commandID, MTM1M3_command_startC *data) : Command(commandID) {
     _data.configurationOverride = data->configurationOverride;
 }
 
@@ -51,7 +51,7 @@ bool StartCommand::validate() {
 
 void StartCommand::execute() { Context::get().start(this); }
 
-void StartCommand::ackInProgress(const char* description, double timeout) {
+void StartCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

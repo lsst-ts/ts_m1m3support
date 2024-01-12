@@ -44,8 +44,8 @@ public:
 
     void sample() override;
 
-    void readSlot1(float* data) override;
-    void readSlot2(uint32_t* data) override;
+    void readSlot1(float *data) override;
+    void readSlot2(uint32_t *data) override;
 
 private:
     uint32_t _session;

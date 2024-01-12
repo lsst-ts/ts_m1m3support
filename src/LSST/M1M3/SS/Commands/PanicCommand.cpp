@@ -23,8 +23,8 @@
 
 #include <cRIO/SAL/Command.h>
 
-#include <Model.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 
 #include <PanicCommand.h>
 
@@ -37,7 +37,8 @@ bool PanicCommand::validate() {
     if (Model::instance().getSafetyController() == NULL) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "Panic",
-                "Panic command cannot be called without Safety Controller (most likely called in a wrong "
+                "Panic command cannot be called without Safety Controller "
+                "(most likely called in a wrong "
                 "state).");
         return false;
     }
@@ -46,7 +47,7 @@ bool PanicCommand::validate() {
 
 void PanicCommand::execute() { Model::instance().getSafetyController()->userPanic(); }
 
-void PanicCommand::ackInProgress(const char* description, double timeout) {
+void PanicCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandpanic(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

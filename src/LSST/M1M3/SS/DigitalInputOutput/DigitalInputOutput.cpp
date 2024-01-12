@@ -22,8 +22,8 @@
  */
 
 #include <algorithm>
-#include <cstring>
 #include <chrono>
+#include <cstring>
 
 #include <spdlog/spdlog.h>
 
@@ -31,13 +31,13 @@
 
 #include <DigitalInputOutput.h>
 #include <FPGAAddresses.h>
-#include <M1M3SSPublisher.h>
 #include <InterlockWarning.h>
+#include <M1M3SSPublisher.h>
+#include <Range.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
 #include <SupportFPGAData.h>
 #include <Timestamp.h>
-#include <Range.h>
 
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
@@ -62,7 +62,7 @@ DigitalInputOutput::DigitalInputOutput(token) {
     memset(_cellLightWarning, 0, sizeof(MTM1M3_logevent_cellLightWarningC));
 }
 
-void DigitalInputOutput::setSafetyController(SafetyController* safetyController) {
+void DigitalInputOutput::setSafetyController(SafetyController *safetyController) {
     SPDLOG_DEBUG("DigitalInputOutput: setSafetyController()");
     _safetyController = safetyController;
 }
@@ -71,7 +71,7 @@ void DigitalInputOutput::processData() {
     // TODO: Handle no data available
     SPDLOG_TRACE("DigitalInputOutput: processData()");
     bool tryPublish = false;
-    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
     double timestamp =
             Timestamp::fromFPGA(std::max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
@@ -139,7 +139,8 @@ void DigitalInputOutput::processData() {
         InterlockWarning::instance().setData(timestamp, fpgaData->DigitalInputStates);
 
         if (_safetyController) {
-            // report heartbeat lost first. GIS cuts power if heartbeats aren't comming.
+            // report heartbeat lost first. GIS cuts power if heartbeats aren't
+            // comming.
             _safetyController->interlockNotifyGISHeartbeatLost(InterlockWarning::instance().gisHeartbeatLost);
 
             _safetyController->airControllerNotifyCommandSensorMismatch(

@@ -34,8 +34,8 @@ class ProfileController {
 public:
     ProfileController();
 
-    void setupMirrorForceProfile(float* xForce, float* yForce, float* zForce, float* xMoment, float* yMoment,
-                                 float* zMoment);
+    void setupMirrorForceProfile(float *xForce, float *yForce, float *zForce, float *xMoment, float *yMoment,
+                                 float *zMoment);
     bool incMirrorForceProfile();
     MirrorForceProfileRecord getMirrorForceProfileData();
 

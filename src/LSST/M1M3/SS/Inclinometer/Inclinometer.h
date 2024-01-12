@@ -24,10 +24,10 @@
 #ifndef INCLINOMETER_H_
 #define INCLINOMETER_H_
 
-#include <cRIO/DataTypes.h>
 #include <InclinometerSettings.h>
-#include <SupportFPGAData.h>
 #include <SafetyController.h>
+#include <SupportFPGAData.h>
+#include <cRIO/DataTypes.h>
 
 struct MTM1M3_inclinometerDataC;
 struct MTM1M3_logevent_inclinometerSensorWarningC;
@@ -46,7 +46,7 @@ public:
      * @param[in] fpgaData The fpga data.
      * @param[in] safetyController The safety controller.
      */
-    Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController);
+    Inclinometer(SupportFPGAData *fpgaData, SafetyController *safetyController);
 
     /*!
      * Processes currently available inclinometer data and publish it.
@@ -54,12 +54,12 @@ public:
     void processData();
 
 private:
-    SupportFPGAData* _fpgaData;
-    SafetyController* _safetyController;
-    InclinometerSettings* _inclinometerSettings;
+    SupportFPGAData *_fpgaData;
+    SafetyController *_safetyController;
+    InclinometerSettings *_inclinometerSettings;
 
-    MTM1M3_inclinometerDataC* _inclinometerData;
-    MTM1M3_logevent_inclinometerSensorWarningC* _inclinometerWarning;
+    MTM1M3_inclinometerDataC *_inclinometerData;
+    MTM1M3_logevent_inclinometerSensorWarningC *_inclinometerWarning;
 
     uint64_t _lastSampleTimestamp;
     uint64_t _lastErrorTimestamp;

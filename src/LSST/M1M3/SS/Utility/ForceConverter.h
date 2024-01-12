@@ -24,10 +24,10 @@
 #ifndef FORCECONVERTER_H_
 #define FORCECONVERTER_H_
 
+#include <DistributedForces.h>
+#include <ForcesAndMoments.h>
 #include <cRIO/DataTypes.h>
 #include <cmath>
-#include <ForcesAndMoments.h>
-#include <DistributedForces.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -38,36 +38,36 @@ class ForceActuatorSettings;
 
 class ForceConverter {
 public:
-    static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
-                                     float* yForce, float* zForce) {
+    static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float *xForce,
+                                     float *yForce, float *zForce) {
         *xForce = secondaryCylinder * _reciprocalSqrt2;
         *yForce = 0;
         *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
-    static void daaNegativeXToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
-                                     float* yForce, float* zForce) {
+    static void daaNegativeXToMirror(float primaryCylinder, float secondaryCylinder, float *xForce,
+                                     float *yForce, float *zForce) {
         *xForce = -secondaryCylinder * _reciprocalSqrt2;
         *yForce = 0;
         *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
-    static void daaPositiveYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
-                                     float* yForce, float* zForce) {
+    static void daaPositiveYToMirror(float primaryCylinder, float secondaryCylinder, float *xForce,
+                                     float *yForce, float *zForce) {
         *xForce = 0;
         *yForce = secondaryCylinder * _reciprocalSqrt2;
         *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
-    static void daaNegativeYToMirror(float primaryCylinder, float secondaryCylinder, float* xForce,
-                                     float* yForce, float* zForce) {
+    static void daaNegativeYToMirror(float primaryCylinder, float secondaryCylinder, float *xForce,
+                                     float *yForce, float *zForce) {
         *xForce = 0;
         *yForce = -secondaryCylinder * _reciprocalSqrt2;
         *zForce = secondaryCylinder * _reciprocalSqrt2 + primaryCylinder;
     }
 
-    static void saaToMirror(float primaryCylinder, float secondaryCylinder, float* xForce, float* yForce,
-                            float* zForce) {
+    static void saaToMirror(float primaryCylinder, float secondaryCylinder, float *xForce, float *yForce,
+                            float *zForce) {
         *xForce = 0;
         *yForce = 0;
         *zForce = primaryCylinder;

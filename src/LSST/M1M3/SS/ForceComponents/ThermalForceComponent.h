@@ -44,9 +44,9 @@ namespace SS {
  */
 class ThermalForceComponent : public ForceComponent {
 public:
-    ThermalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    ThermalForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
-    void applyThermalForces(float* x, float* y, float* z);
+    void applyThermalForces(float *x, float *y, float *z);
     void applyThermalForcesByMirrorTemperature(float temperature);
 
     void postEnableDisableActions() override;
@@ -55,12 +55,12 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController* _safetyController;
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    SafetyController *_safetyController;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_appliedThermalForcesC* _appliedThermalForces;
-    MTM1M3_logevent_preclippedThermalForcesC* _preclippedThermalForces;
+    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_appliedThermalForcesC *_appliedThermalForces;
+    MTM1M3_logevent_preclippedThermalForcesC *_preclippedThermalForces;
 };
 
 } /* namespace SS */

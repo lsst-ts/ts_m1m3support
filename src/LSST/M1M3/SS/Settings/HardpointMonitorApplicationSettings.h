@@ -43,7 +43,8 @@ public:
      * Source data. Contains monitor address. Populated in
      * HardpointMonitorApplicationSettings.cpp.
      *
-     * @snippet Settings/HardpointMonitorApplicationSettings.cpp HardpointMonitorTableRow initialization
+     * @snippet Settings/HardpointMonitorApplicationSettings.cpp
+     * HardpointMonitorTableRow initialization
      *
      * @see ForceActuatorTableRow
      */

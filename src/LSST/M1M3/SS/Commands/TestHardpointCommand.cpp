@@ -31,7 +31,7 @@
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-TestHardpointCommand::TestHardpointCommand(int32_t commandID, MTM1M3_command_testHardpointC* data)
+TestHardpointCommand::TestHardpointCommand(int32_t commandID, MTM1M3_command_testHardpointC *data)
         : Command(commandID) {
     _data.hardpointActuator = data->hardpointActuator;
 }
@@ -51,7 +51,7 @@ bool TestHardpointCommand::validate() {
 
 void TestHardpointCommand::execute() { Context::get().testHardpoint(this); }
 
-void TestHardpointCommand::ackInProgress(const char* description, double timeout) {
+void TestHardpointCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandtestHardpoint(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

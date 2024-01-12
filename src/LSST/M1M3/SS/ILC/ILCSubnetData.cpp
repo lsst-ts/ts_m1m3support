@@ -21,20 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ILCSubnetData.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
+#include <ILCSubnetData.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-                             HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-                             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings)
+ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+                             HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+                             HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings)
         : _forceActuatorApplicationSettings(forceActuatorApplicationSettings) {
     SPDLOG_DEBUG("ILCSubnetData::ILCSubnetData()");
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
@@ -122,7 +122,7 @@ ILCMap ILCSubnetData::getMap(int32_t actuatorId) {
 
 void ILCSubnetData::disableFA(int32_t actuatorId) {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container* container = &subnetData[subnetIndex];
+        Container *container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
             if (container->FAIndex[i].ActuatorId == actuatorId) {
                 container->FAIndex[i].Disabled = true;
@@ -137,7 +137,7 @@ void ILCSubnetData::disableFA(int32_t actuatorId) {
 
 void ILCSubnetData::enableFA(int32_t actuatorId) {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container* container = &subnetData[subnetIndex];
+        Container *container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
             if (container->FAIndex[i].ActuatorId == actuatorId) {
                 container->FAIndex[i].Disabled = false;
@@ -152,7 +152,7 @@ void ILCSubnetData::enableFA(int32_t actuatorId) {
 
 void ILCSubnetData::enableAllFA() {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container* container = &subnetData[subnetIndex];
+        Container *container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
             container->FAIndex[i].Disabled = false;
         }

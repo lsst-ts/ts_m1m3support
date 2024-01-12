@@ -34,7 +34,6 @@
 #include <ActiveOpticForceComponent.h>
 #include <AzimuthForceComponent.h>
 #include <BalanceForceComponent.h>
-#include <cRIO/DataTypes.h>
 #include <DistributedForces.h>
 #include <ElevationForceComponent.h>
 #include <FinalForceComponent.h>
@@ -48,6 +47,7 @@
 #include <StaticForceComponent.h>
 #include <ThermalForceComponent.h>
 #include <VelocityForceComponent.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -127,7 +127,7 @@ struct ForceActuatorIndicesNeighbors {
  */
 class ForceController {
 public:
-    ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    ForceController(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
     void reset();
 
@@ -136,7 +136,7 @@ public:
      *
      * @param tmaElevationData
      */
-    void updateTMAElevationData(MTMount_elevationC* tmaElevationData);
+    void updateTMAElevationData(MTMount_elevationC *tmaElevationData);
 
     /**
      * Tests following error on all actuaturs. Reports any violation into
@@ -166,11 +166,11 @@ public:
     bool applyAccelerationForces();
     void zeroAccelerationForces();
 
-    void applyActiveOpticForces(float* z);
+    void applyActiveOpticForces(float *z);
     void zeroActiveOpticForces();
 
     void applyAzimuthForces();
-    void updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData);
+    void updateTMAAzimuthForces(MTMount_azimuthC *tmaAzimuthData);
     void zeroAzimuthForces();
 
     bool applyBalanceForces();
@@ -195,7 +195,7 @@ public:
     void applyElevationForces();
     void zeroElevationForces();
 
-    void applyOffsetForces(float* x, float* y, float* z);
+    void applyOffsetForces(float *x, float *y, float *z);
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
     void zeroOffsetForces();
@@ -230,8 +230,8 @@ private:
 
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
-    SafetyController* _safetyController;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
+    SafetyController *_safetyController;
 
     AccelerationForceComponent _accelerationForceComponent;
     ActiveOpticForceComponent _activeOpticForceComponent;
@@ -244,18 +244,18 @@ private:
     VelocityForceComponent _velocityForceComponent;
     FinalForceComponent _finalForceComponent;
 
-    MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
-    MTM1M3_appliedForcesC* _appliedForces;
-    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_preclippedCylinderForcesC* _preclippedCylinderForces;
+    MTM1M3_appliedCylinderForcesC *_appliedCylinderForces;
+    MTM1M3_appliedForcesC *_appliedForces;
+    MTM1M3_logevent_forceActuatorStateC *_forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_logevent_preclippedCylinderForcesC *_preclippedCylinderForces;
 
-    MTM1M3_inclinometerDataC* _inclinometerData;
-    MTM1M3_pidDataC* _pidData;
-    MTM1M3_logevent_pidInfoC* _pidInfo;
-    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    MTM1M3_accelerometerDataC* _accelerometerData;
-    MTM1M3_gyroDataC* _gyroData;
+    MTM1M3_inclinometerDataC *_inclinometerData;
+    MTM1M3_pidDataC *_pidData;
+    MTM1M3_logevent_pidInfoC *_pidInfo;
+    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
+    MTM1M3_accelerometerDataC *_accelerometerData;
+    MTM1M3_gyroDataC *_gyroData;
 
     ForceActuatorIndicesNeighbors _neighbors[FA_COUNT];
 
@@ -287,14 +287,18 @@ private:
         }
 
         void execute(float limit, float fe) override {
-            SPDLOG_WARN("Violated {} follow-up error FA ID {} measured error {} ({}th occurence), limit +-{}",
-                        _axis, _faId, fe, _counter, limit);
+            SPDLOG_WARN(
+                    "Violated {} follow-up error FA ID {} measured error {} "
+                    "({}th occurence), limit +-{}",
+                    _axis, _faId, fe, _counter, limit);
         }
 
         void reset() override {
             if (_counter > 0) {
-                SPDLOG_INFO("FA ID {} axis {} following error is back into limits after {} failures", _faId,
-                            _axis, _counter);
+                SPDLOG_INFO(
+                        "FA ID {} axis {} following error is back into limits "
+                        "after {} failures",
+                        _faId, _axis, _counter);
                 _counter = 0;
             }
         }

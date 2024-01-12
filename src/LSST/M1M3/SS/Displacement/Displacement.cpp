@@ -38,7 +38,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Displacement::Displacement(SupportFPGAData* fpgaData, SafetyController* safetyController) {
+Displacement::Displacement(SupportFPGAData *fpgaData, SafetyController *safetyController) {
     SPDLOG_DEBUG("Displacement: Displacement()");
     _displacementSensorSettings = &DisplacementSensorSettings::instance();
     _fpgaData = fpgaData;
@@ -102,9 +102,10 @@ void Displacement::processData() {
     if (_fpgaData->DisplacementSampleTimestamp > _lastSampleTimestamp) {
         _lastSampleTimestamp = _fpgaData->DisplacementSampleTimestamp;
         _imsData->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementSampleTimestamp);
-        // We need to swap the direction of the IMS reading, note sensor 5 and 7 are mounted opposite
-        // We also need to convert the raw sensor values to millimeters
-        double* NOffsets = _displacementSensorSettings->NOffsets.data();
+        // We need to swap the direction of the IMS reading, note sensor 5 and 7 are
+        // mounted opposite We also need to convert the raw sensor values to
+        // millimeters
+        double *NOffsets = _displacementSensorSettings->NOffsets.data();
         _imsData->rawSensorData[0] = 50.0 - ((_fpgaData->DisplacementRaw1 + NOffsets[0]) / 10000.0);
         _imsData->rawSensorData[1] = 50.0 - ((_fpgaData->DisplacementRaw2 + NOffsets[1]) / 10000.0);
         _imsData->rawSensorData[2] = 50.0 - ((_fpgaData->DisplacementRaw3 + NOffsets[2]) / 10000.0);
@@ -114,7 +115,7 @@ void Displacement::processData() {
         _imsData->rawSensorData[6] = 50.0 - ((_fpgaData->DisplacementRaw7 + NOffsets[6]) / 10000.0);
         _imsData->rawSensorData[7] =
                 ((_fpgaData->DisplacementRaw8 + _displacementSensorSettings->NOffsets[7]) / 10000.0);
-        int32_t* ports = _displacementSensorSettings->NPorts.data();
+        int32_t *ports = _displacementSensorSettings->NPorts.data();
         _imsData->xPosition =
                 (_displacementSensorSettings->ConverterMatrix[0] * _imsData->rawSensorData[ports[0]] +
                  _displacementSensorSettings->ConverterMatrix[1] * _imsData->rawSensorData[ports[1]] +

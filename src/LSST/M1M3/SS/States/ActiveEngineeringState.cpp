@@ -48,33 +48,33 @@
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
 #include <TranslateM1M3Command.h>
-#include <TurnPowerOnCommand.h>
 #include <TurnPowerOffCommand.h>
+#include <TurnPowerOnCommand.h>
 #include <UpdatePIDCommand.h>
 
 using namespace LSST::M1M3::SS;
 
 ActiveEngineeringState::ActiveEngineeringState() : EnabledState("ActiveEngineeringState") {}
 
-States::Type ActiveEngineeringState::update(UpdateCommand* command) {
+States::Type ActiveEngineeringState::update(UpdateCommand *command) {
     SPDLOG_TRACE("ActiveEngineeringState: update()");
     EngineeringState::sendTelemetry();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::setSlewFlag(SetSlewFlagCommand* command) {
+States::Type ActiveEngineeringState::setSlewFlag(SetSlewFlagCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: setSlewFlag()");
     Model::instance().getSlewController()->enterSlew();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::clearSlewFlag(ClearSlewFlagCommand* command) {
+States::Type ActiveEngineeringState::clearSlewFlag(ClearSlewFlagCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: clearSlewFlag()");
     Model::instance().getSlewController()->exitSlew();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* command) {
+States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: exitEngineering()");
     Model::instance().getForceController()->resetPIDs();
     DigitalInputOutput::instance().turnAirOn();
@@ -89,12 +89,12 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand* com
     return Model::instance().getSafetyController()->checkSafety(States::ActiveState);
 }
 
-States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command* command) {
+States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command *command) {
     BoosterValveStatus::instance().setUserTriggered(false);
     return EnabledActiveState::lowerM1M3(command);
 }
 
-States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command) {
+States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command *command) {
     SPDLOG_INFO("ActiveEngineeringState: translateM1M3()");
     if (!Model::instance().getPositionController()->translate(
                 command->getData()->xTranslation, command->getData()->yTranslation,
@@ -102,12 +102,13 @@ States::Type ActiveEngineeringState::translateM1M3(TranslateM1M3Command* command
                 command->getData()->yRotation, command->getData()->zRotation)) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "TranslateM1M3",
-                "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+                "At least one hardpoint actuator commanded to move is "
+                "already MOVING or CHASING.");
     }
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command) {
+States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command *command) {
     SPDLOG_INFO("ActiveEngineeringState: positionM1M3()");
     if (!Model::instance().getPositionController()->moveToAbsolute(
                 command->getData()->xPosition, command->getData()->yPosition, command->getData()->zPosition,
@@ -115,12 +116,13 @@ States::Type ActiveEngineeringState::positionM1M3(PositionM1M3Command* command) 
                 command->getData()->zRotation)) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "PositionM1M3",
-                "At least one hardpoint actuator commanded to move is already MOVING or CHASING.");
+                "At least one hardpoint actuator commanded to move is "
+                "already MOVING or CHASING.");
     }
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::runMirrorForceProfile(RunMirrorForceProfileCommand* command) {
+States::Type ActiveEngineeringState::runMirrorForceProfile(RunMirrorForceProfileCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: runMirrorForceProfile()");
     Model::instance().getProfileController()->setupMirrorForceProfile(
             command->getData()->xForce, command->getData()->yForce, command->getData()->zForce,
@@ -128,7 +130,7 @@ States::Type ActiveEngineeringState::runMirrorForceProfile(RunMirrorForceProfile
     return Model::instance().getSafetyController()->checkSafety(States::ProfileHardpointCorrectionState);
 }
 
-States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand* command) {
+States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: updatePID()");
     auto data = command->getData();
     PIDParameters parameters(data->timestep, data->p, data->i, data->d, data->n);
@@ -136,14 +138,14 @@ States::Type ActiveEngineeringState::updatePID(UpdatePIDCommand* command) {
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveEngineeringState::resetPID(ResetPIDCommand* command) {
+States::Type ActiveEngineeringState::resetPID(ResetPIDCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: resetPID()");
     Model::instance().getForceController()->resetPID(command->getData()->pid - 1);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
 States::Type ActiveEngineeringState::enableDisableForceComponent(
-        EnableDisableForceComponentCommand* command) {
+        EnableDisableForceComponentCommand *command) {
     SPDLOG_INFO("EnableDisableForceComponentCommand forceComponent {}, enable {}",
                 command->getData()->forceComponent, command->getData()->enable ? "true" : "false");
     Model::instance().getForceController()->enableDisableForceComponent(command->getData()->forceComponent,

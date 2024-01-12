@@ -41,7 +41,7 @@ public:
     void stop();
 
 private:
-    void _enqueueCommandIfAvailable(Command* command);
+    void _enqueueCommandIfAvailable(Command *command);
 
     bool _keepRunning;
 };

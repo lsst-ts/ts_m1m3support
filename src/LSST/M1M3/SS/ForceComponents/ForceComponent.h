@@ -26,8 +26,8 @@
 
 #include <string>
 
-#include <cRIO/DataTypes.h>
 #include <ForceComponentSettings.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -115,7 +115,8 @@ public:
     void enable();
 
     /**
-     * Disable the force component. Starts to gradually scales force contribution to
+     * Disable the force component. Starts to gradually scales force contribution
+     * to
      */
     void disable();
 

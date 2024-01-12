@@ -26,8 +26,8 @@
 
 #include <LimitTrigger.h>
 
-#include <spdlog/spdlog.h>
 #include <spdlog/fmt/fmt.h>
+#include <spdlog/spdlog.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -59,7 +59,7 @@ public:
     }
 
     template <typename T>
-    static bool InRangeAndCoerce(T min, T max, T value, T* output) {
+    static bool InRangeAndCoerce(T min, T max, T value, T *output) {
         if (Range::InRange(min, max, value)) {
             (*output) = value;
             return true;
@@ -84,7 +84,7 @@ public:
      * @return true if value >= min and value <= max
      */
     template <typename T, typename... TArgs>
-    static bool InRangeTrigger(T min, T max, T value, LimitTrigger<TArgs...>& limitTrigger, TArgs... lArgs) {
+    static bool InRangeTrigger(T min, T max, T value, LimitTrigger<TArgs...> &limitTrigger, TArgs... lArgs) {
         bool inRange = InRange(min, max, value);
         if (inRange == false) {
             limitTrigger.check(lArgs...);

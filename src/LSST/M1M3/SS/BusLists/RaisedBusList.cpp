@@ -28,15 +28,15 @@
 #include <SAL_MTM1M3C.h>
 
 #include <BoosterValveStatus.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
 #include <M1M3SSPublisher.h>
 #include <RaisedBusList.h>
 #include <RoundRobin.h>
 
 using namespace LSST::M1M3::SS;
 
-RaisedBusList::RaisedBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
+RaisedBusList::RaisedBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("RaisedBusList: RaisedBusList()");
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
@@ -114,8 +114,9 @@ void RaisedBusList::buildBuffer() {
             for (int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
                 uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
                 int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-                // Steps are swapped because negative steps extend and positive steps retract
-                // This doesn't match what most people would expect so we are swapping it
+                // Steps are swapped because negative steps extend and positive steps
+                // retract This doesn't match what most people would expect so we are
+                // swapping it
                 steps[address - 1] = -_hardpointActuatorData->stepsCommanded[dataIndex];
             }
             this->ilcMessageFactory->broadcastStepMotor(&this->buffer, _outerLoopData->broadcastCounter,
@@ -214,8 +215,9 @@ void RaisedBusList::update() {
             for (int hpIndex = 0; hpIndex < this->subnetData->getHPCount(subnetIndex); hpIndex++) {
                 uint8_t address = this->subnetData->getHPIndex(subnetIndex, hpIndex).Address;
                 int32_t dataIndex = this->subnetData->getHPIndex(subnetIndex, hpIndex).DataIndex;
-                // Steps are swapped because negative steps extend and positive steps retract
-                // This doesn't match what most people would expect so we are swapping it
+                // Steps are swapped because negative steps extend and positive steps
+                // retract This doesn't match what most people would expect so we are
+                // swapping it
                 steps[address - 1] = -_hardpointActuatorData->stepsCommanded[dataIndex];
             }
             this->buffer.setIndex(_moveStepCommandIndex[subnetIndex]);

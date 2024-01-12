@@ -21,10 +21,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <ForceController.h>
 #include <LoweringFaultState.h>
 #include <Model.h>
 #include <PowerController.h>
-#include <ForceController.h>
 #include <spdlog/spdlog.h>
 
 namespace LSST {
@@ -33,7 +33,7 @@ namespace SS {
 
 LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
 
-States::Type LoweringFaultState::update(UpdateCommand* command) {
+States::Type LoweringFaultState::update(UpdateCommand *command) {
     SPDLOG_TRACE("LoweringFaultState: update()");
     ensureFaulted();
     FaultState::update(command);

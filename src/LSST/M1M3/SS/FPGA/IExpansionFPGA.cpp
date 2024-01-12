@@ -31,7 +31,7 @@
 
 using namespace LSST::M1M3::SS;
 
-IExpansionFPGA& IExpansionFPGA::get() {
+IExpansionFPGA &IExpansionFPGA::get() {
 #ifdef SIMULATOR
     static SimulatedExpansionFPGA sexpansionfpga;
     return sexpansionfpga;

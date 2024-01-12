@@ -22,8 +22,8 @@
  */
 
 #include <ForceComponent.h>
-#include <cstring>
 #include <cmath>
+#include <cstring>
 #include <spdlog/spdlog.h>
 
 namespace LSST {

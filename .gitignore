@@ -43,3 +43,4 @@ ospl-info.log
 .isort.cfg
 .mypy.ini
 .ruff.toml
+towncrier.toml

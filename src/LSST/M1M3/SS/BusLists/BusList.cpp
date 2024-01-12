@@ -28,7 +28,7 @@
 
 using namespace LSST::M1M3::SS;
 
-BusList::BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory) {
+BusList::BusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory) {
     this->subnetData = subnetData;
     this->ilcMessageFactory = ilcMessageFactory;
 }

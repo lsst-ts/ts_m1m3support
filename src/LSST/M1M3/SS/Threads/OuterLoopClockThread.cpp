@@ -37,24 +37,22 @@ using namespace LSST::M1M3::SS;
 OuterLoopClockThread::OuterLoopClockThread() { _keepRunning = true; }
 
 void OuterLoopClockThread::run() {
-  SPDLOG_INFO("OuterLoopClockThread: Start");
-  while (_keepRunning) {
-    try {
-      IFPGA::get().waitForOuterLoopClock(1000);
-    } catch (std::runtime_error &er) {
-      SPDLOG_WARN(
-          "OuterLoopClockThread: Failed to receive outer loop clock: {}",
-          er.what());
-    }
+    SPDLOG_INFO("OuterLoopClockThread: Start");
+    while (_keepRunning) {
+        try {
+            IFPGA::get().waitForOuterLoopClock(25);
+        } catch (std::runtime_error &er) {
+            SPDLOG_WARN("OuterLoopClockThread: Failed to receive outer loop clock: {}", er.what());
+        }
 
-    if (_keepRunning) {
-      ControllerThread::get().enqueue(new UpdateCommand(&_updateMutex));
+        if (_keepRunning) {
+            ControllerThread::get().enqueue(new UpdateCommand(&_updateMutex));
+        }
+        _updateMutex.lock();
+        _updateMutex.unlock();
+        IFPGA::get().ackOuterLoopClock();
     }
-    _updateMutex.lock();
-    _updateMutex.unlock();
-    IFPGA::get().ackOuterLoopClock();
-  }
-  SPDLOG_INFO("OuterLoopClockThread: Completed");
+    SPDLOG_INFO("OuterLoopClockThread: Completed");
 }
 
 void OuterLoopClockThread::stop() { _keepRunning = false; }
