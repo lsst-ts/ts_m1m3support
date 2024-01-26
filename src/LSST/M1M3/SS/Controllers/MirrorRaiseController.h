@@ -24,10 +24,10 @@
 #ifndef MIRRORRAISECONTROLLER_H_
 #define MIRRORRAISECONTROLLER_H_
 
-#include <PositionController.h>
 #include <ForceController.h>
-#include <SafetyController.h>
+#include <PositionController.h>
 #include <PowerController.h>
+#include <SafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -57,8 +57,8 @@ public:
      * @param safetyController
      * @param powerController
      */
-    MirrorRaiseController(PositionController* positionController, ForceController* forceController,
-                          SafetyController* safetyController, PowerController* powerController);
+    MirrorRaiseController(PositionController *positionController, ForceController *forceController,
+                          SafetyController *safetyController, PowerController *powerController);
 
     /**
      * Starts mirror raising. Should be called once
@@ -75,10 +75,10 @@ public:
     void resumeM1M3Raising();
 
 private:
-    PositionController* _positionController;
-    ForceController* _forceController;
-    SafetyController* _safetyController;
-    PowerController* _powerController;
+    PositionController *_positionController;
+    ForceController *_forceController;
+    SafetyController *_safetyController;
+    PowerController *_powerController;
 
     // time spend in paused state doesn't count to timeout
     double _cachedStartTime;

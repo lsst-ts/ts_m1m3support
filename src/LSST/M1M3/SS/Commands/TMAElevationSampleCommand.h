@@ -35,9 +35,9 @@ namespace SS {
 
 class TMAElevationSampleCommand : public Command {
 public:
-    TMAElevationSampleCommand(MTMount_elevationC* data);
+    TMAElevationSampleCommand(MTMount_elevationC *data);
 
-    MTMount_elevationC* getData() { return &_data; }
+    MTMount_elevationC *getData() { return &_data; }
 
     void execute();
 

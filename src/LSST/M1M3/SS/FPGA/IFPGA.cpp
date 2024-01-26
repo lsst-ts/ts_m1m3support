@@ -21,9 +21,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <NiFpga.h>
-#include <IFPGA.h>
 #include <FPGAAddresses.h>
+#include <IFPGA.h>
+#include <NiFpga.h>
 
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>
@@ -35,7 +35,7 @@
 
 using namespace LSST::M1M3::SS;
 
-IFPGA& IFPGA::get() {
+IFPGA &IFPGA::get() {
 #ifdef SIMULATOR
     static SimulatedFPGA simulatedfpga;
     return simulatedfpga;

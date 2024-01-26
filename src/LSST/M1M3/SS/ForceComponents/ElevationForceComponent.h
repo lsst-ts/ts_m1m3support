@@ -26,8 +26,8 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceComponent.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <ForceComponent.h>
 #include <SafetyController.h>
 
 namespace LSST {
@@ -36,9 +36,9 @@ namespace SS {
 
 class ElevationForceComponent : public ForceComponent {
 public:
-    ElevationForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    ElevationForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
-    void applyElevationForces(float* x, float* y, float* z);
+    void applyElevationForces(float *x, float *y, float *z);
 
     /**
      * Calculate offset forces from current telescope elevation.
@@ -53,12 +53,12 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController* _safetyController;
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    SafetyController *_safetyController;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_appliedElevationForcesC* _appliedElevationForces;
-    MTM1M3_logevent_preclippedElevationForcesC* _preclippedElevationForces;
+    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_appliedElevationForcesC *_appliedElevationForces;
+    MTM1M3_logevent_preclippedElevationForcesC *_preclippedElevationForces;
 };
 
 } /* namespace SS */

@@ -23,9 +23,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <memory>
 #include <cmath>
 #include <iostream>
+#include <memory>
 
 #include <SAL_MTM1M3.h>
 

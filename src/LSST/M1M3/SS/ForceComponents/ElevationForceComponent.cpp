@@ -31,14 +31,14 @@
 #include <ForcesAndMoments.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
-#include <SafetyController.h>
-#include <Range.h>
 #include <RaisingLoweringInfo.h>
+#include <Range.h>
+#include <SafetyController.h>
 
 using namespace LSST::M1M3::SS;
 
 ElevationForceComponent::ElevationForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Elevation", &ForceActuatorSettings::instance().ElevationComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -47,12 +47,13 @@ ElevationForceComponent::ElevationForceComponent(
     _preclippedElevationForces = M1M3SSPublisher::instance().getEventPreclippedElevationForces();
 }
 
-void ElevationForceComponent::applyElevationForces(float* x, float* y, float* z) {
+void ElevationForceComponent::applyElevationForces(float *x, float *y, float *z) {
     SPDLOG_TRACE("ElevationForceComponent: applyElevationForces()");
 
     if (!isEnabled()) {
         SPDLOG_ERROR(
-                "ElevationForceComponent: applyElevationForces() called when the component is not "
+                "ElevationForceComponent: applyElevationForces() called when "
+                "the component is not "
                 "applied");
         return;
     }

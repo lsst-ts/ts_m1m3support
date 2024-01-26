@@ -21,15 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PowerSupplyStatus.h>
 #include <M1M3SSPublisher.h>
+#include <PowerSupplyStatus.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
 PowerSupplyStatus::PowerSupplyStatus() {
-    // power supply status uses only 24 bits, as topmost 8 channels aren't connected
+    // power supply status uses only 24 bits, as topmost 8 channels aren't
+    // connected
     lastStatus = 0xFFFFFFFF;
 }
 

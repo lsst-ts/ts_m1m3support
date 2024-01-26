@@ -32,8 +32,8 @@
 #include <GyroSettings.h>
 #include <IFPGA.h>
 #include <M1M3SSPublisher.h>
-#include <Timestamp.h>
 #include <SupportFPGAData.h>
+#include <Timestamp.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -113,7 +113,7 @@ void Gyro::processData() {
     // TODO: Handle limits, push to safety controller
     SPDLOG_TRACE("Gyro: processData()");
     bool tryLogWarning = false;
-    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
     if (fpgaData->GyroErrorTimestamp > _lastErrorTimestamp) {
         _lastErrorTimestamp = fpgaData->GyroErrorTimestamp;
         _errorCleared = false;

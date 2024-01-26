@@ -36,11 +36,11 @@ namespace SS {
  */
 class EnabledActiveState : public virtual EnabledState {
 public:
-    States::Type lowerM1M3(LowerM1M3Command* command) override;
-    States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) override;
-    States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command) override;
-    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) override;
-    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) override;
+    States::Type lowerM1M3(LowerM1M3Command *command) override;
+    States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand *command) override;
+    States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand *command) override;
+    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand *command) override;
+    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand *command) override;
 
 protected:
     virtual States::Type getLoweringState() = 0;

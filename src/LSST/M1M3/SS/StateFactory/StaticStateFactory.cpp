@@ -49,12 +49,12 @@ StaticStateFactory::StaticStateFactory()
     SPDLOG_DEBUG("StaticStateFactory: StaticStateFactor()");
 }
 
-StaticStateFactory& StaticStateFactory::get() {
+StaticStateFactory &StaticStateFactory::get() {
     static StaticStateFactory stateFactory;
     return stateFactory;
 }
 
-State* StaticStateFactory::create(States::Type state) {
+State *StaticStateFactory::create(States::Type state) {
     switch (state) {
         case States::OfflineState:
             return &_offlineState;

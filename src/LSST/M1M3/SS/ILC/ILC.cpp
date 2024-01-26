@@ -30,33 +30,33 @@
 #include <SAL_MTM1M3C.h>
 
 #include <BusList.h>
-#include <cRIO/DataTypes.h>
+#include <FPGAAddresses.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
 #include <ForceActuatorFollowingErrorCounter.h>
 #include <ForceActuatorForceWarning.h>
 #include <ForceActuatorInfo.h>
 #include <ForceActuatorSettings.h>
-#include <FPGAAddresses.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointActuatorSettings.h>
+#include <IFPGA.h>
 #include <ILC.h>
 #include <ILCApplicationSettings.h>
-#include <IFPGA.h>
 #include <M1M3SSPublisher.h>
 #include <PositionController.h>
 #include <RoundRobin.h>
 #include <Timestamp.h>
+#include <cRIO/DataTypes.h>
 
 #define ADDRESS_COUNT 256
 
 using namespace LSST::M1M3::SS;
 
-ILC::ILC(PositionController* positionController,
-         ForceActuatorApplicationSettings* forceActuatorApplicationSettings,
-         HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
-         HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
-         SafetyController* safetyController)
+ILC::ILC(PositionController *positionController,
+         ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+         HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+         HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
+         SafetyController *safetyController)
         : _subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings,
                       hardpointMonitorApplicationSettings),
           _ilcMessageFactory(),
@@ -360,7 +360,7 @@ void ILC::calculateHPPostion() {
 
 void ILC::calculateHPMirrorForces() {
     std::vector<float> m = ForceActuatorSettings::instance().HardpointForceMomentTable;
-    float* force = _hardpointActuatorData->measuredForce;
+    float *force = _hardpointActuatorData->measuredForce;
     _hardpointActuatorData->fx = m[0] * force[0] + m[1] * force[1] + m[2] * force[2] + m[3] * force[3] +
                                  m[4] * force[4] + m[5] * force[5];
     _hardpointActuatorData->fy = m[6] * force[0] + m[7] * force[1] + m[8] * force[2] + m[9] * force[3] +
@@ -499,7 +499,7 @@ uint8_t ILC::_subnetToTxAddress(uint8_t subnet) {
     }
 }
 
-void ILC::_writeBusList(BusList* busList) {
+void ILC::_writeBusList(BusList *busList) {
     IFPGA::get().writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
     _responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(),
                                          busList->getExpectedHMResponses());

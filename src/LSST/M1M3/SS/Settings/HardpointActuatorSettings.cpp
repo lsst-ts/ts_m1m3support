@@ -49,9 +49,10 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
         auto _hpIntSettings = [doc](int32_t *data, const char *field) {
             std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t>>();
             if (dataVec.size() != HP_COUNT) {
-                throw std::runtime_error(fmt::format(
-                        "Invalid {} field in HardpointActuatorSettings, expected {}, found {} integers",
-                        field, HP_COUNT, dataVec.size()));
+                throw std::runtime_error(
+                        fmt::format("Invalid {} field in HardpointActuatorSettings, "
+                                    "expected {}, found {} integers",
+                                    field, HP_COUNT, dataVec.size()));
             }
             for (int i = 0; i < HP_COUNT; i++) {
                 data[i] = dataVec[i];
@@ -128,7 +129,8 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
 
         if (inRangeReadoutsToChaseFromWaitingTension <= 0) {
             throw std::runtime_error(
-                    fmt::format("InRangeReadoutsToChaseFromWaitingTension must be positive number, is {}",
+                    fmt::format("InRangeReadoutsToChaseFromWaitingTension must be "
+                                "positive number, is {}",
                                 inRangeReadoutsToChaseFromWaitingTension));
         }
 
@@ -137,19 +139,22 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
         airPressureFaultLowRaising = doc["AirPressureFaultLowRaising"].as<float>();
 
         if (airPressureFaultHigh <= airPressureFaultLow) {
-            throw std::runtime_error(fmt::format(
-                    "AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLow ({:.2f})",
-                    airPressureFaultHigh, airPressureFaultLow));
+            throw std::runtime_error(
+                    fmt::format("AirPressureFaultHigh ({:.2f}) is lower or equal "
+                                "AirPressureFaultLow ({:.2f})",
+                                airPressureFaultHigh, airPressureFaultLow));
         }
         if (airPressureFaultHigh <= airPressureFaultLowRaising) {
-            throw std::runtime_error(fmt::format(
-                    "AirPressureFaultHigh ({:.2f}) is lower or equal AirPressureFaultLowRaising ({:.2f})",
-                    airPressureFaultHigh, airPressureFaultLowRaising));
+            throw std::runtime_error(
+                    fmt::format("AirPressureFaultHigh ({:.2f}) is lower or equal "
+                                "AirPressureFaultLowRaising ({:.2f})",
+                                airPressureFaultHigh, airPressureFaultLowRaising));
         }
         for (int i = 0; i < HP_COUNT; i++) {
             if (lowProximityEncoder[i] >= highProximityEncoder[i]) {
                 throw std::runtime_error(
-                        fmt::format("HardpointActuatorSettings LowProximity isn't smaller than HighProximity "
+                        fmt::format("HardpointActuatorSettings LowProximity isn't smaller "
+                                    "than HighProximity "
                                     "for hardpoint {}",
                                     i + 1));
             }

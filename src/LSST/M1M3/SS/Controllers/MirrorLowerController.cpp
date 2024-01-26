@@ -33,10 +33,10 @@
 
 using namespace LSST::M1M3::SS;
 
-MirrorLowerController::MirrorLowerController(PositionController* positionController,
-                                             ForceController* forceController,
-                                             SafetyController* safetyController,
-                                             PowerController* powerController) {
+MirrorLowerController::MirrorLowerController(PositionController *positionController,
+                                             ForceController *forceController,
+                                             SafetyController *safetyController,
+                                             PowerController *powerController) {
     SPDLOG_DEBUG("MirrorLowerController: MirrorLowerController()");
     _positionController = positionController;
     _forceController = forceController;
@@ -90,12 +90,14 @@ void MirrorLowerController::runLoop() {
             _positionController->enableChaseAll();
         }
     } else if (RaisingLoweringInfo::instance().supportPercentageZeroed() == false) {
-        // We are still in the process of transfering the support force from the static supports
-        // to the force actuators
-        // TODO: Does it matter if the following error is bad when we are trying to lower the mirror?
+        // We are still in the process of transfering the support force from the
+        // static supports to the force actuators
+        // TODO: Does it matter if the following error is bad when we are trying to
+        // lower the mirror?
         if (_positionController->hpRaiseLowerForcesInTolerance(false)) {
-            // The forces on the hardpoints are within tolerance, we can continue to transfer the
-            // support force from the static supports to the force actuators
+            // The forces on the hardpoints are within tolerance, we can continue to
+            // transfer the support force from the static supports to the force
+            // actuators
             RaisingLoweringInfo::instance().decSupportPercentage();
         }
     }
@@ -109,10 +111,10 @@ bool MirrorLowerController::checkComplete() {
 
 void MirrorLowerController::complete() {
     SPDLOG_INFO("MirrorLowerController: complete()");
-    // All of the support force has been transfered from the static supports to the
-    // force actuators, stop the hardpoints from chasing
-    // Transition to the end state (parked or parked engineering) if all of the support
-    // force has been transfered from the force actuators to the static supports
+    // All of the support force has been transfered from the static supports to
+    // the force actuators, stop the hardpoints from chasing Transition to the end
+    // state (parked or parked engineering) if all of the support force has been
+    // transfered from the force actuators to the static supports
     _positionController->disableChaseAll();
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();

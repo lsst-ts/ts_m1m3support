@@ -39,7 +39,7 @@ namespace M1M3 {
 namespace SS {
 
 AzimuthForceComponent::AzimuthForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Azimuth", &ForceActuatorSettings::instance().AzimuthComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -48,13 +48,14 @@ AzimuthForceComponent::AzimuthForceComponent(
     _preclippedAzimuthForces = M1M3SSPublisher::instance().getEventPreclippedAzimuthForces();
 }
 
-void AzimuthForceComponent::applyAzimuthForces(float* x, float* y, float* z) {
+void AzimuthForceComponent::applyAzimuthForces(float *x, float *y, float *z) {
     SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForces()");
 
     if (!isEnabled()) {
         using namespace std::chrono_literals;
         TG_LOG_ERROR(5s,
-                     "AzimuthForceComponent: applyAzimuthForces() called when the component is not applied");
+                     "AzimuthForceComponent: applyAzimuthForces() called when "
+                     "the component is not applied");
         return;
     }
 

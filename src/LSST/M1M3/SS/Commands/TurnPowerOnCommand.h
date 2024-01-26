@@ -34,13 +34,13 @@ namespace SS {
 
 class TurnPowerOnCommand : public Command {
 public:
-    TurnPowerOnCommand(int32_t commandID, MTM1M3_command_turnPowerOnC* data);
+    TurnPowerOnCommand(int32_t commandID, MTM1M3_command_turnPowerOnC *data);
 
-    MTM1M3_command_turnPowerOnC* getData() { return &_data; }
+    MTM1M3_command_turnPowerOnC *getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
+    void ackInProgress(const char *description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

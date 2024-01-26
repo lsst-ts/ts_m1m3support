@@ -30,8 +30,8 @@ namespace SS {
 
 ProfileController::ProfileController() { SPDLOG_DEBUG("ProfileController: ProfileController()"); }
 
-void ProfileController::setupMirrorForceProfile(float* xForce, float* yForce, float* zForce, float* xMoment,
-                                                float* yMoment, float* zMoment) {
+void ProfileController::setupMirrorForceProfile(float *xForce, float *yForce, float *zForce, float *xMoment,
+                                                float *yMoment, float *zMoment) {
     SPDLOG_INFO("ProfileController: setupMirrorForceProfile()");
     _mirrorForceProfile.Index = 0;
     for (int i = 0; i < 1000; ++i) {

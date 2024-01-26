@@ -23,10 +23,10 @@
 
 #include <spdlog/spdlog.h>
 
+#include <ForceController.h>
 #include <HardpointActuatorMotionStates.h>
 #include <HardpointActuatorWarning.h>
 #include <HardpointTestController.h>
-#include <ForceController.h>
 #include <Model.h>
 #include <Publisher.h>
 #include <SettingReader.h>

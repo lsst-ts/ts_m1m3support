@@ -21,16 +21,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <cmath>
 
 #include <ForceActuatorSettings.h>
 #include <ForceController.h>
 #include <Model.h>
+#include <RaisingLoweringInfo.h>
 #include <SettingReader.h>
 #include <StateTypes.h>
-#include <RaisingLoweringInfo.h>
 
 #include <SAL_MTM1M3.h>
 

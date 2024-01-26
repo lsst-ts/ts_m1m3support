@@ -21,17 +21,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <RaisingState.h>
 #include <Model.h>
-#include <SafetyController.h>
 #include <ModelPublisher.h>
+#include <RaisingState.h>
+#include <SafetyController.h>
 #include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
 RaisingState::RaisingState() : EnabledState("RaisingState") {}
 
-States::Type RaisingState::update(UpdateCommand* command) {
+States::Type RaisingState::update(UpdateCommand *command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("RaisingState: update()");
     Model::instance().getMirrorRaiseController()->runLoop();
@@ -40,13 +40,13 @@ States::Type RaisingState::update(UpdateCommand* command) {
                                                                                  : States::NoStateTransition);
 }
 
-States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
+States::Type RaisingState::abortRaiseM1M3(AbortRaiseM1M3Command *command) {
     SPDLOG_INFO("RaisingState: abortRaiseM1M3()");
     Model::instance().getMirrorLowerController()->abortRaiseM1M3();
     return Model::instance().getSafetyController()->checkSafety(States::LoweringState);
 }
 
-States::Type RaisingState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
+States::Type RaisingState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand *command) {
     SPDLOG_INFO("Pausing M1M3 raising");
     Model::instance().getMirrorRaiseController()->pauseM1M3Raising();
     return Model::instance().getSafetyController()->checkSafety(States::PausedRaisingState);

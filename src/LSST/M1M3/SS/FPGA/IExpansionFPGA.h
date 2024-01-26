@@ -45,7 +45,7 @@ public:
     IExpansionFPGA() {}
     virtual ~IExpansionFPGA() {}
 
-    static IExpansionFPGA& get();
+    static IExpansionFPGA &get();
 
     void setResource(bool enabled, std::string resource) {
         _disabled = !enabled;
@@ -105,7 +105,7 @@ public:
      *
      * @throw NiError on NI error
      */
-    virtual void readSlot1(float* data) = 0;
+    virtual void readSlot1(float *data) = 0;
 
     /**
      * Reads 32 bitfield of DIO status. The reported values are:
@@ -119,7 +119,8 @@ public:
      * 7. DC power network B redundancy module status
      * 8. DC power network C redundancy module status
      * 9. DC power network D redundancy module status
-     * 10. DC power network controllers redundancy module status DC network A power supply 1 status
+     * 10. DC power network controllers redundancy module status DC network A
+     * power supply 1 status
      * 11. DC network A power supply 2 status
      * 12. DC network B power supply 3 status
      * 13. DC network B power supply 4 status
@@ -127,21 +128,22 @@ public:
      * 15. DC network C power supply 6 status
      * 16. DC network D power supply 7 status
      * 17. DC network D power supply 8 status
-     * 18. DC network controllers power supply 9 status DC network LED lights power supply 11 status
+     * 18. DC network controllers power supply 9 status DC network LED lights
+     * power supply 11 status
      * 19. DC network external control power supply 12 status
      * 20. DC network laser tracker power supply 13 status
      *
      * @throw NiError on NI error
      */
-    virtual void readSlot2(uint32_t* data) = 0;
+    virtual void readSlot2(uint32_t *data) = 0;
 
 protected:
     bool _disabled;
     std::string _fpga_resource;
 
 private:
-    IExpansionFPGA& operator=(const IExpansionFPGA&) = delete;
-    IExpansionFPGA(const IExpansionFPGA&) = delete;
+    IExpansionFPGA &operator=(const IExpansionFPGA &) = delete;
+    IExpansionFPGA(const IExpansionFPGA &) = delete;
 };
 
 } /* namespace SS */

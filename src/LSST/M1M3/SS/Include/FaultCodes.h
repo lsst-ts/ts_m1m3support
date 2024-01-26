@@ -165,7 +165,8 @@ struct FaultCodes {
         HardpointActuatorFollowingError = _MASK_HARDPOINT | 0x09,
 
         /**
-         * Triggered when hardpoint cannot reach given encoder position during FinePositioning.
+         * Triggered when hardpoint cannot reach given encoder position during
+         * FinePositioning.
          */
         HardpointUnstableError = _MASK_HARDPOINT | 0x0A,
 

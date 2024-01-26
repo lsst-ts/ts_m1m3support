@@ -39,7 +39,7 @@ namespace M1M3 {
 namespace SS {
 
 BalanceForceComponent::BalanceForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Balance", &ForceActuatorSettings::instance().BalanceComponentSettings),
           _fx(0, SettingReader::instance().getPIDSettings(false).getParameters(0)),
           _fy(1, SettingReader::instance().getPIDSettings(false).getParameters(1)),
@@ -54,11 +54,13 @@ BalanceForceComponent::BalanceForceComponent(
     _preclippedBalanceForces = M1M3SSPublisher::instance().getEventPreclippedBalanceForces();
 }
 
-void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z, bool check) {
+void BalanceForceComponent::applyBalanceForces(float *x, float *y, float *z, bool check) {
     SPDLOG_TRACE("BalanceForceComponent: applyBalanceForces()");
 
     if (check && !isEnabled()) {
-        SPDLOG_ERROR("BalanceForceComponent: applyBalanceForces() called when the component is not applied");
+        SPDLOG_ERROR(
+                "BalanceForceComponent: applyBalanceForces() called when the "
+                "component is not applied");
         return;
     }
 
@@ -78,7 +80,8 @@ void BalanceForceComponent::applyBalanceForces(float* x, float* y, float* z, boo
 void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float yForce, float zForce,
                                                              float xMoment, float yMoment, float zMoment) {
     SPDLOG_TRACE(
-            "BalanceForceComponent: applyBalanceForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
+            "BalanceForceComponent: applyBalanceForcesByMirrorForces({:.1f}, {:.1f}, "
+            "{:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
     float fx = _fx.process(0, xForce);
@@ -140,7 +143,7 @@ bool BalanceForceComponent::applyFreezedForces() {
 
 void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
     SPDLOG_DEBUG("BalanceForceComponent: updatePID({})", id);
-    PID* pid = _idToPID(id);
+    PID *pid = _idToPID(id);
     if (pid != NULL) {
         pid->updateParameters(parameters);
     }
@@ -148,7 +151,7 @@ void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
 
 void BalanceForceComponent::resetPID(int id) {
     SPDLOG_DEBUG("BalanceForceComponent: resetPID()");
-    PID* pid = _idToPID(id);
+    PID *pid = _idToPID(id);
     if (pid != NULL) {
         pid->restoreInitialParameters();
     }
@@ -267,7 +270,7 @@ void BalanceForceComponent::postUpdateActions() {
     M1M3SSPublisher::instance().logAppliedBalanceForces();
 }
 
-PID* BalanceForceComponent::_idToPID(int id) {
+PID *BalanceForceComponent::_idToPID(int id) {
     switch (id) {
         case 0:
             return &_fx;

@@ -37,7 +37,6 @@
 #include <InterlockControllerSafetySettings.h>
 #include <LowerOperationSafetySettings.h>
 #include <PositionControllerSafetySettings.h>
-#include <PositionControllerSafetySettings.h>
 #include <PowerControllerSafetySettings.h>
 #include <RaiseOperationSafetySettings.h>
 #include <TMASafetySettings.h>

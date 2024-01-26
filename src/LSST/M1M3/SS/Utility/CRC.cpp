@@ -26,7 +26,7 @@
 
 using namespace LSST::M1M3::SS;
 
-uint16_t CRC::modbus(uint8_t* buffer, int32_t startIndex, int32_t length) {
+uint16_t CRC::modbus(uint8_t *buffer, int32_t startIndex, int32_t length) {
     uint16_t crc = 0xFFFF;
     for (int i = startIndex; i < startIndex + length; i++) {
         crc = crc ^ ((uint16_t)buffer[i]);
@@ -42,7 +42,7 @@ uint16_t CRC::modbus(uint8_t* buffer, int32_t startIndex, int32_t length) {
     return crc;
 }
 
-uint16_t CRC::modbus(uint16_t* buffer, int32_t startIndex, int32_t length) {
+uint16_t CRC::modbus(uint16_t *buffer, int32_t startIndex, int32_t length) {
     uint16_t crc = 0xFFFF;
     for (int i = startIndex; i < startIndex + length; i++) {
         crc = crc ^ buffer[i];

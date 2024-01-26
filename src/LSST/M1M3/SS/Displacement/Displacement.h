@@ -24,10 +24,10 @@
 #ifndef DISPLACEMENT_H_
 #define DISPLACEMENT_H_
 
-#include <cRIO/DataTypes.h>
 #include <DisplacementSensorSettings.h>
 #include <SafetyController.h>
 #include <SupportFPGAData.h>
+#include <cRIO/DataTypes.h>
 
 struct MTM1M3_imsDataC;
 struct MTM1M3_logevent_displacementSensorWarningC;
@@ -46,7 +46,7 @@ public:
      * @param[in] _fpgaData The fpga data.
      * @param[in] safetyController The safety controller.
      */
-    Displacement(SupportFPGAData* fpgaData, SafetyController* safetyController);
+    Displacement(SupportFPGAData *fpgaData, SafetyController *safetyController);
 
     /*!
      * Processes currently available displacement sensor data and publish it.
@@ -54,12 +54,12 @@ public:
     void processData();
 
 private:
-    DisplacementSensorSettings* _displacementSensorSettings;
-    SupportFPGAData* _fpgaData;
-    SafetyController* _safetyController;
+    DisplacementSensorSettings *_displacementSensorSettings;
+    SupportFPGAData *_fpgaData;
+    SafetyController *_safetyController;
 
-    MTM1M3_imsDataC* _imsData;
-    MTM1M3_logevent_displacementSensorWarningC* _displacementWarning;
+    MTM1M3_imsDataC *_imsData;
+    MTM1M3_logevent_displacementSensorWarningC *_displacementWarning;
 
     uint64_t _lastSampleTimestamp;
     uint64_t _lastErrorTimestamp;

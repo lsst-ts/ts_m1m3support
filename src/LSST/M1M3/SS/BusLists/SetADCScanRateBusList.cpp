@@ -24,15 +24,15 @@
 #include <spdlog/spdlog.h>
 
 #include <ForceActuatorInfo.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
 #include <M1M3SSPublisher.h>
 #include <SAL_MTM1M3C.h>
 #include <SetADCScanRateBusList.h>
 
 using namespace LSST::M1M3::SS;
 
-SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
+SetADCScanRateBusList::SetADCScanRateBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("SetADCScanRateBusList: SetADCScanRateBusList()");
 }
@@ -41,8 +41,8 @@ void SetADCScanRateBusList::buildBuffer() {
     BusList::buildBuffer();
     SPDLOG_DEBUG("SetADCScanRateBusList: buildBuffer()");
 
-    auto& forceInfo = ForceActuatorInfo::instance();
-    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
+    auto &forceInfo = ForceActuatorInfo::instance();
+    MTM1M3_logevent_hardpointActuatorInfoC *hardpointInfo =
             M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);

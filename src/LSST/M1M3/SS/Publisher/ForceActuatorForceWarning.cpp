@@ -194,7 +194,8 @@ bool ForceActuatorForceWarning::checkXMeasuredForce(int xIndex, int actuatorId, 
             anyWarning = true;
             anyMeasuredXForceWarning = true;
             SPDLOG_WARN(
-                    "Measured X force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
+                    "Measured X force for actuator {}: measured {:.1f} N isn't "
+                    "between {:.1f} N and "
                     "{:.1f} N",
                     actuatorId, xForce, xLowWarning, xHighWarning);
         } else {
@@ -224,7 +225,8 @@ bool ForceActuatorForceWarning::checkYMeasuredForce(int yIndex, int actuatorId, 
             anyWarning = true;
             anyMeasuredYForceWarning = true;
             SPDLOG_WARN(
-                    "Measured Y force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
+                    "Measured Y force for actuator {}: measured {:.1f} N isn't "
+                    "between {:.1f} N and "
                     "{:.1f} N",
                     actuatorId, yForce, yLowWarning, yHighWarning);
         } else {
@@ -254,7 +256,8 @@ bool ForceActuatorForceWarning::checkZMeasuredForce(int zIndex, int actuatorId, 
             anyWarning = true;
             anyMeasuredZForceWarning = true;
             SPDLOG_WARN(
-                    "Measured Z force for actuator {}: measured {:.1f} N isn't between {:.1f} N and "
+                    "Measured Z force for actuator {}: measured {:.1f} N isn't "
+                    "between {:.1f} N and "
                     "{:.1f} N",
                     actuatorId, zForce, zLowWarning, zHighWarning);
         } else {

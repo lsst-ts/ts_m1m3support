@@ -38,21 +38,24 @@ namespace SS {
  * Bump test is performed in the following stages (per actuator, so if both
  * primary and secondary shall be tested, repeat):
  *
- * 1. check that average of _testMeasurements measured forces roughly equal to 0 (in _tolerance)
+ * 1. check that average of _testMeasurements measured forces roughly equal to 0
+ * (in _tolerance)
  * 2. apply a small positive force
  * 3. sleep for _testSettleTime
- * 4. check that average of _testMeasurements measured forces roughly equal to the applied force (in
- * _tolerance)
+ * 4. check that average of _testMeasurements measured forces roughly equal to
+ * the applied force (in _tolerance)
  * 5. null applied offset
  * 6. sleep for _testSettleTime
- * 7. check that average of _testMeasurements measured forces roughly equal to 0 (in _tolerance)
+ * 7. check that average of _testMeasurements measured forces roughly equal to 0
+ * (in _tolerance)
  * 8. apply a small negative force
  * 9. sleep for _testSettleTime
- * 10. check that average of _testMeasurements measured forces roughly equal to the applied force (in
- * _tolerance)
+ * 10. check that average of _testMeasurements measured forces roughly equal to
+ * the applied force (in _tolerance)
  * 11. null applied offset
  * 12. sleep for _testSettleTime
- * 13. check that average of _testMeasurements measured forces roughly equal to 0 (in _tolerance)
+ * 13. check that average of _testMeasurements measured forces roughly equal to
+ * 0 (in _tolerance)
  *
  * If any of the steps fails, transition to failed stage and exit.
  */
@@ -113,7 +116,7 @@ private:
     double _sleepUntil;
 
     typedef enum { FINISHED, FAILED, NO_CHANGE, STATE_CHANGED } runCylinderReturn_t;
-    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], short int* stage);
+    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], short int *stage);
 
     void _resetProgress(bool zeroOffsets = true);
     void _resetAverages();

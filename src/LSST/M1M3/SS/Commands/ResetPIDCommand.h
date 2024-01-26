@@ -34,13 +34,13 @@ namespace SS {
 
 class ResetPIDCommand : public Command {
 public:
-    ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* data);
+    ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC *data);
 
-    MTM1M3_command_resetPIDC* getData() { return &_data; }
+    MTM1M3_command_resetPIDC *getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
+    void ackInProgress(const char *description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

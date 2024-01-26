@@ -33,10 +33,10 @@
 #include <AbortProfileCommand.h>
 #include <AbortRaiseM1M3Command.h>
 #include <ApplyActiveOpticForcesCommand.h>
-#include <ApplyOffsetForcesCommand.h>
 #include <ApplyOffsetForcesByMirrorForceCommand.h>
-#include <BoosterValveOpenCommand.h>
+#include <ApplyOffsetForcesCommand.h>
 #include <BoosterValveCloseCommand.h>
+#include <BoosterValveOpenCommand.h>
 #include <ClearActiveOpticForcesCommand.h>
 #include <ClearOffsetForcesCommand.h>
 #include <ClearSlewFlagCommand.h>
@@ -48,11 +48,11 @@
 #include <EnableCommand.h>
 #include <EnableDisableForceComponentCommand.h>
 #include <EnableForceActuatorCommand.h>
-#include <EnableHardpointCorrectionsCommand.h>
 #include <EnableHardpointChaseCommand.h>
+#include <EnableHardpointCorrectionsCommand.h>
 #include <EnterEngineeringCommand.h>
-#include <ExitEngineeringCommand.h>
 #include <ExitControlCommand.h>
+#include <ExitEngineeringCommand.h>
 #include <ForceActuatorBumpTestCommand.h>
 #include <KillForceActuatorBumpTestCommand.h>
 #include <KillHardpointTestCommand.h>
@@ -70,16 +70,16 @@
 #include <StandbyCommand.h>
 #include <StartCommand.h>
 #include <StopHardpointMotionCommand.h>
-#include <TestHardpointCommand.h>
-#include <TranslateM1M3Command.h>
-#include <TurnAirOnCommand.h>
-#include <TurnAirOffCommand.h>
-#include <TurnLightsOnCommand.h>
-#include <TurnLightsOffCommand.h>
-#include <TurnPowerOnCommand.h>
-#include <TurnPowerOffCommand.h>
 #include <TMAAzimuthSampleCommand.h>
 #include <TMAElevationSampleCommand.h>
+#include <TestHardpointCommand.h>
+#include <TranslateM1M3Command.h>
+#include <TurnAirOffCommand.h>
+#include <TurnAirOnCommand.h>
+#include <TurnLightsOffCommand.h>
+#include <TurnLightsOnCommand.h>
+#include <TurnPowerOffCommand.h>
+#include <TurnPowerOnCommand.h>
 #include <UpdatePIDCommand.h>
 
 using namespace LSST::cRIO::SAL;
@@ -87,7 +87,7 @@ using namespace LSST::M1M3::SS;
 
 M1M3SSSubscriber::M1M3SSSubscriber() { SPDLOG_DEBUG("M1M3SSSubscriber: M1M3SSSubscriber()"); }
 
-M1M3SSSubscriber& M1M3SSSubscriber::get() {
+M1M3SSSubscriber &M1M3SSSubscriber::get() {
     static M1M3SSSubscriber subscriber;
     return subscriber;
 }
@@ -95,62 +95,62 @@ M1M3SSSubscriber& M1M3SSSubscriber::get() {
 void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL) {
     _m1m3SAL = m1m3SAL;
     _mtMountSAL = mtMountSAL;
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setLogLevel");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_start");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enable");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_disable");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_standby");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitControl");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_panic");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setSlewFlag");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearSlewFlag");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOn");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnAirOff");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_boosterValveOpen");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_boosterValveClose");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForces");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearOffsetForces");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_raiseM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_lowerM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_pauseM1M3RaisingLowering");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_resumeM1M3RaisingLowering");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyActiveOpticForces");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_clearActiveOpticForces");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enterEngineering");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_exitEngineering");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_testHardpoint");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_killHardpointTest");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_moveHardpointActuators");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableHardpointChase");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableHardpointChase");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_abortRaiseM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_translateM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_stopHardpointMotion");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_positionM1M3");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnLightsOn");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnLightsOff");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnPowerOn");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_turnPowerOff");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableHardpointCorrections");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableHardpointCorrections");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_runMirrorForceProfile");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_abortProfile");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_applyOffsetForcesByMirrorForce");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_updatePID");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_resetPID");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_forceActuatorBumpTest");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_killForceActuatorBumpTest");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableForceActuator");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableAllForceActuators");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_disableForceActuator");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_enableDisableForceComponent");
-    _m1m3SAL->salProcessor((char*)"MTM1M3_command_setSlewControllerSettings");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_setLogLevel");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_start");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_enable");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_disable");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_standby");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_exitControl");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_panic");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_setSlewFlag");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_clearSlewFlag");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_turnAirOn");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_turnAirOff");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_boosterValveOpen");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_boosterValveClose");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_applyOffsetForces");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_clearOffsetForces");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_raiseM1M3");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_lowerM1M3");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_pauseM1M3RaisingLowering");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_resumeM1M3RaisingLowering");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_applyActiveOpticForces");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_clearActiveOpticForces");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_enterEngineering");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_exitEngineering");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_testHardpoint");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_killHardpointTest");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_moveHardpointActuators");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_enableHardpointChase");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_disableHardpointChase");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_abortRaiseM1M3");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_translateM1M3");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_stopHardpointMotion");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_positionM1M3");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_turnLightsOn");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_turnLightsOff");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_turnPowerOn");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_turnPowerOff");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_enableHardpointCorrections");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_disableHardpointCorrections");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_runMirrorForceProfile");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_abortProfile");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_applyOffsetForcesByMirrorForce");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_updatePID");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_resetPID");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_forceActuatorBumpTest");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_killForceActuatorBumpTest");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_enableForceActuator");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_enableAllForceActuators");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_disableForceActuator");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_enableDisableForceComponent");
+    _m1m3SAL->salProcessor((char *)"MTM1M3_command_setSlewControllerSettings");
 
-    _mtMountSAL->salTelemetrySub((char*)"MTMount_azimuth");
-    _mtMountSAL->salTelemetrySub((char*)"MTMount_elevation");
+    _mtMountSAL->salTelemetrySub((char *)"MTMount_azimuth");
+    _mtMountSAL->salTelemetrySub((char *)"MTMount_elevation");
 }
 
-Command* M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
+Command *M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
     MTM1M3_command_setLogLevelC setLogLevelData;
     int32_t commandID = _m1m3SAL->acceptCommand_setLogLevel(&setLogLevelData);
     if (commandID > 0) {
@@ -172,7 +172,7 @@ Command* M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
 }
 
 #define COMMAND(name, cmd)                                                \
-    Command* M1M3SSSubscriber::tryAcceptCommand##name() {                 \
+    Command *M1M3SSSubscriber::tryAcceptCommand##name() {                 \
         int32_t commandID = _m1m3SAL->acceptCommand_##cmd(&_##cmd##Data); \
         if (commandID > 0) {                                              \
             return new name##Command(commandID, &_##cmd##Data);           \
@@ -181,7 +181,7 @@ Command* M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
     }
 
 #define COMMAND_NOPARS(name, cmd)                                         \
-    Command* M1M3SSSubscriber::tryAcceptCommand##name() {                 \
+    Command *M1M3SSSubscriber::tryAcceptCommand##name() {                 \
         MTM1M3_command_##cmd##C _##cmd##Data;                             \
         int32_t commandID = _m1m3SAL->acceptCommand_##cmd(&_##cmd##Data); \
         if (commandID > 0) {                                              \
@@ -262,7 +262,7 @@ COMMAND_NOPARS(EnableAllForceActuators, enableAllForceActuators)
 COMMAND(EnableDisableForceComponent, enableDisableForceComponent)
 COMMAND(SetSlewControllerSettings, setSlewControllerSettings)
 
-Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
+Command *M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
     int32_t result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
     if (result == 0) {
         return new TMAAzimuthSampleCommand(&_tmaAzimuth);
@@ -270,7 +270,7 @@ Command* M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
     return 0;
 }
 
-Command* M1M3SSSubscriber::tryGetSampleTMAElevation() {
+Command *M1M3SSSubscriber::tryGetSampleTMAElevation() {
     int32_t result = _mtMountSAL->getSample_elevation(&_tmaElevation);
     if (result == 0) {
         return new TMAElevationSampleCommand(&_tmaElevation);

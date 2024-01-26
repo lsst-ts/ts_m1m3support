@@ -48,8 +48,8 @@ public:
     void processData();
 
 private:
-    MTM1M3_accelerometerDataC* _accelerometerData;
-    MTM1M3_logevent_accelerometerWarningC* _accelerometerWarning;
+    MTM1M3_accelerometerDataC *_accelerometerData;
+    MTM1M3_logevent_accelerometerWarningC *_accelerometerWarning;
 };
 
 } /* namespace SS */

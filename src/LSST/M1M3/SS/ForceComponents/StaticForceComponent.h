@@ -38,7 +38,7 @@ namespace SS {
 
 class StaticForceComponent : public ForceComponent {
 public:
-    StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
+    StaticForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
     /**
      * Apply static forces. Enable static forces if those were disabled.
@@ -47,7 +47,7 @@ public:
      * @param y y static forces
      * @param z z static forces
      */
-    void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);
+    void applyStaticForces(std::vector<float> *x, std::vector<float> *y, std::vector<float> *z);
 
     void postEnableDisableActions() override;
 
@@ -55,12 +55,12 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController* _safetyController;
-    ForceActuatorApplicationSettings* _forceActuatorApplicationSettings;
+    SafetyController *_safetyController;
+    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
-    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
-    MTM1M3_logevent_appliedStaticForcesC* _appliedStaticForces;
-    MTM1M3_logevent_preclippedStaticForcesC* _preclippedStaticForces;
+    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_logevent_appliedStaticForcesC *_appliedStaticForces;
+    MTM1M3_logevent_preclippedStaticForcesC *_preclippedStaticForces;
 };
 
 } /* namespace SS */

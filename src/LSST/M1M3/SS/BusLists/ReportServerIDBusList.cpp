@@ -21,14 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ReportServerIDBusList.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
+#include <ReportServerIDBusList.h>
 #include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-ReportServerIDBusList::ReportServerIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
+ReportServerIDBusList::ReportServerIDBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportServerIDBusList: ReportServerIDBusList()");
 }

@@ -48,7 +48,7 @@ public:
     void setIndex(int32_t index);
     void incIndex(int32_t inc);
     void skipToNextFrame();
-    uint16_t* getBuffer();
+    uint16_t *getBuffer();
     void set(int32_t index, uint16_t data);
     void setLength(int32_t length);
     int32_t getLength();
@@ -145,7 +145,7 @@ public:
      *
      * Throws exception on error.
      */
-    void pullModbusResponse(uint16_t request, uint64_t& beginTs, uint64_t& endTs, std::vector<uint8_t>& data);
+    void pullModbusResponse(uint16_t request, uint64_t &beginTs, uint64_t &endTs, std::vector<uint8_t> &data);
 
 private:
     uint16_t _buffer[5120];

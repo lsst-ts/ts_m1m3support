@@ -21,9 +21,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <thread>
 #include <chrono>
 #include <spdlog/spdlog.h>
+#include <thread>
 
 #include <BoosterValveStatus.h>
 #include <DigitalInputOutput.h>
@@ -38,21 +38,21 @@
 #include <SettingReader.h>
 #include <StandbyState.h>
 
-extern const char* CONFIG_SCHEMA_VERSION;
-extern const char* CONFIG_URL;
-extern const char* GIT_HASH;
+extern const char *CONFIG_SCHEMA_VERSION;
+extern const char *CONFIG_URL;
+extern const char *GIT_HASH;
 
 using namespace LSST::M1M3::SS;
 
 StandbyState::StandbyState() : State("StandbyState") {}
 
-States::Type StandbyState::update(UpdateCommand* command) {
+States::Type StandbyState::update(UpdateCommand *command) {
     SPDLOG_TRACE("StandbyState: update()");
     Heartbeat::instance().tryToggle();
     return States::NoStateTransition;
 }
 
-States::Type StandbyState::start(StartCommand* command) {
+States::Type StandbyState::start(StartCommand *command) {
     SPDLOG_INFO("StandbyState: start()");
 
     ForceControllerState::instance().log();
@@ -86,13 +86,13 @@ States::Type StandbyState::start(StartCommand* command) {
             "positionControllerSettings,";
     M1M3SSPublisher::instance().logConfigurationApplied();
 
-    PowerController* powerController = Model::instance().getPowerController();
-    ILC* ilc = Model::instance().getILC();
-    Gyro* gyro = Model::instance().getGyro();
+    PowerController *powerController = Model::instance().getPowerController();
+    ILC *ilc = Model::instance().getILC();
+    Gyro *gyro = Model::instance().getGyro();
 
     BoosterValveStatus::instance().reset();
 
-    auto& heartbeat = Heartbeat::instance();
+    auto &heartbeat = Heartbeat::instance();
     heartbeat.tryToggle();
     std::this_thread::sleep_for(1ms);  // wait for GIS to sense heartbeat
 
@@ -114,47 +114,47 @@ States::Type StandbyState::start(StartCommand* command) {
     ilc->flushAll();
     ilc->writeSetModeClearFaultsBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeReportServerIDBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeReportServerStatusBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeReportADCScanRateBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeReadCalibrationDataBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeReadBoostValveDCAGainBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeReportDCAIDBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeReportDCAStatusBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     ilc->writeSetModeDisableBuffer();
     ilc->triggerModbus();
-    ilc->waitForAllSubnets(5000);
+    ilc->waitForAllSubnets(ILC_WAIT);
     ilc->readAll();
     heartbeat.tryToggle();
     M1M3SSPublisher::instance().getEnabledForceActuators()->log();
@@ -176,7 +176,7 @@ States::Type StandbyState::start(StartCommand* command) {
     return Model::instance().getSafetyController()->checkSafety(States::DisabledState);
 }
 
-States::Type StandbyState::exitControl(ExitControlCommand* command) {
+States::Type StandbyState::exitControl(ExitControlCommand *command) {
     SPDLOG_INFO("StandbyState: ExitControl()");
     Model::instance().exitControl();
     return States::OfflineState;

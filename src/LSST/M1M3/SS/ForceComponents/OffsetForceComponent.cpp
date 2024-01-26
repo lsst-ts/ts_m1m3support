@@ -31,14 +31,14 @@
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <OffsetForceComponent.h>
-#include <SafetyController.h>
 #include <Range.h>
+#include <SafetyController.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Offset", &ForceActuatorSettings::instance().OffsetComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -48,11 +48,13 @@ OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings* for
     zeroOffsetForces();
 }
 
-void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
+void OffsetForceComponent::applyOffsetForces(float *x, float *y, float *z) {
     SPDLOG_DEBUG("OffsetForceComponent: applyOffsetForces()");
 
     if (!isEnabled()) {
-        SPDLOG_ERROR("OffsetForceComponent: applyOffsetForces() called when the component is not applied");
+        SPDLOG_ERROR(
+                "OffsetForceComponent: applyOffsetForces() called when the "
+                "component is not applied");
         return;
     }
 
@@ -72,7 +74,8 @@ void OffsetForceComponent::applyOffsetForces(float* x, float* y, float* z) {
 void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce,
                                                            float xMoment, float yMoment, float zMoment) {
     SPDLOG_DEBUG(
-            "OffsetForceComponent: applyOffsetForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
+            "OffsetForceComponent: applyOffsetForcesByMirrorForces({:.1f}, "
+            "{:.1f}, {:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceDistribution(

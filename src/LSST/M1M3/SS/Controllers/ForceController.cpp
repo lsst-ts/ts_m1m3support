@@ -28,18 +28,18 @@
 
 #include <SAL_MTM1M3C.h>
 
+#include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
 #include <ForceActuatorInfo.h>
-#include <ForceController.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorOrientations.h>
 #include <ForceActuatorSettings.h>
+#include <ForceController.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <RaisingLoweringInfo.h>
+#include <Range.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
-#include <Range.h>
 #include <TMA.h>
 
 using namespace std;
@@ -52,7 +52,7 @@ ForceActuatorIndicesNeighbors::ForceActuatorIndicesNeighbors() {
     memset(FarIndices, 0, sizeof(FarIndices));
 }
 
-ForceController::ForceController(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+ForceController::ForceController(ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : _accelerationForceComponent(forceActuatorApplicationSettings),
           _activeOpticForceComponent(forceActuatorApplicationSettings),
           _azimuthForceComponent(forceActuatorApplicationSettings),
@@ -95,7 +95,7 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
     for (int i = 0; i < FA_COUNT; i++) {
         _mirrorWeight += df.ZForces[i];
         _zero[i] = 0;
-        ForceActuatorIndicesNeighbors* currentNeighbors = _neighbors + i;
+        ForceActuatorIndicesNeighbors *currentNeighbors = _neighbors + i;
         currentNeighbors->nearCount = 0;
         for (size_t j = 0; j < FA_MAX_NEAR_COUNT; ++j) {
             if (ForceActuatorSettings::instance().Neighbors[i].NearZIDs[j] == 0) {
@@ -113,8 +113,10 @@ ForceController::ForceController(ForceActuatorApplicationSettings* forceActuator
             currentNeighbors->NearZIndices[j] = index;
         }
         if (currentNeighbors->nearCount < 3) {
-            SPDLOG_CRITICAL("Invalid number of near neighbors for FA index {}: expected 3+, found {}", i,
-                            currentNeighbors->nearCount);
+            SPDLOG_CRITICAL(
+                    "Invalid number of near neighbors for FA index {}: "
+                    "expected 3+, found {}",
+                    i, currentNeighbors->nearCount);
             exit(EXIT_FAILURE);
         }
         for (size_t j = 0; j < FA_FAR_COUNT; ++j) {
@@ -280,7 +282,7 @@ void ForceController::zeroAccelerationForces() {
     }
 }
 
-void ForceController::applyActiveOpticForces(float* z) {
+void ForceController::applyActiveOpticForces(float *z) {
     SPDLOG_INFO("ForceController: applyActiveOpticForces()");
     if (!_activeOpticForceComponent.isEnabled()) {
         _activeOpticForceComponent.enable();
@@ -302,7 +304,7 @@ void ForceController::applyAzimuthForces() {
     }
 }
 
-void ForceController::updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
+void ForceController::updateTMAAzimuthForces(MTMount_azimuthC *tmaAzimuthData) {
     SPDLOG_TRACE("ForceController: updateTMAAzimuthForces() {:.4f}", tmaAzimuthData->actualPosition);
     if (_azimuthForceComponent.isEnabled()) {
         _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
@@ -374,7 +376,7 @@ void ForceController::zeroElevationForces() {
     }
 }
 
-void ForceController::applyOffsetForces(float* x, float* y, float* z) {
+void ForceController::applyOffsetForces(float *x, float *y, float *z) {
     SPDLOG_INFO("ForceController: applyOffsetForces()");
     if (!_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.enable();
@@ -385,7 +387,8 @@ void ForceController::applyOffsetForces(float* x, float* y, float* z) {
 void ForceController::applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                                       float yMoment, float zMoment) {
     SPDLOG_INFO(
-            "ForceController: applyOffsetForcesByMirrorForces({:.1f}, {:.1f}, {:.1f}, {:.1f}, {:.1f}, "
+            "ForceController: applyOffsetForcesByMirrorForces({:.1f}, "
+            "{:.1f}, {:.1f}, {:.1f}, {:.1f}, "
             "{:.1f})",
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
     if (!_offsetForceComponent.isEnabled()) {
@@ -463,7 +466,7 @@ void ForceController::zeroVelocityForces() {
 }
 
 void ForceController::enableDisableForceComponent(int forceComponentEnum, bool enabled) {
-    ForceComponent* forceComponent = NULL;
+    ForceComponent *forceComponent = NULL;
     switch (forceComponentEnum) {
         case MTM1M3::enableDisableForceComponent_AccelerationForce:
             forceComponent = &_accelerationForceComponent;
@@ -517,7 +520,7 @@ void ForceController::_sumAllForces() {
 void ForceController::_convertForcesToSetpoints() {
     SPDLOG_TRACE("ForceController: convertForcesToSetpoints()");
     bool clippingRequired = false;
-    auto& forceActuatorInfo = ForceActuatorInfo::instance();
+    auto &forceActuatorInfo = ForceActuatorInfo::instance();
     for (int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
@@ -625,19 +628,19 @@ bool ForceController::_checkMirrorMoments() {
     _forceSetpointWarning->zMomentWarning = !Range::InRange(zMomentMin, zMomentMax, zMoment);
     _safetyController->forceControllerNotifyXMomentLimit(
             _forceSetpointWarning->xMomentWarning,
-            fmt::format(
-                    "Force controller X Moment Limit - applied {:.02f} N, expected {:.02f} N to {:.02f} N",
-                    xMoment, xMomentMin, xMomentMax));
+            fmt::format("Force controller X Moment Limit - applied {:.02f} N, "
+                        "expected {:.02f} N to {:.02f} N",
+                        xMoment, xMomentMin, xMomentMax));
     _safetyController->forceControllerNotifyYMomentLimit(
             _forceSetpointWarning->yMomentWarning,
-            fmt::format(
-                    "Force controller Y Moment Limit - applied {:.02f} N, expected {:.02f} N to {:.02f} N",
-                    yMoment, yMomentMin, yMomentMax));
+            fmt::format("Force controller Y Moment Limit - applied {:.02f} N, "
+                        "expected {:.02f} N to {:.02f} N",
+                        yMoment, yMomentMin, yMomentMax));
     _safetyController->forceControllerNotifyZMomentLimit(
             _forceSetpointWarning->zMomentWarning,
-            fmt::format(
-                    "Force controller Z Moment Limit - applied {:.02f} N, expected {:.02f} N to {:.02f} N",
-                    zMoment, zMomentMin, zMomentMax));
+            fmt::format("Force controller Z Moment Limit - applied {:.02f} N, "
+                        "expected {:.02f} N to {:.02f} N",
+                        zMoment, zMomentMin, zMomentMax));
     return _forceSetpointWarning->xMomentWarning || _forceSetpointWarning->yMomentWarning ||
            _forceSetpointWarning->zMomentWarning;
 }

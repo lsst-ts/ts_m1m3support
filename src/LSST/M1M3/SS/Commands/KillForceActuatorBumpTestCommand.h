@@ -39,10 +39,10 @@ namespace SS {
  */
 class KillForceActuatorBumpTestCommand : public Command {
 public:
-    KillForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC* data);
+    KillForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_killForceActuatorBumpTestC *data);
 
     void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
+    void ackInProgress(const char *description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 };

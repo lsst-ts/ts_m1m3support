@@ -28,8 +28,8 @@
 
 #include <cRIO/Singleton.h>
 
-#include <cRIO/DataTypes.h>
 #include <StartCommand.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -39,7 +39,7 @@ struct ExpansionFPGAApplicationSettings : public cRIO::Singleton<ExpansionFPGAAp
     ExpansionFPGAApplicationSettings(token);
 
     void load(YAML::Node doc);
-    void initialize(StartCommand* command);
+    void initialize(StartCommand *command);
 
     bool Enabled;
     std::string Resource;

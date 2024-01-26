@@ -38,7 +38,7 @@ namespace M1M3 {
 namespace SS {
 
 ActiveOpticForceComponent::ActiveOpticForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("ActiveOptic", &ForceActuatorSettings::instance().ActiveOpticComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -47,12 +47,13 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(
     _preclippedActiveOpticForces = M1M3SSPublisher::instance().getEventPreclippedActiveOpticForces();
 }
 
-void ActiveOpticForceComponent::applyActiveOpticForces(float* z) {
+void ActiveOpticForceComponent::applyActiveOpticForces(float *z) {
     SPDLOG_DEBUG("ActiveOpticForceComponent: applyActiveOpticForces()");
 
     if (!isEnabled()) {
         SPDLOG_ERROR(
-                "ActiveOpticForceComponent: applyActiveOpticForces() called when the component is not "
+                "ActiveOpticForceComponent: applyActiveOpticForces() called "
+                "when the component is not "
                 "applied");
         return;
     }

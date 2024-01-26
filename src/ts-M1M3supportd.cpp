@@ -20,30 +20,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <getopt.h>
 #include <cstring>
-#include <iostream>
-#include <signal.h>
-#include <pwd.h>
+#include <getopt.h>
 #include <grp.h>
+#include <iostream>
+#include <pwd.h>
+#include <signal.h>
 
 #include <chrono>
 #include <thread>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/async.h>
-#include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/sinks/daily_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/async.h>
 #include <spdlog/sinks/syslog_sink.h>
-#include <SALSink.h>
+#include <spdlog/spdlog.h>
 
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
 
-#include <EnterControlCommand.h>
-#include <ExitControlCommand.h>
+#include <SALSink.h>
+
 #include <Context.h>
 #include <ControllerThread.h>
+#include <EnterControlCommand.h>
+#include <ExitControlCommand.h>
 #include <IExpansionFPGA.h>
 #include <M1M3SSPublisher.h>
 #include <M1M3SSSubscriber.h>
@@ -52,8 +53,6 @@
 #include <PPSThread.h>
 #include <RawDCAccelerometersCommands.h>
 #include <ReloadConfigurationCommand.h>
-#include <SAL_MTM1M3.h>
-#include <SAL_MTMount.h>
 #include <SettingReader.h>
 #include <SubscriberThread.h>
 
@@ -62,27 +61,32 @@
 #else
 #include <FPGA.h>
 #endif
-#include <NiError.h>
 
 using namespace std::chrono;
 using namespace LSST::M1M3::SS;
 
-extern const char* VERSION;
+extern const char *VERSION;
 
 void printHelp() {
-    std::cout << "M1M3 Static Support controller. Runs either as simulator or as simulator or as "
+    std::cout << "M1M3 Static Support controller. Runs either as simulator or as "
+                 "simulator or as "
                  "the real thing on cRIO."
               << std::endl
               << "Version: " << VERSION << std::endl
               << "Options:" << std::endl
               << "  -b runs on background, don't log to stdout" << std::endl
-              << "  -c <configuration path> use given configuration directory (should be SettingFiles)"
+              << "  -c <configuration path> use given configuration directory "
+                 "(should be SettingFiles)"
               << std::endl
-              << "  -d increases debugging (can be specified multiple times, default is info)" << std::endl
+              << "  -d increases debugging (can be specified multiple times, "
+                 "default is info)"
+              << std::endl
               << "  -f runs on foreground, don't log to file" << std::endl
               << "  -h prints this help" << std::endl
               << "  -p PID file, started as daemon on background" << std::endl
-              << "  -s increases SAL debugging (can be specified multiple times, default is 0)" << std::endl
+              << "  -s increases SAL debugging (can be specified multiple times, "
+                 "default is 0)"
+              << std::endl
               << "  -S don't transmit log messages on SAL/DDS" << std::endl
               << "  -u <user>:<group> run under user & group" << std::endl
               << "  -v prints version and exits" << std::endl
@@ -92,7 +96,7 @@ void printHelp() {
 int debugLevel = 0;
 int debugLevelSAL = 0;
 
-const char* pidFile = NULL;
+const char *pidFile = NULL;
 std::string daemonUser("m1m3");
 std::string daemonGroup("m1m3");
 
@@ -117,7 +121,7 @@ void sigUsr2(int signal) {
 std::vector<spdlog::sink_ptr> sinks;
 int enabledSinks = 0x10;
 
-void processArgs(int argc, char* const argv[], const char*& configRoot) {
+void processArgs(int argc, char *const argv[], const char *&configRoot) {
     int opt;
     while ((opt = getopt(argc, argv, "bc:dfhp:sSu:vV")) != -1) {
         switch (opt) {
@@ -147,7 +151,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
                 enabledSinks &= ~0x10;
                 break;
             case 'u': {
-                char* sep = strchr(optarg, ':');
+                char *sep = strchr(optarg, ':');
                 if (sep) {
                     *sep = '\0';
                     daemonUser = optarg;
@@ -176,7 +180,7 @@ void processArgs(int argc, char* const argv[], const char*& configRoot) {
     }
 }
 
-void initializeFPGA(IFPGA* fpga) {
+void initializeFPGA(IFPGA *fpga) {
 #ifdef SIMULATOR
     SPDLOG_WARN("Starting Simulator version! Version {}", VERSION);
 #else
@@ -246,7 +250,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
         controller.join();
         SPDLOG_INFO("Main: Joining outer loop clock thread");
         outerLoopClock.join();
-    } catch (std::exception& ex) {
+    } catch (std::exception &ex) {
         if (retPipe >= 0) {
             write(retPipe, ex.what(), strlen(ex.what()));
             close(retPipe);
@@ -287,20 +291,20 @@ void startLog() {
     setSinks();
 }
 
-int main(int argc, char* const argv[]) {
-    const char* configRoot = "/var/lib/M1M3support";
+int main(int argc, char *const argv[]) {
+    const char *configRoot = "/var/lib/M1M3support";
 
     processArgs(argc, argv, configRoot);
 
     int startPipe[2] = {-1, -1};
 
     if (pidFile) {
-        struct passwd* runAs = getpwnam(daemonUser.c_str());
+        struct passwd *runAs = getpwnam(daemonUser.c_str());
         if (runAs == NULL) {
             std::cerr << "Error: Cannot find user " << daemonUser << std::endl;
             exit(EXIT_FAILURE);
         }
-        struct group* runGroup = getgrnam(daemonGroup.c_str());
+        struct group *runGroup = getgrnam(daemonGroup.c_str());
         if (runGroup == NULL) {
             std::cerr << "Error: Cannot find group " << daemonGroup << std::endl;
             exit(EXIT_FAILURE);
@@ -395,8 +399,8 @@ int main(int argc, char* const argv[]) {
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
     M1M3SSPublisher::instance().newLogLevel(getSpdLogLogLevel() * 10);
 
-    IFPGA* fpga = &IFPGA::get();
-    IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
+    IFPGA *fpga = &IFPGA::get();
+    IExpansionFPGA *expansionFPGA = &IExpansionFPGA::get();
 
     try {
         initializeFPGA(fpga);
@@ -408,7 +412,7 @@ int main(int argc, char* const argv[]) {
         expansionFPGA->close();
         fpga->close();
         fpga->finalize();
-    } catch (NiError& nie) {
+    } catch (std::runtime_error &nie) {
         if (startPipe[1] >= 0) {
             write(startPipe[1], nie.what(), strlen(nie.what()));
             close(startPipe[1]);

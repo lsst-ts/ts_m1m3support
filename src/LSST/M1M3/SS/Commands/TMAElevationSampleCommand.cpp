@@ -22,15 +22,15 @@
  */
 
 #include <Context.h>
-#include <TMAElevationSampleCommand.h>
 #include <LimitLog.h>
 #include <SettingReader.h>
-#include <cstring>
+#include <TMAElevationSampleCommand.h>
 #include <chrono>
+#include <cstring>
 
 using namespace LSST::M1M3::SS;
 
-TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC* data) : Command(-1) {
+TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC *data) : Command(-1) {
     memcpy(&_data, data, sizeof(MTMount_elevationC));
 }
 

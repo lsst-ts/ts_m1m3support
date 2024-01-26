@@ -24,12 +24,12 @@
 #include <spdlog/spdlog.h>
 
 #include <DistributedForces.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <ForceControllerState.h>
 #include <ForcesAndMoments.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <Range.h>
 #include <SafetyController.h>
 #include <VelocityForceComponent.h>
@@ -39,7 +39,7 @@ namespace M1M3 {
 namespace SS {
 
 VelocityForceComponent::VelocityForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Velocity", &ForceActuatorSettings::instance().VelocityComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -48,12 +48,13 @@ VelocityForceComponent::VelocityForceComponent(
     _preclippedVelocityForces = M1M3SSPublisher::instance().getEventPreclippedVelocityForces();
 }
 
-void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
+void VelocityForceComponent::applyVelocityForces(float *x, float *y, float *z) {
     SPDLOG_TRACE("VelocityForceComponent: applyVelocityForces()");
 
     if (!isEnabled()) {
         SPDLOG_ERROR(
-                "VelocityForceComponent: applyVelocityForces() called when the component is not applied");
+                "VelocityForceComponent: applyVelocityForces() called when "
+                "the component is not applied");
         return;
     }
 
@@ -73,8 +74,10 @@ void VelocityForceComponent::applyVelocityForces(float* x, float* y, float* z) {
 void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularVelocityX,
                                                                   float angularVelocityY,
                                                                   float angularVelocityZ) {
-    SPDLOG_TRACE("VelocityForceComponent: applyVelocityForcesByMirrorForces({:.1f}, {:.1f}, {:.1f})",
-                 angularVelocityX, angularVelocityY, angularVelocityZ);
+    SPDLOG_TRACE(
+            "VelocityForceComponent: "
+            "applyVelocityForcesByMirrorForces({:.1f}, {:.1f}, {:.1f})",
+            angularVelocityX, angularVelocityY, angularVelocityZ);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularVelocity(
             angularVelocityX, angularVelocityY, angularVelocityZ);
     float xForces[FA_X_COUNT];

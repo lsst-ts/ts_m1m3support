@@ -79,24 +79,24 @@ public:
     // TODO will need settingsToApply to load correct configuration set
     void load();
 
-    ForceActuatorApplicationSettings* getForceActuatorApplicationSettings() {
+    ForceActuatorApplicationSettings *getForceActuatorApplicationSettings() {
         return &_forceActuatorApplicationSettings;
     }
 
-    HardpointActuatorApplicationSettings* getHardpointActuatorApplicationSettings() {
+    HardpointActuatorApplicationSettings *getHardpointActuatorApplicationSettings() {
         return &_hardpointActuatorApplicationSettings;
     }
-    HardpointMonitorApplicationSettings* getHardpointMonitorApplicationSettings() {
+    HardpointMonitorApplicationSettings *getHardpointMonitorApplicationSettings() {
         return &_hardpointMonitorApplicationSettings;
     }
 
-    SafetyControllerSettings* getSafetyControllerSettings() { return &_safetyControllerSettings; }
+    SafetyControllerSettings *getSafetyControllerSettings() { return &_safetyControllerSettings; }
 
-    PIDSettings& getPIDSettings(bool slew);
+    PIDSettings &getPIDSettings(bool slew);
 
 private:
-    SettingReader& operator=(const SettingReader&) = delete;
-    SettingReader(const SettingReader&) = delete;
+    SettingReader &operator=(const SettingReader &) = delete;
+    SettingReader(const SettingReader &) = delete;
 
     std::string _getSetPath(std::string file);
 

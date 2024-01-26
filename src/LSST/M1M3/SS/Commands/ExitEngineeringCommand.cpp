@@ -38,7 +38,8 @@ bool ExitEngineeringCommand::validate() {
     if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "ExitEngineering",
-                fmt::format("Cannot exit engineering mode as bump test for actuator {} is in progress.",
+                fmt::format("Cannot exit engineering mode as bump test for actuator {} "
+                            "is in progress.",
                             M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId));
         return false;
     }
@@ -47,7 +48,7 @@ bool ExitEngineeringCommand::validate() {
 
 void ExitEngineeringCommand::execute() { Context::get().exitEngineering(this); }
 
-void ExitEngineeringCommand::ackInProgress(const char* description, double timeout) {
+void ExitEngineeringCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandexitEngineering(getCommandID(), ACK_INPROGRESS, description,
                                                           timeout);
 }

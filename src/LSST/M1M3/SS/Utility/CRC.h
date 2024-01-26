@@ -45,7 +45,7 @@ public:
      *
      * @return 16 bits Modbus CRC
      */
-    static uint16_t modbus(uint8_t* buffer, int32_t startIndex, int32_t length);
+    static uint16_t modbus(uint8_t *buffer, int32_t startIndex, int32_t length);
 
     /**
      * Calculates 16 bit Modbus CRC. See (CRC calculator)[https://crccalc.com]
@@ -57,7 +57,7 @@ public:
      *
      * @return 16 bits Modbus CRC
      */
-    static uint16_t modbus(uint16_t* buffer, int32_t startIndex, int32_t length);
+    static uint16_t modbus(uint16_t *buffer, int32_t startIndex, int32_t length);
 };
 
 } /* namespace SS */

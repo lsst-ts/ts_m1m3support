@@ -22,14 +22,14 @@
  */
 
 #include <Context.h>
-#include <TMAAzimuthSampleCommand.h>
-#include <SettingReader.h>
 #include <LimitLog.h>
+#include <SettingReader.h>
+#include <TMAAzimuthSampleCommand.h>
 #include <cstring>
 
 using namespace LSST::M1M3::SS;
 
-TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) : Command(-1) {
+TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC *data) : Command(-1) {
     memcpy(&_data, data, sizeof(MTMount_azimuthC));
 }
 

@@ -21,13 +21,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <PowerController.h>
 #include <FPGAAddresses.h>
-#include <SupportFPGAData.h>
 #include <M1M3SSPublisher.h>
-#include <SafetyController.h>
-#include <Timestamp.h>
+#include <PowerController.h>
 #include <SAL_MTM1M3C.h>
+#include <SafetyController.h>
+#include <SupportFPGAData.h>
+#include <Timestamp.h>
 #include <spdlog/spdlog.h>
 
 #include <cstring>
@@ -35,7 +35,7 @@
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
 
-PowerController::PowerController(SafetyController* safetyController) {
+PowerController::PowerController(SafetyController *safetyController) {
     SPDLOG_DEBUG("PowerController: PowerController()");
     _safetyController = safetyController;
 
@@ -54,7 +54,7 @@ void PowerController::processData() {
     // TODO: Handle no data available
     // TODO: Handle limits, push to safety controller
     SPDLOG_TRACE("PowerController: processData()");
-    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
 
     if (fpgaData->PowerSupplyTimestamp != _lastPowerTimestamp) {
         _lastPowerTimestamp = fpgaData->PowerSupplyTimestamp;
