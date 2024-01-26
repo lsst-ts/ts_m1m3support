@@ -33,18 +33,23 @@
 #include <UpdateCommand.h>
 
 using namespace LSST::M1M3::SS;
+using namespace std::chrono_literals;
 
 OuterLoopClockThread::OuterLoopClockThread() { _keepRunning = true; }
 
 void OuterLoopClockThread::run() {
   SPDLOG_INFO("OuterLoopClockThread: Start");
   while (_keepRunning) {
-    try {
-      IFPGA::get().waitForOuterLoopClock(1000);
-    } catch (std::runtime_error &er) {
-      SPDLOG_WARN(
-          "OuterLoopClockThread: Failed to receive outer loop clock: {}",
-          er.what());
+    if (false) {
+      try {
+        IFPGA::get().waitForOuterLoopClock(25);
+      } catch (std::runtime_error &er) {
+        SPDLOG_WARN(
+            "OuterLoopClockThread: Failed to receive outer loop clock: {}",
+            er.what());
+      }
+    } else {
+      std::this_thread::sleep_for(18ms);
     }
 
     if (_keepRunning) {

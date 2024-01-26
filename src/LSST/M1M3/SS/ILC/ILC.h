@@ -53,6 +53,7 @@
 #include <SetADCChanneOffsetAndSensitivityBusList.h>
 #include <SetADCScanRateBusList.h>
 #include <SetBoostValveDCAGainBusList.h>
+#include <SlewBusList.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -104,6 +105,8 @@ public:
      * Called in enabled state (parked, raised,..).
      */
     void writeActiveListBuffer();
+
+    void writeSlewListBuffer();
 
     /**
      * Called in enabled state. Calls once writeRaisedListBuffer and twice (to
@@ -197,6 +200,7 @@ private:
     FreezeSensorBusList _busListFreezeSensor;
     RaisedBusList _busListRaised;
     ActiveBusList _busListActive;
+    SlewBusList _busListSlew;
 
     HardpointActuatorSettings* _hardpointActuatorSettings;
     MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;

@@ -37,6 +37,7 @@
 #include <ForceActuatorForceWarning.h>
 #include <ForceActuatorInfo.h>
 #include <ForceActuatorSettings.h>
+#include <ForceControllerState.h>
 #include <FPGAAddresses.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointActuatorSettings.h>
@@ -82,7 +83,8 @@ ILC::ILC(PositionController* positionController,
                                            ILCModes::ClearFaults),
           _busListFreezeSensor(&_subnetData, &_ilcMessageFactory),
           _busListRaised(&_subnetData, &_ilcMessageFactory),
-          _busListActive(&_subnetData, &_ilcMessageFactory) {
+          _busListActive(&_subnetData, &_ilcMessageFactory),
+          _busListSlew(&_subnetData, &_ilcMessageFactory) {
     SPDLOG_DEBUG("ILC: ILC()");
     _safetyController = safetyController;
     _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
@@ -116,6 +118,7 @@ void ILC::buildBusLists() {
     _busListFreezeSensor.buildBuffer();
     _busListRaised.buildBuffer();
     _busListActive.buildBuffer();
+    _busListSlew.buildBuffer();
 }
 
 void ILC::writeCalibrationDataBuffer() {
@@ -212,12 +215,22 @@ void ILC::writeActiveListBuffer() {
     _writeBusList(&_busListActive);
 }
 
+void ILC::writeSlewListBuffer() {
+    SPDLOG_DEBUG("ILC: writeSlewListBuffer()");
+    _busListSlew.update();
+    _writeBusList(&_busListSlew);
+}
+
 void ILC::writeControlListBuffer() {
     SPDLOG_DEBUG("ILC: writeControlListBuffer()");
-    if (_controlListToggle == 0) {
-        writeRaisedListBuffer();
+    if (ForceControllerState::instance().slewFlag == true) {
+        writeSlewListBuffer();
     } else {
-        writeActiveListBuffer();
+        if (_controlListToggle == 0) {
+            writeRaisedListBuffer();
+        } else {
+            writeActiveListBuffer();
+        }
     }
     _controlListToggle = RoundRobin::Inc(_controlListToggle, 3);
 }
