@@ -246,7 +246,7 @@ int M1M3SScli::setDCAGain(command_vec cmds) {
     for (auto u : ilcs) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDCAGain(u.second, primary, secondary);
     }
-    runILCCommands();
+    runILCCommands(500);
     return 0;
 }
 
@@ -267,7 +267,7 @@ int M1M3SScli::setSAAOffset(command_vec cmds) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setSAAForceOffset(u.second, false,
                                                                                       primary);
     }
-    runILCCommands();
+    runILCCommands(500);
     return 0;
 }
 
@@ -289,7 +289,7 @@ int M1M3SScli::setDAAOffset(command_vec cmds) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDAAForceOffset(u.second, false,
                                                                                       primary, secondary);
     }
-    runILCCommands();
+    runILCCommands(500);
     return 0;
 }
 
@@ -315,7 +315,7 @@ int M1M3SScli::setCalibration(command_vec cmds) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setOffsetAndSensitivity(
                 u.second, channel, offset, sensitivity);
     }
-    runILCCommands();
+    runILCCommands(500);
     return 0;
 }
 
