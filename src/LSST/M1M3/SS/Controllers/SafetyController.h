@@ -31,8 +31,8 @@
 #include <SAL_MTM1M3C.h>
 
 #include <FaultCodes.h>
-#include <StateTypes.h>
 #include <SafetyControllerSettings.h>
+#include <StateTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -49,7 +49,7 @@ namespace SS {
  */
 class SafetyController {
 public:
-    SafetyController(SafetyControllerSettings* safetyControllerSettings);
+    SafetyController(SafetyControllerSettings *safetyControllerSettings);
 
     void clearErrorCode();
 
@@ -170,7 +170,8 @@ public:
      * Check if mirror safety rules are fulfilled. When safety rules are not
      * fulfilled, returns States::LoweringFaultState.
      *
-     * @param preferredNextState returns this state if mirror safety is not violated
+     * @param preferredNextState returns this state if mirror safety is not
+     * violated
      *
      * @return preferredNextState if mirror safety is not violated,
      * States::LoweringFaultState otherwise.
@@ -180,7 +181,7 @@ public:
 private:
     template <typename... Args>
     void _updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag,
-                         std::string errorReport, Args&&... args) {
+                         std::string errorReport, Args &&...args) {
         bool faultConditionExists = enabledFlag && conditionFlag;
         if (faultConditionExists && _errorCodeData->errorCode == FaultCodes::NoFault) {
             _errorCodeData->errorCode = faultCode;
@@ -190,9 +191,9 @@ private:
 
     void _clearError();
 
-    SafetyControllerSettings* _safetyControllerSettings;
+    SafetyControllerSettings *_safetyControllerSettings;
 
-    MTM1M3_logevent_errorCodeC* _errorCodeData;
+    MTM1M3_logevent_errorCodeC *_errorCodeData;
 
     std::list<int> _ilcCommunicationTimeoutData;
     std::list<int> _forceActuatorFollowingErrorData[FA_COUNT];

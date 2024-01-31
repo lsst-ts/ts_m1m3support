@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ForceActuatorData.h>
 #include <EnabledForceActuators.h>
+#include <ForceActuatorData.h>
 #include <M1M3SSPublisher.h>
 #include <SettingReader.h>
 

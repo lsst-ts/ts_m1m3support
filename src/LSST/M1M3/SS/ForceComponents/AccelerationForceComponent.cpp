@@ -27,8 +27,8 @@
 #include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
-#include <ForcesAndMoments.h>
 #include <ForceControllerState.h>
+#include <ForcesAndMoments.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <Range.h>
@@ -38,7 +38,7 @@ namespace M1M3 {
 namespace SS {
 
 AccelerationForceComponent::AccelerationForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Acceleration", &ForceActuatorSettings::instance().AccelerationComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -47,12 +47,13 @@ AccelerationForceComponent::AccelerationForceComponent(
     _preclippedAccelerationForces = M1M3SSPublisher::instance().getEventPreclippedAccelerationForces();
 }
 
-void AccelerationForceComponent::applyAccelerationForces(float* x, float* y, float* z) {
+void AccelerationForceComponent::applyAccelerationForces(float *x, float *y, float *z) {
     SPDLOG_TRACE("AccelerationForceComponent: applyAccelerationForces()");
 
     if (!isEnabled()) {
         SPDLOG_ERROR(
-                "AccelerationForceComponent: applyAccelerationForces() called when the component is not "
+                "AccelerationForceComponent: applyAccelerationForces() called "
+                "when the component is not "
                 "applied");
         return;
     }
@@ -74,7 +75,8 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
                                                                                float angularAccelerationY,
                                                                                float angularAccelerationZ) {
     SPDLOG_TRACE(
-            "AccelerationForceComponent: applyAccelerationForcesByAngularAccelerations(P:.1f}, {.1f}, {.1f})",
+            "AccelerationForceComponent: "
+            "applyAccelerationForcesByAngularAccelerations(P:.1f}, {.1f}, {.1f})",
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularAcceleration(
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);

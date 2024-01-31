@@ -34,13 +34,13 @@ namespace SS {
 
 class EnableDisableForceComponentCommand : public Command {
 public:
-    EnableDisableForceComponentCommand(int32_t commandID, MTM1M3_command_enableDisableForceComponentC* data);
+    EnableDisableForceComponentCommand(int32_t commandID, MTM1M3_command_enableDisableForceComponentC *data);
 
-    MTM1M3_command_enableDisableForceComponentC* getData() { return &_data; }
+    MTM1M3_command_enableDisableForceComponentC *getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
+    void ackInProgress(const char *description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

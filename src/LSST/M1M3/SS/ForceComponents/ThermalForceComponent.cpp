@@ -39,7 +39,7 @@ namespace M1M3 {
 namespace SS {
 
 ThermalForceComponent::ThermalForceComponent(
-        ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Thermal", &ForceActuatorSettings::instance().ThermalComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -48,11 +48,13 @@ ThermalForceComponent::ThermalForceComponent(
     _preclippedThermalForces = M1M3SSPublisher::instance().getEventPreclippedThermalForces();
 }
 
-void ThermalForceComponent::applyThermalForces(float* x, float* y, float* z) {
+void ThermalForceComponent::applyThermalForces(float *x, float *y, float *z) {
     SPDLOG_TRACE("ThermalForceComponent: applyThermalForces()");
 
     if (!isEnabled()) {
-        SPDLOG_ERROR("ThermalForceComponent: applyThermalForces() called when the component is not applied");
+        SPDLOG_ERROR(
+                "ThermalForceComponent: applyThermalForces() called when the "
+                "component is not applied");
         return;
     }
 

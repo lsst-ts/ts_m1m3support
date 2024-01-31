@@ -23,8 +23,8 @@
 
 #include <cRIO/SAL/Command.h>
 
-#include <DisableCommand.h>
 #include <Context.h>
+#include <DisableCommand.h>
 #include <M1M3SSPublisher.h>
 
 using namespace LSST::cRIO::SAL;
@@ -34,7 +34,7 @@ DisableCommand::DisableCommand(int32_t commandID) : Command(commandID) {}
 
 void DisableCommand::execute() { Context::get().disable(this); }
 
-void DisableCommand::ackInProgress(const char* description, double timeout) {
+void DisableCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommanddisable(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

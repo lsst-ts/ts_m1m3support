@@ -33,13 +33,13 @@
 
 #include <cRIO/Singleton.h>
 
-#include <cRIO/DataTypes.h>
 #include <DistributedForces.h>
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorBumpTestSettings.h>
 #include <ForceComponentSettings.h>
 #include <ForcesAndMoments.h>
 #include <Limit.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

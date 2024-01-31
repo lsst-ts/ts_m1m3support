@@ -24,8 +24,8 @@
 #include <spdlog/spdlog.h>
 #include <stdlib.h>
 
-#include <sal_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
+#include <sal_MTM1M3.h>
 
 #include <HardpointActuatorSettings.h>
 #include <HardpointActuatorWarning.h>
@@ -33,8 +33,8 @@
 #include <Model.h>
 #include <PositionController.h>
 #include <PositionControllerSettings.h>
-#include <Range.h>
 #include <RaisingLoweringInfo.h>
+#include <Range.h>
 #include <TMA.h>
 
 using namespace MTM1M3;
@@ -137,8 +137,10 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
             if (waitTension == WAITING) {
                 _counter = 0;
             } else {
-                SPDLOG_WARN("Violated hardpoint {} measured force {} ({}th occurence), limit {} to {}", _hp,
-                            measured, _counter, lowLimit, highLimit);
+                SPDLOG_WARN(
+                        "Violated hardpoint {} measured force {} ({}th occurence), "
+                        "limit {} to {}",
+                        _hp, measured, _counter, lowLimit, highLimit);
             }
         }
 
@@ -171,7 +173,8 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
     for (int i = 0; i < HP_COUNT; i++) {
         bool inRange = false;
         float lowLimit = baseLowLimit;
-        // low limit when lowering needs to be adjusted. M1M3 shall not follow anything unsignificant
+        // low limit when lowering needs to be adjusted. M1M3 shall not follow
+        // anything unsignificant
         if (raise == false && _hardpointActuatorState->motionState[i] ==
                                       MTM1M3_shared_HardpointActuatorMotionState_WaitingTension) {
             lowLimit = (baseLowLimit + highLimit) / 2.0;
@@ -182,7 +185,8 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
 
         raiseLowerInfo->setHPWait(i, !inRange);
 
-        // tread HP 2 and 5 (index 1 and 4) differently when raising/lowering below 45 deg in elevation
+        // tread HP 2 and 5 (index 1 and 4) differently when raising/lowering below
+        // 45 deg in elevation
         if ((TMA::instance().getElevation() < _hardpointActuatorSettings->ignoreTensionRaisingLowering) &&
             hp_can_see_tension(i)) {
             switch (_hardpointActuatorState->motionState[i]) {
@@ -193,7 +197,8 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
                             if (_waitTension[i] != ALREADY_WAITED) {
                                 _waitTension[i] = ALREADY_WAITED;
                                 SPDLOG_ERROR(
-                                        "HP {} chasing still enabled, as the HP was already in waiting state",
+                                        "HP {} chasing still enabled, as the HP was already "
+                                        "in waiting state",
                                         i + 1);
                             }
                             ret = ret & inRange;
@@ -205,7 +210,8 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
                             M1M3SSPublisher::instance().logHardpointActuatorState();
                             if (raise) {
                                 SPDLOG_WARN(
-                                        "HP {} waiting for tension force to clear as the mirror will raise",
+                                        "HP {} waiting for tension force to clear as the "
+                                        "mirror will raise",
                                         i + 1);
                             } else {
                                 SPDLOG_WARN("HP {} disable chasing as tension force is too high", i + 1);
@@ -282,7 +288,7 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
     return true;
 }
 
-bool PositionController::move(int32_t* steps) {
+bool PositionController::move(int32_t *steps) {
     SPDLOG_INFO("PositionController: move({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", steps[0], steps[1], steps[2],
                 steps[3], steps[4], steps[5]);
     if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
@@ -323,7 +329,7 @@ bool PositionController::move(int32_t* steps) {
     return true;
 }
 
-bool PositionController::moveToEncoder(int32_t* encoderValues) {
+bool PositionController::moveToEncoder(int32_t *encoderValues) {
     SPDLOG_INFO("PositionController: moveToEncoder({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", encoderValues[0],
                 encoderValues[1], encoderValues[2], encoderValues[3], encoderValues[4], encoderValues[5]);
     if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
@@ -349,12 +355,12 @@ bool PositionController::moveToEncoder(int32_t* encoderValues) {
         _stableEncoderCount[i] = 0;
         _unstableEncoderCount[i] = 0;
         int deltaEncoder = _targetEncoderValues[i] - _hardpointActuatorData->encoder[i];
-        // If we overshoot our target encoder value we have to clear what appears to be quite a bit of
-        // backlash So lets not overshoot our target
+        // If we overshoot our target encoder value we have to clear what appears to
+        // be quite a bit of backlash So lets not overshoot our target
         if (deltaEncoder > 0) {
             deltaEncoder -= 4;
-            // We are already very close to our target so lets not do anything during the quick positioning
-            // phase
+            // We are already very close to our target so lets not do anything during
+            // the quick positioning phase
             if (deltaEncoder < 0) {
                 deltaEncoder = 0;
             }
@@ -552,10 +558,11 @@ void PositionController::checkLimits(int hp) {
     _safetyController->positionControllerNotifyLimitHigh(hp, highLimit);
 }
 
-void PositionController::_convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY,
+void PositionController::_convertToSteps(int32_t *steps, double x, double y, double z, double rX, double rY,
                                          double rZ) {
-    // The reason for defining HP 3 first (index 2) is due to the matrix. Review the
-    // MirrorPositionToHardpointDisplacementTable for a description of the matrix.
+    // The reason for defining HP 3 first (index 2) is due to the matrix. Review
+    // the MirrorPositionToHardpointDisplacementTable for a description of the
+    // matrix.
     steps[2] = (_hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[0] * x +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[1] * y +
                 _hardpointActuatorSettings->MirrorPositionToHardpointDisplacement[2] * z +

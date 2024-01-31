@@ -33,8 +33,8 @@
 #include <IFPGA.h>
 #include <M1M3SSPublisher.h>
 #include <SupportFPGAData.h>
-#include <Timestamp.h>
 #include <TMA.h>
+#include <Timestamp.h>
 #include <Units.h>
 
 using namespace LSST::M1M3::SS;
@@ -53,10 +53,10 @@ void Accelerometer::processData() {
     // TODO: Handle no data available
     // TODO: Handle acceleration limits, push to safety controller
     SPDLOG_TRACE("Accelerometer: processData()");
-    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
     _accelerometerData->timestamp = Timestamp::fromFPGA(fpgaData->AccelerometerSampleTimestamp);
 
-    auto& accelerometerSettings = AccelerometerSettings::instance();
+    auto &accelerometerSettings = AccelerometerSettings::instance();
 
     for (int i = 0; i < 8; i++) {
         _accelerometerData->rawAccelerometer[i] = fpgaData->AccelerometerRaw[i];
@@ -90,8 +90,9 @@ void Accelerometer::processData() {
             applyPoly(accelerometerSettings.zElevationPoly, elevation);
 
     /** _accelerometerData->angularAccelerationZ =
-            RAD2D * (_accelerometerData->accelerometer[0] + _accelerometerData->accelerometer[2] -
-             _accelerometerData->accelerometer[4] - _accelerometerData->accelerometer[6]) /
+            RAD2D * (_accelerometerData->accelerometer[0] +
+       _accelerometerData->accelerometer[2] - _accelerometerData->accelerometer[4]
+       - _accelerometerData->accelerometer[6]) /
             (accelerometerSettings.angularAccelerationDistance[2] * 2); */
     M1M3SSPublisher::instance().putAccelerometerData();
 }

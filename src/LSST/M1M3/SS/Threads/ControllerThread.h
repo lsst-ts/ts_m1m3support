@@ -53,7 +53,7 @@ public:
      *
      * @return singleton instance
      */
-    static ControllerThread& get();
+    static ControllerThread &get();
 
     void run();
     void stop();
@@ -61,18 +61,18 @@ public:
     /**
      * @brief Put command into queue.
      */
-    void enqueue(Command* command);
+    void enqueue(Command *command);
 
 private:
-    ControllerThread& operator=(const ControllerThread&) = delete;
-    ControllerThread(const ControllerThread&) = delete;
+    ControllerThread &operator=(const ControllerThread &) = delete;
+    ControllerThread(const ControllerThread &) = delete;
 
     void _clear();
-    void _execute(Command* command);
+    void _execute(Command *command);
 
     bool _keepRunning;
     std::mutex _mutex;
-    std::queue<Command*> _queue;
+    std::queue<Command *> _queue;
     std::condition_variable _cv;
 };
 

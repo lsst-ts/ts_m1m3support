@@ -556,14 +556,16 @@ void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primary
         auto ImmediateFaultThreshold = primary.GetColumn<float>("ImmediateFaultThreshold");
         for (int i = 0; i < FA_COUNT; i++) {
             if (WarningThreshold[i] > ImmediateFaultThreshold[i]) {
-                throw std::runtime_error(fmt::format(
-                        "Primary FA ID {} warning threshold is larger than immediate fault: {} > {}", ID[i],
-                        WarningThreshold[i], ImmediateFaultThreshold[i]));
+                throw std::runtime_error(
+                        fmt::format("Primary FA ID {} warning threshold is larger than immediate "
+                                    "fault: {} > {}",
+                                    ID[i], WarningThreshold[i], ImmediateFaultThreshold[i]));
             }
             if (CountingFaultThreshold[i] > ImmediateFaultThreshold[i]) {
-                throw std::runtime_error(fmt::format(
-                        "Primary FA ID {} counting threshold is larger than immediate fault: {} > {}", ID[i],
-                        CountingFaultThreshold[i], ImmediateFaultThreshold[i]));
+                throw std::runtime_error(
+                        fmt::format("Primary FA ID {} counting threshold is larger than immediate "
+                                    "fault: {} > {}",
+                                    ID[i], CountingFaultThreshold[i], ImmediateFaultThreshold[i]));
             }
 
             primaryFollowingErrorWarningThreshold[i] = WarningThreshold[i];
@@ -580,7 +582,8 @@ void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primary
         auto ID = secondary.GetColumn<int>("ID");
         if (ID.size() != FA_S_COUNT) {
             throw std::runtime_error(
-                    fmt::format("SecondaryFollowingErrorTable {} doesn't contain all {} rows - {} read",
+                    fmt::format("SecondaryFollowingErrorTable {} doesn't contain all {} "
+                                "rows - {} read",
                                 secondaryFullPath, FA_S_COUNT, ID.size()));
         }
         auto WarningThreshold = secondary.GetColumn<float>("WarningThreshold");
@@ -588,14 +591,16 @@ void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primary
         auto ImmediateFaultThreshold = secondary.GetColumn<float>("ImmediateFaultThreshold");
         for (int i = 0; i < FA_S_COUNT; i++) {
             if (WarningThreshold[i] > ImmediateFaultThreshold[i]) {
-                throw std::runtime_error(fmt::format(
-                        "Secondary FA ID {} warning threshold is larger than immediate fault: {} > {}", ID[i],
-                        WarningThreshold[i], ImmediateFaultThreshold[i]));
+                throw std::runtime_error(
+                        fmt::format("Secondary FA ID {} warning threshold is larger than immediate "
+                                    "fault: {} > {}",
+                                    ID[i], WarningThreshold[i], ImmediateFaultThreshold[i]));
             }
             if (CountingFaultThreshold[i] > ImmediateFaultThreshold[i]) {
-                throw std::runtime_error(fmt::format(
-                        "Secondary FA ID {} counting threshold is larger than immediate fault: {} > {}",
-                        ID[i], CountingFaultThreshold[i], ImmediateFaultThreshold[i]));
+                throw std::runtime_error(
+                        fmt::format("Secondary FA ID {} counting threshold is larger than immediate "
+                                    "fault: {} > {}",
+                                    ID[i], CountingFaultThreshold[i], ImmediateFaultThreshold[i]));
             }
 
             secondaryFollowingErrorWarningThreshold[i] = WarningThreshold[i];

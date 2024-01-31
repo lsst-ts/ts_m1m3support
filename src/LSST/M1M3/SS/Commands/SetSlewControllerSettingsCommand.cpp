@@ -36,7 +36,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 SetSlewControllerSettingsCommand::SetSlewControllerSettingsCommand(
-        int32_t commandID, MTM1M3_command_setSlewControllerSettingsC* data)
+        int32_t commandID, MTM1M3_command_setSlewControllerSettingsC *data)
         : Command(commandID) {
     _data = *data;
 }
@@ -61,7 +61,7 @@ bool SetSlewControllerSettingsCommand::validate() {
 
 void SetSlewControllerSettingsCommand::execute() { Context::get().setSlewControllerSettings(this); }
 
-void SetSlewControllerSettingsCommand::ackInProgress(const char* description, double timeout) {
+void SetSlewControllerSettingsCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandsetSlewControllerSettings(getCommandID(), ACK_INPROGRESS,
                                                                     description, timeout);
 }

@@ -35,7 +35,7 @@
 
 using namespace LSST::M1M3::SS;
 
-SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSettings) {
+SafetyController::SafetyController(SafetyControllerSettings *safetyControllerSettings) {
     SPDLOG_DEBUG("SafetyController: SafetyController()");
     _safetyControllerSettings = safetyControllerSettings;
     _errorCodeData = M1M3SSPublisher::instance().getEventErrorCode();
@@ -462,8 +462,9 @@ void SafetyController::positionControllerHighTension(int hp, float weightSupport
                     _safetyControllerSettings->PositionController.FaultForTensionAboveSupported >= 0,
                     weightSupportedPercent >
                             _safetyControllerSettings->PositionController.FaultForTensionAboveSupported,
-                    "Hardpoint #{} still in tension (not chasing) above {}% supported, limit is {}%.", hp + 1,
-                    weightSupportedPercent,
+                    "Hardpoint #{} still in tension (not chasing) above {}% "
+                    "supported, limit is {}%.",
+                    hp + 1, weightSupportedPercent,
                     _safetyControllerSettings->PositionController.FaultForTensionAboveSupported);
 }
 
@@ -668,7 +669,8 @@ void SafetyController::userPanic() {
 
 States::Type SafetyController::checkSafety(States::Type preferredNextState) {
     if (_errorCodeData->errorCode != FaultCodes::NoFault) {
-        // shall first make sure mirror is faulted, before performing anything else (logging,..)
+        // shall first make sure mirror is faulted, before performing anything else
+        // (logging,..)
         LoweringFaultState::ensureFaulted();
         M1M3SSPublisher::instance().logErrorCode();
         DigitalInputOutput::instance().setCriticalFailureToSafetyController();

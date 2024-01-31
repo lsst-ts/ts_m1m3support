@@ -16,14 +16,15 @@
  *
  * This is a #define to allow for string literal concatenation. For example:
  *
- *    static const char* const Bitfile = "C:\\" NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile;
+ *    static const char* const Bitfile = "C:\\"
+ * NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile;
  */
 #define NiFpga_ts_M1M3SupportExpansionFPGA_Bitfile "NiFpga_ts_M1M3SupportExpansionFPGA.lvbitx"
 
 /**
  * The signature of the FPGA bitfile.
  */
-static const char* const NiFpga_ts_M1M3SupportExpansionFPGA_Signature = "83550EEFE36B089CB5745FB593A813FA";
+static const char *const NiFpga_ts_M1M3SupportExpansionFPGA_Signature = "83550EEFE36B089CB5745FB593A813FA";
 
 #if NiFpga_Cpp
 extern "C" {

@@ -154,7 +154,7 @@ void HardpointActuatorWarning::setStatus(int32_t hpIndex, double _timestamp, uin
     broadcastCounterWarning[hpIndex] = broadcastCounter != ((status & 0xF0) >> 4);
 }
 
-void HardpointActuatorWarning::parseIlcStatus(ModbusBuffer* buffer, int32_t hpIndex) {
+void HardpointActuatorWarning::parseIlcStatus(ModbusBuffer *buffer, int32_t hpIndex) {
     uint16_t ilcStatus = buffer->readU16();
     uint16_t ilcFaults = buffer->readU16();
 

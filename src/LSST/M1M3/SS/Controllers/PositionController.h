@@ -26,11 +26,11 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <cRIO/DataTypes.h>
 #include <HardpointActuatorSettings.h>
 #include <PositionControllerSettings.h>
 #include <SafetyController.h>
 #include <Units.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -104,10 +104,11 @@ public:
      *
      * @param steps array of 6 HP steps offsets
      *
-     * @return false if move cannot be perfomed, as not all actuators are in Standby state
+     * @return false if move cannot be perfomed, as not all actuators are in
+     * Standby state
      */
-    bool move(int32_t* steps);
-    bool moveToEncoder(int32_t* encoderValues);
+    bool move(int32_t *steps);
+    bool moveToEncoder(int32_t *encoderValues);
 
     /**
      * Commands mirror to move to new position.
@@ -141,8 +142,8 @@ public:
     /**
      * Stops HP motion. If index is negative, all hardpoints are stopped.
      *
-     * @param hardpointIndex index of the hardpoint to stop, or negative value to stop all hardpoints,
-     * Defaults to -1.
+     * @param hardpointIndex index of the hardpoint to stop, or negative value to
+     * stop all hardpoints, Defaults to -1.
      */
     void stopMotion(int hardpointIndex = -1);
 
@@ -181,18 +182,18 @@ public:
     void checkLimits(int hp);
 
 private:
-    void _convertToSteps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
+    void _convertToSteps(int32_t *steps, double x, double y, double z, double rX, double rY, double rZ);
 
     void _checkFollowingError(int hp);
 
     void _resetWaitTension();
 
-    PositionControllerSettings* _positionControllerSettings;
-    HardpointActuatorSettings* _hardpointActuatorSettings;
+    PositionControllerSettings *_positionControllerSettings;
+    HardpointActuatorSettings *_hardpointActuatorSettings;
 
-    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
-    MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
-    MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
+    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
+    MTM1M3_logevent_hardpointActuatorStateC *_hardpointActuatorState;
+    MTM1M3_logevent_hardpointActuatorInfoC *_hardpointInfo;
 
     int32_t _scaledMaxStepsPerLoop[HP_COUNT];
     int32_t _targetEncoderValues[HP_COUNT];
@@ -203,7 +204,7 @@ private:
     wait_tension_t _waitTension[HP_COUNT];
     uint16_t _raisingLoweringInRangeSamples[HP_COUNT];
 
-    SafetyController* _safetyController;
+    SafetyController *_safetyController;
 };
 
 } /* namespace SS */

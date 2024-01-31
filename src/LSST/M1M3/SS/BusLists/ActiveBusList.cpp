@@ -29,14 +29,14 @@
 
 #include <ActiveBusList.h>
 #include <BoosterValveStatus.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
 #include <M1M3SSPublisher.h>
 #include <RoundRobin.h>
 
 using namespace LSST::M1M3::SS;
 
-ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
+ActiveBusList::ActiveBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("RaisedBusList: RaisedBusList()");
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();

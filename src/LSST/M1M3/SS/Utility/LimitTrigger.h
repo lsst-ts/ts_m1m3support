@@ -47,8 +47,8 @@ namespace SS {
  *     }
  *
  *     bool trigger() override { return ++_counter >= _minOccurence; }
- *     void execute(const char *msg) override { std::cout << "Executed with message " << msg << std::endl; }
- *     void reset() override { _counter = 0; }
+ *     void execute(const char *msg) override { std::cout << "Executed with
+ * message " << msg << std::endl; } void reset() override { _counter = 0; }
  *
  * private:
  *     int _counter;
@@ -70,7 +70,8 @@ public:
     LimitTrigger() {}
 
     /**
-     * Should be called from code when out of bounds conditions for triggering is detected.
+     * Should be called from code when out of bounds conditions for triggering is
+     * detected.
      *
      * @param args arguments that will be passed to execute method if
      * triggering conditions are met.

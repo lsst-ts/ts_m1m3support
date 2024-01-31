@@ -29,7 +29,7 @@ using namespace LSST::M1M3::SS;
 
 ForceActuatorInfo::ForceActuatorInfo(token) {}
 
-void ForceActuatorInfo::populate(ForceActuatorApplicationSettings* forceActuatorApplicationSettings) {
+void ForceActuatorInfo::populate(ForceActuatorApplicationSettings *forceActuatorApplicationSettings) {
     SPDLOG_DEBUG("Populating ForceActuatorInfo");
     for (int i = 0; i < FA_COUNT; i++) {
         ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
@@ -53,7 +53,7 @@ void ForceActuatorInfo::populate(ForceActuatorApplicationSettings* forceActuator
     }
 }
 
-void ForceActuatorInfo::parseServerIDResponse(ModbusBuffer* buffer, int32_t dataIndex) {
+void ForceActuatorInfo::parseServerIDResponse(ModbusBuffer *buffer, int32_t dataIndex) {
     uint8_t length = buffer->readU8();
 
     ilcUniqueId[dataIndex] = buffer->readU48();
@@ -70,7 +70,7 @@ void ForceActuatorInfo::parseServerIDResponse(ModbusBuffer* buffer, int32_t data
     buffer->skipToNextFrame();
 }
 
-void ForceActuatorInfo::parseBoosterValveDCAGains(ModbusBuffer* buffer, int32_t dataIndex) {
+void ForceActuatorInfo::parseBoosterValveDCAGains(ModbusBuffer *buffer, int32_t dataIndex) {
     mezzaninePrimaryCylinderGain[dataIndex] = buffer->readSGL();
     mezzanineSecondaryCylinderGain[dataIndex] = buffer->readSGL();
 
@@ -81,7 +81,7 @@ void ForceActuatorInfo::setFACalibration(int32_t dataIndex, uint8_t _adcScanRate
     adcScanRate[dataIndex] = _adcScanRate;
 }
 
-void ForceActuatorInfo::parseFAADCScanRate(ModbusBuffer* buffer, int32_t dataIndex) {
+void ForceActuatorInfo::parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataIndex) {
     mainPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
     mainSecondaryCylinderCoefficient[dataIndex] = mainPrimaryCylinderCoefficient[dataIndex];
     buffer->readSGL();  // Main Coefficient K2
@@ -112,7 +112,7 @@ void ForceActuatorInfo::parseFAADCScanRate(ModbusBuffer* buffer, int32_t dataInd
     buffer->skipToNextFrame();
 }
 
-void ForceActuatorInfo::parseSetDCAID(ModbusBuffer* buffer, int32_t dataIndex) {
+void ForceActuatorInfo::parseSetDCAID(ModbusBuffer *buffer, int32_t dataIndex) {
     mezzanineUniqueId[dataIndex] = buffer->readU48();
     mezzanineFirmwareType[dataIndex] = buffer->readU8();
     mezzanineMajorRevision[dataIndex] = buffer->readU8();

@@ -4,6 +4,13 @@
 Version History
 ===============
 
+v2.15.3
+-------
+
+* m1m3sscli set-dca-gain and dca-gain commands
+* changed IRQ timeouts
+* Adjust to new cRIOcpp version
+
 v2.15.2
 -------
 

@@ -24,13 +24,13 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
-#include <TurnPowerOffCommand.h>
 #include <M1M3SSPublisher.h>
+#include <TurnPowerOffCommand.h>
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-TurnPowerOffCommand::TurnPowerOffCommand(int32_t commandID, MTM1M3_command_turnPowerOffC* data)
+TurnPowerOffCommand::TurnPowerOffCommand(int32_t commandID, MTM1M3_command_turnPowerOffC *data)
         : Command(commandID) {
     _data.turnPowerNetworkAOff = data->turnPowerNetworkAOff;
     _data.turnPowerNetworkBOff = data->turnPowerNetworkBOff;
@@ -56,7 +56,7 @@ bool TurnPowerOffCommand::validate() {
 
 void TurnPowerOffCommand::execute() { Context::get().turnPowerOff(this); }
 
-void TurnPowerOffCommand::ackInProgress(const char* description, double timeout) {
+void TurnPowerOffCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnPowerOff(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

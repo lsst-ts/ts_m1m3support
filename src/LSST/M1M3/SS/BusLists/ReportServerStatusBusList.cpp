@@ -21,15 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ReportServerStatusBusList.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
+#include <ReportServerStatusBusList.h>
 #include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-ReportServerStatusBusList::ReportServerStatusBusList(ILCSubnetData* subnetData,
-                                                     ILCMessageFactory* ilcMessageFactory)
+ReportServerStatusBusList::ReportServerStatusBusList(ILCSubnetData *subnetData,
+                                                     ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportServerStatusBusList: ReportServerStatusBusList()");
 }

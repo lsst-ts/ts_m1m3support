@@ -35,10 +35,10 @@
 
 using namespace LSST::M1M3::SS;
 
-MirrorRaiseController::MirrorRaiseController(PositionController* positionController,
-                                             ForceController* forceController,
-                                             SafetyController* safetyController,
-                                             PowerController* powerController) {
+MirrorRaiseController::MirrorRaiseController(PositionController *positionController,
+                                             ForceController *forceController,
+                                             SafetyController *safetyController,
+                                             PowerController *powerController) {
     SPDLOG_DEBUG("MirrorRaiseController: MirrorRaiseController()");
     _positionController = positionController;
     _forceController = forceController;
@@ -82,7 +82,8 @@ void MirrorRaiseController::start(bool bypassMoveToReference) {
 
     if (AirSupplyStatus::instance().airValveClosed == true) {
         SPDLOG_WARN(
-                "Air valve is closed and the mirror was commanded to raise. Please check that the compressed "
+                "Air valve is closed and the mirror was commanded to raise. "
+                "Please check that the compressed "
                 "air is provided to the M1M3 support system");
     }
 }
@@ -99,27 +100,29 @@ void MirrorRaiseController::runLoop() {
         // Wait for pressure to raise after valve opening
         if (raiseInfo->supportPercentageZeroed() && hpWarning->anyLowAirPressureFault) {
             raiseInfo->setWaitAirPressure(true);
-            // hpRaiseLowerForcesInTolerance needs to be called to stop encoder movement if on tension limit
+            // hpRaiseLowerForcesInTolerance needs to be called to stop encoder
+            // movement if on tension limit
             _positionController->hpRaiseLowerForcesInTolerance(true);
             return;
         }
         raiseInfo->setWaitAirPressure(false);
-        // We are still in the process of transferring the support force from the static supports
-        // to the force actuators
+        // We are still in the process of transferring the support force from the
+        // static supports to the force actuators
         if (_positionController->hpRaiseLowerForcesInTolerance(true) &&
             _forceController->faRaiseFollowingErrorInTolerance()) {
             // The forces on the hardpoints are within tolerance and
-            // the force actuators are following their setpoints, we can continue to transfer the
-            // support force from the static supports to the force actuators
+            // the force actuators are following their setpoints, we can continue to
+            // transfer the support force from the static supports to the force
+            // actuators
             RaisingLoweringInfo::instance().incSupportPercentage();
             if (_raisePauseReported == true) {
                 _raisePauseReported = false;
                 SPDLOG_INFO("Raising resumed");
             }
             if (RaisingLoweringInfo::instance().supportPercentageFilled()) {
-                // All of the support force has been transfered from the static supports to the
-                // force actuators, stop the hardpoints from chasing and start moving to the
-                // reference position
+                // All of the support force has been transfered from the static supports
+                // to the force actuators, stop the hardpoints from chasing and start
+                // moving to the reference position
                 _positionController->disableChaseAll();
                 if (!_bypassMoveToReference) {
                     _positionController->moveToReferencePosition();
@@ -139,8 +142,10 @@ bool MirrorRaiseController::checkComplete() {
     bool forceFilled = RaisingLoweringInfo::instance().supportPercentageFilled();
     bool positionCompleted = _positionController->motionComplete();
     if (_lastForceFilled != forceFilled) {
-        SPDLOG_INFO("MirrorRaiseController::checkComplete force controller support percentage {}",
-                    forceFilled ? "filled" : "not filled");
+        SPDLOG_INFO(
+                "MirrorRaiseController::checkComplete force controller support "
+                "percentage {}",
+                forceFilled ? "filled" : "not filled");
     }
     if (_lastPositionCompleted != positionCompleted) {
         SPDLOG_INFO("MirrorRaiseController::checkComplete position controller moves {}",
@@ -155,9 +160,9 @@ bool MirrorRaiseController::checkComplete() {
 
 void MirrorRaiseController::complete() {
     SPDLOG_INFO("MirrorRaiseController: complete()");
-    // Transition to the end state (active or active engineering) if all of the support force has been
-    // transfered from the static supports to the force actuators and all hardpoints have completed their
-    // commanded motions
+    // Transition to the end state (active or active engineering) if all of the
+    // support force has been transfered from the static supports to the force
+    // actuators and all hardpoints have completed their commanded motions
     _forceController->zeroAccelerationForces();
     _forceController->zeroActiveOpticForces();
     _forceController->applyAzimuthForces();

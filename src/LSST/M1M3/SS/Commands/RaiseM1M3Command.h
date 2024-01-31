@@ -34,13 +34,13 @@ namespace SS {
 
 class RaiseM1M3Command : public Command {
 public:
-    RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C* data);
+    RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C *data);
 
-    MTM1M3_command_raiseM1M3C* getData() { return &_data; }
+    MTM1M3_command_raiseM1M3C *getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
+    void ackInProgress(const char *description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

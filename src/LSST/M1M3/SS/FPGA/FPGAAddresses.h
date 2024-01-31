@@ -24,6 +24,8 @@
 #ifndef FPGAADDRESSES_H_
 #define FPGAADDRESSES_H_
 
+#include <cstdint>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {

@@ -24,9 +24,9 @@
 #ifndef STANDBYSTATE_H_
 #define STANDBYSTATE_H_
 
-#include <UpdateCommand.h>
 #include <StartCommand.h>
 #include <State.h>
+#include <UpdateCommand.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -41,9 +41,9 @@ class StandbyState : public State {
 public:
     StandbyState();
 
-    States::Type update(UpdateCommand* command) override;
-    States::Type start(StartCommand* command) override;
-    States::Type exitControl(ExitControlCommand* command) override;
+    States::Type update(UpdateCommand *command) override;
+    States::Type start(StartCommand *command) override;
+    States::Type exitControl(ExitControlCommand *command) override;
 };
 
 } /* namespace SS */

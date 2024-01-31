@@ -30,7 +30,7 @@
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_command_applyOffsetForcesC* data)
+ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_command_applyOffsetForcesC *data)
         : Command(commandID) {
     for (int i = 0; i < FA_COUNT; i++) {
         if (i < FA_X_COUNT) {
@@ -47,7 +47,7 @@ bool ApplyOffsetForcesCommand::validate() { return true; }
 
 void ApplyOffsetForcesCommand::execute() { Context::get().applyOffsetForces(this); }
 
-void ApplyOffsetForcesCommand::ackInProgress(const char* description, double timeout) {
+void ApplyOffsetForcesCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandapplyOffsetForces(getCommandID(), ACK_INPROGRESS, description,
                                                             timeout);
 }

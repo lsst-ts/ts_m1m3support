@@ -29,10 +29,10 @@
 #include <cRIO/Singleton.h>
 
 #include <AirSupplyStatus.h>
-#include <cRIO/DataTypes.h>
 #include <IFPGA.h>
 #include <InterlockStatus.h>
 #include <SafetyController.h>
+#include <cRIO/DataTypes.h>
 
 struct MTM1M3_logevent_airSupplyStatusC;
 struct MTM1M3_logevent_airSupplyWarningC;
@@ -59,7 +59,7 @@ public:
      * Sets the safety controller.
      * @param[in] safetyController The safety controller.
      */
-    void setSafetyController(SafetyController* safetyController);
+    void setSafetyController(SafetyController *safetyController);
 
     /*!
      * Processes currently available digital input and output data and publish it.
@@ -104,13 +104,13 @@ public:
     void turnCellLightsOff();
 
 private:
-    SafetyController* _safetyController;
+    SafetyController *_safetyController;
 
-    AirSupplyStatus* _airSupplyStatus;
-    MTM1M3_logevent_airSupplyWarningC* _airSupplyWarning;
-    MTM1M3_logevent_cellLightStatusC* _cellLightStatus;
-    MTM1M3_logevent_cellLightWarningC* _cellLightWarning;
-    InterlockStatus* _interlockStatus;
+    AirSupplyStatus *_airSupplyStatus;
+    MTM1M3_logevent_airSupplyWarningC *_airSupplyWarning;
+    MTM1M3_logevent_cellLightStatusC *_cellLightStatus;
+    MTM1M3_logevent_cellLightWarningC *_cellLightWarning;
+    InterlockStatus *_interlockStatus;
 
     uint64_t _lastDOTimestamp;
     uint64_t _lastDITimestamp;

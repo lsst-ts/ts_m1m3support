@@ -31,12 +31,12 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 DisableHardpointChaseCommand::DisableHardpointChaseCommand(int32_t commandID,
-                                                           MTM1M3_command_disableHardpointChaseC* data)
+                                                           MTM1M3_command_disableHardpointChaseC *data)
         : Command(commandID) {}
 
 void DisableHardpointChaseCommand::execute() { Context::get().disableHardpointChase(this); }
 
-void DisableHardpointChaseCommand::ackInProgress(const char* description, double timeout) {
+void DisableHardpointChaseCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommanddisableHardpointChase(getCommandID(), ACK_INPROGRESS, description,
                                                                 timeout);
 }

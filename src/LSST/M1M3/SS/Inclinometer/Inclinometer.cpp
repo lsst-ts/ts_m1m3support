@@ -22,12 +22,12 @@
  */
 
 #include <Inclinometer.h>
-#include <SupportFPGAData.h>
-#include <M1M3SSPublisher.h>
-#include <SafetyController.h>
 #include <InclinometerSettings.h>
-#include <Timestamp.h>
+#include <M1M3SSPublisher.h>
 #include <SAL_MTM1M3C.h>
+#include <SafetyController.h>
+#include <SupportFPGAData.h>
+#include <Timestamp.h>
 #include <spdlog/spdlog.h>
 
 #include <cstring>
@@ -36,7 +36,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Inclinometer::Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController) {
+Inclinometer::Inclinometer(SupportFPGAData *fpgaData, SafetyController *safetyController) {
     SPDLOG_DEBUG("Inclinometer: Inclinometer()");
 
     _fpgaData = fpgaData;

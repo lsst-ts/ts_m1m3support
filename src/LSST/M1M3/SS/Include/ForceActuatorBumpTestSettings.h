@@ -35,12 +35,13 @@ namespace SS {
  */
 struct ForceActuatorBumpTestSettings {
     /**
-     * Warning tolerance. If crossed and below error tolerance, warning log entry will be produced. Test shall
-     * not pass.
+     * Warning tolerance. If crossed and below error tolerance, warning log entry
+     * will be produced. Test shall not pass.
      */
     float warning;
     /**
-     * Error tolerance. If crossed, test shall fail and error log entry with explanation will be produced.
+     * Error tolerance. If crossed, test shall fail and error log entry with
+     * explanation will be produced.
      */
     float error;
 

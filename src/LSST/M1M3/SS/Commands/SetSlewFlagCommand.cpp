@@ -24,8 +24,8 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
-#include <SetSlewFlagCommand.h>
 #include <M1M3SSPublisher.h>
+#include <SetSlewFlagCommand.h>
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
@@ -34,7 +34,7 @@ SetSlewFlagCommand::SetSlewFlagCommand(int32_t commandID) : Command(commandID) {
 
 void SetSlewFlagCommand::execute() { Context::get().setSlewFlag(this); }
 
-void SetSlewFlagCommand::ackInProgress(const char* description, double timeout) {
+void SetSlewFlagCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandsetSlewFlag(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

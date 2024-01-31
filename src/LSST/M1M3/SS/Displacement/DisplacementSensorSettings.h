@@ -33,8 +33,8 @@
 
 #include <cRIO/Singleton.h>
 
-#include <cRIO/DataTypes.h>
 #include <M1M3SSPublisher.h>
+#include <cRIO/DataTypes.h>
 
 namespace LSST {
 namespace M1M3 {

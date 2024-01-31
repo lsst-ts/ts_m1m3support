@@ -24,19 +24,19 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
-#include <StopHardpointMotionCommand.h>
 #include <M1M3SSPublisher.h>
+#include <StopHardpointMotionCommand.h>
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 StopHardpointMotionCommand::StopHardpointMotionCommand(int32_t commandID,
-                                                       MTM1M3_command_stopHardpointMotionC*)
+                                                       MTM1M3_command_stopHardpointMotionC *)
         : Command(commandID) {}
 
 void StopHardpointMotionCommand::execute() { Context::get().stopHardpointMotion(this); }
 
-void StopHardpointMotionCommand::ackInProgress(const char* description, double timeout) {
+void StopHardpointMotionCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandstopHardpointMotion(getCommandID(), ACK_INPROGRESS, description,
                                                               timeout);
 }

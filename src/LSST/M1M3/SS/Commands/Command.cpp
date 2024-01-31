@@ -33,6 +33,6 @@ double Command::getDefaultTimeout() { return DEFAULT_CMD_TIMEOUT; }
 
 bool Command::validate() { return true; }
 void Command::execute() {}
-void Command::ackInProgress(const char* description, double timeout) {}
+void Command::ackInProgress(const char *description, double timeout) {}
 void Command::ackComplete() {}
 void Command::ackFailed(std::string reason) {}

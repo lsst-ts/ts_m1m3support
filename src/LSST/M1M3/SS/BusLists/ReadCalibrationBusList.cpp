@@ -21,15 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ReadCalibrationBusList.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
+#include <ReadCalibrationBusList.h>
 #include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-ReadCalibrationBusList::ReadCalibrationBusList(ILCSubnetData* subnetData,
-                                               ILCMessageFactory* ilcMessageFactory)
+ReadCalibrationBusList::ReadCalibrationBusList(ILCSubnetData *subnetData,
+                                               ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReadCalibrationBusList: ReadCalibrationBusList()");
 }

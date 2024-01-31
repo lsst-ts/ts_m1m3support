@@ -51,10 +51,11 @@ struct HardpointActuatorTableRow {
 class HardpointActuatorApplicationSettings {
 public:
     /**
-     * Source data. Contains hardpoint actuator position and addresses. Populated in
-     * HardpointActuatorApplicationSettings.cpp.
+     * Source data. Contains hardpoint actuator position and addresses. Populated
+     * in HardpointActuatorApplicationSettings.cpp.
      *
-     * @snippet Settings/HardpointActuatorApplicationSettings.cpp HarpointActuatorTableRow initialization
+     * @snippet Settings/HardpointActuatorApplicationSettings.cpp
+     * HarpointActuatorTableRow initialization
      *
      * @see ForceActuatorTableRow
      */

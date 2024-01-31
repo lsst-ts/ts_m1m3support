@@ -26,15 +26,15 @@
 
 #include <spdlog/spdlog.h>
 
-#include <Heartbeat.h>
+#include <cRIO/NiError.h>
+
 #include <ExpansionFPGA.h>
 #include <ExpansionFPGAApplicationSettings.h>
-#include <NiError.h>
+#include <Heartbeat.h>
 #include <NiFpga_ts_M1M3SupportExpansionFPGA.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::cRIO;
+using namespace LSST::M1M3::SS;
 
 ExpansionFPGA::ExpansionFPGA() {
     SPDLOG_DEBUG("ExpansionFPGA: ExpansionFPGA()");
@@ -66,7 +66,7 @@ void ExpansionFPGA::open() {
     NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(), 0,
            &(_session));
 
-    auto& heartbeat = Heartbeat::instance();
+    auto &heartbeat = Heartbeat::instance();
     heartbeat.tryToggle();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
@@ -112,7 +112,7 @@ void ExpansionFPGA::sample() {
                  NiFpga_WriteBool(_session, NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample, true));
 }
 
-void ExpansionFPGA::readSlot1(float* data) {
+void ExpansionFPGA::readSlot1(float *data) {
     if (_disabled) {
         return;
     }
@@ -121,14 +121,10 @@ void ExpansionFPGA::readSlot1(float* data) {
                                      data, 6));
 }
 
-void ExpansionFPGA::readSlot2(uint32_t* data) {
+void ExpansionFPGA::readSlot2(uint32_t *data) {
     if (_disabled) {
         return;
     }
     NiThrowError(__PRETTY_FUNCTION__,
                  NiFpga_ReadU32(_session, NiFpga_ts_M1M3SupportExpansionFPGA_IndicatorU32_Slot2, data));
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

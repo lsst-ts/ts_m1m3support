@@ -34,13 +34,13 @@ namespace SS {
 
 class RunMirrorForceProfileCommand : public Command {
 public:
-    RunMirrorForceProfileCommand(int32_t commandID, MTM1M3_command_runMirrorForceProfileC* data);
+    RunMirrorForceProfileCommand(int32_t commandID, MTM1M3_command_runMirrorForceProfileC *data);
 
-    MTM1M3_command_runMirrorForceProfileC* getData() { return &_data; }
+    MTM1M3_command_runMirrorForceProfileC *getData() { return &_data; }
 
     bool validate();
     void execute();
-    void ackInProgress(const char* description, double timeout);
+    void ackInProgress(const char *description, double timeout);
     void ackComplete();
     void ackFailed(std::string reason);
 

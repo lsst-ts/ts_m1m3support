@@ -24,8 +24,8 @@
 #ifndef FPGA_H_
 #define FPGA_H_
 
-#include <NiFpga.h>
 #include <IFPGA.h>
+#include <NiFpga.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -63,22 +63,22 @@ public:
     void pullTelemetry() override;
     void pullHealthAndStatus() override;
 
-    void writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
-    void writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
+    void writeCommandFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) override;
+    void writeRequestFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) override;
     void writeTimestampFIFO(uint64_t timestamp) override;
-    void readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) override;
-    void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
+    void readU8ResponseFIFO(uint8_t *data, size_t length, uint32_t timeoutInMs) override;
+    void readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) override;
 
-    std::vector<uint8_t> readMPUFIFO(cRIO::MPU& mpu) override { throw std::runtime_error("readMPU called"); }
-    void writeMPUFIFO(cRIO::MPU& mpu) override {}
+    std::vector<uint8_t> readMPUFIFO(cRIO::MPU &mpu) override { throw std::runtime_error("readMPU called"); }
+    void writeMPUFIFO(cRIO::MPU &mpu) override {}
 
-    void waitOnIrqs(uint32_t irqs, uint32_t timeout, bool& timedout, uint32_t* triggered = NULL) override;
+    void waitOnIrqs(uint32_t irqs, uint32_t timeout, bool &timedout, uint32_t *triggered = NULL) override;
     void ackIrqs(uint32_t irqs) override;
 
     void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) override;
-    void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) override;
+    void readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeoutInMs = 10) override;
 
-    void readRawAccelerometerFIFO(uint64_t* raw, size_t samples) override;
+    void readRawAccelerometerFIFO(uint64_t *raw, size_t samples) override;
 
 private:
     uint32_t _session;

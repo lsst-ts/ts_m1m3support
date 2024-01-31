@@ -34,13 +34,13 @@ namespace SS {
 
 class MoveHardpointActuatorsCommand : public Command {
 public:
-    MoveHardpointActuatorsCommand(int32_t commandID, MTM1M3_command_moveHardpointActuatorsC* data);
+    MoveHardpointActuatorsCommand(int32_t commandID, MTM1M3_command_moveHardpointActuatorsC *data);
 
-    MTM1M3_command_moveHardpointActuatorsC* getData() { return &_data; }
+    MTM1M3_command_moveHardpointActuatorsC *getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
+    void ackInProgress(const char *description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

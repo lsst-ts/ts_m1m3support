@@ -23,8 +23,8 @@
 
 #include <cRIO/SAL/Command.h>
 
-#include <Context.h>
 #include <ClearSlewFlagCommand.h>
+#include <Context.h>
 #include <M1M3SSPublisher.h>
 
 using namespace LSST::cRIO::SAL;
@@ -34,7 +34,7 @@ ClearSlewFlagCommand::ClearSlewFlagCommand(int32_t commandID) : Command(commandI
 
 void ClearSlewFlagCommand::execute() { Context::get().clearSlewFlag(this); }
 
-void ClearSlewFlagCommand::ackInProgress(const char* description, double timeout) {
+void ClearSlewFlagCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandclearSlewFlag(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

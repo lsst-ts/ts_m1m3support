@@ -22,12 +22,12 @@
  */
 
 #include <ControllerThread.h>
-#include <SubscriberThread.h>
 #include <M1M3SSPublisher.h>
 #include <M1M3SSSubscriber.h>
+#include <SubscriberThread.h>
 #include <chrono>
-#include <thread>
 #include <spdlog/spdlog.h>
+#include <thread>
 
 namespace LSST {
 namespace M1M3 {
@@ -104,7 +104,7 @@ void SubscriberThread::run() {
 
 void SubscriberThread::stop() { _keepRunning = false; }
 
-void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
+void SubscriberThread::_enqueueCommandIfAvailable(Command *command) {
     if (command) {
         try {
             if (command->validate()) {
@@ -115,7 +115,7 @@ void SubscriberThread::_enqueueCommandIfAvailable(Command* command) {
                         fmt::format("Command \"{}\" validation failed: {} ", info->command, info->reason));
                 delete command;
             }
-        } catch (std::exception& ex) {
+        } catch (std::exception &ex) {
             command->ackFailed(ex.what());
             delete command;
         }

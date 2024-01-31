@@ -1,10 +1,10 @@
 /*
  * Command line Thermal System client.
  *
- * Developed for the Vera C. Rubin Observatory Telescope & Site Software Systems.
- * This product includes software developed by the Vera C.Rubin Observatory Project
- * (https://www.lsst.org). See the COPYRIGHT file at the top-level directory of
- * this distribution for details of code ownership.
+ * Developed for the Vera C. Rubin Observatory Telescope & Site Software
+ * Systems. This product includes software developed by the Vera C.Rubin
+ * Observatory Project (https://www.lsst.org). See the COPYRIGHT file at the
+ * top-level directory of this distribution for details of code ownership.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -21,12 +21,12 @@
  */
 
 #include <csignal>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 #include <spdlog/async.h>
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 #include <cRIO/ElectromechanicalPneumaticILC.h>
 #include <cRIO/FPGACliApp.h>
@@ -55,10 +55,11 @@ using namespace std::chrono_literals;
 
 class M1M3SScli : public FPGACliApp {
 public:
-    M1M3SScli(const char* name, const char* description);
+    M1M3SScli(const char *name, const char *description);
     int setPower(command_vec cmds);
     int setAir(command_vec cmds);
     int setLights(command_vec cmds);
+    int setDCAGain(command_vec cmds);
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
     int setCalibration(command_vec cmds);
@@ -66,7 +67,7 @@ public:
     int dumpAccelerometer(command_vec cmds);
 
 protected:
-    virtual LSST::cRIO::FPGA* newFPGA(const char* dir) override;
+    virtual LSST::cRIO::FPGA *newFPGA(const char *dir) override;
     virtual ILCUnits getILCs(command_vec cmds) override;
 
     void _printSupportData();
@@ -80,11 +81,13 @@ protected:
     void processHardpointForceStatus(uint8_t address, uint8_t status, int32_t encoderPostion,
                                      float loadCellForce) override;
 
-    virtual void processHardpointLVDT(uint8_t address, float breakawayLVDT, float displacementLVDT) override;
+    void processDCAGain(uint8_t address, float primaryGain, float secondaryGain) override;
 
-    virtual void processSAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce) override;
-    virtual void processDAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce,
-                                       float secondaryLoadCellForce) override;
+    void processHardpointLVDT(uint8_t address, float breakawayLVDT, float displacementLVDT) override;
+
+    void processSAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce) override;
+    void processDAAForceStatus(uint8_t address, uint8_t status, float primaryLoadCellForce,
+                               float secondaryLoadCellForce) override;
 
     void processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
                                 float mainSensitivity[4], float backupADCK[4], float backupOffset[4],
@@ -102,12 +105,12 @@ public:
     PrintSSFPGA() : LSST::M1M3::SS::FPGA() {}
 #endif
 
-    void writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeout) override;
-    void writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeout) override;
-    void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeout) override;
+    void writeCommandFIFO(uint16_t *data, size_t length, uint32_t timeout) override;
+    void writeRequestFIFO(uint16_t *data, size_t length, uint32_t timeout) override;
+    void readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeout) override;
 };
 
-M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(name, description) {
+M1M3SScli::M1M3SScli(const char *name, const char *description) : FPGACliApp(name, description) {
     addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>",
                "Power off/on ILC bus");
 
@@ -151,11 +154,21 @@ M1M3SScli::M1M3SScli(const char* name, const char* description) : FPGACliApp(nam
             "Read hardpoint info");
 
     addILCCommand(
+            "dca-gain",
+            [](ILCUnit u) {
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportDCAGain(u.second);
+            },
+            "Read booster valve DCA Gain");
+
+    addILCCommand(
             "lvdt",
             [](ILCUnit u) {
                 std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportHardpointLVDT(u.second);
             },
             "Read LVDT info");
+
+    addCommand("set-dca-gain", std::bind(&M1M3SScli::setDCAGain, this, std::placeholders::_1), "DDs?",
+               NEED_FPGA, "<axial gain> <lateral gain> <ILC..>", "Set DCA gain");
 
     addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",
                NEED_FPGA, "<primary> <ILC..>", "Set ILC primary force offset");
@@ -222,6 +235,21 @@ int M1M3SScli::setLights(command_vec cmds) {
     return 0;
 }
 
+int M1M3SScli::setDCAGain(command_vec cmds) {
+    float primary = stof(cmds[0]);
+    float secondary = stof(cmds[1]);
+
+    cmds.erase(cmds.begin(), cmds.begin() + 2);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDCAGain(u.second, primary, secondary);
+    }
+    runILCCommands(500);
+    return 0;
+}
+
 int M1M3SScli::setSAAOffset(command_vec cmds) {
     float primary = stof(cmds[0]);
 
@@ -239,7 +267,7 @@ int M1M3SScli::setSAAOffset(command_vec cmds) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setSAAForceOffset(u.second, false,
                                                                                       primary);
     }
-    runILCCommands();
+    runILCCommands(500);
     return 0;
 }
 
@@ -261,7 +289,7 @@ int M1M3SScli::setDAAOffset(command_vec cmds) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDAAForceOffset(u.second, false,
                                                                                       primary, secondary);
     }
-    runILCCommands();
+    runILCCommands(500);
     return 0;
 }
 
@@ -287,19 +315,19 @@ int M1M3SScli::setCalibration(command_vec cmds) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setOffsetAndSensitivity(
                 u.second, channel, offset, sensitivity);
     }
-    runILCCommands();
+    runILCCommands(500);
     return 0;
 }
 
 class ReadRawAccelerometer : public Thread {
 public:
-    ReadRawAccelerometer(FPGAClass* _fpga) { fpga = _fpga; }
-    void run(std::unique_lock<std::mutex>& lock) override;
+    ReadRawAccelerometer(FPGAClass *_fpga) { fpga = _fpga; }
+    void run(std::unique_lock<std::mutex> &lock) override;
 
-    FPGAClass* fpga;
+    FPGAClass *fpga;
 };
 
-static ReadRawAccelerometer* rawThread = NULL;
+static ReadRawAccelerometer *rawThread = NULL;
 
 void signal_stop_dump(int signal) {
     if (rawThread == NULL) {
@@ -310,7 +338,7 @@ void signal_stop_dump(int signal) {
     std::cerr << "End dumping data." << std::endl;
 }
 
-void ReadRawAccelerometer::run(std::unique_lock<std::mutex>& lock) {
+void ReadRawAccelerometer::run(std::unique_lock<std::mutex> &lock) {
     uint64_t raw[8];
     while (keepRunning) {
         runCondition.wait_for(lock, 1ms);
@@ -331,7 +359,7 @@ void ReadRawAccelerometer::run(std::unique_lock<std::mutex>& lock) {
 int M1M3SScli::dumpAccelerometer(command_vec cmds) {
     std::cerr << "Press Ctr+c to end dump." << std::endl;
 
-    rawThread = new ReadRawAccelerometer(dynamic_cast<FPGAClass*>(getFPGA()));
+    rawThread = new ReadRawAccelerometer(dynamic_cast<FPGAClass *>(getFPGA()));
     std::signal(SIGINT, &signal_stop_dump);
 
     std::this_thread::sleep_for(500ms);
@@ -350,7 +378,7 @@ int M1M3SScli::dumpAccelerometer(command_vec cmds) {
     return 0;
 }
 
-LSST::cRIO::FPGA* M1M3SScli::newFPGA(const char* dir) { return new PrintSSFPGA(); }
+LSST::cRIO::FPGA *M1M3SScli::newFPGA(const char *dir) { return new PrintSSFPGA(); }
 
 constexpr int ILC_BUS = 5;
 
@@ -434,7 +462,7 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
                     return units;
                 }
             }
-        } catch (std::logic_error& e) {
+        } catch (std::logic_error &e) {
             std::cerr << "Non-numeric address: " << c << std::endl;
         }
 
@@ -463,8 +491,8 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
 }
 
 void M1M3SScli::_printSupportData() {
-    dynamic_cast<FPGAClass*>(getFPGA())->pullTelemetry();
-    SupportFPGAData* fpgaData = dynamic_cast<FPGAClass*>(getFPGA())->getSupportFPGAData();
+    dynamic_cast<FPGAClass *>(getFPGA())->pullTelemetry();
+    SupportFPGAData *fpgaData = dynamic_cast<FPGAClass *>(getFPGA())->getSupportFPGAData();
 
     auto printOnOff = [](bool on) { return (on ? "on" : "off"); };
     auto printNeg = [printOnOff](bool neg) { return printOnOff(!neg); };
@@ -496,7 +524,7 @@ void _printSepline() {
 }
 
 template <typename t>
-void print4(const char* name, t a[4]) {
+void print4(const char *name, t a[4]) {
     std::cout << std::setfill(' ') << std::setw(18) << name;
     for (int i = 0; i < 4; i++) {
         std::cout << " " << std::setw(15) << std::setprecision(10) << a[i];
@@ -517,6 +545,13 @@ void PrintElectromechanical::processHardpointForceStatus(uint8_t address, uint8_
     std::cout << "Encoder Position: " << encoderPostion << std::endl;
     std::cout << "Load Cell Force: " << std::setprecision(2) << std::fixed << loadCellForce << " N"
               << std::endl;
+}
+
+void PrintElectromechanical::processDCAGain(uint8_t address, float primaryGain, float secondaryGain) {
+    _printSepline();
+
+    std::cout << "Primary (axial) gain: " << primaryGain << std::endl;
+    std::cout << "Secondary (lateral) gain: " << secondaryGain << std::endl;
 }
 
 void PrintElectromechanical::processHardpointLVDT(uint8_t address, float breakawayLVDT,
@@ -573,7 +608,7 @@ void PrintElectromechanical::processMezzaninePressure(uint8_t address, float pri
     _printSepline();
     std::cout << "Pressure data " << std::to_string(getBus()) << "/" << std::to_string(address) << std::endl;
 
-    auto printPushPull = [](const char* name, float push, float pull) {
+    auto printPushPull = [](const char *name, float push, float pull) {
         std::cout << std::setfill(' ') << std::setw(10) << name << ": " << std::setw(8)
                   << std::setprecision(2) << std::fixed << push << " | " << std::setw(8)
                   << std::setprecision(2) << std::fixed << push << std::endl;
@@ -585,7 +620,7 @@ void PrintElectromechanical::processMezzaninePressure(uint8_t address, float pri
 
 M1M3SScli cli("M1M3SS", "M1M3 Support System Command Line Interface");
 
-void _printBuffer(std::string prefix, uint16_t* buf, size_t len) {
+void _printBuffer(std::string prefix, uint16_t *buf, size_t len) {
     if (cli.getDebugLevel() == 0) {
         return;
     }
@@ -597,19 +632,19 @@ void _printBuffer(std::string prefix, uint16_t* buf, size_t len) {
     std::cout << std::endl;
 }
 
-void PrintSSFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeout) {
+void PrintSSFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t timeout) {
     _printBuffer("C> ", data, length);
     FPGAClass::writeCommandFIFO(data, length, timeout);
 }
 
-void PrintSSFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeout) {
+void PrintSSFPGA::writeRequestFIFO(uint16_t *data, size_t length, uint32_t timeout) {
     _printBuffer("R> ", data, length);
     FPGAClass::writeRequestFIFO(data, length, timeout);
 }
 
-void PrintSSFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeout) {
+void PrintSSFPGA::readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeout) {
     FPGAClass::readU16ResponseFIFO(data, length, timeout);
     _printBuffer("R< ", data, length);
 }
 
-int main(int argc, char* const argv[]) { return cli.run(argc, argv); }
+int main(int argc, char *const argv[]) { return cli.run(argc, argv); }

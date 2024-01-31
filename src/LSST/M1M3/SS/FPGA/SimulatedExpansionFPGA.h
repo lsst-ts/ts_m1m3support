@@ -24,8 +24,8 @@
 #ifndef LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
 #define LSST_M1M3_SS_FPGA_SIMULATEDEXPANSIONFPGA_H_
 
-#include <NiFpga.h>
 #include <IExpansionFPGA.h>
+#include <NiFpga.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -42,8 +42,8 @@ public:
 
     void sample() override;
 
-    void readSlot1(float* data) override;
-    void readSlot2(uint32_t* data) override;
+    void readSlot1(float *data) override;
+    void readSlot2(uint32_t *data) override;
 };
 
 }  // namespace SS

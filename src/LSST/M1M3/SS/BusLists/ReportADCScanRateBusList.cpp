@@ -21,15 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ReportADCScanRateBusList.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
+#include <ReportADCScanRateBusList.h>
 #include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
-ReportADCScanRateBusList::ReportADCScanRateBusList(ILCSubnetData* subnetData,
-                                                   ILCMessageFactory* ilcMessageFactory)
+ReportADCScanRateBusList::ReportADCScanRateBusList(ILCSubnetData *subnetData,
+                                                   ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportADCScanRateBusList: ReportADCScanRateBusList()");
 }

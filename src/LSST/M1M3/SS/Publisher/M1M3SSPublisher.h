@@ -24,9 +24,9 @@
 #ifndef M1M3SSPUBLISHER_H_
 #define M1M3SSPUBLISHER_H_
 
-#include <cRIO/DataTypes.h>
 #include <SAL_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
+#include <cRIO/DataTypes.h>
 #include <ccpp_sal_MTM1M3.h>
 
 #include <cRIO/Singleton.h>
@@ -68,115 +68,115 @@ public:
      *
      * @see putAccelerometerData
      */
-    MTM1M3_accelerometerDataC* getAccelerometerData() { return &_accelerometerData; }
-    MTM1M3_gyroDataC* getGyroData() { return &_gyroData; }
-    MTM1M3_hardpointActuatorDataC* getHardpointActuatorData() { return &_hardpointActuatorData; }
-    MTM1M3_hardpointMonitorDataC* getHardpointMonitorData() { return &_hardpointMonitorData; }
-    MTM1M3_imsDataC* getIMSData() { return &_imsData; }
-    MTM1M3_inclinometerDataC* getInclinometerData() { return &_inclinometerData; }
-    MTM1M3_outerLoopDataC* getOuterLoopData() { return &_outerLoopData; }
-    MTM1M3_pidDataC* getPIDData() { return &_pidData; }
-    MTM1M3_powerSupplyDataC* getPowerSupplyData() { return &_powerSupplyData; }
+    MTM1M3_accelerometerDataC *getAccelerometerData() { return &_accelerometerData; }
+    MTM1M3_gyroDataC *getGyroData() { return &_gyroData; }
+    MTM1M3_hardpointActuatorDataC *getHardpointActuatorData() { return &_hardpointActuatorData; }
+    MTM1M3_hardpointMonitorDataC *getHardpointMonitorData() { return &_hardpointMonitorData; }
+    MTM1M3_imsDataC *getIMSData() { return &_imsData; }
+    MTM1M3_inclinometerDataC *getInclinometerData() { return &_inclinometerData; }
+    MTM1M3_outerLoopDataC *getOuterLoopData() { return &_outerLoopData; }
+    MTM1M3_pidDataC *getPIDData() { return &_pidData; }
+    MTM1M3_powerSupplyDataC *getPowerSupplyData() { return &_powerSupplyData; }
 
-    MTM1M3_logevent_accelerometerWarningC* getEventAccelerometerWarning() {
+    MTM1M3_logevent_accelerometerWarningC *getEventAccelerometerWarning() {
         return &_eventAccelerometerWarning;
     }
-    MTM1M3_logevent_airSupplyWarningC* getEventAirSupplyWarning() { return &_eventAirSupplyWarning; }
-    MTM1M3_appliedAccelerationForcesC* getAppliedAccelerationForces() { return &_appliedAccelerationForces; }
-    MTM1M3_logevent_appliedActiveOpticForcesC* getEventAppliedActiveOpticForces() {
+    MTM1M3_logevent_airSupplyWarningC *getEventAirSupplyWarning() { return &_eventAirSupplyWarning; }
+    MTM1M3_appliedAccelerationForcesC *getAppliedAccelerationForces() { return &_appliedAccelerationForces; }
+    MTM1M3_logevent_appliedActiveOpticForcesC *getEventAppliedActiveOpticForces() {
         return &_eventAppliedActiveOpticForces;
     }
-    MTM1M3_appliedAzimuthForcesC* getAppliedAzimuthForces() { return &_appliedAzimuthForces; }
-    MTM1M3_appliedBalanceForcesC* getAppliedBalanceForces() { return &_appliedBalanceForces; }
-    MTM1M3_appliedCylinderForcesC* getAppliedCylinderForces() { return &_appliedCylinderForces; }
-    MTM1M3_appliedElevationForcesC* getAppliedElevationForces() { return &appliedElevationForces; }
-    MTM1M3_appliedForcesC* getAppliedForces() { return &_appliedForces; }
-    MTM1M3_logevent_appliedOffsetForcesC* getEventAppliedOffsetForces() { return &_eventAppliedOffsetForces; }
-    MTM1M3_logevent_appliedStaticForcesC* getEventAppliedStaticForces() { return &eventAppliedStaticForces; }
-    MTM1M3_appliedThermalForcesC* getAppliedThermalForces() { return &_appliedThermalForces; }
-    MTM1M3_appliedVelocityForcesC* getAppliedVelocityForces() { return &_appliedVelocityForces; }
-    MTM1M3_logevent_cellLightStatusC* getEventCellLightStatus() { return &_eventCellLightStatus; }
-    MTM1M3_logevent_cellLightWarningC* getEventCellLightWarning() { return &_eventCellLightWarning; }
-    MTM1M3_logevent_commandRejectionWarningC* getEventCommandRejectionWarning() {
+    MTM1M3_appliedAzimuthForcesC *getAppliedAzimuthForces() { return &_appliedAzimuthForces; }
+    MTM1M3_appliedBalanceForcesC *getAppliedBalanceForces() { return &_appliedBalanceForces; }
+    MTM1M3_appliedCylinderForcesC *getAppliedCylinderForces() { return &_appliedCylinderForces; }
+    MTM1M3_appliedElevationForcesC *getAppliedElevationForces() { return &appliedElevationForces; }
+    MTM1M3_appliedForcesC *getAppliedForces() { return &_appliedForces; }
+    MTM1M3_logevent_appliedOffsetForcesC *getEventAppliedOffsetForces() { return &_eventAppliedOffsetForces; }
+    MTM1M3_logevent_appliedStaticForcesC *getEventAppliedStaticForces() { return &eventAppliedStaticForces; }
+    MTM1M3_appliedThermalForcesC *getAppliedThermalForces() { return &_appliedThermalForces; }
+    MTM1M3_appliedVelocityForcesC *getAppliedVelocityForces() { return &_appliedVelocityForces; }
+    MTM1M3_logevent_cellLightStatusC *getEventCellLightStatus() { return &_eventCellLightStatus; }
+    MTM1M3_logevent_cellLightWarningC *getEventCellLightWarning() { return &_eventCellLightWarning; }
+    MTM1M3_logevent_commandRejectionWarningC *getEventCommandRejectionWarning() {
         return &_eventCommandRejectionWarning;
     }
-    MTM1M3_logevent_detailedStateC* getEventDetailedState() { return &_eventDetailedState; }
-    MTM1M3_logevent_displacementSensorWarningC* getEventDisplacementSensorWarning() {
+    MTM1M3_logevent_detailedStateC *getEventDetailedState() { return &_eventDetailedState; }
+    MTM1M3_logevent_displacementSensorWarningC *getEventDisplacementSensorWarning() {
         return &_eventDisplacementSensorWarning;
     }
-    static EnabledForceActuators* getEnabledForceActuators() { return &(instance()._enabledForceActuators); }
-    MTM1M3_logevent_errorCodeC* getEventErrorCode() { return &_eventErrorCode; }
-    MTM1M3_logevent_forceActuatorBumpTestStatusC* getEventForceActuatorBumpTestStatus() {
+    static EnabledForceActuators *getEnabledForceActuators() { return &(instance()._enabledForceActuators); }
+    MTM1M3_logevent_errorCodeC *getEventErrorCode() { return &_eventErrorCode; }
+    MTM1M3_logevent_forceActuatorBumpTestStatusC *getEventForceActuatorBumpTestStatus() {
         return &_eventForceActuatorBumpTestStatus;
     }
-    MTM1M3_logevent_forceActuatorStateC* getEventForceActuatorState() { return &_eventForceActuatorState; }
-    static ForceActuatorWarning* getForceActuatorWarning() { return &(instance()._forceActuatorWarning); }
-    MTM1M3_logevent_forceSetpointWarningC* getEventForceSetpointWarning() {
+    MTM1M3_logevent_forceActuatorStateC *getEventForceActuatorState() { return &_eventForceActuatorState; }
+    static ForceActuatorWarning *getForceActuatorWarning() { return &(instance()._forceActuatorWarning); }
+    MTM1M3_logevent_forceSetpointWarningC *getEventForceSetpointWarning() {
         return &_eventForceSetpointWarning;
     }
-    MTM1M3_logevent_gyroWarningC* getEventGyroWarning() { return &_eventGyroWarning; }
-    MTM1M3_logevent_hardpointActuatorInfoC* getEventHardpointActuatorInfo() {
+    MTM1M3_logevent_gyroWarningC *getEventGyroWarning() { return &_eventGyroWarning; }
+    MTM1M3_logevent_hardpointActuatorInfoC *getEventHardpointActuatorInfo() {
         return &_eventHardpointActuatorInfo;
     }
-    MTM1M3_logevent_hardpointActuatorStateC* getEventHardpointActuatorState() {
+    MTM1M3_logevent_hardpointActuatorStateC *getEventHardpointActuatorState() {
         return &_eventHardpointActuatorState;
     }
-    MTM1M3_logevent_hardpointMonitorInfoC* getEventHardpointMonitorInfo() {
+    MTM1M3_logevent_hardpointMonitorInfoC *getEventHardpointMonitorInfo() {
         return &_eventHardpointMonitorInfo;
     }
-    MTM1M3_logevent_hardpointMonitorStateC* getEventHardpointMonitorState() {
+    MTM1M3_logevent_hardpointMonitorStateC *getEventHardpointMonitorState() {
         return &_eventHardpointMonitorState;
     }
-    MTM1M3_logevent_hardpointMonitorWarningC* getEventHardpointMonitorWarning() {
+    MTM1M3_logevent_hardpointMonitorWarningC *getEventHardpointMonitorWarning() {
         return &_eventHardpointMonitorWarning;
     }
-    MTM1M3_logevent_ilcWarningC* getEventILCWarning() { return &_eventILCWarning; }
-    MTM1M3_logevent_inclinometerSensorWarningC* getEventInclinometerSensorWarning() {
+    MTM1M3_logevent_ilcWarningC *getEventILCWarning() { return &_eventILCWarning; }
+    MTM1M3_logevent_inclinometerSensorWarningC *getEventInclinometerSensorWarning() {
         return &_eventInclinometerSensorWarning;
     }
-    MTM1M3_logevent_interlockWarningC* getEventInterlockWarning() { return &_eventInterlockWarning; }
-    MTM1M3_logevent_pidInfoC* getEventPIDInfo() { return &_eventPIDInfo; }
-    MTM1M3_logevent_powerStatusC* getEventPowerStatus() { return &_eventPowerStatus; }
-    static PowerSupplyStatus* getPowerSupplyStatus() { return &(instance()._powerSupplyStatus); }
-    MTM1M3_logevent_powerWarningC* getEventPowerWarning() { return &_eventPowerWarning; }
-    MTM1M3_logevent_preclippedAccelerationForcesC* getEventPreclippedAccelerationForces() {
+    MTM1M3_logevent_interlockWarningC *getEventInterlockWarning() { return &_eventInterlockWarning; }
+    MTM1M3_logevent_pidInfoC *getEventPIDInfo() { return &_eventPIDInfo; }
+    MTM1M3_logevent_powerStatusC *getEventPowerStatus() { return &_eventPowerStatus; }
+    static PowerSupplyStatus *getPowerSupplyStatus() { return &(instance()._powerSupplyStatus); }
+    MTM1M3_logevent_powerWarningC *getEventPowerWarning() { return &_eventPowerWarning; }
+    MTM1M3_logevent_preclippedAccelerationForcesC *getEventPreclippedAccelerationForces() {
         return &_eventPreclippedAccelerationForces;
     }
-    MTM1M3_logevent_preclippedActiveOpticForcesC* getEventPreclippedActiveOpticForces() {
+    MTM1M3_logevent_preclippedActiveOpticForcesC *getEventPreclippedActiveOpticForces() {
         return &_eventPreclippedActiveOpticForces;
     }
-    MTM1M3_logevent_preclippedAzimuthForcesC* getEventPreclippedAzimuthForces() {
+    MTM1M3_logevent_preclippedAzimuthForcesC *getEventPreclippedAzimuthForces() {
         return &_eventPreclippedAzimuthForces;
     }
-    MTM1M3_logevent_preclippedBalanceForcesC* getEventPreclippedBalanceForces() {
+    MTM1M3_logevent_preclippedBalanceForcesC *getEventPreclippedBalanceForces() {
         return &_eventPreclippedBalanceForces;
     }
-    MTM1M3_logevent_preclippedCylinderForcesC* getEventPreclippedCylinderForces() {
+    MTM1M3_logevent_preclippedCylinderForcesC *getEventPreclippedCylinderForces() {
         return &_eventPreclippedCylinderForces;
     }
-    MTM1M3_logevent_preclippedElevationForcesC* getEventPreclippedElevationForces() {
+    MTM1M3_logevent_preclippedElevationForcesC *getEventPreclippedElevationForces() {
         return &_eventPreclippedElevationForces;
     }
-    MTM1M3_logevent_preclippedForcesC* getEventPreclippedForces() { return &_eventPreclippedForces; }
-    MTM1M3_logevent_preclippedOffsetForcesC* getEventPreclippedOffsetForces() {
+    MTM1M3_logevent_preclippedForcesC *getEventPreclippedForces() { return &_eventPreclippedForces; }
+    MTM1M3_logevent_preclippedOffsetForcesC *getEventPreclippedOffsetForces() {
         return &_eventPreclippedOffsetForces;
     }
-    MTM1M3_logevent_preclippedStaticForcesC* getEventPreclippedStaticForces() {
+    MTM1M3_logevent_preclippedStaticForcesC *getEventPreclippedStaticForces() {
         return &_eventPreclippedStaticForces;
     }
-    MTM1M3_logevent_preclippedThermalForcesC* getEventPreclippedThermalForces() {
+    MTM1M3_logevent_preclippedThermalForcesC *getEventPreclippedThermalForces() {
         return &_eventPreclippedThermalForces;
     }
-    MTM1M3_logevent_preclippedVelocityForcesC* getEventPreclippedVelocityForces() {
+    MTM1M3_logevent_preclippedVelocityForcesC *getEventPreclippedVelocityForces() {
         return &_eventPreclippedVelocityForces;
     }
-    MTM1M3_logevent_configurationsAvailableC* getEventConfigurationsAvailable() {
+    MTM1M3_logevent_configurationsAvailableC *getEventConfigurationsAvailable() {
         return &_eventConfigurationsAvailable;
     }
-    MTM1M3_logevent_configurationAppliedC* getEventConfigurationApplied() {
+    MTM1M3_logevent_configurationAppliedC *getEventConfigurationApplied() {
         return &_eventConfigurationApplied;
     }
-    MTM1M3_logevent_summaryStateC* getEventSummaryState() { return &_eventSummaryState; }
+    MTM1M3_logevent_summaryStateC *getEventSummaryState() { return &_eventSummaryState; }
 
     /**
      * Returns current timestamp.
@@ -190,7 +190,7 @@ public:
      * getAccelerometerData().
      */
     void putAccelerometerData();
-    void putForceActuatorData(MTM1M3_forceActuatorDataC* data) {
+    void putForceActuatorData(MTM1M3_forceActuatorDataC *data) {
         _m1m3SAL->putSample_forceActuatorData(data);
     }
     void putGyroData();
@@ -202,13 +202,13 @@ public:
     void putPIDData();
     void putPowerSupplyData();
 
-    void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC* data) {
+    void logAccelerometerSettings(MTM1M3_logevent_accelerometerSettingsC *data) {
         _m1m3SAL->logEvent_accelerometerSettings(data, 0);
     }
-    void logPositionControllerSettings(MTM1M3_logevent_positionControllerSettingsC* data) {
+    void logPositionControllerSettings(MTM1M3_logevent_positionControllerSettingsC *data) {
         _m1m3SAL->logEvent_positionControllerSettings(data, 0);
     }
-    void logSlewControllerSettings(MTM1M3_logevent_slewControllerSettingsC* data) {
+    void logSlewControllerSettings(MTM1M3_logevent_slewControllerSettingsC *data) {
         _m1m3SAL->logEvent_slewControllerSettings(data, 0);
     }
 
@@ -226,7 +226,7 @@ public:
      * Calls logAccelerometerWarning().
      */
     void tryLogAccelerometerWarning();
-    void logAirSupplyStatus(MTM1M3_logevent_airSupplyStatusC* data) {
+    void logAirSupplyStatus(MTM1M3_logevent_airSupplyStatusC *data) {
         _m1m3SAL->logEvent_airSupplyStatus(data, 0);
     }
     void logAirSupplyWarning();
@@ -242,10 +242,10 @@ public:
     void logAppliedStaticForces();
     void logAppliedThermalForces();
     void logAppliedVelocityForces();
-    void logBoosterValveSettings(MTM1M3_logevent_boosterValveSettingsC* data) {
+    void logBoosterValveSettings(MTM1M3_logevent_boosterValveSettingsC *data) {
         _m1m3SAL->logEvent_boosterValveSettings(data, 0);
     }
-    void logBoosterValveStatus(MTM1M3_logevent_boosterValveStatusC* data) {
+    void logBoosterValveStatus(MTM1M3_logevent_boosterValveStatusC *data) {
         _m1m3SAL->logEvent_boosterValveStatus(data, 0);
     }
     void logCellLightStatus();
@@ -255,59 +255,59 @@ public:
     void logCommandRejectionWarning();
     void logCommandRejectionWarning(std::string command, std::string reason);
     template <typename... Args>
-    void commandFailed(std::string command, std::string const& format, Args const&... args) {
+    void commandFailed(std::string command, std::string const &format, Args const &...args) {
         std::string reason = fmt::format(format, args...);
         logCommandRejectionWarning(command, reason);
         throw std::runtime_error(reason);
     }
     void logDetailedState();
     void tryLogDetailedState();
-    void logDisplacementSensorSettings(MTM1M3_logevent_displacementSensorSettingsC* data) {
+    void logDisplacementSensorSettings(MTM1M3_logevent_displacementSensorSettingsC *data) {
         _m1m3SAL->logEvent_displacementSensorSettings(data, 0);
     }
     void logDisplacementSensorWarning();
-    void logEnabledForceActuators(MTM1M3_logevent_enabledForceActuatorsC* data) {
+    void logEnabledForceActuators(MTM1M3_logevent_enabledForceActuatorsC *data) {
         _m1m3SAL->logEvent_enabledForceActuators(data, 0);
     }
     void tryLogDisplacementSensorWarning();
     void logErrorCode();
     void tryLogErrorCode();
-    void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC* data) {
+    void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC *data) {
         _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
     }
     void logForceActuatorBumpTestStatus();
-    void logForceActuatorForceWarning(MTM1M3_logevent_forceActuatorForceWarningC* data) {
+    void logForceActuatorForceWarning(MTM1M3_logevent_forceActuatorForceWarningC *data) {
         _m1m3SAL->logEvent_forceActuatorForceWarning(data, 0);
     }
-    void logForceActuatorFollowingErrorCounter(MTM1M3_logevent_forceActuatorFollowingErrorCounterC* data) {
+    void logForceActuatorFollowingErrorCounter(MTM1M3_logevent_forceActuatorFollowingErrorCounterC *data) {
         _m1m3SAL->logEvent_forceActuatorFollowingErrorCounter(data, 0);
     }
     void tryLogForceActuatorForceWarning();
-    void logForceActuatorInfo(MTM1M3_logevent_forceActuatorInfoC* data) {
+    void logForceActuatorInfo(MTM1M3_logevent_forceActuatorInfoC *data) {
         _m1m3SAL->logEvent_forceActuatorInfo(data, 0);
     }
     void logForceActuatorState();
     void tryLogForceActuatorState();
-    void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC* data) {}
+    void logForceActuatorWarning(MTM1M3_logevent_forceActuatorWarningC *data) {}
     ///        _m1m3SAL->logEvent_forceActuatorWarning(data, 0);
     ///    }
 
-    void logForceControllerState(MTM1M3_logevent_forceControllerStateC* data) {
+    void logForceControllerState(MTM1M3_logevent_forceControllerStateC *data) {
         _m1m3SAL->logEvent_forceControllerState(data, 0);
     }
     void logForceSetpointWarning();
     void tryLogForceSetpointWarning();
-    void logGyroSettings(MTM1M3_logevent_gyroSettingsC* data) { _m1m3SAL->logEvent_gyroSettings(data, 0); }
+    void logGyroSettings(MTM1M3_logevent_gyroSettingsC *data) { _m1m3SAL->logEvent_gyroSettings(data, 0); }
     void logGyroWarning();
     void tryLogGyroWarning();
     void logHardpointActuatorInfo();
     void tryLogHardpointActuatorInfo();
-    void logHardpointActuatorSettings(MTM1M3_logevent_hardpointActuatorSettingsC* data) {
+    void logHardpointActuatorSettings(MTM1M3_logevent_hardpointActuatorSettingsC *data) {
         _m1m3SAL->logEvent_hardpointActuatorSettings(data, 0);
     }
     void logHardpointActuatorState();
     void tryLogHardpointActuatorState();
-    void logHardpointActuatorWarning(MTM1M3_logevent_hardpointActuatorWarningC* data) {
+    void logHardpointActuatorWarning(MTM1M3_logevent_hardpointActuatorWarningC *data) {
         _m1m3SAL->logEvent_hardpointActuatorWarning(data, 0);
     }
     void logHardpointMonitorInfo();
@@ -316,28 +316,28 @@ public:
     void tryLogHardpointMonitorState();
     void logHardpointMonitorWarning();
     void tryLogHardpointMonitorWarning();
-    void logHardpointTestStatus(MTM1M3_logevent_hardpointTestStatusC* data) {
+    void logHardpointTestStatus(MTM1M3_logevent_hardpointTestStatusC *data) {
         _m1m3SAL->logEvent_hardpointTestStatus(data, 0);
     }
-    void logHeartbeat(MTM1M3_logevent_heartbeatC* data) { _m1m3SAL->logEvent_heartbeat(data, 0); }
-    void logILCWarning(MTM1M3_logevent_ilcWarningC* data) { _m1m3SAL->logEvent_ilcWarning(data, 0); }
-    void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC* data) {
+    void logHeartbeat(MTM1M3_logevent_heartbeatC *data) { _m1m3SAL->logEvent_heartbeat(data, 0); }
+    void logILCWarning(MTM1M3_logevent_ilcWarningC *data) { _m1m3SAL->logEvent_ilcWarning(data, 0); }
+    void logInclinometerSettings(MTM1M3_logevent_inclinometerSettingsC *data) {
         _m1m3SAL->logEvent_inclinometerSettings(data, 0);
     }
     void logInclinometerSensorWarning();
     void tryLogInclinometerSensorWarning();
-    void logInterlockStatus(MTM1M3_logevent_interlockStatusC* data) {
+    void logInterlockStatus(MTM1M3_logevent_interlockStatusC *data) {
         _m1m3SAL->logEvent_interlockStatus(data, 0);
     }
-    void logInterlockWarning(MTM1M3_logevent_interlockWarningC* data) {
+    void logInterlockWarning(MTM1M3_logevent_interlockWarningC *data) {
         _m1m3SAL->logEvent_interlockWarning(data, 0);
     };
     void newLogLevel(int newLevel);
     void logPIDInfo();
-    void logPIDSettings(MTM1M3_logevent_pidSettingsC* data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
+    void logPIDSettings(MTM1M3_logevent_pidSettingsC *data) { _m1m3SAL->logEvent_pidSettings(data, 0); }
     void logPowerStatus();
     void tryLogPowerStatus();
-    void logPowerSupplyStatus(MTM1M3_logevent_powerSupplyStatusC* data) {
+    void logPowerSupplyStatus(MTM1M3_logevent_powerSupplyStatusC *data) {
         _m1m3SAL->logEvent_powerSupplyStatus(data, 0);
     }
     void logPowerWarning();
@@ -359,14 +359,14 @@ public:
     void logConfigurationApplied() {
         _m1m3SAL->logEvent_configurationApplied(&_eventConfigurationApplied, 0);
     }
-    void logSimulationMode(MTM1M3_logevent_simulationModeC* data) {
+    void logSimulationMode(MTM1M3_logevent_simulationModeC *data) {
         _m1m3SAL->logEvent_simulationMode(data, 0);
     }
     void logSoftwareVersions();
     void logSummaryState();
     void tryLogSummaryState();
 
-    void logRaisingLoweringInfo(MTM1M3_logevent_raisingLoweringInfoC* data) {
+    void logRaisingLoweringInfo(MTM1M3_logevent_raisingLoweringInfoC *data) {
         _m1m3SAL->logEvent_raisingLoweringInfo(data, 0);
     }
 
@@ -374,9 +374,11 @@ public:
      * @brief Acknowledges start command.
      *
      * @param commandID
-     * @param ackCode acknowledgement code. Either ACK_INPROGRESS, ACK_FAILED or ACK_COMPLETE
+     * @param ackCode acknowledgement code. Either ACK_INPROGRESS, ACK_FAILED or
+     * ACK_COMPLETE
      * @param description string collected during command execution
-     * @param timeout reported command timeout. Should be used for only for ACK_INPROGRESS acknowledgement
+     * @param timeout reported command timeout. Should be used for only for
+     * ACK_INPROGRESS acknowledgement
      */
 #define ACK_COMMAND_H(command)                                                            \
     void ackCommand##command(int32_t commandID, int32_t ackCode, std::string description, \
@@ -434,8 +436,8 @@ public:
     ACK_COMMAND_H(setSlewControllerSettings)
 
 private:
-    M1M3SSPublisher& operator=(const M1M3SSPublisher&) = delete;
-    M1M3SSPublisher(const M1M3SSPublisher&) = delete;
+    M1M3SSPublisher &operator=(const M1M3SSPublisher &) = delete;
+    M1M3SSPublisher(const M1M3SSPublisher &) = delete;
 
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
 

@@ -33,7 +33,7 @@ using namespace LSST::M1M3::SS;
 PausedRaisingEngineeringState::PausedRaisingEngineeringState()
         : EnabledState("PausedRaisingEngineeringState") {}
 
-States::Type PausedRaisingEngineeringState::update(UpdateCommand* command) {
+States::Type PausedRaisingEngineeringState::update(UpdateCommand *command) {
     ModelPublisher publishModel{};
     SPDLOG_TRACE("PauseRaisingEngineeringState: update()");
     Model::instance().getMirrorRaiseController()->runLoop();
@@ -42,7 +42,7 @@ States::Type PausedRaisingEngineeringState::update(UpdateCommand* command) {
 }
 
 States::Type PausedRaisingEngineeringState::resumeM1M3RaisingLowering(
-        ResumeM1M3RaisingLoweringCommand* command) {
+        ResumeM1M3RaisingLoweringCommand *command) {
     SPDLOG_INFO("Resuming M1M3 raising in engineering state");
     Model::instance().getMirrorRaiseController()->resumeM1M3Raising();
     return Model::instance().getSafetyController()->checkSafety(States::RaisingState);

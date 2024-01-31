@@ -24,9 +24,9 @@
 #ifndef GYRO_H_
 #define GYRO_H_
 
-#include <cRIO/DataTypes.h>
 #include <GyroSettings.h>
 #include <SupportFPGAData.h>
+#include <cRIO/DataTypes.h>
 #include <string>
 
 struct MTM1M3_gyroDataC;
@@ -94,10 +94,10 @@ private:
      */
     void writeCommand(std::string command);
 
-    GyroSettings* _gyroSettings;
+    GyroSettings *_gyroSettings;
 
-    MTM1M3_gyroDataC* _gyroData;
-    MTM1M3_logevent_gyroWarningC* _gyroWarning;
+    MTM1M3_gyroDataC *_gyroData;
+    MTM1M3_logevent_gyroWarningC *_gyroWarning;
 
     uint64_t _lastSampleTimestamp;
     uint64_t _lastBITTimestamp;

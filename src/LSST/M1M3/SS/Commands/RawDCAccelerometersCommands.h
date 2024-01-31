@@ -43,7 +43,8 @@ public:
 };
 
 /**
- * Stop raw DC accelerometer data recording. Virtual command, isn't mapped to SAL/DDS.
+ * Stop raw DC accelerometer data recording. Virtual command, isn't mapped to
+ * SAL/DDS.
  */
 class StopRawDCAccelerometersCommand : public Command {
 public:

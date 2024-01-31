@@ -21,18 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <SetADCChanneOffsetAndSensitivityBusList.h>
-#include <ILCSubnetData.h>
 #include <ILCMessageFactory.h>
+#include <ILCSubnetData.h>
 #include <SAL_MTM1M3C.h>
+#include <SetADCChanneOffsetAndSensitivityBusList.h>
 #include <spdlog/spdlog.h>
 
 using namespace LSST::M1M3::SS;
 
 SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(
-        ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
+        ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
-    SPDLOG_DEBUG("SetADCChanneOffsetAndSensitivityBusList: SetADCChanneOffsetAndSensitivityBusList()");
+    SPDLOG_DEBUG(
+            "SetADCChanneOffsetAndSensitivityBusList: "
+            "SetADCChanneOffsetAndSensitivityBusList()");
 }
 
 void SetADCChanneOffsetAndSensitivityBusList::buildBuffer() {

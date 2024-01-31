@@ -91,9 +91,11 @@
 
 #include <NiFpga_M1M3SupportFPGA.h>
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     if (argc == 1) {
-        std::cerr << "Decodes raw DC accelerometer output. Needs at least one file as argument." << std::endl;
+        std::cerr << "Decodes raw DC accelerometer output. Needs at least one file "
+                     "as argument."
+                  << std::endl;
         return -1;
     }
     std::ifstream file;
@@ -109,13 +111,14 @@ int main(int argc, char** argv) {
 
     for (int i = 1; i < argc; i++) {
         try {
-            // auto file = std::ifstream(argv[i], std::ifstream::in | std::fstream::binary);
+            // auto file = std::ifstream(argv[i], std::ifstream::in |
+            // std::fstream::binary);
             file.open(argv[i], std::ifstream::binary);
             file.exceptions(std::ios::eofbit | std::ios::badbit | std::ios::failbit);
             int i = 0;
             while (!file.eof()) {
                 uint64_t data;
-                file.read(reinterpret_cast<char*>(&data) + 5, 3);
+                file.read(reinterpret_cast<char *>(&data) + 5, 3);
                 data = be64toh(data);
                 std::cout << NiFpga_ConvertFromFxpToFloat(
                         NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo, data);
@@ -127,7 +130,7 @@ int main(int argc, char** argv) {
                     std::cout << ",";
                 }
             }
-        } catch (const std::ios_base::failure& e) {
+        } catch (const std::ios_base::failure &e) {
             if (file.eof()) {
                 continue;
             }

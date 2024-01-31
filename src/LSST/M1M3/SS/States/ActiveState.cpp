@@ -36,25 +36,25 @@ namespace SS {
 
 ActiveState::ActiveState() : EnabledState("ActiveState") {}
 
-States::Type ActiveState::update(UpdateCommand* command) {
+States::Type ActiveState::update(UpdateCommand *command) {
     SPDLOG_TRACE("ActiveState: update()");
     sendTelemetry();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveState::setSlewFlag(SetSlewFlagCommand* command) {
+States::Type ActiveState::setSlewFlag(SetSlewFlagCommand *command) {
     SPDLOG_INFO("ActiveState: setSlewFlag()");
     Model::instance().getSlewController()->enterSlew();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveState::clearSlewFlag(ClearSlewFlagCommand* command) {
+States::Type ActiveState::clearSlewFlag(ClearSlewFlagCommand *command) {
     SPDLOG_INFO("ActiveState: clearSlewFlag()");
     Model::instance().getSlewController()->exitSlew();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ActiveState::enterEngineering(EnterEngineeringCommand* command) {
+States::Type ActiveState::enterEngineering(EnterEngineeringCommand *command) {
     SPDLOG_INFO("ActiveState: enterEngineering()");
     return Model::instance().getSafetyController()->checkSafety(States::ActiveEngineeringState);
 }

@@ -69,7 +69,7 @@ public:
      * @param description Textual description send with the command.
      * @param timeout
      */
-    virtual void ackInProgress(const char* description, double timeout);
+    virtual void ackInProgress(const char *description, double timeout);
 
     /**
      * Acknowledges the command has completed successfully.

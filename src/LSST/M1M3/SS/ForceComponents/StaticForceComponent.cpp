@@ -38,7 +38,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings)
+StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
         : ForceComponent("Static", &ForceActuatorSettings::instance().StaticComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
@@ -47,12 +47,14 @@ StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings* for
     _preclippedStaticForces = M1M3SSPublisher::instance().getEventPreclippedStaticForces();
 }
 
-void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y,
-                                             std::vector<float>* z) {
+void StaticForceComponent::applyStaticForces(std::vector<float> *x, std::vector<float> *y,
+                                             std::vector<float> *z) {
     SPDLOG_DEBUG("StaticForceComponent: applyStaticForces()");
 
     if (!isEnabled()) {
-        SPDLOG_ERROR("StaticForceComponent: applyStaticForces() called when the component is not applied");
+        SPDLOG_ERROR(
+                "StaticForceComponent: applyStaticForces() called when the "
+                "component is not applied");
         return;
     }
 

@@ -34,15 +34,15 @@ namespace SS {
 
 class ActiveBusList : public BusList {
 public:
-    ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
+    ActiveBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory);
 
     void buildBuffer() override;
     void update() override;
 
 private:
-    MTM1M3_outerLoopDataC* _outerLoopData;
-    MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
-    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    MTM1M3_outerLoopDataC *_outerLoopData;
+    MTM1M3_appliedCylinderForcesC *_appliedCylinderForces;
+    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
 
     int32_t _setForceCommandIndex[5];
     int32_t _hpFreezeCommandIndex[5];

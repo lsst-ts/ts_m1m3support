@@ -31,7 +31,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
-                                                             MTM1M3_command_applyActiveOpticForcesC* data)
+                                                             MTM1M3_command_applyActiveOpticForcesC *data)
         : Command(commandID) {
     for (int i = 0; i < FA_COUNT; i++) {
         _data.zForces[i] = data->zForces[i];
@@ -40,7 +40,7 @@ ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
 
 void ApplyActiveOpticForcesCommand::execute() { Context::get().applyActiveOpticForces(this); }
 
-void ApplyActiveOpticForcesCommand::ackInProgress(const char* description, double timeout) {
+void ApplyActiveOpticForcesCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandapplyActiveOpticForces(getCommandID(), ACK_INPROGRESS, description,
                                                                  timeout);
 }

@@ -31,18 +31,18 @@
 #include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
 
-#include <AirSupplyStatus.h>
 #include <AccelerometerSettings.h>
+#include <AirSupplyStatus.h>
 #include <CRC.h>
-#include <ForceActuatorSettings.h>
 #include <FPGAAddresses.h>
+#include <ForceActuatorSettings.h>
 #include <M1M3SSPublisher.h>
 #include <NiFpga_M1M3SupportFPGA.h>
 #include <RaisingLoweringInfo.h>
 #include <SettingReader.h>
 #include <SimulatedFPGA.h>
-#include <Timestamp.h>
 #include <TMA.h>
+#include <Timestamp.h>
 #include <Units.h>
 
 using namespace LSST::M1M3::SS;
@@ -51,14 +51,15 @@ using namespace std::chrono_literals;
 
 // simulate 1 degree per second (there are 50 loops runs per second)
 const float MOUNT_SIMULATION_STEP = 1 / 50.0;
-// Gyroscope simulated velocity change. Same time unit as MOUNT_SIMULATION_STEP. Reach roughly max +-6
-// deg/sec.
+// Gyroscope simulated velocity change. Same time unit as MOUNT_SIMULATION_STEP.
+// Reach roughly max +-6 deg/sec.
 const float GYRO_SIMULATE_STEP = D2RAD / 375.0;
-// Accelerometers simulated acceleration change. Same time unit as MOUNT_SIMULATION_STEP. Reach roughly +-6
-// deg/sec.
+// Accelerometers simulated acceleration change. Same time unit as
+// MOUNT_SIMULATION_STEP. Reach roughly +-6 deg/sec.
 const float ACCEL_SIMULATED_STEP = D2RAD / 374.0;
 
-// Mount data are valid for 20 seconds in simulation, before simulated mount movement takes over
+// Mount data are valid for 20 seconds in simulation, before simulated mount
+// movement takes over
 #define MOUNT_VALIDITY 20s
 
 // Simulate raising below IgnoreTensionRaisingLowering elevation
@@ -93,7 +94,7 @@ SimulatedFPGA::SimulatedFPGA() {
     supportFPGAData.GyroRawZ = 0;
 
     _mgrMTMount = SAL_MTMount();
-    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
+    _mgrMTMount.salTelemetrySub(const_cast<char *>("MTMount_elevation"));
 
     _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
 
@@ -162,9 +163,9 @@ void SimulatedFPGA::pullTelemetry() {
     supportFPGAData.InclinometerErrorCode = 0;
     supportFPGAData.InclinometerSampleTimestamp = timestamp;
 
-    // Inclinometer raw value is measured as (negative) zenith angle (0 = zenith, -90 = horizon).
-    // Converts elevation to zenith angle and adds random 1/200th deg (=18 arcsec) noise.
-    // Also simulates gyroscope values
+    // Inclinometer raw value is measured as (negative) zenith angle (0 = zenith,
+    // -90 = horizon). Converts elevation to zenith angle and adds random 1/200th
+    // deg (=18 arcsec) noise. Also simulates gyroscope values
 
     {
         std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);
@@ -251,7 +252,7 @@ void SimulatedFPGA::pullTelemetry() {
     supportFPGAData.AccelerometerSampleCount++;
     supportFPGAData.AccelerometerSampleTimestamp = timestamp;
 
-    auto& accelerometerSettings = AccelerometerSettings::instance();
+    auto &accelerometerSettings = AccelerometerSettings::instance();
     for (int i = 0; i < 8; i++) {
         supportFPGAData.AccelerometerRaw[i] =
                 (getRndPM1() * 0.001 - accelerometerSettings.accelerometerOffset[i]) /
@@ -300,16 +301,16 @@ uint8_t _broadCastCounter() {
 }
 
 template <class t>
-void setBit(t& value, uint32_t bit, bool on) {
+void setBit(t &value, uint32_t bit, bool on) {
     value = (value & ~bit) | (on ? bit : 0);
 }
 
-void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length;) {
         uint16_t signal = data[i++];
         uint16_t dataLength = 0;
         uint16_t subnet = 0;
-        std::queue<uint16_t>* response = 0;
+        std::queue<uint16_t> *response = 0;
         switch (signal) {
             case FPGAAddresses::AccelerometerAx:
             case FPGAAddresses::AccelerometerAz:
@@ -484,7 +485,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                         _sendResponse = false;
                     }
 
-                    ForceActuatorApplicationSettings* forceActuatorApplicationSettings =
+                    ForceActuatorApplicationSettings *forceActuatorApplicationSettings =
                             SettingReader::instance().getForceActuatorApplicationSettings();
                     int zIndex = -1;
                     for (int j = 0; j < FA_COUNT; ++j) {
@@ -545,7 +546,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             _writeModbusFloat(response, 1.0);  // Write Primary Cylinder DCA Gain
-                            _writeModbusFloat(response, 1.2);  // Write Secondary Cylinder DCA Gain
+                            _writeModbusFloat(response,
+                                              1.2);  // Write Secondary Cylinder DCA Gain
                             _writeModbusCRC(response);
                             break;
                         }
@@ -570,7 +572,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                                   (static_cast<uint32_t>(word2) << 8) | word3)) /
                                          1000.0) +
                                         (getRndPM1() * 0.5);
-                                _writeModbusFloat(response, force);  // Write Secondary Cylinder Force
+                                _writeModbusFloat(response,
+                                                  force);  // Write Secondary Cylinder Force
                             }
                             _writeModbusCRC(response);
                             break;
@@ -599,8 +602,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                                   .getAppliedCylinderForces()
                                                   ->secondaryCylinderForces[sIndex]) /
                                          1000.0) +
-                                        (getRndPM1() * 0.5);         // Update to Secondary Cylinder Force
-                                _writeModbusFloat(response, force);  // Write Secondary Cylinder Force
+                                        (getRndPM1() * 0.5);  // Update to Secondary Cylinder Force
+                                _writeModbusFloat(response,
+                                                  force);  // Write Secondary Cylinder Force
                             }
                             _writeModbusCRC(response);
                             break;
@@ -639,7 +643,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
-                                _writeModbusFloat(response, _getAirPressure());  // Write DCA Pressure
+                                _writeModbusFloat(response,
+                                                  _getAirPressure());  // Write DCA Pressure
                             }
                             _writeModbusCRC(response);
                             break;
@@ -680,10 +685,12 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                                                                                                : 0x00) |
                                 (_hardpointActuatorData->encoder[index] > _HPEncoderHigh[index] ? 0x04
                                                                                                 : 0x00);
-                        _writeModbus(response, _broadCastCounter() | status);  // Write ILC Status
+                        _writeModbus(response,
+                                     _broadCastCounter() | status);  // Write ILC Status
                         // Number of steps issued / 4 + current encoder
-                        // The encoder is also inverted after being received to match axis direction
-                        // So we have to also invert the encoder here to counteract that
+                        // The encoder is also inverted after being received to match axis
+                        // direction So we have to also invert the encoder here to
+                        // counteract that
                         if (steps < 4 && steps > 0) {
                             steps = 4;
                         } else if (steps > -4 && steps < 0) {
@@ -838,7 +845,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 4; ++j) {
-                                _writeModbusFloat(response, _getAirPressure());  // Write DCA Pressure
+                                _writeModbusFloat(response,
+                                                  _getAirPressure());  // Write DCA Pressure
                             }
                             _writeModbusCRC(response);
                             break;
@@ -882,9 +890,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t tim
     }
 }
 
-void SimulatedFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::writeRequestFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
     int signal = data[0];
-    std::queue<uint16_t>* modbusResponse = 0;
+    std::queue<uint16_t> *modbusResponse = 0;
     switch (signal) {
         case FPGAAddresses::AccelerometerAx:
         case FPGAAddresses::AccelerometerAz:
@@ -956,9 +964,9 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t tim
 
 void SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) {}
 
-void SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) {}
+void SimulatedFPGA::readU8ResponseFIFO(uint8_t *data, size_t length, uint32_t timeoutInMs) {}
 
-void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length; ++i) {
         data[i] = _u16Response.front();
         _u16Response.pop();
@@ -967,13 +975,13 @@ void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t 
 
 void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}
 
-void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length; i++) {
         data[i] = i;
     }
 }
 
-void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t* raw, size_t samples) {
+void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t *raw, size_t samples) {
     for (size_t i = 0; i < samples * 8; i++) {
         raw[i] = NiFpga_ConvertFromFloatToFxp(
                 NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo, -1 + (0.01f * i));
@@ -1000,7 +1008,7 @@ void SimulatedFPGA::_monitorElevation(void) {
     }
 }
 
-void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
+void SimulatedFPGA::_writeModbus(std::queue<uint16_t> *response, uint16_t data) {
     if (_sendResponse == false) {
         return;
     }
@@ -1008,19 +1016,19 @@ void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) 
     response->push((data << 1) | 0x9000);
 }
 
-void SimulatedFPGA::_writeModbus16(std::queue<uint16_t>* response, int16_t data) {
+void SimulatedFPGA::_writeModbus16(std::queue<uint16_t> *response, int16_t data) {
     _writeModbus(response, (data >> 8) & 0xFF);
     _writeModbus(response, data & 0xFF);
 }
 
-void SimulatedFPGA::_writeModbus32(std::queue<uint16_t>* response, int32_t data) {
+void SimulatedFPGA::_writeModbus32(std::queue<uint16_t> *response, int32_t data) {
     _writeModbus(response, (data >> 24) & 0xFF);
     _writeModbus(response, (data >> 16) & 0xFF);
     _writeModbus(response, (data >> 8) & 0xFF);
     _writeModbus(response, data & 0xFF);
 }
 
-void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t>* response, float data) {
+void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t> *response, float data) {
     uint8_t buffer[4];
     memcpy(buffer, &data, 4);
     _writeModbus(response, buffer[3]);
@@ -1029,7 +1037,7 @@ void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t>* response, float data
     _writeModbus(response, buffer[0]);
 }
 
-void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
+void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t> *response) {
     uint16_t buffer[256];
     int i = 0;
     while (!_crcVector.empty()) {
@@ -1050,7 +1058,7 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     response->push(0xA000);  // Write End of Frame
 }
 
-void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t>* response, int index) {
+void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t> *response, int index) {
     _writeModbus16(
             response,
             (_hardpointActuatorData->encoder[index] < _HPEncoderLow[index] ? 0x0200 : 0x0000) |
