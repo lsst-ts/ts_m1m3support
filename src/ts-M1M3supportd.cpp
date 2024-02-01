@@ -30,11 +30,12 @@
 #include <chrono>
 #include <thread>
 
-#include "spdlog/sinks/daily_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include <spdlog/async.h>
-#include <spdlog/sinks/syslog_sink.h>
 #include <spdlog/spdlog.h>
+
+#include <spdlog/async.h>
+#include <spdlog/sinks/daily_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/syslog_sink.h>
 
 #include <SAL_MTM1M3.h>
 #include <SAL_MTMount.h>
