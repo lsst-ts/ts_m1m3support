@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.15.4
+-------
+
+* Fix simulator build (spdlog include issue)
+
 v2.15.3
 -------
 

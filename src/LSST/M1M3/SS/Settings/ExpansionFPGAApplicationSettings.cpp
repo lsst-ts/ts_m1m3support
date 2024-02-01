@@ -32,7 +32,7 @@
 
 using namespace LSST::M1M3::SS;
 
-ExpansionFPGAApplicationSettings::ExpansionFPGAApplicationSettings(token){};
+ExpansionFPGAApplicationSettings::ExpansionFPGAApplicationSettings(token) {}
 
 void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
     try {
