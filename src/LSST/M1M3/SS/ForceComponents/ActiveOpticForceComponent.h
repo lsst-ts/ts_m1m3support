@@ -37,7 +37,7 @@ class ActiveOpticForceComponent : public ForceComponent {
 public:
     ActiveOpticForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyActiveOpticForces(float* z);
+    void applyActiveOpticForces(std::vector<float> z);
 
     void postEnableDisableActions() override;
 

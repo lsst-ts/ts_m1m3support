@@ -42,18 +42,18 @@ ForceActuatorNeighbors::ForceActuatorNeighbors() {
 }
 
 ForceActuatorSettings::ForceActuatorSettings(token) {
+#ifndef WITH_SAL_KAFKA
     memset(primaryFollowingErrorWarningThreshold, 0, sizeof(primaryFollowingErrorWarningThreshold));
     memset(primaryFollowingErrorCountingFaultThreshold, 0,
            sizeof(primaryFollowingErrorCountingFaultThreshold));
     memset(primaryFollowingErrorImmediateFaultThreshold, 0,
            sizeof(primaryFollowingErrorImmediateFaultThreshold));
-
     memset(secondaryFollowingErrorWarningThreshold, 0, sizeof(secondaryFollowingErrorWarningThreshold));
     memset(secondaryFollowingErrorCountingFaultThreshold, 0,
            sizeof(secondaryFollowingErrorCountingFaultThreshold));
     memset(secondaryFollowingErrorImmediateFaultThreshold, 0,
            sizeof(secondaryFollowingErrorImmediateFaultThreshold));
-
+#endif
     measuredWarningPercentage = 90;
 }
 
@@ -212,8 +212,8 @@ void ForceActuatorSettings::load(YAML::Node doc) {
 }
 
 ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces, float *yForces,
-        float *zForces) {
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> xForces, std::vector<float> yForces,
+        std::vector<float>zForces) {
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;
@@ -252,7 +252,7 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
 }
 
 ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces) {
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> zForces) {
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;

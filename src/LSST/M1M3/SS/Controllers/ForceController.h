@@ -166,7 +166,7 @@ public:
     bool applyAccelerationForces();
     void zeroAccelerationForces();
 
-    void applyActiveOpticForces(float* z);
+    void applyActiveOpticForces(std::vector<float> z);
     void zeroActiveOpticForces();
 
     void applyAzimuthForces();
@@ -192,7 +192,7 @@ public:
     void applyElevationForces();
     void zeroElevationForces();
 
-    void applyOffsetForces(float* x, float* y, float* z);
+    void applyOffsetForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
     void zeroOffsetForces();

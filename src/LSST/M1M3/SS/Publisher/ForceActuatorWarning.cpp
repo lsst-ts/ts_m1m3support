@@ -78,7 +78,7 @@ void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int
 }
 
 void ForceActuatorWarning::parseStatus(ModbusBuffer* buffer, const int32_t dataIndex,
-                                       DDS::Short broadcastCounter) {
+                                       int32_t broadcastCounter) {
     uint8_t ilcStatus = buffer->readU8();
     bool brCntWarning = broadcastCounter != ((ilcStatus & 0xF0) >> 4);
     // bit 0x10 becomes brCntWarning

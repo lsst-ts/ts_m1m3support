@@ -113,7 +113,7 @@ private:
     double _sleepUntil;
 
     typedef enum { FINISHED, FAILED, NO_CHANGE, STATE_CHANGED } runCylinderReturn_t;
-    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], short int* stage);
+    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], int* stage);
 
     void _resetProgress(bool zeroOffsets = true);
     void _resetAverages();

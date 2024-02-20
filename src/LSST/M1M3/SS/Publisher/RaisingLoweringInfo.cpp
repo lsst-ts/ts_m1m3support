@@ -32,12 +32,12 @@ using namespace LSST::M1M3::SS;
 RaisingLoweringInfo::RaisingLoweringInfo(token) {
     weightSupportedPercent = 0;
     waitAirPressure = false;
-
+#ifndef WITH_SAL_KAFKA
     memset(waitHardpoint, 0, sizeof(waitHardpoint));
     memset(waitXForceActuator, 0, sizeof(waitXForceActuator));
     memset(waitYForceActuator, 0, sizeof(waitYForceActuator));
     memset(waitZForceActuator, 0, sizeof(waitZForceActuator));
-
+#endif
     _updated = true;
 }
 

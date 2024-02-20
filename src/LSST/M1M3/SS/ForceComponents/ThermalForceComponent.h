@@ -46,7 +46,7 @@ class ThermalForceComponent : public ForceComponent {
 public:
     ThermalForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyThermalForces(float* x, float* y, float* z);
+    void applyThermalForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
     void applyThermalForcesByMirrorTemperature(float temperature);
 
     void postEnableDisableActions() override;

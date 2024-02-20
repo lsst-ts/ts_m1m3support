@@ -106,8 +106,8 @@ public:
      *
      * @return false if move cannot be perfomed, as not all actuators are in Standby state
      */
-    bool move(int32_t* steps);
-    bool moveToEncoder(int32_t* encoderValues);
+    bool move(std::vector<int> steps);
+    bool moveToEncoder(std::vector<int> encoderValues);
 
     /**
      * Commands mirror to move to new position.

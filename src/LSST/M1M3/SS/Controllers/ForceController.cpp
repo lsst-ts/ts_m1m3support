@@ -273,7 +273,7 @@ void ForceController::zeroAccelerationForces() {
     }
 }
 
-void ForceController::applyActiveOpticForces(float* z) {
+void ForceController::applyActiveOpticForces(std::vector<float> z) {
     SPDLOG_INFO("ForceController: applyActiveOpticForces()");
     if (!_activeOpticForceComponent.isEnabled()) {
         _activeOpticForceComponent.enable();
@@ -357,7 +357,7 @@ void ForceController::zeroElevationForces() {
     }
 }
 
-void ForceController::applyOffsetForces(float* x, float* y, float* z) {
+void ForceController::applyOffsetForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
     SPDLOG_INFO("ForceController: applyOffsetForces()");
     if (!_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.enable();
@@ -531,12 +531,20 @@ void ForceController::_convertForcesToSetpoints() {
                             _toInt24(-_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
             }
+#ifdef WITH_SAL_KAFKA
             bool notInRangeS =
                     !Range::InRangeAndCoerce((int)secondaryLowFault, (int)secondaryHighFault,
                                              _preclippedCylinderForces->secondaryCylinderForces[sIndex],
-                                             _appliedCylinderForces->secondaryCylinderForces + sIndex);
+                                             _appliedCylinderForces->secondaryCylinderForces[sIndex]);
+#else
+            bool notInRangeS =
+                    !Range::InRangeAndCoerce((int64_t)secondaryLowFault, (int64_t)secondaryHighFault,
+                                             _preclippedCylinderForces->secondaryCylinderForces[sIndex],
+                                             _appliedCylinderForces->secondaryCylinderForces[sIndex]);
+#endif
             _forceSetpointWarning->safetyLimitWarning[pIndex] =
                     notInRangeS || _forceSetpointWarning->safetyLimitWarning[pIndex];
+
         }
 
         float primaryLowFault = ForceActuatorSettings::instance().CylinderLimitPrimaryTable[pIndex].LowFault;
@@ -565,12 +573,18 @@ void ForceController::_convertForcesToSetpoints() {
                         _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->yForces[yIndex]);
                 break;
         }
+#ifdef WITH_SAL_KAFKA
         bool notInRange = !Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault,
                                                    _preclippedCylinderForces->primaryCylinderForces[pIndex],
-                                                   _appliedCylinderForces->primaryCylinderForces + pIndex);
+                                                   _appliedCylinderForces->primaryCylinderForces[pIndex]);
+#else
+        bool notInRange = !Range::InRangeAndCoerce((int64_t)primaryLowFault, (int64_t)primaryHighFault,
+                                                   _preclippedCylinderForces->primaryCylinderForces[pIndex],
+                                                   _appliedCylinderForces->primaryCylinderForces[pIndex]);
+#endif
         _forceSetpointWarning->safetyLimitWarning[pIndex] =
                 notInRange || _forceSetpointWarning->safetyLimitWarning[pIndex];
-
+ 
         clippingRequired = _forceSetpointWarning->safetyLimitWarning[pIndex] || clippingRequired;
     }
     _appliedCylinderForces->timestamp = M1M3SSPublisher::instance().getTimestamp();

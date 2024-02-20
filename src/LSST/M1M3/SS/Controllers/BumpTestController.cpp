@@ -21,7 +21,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef WITH_SAL_KAFKA
 #include <sal_MTM1M3.h>
+#endif
+
 #include <spdlog/spdlog.h>
 
 #include <BumpTestController.h>
@@ -29,7 +32,7 @@
 #include <ForceActuatorSettings.h>
 #include <ForceController.h>
 #include <Model.h>
-#include <Publisher.h>
+#include <M1M3SSPublisher.h>
 #include <SettingReader.h>
 
 using namespace MTM1M3;
@@ -137,7 +140,7 @@ void BumpTestController::runLoop() {
 
     if (_testSecondary) {
         runCylinderReturn_t sRet = FAILED;
-        short int* secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
+        int* secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
         if (_xIndex >= 0)
             sRet = _runCylinder('X', _xIndex, _xAverages, secondaryStage);
         else if (_yIndex >= 0)
@@ -192,7 +195,7 @@ void BumpTestController::stopCylinder(char axis) {
 
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
                                                                          double averages[],
-                                                                         short int* stage) {
+                                                                         int* stage) {
     ForceController* forceController = Model::instance().getForceController();
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
     MTM1M3_logevent_forceActuatorBumpTestStatusC* forceActuatorBumpTestStatus =

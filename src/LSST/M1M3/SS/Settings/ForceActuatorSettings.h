@@ -71,13 +71,13 @@ public:
     bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
 
     ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces,
-            float *yForces, float *zForces);
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> xForces,
+            std::vector<float> yForces, std::vector<float> zForces);
 
     /** Calculates
      */
     ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces);
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> zForces);
 
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,
                                                             float angularAccelerationY,

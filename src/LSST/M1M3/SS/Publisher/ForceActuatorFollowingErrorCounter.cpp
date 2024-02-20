@@ -35,11 +35,12 @@ ForceActuatorFollowingErrorCounter::ForceActuatorFollowingErrorCounter(token) {
     _lastSendCounter = 0;
 
     counter = 0;
-
+#ifndef WITH_SAL_KAFKA
     memset(primaryAxisFollowingErrorWarningCounter, 0, sizeof(primaryAxisFollowingErrorWarningCounter));
     memset(primaryAxisFollowingErrorCountingCounter, 0, sizeof(primaryAxisFollowingErrorCountingCounter));
     memset(secondaryAxisFollowingErrorWarningCounter, 0, sizeof(secondaryAxisFollowingErrorWarningCounter));
     memset(secondaryAxisFollowingErrorCountingCounter, 0, sizeof(secondaryAxisFollowingErrorCountingCounter));
+#endif
 }
 
 void ForceActuatorFollowingErrorCounter::updatePrimaryCounts(int dataIndex, bool warningTriggered,

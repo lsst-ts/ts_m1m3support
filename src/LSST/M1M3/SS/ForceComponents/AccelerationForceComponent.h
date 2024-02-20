@@ -38,7 +38,7 @@ class AccelerationForceComponent : public ForceComponent {
 public:
     AccelerationForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyAccelerationForces(float* x, float* y, float* z);
+    void applyAccelerationForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
 
     /**
      * Calculate forces from accelerations.

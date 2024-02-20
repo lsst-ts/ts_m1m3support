@@ -91,7 +91,7 @@ SimulatedFPGA::SimulatedFPGA() {
     supportFPGAData.GyroRawY = 0;
     supportFPGAData.GyroRawZ = 0;
 
-    _mgrMTMount = SAL_MTMount();
+    SAL_MTMount _mgrMTMount = SAL_MTMount();
     _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
 
     _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
@@ -978,7 +978,7 @@ void SimulatedFPGA::_monitorElevation(void) {
     SPDLOG_DEBUG("Start monitoring mount elevation...");
 
     while (!_exitThread) {
-        ReturnCode_t status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
+        int status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
 
         if (status == 0) {
             {

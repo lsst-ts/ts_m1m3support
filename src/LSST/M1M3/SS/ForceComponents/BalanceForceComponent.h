@@ -55,7 +55,7 @@ class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyBalanceForces(float* x, float* y, float* z);
+    void applyBalanceForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
 
     /**
      * Called from ForceController::updateAppliedForces. Feeds in hardpoint

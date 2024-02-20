@@ -18,14 +18,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
+ 
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef STATETYPES_H_
 #define STATETYPES_H_
 
+#include <SAL_MTM1M3.h>  // Provides access to enumerations
 #include <DataTypes.h>
-#include <sal_MTM1M3.h>  // Provides access to enumerations
+
 
 struct States {
     enum Type {

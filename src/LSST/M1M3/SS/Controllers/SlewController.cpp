@@ -20,14 +20,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+#ifndef WITH_SAL_KAFKA
 #include <sal_MTM1M3.h>
+#endif
+
 #include <spdlog/spdlog.h>
 
 #include <BoosterValveStatus.h>
 #include <ForceControllerState.h>
 #include <Model.h>
-#include <Publisher.h>
+#include <M1M3SSPublisher.h>
 #include <SettingReader.h>
 #include <SlewController.h>
 #include <SlewControllerSettings.h>

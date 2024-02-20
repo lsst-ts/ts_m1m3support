@@ -29,11 +29,13 @@
 using namespace LSST::M1M3::SS;
 
 AccelerometerSettings::AccelerometerSettings(token) {
+#ifndef WITH_SAL_KAFKA
     memset(angularAccelerationDistance, 0, sizeof(angularAccelerationDistance));
     memset(bias, 0, sizeof(bias));
     memset(sensitivity, 0, sizeof(sensitivity));
     memset(accelerometerOffset, 0, sizeof(accelerometerOffset));
     memset(scalar, 0, sizeof(scalar));
+#endif
 }
 
 void AccelerometerSettings::load(YAML::Node doc) {

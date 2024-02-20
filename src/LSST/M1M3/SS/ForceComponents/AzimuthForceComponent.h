@@ -38,7 +38,7 @@ class AzimuthForceComponent : public ForceComponent {
 public:
     AzimuthForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyAzimuthForces(float* x, float* y, float* z);
+    void applyAzimuthForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
 
     /**
      * Calculate and apply azimuth forces.

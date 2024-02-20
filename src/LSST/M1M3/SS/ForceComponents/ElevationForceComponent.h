@@ -38,7 +38,7 @@ class ElevationForceComponent : public ForceComponent {
 public:
     ElevationForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyElevationForces(float* x, float* y, float* z);
+    void applyElevationForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
 
     /**
      * Calculate offset forces from current telescope elevation.

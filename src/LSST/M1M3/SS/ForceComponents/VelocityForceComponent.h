@@ -38,7 +38,7 @@ class VelocityForceComponent : public ForceComponent {
 public:
     VelocityForceComponent(ForceActuatorApplicationSettings* forceActuatorApplicationSettings);
 
-    void applyVelocityForces(float* x, float* y, float* z);
+    void applyVelocityForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
     void applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY,
                                               float angularVelocityZ);
 

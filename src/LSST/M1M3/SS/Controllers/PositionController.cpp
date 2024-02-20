@@ -24,7 +24,10 @@
 #include <spdlog/spdlog.h>
 #include <stdlib.h>
 
+#ifndef WITH_SAL_KAFKA
 #include <sal_MTM1M3.h>
+#endif
+
 #include <SAL_MTM1M3C.h>
 
 #include <HardpointActuatorSettings.h>
@@ -282,7 +285,7 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
     return true;
 }
 
-bool PositionController::move(int32_t* steps) {
+bool PositionController::move(vector<int> steps) {
     SPDLOG_INFO("PositionController: move({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", steps[0], steps[1], steps[2],
                 steps[3], steps[4], steps[5]);
     if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
@@ -323,7 +326,7 @@ bool PositionController::move(int32_t* steps) {
     return true;
 }
 
-bool PositionController::moveToEncoder(int32_t* encoderValues) {
+bool PositionController::moveToEncoder(std::vector<int> encoderValues) {
     SPDLOG_INFO("PositionController: moveToEncoder({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", encoderValues[0],
                 encoderValues[1], encoderValues[2], encoderValues[3], encoderValues[4], encoderValues[5]);
     if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
@@ -392,7 +395,7 @@ bool PositionController::moveToAbsolute(double x, double y, double z, double rX,
                 rZ);
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
-    int32_t encoderValues[6];
+    std::vector<int> encoderValues{0,0,0,0,0,0};
     double stepsToEncoder = _hardpointActuatorSettings->micrometersPerStep /
                             _hardpointActuatorSettings->micrometersPerEncoder;
     for (int i = 0; i < HP_COUNT; ++i) {
@@ -416,7 +419,7 @@ bool PositionController::translate(double x, double y, double z, double rX, doub
     SPDLOG_INFO("PositionController: translate({:f}, {:f}, {:f}, {:f}, {:f}, {:f})", x, y, z, rX, rY, rZ);
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
-    int32_t encoderValues[6];
+    std::vector<int> encoderValues{0,0,0,0,0,0};
     double stepsToEncoder = _hardpointActuatorSettings->micrometersPerStep /
                             _hardpointActuatorSettings->micrometersPerEncoder;
     for (int i = 0; i < HP_COUNT; ++i) {
@@ -463,9 +466,15 @@ void PositionController::updateSteps() {
             }
             case MTM1M3_shared_HardpointActuatorMotionState_Stepping: {
                 _checkFollowingError(i);
+#ifdef WITH_SAL_KAFKA
                 int32_t moveSteps =
-                        Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
+                        Range::CoerceIntoRange(-(int)_scaledMaxStepsPerLoop[i], (int)_scaledMaxStepsPerLoop[i],
                                                _hardpointActuatorData->stepsQueued[i]);
+#else
+                int32_t moveSteps =
+                        Range::CoerceIntoRange(-(int64_t)_scaledMaxStepsPerLoop[i], (int64_t)_scaledMaxStepsPerLoop[i],
+                                               _hardpointActuatorData->stepsQueued[i]);
+#endif
                 _hardpointActuatorData->stepsQueued[i] -= moveSteps;
                 _hardpointActuatorData->stepsCommanded[i] = (int16_t)moveSteps;
                 if (_hardpointActuatorData->stepsQueued[i] == 0 &&
@@ -478,9 +487,15 @@ void PositionController::updateSteps() {
             }
             case MTM1M3_shared_HardpointActuatorMotionState_QuickPositioning: {
                 _checkFollowingError(i);
-                int32_t moveSteps =
-                        Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
+#ifdef WITH_SAL_KAFKA
+                int64_t moveSteps =
+                        Range::CoerceIntoRange(-(int)_scaledMaxStepsPerLoop[i], (int)_scaledMaxStepsPerLoop[i],
                                                _hardpointActuatorData->stepsQueued[i]);
+#else
+                int64_t moveSteps =
+                        Range::CoerceIntoRange(-(int64_t)_scaledMaxStepsPerLoop[i], (int64_t)_scaledMaxStepsPerLoop[i],
+                                               _hardpointActuatorData->stepsQueued[i]);
+#endif
                 _hardpointActuatorData->stepsQueued[i] -= moveSteps;
                 _hardpointActuatorData->stepsCommanded[i] = (int16_t)moveSteps;
                 if (_hardpointActuatorData->stepsQueued[i] == 0 &&

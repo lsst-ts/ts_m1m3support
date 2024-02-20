@@ -24,6 +24,7 @@
 #ifndef STATE_H_
 #define STATE_H_
 
+#include <SAL_MTM1M3_enums.h>
 #include <time.h>
 #include <string>
 
