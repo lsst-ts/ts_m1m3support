@@ -25,6 +25,7 @@
 # Metadata
 *.aliases
 *.lvlps
+src/stghn1Ng
 
 ts-M1M3supportd
 m1m3sscli
