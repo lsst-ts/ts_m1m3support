@@ -47,7 +47,11 @@ AccelerationForceComponent::AccelerationForceComponent(
     _preclippedAccelerationForces = M1M3SSPublisher::instance().getEventPreclippedAccelerationForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void AccelerationForceComponent::applyAccelerationForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+ #else
 void AccelerationForceComponent::applyAccelerationForces(float *x, float *y, float *z) {
+#endif
     SPDLOG_TRACE("AccelerationForceComponent: applyAccelerationForces()");
 
     if (!isEnabled()) {
@@ -80,9 +84,15 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularAcceleration(
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT,0);
+    std::vector<float> yForces(FA_Y_COUNT,0);
+    std::vector<float> zForces(FA_Z_COUNT,0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -123,7 +133,7 @@ void AccelerationForceComponent::postUpdateActions() {
             _preclippedAccelerationForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedAccelerationForces->xForces[xIndex],
-                                                  _appliedAccelerationForces->xForces + xIndex);
+                                                  _appliedAccelerationForces->xForces[xIndex]);
             _forceSetpointWarning->accelerationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
         }
@@ -134,7 +144,7 @@ void AccelerationForceComponent::postUpdateActions() {
             _preclippedAccelerationForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedAccelerationForces->yForces[yIndex],
-                                                  _appliedAccelerationForces->yForces + yIndex);
+                                                  _appliedAccelerationForces->yForces[yIndex]);
             _forceSetpointWarning->accelerationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
         }
@@ -144,7 +154,7 @@ void AccelerationForceComponent::postUpdateActions() {
         _preclippedAccelerationForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
                                               _preclippedAccelerationForces->zForces[zIndex],
-                                              _appliedAccelerationForces->zForces + zIndex);
+                                              _appliedAccelerationForces->zForces[zIndex]);
         _forceSetpointWarning->accelerationForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->accelerationForceWarning[zIndex] || clippingRequired;

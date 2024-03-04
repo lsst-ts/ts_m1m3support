@@ -24,6 +24,10 @@
 #ifndef STATE_H_
 #define STATE_H_
 
+#ifdef WITH_SAL_KAFKA
+#include <SAL_MTM1M3_enums.h>
+#endif
+
 #include <string>
 #include <time.h>
 

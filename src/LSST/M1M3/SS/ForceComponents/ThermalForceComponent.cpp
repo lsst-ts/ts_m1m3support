@@ -48,7 +48,11 @@ ThermalForceComponent::ThermalForceComponent(
     _preclippedThermalForces = M1M3SSPublisher::instance().getEventPreclippedThermalForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void ThermalForceComponent::applyThermalForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+#else
 void ThermalForceComponent::applyThermalForces(float *x, float *y, float *z) {
+#endif
     SPDLOG_TRACE("ThermalForceComponent: applyThermalForces()");
 
     if (!isEnabled()) {
@@ -74,9 +78,15 @@ void ThermalForceComponent::applyThermalForces(float *x, float *y, float *z) {
 void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperature) {
     SPDLOG_TRACE("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromTemperature(temperature);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT,0);
+    std::vector<float> yForces(FA_Y_COUNT,0);
+    std::vector<float> zForces(FA_Z_COUNT,0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -117,7 +127,7 @@ void ThermalForceComponent::postUpdateActions() {
             _preclippedThermalForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedThermalForces->xForces[xIndex],
-                                             _appliedThermalForces->xForces + xIndex);
+                                             _appliedThermalForces->xForces[xIndex]);
             _forceSetpointWarning->thermalForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
@@ -128,7 +138,7 @@ void ThermalForceComponent::postUpdateActions() {
             _preclippedThermalForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedThermalForces->yForces[yIndex],
-                                             _appliedThermalForces->yForces + yIndex);
+                                             _appliedThermalForces->yForces[yIndex]);
             _forceSetpointWarning->thermalForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
@@ -138,7 +148,7 @@ void ThermalForceComponent::postUpdateActions() {
         _preclippedThermalForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedThermalForces->zForces[zIndex],
-                                         _appliedThermalForces->zForces + zIndex);
+                                         _appliedThermalForces->zForces[zIndex]);
         _forceSetpointWarning->thermalForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->thermalForceWarning[zIndex] || clippingRequired;

@@ -23,11 +23,15 @@
 
 #include <spdlog/spdlog.h>
 
+#ifdef WITH_SAL_KAFKA
+#include <SAL_MTM1M3_enums.h>
+#endif
+
 #include <ActiveState.h>
 #include <BoosterValveController.h>
 #include <ForceController.h>
 #include <Model.h>
-#include <Publisher.h>
+#include <M1M3SSPublisher.h>
 #include <SafetyController.h>
 
 namespace LSST {

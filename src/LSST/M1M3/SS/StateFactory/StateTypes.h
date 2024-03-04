@@ -25,7 +25,11 @@
 #define STATETYPES_H_
 
 #include <cRIO/DataTypes.h>
+#ifdef WITH_SAL_KAFKA
+#include <SAL_MTM1M3.h>  // Provides access to enumerations
+#else
 #include <sal_MTM1M3.h>  // Provides access to enumerations
+#endif
 
 struct States {
     enum Type {

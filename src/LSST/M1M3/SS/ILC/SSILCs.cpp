@@ -355,7 +355,11 @@ void SSILCs::calculateHPPostion() {
 
 void SSILCs::calculateHPMirrorForces() {
     std::vector<float> m = ForceActuatorSettings::instance().HardpointForceMomentTable;
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> force = _hardpointActuatorData->measuredForce;
+#else
     float *force = _hardpointActuatorData->measuredForce;
+#endif
     _hardpointActuatorData->fx = m[0] * force[0] + m[1] * force[1] + m[2] * force[2] + m[3] * force[3] +
                                  m[4] * force[4] + m[5] * force[5];
     _hardpointActuatorData->fy = m[6] * force[0] + m[7] * force[1] + m[8] * force[2] + m[9] * force[3] +

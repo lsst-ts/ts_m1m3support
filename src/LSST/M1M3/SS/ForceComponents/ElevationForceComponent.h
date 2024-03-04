@@ -37,9 +37,11 @@ namespace SS {
 class ElevationForceComponent : public ForceComponent {
 public:
     ElevationForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
-
+#ifdef WITH_SAL_KAFKA
+  void applyElevationForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+#else
     void applyElevationForces(float *x, float *y, float *z);
-
+#endif
     /**
      * Calculate offset forces from current telescope elevation.
      *
