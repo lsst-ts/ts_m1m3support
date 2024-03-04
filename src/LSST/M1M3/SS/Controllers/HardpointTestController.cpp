@@ -28,7 +28,7 @@
 #include <HardpointActuatorWarning.h>
 #include <HardpointTestController.h>
 #include <Model.h>
-#include <Publisher.h>
+#include <M1M3SSPublisher.h>
 #include <SettingReader.h>
 
 using namespace MTM1M3;
