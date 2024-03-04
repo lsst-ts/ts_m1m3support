@@ -50,7 +50,7 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
 
 #ifdef WITH_SAL_KAFKA
         auto _hpIntSettings = [doc](std::vector<int> &dataVec, const char *field) {
-            dataVec = doc[field].as<std::vector<int> >();
+            dataVec = doc[field].as<std::vector<int>>();
 #else
         auto _hpIntSettings = [doc](int32_t *data, const char *field) {
             std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t> >();

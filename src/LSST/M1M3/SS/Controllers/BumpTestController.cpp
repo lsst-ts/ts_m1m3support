@@ -192,7 +192,8 @@ void BumpTestController::stopCylinder(char axis) {
 
 #ifdef WITH_SAL_KAFKA
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
-                                                                         double averages[], int *stage) {
+                                                                         double averages[],
+                                                                         int *stage) {
 #else
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
                                                                          double averages[],
