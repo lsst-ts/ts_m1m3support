@@ -48,7 +48,11 @@ AzimuthForceComponent::AzimuthForceComponent(
     _preclippedAzimuthForces = M1M3SSPublisher::instance().getEventPreclippedAzimuthForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void AzimuthForceComponent::applyAzimuthForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+#else
 void AzimuthForceComponent::applyAzimuthForces(float *x, float *y, float *z) {
+#endif
     SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForces()");
 
     if (!isEnabled()) {
@@ -75,9 +79,15 @@ void AzimuthForceComponent::applyAzimuthForces(float *x, float *y, float *z) {
 void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle) {
     SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.4f})", azimuthAngle);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAzimuthAngle(azimuthAngle);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT,0);
+    std::vector<float> yForces(FA_Y_COUNT,0);
+    std::vector<float> zForces(FA_Z_COUNT,0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -118,7 +128,7 @@ void AzimuthForceComponent::postUpdateActions() {
             _preclippedAzimuthForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedAzimuthForces->xForces[xIndex],
-                                             _appliedAzimuthForces->xForces + xIndex);
+                                             _appliedAzimuthForces->xForces[xIndex]);
             _forceSetpointWarning->azimuthForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->azimuthForceWarning[zIndex];
         }
@@ -129,7 +139,7 @@ void AzimuthForceComponent::postUpdateActions() {
             _preclippedAzimuthForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedAzimuthForces->yForces[yIndex],
-                                             _appliedAzimuthForces->yForces + yIndex);
+                                             _appliedAzimuthForces->yForces[yIndex]);
             _forceSetpointWarning->azimuthForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->azimuthForceWarning[zIndex];
         }
@@ -139,7 +149,7 @@ void AzimuthForceComponent::postUpdateActions() {
         _preclippedAzimuthForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedAzimuthForces->zForces[zIndex],
-                                         _appliedAzimuthForces->zForces + zIndex);
+                                         _appliedAzimuthForces->zForces[zIndex]);
         _forceSetpointWarning->azimuthForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->azimuthForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->azimuthForceWarning[zIndex] || clippingRequired;

@@ -37,8 +37,11 @@ namespace SS {
 class VelocityForceComponent : public ForceComponent {
 public:
     VelocityForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
-
+#ifdef WITH_SAL_KAFKA
+    void applyVelocityForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+#else
     void applyVelocityForces(float *x, float *y, float *z);
+#endif
     void applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY,
                                               float angularVelocityZ);
 

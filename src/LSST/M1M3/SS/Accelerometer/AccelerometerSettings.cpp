@@ -31,6 +31,7 @@
 using namespace LSST::M1M3::SS;
 
 AccelerometerSettings::AccelerometerSettings(token) {
+#ifndef WITH_SAL_KAFKA
     memset(angularAccelerationDistance, 0, sizeof(angularAccelerationDistance));
     memset(bias, 0, sizeof(bias));
     memset(sensitivity, 0, sizeof(sensitivity));
@@ -40,7 +41,7 @@ AccelerometerSettings::AccelerometerSettings(token) {
     memset(xElevationPoly, 0, sizeof(xElevationPoly));
     memset(yElevationPoly, 0, sizeof(xElevationPoly));
     memset(zElevationPoly, 0, sizeof(xElevationPoly));
-
+#endif
     dump_path = "/tmp/rawdc_%FT%T.bin";
 }
 

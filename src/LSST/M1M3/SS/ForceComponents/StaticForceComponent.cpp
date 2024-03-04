@@ -96,7 +96,7 @@ void StaticForceComponent::postUpdateActions() {
             _preclippedStaticForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedStaticForces->xForces[xIndex],
-                                             _appliedStaticForces->xForces + xIndex);
+                                             _appliedStaticForces->xForces[xIndex]);
             _forceSetpointWarning->staticForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
         }
@@ -107,7 +107,7 @@ void StaticForceComponent::postUpdateActions() {
             _preclippedStaticForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedStaticForces->yForces[yIndex],
-                                             _appliedStaticForces->yForces + yIndex);
+                                             _appliedStaticForces->yForces[yIndex]);
             _forceSetpointWarning->staticForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
         }
@@ -116,7 +116,7 @@ void StaticForceComponent::postUpdateActions() {
         float zHighFault = ForceActuatorSettings::instance().StaticLimitZTable[zIndex].HighFault;
         _preclippedStaticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedStaticForces->zForces[zIndex],
-                                              _appliedStaticForces->zForces + zIndex);
+                                              _appliedStaticForces->zForces[zIndex]);
         _forceSetpointWarning->staticForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->staticForceWarning[zIndex] || clippingRequired;

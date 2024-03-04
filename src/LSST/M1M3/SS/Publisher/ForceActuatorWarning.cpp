@@ -81,8 +81,13 @@ void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer *buffer, int
     _shouldSend = true;
 }
 
+#ifdef WITH_SAL_KAFKA
+void ForceActuatorWarning::parseStatus(ModbusBuffer *buffer, int32_t dataIndex,
+                                       const int32_t broadcastCounter) {
+#else
 void ForceActuatorWarning::parseStatus(ModbusBuffer *buffer, const int32_t dataIndex,
                                        DDS::Short broadcastCounter) {
+#endif
     uint8_t ilcStatus = buffer->readU8();
 
     bool brCntWarning = broadcastCounter != ((ilcStatus & 0xF0) >> 4);

@@ -45,8 +45,11 @@ namespace SS {
 class ThermalForceComponent : public ForceComponent {
 public:
     ThermalForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
-
+#ifdef WITH_SAL_KAFKA
+    void applyThermalForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+#else
     void applyThermalForces(float *x, float *y, float *z);
+#endif
     void applyThermalForcesByMirrorTemperature(float temperature);
 
     void postEnableDisableActions() override;

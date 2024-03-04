@@ -36,9 +36,11 @@ namespace SS {
 class ActiveOpticForceComponent : public ForceComponent {
 public:
     ActiveOpticForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
-
+#ifdef WITH_SAL_KAFKA
+    void applyActiveOpticForces(std::vector<float> z);
+#else
     void applyActiveOpticForces(float *z);
-
+#endif
     void postEnableDisableActions() override;
 
 protected:
