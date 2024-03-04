@@ -21,6 +21,10 @@ ALL_OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(ALL_CPP_SR
 C_DEPS = $(patsubst %.c,%.c.d,$(C_SRCS))
 CPP_DEPS = $(patsubst %.cpp,%.cpp.d,$(ALL_CPP_SRCS))
 
+LIBS += $(PKG_LIBS) -ldl -lpthread /opt/lsst/ts_sal/lib/libSAL_MTM1M3.a /opt/lsst/ts_sal/lib/libSAL_MTMount.a -L/usr/lib64/boost${BOOST_RELEASE} lboost_filesystem -lboost_iostreams -lboost_program_options -lboost_system /opt/lsst/ts_sal/lib/libserdes++.a /opt/lsst/ts_sal/lib/libserdes.a -L{LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
+
+LIBS_FLAGS += -L"${LSST_SAL_PREFIX}/lib"
+
 ifeq ($(filter $(MAKECMDGOALS),clean), )
   -include ${C_DEPS} ${CPP_DEPS}
 endif

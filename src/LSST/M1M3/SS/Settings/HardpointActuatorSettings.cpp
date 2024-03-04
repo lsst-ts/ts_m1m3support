@@ -30,9 +30,11 @@
 using namespace LSST::M1M3::SS;
 
 HardpointActuatorSettings::HardpointActuatorSettings(token) {
+#ifndef WITH_SAL_KAFKA
     memset(encoderOffset, 0, sizeof(encoderOffset));
     memset(lowProximityEncoder, 0, sizeof(lowProximityEncoder));
     memset(highProximityEncoder, 0, sizeof(highProximityEncoder));
+#endif
 }
 
 void HardpointActuatorSettings::load(YAML::Node doc) {
@@ -46,17 +48,23 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
         micrometersPerStep = doc["MicrometersPerStep"].as<double>();
         micrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
 
-        auto _hpIntSettings = [doc](int32_t *data, const char *field) {
-            std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t>>();
+#ifndef WITH_SAL_KAFKA
+         auto _hpIntSettings = [doc](int32_t *data, const char *field) {
+             std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t>>();
+#else
++        auto _hpIntSettings = [doc](std::vector<int> dataVec, const char *field) {
+#endif
             if (dataVec.size() != HP_COUNT) {
                 throw std::runtime_error(
                         fmt::format("Invalid {} field in HardpointActuatorSettings, "
                                     "expected {}, found {} integers",
                                     field, HP_COUNT, dataVec.size()));
             }
+#ifndef WITH_SAL_KAFKA
             for (int i = 0; i < HP_COUNT; i++) {
                 data[i] = dataVec[i];
             }
+#endif
         };
 
         _hpIntSettings(encoderOffset, "HPEncoderOffsets");

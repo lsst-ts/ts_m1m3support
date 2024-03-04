@@ -70,15 +70,24 @@ public:
      */
     bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
 
+#ifdef WITH_SAL_KAFKA
+    ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> xForces,
+            std::vector<float> yForces, std::vector<float> zForces);
+#else
     ForcesAndMoments calculateForcesAndMoments(
             ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces,
             float *yForces, float *zForces);
+#endif
 
     /** Calculates
      */
     ForcesAndMoments calculateForcesAndMoments(
+#ifdef WITH_SAL_KAFKA
+           ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> zForces);
+#else
             ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces);
-
+#endif
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,
                                                             float angularAccelerationY,
                                                             float angularAccelerationZ);

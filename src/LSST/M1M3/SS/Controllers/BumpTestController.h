@@ -147,8 +147,11 @@ private:
     double _sleepUntil;
 
     typedef enum { FINISHED, FAILED, NO_CHANGE, STATE_CHANGED } runCylinderReturn_t;
+#ifdef WITH_SAL_KAFKA
+    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], int *stage);
+#else
     runCylinderReturn_t _runCylinder(char axis, int index, double averages[], short int *stage);
-
+#endif
     void _resetProgress(bool zeroOffsets = true);
     void _resetAverages();
 

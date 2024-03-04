@@ -107,8 +107,13 @@ public:
      * @return false if move cannot be perfomed, as not all actuators are in
      * Standby state
      */
+#ifdef WITH_SAL_KAFKA
+     bool move(std::vector<int> steps);
+     bool moveToEncoder(std::vector<int> encoderValues);
+#else
     bool move(int32_t *steps);
     bool moveToEncoder(int32_t *encoderValues);
+#endif
 
     /**
      * Commands mirror to move to new position.

@@ -48,7 +48,11 @@ VelocityForceComponent::VelocityForceComponent(
     _preclippedVelocityForces = M1M3SSPublisher::instance().getEventPreclippedVelocityForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void VelocityForceComponent::applyVelocityForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+#else
 void VelocityForceComponent::applyVelocityForces(float *x, float *y, float *z) {
+#endif
     SPDLOG_TRACE("VelocityForceComponent: applyVelocityForces()");
 
     if (!isEnabled()) {
@@ -80,9 +84,15 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
             angularVelocityX, angularVelocityY, angularVelocityZ);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularVelocity(
             angularVelocityX, angularVelocityY, angularVelocityZ);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT,0);
+    std::vector<float> yForces(FA_Y_COUNT,0);
+    std::vector<float> zForces(FA_Z_COUNT,0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -123,7 +133,7 @@ void VelocityForceComponent::postUpdateActions() {
             _preclippedVelocityForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedVelocityForces->xForces[xIndex],
-                                                  _appliedVelocityForces->xForces + xIndex);
+                                                  _appliedVelocityForces->xForces[xIndex]);
             _forceSetpointWarning->velocityForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         }
@@ -134,7 +144,7 @@ void VelocityForceComponent::postUpdateActions() {
             _preclippedVelocityForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedVelocityForces->yForces[yIndex],
-                                                  _appliedVelocityForces->yForces + yIndex);
+                                                  _appliedVelocityForces->yForces[yIndex]);
             _forceSetpointWarning->velocityForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         }
@@ -144,7 +154,7 @@ void VelocityForceComponent::postUpdateActions() {
         _preclippedVelocityForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedVelocityForces->zForces[zIndex],
-                                         _appliedVelocityForces->zForces + zIndex);
+                                         _appliedVelocityForces->zForces[zIndex]);
         _forceSetpointWarning->velocityForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->velocityForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->velocityForceWarning[zIndex] || clippingRequired;
