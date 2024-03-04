@@ -11,6 +11,8 @@ all: ts-M1M3supportd m1m3sscli
 src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
 
+LIBS += $(PKG_LIBS) -ldl -lpthread /opt/lsst/ts_sal/lib/libSAL_MTM1M3.a /opt/lsst/ts_sal/lib/libSAL_MTMount.a -L/usr/lib64/boost${BOOST_RELEASE}lboost_filesystem -lboost_iostreams -lboost_program_options -lboost_system /opt/lsst/ts_sal/lib/libserdes++.a /opt/lsst/ts_sal/lib/libserdes.a {LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
+
 # Tool invocations
 ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'
@@ -95,7 +97,6 @@ ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
 	${co}cp -r Bitfiles/* ipk/data/var/lib/M1M3support
 	${co}sed s?@VERSION@?$(VERSION)?g control.ipk.in > ipk/control/control
 	${co}cp postinst prerm postrm ipk/control
-	${co}echo -e "/etc/default/M1M3support\n/var/lib/M1M3support/ospl-embedded-shmem.xml\n/var/lib/M1M3supportS/QoS.xml" > ipk/control/conffiles
 	${co}find SettingFiles -name '*.yaml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/M1M3support#' >> ipk/control/conffiles
 	${co}echo "2.0" > ipk/debian-binary
 	${co}tar czf ipk/data.tar.gz -P --transform "s#^ipk/data#.#" --owner=0 --group=0 ipk/data
