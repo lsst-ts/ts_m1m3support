@@ -11,8 +11,6 @@ all: ts-M1M3supportd m1m3sscli
 src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
 
-LIBS += $(PKG_LIBS) -ldl -lpthread /opt/lsst/ts_sal/lib/libSAL_MTM1M3.a /opt/lsst/ts_sal/lib/libSAL_MTMount.a -L/usr/lib64/boost${BOOST_RELEASE}lboost_filesystem -lboost_iostreams -lboost_program_options -lboost_system /opt/lsst/ts_sal/lib/libserdes++.a /opt/lsst/ts_sal/lib/libserdes.a {LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
-
 # Tool invocations
 ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
 	@echo '[LD ] $@'

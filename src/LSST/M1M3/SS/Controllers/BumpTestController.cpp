@@ -139,7 +139,7 @@ void BumpTestController::runLoop() {
 
     if (_testSecondary) {
         runCylinderReturn_t sRet = FAILED;
-#ifdef WITh_SAL_KAFKA
+#ifdef WITH_SAL_KAFKA
         int* secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
 #else
         short int *secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
