@@ -45,8 +45,11 @@ Accelerometer::Accelerometer() {
     _accelerometerData = M1M3SSPublisher::instance().getAccelerometerData();
     _accelerometerWarning = M1M3SSPublisher::instance().getEventAccelerometerWarning();
 
+#ifndef WITH_SAL_KAFKA
     memset(_accelerometerData, 0, sizeof(MTM1M3_accelerometerDataC));
     memset(_accelerometerWarning, 0, sizeof(MTM1M3_logevent_accelerometerWarningC));
+
+#endif
 }
 
 void Accelerometer::processData() {

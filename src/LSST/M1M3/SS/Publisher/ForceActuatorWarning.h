@@ -71,8 +71,11 @@ public:
      * @param dataIndex FA index
      * @param broadcastCounter actual (expected) value of broadcast counter
      */
+#ifdef WITH_SAL_KAFKA
+    void parseStatus(ModbusBuffer *buffer, int32_t dataIndex, int32_t broadcastCounter);
+#else
     void parseStatus(ModbusBuffer *buffer, int32_t dataIndex, const DDS::Short broadcastCounter);
-
+#endif
     /**
      * Parses DCA status (included in response to function code 121).
      *

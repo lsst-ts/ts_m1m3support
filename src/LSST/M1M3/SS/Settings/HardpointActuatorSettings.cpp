@@ -52,7 +52,7 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
          auto _hpIntSettings = [doc](int32_t *data, const char *field) {
              std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t>>();
 #else
-+        auto _hpIntSettings = [doc](std::vector<int> dataVec, const char *field) {
+         auto _hpIntSettings = [doc](std::vector<int> dataVec, const char *field) {
 #endif
             if (dataVec.size() != HP_COUNT) {
                 throw std::runtime_error(
