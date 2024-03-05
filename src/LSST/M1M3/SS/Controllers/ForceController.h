@@ -200,7 +200,7 @@ public:
     void zeroElevationForces();
 
 #ifdef WITH_SAL_KAFKA
-    void applyOffsetForces(std::vector(float> x, std::vector<float> y, std::vector<float> z);
+    void applyOffsetForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
 #else
     void applyOffsetForces(float *x, float *y, float *z);
 #endif
