@@ -291,7 +291,7 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
     return true;
 }
 
-ifdef WITH_SAL_KAFKA
+#ifdef WITH_SAL_KAFKA
 bool PositionController::move(std::vector<int> steps) {
 #else
 bool PositionController::move(int32_t *steps) {
@@ -336,8 +336,8 @@ bool PositionController::move(int32_t *steps) {
     return true;
 }
 
-#ifdef WTH_SAL_KAFKA
-bool PositionController::moveToEncoder(std::vectort<int> encoderValues) {
+#ifdef WITH_SAL_KAFKA
+bool PositionController::moveToEncoder(std::vector<int> encoderValues) {
 #else
 bool PositionController::moveToEncoder(int32_t *encoderValues) {
 #endif
