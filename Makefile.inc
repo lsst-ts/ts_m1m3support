@@ -7,7 +7,11 @@ ifndef VERBOSE
 endif
 
 # change as needed
-c_opts := -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE -DWITH_SAL_KAFKA
+ifeq ($(WITH_SAL_KAFKA),1)
+  c_opts := -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE -DWITH_SAL_KAFKA
+else
+  c_opts := -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
+endif
 
 ifdef DEBUG
   c_opts += -g
@@ -23,16 +27,20 @@ PKG_CPPFLAGS := \
 	$(shell pkg-config spdlog --cflags $(silence)) \
 	$(shell pkg-config fmt --cflags $(silence))
 
-SAL_CPPFLAGS += $(PKG_CPPFLAGS)  \
+ifeq ($(WITH_SAL_KAFKA),1)
+  SAL_CPPFLAGS += $(PKG_CPPFLAGS)  \
+	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src -I${SAL_WORK_DIR}/include \
+	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include -I${LSST_SAL_PREFIX}/include/avro
+else
+  SAL_CPPFLAGS += $(PKG_CPPFLAGS) \
+	-I${OSPL_HOME}/include -I${OSPL_HOME}/include/sys -I${OSPL_HOME}/include/dcps/C++/SACPP \
 	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src -I${SAL_WORK_DIR}/include \
 	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include
+endif
 
 PKG_LIBS := \
 	$(shell pkg-config yaml-cpp --libs $(silence)) -lstdc++fs
 
-SAL_CPPFLAGS += $(PKG_CPPFLAGS)  -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include -I${LSST_SAL_PREFIX}/include/avro
-
-LIBS += $(PKG_LIBS) -ldl -lpthread /opt/lsst/ts_sal/lib/libSAL_MTM1M3.a /opt/lsst/ts_sal/lib/libSAL_MTMount.a -L/usr/lib64/boost${BOOST_RELEASE} -lboost_filesystem -lboost_iostreams -lboost_program_options -lboost_system /opt/lsst/ts_sal/lib/libserdes++.a /opt/lsst/ts_sal/lib/libserdes.a -L${LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
 
 CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
 
@@ -47,11 +55,29 @@ else
   PKG_LIBS += $(shell pkg-config spdlog --libs $(silence) | sed -E 's/-l([a-z0-9]*)/-l:lib\1.a/g')
 endif
 
-LIBS += $(PKG_LIBS) -ldl 
+ifeq ($(WITH_SAL_KAFKA),1)
+  LIBS += $(PKG_LIBS) -ldl -lpthread -L/usr/lib64/boost${BOOST_RELEASE} -lboost_filesystem -lboost_iostreams \
+	-lboost_program_options -lboost_system \
+	-L${LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
+else
+  LIBS += $(PKG_LIBS) -ldl 
+endif
 
-SAL_LIBS := ${LSST_SAL_PREFIX}/lib/libSAL_MTM1M3.a ${LSST_SAL_PREFIX}/lib/libSAL_MTMount.a
+ifeq ($(WITH_SAL_KAFKA),1)
+  SAL_LIBS := -lserdes++ -lserdes \
+	${LSST_SAL_PREFIX}/lib/libSAL_MTM1M3.a ${LSST_SAL_PREFIX}/lib/libSAL_MTMount.a
+else
+  SAL_LIBS := -ldcpssacpp -ldcpsgapi -lddsuser -lddskernel \
+	-lpthread -lddsserialization -lddsconfparser -lddsconf -lddsdatabase \
+	-lddsutil -lddsos \
+	${SAL_WORK_DIR}/lib/libSAL_MTM1M3.a ${SAL_WORK_DIR}/lib/libSAL_MTMount.a
+endif
 
-LIBS_FLAGS += -L${LSST_SAL_PREFIX}/lib
+ifeq ($(WITH_SAL_KAFKA),1)
+  LIBS_FLAGS += -L${LSST_SAL_PREFIX}/lib
+else
+  LIBS_FLAGS += -L${OSPL_HOME}/lib -L${LSST_SDK_INSTALL}/lib
+endif
 
 VERSION := $(shell git describe --tags --dirty 2>/dev/null || echo "unknown:non-git")
 GIT_HASH := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown-non-git")
