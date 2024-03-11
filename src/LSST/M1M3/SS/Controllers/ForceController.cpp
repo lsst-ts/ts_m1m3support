@@ -282,8 +282,13 @@ void ForceController::zeroAccelerationForces() {
     }
 }
 
+#ifdef WITH_SAL_KAFKA
+void ForceController::applyActiveOpticForces(std::vector<float> z) {
+    SPDLOG_INFO("ForceController: applyActiveOpticForces()");
+#else
 void ForceController::applyActiveOpticForces(float *z) {
     SPDLOG_INFO("ForceController: applyActiveOpticForces()");
+#endif
     if (!_activeOpticForceComponent.isEnabled()) {
         _activeOpticForceComponent.enable();
     }
@@ -376,8 +381,13 @@ void ForceController::zeroElevationForces() {
     }
 }
 
+#ifdef WITH_SAL_KAFKA
+void ForceController::applyOffsetForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+    SPDLOG_INFO("ForceController: applyOffsetForces()");
+#else
 void ForceController::applyOffsetForces(float *x, float *y, float *z) {
     SPDLOG_INFO("ForceController: applyOffsetForces()");
+#endif
     if (!_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.enable();
     }
@@ -554,7 +564,7 @@ void ForceController::_convertForcesToSetpoints() {
             bool notInRangeS =
                     !Range::InRangeAndCoerce((int)secondaryLowFault, (int)secondaryHighFault,
                                              _preclippedCylinderForces->secondaryCylinderForces[sIndex],
-                                             _appliedCylinderForces->secondaryCylinderForces + sIndex);
+                                             _appliedCylinderForces->secondaryCylinderForces[sIndex]);
             _forceSetpointWarning->safetyLimitWarning[pIndex] =
                     notInRangeS || _forceSetpointWarning->safetyLimitWarning[pIndex];
         }
@@ -587,7 +597,7 @@ void ForceController::_convertForcesToSetpoints() {
         }
         bool notInRange = !Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault,
                                                    _preclippedCylinderForces->primaryCylinderForces[pIndex],
-                                                   _appliedCylinderForces->primaryCylinderForces + pIndex);
+                                                   _appliedCylinderForces->primaryCylinderForces[pIndex]);
         _forceSetpointWarning->safetyLimitWarning[pIndex] =
                 notInRange || _forceSetpointWarning->safetyLimitWarning[pIndex];
 

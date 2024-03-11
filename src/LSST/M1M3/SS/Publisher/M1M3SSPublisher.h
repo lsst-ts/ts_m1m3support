@@ -27,7 +27,10 @@
 #include <SAL_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
 #include <cRIO/DataTypes.h>
+
+#ifndef WITH_SAL_KAFKA
 #include <ccpp_sal_MTM1M3.h>
+#endif
 
 #include <cRIO/Singleton.h>
 

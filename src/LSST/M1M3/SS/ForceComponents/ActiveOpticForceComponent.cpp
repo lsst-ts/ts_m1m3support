@@ -47,7 +47,11 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(
     _preclippedActiveOpticForces = M1M3SSPublisher::instance().getEventPreclippedActiveOpticForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void ActiveOpticForceComponent::applyActiveOpticForces(std::vector<float> z) {
+#else
 void ActiveOpticForceComponent::applyActiveOpticForces(float *z) {
+#endif
     SPDLOG_DEBUG("ActiveOpticForceComponent: applyActiveOpticForces()");
 
     if (!isEnabled()) {
@@ -85,7 +89,7 @@ void ActiveOpticForceComponent::postUpdateActions() {
         _preclippedActiveOpticForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedActiveOpticForces->zForces[zIndex],
-                                         _appliedActiveOpticForces->zForces + zIndex);
+                                         _appliedActiveOpticForces->zForces[zIndex]);
         _forceSetpointWarning->activeOpticForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->activeOpticForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->activeOpticForceWarning[zIndex] || clippingRequired;
