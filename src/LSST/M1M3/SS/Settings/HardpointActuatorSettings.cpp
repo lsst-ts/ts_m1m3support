@@ -161,9 +161,11 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
         for (int i = 0; i < HP_COUNT; i++) {
             if (lowProximityEncoder[i] >= highProximityEncoder[i]) {
                 throw std::runtime_error(
-                        fmt::format("HardpointActuatorSettings LowProximity isn't smaller "
-                                    "than HighProximity "
+                        fmt::format("HardpointActuatorSettings LowProximity {} isn't smaller "
+                                    "than HighProximity {} "
                                     "for hardpoint {}",
+                                    lowProximityEncoder[i],
+                                    highProximityEncoder[i],
                                     i + 1));
             }
         }
