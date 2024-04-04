@@ -62,9 +62,10 @@ void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit> *data,
 }
 
 #ifdef WITH_SAL_KAFKA
-void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float> zLow, std::vector<float> zHigh,
-                                      std::vector<float> yLow, std::vector<float> yHigh, std::vector<float> xLow,
-                                      std::vector<float> xHigh, const std::string& filename) {
+void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float> &zLow,
+                                      std::vector<float> &zHigh, std::vector<float> &yLow,
+                                      std::vector<float> &yHigh, std::vector<float> &xLow,
+                                      std::vector<float> &xHigh, const std::string &filename) {
 #else
 void TableLoader::loadForceLimitTable(size_t columnsToSkip, float zLow[FA_Z_COUNT], float zHigh[FA_Z_COUNT],
                                       float yLow[FA_Y_COUNT], float yHigh[FA_Y_COUNT], float xLow[FA_X_COUNT],

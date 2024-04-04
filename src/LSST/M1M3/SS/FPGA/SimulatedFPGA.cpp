@@ -1006,11 +1006,7 @@ void SimulatedFPGA::_monitorElevation(void) {
     SPDLOG_DEBUG("Start monitoring mount elevation...");
 
     while (!_exitThread) {
-#ifdef WITH_SAL_KAFKA
-        int status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
-#else
-        ReturnCode_t status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
-#endif
+        auto status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
         if (status == 0) {
             {
                 std::lock_guard<std::mutex> lock_g(_elevationReadWriteLock);

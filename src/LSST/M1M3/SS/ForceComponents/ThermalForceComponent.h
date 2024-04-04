@@ -46,7 +46,8 @@ class ThermalForceComponent : public ForceComponent {
 public:
     ThermalForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 #ifdef WITH_SAL_KAFKA
-    void applyThermalForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+    void applyThermalForces(const std::vector<float> &x, const std::vector<float> &y,
+                            const std::vector<float> &z);
 #else
     void applyThermalForces(float *x, float *y, float *z);
 #endif

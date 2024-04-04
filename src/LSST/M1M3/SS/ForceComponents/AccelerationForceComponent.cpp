@@ -48,8 +48,10 @@ AccelerationForceComponent::AccelerationForceComponent(
 }
 
 #ifdef WITH_SAL_KAFKA
-void AccelerationForceComponent::applyAccelerationForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
- #else
+void AccelerationForceComponent::applyAccelerationForces(const std::vector<float> &x,
+                                                         const std::vector<float> &y,
+                                                         const std::vector<float> &z) {
+#else
 void AccelerationForceComponent::applyAccelerationForces(float *x, float *y, float *z) {
 #endif
     SPDLOG_TRACE("AccelerationForceComponent: applyAccelerationForces()");
@@ -85,9 +87,9 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularAcceleration(
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
 #ifdef WITH_SAL_KAFKA
-    std::vector<float> xForces(FA_X_COUNT,0);
-    std::vector<float> yForces(FA_Y_COUNT,0);
-    std::vector<float> zForces(FA_Z_COUNT,0);
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
 #else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];

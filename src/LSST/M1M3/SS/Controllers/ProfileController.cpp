@@ -31,8 +31,12 @@ namespace SS {
 ProfileController::ProfileController() { SPDLOG_DEBUG("ProfileController: ProfileController()"); }
 
 #ifdef WITH_SAL_KAFKA
-void ProfileController::setupMirrorForceProfile(std::vector<float> xForce, std::vector<float> yForce, std::vector<float> zForce, 
-                                                std::vector<float> xMoment, std::vector<float> yMoment, std::vector<float> zMoment) {
+void ProfileController::setupMirrorForceProfile(const std::vector<float> &xForce,
+                                                const std::vector<float> &yForce,
+                                                const std::vector<float> &zForce,
+                                                const std::vector<float> &xMoment,
+                                                const std::vector<float> &yMoment,
+                                                const std::vector<float> &zMoment) {
 #else
 void ProfileController::setupMirrorForceProfile(float *xForce, float *yForce, float *zForce, float *xMoment,
                                                 float *yMoment, float *zMoment) {

@@ -283,7 +283,7 @@ void ForceController::zeroAccelerationForces() {
 }
 
 #ifdef WITH_SAL_KAFKA
-void ForceController::applyActiveOpticForces(std::vector<float> z) {
+void ForceController::applyActiveOpticForces(const std::vector<float> &z) {
     SPDLOG_INFO("ForceController: applyActiveOpticForces()");
 #else
 void ForceController::applyActiveOpticForces(float *z) {
@@ -382,7 +382,8 @@ void ForceController::zeroElevationForces() {
 }
 
 #ifdef WITH_SAL_KAFKA
-void ForceController::applyOffsetForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+void ForceController::applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
+                                        const std::vector<float> &z) {
     SPDLOG_INFO("ForceController: applyOffsetForces()");
 #else
 void ForceController::applyOffsetForces(float *x, float *y, float *z) {
