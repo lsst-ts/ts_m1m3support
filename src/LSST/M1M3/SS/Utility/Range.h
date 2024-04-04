@@ -70,20 +70,11 @@ public:
         }
 #else
     static bool InRangeAndCoerce(T min, T max, T value, T *output) {
-#endif
         if (Range::InRange(min, max, value)) {
-#ifdef WITH_SAL_KAFKA
-            output = value;
-#else
             (*output) = value;
-#endif
             return true;
         } else {
-#ifdef WITH_SAL_KAFKA
-            output = Range::CoerceIntoRange(min, max, value);
-#else
             (*output) = Range::CoerceIntoRange(min, max, value);
-#endif
             return false;
         }
 #endif
