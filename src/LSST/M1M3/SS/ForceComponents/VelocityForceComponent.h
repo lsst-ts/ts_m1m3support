@@ -38,7 +38,8 @@ class VelocityForceComponent : public ForceComponent {
 public:
     VelocityForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 #ifdef WITH_SAL_KAFKA
-    void applyVelocityForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+    void applyVelocityForces(const std::vector<float> &x, const std::vector<float> &y,
+                             const std::vector<float> &z);
 #else
     void applyVelocityForces(float *x, float *y, float *z);
 #endif

@@ -72,8 +72,9 @@ public:
 
 #ifdef WITH_SAL_KAFKA
     ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> xForces,
-            std::vector<float> yForces, std::vector<float> zForces);
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+            const std::vector<float> &xForces, const std::vector<float> &yForces,
+            const std::vector<float> &zForces);
 #else
     ForcesAndMoments calculateForcesAndMoments(
             ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces,
@@ -82,10 +83,12 @@ public:
 
     /** Calculates
      */
-    ForcesAndMoments calculateForcesAndMoments(
 #ifdef WITH_SAL_KAFKA
-           ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> zForces);
+    ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+            const std::vector<float> &zForces);
 #else
+    ForcesAndMoments calculateForcesAndMoments(
             ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces);
 #endif
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,

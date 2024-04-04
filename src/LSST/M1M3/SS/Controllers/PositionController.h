@@ -108,8 +108,8 @@ public:
      * Standby state
      */
 #ifdef WITH_SAL_KAFKA
-     bool move(std::vector<int> steps);
-     bool moveToEncoder(std::vector<int> encoderValues);
+    bool move(const std::vector<int> &steps);
+    bool moveToEncoder(const std::vector<int> &encoderValues);
 #else
     bool move(int32_t *steps);
     bool moveToEncoder(int32_t *encoderValues);

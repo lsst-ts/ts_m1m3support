@@ -37,7 +37,7 @@ class ActiveOpticForceComponent : public ForceComponent {
 public:
     ActiveOpticForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 #ifdef WITH_SAL_KAFKA
-    void applyActiveOpticForces(std::vector<float> z);
+    void applyActiveOpticForces(const std::vector<float> &z);
 #else
     void applyActiveOpticForces(float *z);
 #endif

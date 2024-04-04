@@ -38,7 +38,8 @@ class AccelerationForceComponent : public ForceComponent {
 public:
     AccelerationForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 #ifdef WITH_SAL_KAFKA
-  void applyAccelerationForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+    void applyAccelerationForces(const std::vector<float> &x, const std::vector<float> &y,
+                                 const std::vector<float> &z);
 #else
     void applyAccelerationForces(float *x, float *y, float *z);
 #endif
