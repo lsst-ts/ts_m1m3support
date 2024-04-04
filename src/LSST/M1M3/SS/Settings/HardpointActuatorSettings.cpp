@@ -48,11 +48,12 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
         micrometersPerStep = doc["MicrometersPerStep"].as<double>();
         micrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
 
-#ifndef WITH_SAL_KAFKA
-         auto _hpIntSettings = [doc](int32_t *data, const char *field) {
-             std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t>>();
+#ifdef WITH_SAL_KAFKA
+        auto _hpIntSettings = [doc](std::vector<int> &dataVec, const char *field) {
+            dataVec = doc[field].as<std::vector<int> >();
 #else
-         auto _hpIntSettings = [doc](std::vector<int> dataVec, const char *field) {
+        auto _hpIntSettings = [doc](int32_t *data, const char *field) {
+            std::vector<int32_t> dataVec = doc[field].as<std::vector<int32_t> >();
 #endif
             if (dataVec.size() != HP_COUNT) {
                 throw std::runtime_error(
@@ -161,12 +162,10 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
         for (int i = 0; i < HP_COUNT; i++) {
             if (lowProximityEncoder[i] >= highProximityEncoder[i]) {
                 throw std::runtime_error(
-                        fmt::format("HardpointActuatorSettings LowProximity {} isn't smaller "
-                                    "than HighProximity {} "
+                        fmt::format("HardpointActuatorSettings LowProximity ({}) isn't smaller "
+                                    "than HighProximity ({}) "
                                     "for hardpoint {}",
-                                    lowProximityEncoder[i],
-                                    highProximityEncoder[i],
-                                    i + 1));
+                                    lowProximityEncoder[i], highProximityEncoder[i], i + 1));
             }
         }
     } catch (YAML::Exception &ex) {

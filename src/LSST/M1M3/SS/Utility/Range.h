@@ -60,26 +60,25 @@ public:
 
     template <typename T>
 #ifdef WITH_SAL_KAFKA
-    static bool InRangeAndCoerce(T min, T max, T value, T output) {
-#else
-    static bool InRangeAndCoerce(T min, T max, T value, T *output) {
-#endif
+    static bool InRangeAndCoerce(T min, T max, T value, T &output) {
         if (Range::InRange(min, max, value)) {
-#ifdef WITH_SAL_KAFKA
             output = value;
-#else
-            (*output) = value;
-#endif
             return true;
         } else {
-#ifdef WITH_SAL_KAFKA
             output = Range::CoerceIntoRange(min, max, value);
-#else
-            (*output) = Range::CoerceIntoRange(min, max, value);
-#endif
             return false;
         }
-    }
+#else
+    static bool InRangeAndCoerce(T min, T max, T value, T *output) {
+        if (Range::InRange(min, max, value)) {
+            (*output) = value;
+            return true;
+        } else {
+            (*output) = Range::CoerceIntoRange(min, max, value);
+            return false;
+        }
+#endif
+    }  // namespace SS
 
     /**
      * Tests if value is in given range. Fires LimitTrigger if conditions
@@ -105,7 +104,7 @@ public:
         }
         return inRange;
     }
-};
+};  // namespace M1M3
 
 }  // namespace SS
 }  // namespace M1M3

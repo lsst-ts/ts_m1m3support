@@ -49,7 +49,8 @@ ThermalForceComponent::ThermalForceComponent(
 }
 
 #ifdef WITH_SAL_KAFKA
-void ThermalForceComponent::applyThermalForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+void ThermalForceComponent::applyThermalForces(const std::vector<float> &x, const std::vector<float> &y,
+                                               const std::vector<float> &z) {
 #else
 void ThermalForceComponent::applyThermalForces(float *x, float *y, float *z) {
 #endif
@@ -79,9 +80,9 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
     SPDLOG_TRACE("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromTemperature(temperature);
 #ifdef WITH_SAL_KAFKA
-    std::vector<float> xForces(FA_X_COUNT,0);
-    std::vector<float> yForces(FA_Y_COUNT,0);
-    std::vector<float> zForces(FA_Z_COUNT,0);
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
 #else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];

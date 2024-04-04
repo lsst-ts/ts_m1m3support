@@ -139,11 +139,7 @@ void BumpTestController::runLoop() {
 
     if (_testSecondary) {
         runCylinderReturn_t sRet = FAILED;
-#ifdef WITH_SAL_KAFKA
-        int* secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
-#else
-        short int *secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
-#endif
+        auto secondaryStage = &(forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex]);
         if (_xIndex >= 0)
             sRet = _runCylinder('X', _xIndex, _xAverages, secondaryStage);
         else if (_yIndex >= 0)
@@ -198,9 +194,7 @@ void BumpTestController::stopCylinder(char axis) {
 
 #ifdef WITH_SAL_KAFKA
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
-                                                                         double averages[],
-                                                                         int *stage) {
-
+                                                                         double averages[], int *stage) {
 #else
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
                                                                          double averages[],
