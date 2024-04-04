@@ -89,9 +89,6 @@ public:
             const std::vector<float> &zForces);
 #else
     ForcesAndMoments calculateForcesAndMoments(
-#ifdef WITH_SAL_KAFKA
-           ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> zForces);
-#else
             ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces);
 #endif
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,

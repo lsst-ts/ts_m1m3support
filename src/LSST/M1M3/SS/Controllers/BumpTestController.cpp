@@ -190,15 +190,9 @@ void BumpTestController::stopCylinder(char axis) {
     _resetProgress();
 }
 
-#ifdef WITH_SAL_KAFKA
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
                                                                          double averages[],
                                                                          int *stage) {
-#else
-BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
-                                                                         double averages[],
-                                                                         short int *stage) {
-#endif
     ForceController *forceController = Model::instance().getForceController();
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
     MTM1M3_logevent_forceActuatorBumpTestStatusC *forceActuatorBumpTestStatus =
