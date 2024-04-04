@@ -214,11 +214,12 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     log();
 }
 
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
 #ifdef WITH_SAL_KAFKA
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> xForces, std::vector<float> yForces,
-        std::vector<float>zForces) {
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, const std::vector<float> &xForces,
+        const std::vector<float> &yForces, const std::vector<float> &zForces) {
 #else
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
         ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces, float *yForces,
         float *zForces) {
 #endif
@@ -259,10 +260,12 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
     return fm;
 }
 
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
 #ifdef WITH_SAL_KAFKA
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, std::vector<float> zForces) {
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
+        ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+        const std::vector<float> &zForces) {
 #else
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
         ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces) {
 #endif
     ForcesAndMoments fm;

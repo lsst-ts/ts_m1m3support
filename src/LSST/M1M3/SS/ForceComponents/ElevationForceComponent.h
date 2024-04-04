@@ -38,7 +38,8 @@ class ElevationForceComponent : public ForceComponent {
 public:
     ElevationForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 #ifdef WITH_SAL_KAFKA
-  void applyElevationForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+    void applyElevationForces(const std::vector<float> &x, const std::vector<float> &y,
+                              const std::vector<float> &z);
 #else
     void applyElevationForces(float *x, float *y, float *z);
 #endif

@@ -49,7 +49,8 @@ AzimuthForceComponent::AzimuthForceComponent(
 }
 
 #ifdef WITH_SAL_KAFKA
-void AzimuthForceComponent::applyAzimuthForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+void AzimuthForceComponent::applyAzimuthForces(const std::vector<float> &x, const std::vector<float> &y,
+                                               const std::vector<float> &z) {
 #else
 void AzimuthForceComponent::applyAzimuthForces(float *x, float *y, float *z) {
 #endif
@@ -80,9 +81,9 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
     SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForcesByMirrorForces({:.4f})", azimuthAngle);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAzimuthAngle(azimuthAngle);
 #ifdef WITH_SAL_KAFKA
-    std::vector<float> xForces(FA_X_COUNT,0);
-    std::vector<float> yForces(FA_Y_COUNT,0);
-    std::vector<float> zForces(FA_Z_COUNT,0);
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
 #else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];

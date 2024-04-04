@@ -292,7 +292,7 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
 }
 
 #ifdef WITH_SAL_KAFKA
-bool PositionController::move(std::vector<int> steps) {
+bool PositionController::move(const std::vector<int> &steps) {
 #else
 bool PositionController::move(int32_t *steps) {
 #endif
@@ -337,7 +337,7 @@ bool PositionController::move(int32_t *steps) {
 }
 
 #ifdef WITH_SAL_KAFKA
-bool PositionController::moveToEncoder(std::vector<int> encoderValues) {
+bool PositionController::moveToEncoder(const std::vector<int> &encoderValues) {
 #else
 bool PositionController::moveToEncoder(int32_t *encoderValues) {
 #endif
@@ -410,7 +410,7 @@ bool PositionController::moveToAbsolute(double x, double y, double z, double rX,
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
 #ifdef WITH_SAL_KAFKA
-    std::vector<int> encoderValues{0,0,0,0,0,0};
+    std::vector<int> encoderValues(6, 0);
 #else
     int32_t encoderValues[6];
 #endif
@@ -438,7 +438,7 @@ bool PositionController::translate(double x, double y, double z, double rX, doub
     int32_t steps[6];
     _convertToSteps(steps, x, y, z, rX, rY, rZ);
 #ifdef WITH_SAL_KAFKA
-    std::vector<int> encoderValues{0,0,0,0,0,0};
+    std::vector<int> encoderValues(6, 0);
 #else
     int32_t encoderValues[6];
 #endif
@@ -490,8 +490,8 @@ void PositionController::updateSteps() {
                 _checkFollowingError(i);
 #ifdef WITH_SAL_KAFKA
                 int32_t moveSteps =
-                        Range::CoerceIntoRange(-(int)_scaledMaxStepsPerLoop[i], (int)_scaledMaxStepsPerLoop[i],
-                                               _hardpointActuatorData->stepsQueued[i]);
+                        Range::CoerceIntoRange<int32_t>(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
+                                                        _hardpointActuatorData->stepsQueued[i]);
 #else
                 int32_t moveSteps =
                         Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
@@ -511,8 +511,8 @@ void PositionController::updateSteps() {
                 _checkFollowingError(i);
 #ifdef WITH_SAL_KAFKA
                 int32_t moveSteps =
-                        Range::CoerceIntoRange(-(int)_scaledMaxStepsPerLoop[i], (int)_scaledMaxStepsPerLoop[i],
-                                               _hardpointActuatorData->stepsQueued[i]);
+                        Range::CoerceIntoRange<int32_t>(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],
+                                                        _hardpointActuatorData->stepsQueued[i]);
 #else
                 int32_t moveSteps =
                         Range::CoerceIntoRange(-_scaledMaxStepsPerLoop[i], _scaledMaxStepsPerLoop[i],

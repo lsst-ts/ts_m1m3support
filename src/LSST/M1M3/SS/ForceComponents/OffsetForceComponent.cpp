@@ -49,7 +49,8 @@ OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings *for
 }
 
 #ifdef WITH_SAL_KAFKA
-void OffsetForceComponent::applyOffsetForces(std::vector<float> x, std::vector<float> y, std::vector<float> z) {
+void OffsetForceComponent::applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
+                                             const std::vector<float> &z) {
 #else
 void OffsetForceComponent::applyOffsetForces(float *x, float *y, float *z) {
 #endif
@@ -85,9 +86,9 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceDistribution(
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
 #ifdef WITH_SAL_KAFKA
-    std::vector<float> xForces(FA_X_COUNT,0);
-    std::vector<float> yForces(FA_Y_COUNT,0);
-    std::vector<float> zForces(FA_Z_COUNT,0);
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
 #else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];

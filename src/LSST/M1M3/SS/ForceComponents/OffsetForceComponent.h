@@ -41,7 +41,8 @@ class OffsetForceComponent : public ForceComponent {
 public:
     OffsetForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 #ifdef WITH_SAL_KAFKA
- void applyOffsetForces(std::vector<float> x, std::vector<float> y, std::vector<float> z);
+    void applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
+                           const std::vector<float> &z);
 #else
     void applyOffsetForces(float *x, float *y, float *z);
 #endif

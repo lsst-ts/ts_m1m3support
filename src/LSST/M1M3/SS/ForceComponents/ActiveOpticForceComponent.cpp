@@ -48,7 +48,7 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(
 }
 
 #ifdef WITH_SAL_KAFKA
-void ActiveOpticForceComponent::applyActiveOpticForces(std::vector<float> z) {
+void ActiveOpticForceComponent::applyActiveOpticForces(const std::vector<float> &z) {
 #else
 void ActiveOpticForceComponent::applyActiveOpticForces(float *z) {
 #endif
