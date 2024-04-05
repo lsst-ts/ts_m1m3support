@@ -993,6 +993,7 @@ void SimulatedFPGA::_monitorElevation(void) {
     _mgrMTMount.salTelemetrySub(const_cast<char *>("MTMount_elevation"));
 
     SPDLOG_DEBUG("Start monitoring mount elevation...");
+    auto status = _mgrMTMount.flushSamples_elevation(&mountElevationInstance);
 
     while (!_exitThread) {
         auto status = _mgrMTMount.getSample_elevation(&mountElevationInstance);
