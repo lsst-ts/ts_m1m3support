@@ -80,11 +80,12 @@ States::Type DisabledState::update(UpdateCommand *command) {
 
 States::Type DisabledState::enable(EnableCommand *command) {
     SPDLOG_INFO("DisabledState: enable()");
-    Model::instance().getILC()->writeSetModeEnableBuffer();
-    Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(false);
-    Model::instance().getILC()->readAll();
-    Model::instance().getILC()->verifyResponses();
+    auto ilc = Model::instance().getILC();
+    ilc->writeSetModeEnableBuffer();
+    ilc->triggerModbus();
+    ilc->waitForAllSubnets(false);
+    ilc->readAll();
+    ilc->verifyResponses();
     DigitalInputOutput::instance().turnAirOn();
     Model::instance().getPowerController()->setAllAuxPowerNetworks(true);
     return Model::instance().getSafetyController()->checkSafety(States::ParkedState);
@@ -92,11 +93,12 @@ States::Type DisabledState::enable(EnableCommand *command) {
 
 States::Type DisabledState::standby(StandbyCommand *command) {
     SPDLOG_INFO("DisabledState: standby()");
-    Model::instance().getILC()->writeSetModeStandbyBuffer();
-    Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(false);
-    Model::instance().getILC()->readAll();
-    Model::instance().getILC()->verifyResponses();
+    auto ilc = Model::instance().getILC();
+    ilc->writeSetModeStandbyBuffer();
+    ilc->triggerModbus();
+    ilc->waitForAllSubnets(false);
+    ilc->readAll();
+    ilc->verifyResponses();
     M1M3SSPublisher::instance().tryLogForceActuatorState();
     Model::instance().getPowerController()->setBothPowerNetworks(false);
     return Model::instance().getSafetyController()->checkSafety(States::StandbyState);
