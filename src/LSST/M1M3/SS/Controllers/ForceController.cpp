@@ -563,9 +563,9 @@ void ForceController::_convertForcesToSetpoints() {
                     break;
             }
             bool notInRangeS =
-                    !Range::InRangeAndCoerce((int)secondaryLowFault, (int)secondaryHighFault,
-                                             _preclippedCylinderForces->secondaryCylinderForces[sIndex],
-                                             _appliedCylinderForces->secondaryCylinderForces[sIndex]);
+                    !Range::InRangeAndCoerce<int>(secondaryLowFault, secondaryHighFault,
+                                                  _preclippedCylinderForces->secondaryCylinderForces[sIndex],
+                                                  _appliedCylinderForces->secondaryCylinderForces[sIndex]);
             _forceSetpointWarning->safetyLimitWarning[pIndex] =
                     notInRangeS || _forceSetpointWarning->safetyLimitWarning[pIndex];
         }
@@ -596,9 +596,9 @@ void ForceController::_convertForcesToSetpoints() {
                         _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->yForces[yIndex]);
                 break;
         }
-        bool notInRange = !Range::InRangeAndCoerce((int)primaryLowFault, (int)primaryHighFault,
-                                                   _preclippedCylinderForces->primaryCylinderForces[pIndex],
-                                                   _appliedCylinderForces->primaryCylinderForces[pIndex]);
+        bool notInRange = !Range::InRangeAndCoerce<int>(
+                primaryLowFault, primaryHighFault, _preclippedCylinderForces->primaryCylinderForces[pIndex],
+                _appliedCylinderForces->primaryCylinderForces[pIndex]);
         _forceSetpointWarning->safetyLimitWarning[pIndex] =
                 notInRange || _forceSetpointWarning->safetyLimitWarning[pIndex];
 
