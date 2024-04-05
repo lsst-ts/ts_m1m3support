@@ -103,4 +103,3 @@ ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
 	${co}tar czf ipk/control.tar.gz -P --transform "s#^ipk/control#.#" --owner=0 --group=0 ipk/control
 	${co}ar r $@ ipk/control.tar.gz ipk/data.tar.gz ipk/debian-binary
 endif
-
