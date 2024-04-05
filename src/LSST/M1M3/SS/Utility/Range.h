@@ -59,7 +59,6 @@ public:
     }
 
     template <typename T>
-#ifdef WITH_SAL_KAFKA
     static bool InRangeAndCoerce(T min, T max, T value, T &output) {
         if (Range::InRange(min, max, value)) {
             output = value;
@@ -68,16 +67,6 @@ public:
             output = Range::CoerceIntoRange(min, max, value);
             return false;
         }
-#else
-    static bool InRangeAndCoerce(T min, T max, T value, T *output) {
-        if (Range::InRange(min, max, value)) {
-            (*output) = value;
-            return true;
-        } else {
-            (*output) = Range::CoerceIntoRange(min, max, value);
-            return false;
-        }
-#endif
     }  // namespace SS
 
     /**
