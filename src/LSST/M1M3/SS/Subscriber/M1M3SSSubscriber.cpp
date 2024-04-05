@@ -148,6 +148,9 @@ void M1M3SSSubscriber::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_p
 
     _mtMountSAL->salTelemetrySub((char *)"MTMount_azimuth");
     _mtMountSAL->salTelemetrySub((char *)"MTMount_elevation");
+
+    _mtMountSAL->flushSamples_azimuth(&_tmaAzimuth);
+    _mtMountSAL->flushSamples_elevation(&_tmaElevation);
 }
 
 Command *M1M3SSSubscriber::tryAcceptCommandSetLogLevel() {
