@@ -48,7 +48,6 @@ Accelerometer::Accelerometer() {
 #ifndef WITH_SAL_KAFKA
     memset(_accelerometerData, 0, sizeof(MTM1M3_accelerometerDataC));
     memset(_accelerometerWarning, 0, sizeof(MTM1M3_logevent_accelerometerWarningC));
-
 #endif
 }
 
