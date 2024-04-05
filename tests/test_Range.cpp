@@ -45,14 +45,40 @@ private:
     int _occurences;
 };
 
+TEST_CASE("InRangeAndCoerce integer", "[Range]") {
+    int ival = 10;
+    CHECK(Range::InRangeAndCoerce(1, 4, ival, ival) == false);
+    CHECK(ival == 4);
+
+    CHECK(Range::InRangeAndCoerce(1, 4, ival, ival) == true);
+
+    CHECK(Range::InRangeAndCoerce(5, 8, ival, ival) == false);
+    CHECK(ival == 5);
+
+    CHECK(Range::InRangeAndCoerce(5, 8, ival, ival) == true);
+}
+
+TEST_CASE("InRangeAndCoerce double", "[Range]") {
+    double dval = 10.123;
+    CHECK(Range::InRangeAndCoerce(1.23, 4.56, dval, dval) == false);
+    CHECK(dval == 4.56);
+
+    CHECK(Range::InRangeAndCoerce(1.23, 4.56, dval, dval) == true);
+
+    CHECK(Range::InRangeAndCoerce(5.81, 8.92, dval, dval) == false);
+    CHECK(dval == 5.81);
+
+    CHECK(Range::InRangeAndCoerce(5.81, 8.92, dval, dval) == true);
+}
+
 TEST_CASE("InRangeTrigger", "[Range]") {
     SimpleLimitTrigger trigger(2);
-    REQUIRE(Range::InRangeTrigger(1.23, 1.25, 1.24, trigger, 1) == true);
-    REQUIRE(trigger.executedVal == 0);
+    CHECK(Range::InRangeTrigger(1.23, 1.25, 1.24, trigger, 1) == true);
+    CHECK(trigger.executedVal == 0);
 
-    REQUIRE(Range::InRangeTrigger(1.23, 1.25, 1.26, trigger, 2) == false);
-    REQUIRE(trigger.executedVal == 0);
+    CHECK(Range::InRangeTrigger(1.23, 1.25, 1.26, trigger, 2) == false);
+    CHECK(trigger.executedVal == 0);
 
-    REQUIRE(Range::InRangeTrigger(1.23, 1.25, 1.22, trigger, 3) == false);
-    REQUIRE(trigger.executedVal == 3);
+    CHECK(Range::InRangeTrigger(1.23, 1.25, 1.22, trigger, 3) == false);
+    CHECK(trigger.executedVal == 3);
 }
