@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.16.0
+-------
+
+* Option to build for Kafka-SAL
+
 v2.15.9
 -------
 
