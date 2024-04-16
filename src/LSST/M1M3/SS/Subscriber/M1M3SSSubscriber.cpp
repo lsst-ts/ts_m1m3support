@@ -268,6 +268,9 @@ COMMAND(SetSlewControllerSettings, setSlewControllerSettings)
 Command *M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
     int32_t result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
     if (result == 0) {
+        while (result == 0) {
+          result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
+        }
         return new TMAAzimuthSampleCommand(&_tmaAzimuth);
     }
     return 0;
@@ -276,6 +279,9 @@ Command *M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
 Command *M1M3SSSubscriber::tryGetSampleTMAElevation() {
     int32_t result = _mtMountSAL->getSample_elevation(&_tmaElevation);
     if (result == 0) {
+        while (result == 0) {
+          result = _mtMountSAL->getSample_elevation(&_tmaElevation);
+        }
         return new TMAElevationSampleCommand(&_tmaElevation);
     }
     return 0;
