@@ -31,33 +31,64 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Performs bump test on single actuator. Bump tests actuator performance by
- * applying small positive and negative force offsets on stationary (parked)
- * mirror, and compare measured forces from force cell.
+ * Performs bump test on single force actuator (FA). Bump tests of an actuator
+ * is performed by applying a small positive and negative force offsets on
+ * stationary (parked) mirror. The tests is evaluated by comparing value
+ * reported by the force actuator load cell with the target (offset) value.
  *
- * Bump test is performed in the following stages (per actuator, so if both
- * primary and secondary shall be tested, repeat):
+ * Settings stored under ForceActuatorSettings/BumpTest specify timeouts,
+ * allowable ranges and number of measurements performed. The configuration
+ * values are enclosed in the following text with : - for example
+ * :TestedTolerances/Warning:
  *
- * 1. check that average of _testMeasurements measured forces roughly equal to 0
- * (in _tolerance)
- * 2. apply a small positive force
- * 3. sleep for _testSettleTime
- * 4. check that average of _testMeasurements measured forces roughly equal to
- * the applied force (in _tolerance)
+ * Bump test is performed in the following stages (per actuator axis, so if both
+ * primary and secondary shall be tested, this is repeated twice per dual axis
+ * actuator):
+ *
+ * 1. check that average of :TestMeasurements: measured forces roughly equal to
+ * 0 (within :TestedTolerances/Error: for the FA being tested, and within
+ * :NonTestedTolerances/Error: for FAs not tested)
+ *
+ * 2. apply a small positive force (222 N, _testForce member variable)
+ *
+ * 3. sleep for :SettleTime: seconds
+ *
+ * 4. check that the average of :TestMeasurements: force actuator values
+ * following the settle time equals (within :TestedTolerances/Error: for tested
+ * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the applied
+ * (target offset) force
+ *
  * 5. null applied offset
- * 6. sleep for _testSettleTime
- * 7. check that average of _testMeasurements measured forces roughly equal to 0
- * (in _tolerance)
- * 8. apply a small negative force
- * 9. sleep for _testSettleTime
- * 10. check that average of _testMeasurements measured forces roughly equal to
- * the applied force (in _tolerance)
- * 11. null applied offset
- * 12. sleep for _testSettleTime
- * 13. check that average of _testMeasurements measured forces roughly equal to
- * 0 (in _tolerance)
  *
- * If any of the steps fails, transition to failed stage and exit.
+ * 6. sleep for :SettleTime: seconds
+ *
+ * 7. check that the average of :TestMeasurements: force actuator values
+ * following the settle time equals (within :TestedTolerances/Error: for tested
+ * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the 0
+ *
+ * 8. apply a small negative force (-222 N, - _testForce member variable)
+ *
+ * 9. sleep for :SettleTime: seconds
+ *
+ * 10. check that the average of :TestMeasurements: force actuator values
+ * following the settle time equals (within :TestedTolerances/Error: for tested
+ * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the 0
+ *
+ * 11. null applied offset
+ *
+ * 12. sleep for :SettleTime: seconds
+ *
+ * 13. check that the average of :TestMeasurements: force actuator values
+ * following the settle time equals (within :TestedTolerances/Error: for tested
+ * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the 0
+ *
+ * If any of the steps fails, transition to failed stage, reset to zero all
+ * applied offsets and exit the bump test for the given FA.
+ *
+ * :TestedTolerances/Warning: and :NonTestedTolerances/Warning: are used as
+ * warning levels. If the error surpassed those, but doesn't trigger an error
+ * (is not above error value), a warning message is send to the system log.
+
  */
 class BumpTestController {
 public:
