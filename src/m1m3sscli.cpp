@@ -67,7 +67,7 @@ public:
     int dumpAccelerometer(command_vec cmds);
 
 protected:
-    virtual LSST::cRIO::FPGA *newFPGA(const char *dir) override;
+    virtual LSST::cRIO::FPGA *newFPGA(const char *dir, bool &fpga_singleton) override;
     virtual ILCUnits getILCs(command_vec cmds) override;
 
     void _printSupportData();
@@ -75,11 +75,12 @@ protected:
 
 class PrintElectromechanical : public ElectromechanicalPneumaticILC, public PrintILC {
 public:
-    PrintElectromechanical(uint8_t bus) : ILC(bus), ElectromechanicalPneumaticILC(bus), PrintILC(bus) {}
+    PrintElectromechanical(uint8_t bus)
+            : ILCBusList(bus), ElectromechanicalPneumaticILC(bus), PrintILC(bus) {}
 
 protected:
-    void processHardpointForceStatus(uint8_t address, uint8_t status, int32_t encoderPostion,
-                                     float loadCellForce) override;
+    void processStepperForceStatus(uint8_t address, uint8_t status, int32_t encoderPostion,
+                                   float loadCellForce) override;
 
     void processDCAGain(uint8_t address, float primaryGain, float secondaryGain) override;
 
@@ -148,7 +149,7 @@ M1M3SScli::M1M3SScli(const char *name, const char *description) : FPGACliApp(nam
     addILCCommand(
             "hardpoint-force",
             [](ILCUnit u) {
-                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportHardpointForceStatus(
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportStepperForceStatus(
                         u.second);
             },
             "Read hardpoint info");
@@ -378,7 +379,10 @@ int M1M3SScli::dumpAccelerometer(command_vec cmds) {
     return 0;
 }
 
-LSST::cRIO::FPGA *M1M3SScli::newFPGA(const char *dir) { return new PrintSSFPGA(); }
+LSST::cRIO::FPGA *M1M3SScli::newFPGA(const char *dir, bool &fpga_singleton) {
+    fpga_singleton = false;
+    return new PrintSSFPGA();
+}
 
 constexpr int ILC_BUS = 5;
 
@@ -532,8 +536,8 @@ void print4(const char *name, t a[4]) {
     std::cout << std::endl;
 }
 
-void PrintElectromechanical::processHardpointForceStatus(uint8_t address, uint8_t status,
-                                                         int32_t encoderPostion, float loadCellForce) {
+void PrintElectromechanical::processStepperForceStatus(uint8_t address, uint8_t status,
+                                                       int32_t encoderPostion, float loadCellForce) {
     _printSepline();
 
     auto limitSwitch = [](bool sw) { return (sw ? "CLOSED" : "OPEN"); };

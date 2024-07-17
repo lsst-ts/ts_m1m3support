@@ -31,7 +31,6 @@
 #include <Displacement.h>
 #include <EnableHardpointChaseCommand.h>
 #include <ForceController.h>
-#include <ILC.h>
 #include <Inclinometer.h>
 #include <Model.h>
 #include <MoveHardpointActuatorsCommand.h>
