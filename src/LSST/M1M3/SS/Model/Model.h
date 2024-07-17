@@ -39,7 +39,6 @@
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <HardpointTestController.h>
-#include <ILC.h>
 #include <Inclinometer.h>
 #include <InclinometerSettings.h>
 #include <MirrorLowerController.h>
@@ -51,6 +50,7 @@
 #include <ProfileController.h>
 #include <SafetyController.h>
 #include <SlewController.h>
+#include <SSILCs.h>
 #include <StartCommand.h>
 #include <StateTypes.h>
 
@@ -71,7 +71,7 @@ public:
 
     inline Displacement *getDisplacement() { return _displacement; }
     inline Inclinometer *getInclinometer() { return _inclinometer; }
-    inline ILC *getILC() { return _ilc; }
+    inline SSILCs *getILC() { return _ilc; }
     inline ForceController *getForceController() { return _forceController; }
     inline SafetyController *getSafetyController() { return _safetyController; }
     inline PositionController *getPositionController() { return _positionController; }
@@ -109,7 +109,7 @@ private:
 
     Displacement *_displacement;
     Inclinometer *_inclinometer;
-    ILC *_ilc;
+    SSILCs *_ilc;
     ForceController *_forceController;
     SafetyController *_safetyController;
     PositionController *_positionController;

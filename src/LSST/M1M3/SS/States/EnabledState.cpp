@@ -35,7 +35,6 @@
 #include <ForceActuatorData.h>
 #include <HardpointActuatorWarning.h>
 #include <Heartbeat.h>
-#include <ILC.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <ModelPublisher.h>
@@ -73,7 +72,7 @@ void EnabledState::runLoop() {
 
     Heartbeat::instance().tryToggle();
 
-    ILC *ilc = Model::instance().getILC();
+    auto ilc = Model::instance().getILC();
     Model::instance().getForceController()->updateAppliedForces();
     Model::instance().getForceController()->processAppliedForces();
     ilc->writeControlListBuffer();

@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.15.5
+=======
+
+* new ts_cRIOcpp API
+
 v2.15.4
 -------
 

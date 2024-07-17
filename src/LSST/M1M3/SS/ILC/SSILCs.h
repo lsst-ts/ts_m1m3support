@@ -21,8 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ILC_H_
-#define ILC_H_
+#ifndef SSILCS_H_
+#define SSILCS_H_
 
 #include <SAL_MTM1M3C.h>
 
@@ -59,19 +59,19 @@ namespace M1M3 {
 namespace SS {
 
 /*!
- * The ILC class used to communicate with the M1M3's 5 subnets. Uses BusList
+ * The SSILCs class used to communicate with the M1M3's 5 subnets. Uses BusList
  * subclasses to send queries to FPGA.
  *
  * @see BusList
  */
-class ILC {
+class SSILCs {
 public:
-    ILC(PositionController *positionController,
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-        HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
-        HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
-        SafetyController *safetyController);
-    virtual ~ILC();
+    SSILCs(PositionController *positionController,
+           ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+           HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+           HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
+           SafetyController *safetyController);
+    virtual ~SSILCs();
 
     /**
      * (Re)-build all bus lists.
@@ -224,4 +224,4 @@ private:
 } /* namespace M1M3 */
 } /* namespace LSST */
 
-#endif /* ILC_H_ */
+#endif /* SSILCS_H_ */

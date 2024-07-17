@@ -31,7 +31,6 @@
 #include <Gyro.h>
 #include <HardpointActuatorWarning.h>
 #include <Heartbeat.h>
-#include <ILC.h>
 #include <Inclinometer.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
@@ -51,7 +50,7 @@ DisabledState::DisabledState() : State("DisabledState") {}
 States::Type DisabledState::update(UpdateCommand *command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("DisabledState::update()");
-    ILC *ilc = Model::instance().getILC();
+    auto ilc = Model::instance().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
     Heartbeat::instance().tryToggle();

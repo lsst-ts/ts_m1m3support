@@ -31,7 +31,6 @@
 #include <EnableHardpointChaseCommand.h>
 #include <EngineeringState.h>
 #include <ForceController.h>
-#include <ILC.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <MoveHardpointActuatorsCommand.h>

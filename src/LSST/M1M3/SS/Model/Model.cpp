@@ -37,7 +37,6 @@
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <IFPGA.h>
-#include <ILC.h>
 #include <Inclinometer.h>
 #include <M1M3SSPublisher.h>
 #include <MirrorLowerController.h>
@@ -47,6 +46,7 @@
 #include <PowerController.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
+#include <SSILCs.h>
 #include <Timestamp.h>
 #include <U16ArrayUtilities.h>
 
@@ -130,10 +130,10 @@ void Model::loadSettings(const char *settingsToApply) {
     _positionController = new PositionController();
 
     delete _ilc;
-    SPDLOG_INFO("Model: Creating ILC");
-    _ilc = new ILC(_positionController, forceActuatorApplicationSettings,
-                   hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings,
-                   _safetyController);
+    SPDLOG_INFO("Model: Creating SS ILC");
+    _ilc = new SSILCs(_positionController, forceActuatorApplicationSettings,
+                      hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings,
+                      _safetyController);
 
     delete _forceController;
     SPDLOG_INFO("Model: Creating force controller");
