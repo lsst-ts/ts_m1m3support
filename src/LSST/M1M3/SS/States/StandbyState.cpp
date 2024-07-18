@@ -30,7 +30,6 @@
 #include <ForceControllerState.h>
 #include <Gyro.h>
 #include <Heartbeat.h>
-#include <ILC.h>
 #include <Model.h>
 #include <PowerController.h>
 #include <RaisingLoweringInfo.h>
@@ -87,7 +86,7 @@ States::Type StandbyState::start(StartCommand *command) {
     M1M3SSPublisher::instance().logConfigurationApplied();
 
     PowerController *powerController = Model::instance().getPowerController();
-    ILC *ilc = Model::instance().getILC();
+    auto ilc = Model::instance().getILC();
     Gyro *gyro = Model::instance().getGyro();
 
     BoosterValveStatus::instance().reset();

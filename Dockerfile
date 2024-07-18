@@ -1,4 +1,4 @@
-FROM lsstts/develop-env:develop as crio-develop
+FROM lsstts/develop-env:develop AS crio-develop
 
 ARG XML_BRANCH=develop
 
@@ -36,7 +36,7 @@ RUN source ~/.crio_setup.sh \
 
 FROM crio-develop
 
-ARG cRIO_CPP=v1.10.1
+ARG cRIO_CPP=v1.11.0
 ARG M1M3_SUPPORT=develop
 ARG TARGET="SIMULATOR=1"
 
