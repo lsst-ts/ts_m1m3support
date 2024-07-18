@@ -30,7 +30,6 @@
 #include <FaultState.h>
 #include <ForceActuatorData.h>
 #include <Heartbeat.h>
-#include <ILC.h>
 #include <Model.h>
 #include <ModelPublisher.h>
 #include <RaisingLoweringInfo.h>
@@ -43,7 +42,7 @@ FaultState::FaultState(std::string name) : State(name) {}
 States::Type FaultState::update(UpdateCommand *command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("FaultState: update()");
-    ILC *ilc = Model::instance().getILC();
+    auto ilc = Model::instance().getILC();
     ilc->writeFreezeSensorListBuffer();
     ilc->triggerModbus();
     Heartbeat::instance().tryToggle();

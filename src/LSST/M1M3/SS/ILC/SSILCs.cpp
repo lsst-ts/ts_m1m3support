@@ -40,11 +40,11 @@
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointActuatorSettings.h>
 #include <IFPGA.h>
-#include <ILC.h>
 #include <ILCApplicationSettings.h>
 #include <M1M3SSPublisher.h>
 #include <PositionController.h>
 #include <RoundRobin.h>
+#include <SSILCs.h>
 #include <Timestamp.h>
 #include <cRIO/DataTypes.h>
 
@@ -52,11 +52,11 @@
 
 using namespace LSST::M1M3::SS;
 
-ILC::ILC(PositionController *positionController,
-         ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-         HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
-         HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
-         SafetyController *safetyController)
+SSILCs::SSILCs(PositionController *positionController,
+               ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+               HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+               HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
+               SafetyController *safetyController)
         : _subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings,
                       hardpointMonitorApplicationSettings),
           _ilcMessageFactory(),
@@ -83,7 +83,7 @@ ILC::ILC(PositionController *positionController,
           _busListFreezeSensor(&_subnetData, &_ilcMessageFactory),
           _busListRaised(&_subnetData, &_ilcMessageFactory),
           _busListActive(&_subnetData, &_ilcMessageFactory) {
-    SPDLOG_DEBUG("ILC: ILC()");
+    SPDLOG_DEBUG("SSILCs: SSILCs()");
     _safetyController = safetyController;
     _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
@@ -95,9 +95,9 @@ ILC::ILC(PositionController *positionController,
     buildBusLists();
 }
 
-ILC::~ILC() {}
+SSILCs::~SSILCs() {}
 
-void ILC::buildBusLists() {
+void SSILCs::buildBusLists() {
     _busListSetADCChannelOffsetAndSensitivity.buildBuffer();
     _busListSetADCScanRate.buildBuffer();
     _busListSetBoostValveDCAGains.buildBuffer();
@@ -118,102 +118,102 @@ void ILC::buildBusLists() {
     _busListActive.buildBuffer();
 }
 
-void ILC::writeCalibrationDataBuffer() {
-    SPDLOG_DEBUG("ILC: writeCalibrationDataBuffer()");
+void SSILCs::writeCalibrationDataBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeCalibrationDataBuffer()");
     _writeBusList(&_busListSetADCChannelOffsetAndSensitivity);
 }
 
-void ILC::writeSetADCScanRateBuffer() {
-    SPDLOG_DEBUG("ILC: writeSetADCScanRateBuffer()");
+void SSILCs::writeSetADCScanRateBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeSetADCScanRateBuffer()");
     _writeBusList(&_busListSetADCScanRate);
 }
 
-void ILC::writeSetBoostValveDCAGainBuffer() {
-    SPDLOG_DEBUG("ILC: writeSetBoostValveDCAGainBuffer()");
+void SSILCs::writeSetBoostValveDCAGainBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeSetBoostValveDCAGainBuffer()");
     _writeBusList(&_busListSetBoostValveDCAGains);
 }
 
-void ILC::writeResetBuffer() {
-    SPDLOG_DEBUG("ILC: writeResetBuffer()");
+void SSILCs::writeResetBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeResetBuffer()");
     _writeBusList(&_busListReset);
 }
 
-void ILC::writeReportServerIDBuffer() {
-    SPDLOG_DEBUG("ILC: writeReportServerIDBuffer()");
+void SSILCs::writeReportServerIDBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeReportServerIDBuffer()");
     _writeBusList(&_busListReportServerID);
 }
 
-void ILC::writeReportServerStatusBuffer() {
-    SPDLOG_DEBUG("ILC: writeReportServerStatusBuffer()");
+void SSILCs::writeReportServerStatusBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeReportServerStatusBuffer()");
     _writeBusList(&_busListReportServerStatus);
 }
 
-void ILC::writeReportADCScanRateBuffer() {
-    SPDLOG_DEBUG("ILC: writeReportADCScanRateBuffer()");
+void SSILCs::writeReportADCScanRateBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeReportADCScanRateBuffer()");
     _writeBusList(&_busListReportADCScanRate);
 }
 
-void ILC::writeReadCalibrationDataBuffer() {
-    SPDLOG_DEBUG("ILC: writeReadCalibrationDataBuffer()");
+void SSILCs::writeReadCalibrationDataBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeReadCalibrationDataBuffer()");
     _writeBusList(&_busListReadCalibration);
 }
 
-void ILC::writeReadBoostValveDCAGainBuffer() {
-    SPDLOG_DEBUG("ILC: writeReadBoostValveDCAGainBuffer()");
+void SSILCs::writeReadBoostValveDCAGainBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeReadBoostValveDCAGainBuffer()");
     _writeBusList(&_busListReadBoostValveDCAGains);
 }
 
-void ILC::writeReportDCAIDBuffer() {
-    SPDLOG_DEBUG("ILC: writeReportDCAIDBuffer()");
+void SSILCs::writeReportDCAIDBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeReportDCAIDBuffer()");
     _writeBusList(&_busListReportDCAID);
 }
 
-void ILC::writeReportDCAStatusBuffer() {
-    SPDLOG_DEBUG("ILC: writeReportDCAStatusBuffer()");
+void SSILCs::writeReportDCAStatusBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeReportDCAStatusBuffer()");
     _writeBusList(&_busListReportDCAStatus);
 }
 
-void ILC::writeSetModeDisableBuffer() {
-    SPDLOG_DEBUG("ILC: writeSetModeDisableBuffer()");
+void SSILCs::writeSetModeDisableBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeSetModeDisableBuffer()");
     _writeBusList(&_busListChangeILCModeDisabled);
 }
 
-void ILC::writeSetModeEnableBuffer() {
-    SPDLOG_DEBUG("ILC: writeSetModeEnableBuffer()");
+void SSILCs::writeSetModeEnableBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeSetModeEnableBuffer()");
     _writeBusList(&_busListChangeILCModeEnabled);
 }
 
-void ILC::writeSetModeStandbyBuffer() {
-    SPDLOG_DEBUG("ILC: writeSetModeStandbyBuffer()");
+void SSILCs::writeSetModeStandbyBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeSetModeStandbyBuffer()");
     _writeBusList(&_busListChangeILCModeStandby);
 }
 
-void ILC::writeSetModeClearFaultsBuffer() {
-    SPDLOG_DEBUG("ILC: writeSetModeClearFaultsBuffer()");
+void SSILCs::writeSetModeClearFaultsBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeSetModeClearFaultsBuffer()");
     _writeBusList(&_busListChangeILCModeClearFaults);
 }
 
-void ILC::writeFreezeSensorListBuffer() {
-    SPDLOG_DEBUG("ILC: writeFreezeSensorListBuffer()");
+void SSILCs::writeFreezeSensorListBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeFreezeSensorListBuffer()");
     _busListFreezeSensor.update();
     _writeBusList(&_busListFreezeSensor);
 }
 
-void ILC::writeRaisedListBuffer() {
-    SPDLOG_DEBUG("ILC: writeRaisedListBuffer()");
+void SSILCs::writeRaisedListBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeRaisedListBuffer()");
     _positionController->updateSteps();
     _busListRaised.update();
     _writeBusList(&_busListRaised);
 }
 
-void ILC::writeActiveListBuffer() {
-    SPDLOG_DEBUG("ILC: writeActiveListBuffer()");
+void SSILCs::writeActiveListBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeActiveListBuffer()");
     _busListActive.update();
     _writeBusList(&_busListActive);
 }
 
-void ILC::writeControlListBuffer() {
-    SPDLOG_DEBUG("ILC: writeControlListBuffer()");
+void SSILCs::writeControlListBuffer() {
+    SPDLOG_DEBUG("SSILCs: writeControlListBuffer()");
     if (_controlListToggle == 0) {
         writeRaisedListBuffer();
     } else {
@@ -222,19 +222,19 @@ void ILC::writeControlListBuffer() {
     _controlListToggle = RoundRobin::Inc(_controlListToggle, 3);
 }
 
-void ILC::triggerModbus() {
-    SPDLOG_DEBUG("ILC: triggerModbus()");
+void SSILCs::triggerModbus() {
+    SPDLOG_DEBUG("SSILCs: triggerModbus()");
     IFPGA::get().writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
 }
 
-void ILC::waitForSubnet(int32_t subnet, int32_t timeout) {
-    SPDLOG_DEBUG("ILC: waitForSubnet({:d}, {:d})", subnet, timeout);
+void SSILCs::waitForSubnet(int32_t subnet, int32_t timeout) {
+    SPDLOG_DEBUG("SSILCs: waitForSubnet({:d}, {:d})", subnet, timeout);
     IFPGA::get().waitForModbusIRQ(subnet, timeout);
     IFPGA::get().ackModbusIRQ(subnet);
 }
 
-void ILC::waitForAllSubnets(int32_t timeout) {
-    SPDLOG_DEBUG("ILC: waitForAllSubnets({:d})", timeout);
+void SSILCs::waitForAllSubnets(int32_t timeout) {
+    SPDLOG_DEBUG("SSILCs: waitForAllSubnets({:d})", timeout);
     waitForSubnet(1, timeout);
     waitForSubnet(2, timeout);
     waitForSubnet(3, timeout);
@@ -242,15 +242,15 @@ void ILC::waitForAllSubnets(int32_t timeout) {
     waitForSubnet(5, timeout);
 }
 
-void ILC::read(uint8_t subnet) {
-    SPDLOG_DEBUG("ILC: read({:d})", subnet);
+void SSILCs::read(uint8_t subnet) {
+    SPDLOG_DEBUG("SSILCs: read({:d})", subnet);
     uint16_t addr = _subnetToRxAddress(subnet);
     IFPGA::get().writeRequestFIFO(&addr, 1, 0);
     _rxBuffer.setIndex(0);
     IFPGA::get().readU16ResponseFIFO(_rxBuffer.getBuffer(), 1, 10);
     uint16_t reportedLength = _rxBuffer.readLength();
     if (reportedLength == 0) {
-        throw std::runtime_error(fmt::format("ILC subnet {}: Timeout on response", subnet));
+        throw std::runtime_error(fmt::format("SSILCs subnet {}: Timeout on response", subnet));
     }
 
     _rxBuffer.setIndex(0);
@@ -259,8 +259,8 @@ void ILC::read(uint8_t subnet) {
     _responseParser.parse(&_rxBuffer, subnet);
 }
 
-void ILC::readAll() {
-    SPDLOG_DEBUG("ILC: readAll()");
+void SSILCs::readAll() {
+    SPDLOG_DEBUG("SSILCs: readAll()");
     read(1);
     read(2);
     read(3);
@@ -270,8 +270,8 @@ void ILC::readAll() {
     ForceActuatorFollowingErrorCounter::instance().send();
 }
 
-void ILC::flush(uint8_t subnet) {
-    SPDLOG_DEBUG("ILC: flush({:d})", (int32_t)subnet);
+void SSILCs::flush(uint8_t subnet) {
+    SPDLOG_DEBUG("SSILCs: flush({:d})", (int32_t)subnet);
     uint16_t add = _subnetToRxAddress(subnet);
     IFPGA::get().writeRequestFIFO(&add, 1, 0);
     _rxBuffer.setIndex(0);
@@ -284,8 +284,8 @@ void ILC::flush(uint8_t subnet) {
     }
 }
 
-void ILC::flushAll() {
-    SPDLOG_DEBUG("ILC: flushAll()");
+void SSILCs::flushAll() {
+    SPDLOG_DEBUG("SSILCs: flushAll()");
     flush(1);
     flush(2);
     flush(3);
@@ -293,7 +293,7 @@ void ILC::flushAll() {
     flush(5);
 }
 
-void ILC::calculateHPPostion() {
+void SSILCs::calculateHPPostion() {
     double displacement[] = {
             ((_hardpointActuatorData->encoder[0] - _hardpointActuatorInfo->referencePosition[0]) *
              _hardpointActuatorSettings->micrometersPerEncoder) /
@@ -358,7 +358,7 @@ void ILC::calculateHPPostion() {
             _hardpointActuatorSettings->HardpointDisplacementToMirrorPosition[35] * displacement[1];
 }
 
-void ILC::calculateHPMirrorForces() {
+void SSILCs::calculateHPMirrorForces() {
     std::vector<float> m = ForceActuatorSettings::instance().HardpointForceMomentTable;
     float *force = _hardpointActuatorData->measuredForce;
     _hardpointActuatorData->fx = m[0] * force[0] + m[1] * force[1] + m[2] * force[2] + m[3] * force[3] +
@@ -378,7 +378,7 @@ void ILC::calculateHPMirrorForces() {
                                                   _hardpointActuatorData->fz * _hardpointActuatorData->fz);
 }
 
-void ILC::calculateFAMirrorForces() {
+void SSILCs::calculateFAMirrorForces() {
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
             _forceActuatorApplicationSettings, ForceActuatorData::instance().xForce,
             ForceActuatorData::instance().yForce, ForceActuatorData::instance().zForce);
@@ -391,50 +391,50 @@ void ILC::calculateFAMirrorForces() {
     ForceActuatorData::instance().forceMagnitude = fm.ForceMagnitude;
 }
 
-void ILC::clearResponses() {
-    SPDLOG_DEBUG("ILC: clearResponses()");
+void SSILCs::clearResponses() {
+    SPDLOG_DEBUG("SSILCs: clearResponses()");
     _responseParser.clearResponses();
 }
 
-void ILC::verifyResponses() {
-    SPDLOG_DEBUG("ILC: verifyResponses()");
+void SSILCs::verifyResponses() {
+    SPDLOG_DEBUG("SSILCs: verifyResponses()");
     _responseParser.verifyResponses();
 }
 
-void ILC::publishForceActuatorInfo() {
+void SSILCs::publishForceActuatorInfo() {
     ForceActuatorInfo::instance().timestamp = M1M3SSPublisher::instance().getTimestamp();
     ForceActuatorInfo::instance().log();
 }
 
-void ILC::publishForceActuatorStatus() {
+void SSILCs::publishForceActuatorStatus() {
     // M1M3SSPublisher::instance().putForceActuatorStatus();
 }
 
-void ILC::publishHardpointActuatorInfo() {
+void SSILCs::publishHardpointActuatorInfo() {
     M1M3SSPublisher::instance().getEventHardpointActuatorInfo()->timestamp =
             M1M3SSPublisher::instance().getTimestamp();
     M1M3SSPublisher::instance().logHardpointActuatorInfo();
 }
 
-void ILC::publishHardpointStatus() {
+void SSILCs::publishHardpointStatus() {
     // M1M3SSPublisher::instance().putHardpointStatus();
 }
 
-void ILC::publishHardpointData() { M1M3SSPublisher::instance().putHardpointActuatorData(); }
+void SSILCs::publishHardpointData() { M1M3SSPublisher::instance().putHardpointActuatorData(); }
 
-void ILC::publishHardpointMonitorInfo() {
+void SSILCs::publishHardpointMonitorInfo() {
     M1M3SSPublisher::instance().getEventHardpointMonitorInfo()->timestamp =
             M1M3SSPublisher::instance().getTimestamp();
     M1M3SSPublisher::instance().logHardpointMonitorInfo();
 }
 
-void ILC::publishHardpointMonitorStatus() {
+void SSILCs::publishHardpointMonitorStatus() {
     // M1M3SSPublisher::instance().putHardpointMonitorStatus();
 }
 
-void ILC::publishHardpointMonitorData() { M1M3SSPublisher::instance().putHardpointMonitorData(); }
+void SSILCs::publishHardpointMonitorData() { M1M3SSPublisher::instance().putHardpointMonitorData(); }
 
-void ILC::disableFA(uint32_t actuatorId) {
+void SSILCs::disableFA(uint32_t actuatorId) {
     if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
         SPDLOG_CRITICAL("Race condition? Disabling actuator with far neighbor disabled");
         return;
@@ -444,19 +444,19 @@ void ILC::disableFA(uint32_t actuatorId) {
     buildBusLists();
 }
 
-void ILC::enableFA(uint32_t actuatorId) {
+void SSILCs::enableFA(uint32_t actuatorId) {
     _subnetData.enableFA(actuatorId);
     M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabled(actuatorId, true);
     buildBusLists();
 }
 
-void ILC::enableAllFA() {
+void SSILCs::enableAllFA() {
     _subnetData.enableAllFA();
     M1M3SSPublisher::instance().getEnabledForceActuators()->setEnabledAll();
     buildBusLists();
 }
 
-uint32_t ILC::hasDisabledFarNeighbor(uint32_t actuatorIndex) {
+uint32_t SSILCs::hasDisabledFarNeighbor(uint32_t actuatorIndex) {
     for (auto farID : ForceActuatorSettings::instance().Neighbors[actuatorIndex].FarIDs) {
         if (isDisabled(farID)) {
             return farID;
@@ -465,7 +465,7 @@ uint32_t ILC::hasDisabledFarNeighbor(uint32_t actuatorIndex) {
     return 0;
 }
 
-uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
+uint8_t SSILCs::_subnetToRxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:
             return FPGAAddresses::ModbusSubnetARx;
@@ -482,7 +482,7 @@ uint8_t ILC::_subnetToRxAddress(uint8_t subnet) {
     }
 }
 
-uint8_t ILC::_subnetToTxAddress(uint8_t subnet) {
+uint8_t SSILCs::_subnetToTxAddress(uint8_t subnet) {
     switch (subnet) {
         case 1:
             return FPGAAddresses::ModbusSubnetATx;
@@ -499,13 +499,13 @@ uint8_t ILC::_subnetToTxAddress(uint8_t subnet) {
     }
 }
 
-void ILC::_writeBusList(BusList *busList) {
+void SSILCs::_writeBusList(BusList *busList) {
     IFPGA::get().writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
     _responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(),
                                          busList->getExpectedHMResponses());
 }
 
-void ILC::_updateHPSteps() {
+void SSILCs::_updateHPSteps() {
     for (int i = 0; i < 6; i++) {
         if (_hpSteps[i] != 0) {
             if (_hpSteps[i] > 100) {

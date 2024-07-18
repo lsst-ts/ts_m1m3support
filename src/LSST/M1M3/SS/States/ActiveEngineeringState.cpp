@@ -33,7 +33,6 @@
 #include <DigitalInputOutput.h>
 #include <Displacement.h>
 #include <ForceController.h>
-#include <ILC.h>
 #include <Inclinometer.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
