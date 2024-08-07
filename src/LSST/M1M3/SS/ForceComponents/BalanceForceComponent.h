@@ -54,9 +54,7 @@ namespace SS {
 class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
-
     void applyBalanceForces(float *x, float *y, float *z, bool check = true);
-
     /**
      * Called from ForceController::updateAppliedForces. Feeds in hardpoint
      * force and moments measured from the hardpoint load cells and transformed
