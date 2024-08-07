@@ -21,12 +21,10 @@ endif
 CRIOCPP := ../ts_cRIOcpp/
 
 PKG_CPPFLAGS := \
-	$(shell pkg-config yaml-cpp --cflags $(silence)) \
-	$(shell pkg-config spdlog --cflags $(silence)) \
-	$(shell pkg-config fmt --cflags $(silence))
+	$(shell pkg-config yaml-cpp spdlog fmt --cflags $(silence))
 
 PKG_LIBS := \
-	$(shell pkg-config yaml-cpp --libs $(silence)) -lstdc++fs
+	$(shell pkg-config yaml-cpp spdlog fmt --libs $(silence)) -lstdc++
 
 
 CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
@@ -43,15 +41,19 @@ else
 endif
 
 ifdef WITH_SAL_KAFKA
+  PKG_CPPFLAGS += \
+	$(shell pkg-config rdkafka rdkafka++ openssl snappy jansson --cflags)
+  PKG_LIBS += \
+	$(shell pkg-config rdkafka rdkafka++ openssl snappy jansson --libs)
+
   SAL_CPPFLAGS += $(PKG_CPPFLAGS)  \
-	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src -I${SAL_WORK_DIR}/include \
-	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include -I${LSST_SAL_PREFIX}/include/avro
+        -I${SAL_HOME}/include -I${SAL_HOME}/include/avro
   LIBS += $(PKG_LIBS) -ldl -lpthread -L/usr/lib64/boost${BOOST_RELEASE} -lboost_filesystem -lboost_iostreams \
 	-lboost_program_options -lboost_system \
-	-L${LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
+	-lcurl -lavrocpp -lavro
   SAL_LIBS := -lserdes++ -lserdes \
-	${LSST_SAL_PREFIX}/lib/libSAL_MTM1M3.a ${LSST_SAL_PREFIX}/lib/libSAL_MTMount.a
-  LIBS_FLAGS += -L${LSST_SAL_PREFIX}/lib
+        -lSAL_MTM1M3 -lSAL_MTMount
+  LIBS_FLAGS += $(LIBS) -L${SAL_HOME}/lib
 else
   SAL_CPPFLAGS += $(PKG_CPPFLAGS) \
 	-I${OSPL_HOME}/include -I${OSPL_HOME}/include/sys -I${OSPL_HOME}/include/dcps/C++/SACPP \
