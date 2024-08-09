@@ -55,7 +55,8 @@ BalanceForceComponent::BalanceForceComponent(
 }
 
 #ifdef WITH_SAL_KAFKA
-void BalanceForceComponent::applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y, const std::vector<float> &z) {
+void BalanceForceComponent::applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y,
+                                               const std::vector<float> &z, bool check) {
 #else
 void BalanceForceComponent::applyBalanceForces(float *x, float *y, float *z, bool check) {
 #endif
@@ -99,9 +100,9 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
     DistributedForces forces =
             ForceActuatorSettings::instance().calculateForceDistribution(fx, fy, fz, mx, my, mz);
 #ifdef WITH_SAL_KAFKA
-    std::vector<float> xForces(FA_X_COUNT,0);
-    std::vector<float> yForces(FA_Y_COUNT,0);
-    std::vector<float> zForces(FA_Z_COUNT,0);
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
 #else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
@@ -132,9 +133,15 @@ bool BalanceForceComponent::applyFreezedForces() {
     float mz = _mz.getOffset(&changed);
     DistributedForces forces =
             ForceActuatorSettings::instance().calculateForceDistribution(fx, fy, fz, mx, my, mz);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];

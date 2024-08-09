@@ -192,8 +192,7 @@ void BumpTestController::stopCylinder(char axis) {
 }
 
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
-                                                                         double averages[],
-                                                                         int *stage) {
+                                                                         double averages[], int *stage) {
     ForceController *forceController = Model::instance().getForceController();
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
     MTM1M3_logevent_forceActuatorBumpTestStatusC *forceActuatorBumpTestStatus =

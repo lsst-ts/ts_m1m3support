@@ -55,7 +55,8 @@ class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 #ifdef WITH_SAL_KAFKA
-    void applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y, const std::vector<float> &z);
+    void applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y,
+                            const std::vector<float> &z, bool check = true);
 #else
     void applyBalanceForces(float *x, float *y, float *z, bool check = true);
 #endif

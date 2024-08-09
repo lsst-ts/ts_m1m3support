@@ -269,7 +269,7 @@ Command *M1M3SSSubscriber::tryGetSampleTMAAzimuth() {
     int32_t result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
     if (result == 0) {
         while (result == 0) {
-          result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
+            result = _mtMountSAL->getSample_azimuth(&_tmaAzimuth);
         }
         return new TMAAzimuthSampleCommand(&_tmaAzimuth);
     }
@@ -280,7 +280,7 @@ Command *M1M3SSSubscriber::tryGetSampleTMAElevation() {
     int32_t result = _mtMountSAL->getSample_elevation(&_tmaElevation);
     if (result == 0) {
         while (result == 0) {
-          result = _mtMountSAL->getSample_elevation(&_tmaElevation);
+            result = _mtMountSAL->getSample_elevation(&_tmaElevation);
         }
         return new TMAElevationSampleCommand(&_tmaElevation);
     }
