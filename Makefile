@@ -2,7 +2,7 @@ include Makefile.inc
 
 .PHONY: all clean deploy tests FORCE doc simulator ipk
 
-# Add inputs and outputs from these tool invocations to the build variables 
+# Add inputs and outputs from these tool invocations to the build variables
 #
 
 # All Target
@@ -10,8 +10,6 @@ all: ts-M1M3supportd m1m3sscli
 
 src/libM1M3SS.a: FORCE
 	$(MAKE) -C src libM1M3SS.a
-
-LIBS += $(PKG_LIBS) -ldl -lpthread /opt/lsst/ts_sal/lib/libSAL_MTM1M3.a /opt/lsst/ts_sal/lib/libSAL_MTMount.a -L/usr/lib64/boost${BOOST_RELEASE}lboost_filesystem -lboost_iostreams -lboost_program_options -lboost_system /opt/lsst/ts_sal/lib/libserdes++.a /opt/lsst/ts_sal/lib/libserdes.a {LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
 
 # Tool invocations
 ts-M1M3supportd: src/ts-M1M3supportd.cpp.o src/libM1M3SS.a
@@ -91,12 +89,11 @@ ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
 	${co}cp m1m3sscli ipk/data/usr/sbin/m1m3sscli
 	${co}cp init ipk/data/etc/init.d/ts-M1M3support
 	${co}cp default_M1M3support ipk/data/etc/default/M1M3support
-	${co}cp -r ${TS_DDSCONFIG}/python/lsst/ts/ddsconfig/data/config/ospl-embedded-shmem.xml ipk/data/var/lib/M1M3support || echo "Cannot find ${TS_DDSCONFIG} ospl-embedded-shmem.xml - check it out?"
-	${co}cp -r ${TS_DDSCONFIG}/python/lsst/ts/ddsconfig/data/qos/QoS.xml ipk/data/var/lib/M1M3support || echo "Cannot find ${TS_DDSCONFIG} QoS.xml - check it out?"
 	${co}cp -r SettingFiles/* ipk/data/var/lib/M1M3support
 	${co}cp -r Bitfiles/* ipk/data/var/lib/M1M3support
 	${co}sed s?@VERSION@?$(VERSION)?g control.ipk.in > ipk/control/control
 	${co}cp postinst prerm postrm ipk/control
+	${co}echo -e "/etc/default/M1M3support" > ipk/control/conffiles
 	${co}find SettingFiles -name '*.yaml' -o -name '*.csv' | sed 's#^SettingFiles#/var/lib/M1M3support#' >> ipk/control/conffiles
 	${co}echo "2.0" > ipk/debian-binary
 	${co}tar czf ipk/data.tar.gz -P --transform "s#^ipk/data#.#" --owner=0 --group=0 ipk/data
