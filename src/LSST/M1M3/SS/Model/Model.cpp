@@ -212,6 +212,7 @@ void Model::publishRecommendedSettings() {
 void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
     SPDLOG_TRACE("Model: publishOuterLoop()");
     MTM1M3_outerLoopDataC *data = M1M3SSPublisher::instance().getOuterLoopData();
+    data->timestamp = M1M3SSPublisher::instance().getTimestamp();
     data->executionTime = executionTime.count() / 1000000000.0;
     M1M3SSPublisher::instance().putOuterLoopData();
 }
