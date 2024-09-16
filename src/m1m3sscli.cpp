@@ -127,44 +127,46 @@ M1M3SScli::M1M3SScli(const char *name, const char *description) : FPGACliApp(nam
     addILCCommand(
             "calibration",
             [](ILCUnit u) {
-                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportCalibrationData(u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->reportCalibrationData(
+                        u.getAddress());
             },
             "Read calibration data");
 
     addILCCommand(
             "measured",
             [](ILCUnit u) {
-                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportForceActuatorForceStatus(
-                        u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->reportForceActuatorForceStatus(
+                        u.getAddress());
             },
             "Report measured load cell force");
 
     addILCCommand(
             "pressure",
             [](ILCUnit u) {
-                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->reportMezzaninePressure(
+                        u.getAddress());
             },
             "Read mezzanine pressure");
 
     addILCCommand(
             "hardpoint-force",
             [](ILCUnit u) {
-                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportStepperForceStatus(
-                        u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->reportStepperForceStatus(
+                        u.getAddress());
             },
             "Read hardpoint info");
 
     addILCCommand(
             "dca-gain",
             [](ILCUnit u) {
-                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportDCAGain(u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->reportDCAGain(u.getAddress());
             },
             "Read booster valve DCA Gain");
 
     addILCCommand(
             "lvdt",
             [](ILCUnit u) {
-                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportHardpointLVDT(u.second);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->reportHardpointLVDT(u.getAddress());
             },
             "Read LVDT info");
 
@@ -245,7 +247,8 @@ int M1M3SScli::setDCAGain(command_vec cmds) {
     clearILCs();
     ILCUnits ilcs = getILCs(cmds);
     for (auto u : ilcs) {
-        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDCAGain(u.second, primary, secondary);
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->setDCAGain(u.getAddress(), primary,
+                                                                             secondary);
     }
     runILCCommands(500);
     return 0;
@@ -265,8 +268,8 @@ int M1M3SScli::setSAAOffset(command_vec cmds) {
     clearILCs();
     ILCUnits ilcs = getILCs(cmds);
     for (auto u : ilcs) {
-        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setSAAForceOffset(u.second, false,
-                                                                                      primary);
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->setSAAForceOffset(u.getAddress(), false,
+                                                                                    primary);
     }
     runILCCommands(500);
     return 0;
@@ -287,8 +290,8 @@ int M1M3SScli::setDAAOffset(command_vec cmds) {
     clearILCs();
     ILCUnits ilcs = getILCs(cmds);
     for (auto u : ilcs) {
-        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDAAForceOffset(u.second, false,
-                                                                                      primary, secondary);
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->setDAAForceOffset(u.getAddress(), false,
+                                                                                    primary, secondary);
     }
     runILCCommands(500);
     return 0;
@@ -313,8 +316,8 @@ int M1M3SScli::setCalibration(command_vec cmds) {
         return -1;
     }
     for (auto u : ilcs) {
-        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setOffsetAndSensitivity(
-                u.second, channel, offset, sensitivity);
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.bus)->setOffsetAndSensitivity(
+                u.getAddress(), channel, offset, sensitivity);
     }
     runILCCommands(500);
     return 0;
