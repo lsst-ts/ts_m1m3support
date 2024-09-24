@@ -44,9 +44,9 @@
 #include <Model.h>
 #include <PositionController.h>
 #include <PowerController.h>
+#include <SSILCs.h>
 #include <SafetyController.h>
 #include <SettingReader.h>
-#include <SSILCs.h>
 #include <Timestamp.h>
 #include <U16ArrayUtilities.h>
 

@@ -7,6 +7,7 @@ Version History
 v2.15.5
 -------
 
+* fixed signs in IMS transformations
 * new ts_cRIOcpp API
 * New MPU interface
 * Improved force actuator bump tests documentation

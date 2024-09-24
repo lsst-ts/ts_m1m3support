@@ -48,9 +48,9 @@
 #include <PositionControllerSettings.h>
 #include <PowerController.h>
 #include <ProfileController.h>
+#include <SSILCs.h>
 #include <SafetyController.h>
 #include <SlewController.h>
-#include <SSILCs.h>
 #include <StartCommand.h>
 #include <StateTypes.h>
 

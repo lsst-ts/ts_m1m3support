@@ -102,8 +102,9 @@ void Displacement::processData() {
     if (_fpgaData->DisplacementSampleTimestamp > _lastSampleTimestamp) {
         _lastSampleTimestamp = _fpgaData->DisplacementSampleTimestamp;
         _imsData->timestamp = Timestamp::fromFPGA(_fpgaData->DisplacementSampleTimestamp);
-        // We need to swap the direction of the IMS reading. Tanget sensors are swapped in hardware.
-        // We also need to convert the raw sensor values to millimeters
+        // We need to swap the direction of the IMS reading. Tanget sensors are
+        // swapped in hardware. We also need to convert the raw sensor values to
+        // millimeters
         double *NOffsets = _displacementSensorSettings->NOffsets.data();
         _imsData->rawSensorData[0] = 50.0 - ((_fpgaData->DisplacementRaw1 + NOffsets[0]) / 10000.0);
         _imsData->rawSensorData[1] = ((_fpgaData->DisplacementRaw2 + NOffsets[1]) / 10000.0);
