@@ -73,7 +73,7 @@ public:
     void readU8ResponseFIFO(uint8_t *data, size_t length, uint32_t timeoutInMs) override;
     void readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) override;
 
-    void writeMPUFIFO(const std::vector<uint8_t> &data, uint32_t timeout) override {}
+    void writeMPUFIFO(cRIO::MPU &mpu, const std::vector<uint8_t> &data, uint32_t timeout) override {}
     std::vector<uint8_t> readMPUFIFO(cRIO::MPU &mpu) override { throw std::runtime_error("readMPU called"); }
 
     void waitOnIrqs(uint32_t irqs, uint32_t timeout, bool &timedout, uint32_t *triggered = NULL) override {
