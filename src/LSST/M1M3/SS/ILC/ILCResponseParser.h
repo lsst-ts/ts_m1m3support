@@ -73,7 +73,6 @@ private:
     void _parseFAResetResponse(ModbusBuffer *buffer, ILCMap map);
     void _parseHMResetResponse(ModbusBuffer *buffer, ILCMap map);
     void _parseReadHPCalibrationResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReadFACalibrationResponse(ModbusBuffer *buffer, ILCMap map);
     void _parseReadDCAPressureValuesResponse(ModbusBuffer *buffer, ILCMap map);
     void _parseReadHMPressureValuesResponse(ModbusBuffer *buffer, ILCMap map);
     void _parseReportHMMezzanineIDResponse(ModbusBuffer *buffer, ILCMap map);

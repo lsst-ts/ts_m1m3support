@@ -8,6 +8,7 @@ v2.15.5
 -------
 
 * fixed signs in IMS transformations
+* correctly parse ILC calibration data during startup
 * new ts_cRIOcpp API
 * New MPU interface
 * Improved force actuator bump tests documentation

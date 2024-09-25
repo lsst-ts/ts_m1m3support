@@ -77,14 +77,15 @@ void ForceActuatorInfo::parseBoosterValveDCAGains(ModbusBuffer *buffer, int32_t 
     buffer->skipToNextFrame();
 }
 
-void ForceActuatorInfo::setFACalibration(int32_t dataIndex, uint8_t _adcScanRate) {
-    adcScanRate[dataIndex] = _adcScanRate;
+void ForceActuatorInfo::setFACalibration(ModbusBuffer *buffer, int32_t dataIndex) {
+    adcScanRate[dataIndex] = buffer->readU8();
+
+    buffer->skipToNextFrame();
 }
 
 void ForceActuatorInfo::parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataIndex) {
     mainPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-    mainSecondaryCylinderCoefficient[dataIndex] = mainPrimaryCylinderCoefficient[dataIndex];
-    buffer->readSGL();  // Main Coefficient K2
+    mainSecondaryCylinderCoefficient[dataIndex] = buffer->readSGL();
     buffer->readSGL();  // Main Coefficient K3
     buffer->readSGL();  // Main Coefficient K4
     mainPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
@@ -96,8 +97,7 @@ void ForceActuatorInfo::parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataInd
     buffer->readSGL();  // Main Sensitivity Channel 3
     buffer->readSGL();  // Main Sensitivity Channel 4
     backupPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-    backupSecondaryCylinderCoefficient[dataIndex] = backupPrimaryCylinderCoefficient[dataIndex];
-    buffer->readSGL();  // Backup Coefficient K2
+    backupSecondaryCylinderCoefficient[dataIndex] = buffer->readSGL();
     buffer->readSGL();  // Backup Coefficient K3
     buffer->readSGL();  // Backup Coefficient K4
     backupPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();

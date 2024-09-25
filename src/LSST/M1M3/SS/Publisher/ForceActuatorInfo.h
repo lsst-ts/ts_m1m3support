@@ -49,7 +49,7 @@ public:
 
     void parseBoosterValveDCAGains(ModbusBuffer *buffer, int32_t dataIndex);
 
-    void setFACalibration(int32_t dataIndex, uint8_t _adcScanRate);
+    void setFACalibration(ModbusBuffer *buffer, int32_t dataIndex);
     void parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataIndex);
     void parseSetDCAID(ModbusBuffer *buffer, int32_t dataIndex);
 };

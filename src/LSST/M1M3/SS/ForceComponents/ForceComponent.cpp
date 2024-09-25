@@ -32,6 +32,7 @@ namespace SS {
 
 ForceComponent::ForceComponent(const char *name, ForceComponentSettings *forceComponentSettings)
         : _forceComponentSettings(forceComponentSettings) {
+    _name = name;
     _state = INITIALISING;
 
     _zeroAll();

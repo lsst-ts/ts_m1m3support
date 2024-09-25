@@ -176,7 +176,7 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                                 _parsePneumaticForceStatusResponse(buffer, address, map);
                                 break;
                             case 80:
-                                ForceActuatorInfo::instance().parseFAADCScanRate(buffer, map.DataIndex);
+                                ForceActuatorInfo::instance().setFACalibration(buffer, map.DataIndex);
                                 break;
                             case 81:
                                 _parseSetFAADCChannelOffsetAndSensitivityResponse(buffer, map);
@@ -185,7 +185,7 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                                 _parseFAResetResponse(buffer, map);
                                 break;
                             case 110:
-                                _parseReadFACalibrationResponse(buffer, map);
+                                ForceActuatorInfo::instance().parseFAADCScanRate(buffer, map.DataIndex);
                                 break;
                             case 119:
                                 _parseReadDCAPressureValuesResponse(buffer, map);
@@ -743,11 +743,6 @@ void ILCResponseParser::_parseReadHPCalibrationResponse(ModbusBuffer *buffer, IL
     buffer->readSGL();  // Backup Sensitivity Channel 2
     buffer->readSGL();  // Backup Sensitivity Channel 3
     buffer->readSGL();  // Backup Sensitivity Channel 4
-    buffer->skipToNextFrame();
-}
-
-void ILCResponseParser::_parseReadFACalibrationResponse(ModbusBuffer *buffer, ILCMap map) {
-    ForceActuatorInfo::instance().setFACalibration(map.DataIndex, buffer->readU8());
     buffer->skipToNextFrame();
 }
 
