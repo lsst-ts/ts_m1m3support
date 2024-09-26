@@ -29,6 +29,7 @@
 #include <cRIO/Singleton.h>
 
 #include <ForceActuatorApplicationSettings.h>
+#include <ILCDataTypes.h>
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
 
@@ -45,13 +46,13 @@ public:
 
     void populate(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
-    void parseServerIDResponse(ModbusBuffer *buffer, int32_t dataIndex);
+    void parseServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
 
-    void parseBoosterValveDCAGains(ModbusBuffer *buffer, int32_t dataIndex);
+    void parseBoosterValveDCAGains(ModbusBuffer *buffer, const ILCMap &ilc);
 
-    void setFACalibration(ModbusBuffer *buffer, int32_t dataIndex);
-    void parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataIndex);
-    void parseSetDCAID(ModbusBuffer *buffer, int32_t dataIndex);
+    void parseFAADCScanRate(ModbusBuffer *buffer, const ILCMap &ilc);
+    void parseFACalibration(ModbusBuffer *buffer, const ILCMap &ilc);
+    void parseSetDCAID(ModbusBuffer *buffer, const ILCMap &ilc);
 };
 
 }  // namespace SS

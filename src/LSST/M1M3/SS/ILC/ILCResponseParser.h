@@ -50,37 +50,38 @@ public:
 
 private:
     void _parseErrorResponse(ModbusBuffer *buffer, double timestamp, int32_t actuatorId);
-    void _parseReportHPServerIDResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportHMServerIDResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportHPServerStatusResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportFAServerStatusResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportHMServerStatusResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseChangeHPILCModeResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseChangeFAILCModeResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseChangeHMILCModeResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseElectromechanicalForceAndStatusResponse(ModbusBuffer *buffer, ILCMap map, double timestamp);
-    void _parseSetBoostValveDCAGainsResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseForceDemandResponse(ModbusBuffer *buffer, uint8_t address, ILCMap map);
-    void _parseSingleAxisForceDemandResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseDualAxisForceDemandResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parsePneumaticForceStatusResponse(ModbusBuffer *buffer, uint8_t address, ILCMap map);
-    void _parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseDualAxisPneumaticForceStatusResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseSetHPADCScanRateResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseHPResetResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseFAResetResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseHMResetResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReadHPCalibrationResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReadDCAPressureValuesResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReadHMPressureValuesResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportHMMezzanineIDResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportDCAStatusResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportHMMezzanineStatusResponse(ModbusBuffer *buffer, ILCMap map);
-    void _parseReportLVDTResponse(ModbusBuffer *buffer, ILCMap map);
+    void _parseReportHPServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportHMServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportHPServerStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportFAServerStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportHMServerStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseChangeHPILCModeResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseChangeFAILCModeResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseChangeHMILCModeResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseElectromechanicalForceAndStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc,
+                                                       double timestamp);
+    void _parseSetBoostValveDCAGainsResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseForceDemandResponse(ModbusBuffer *buffer, uint8_t address, const ILCMap &ilc);
+    void _parseSingleAxisForceDemandResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseDualAxisForceDemandResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parsePneumaticForceStatusResponse(ModbusBuffer *buffer, uint8_t address, const ILCMap &ilc);
+    void _parseSingleAxisPneumaticForceStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseDualAxisPneumaticForceStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseSetHPADCScanRateResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseSetHPADCChannelOffsetAndSensitivityResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseSetFAADCChannelOffsetAndSensitivityResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseHPResetResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseFAResetResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseHMResetResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReadHPCalibrationResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReadDCAPressureValuesResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReadHMPressureValuesResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportHMMezzanineIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportDCAStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportHMMezzanineStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void _parseReportLVDTResponse(ModbusBuffer *buffer, const ILCMap &ilc);
 
-    void _checkForceActuatorForces(ILCMap map);
+    void _checkForceActuatorForces(const ILCMap &ilc);
     void _checkHardpointActuatorMeasuredForce(int32_t actuatorId);
     void _checkHardpointActuatorAirPressure(int32_t actuatorId);
 

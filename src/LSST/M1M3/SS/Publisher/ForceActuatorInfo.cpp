@@ -53,70 +53,70 @@ void ForceActuatorInfo::populate(ForceActuatorApplicationSettings *forceActuator
     }
 }
 
-void ForceActuatorInfo::parseServerIDResponse(ModbusBuffer *buffer, int32_t dataIndex) {
+void ForceActuatorInfo::parseServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc) {
     uint8_t length = buffer->readU8();
 
-    ilcUniqueId[dataIndex] = buffer->readU48();
+    ilcUniqueId[ilc.DataIndex] = buffer->readU48();
 
-    ilcApplicationType[dataIndex] = buffer->readU8();
-    networkNodeType[dataIndex] = buffer->readU8();
+    ilcApplicationType[ilc.DataIndex] = buffer->readU8();
+    networkNodeType[ilc.DataIndex] = buffer->readU8();
 
-    ilcSelectedOptions[dataIndex] = buffer->readU8();
-    networkNodeOptions[dataIndex] = buffer->readU8();
-    majorRevision[dataIndex] = buffer->readU8();
-    minorRevision[dataIndex] = buffer->readU8();
+    ilcSelectedOptions[ilc.DataIndex] = buffer->readU8();
+    networkNodeOptions[ilc.DataIndex] = buffer->readU8();
+    majorRevision[ilc.DataIndex] = buffer->readU8();
+    minorRevision[ilc.DataIndex] = buffer->readU8();
 
     buffer->incIndex(length - 12);
     buffer->skipToNextFrame();
 }
 
-void ForceActuatorInfo::parseBoosterValveDCAGains(ModbusBuffer *buffer, int32_t dataIndex) {
-    mezzaninePrimaryCylinderGain[dataIndex] = buffer->readSGL();
-    mezzanineSecondaryCylinderGain[dataIndex] = buffer->readSGL();
+void ForceActuatorInfo::parseBoosterValveDCAGains(ModbusBuffer *buffer, const ILCMap &ilc) {
+    mezzaninePrimaryCylinderGain[ilc.DataIndex] = buffer->readSGL();
+    mezzanineSecondaryCylinderGain[ilc.DataIndex] = buffer->readSGL();
 
     buffer->skipToNextFrame();
 }
 
-void ForceActuatorInfo::setFACalibration(ModbusBuffer *buffer, int32_t dataIndex) {
-    adcScanRate[dataIndex] = buffer->readU8();
+void ForceActuatorInfo::parseFAADCScanRate(ModbusBuffer *buffer, const ILCMap &ilc) {
+    adcScanRate[ilc.DataIndex] = buffer->readU8();
 
     buffer->skipToNextFrame();
 }
 
-void ForceActuatorInfo::parseFAADCScanRate(ModbusBuffer *buffer, int32_t dataIndex) {
-    mainPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-    mainSecondaryCylinderCoefficient[dataIndex] = buffer->readSGL();
+void ForceActuatorInfo::parseFACalibration(ModbusBuffer *buffer, const ILCMap &ilc) {
+    mainPrimaryCylinderCoefficient[ilc.DataIndex] = buffer->readSGL();
+    mainSecondaryCylinderCoefficient[ilc.DataIndex] = buffer->readSGL();
     buffer->readSGL();  // Main Coefficient K3
     buffer->readSGL();  // Main Coefficient K4
-    mainPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-    mainSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+    mainPrimaryCylinderLoadCellOffset[ilc.DataIndex] = buffer->readSGL();
+    mainSecondaryCylinderLoadCellOffset[ilc.DataIndex] = buffer->readSGL();
     buffer->readSGL();  // Main Offset Channel 3
     buffer->readSGL();  // Main Offset Channel 4
-    mainPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-    mainSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+    mainPrimaryCylinderLoadCellSensitivity[ilc.DataIndex] = buffer->readSGL();
+    mainSecondaryCylinderLoadCellSensitivity[ilc.DataIndex] = buffer->readSGL();
     buffer->readSGL();  // Main Sensitivity Channel 3
     buffer->readSGL();  // Main Sensitivity Channel 4
-    backupPrimaryCylinderCoefficient[dataIndex] = buffer->readSGL();
-    backupSecondaryCylinderCoefficient[dataIndex] = buffer->readSGL();
+    backupPrimaryCylinderCoefficient[ilc.DataIndex] = buffer->readSGL();
+    backupSecondaryCylinderCoefficient[ilc.DataIndex] = buffer->readSGL();
     buffer->readSGL();  // Backup Coefficient K3
     buffer->readSGL();  // Backup Coefficient K4
-    backupPrimaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
-    backupSecondaryCylinderLoadCellOffset[dataIndex] = buffer->readSGL();
+    backupPrimaryCylinderLoadCellOffset[ilc.DataIndex] = buffer->readSGL();
+    backupSecondaryCylinderLoadCellOffset[ilc.DataIndex] = buffer->readSGL();
     buffer->readSGL();  // Backup Offset Channel 3
     buffer->readSGL();  // Backup Offset Channel 4
-    backupPrimaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
-    backupSecondaryCylinderLoadCellSensitivity[dataIndex] = buffer->readSGL();
+    backupPrimaryCylinderLoadCellSensitivity[ilc.DataIndex] = buffer->readSGL();
+    backupSecondaryCylinderLoadCellSensitivity[ilc.DataIndex] = buffer->readSGL();
     buffer->readSGL();  // Backup Sensitivity Channel 3
     buffer->readSGL();  // Backup Sensitivity Channel 4
 
     buffer->skipToNextFrame();
 }
 
-void ForceActuatorInfo::parseSetDCAID(ModbusBuffer *buffer, int32_t dataIndex) {
-    mezzanineUniqueId[dataIndex] = buffer->readU48();
-    mezzanineFirmwareType[dataIndex] = buffer->readU8();
-    mezzanineMajorRevision[dataIndex] = buffer->readU8();
-    mezzanineMinorRevision[dataIndex] = buffer->readU8();
+void ForceActuatorInfo::parseSetDCAID(ModbusBuffer *buffer, const ILCMap &ilc) {
+    mezzanineUniqueId[ilc.DataIndex] = buffer->readU48();
+    mezzanineFirmwareType[ilc.DataIndex] = buffer->readU8();
+    mezzanineMajorRevision[ilc.DataIndex] = buffer->readU8();
+    mezzanineMinorRevision[ilc.DataIndex] = buffer->readU8();
 
     buffer->skipToNextFrame();
 }
