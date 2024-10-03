@@ -634,7 +634,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
-                                _writeModbusFloat(response, 0.0);  // Write Calibration Data
+                                _writeModbusFloat(response, address + j);  // Write Calibration Data
                             }
                             _writeModbusCRC(response);
                             break;
