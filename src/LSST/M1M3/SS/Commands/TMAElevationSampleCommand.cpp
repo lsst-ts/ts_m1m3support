@@ -39,7 +39,8 @@ void TMAElevationSampleCommand::execute() {
     double limit = SettingReader::instance().getSafetyControllerSettings()->TMA.ElevationTimeout;
     if (limit > 0 && fabs(diff) > limit) {
         using namespace std::chrono_literals;
-        TG_LOG_ERROR(2s, "Received elevation timestamp deviates by more than {0:.3f}s: {1:.3f}", limit, diff);
+        TG_LOG_ERROR(2s, "Received elevation timestamp ({2:.4f}) deviates by more than {0:.3f}s: {1:.3f}",
+                     limit, diff, _data.timestamp);
         return;
     }
     Context::get().storeTMAElevationSample(this);

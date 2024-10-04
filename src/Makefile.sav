@@ -82,4 +82,3 @@ clean:
 %.c.d: %.c
 	@echo '[DEP] $<'
 	${co}$(C) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.c,%.o,$<) $@'
-

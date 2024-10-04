@@ -54,9 +54,12 @@ namespace SS {
 class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
-
+#ifdef WITH_SAL_KAFKA
+    void applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y,
+                            const std::vector<float> &z, bool check = true);
+#else
     void applyBalanceForces(float *x, float *y, float *z, bool check = true);
-
+#endif
     /**
      * Called from ForceController::updateAppliedForces. Feeds in hardpoint
      * force and moments measured from the hardpoint load cells and transformed

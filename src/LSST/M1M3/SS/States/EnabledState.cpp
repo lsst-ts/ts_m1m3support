@@ -121,11 +121,12 @@ bool EnabledState::lowerCompleted() {
 }
 
 States::Type EnabledState::disableMirror() {
-    Model::instance().getILC()->writeSetModeDisableBuffer();
-    Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(ILC_WAIT);
-    Model::instance().getILC()->readAll();
-    Model::instance().getILC()->verifyResponses();
+    auto ilc = Model::instance().getILC();
+    ilc->writeSetModeDisableBuffer();
+    ilc->triggerModbus();
+    ilc->waitForAllSubnets(ILC_WAIT);
+    ilc->readAll();
+    ilc->verifyResponses();
     Model::instance().getForceController()->reset();
     DigitalInputOutput::instance().turnAirOff();
     Model::instance().getPowerController()->setAllAuxPowerNetworks(false);

@@ -45,9 +45,11 @@ PowerController::PowerController(SafetyController *safetyController) {
 
     _lastPowerTimestamp = 0;
 
+#ifndef WITH_SAL_KAFKA
     memset(_powerSupplyData, 0, sizeof(MTM1M3_powerSupplyDataC));
     memset(_powerStatus, 0, sizeof(MTM1M3_logevent_powerStatusC));
     memset(_powerWarning, 0, sizeof(MTM1M3_logevent_powerWarningC));
+#endif
 }
 
 void PowerController::processData() {
