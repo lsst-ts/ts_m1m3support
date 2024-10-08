@@ -49,7 +49,8 @@ public:
     void verifyResponses();
 
 private:
-    void _parseErrorResponse(ModbusBuffer *buffer, double timestamp, int32_t actuatorId);
+    void _parseErrorResponse(ModbusBuffer *buffer, uint8_t called_function, double timestamp,
+                             int32_t actuatorId);
     void _parseReportHPServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
     void _parseReportHMServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
     void _parseReportHPServerStatusResponse(ModbusBuffer *buffer, const ILCMap &ilc);

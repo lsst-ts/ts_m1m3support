@@ -147,12 +147,12 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
         } else {
             if (subnet >= 1 && subnet <= 5) {
                 uint8_t address = buffer->readU8();
-                uint8_t function = buffer->readU8();
+                uint8_t called_function = buffer->readU8();
                 const ILCMap &ilc = _subnetData->getILCDataFromAddress(subnet - 1, address);
                 switch (ilc.Type) {
                     case ILCTypes::FA:
                         _faExpectedResponses[ilc.DataIndex]--;
-                        switch (function) {
+                        switch (called_function) {
                             case 17:
                                 ForceActuatorInfo::instance().parseServerIDResponse(buffer, ilc);
                                 break;
@@ -209,21 +209,21 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                             case 247:
                             case 248:
                             case 249:
-                                _parseErrorResponse(buffer, timestamp, ilc.ActuatorId);
+                                _parseErrorResponse(buffer, called_function, timestamp, ilc.ActuatorId);
                                 break;
                             default:
                                 SPDLOG_WARN(
                                         "ILCResponseParser: Unknown FA function on subnet {:d} "
                                         "function "
                                         "{:d}",
-                                        (int)function, subnet);
+                                        (int)called_function, subnet);
                                 ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId);
                                 break;
                         }
                         break;
                     case ILCTypes::HP:
                         _hpExpectedResponses[ilc.DataIndex]--;
-                        switch (function) {
+                        switch (called_function) {
                             case 17:
                                 _parseReportHPServerIDResponse(buffer, ilc);
                                 break;
@@ -258,18 +258,18 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                             case 209:
                             case 235:
                             case 238:
-                                _parseErrorResponse(buffer, timestamp, ilc.ActuatorId);
+                                _parseErrorResponse(buffer, called_function, timestamp, ilc.ActuatorId);
                                 break;
                             default:
                                 SPDLOG_WARN("ILCResponseParser: Unknown HP function {:d} on subnet {:d}",
-                                            (int)function, subnet);
+                                            (int)called_function, subnet);
                                 ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId);
                                 break;
                         }
                         break;
                     case ILCTypes::HM:
                         _hmExpectedResponses[ilc.DataIndex]--;
-                        switch (function) {
+                        switch (called_function) {
                             case 17:
                                 _parseReportHMServerIDResponse(buffer, ilc);
                                 break;
@@ -302,11 +302,11 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                             case 248:
                             case 249:
                             case 250:
-                                _parseErrorResponse(buffer, timestamp, ilc.ActuatorId);
+                                _parseErrorResponse(buffer, called_function, timestamp, ilc.ActuatorId);
                                 break;
                             default:
                                 SPDLOG_WARN("ILCResponseParser: Unknown HM function {:d} on subnet {:d}",
-                                            (int)function, subnet);
+                                            (int)called_function, subnet);
                                 ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId);
                                 break;
                         }
@@ -316,7 +316,7 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                                 "ILCResponseParser: Unknown address {:d} on subnet {:d} "
                                 "for function "
                                 "code {:d}",
-                                (int)address, (int)subnet, (int)function);
+                                (int)address, (int)subnet, (int)called_function);
                         ILCWarning::instance().warnUnknownAddress(timestamp, ilc.ActuatorId);
                         break;
                 }
@@ -400,9 +400,11 @@ void ILCResponseParser::verifyResponses() {
     _safetyController->ilcCommunicationTimeout(anyTimeout);
 }
 
-void ILCResponseParser::_parseErrorResponse(ModbusBuffer *buffer, double timestamp, int32_t actuatorId) {
+void ILCResponseParser::_parseErrorResponse(ModbusBuffer *buffer, uint8_t called_function, double timestamp,
+                                            int32_t actuatorId) {
     uint8_t exceptionCode = buffer->readU8();
-    SPDLOG_WARN("ILC Error response received - actuator {}, code {}", actuatorId, exceptionCode);
+    SPDLOG_WARN("ILC Error response received - actuator {}, function {} ({}), code {}", actuatorId,
+                called_function & ~0x80, called_function, exceptionCode);
     switch (exceptionCode) {
         case 1:
             ILCWarning::instance().warnIllegalFunction(timestamp, actuatorId);
