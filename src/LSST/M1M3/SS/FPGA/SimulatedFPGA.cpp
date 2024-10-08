@@ -118,6 +118,7 @@ SimulatedFPGA::SimulatedFPGA() {
 
     _nextClock = std::chrono::steady_clock::now();
     _lastAirOpen = _nextClock;
+    _error_counter = 0;
 }
 
 SimulatedFPGA::~SimulatedFPGA() {
@@ -136,20 +137,30 @@ void SimulatedFPGA::close() { SPDLOG_DEBUG("SimulatedFPGA: close()"); }
 
 void SimulatedFPGA::finalize() { SPDLOG_DEBUG("SimulatedFPGA: finalize()"); }
 
-void SimulatedFPGA::waitForOuterLoopClock(uint32_t timeout) {
+void SimulatedFPGA::waitForOuterLoopClock(uint32_t) {
     std::this_thread::sleep_until(_nextClock);
     _nextClock += std::chrono::milliseconds(20);
 }
 
 void SimulatedFPGA::ackOuterLoopClock() {}
 
-void SimulatedFPGA::waitForPPS(uint32_t timeout) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
+void SimulatedFPGA::waitForPPS(uint32_t) { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 
 void SimulatedFPGA::ackPPS() {}
 
-void SimulatedFPGA::waitForModbusIRQ(int32_t subnet, uint32_t timeout) {}
+void SimulatedFPGA::waitForModbusIRQs(uint32_t, uint32_t) {
+    if (_error_counter == 3000) {
+        std::this_thread::sleep_for(std::chrono::microseconds(20123));
+    }
+    // shall trigger every 5 minutes
+    if (_error_counter == 50 * 60 * 3) {
+        _error_counter = 0;
+    } else {
+        _error_counter++;
+    }
+}
 
-void SimulatedFPGA::ackModbusIRQ(int32_t subnet) {}
+void SimulatedFPGA::ackModbusIRQs() {}
 
 void SimulatedFPGA::pullTelemetry() {
     SPDLOG_TRACE("SimulatedFPGA: pullTelemetry()");

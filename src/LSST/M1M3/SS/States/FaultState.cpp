@@ -54,7 +54,7 @@ States::Type FaultState::update(UpdateCommand *command) {
     Model::instance().getGyro()->processData();
     Model::instance().getInclinometer()->processData();
     Model::instance().getPowerController()->processData();
-    ilc->waitForAllSubnets(ILC_WAIT * 1.5);
+    ilc->waitForAllSubnets(false);
     ilc->readAll();
     ilc->calculateHPPostion();
     ilc->calculateHPMirrorForces();
@@ -73,7 +73,7 @@ States::Type FaultState::standby(StandbyCommand *command) {
     SPDLOG_TRACE("FaultState: standby()");
     Model::instance().getILC()->writeSetModeStandbyBuffer();
     Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(ILC_WAIT);
+    Model::instance().getILC()->waitForAllSubnets(false);
     Model::instance().getILC()->readAll();
     Model::instance().getILC()->verifyResponses();
     Model::instance().getPowerController()->setAllPowerNetworks(false);

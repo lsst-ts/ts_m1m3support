@@ -57,8 +57,8 @@ public:
     void waitForPPS(uint32_t timeout) override;
     void ackPPS() override;
 
-    void waitForModbusIRQ(int32_t subnet, uint32_t timeout) override;
-    void ackModbusIRQ(int32_t subnet) override;
+    void waitForModbusIRQs(uint32_t warning_timeout, uint32_t error_timeout) override;
+    void ackModbusIRQs() override;
 
     void pullTelemetry() override;
     void pullHealthAndStatus() override;
@@ -87,6 +87,8 @@ private:
     NiFpga_IrqContext _outerLoopIRQContext;
     NiFpga_IrqContext _modbusIRQContext;
     NiFpga_IrqContext _ppsIRQContext;
+
+    uint32_t _modbus_irqs;
 };
 
 } /* namespace SS */

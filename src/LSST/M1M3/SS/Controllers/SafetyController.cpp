@@ -553,6 +553,12 @@ void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
                     "ILC communication timeouted: {}", sum);
 }
 
+void SafetyController::modbusIRQTimeout(uint32_t timeout, uint32_t irqs) {
+    _updateOverride(FaultCodes::ModbusIRQTimeout, true, true,
+                    "Timeout waiting for Modbus IRQs: timeout {} ms, waiting for {:b} (binary)", timeout,
+                    irqs);
+}
+
 void SafetyController::forceActuatorFollowingError(int actuatorId, int actuatorDataIndex,
                                                    bool countingWarning, bool immediateFault) {
     _updateOverride(FaultCodes::ForceActuatorFollowingErrorImmediate,

@@ -172,8 +172,6 @@ protected:
     std::string name;
 
     States::Type rejectCommandInvalidState(Command *command, std::string cmd_name);
-
-    static constexpr int32_t ILC_WAIT = 40;
 };
 
 } /* namespace SS */
