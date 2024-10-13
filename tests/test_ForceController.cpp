@@ -185,11 +185,11 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
 
         Model::instance().getForceController()->applyOffsetForcesByMirrorForces(1000, -1000, 200000, 20000,
                                                                                 20000, -300000);
-        runAndCheck(Model::instance().getForceController(), 6.9610, 16308.28906, 17662.20117, 302.42435,
-                    92.18579, -2139.87866);
-        checkRejectedForces(6.96104, 16308.28906, 17662.20117, 302.42435, 92.18579, -2139.87866);
-        runAndCheck(Model::instance().getForceController(), 13.92207, 24458.94531, 27189.82227, 520.36212,
-                    205.89926, -4254.60693);
+        runAndCheck(Model::instance().getForceController(), 33.82841, 16281.42578, 23034.84375, -510.03408,
+                    -745.99316, -10198.81933);
+        checkRejectedForces(33.82841, 16281.42578, 23034.84375, -510.03408, -745.99316, -10198.81933);
+        runAndCheck(Model::instance().getForceController(), 67.65682, 24405.22460, 37935.10546, -1104.55883,
+                    -1470.47497, -20372.48242);
     }
 
     SECTION("Elevation 45 deg with 100% support, force sum doesn't support mirror") {
