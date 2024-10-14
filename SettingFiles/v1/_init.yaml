@@ -1,7 +1,16 @@
+# This is the master setting of the M1M3 static support. Additional data are
+# stored in tables directory as (usually CSV) tables.
+
+# DC accelerometers settings. The measured linear acceleration is basis for
+# calculating angular acceleration of the mirror cell. Two linear acceleration
+# values at different length from the center of rotation gives angular
+# acceleration on the given axis.
 AccelerometerSettings:
+  # (m) Distances of the linear accelerometers.
   AngularAccelerationXDistance: 0.9478
   AngularAccelerationYDistance: 0.7565
   AngularAccelerationZDistance: 4.2500
+  # (unitless) 2nd degree polynomial coefficients describing correction for elevation
   # fit from ./utils/dcelevation 2023-12-12T02:13:00.000 2023-12-12T02:15:00.000
   XElevationPoly: [-0.38949484103608056,0.025085314732613932,0.0001312309672607185]
   YElevationPoly: [16.29382334316596,0.019088107247665388,-0.00162040399077016]
@@ -444,6 +453,12 @@ SlewControllerSettings:
   UseBalanceForces: True
   UseVelocityForces: True
 ILCApplicationSettings:
+  # (milliseconds) Timeout for ILCs calls which are expected to take a while -
+  # not running in the realtime loop.
+  FPGAConfigTimeout: 1000
+  # (milliseconds) Timeout for ILCs calls running in realtime loop.
+  FPGARealtimeLoopTimeout: 35
+  # (microseconds) Those are timeouts for ILC calls as specified in LTS-646.
   ReportServerID: 835
   ReportServerStatus: 270
   ChangeILCMode: 335
