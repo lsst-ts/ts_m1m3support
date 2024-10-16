@@ -113,8 +113,13 @@ public:
 
     void triggerModbus();
 
-    void waitForSubnet(int32_t subnet, int32_t timeout);
-    void waitForAllSubnets(int32_t timeout);
+    /**
+     * Wait for Modbus IRQs.
+     *
+     * @param realtime_loop if true, realtime loop timeouts are used. When
+     * false, config timeouts are used.
+     */
+    void waitForAllSubnets(bool realtime_loop);
 
     void read(uint8_t subnet);
     void readAll();

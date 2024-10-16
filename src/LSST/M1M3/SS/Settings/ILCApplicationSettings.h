@@ -39,6 +39,9 @@ struct ILCApplicationSettings : public cRIO::Singleton<ILCApplicationSettings> {
 
     void load(YAML::Node doc);
 
+    uint32_t FPGAConfigTimeout;
+    uint32_t FPGARealtimeLoopTimeout;
+
     uint32_t ReportServerID;
     uint32_t ReportServerStatus;
     uint32_t ChangeILCMode;

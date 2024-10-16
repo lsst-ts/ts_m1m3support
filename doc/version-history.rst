@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.15.6
+-------
+* Improvements in FPGA IRQ timeout detection
+* Unit fixes - DC accelerometers in m/sec^2, IMS axial offsets in m
+
 v2.15.5
 -------
 

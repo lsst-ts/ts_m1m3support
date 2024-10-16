@@ -227,19 +227,14 @@ void SSILCs::triggerModbus() {
     IFPGA::get().writeCommandFIFO(FPGAAddresses::ModbusSoftwareTrigger, 0);
 }
 
-void SSILCs::waitForSubnet(int32_t subnet, int32_t timeout) {
-    SPDLOG_DEBUG("SSILCs: waitForSubnet({:d}, {:d})", subnet, timeout);
-    IFPGA::get().waitForModbusIRQ(subnet, timeout);
-    IFPGA::get().ackModbusIRQ(subnet);
-}
+void SSILCs::waitForAllSubnets(bool realtime_loop) {
+    uint32_t error_timeout = realtime_loop ? ILCApplicationSettings::instance().FPGARealtimeLoopTimeout
+                                           : ILCApplicationSettings::instance().FPGAConfigTimeout;
+    int32_t warning_timeout = realtime_loop ? 18 : error_timeout * 0.75;
 
-void SSILCs::waitForAllSubnets(int32_t timeout) {
-    SPDLOG_DEBUG("SSILCs: waitForAllSubnets({:d})", timeout);
-    waitForSubnet(1, timeout);
-    waitForSubnet(2, timeout);
-    waitForSubnet(3, timeout);
-    waitForSubnet(4, timeout);
-    waitForSubnet(5, timeout);
+    SPDLOG_DEBUG("SSILCs: waitForAllSubnets(warning {:d}, error {:d})", warning_timeout, error_timeout);
+    IFPGA::get().waitForModbusIRQs(warning_timeout, error_timeout);
+    IFPGA::get().ackModbusIRQs();
 }
 
 void SSILCs::read(uint8_t subnet) {

@@ -63,8 +63,8 @@ void Accelerometer::processData() {
         _accelerometerData->accelerometer[i] =
                 G2M_S_2(((_accelerometerData->rawAccelerometer[i] - accelerometerSettings.bias[i]) /
                          accelerometerSettings.sensitivity[i]) *
-                                accelerometerSettings.scalar[i] +
-                        accelerometerSettings.accelerometerOffset[i]);
+                        accelerometerSettings.scalar[i]) +
+                accelerometerSettings.accelerometerOffset[i];
     }
 
     double elevation = TMA::instance().getElevation();

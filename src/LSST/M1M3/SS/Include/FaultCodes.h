@@ -46,9 +46,9 @@ constexpr int32_t _MASK_USER = 0xC << 16;
 struct FaultCodes {
     enum Type {
         NoFault = 0x00000000,
-        AirControllerCommandOutputMismatch = _MASK_AIR | 0x01,  // 6101
+        AirControllerCommandOutputMismatch = _MASK_AIR | 0x01,
         AirControllerCommandSensorMismatch = _MASK_AIR | 0x02,
-        DisplacementSensorReportsInvalidCommand = _MASK_DISPLACEMENT | 0x01,  // 6102
+        DisplacementSensorReportsInvalidCommand = _MASK_DISPLACEMENT | 0x01,
         DisplacementSensorReportsCommunicationTimeoutError = _MASK_DISPLACEMENT | 0x02,
         DisplacementSensorReportsDataLengthError = _MASK_DISPLACEMENT | 0x03,
         DisplacementSensorReportsNumberOfParametersError = _MASK_DISPLACEMENT | 0x04,
@@ -62,7 +62,7 @@ struct FaultCodes {
         DisplacementUnknownCommand = _MASK_DISPLACEMENT | 0x0C,
         DisplacementUnknownProblem = _MASK_DISPLACEMENT | 0x0D,
         DisplacementInvalidResponse = _MASK_DISPLACEMENT | 0x0E,
-        InclinometerResponseTimeout = _MASK_INCLINOMETER | 0x01,  // 6103
+        InclinometerResponseTimeout = _MASK_INCLINOMETER | 0x01,
         InclinometerInvalidCRC = _MASK_INCLINOMETER | 0x02,
         InclinometerUnknownAddress = _MASK_INCLINOMETER | 0x03,
         InclinometerUnknownFunction = _MASK_INCLINOMETER | 0x04,
@@ -70,7 +70,7 @@ struct FaultCodes {
         InclinometerSensorReportsIllegalDataAddress = _MASK_INCLINOMETER | 0x06,
         InclinometerSensorReportsIllegalFunction = _MASK_INCLINOMETER | 0x07,
         InclinometerUnknownProblem = _MASK_INCLINOMETER | 0x08,
-        InterlockHeartbeatStateOutputMismatch = _MASK_INTERLOCK | 0x01,  // 6104
+        InterlockHeartbeatStateOutputMismatch = _MASK_INTERLOCK | 0x01,
         InterlockCriticalFaultStateOutputMismatch = _MASK_INTERLOCK | 0x02,
         InterlockMirrorLoweringRaisingStateOutputMismatch = _MASK_INTERLOCK | 0x03,
         InterlockMirrorParkedStateOutputMismatch = _MASK_INTERLOCK | 0x04,
@@ -82,7 +82,7 @@ struct FaultCodes {
         InterlockGISEStop = _MASK_INTERLOCK | 0x0A,
         InterlockTMAMotionStop = _MASK_INTERLOCK | 0x0B,
         InterlockGISHeartbeatLost = _MASK_INTERLOCK | 0x0C,
-        ForceControllerSafetyLimit = _MASK_FORCE_CONTROLLER | 0x01,  // 6105
+        ForceControllerSafetyLimit = _MASK_FORCE_CONTROLLER | 0x01,
         ForceControllerXMomentLimit = _MASK_FORCE_CONTROLLER | 0x02,
         ForceControllerYMomentLimit = _MASK_FORCE_CONTROLLER | 0x03,
         ForceControllerZMomentLimit = _MASK_FORCE_CONTROLLER | 0x04,
@@ -103,9 +103,9 @@ struct FaultCodes {
         ForceControllerMeasuredXForceLimit = _MASK_FORCE_CONTROLLER | 0x13,
         ForceControllerMeasuredYForceLimit = _MASK_FORCE_CONTROLLER | 0x14,
         ForceControllerMeasuredZForceLimit = _MASK_FORCE_CONTROLLER | 0x15,
-        CellLightOutputMismatch = _MASK_CELL_LIGHT | 0x01,  // 6106
+        CellLightOutputMismatch = _MASK_CELL_LIGHT | 0x01,
         CellLightSensorMismatch = _MASK_CELL_LIGHT | 0x02,
-        PowerControllerPowerNetworkAOutputMismatch = _MASK_POWER_CONTROLLER | 0x01,  // 6107
+        PowerControllerPowerNetworkAOutputMismatch = _MASK_POWER_CONTROLLER | 0x01,
         PowerControllerPowerNetworkBOutputMismatch = _MASK_POWER_CONTROLLER | 0x02,
         PowerControllerPowerNetworkCOutputMismatch = _MASK_POWER_CONTROLLER | 0x03,
         PowerControllerPowerNetworkDOutputMismatch = _MASK_POWER_CONTROLLER | 0x04,
@@ -113,12 +113,13 @@ struct FaultCodes {
         PowerControllerAuxPowerNetworkBOutputMismatch = _MASK_POWER_CONTROLLER | 0x06,
         PowerControllerAuxPowerNetworkCOutputMismatch = _MASK_POWER_CONTROLLER | 0x07,
         PowerControllerAuxPowerNetworkDOutputMismatch = _MASK_POWER_CONTROLLER | 0x08,
-        RaiseOperationTimeout = _MASK_TIMEOUTS | 0x01,                       // 6108
-        LowerOperationTimeout = _MASK_TIMEOUTS | 0x02,                       // 6109
-        ILCCommunicationTimeout = _MASK_TIMEOUTS | 0x03,                     // 6110
-        ForceActuatorFollowingErrorCounting = _MASK_FORCE_ACTUATOR | 0x01,   // 6111
-        ForceActuatorFollowingErrorImmediate = _MASK_FORCE_ACTUATOR | 0x02,  // 0112
-        HardpointActuator = _MASK_HARDPOINT | 0x01,                          // 6112
+        RaiseOperationTimeout = _MASK_TIMEOUTS | 0x01,
+        LowerOperationTimeout = _MASK_TIMEOUTS | 0x02,
+        ILCCommunicationTimeout = _MASK_TIMEOUTS | 0x03,
+        ModbusIRQTimeout = _MASK_TIMEOUTS | 0x04,
+        ForceActuatorFollowingErrorCounting = _MASK_FORCE_ACTUATOR | 0x01,
+        ForceActuatorFollowingErrorImmediate = _MASK_FORCE_ACTUATOR | 0x02,
+        HardpointActuator = _MASK_HARDPOINT | 0x01,
         HardpointActuatorLoadCellError = _MASK_HARDPOINT | 0x02,
         HardpointActuatorMeasuredForceError = _MASK_HARDPOINT | 0x03,
         HardpointHighTension = _MASK_HARDPOINT | 0x04,

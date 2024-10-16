@@ -62,7 +62,7 @@ States::Type DisabledState::update(UpdateCommand *command) {
     Model::instance().getGyro()->processData();
     Model::instance().getInclinometer()->processData();
     Model::instance().getPowerController()->processData();
-    ilc->waitForAllSubnets(ILC_WAIT);
+    ilc->waitForAllSubnets(false);
     ilc->readAll();
     ilc->calculateHPPostion();
     ilc->calculateHPMirrorForces();
@@ -82,7 +82,7 @@ States::Type DisabledState::enable(EnableCommand *command) {
     SPDLOG_INFO("DisabledState: enable()");
     Model::instance().getILC()->writeSetModeEnableBuffer();
     Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(ILC_WAIT);
+    Model::instance().getILC()->waitForAllSubnets(false);
     Model::instance().getILC()->readAll();
     Model::instance().getILC()->verifyResponses();
     DigitalInputOutput::instance().turnAirOn();
@@ -94,7 +94,7 @@ States::Type DisabledState::standby(StandbyCommand *command) {
     SPDLOG_INFO("DisabledState: standby()");
     Model::instance().getILC()->writeSetModeStandbyBuffer();
     Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(ILC_WAIT);
+    Model::instance().getILC()->waitForAllSubnets(false);
     Model::instance().getILC()->readAll();
     Model::instance().getILC()->verifyResponses();
     M1M3SSPublisher::instance().tryLogForceActuatorState();

@@ -55,14 +55,14 @@ public:
     void close() override;
     void finalize() override;
 
-    void waitForOuterLoopClock(uint32_t timeout) override;
+    void waitForOuterLoopClock(uint32_t) override;
     void ackOuterLoopClock() override;
 
-    void waitForPPS(uint32_t timeout) override;
+    void waitForPPS(uint32_t) override;
     void ackPPS() override;
 
-    void waitForModbusIRQ(int32_t subnet, uint32_t timeout) override;
-    void ackModbusIRQ(int32_t subnet) override;
+    void waitForModbusIRQs(uint32_t, uint32_t) override;
+    void ackModbusIRQs() override;
 
     void pullTelemetry() override;
     void pullHealthAndStatus() override;
@@ -130,6 +130,8 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> _lastAirOpen;
 
     float _getAirPressure();
+
+    uint64_t _error_counter;
 };
 
 /**

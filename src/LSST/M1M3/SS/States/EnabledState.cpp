@@ -78,7 +78,7 @@ void EnabledState::runLoop() {
     ilc->writeControlListBuffer();
     ilc->triggerModbus();
     std::this_thread::sleep_for(1ms);
-    ilc->waitForAllSubnets(ILC_WAIT);
+    ilc->waitForAllSubnets(true);
     ilc->readAll();
     ilc->calculateHPPostion();
     ilc->calculateHPMirrorForces();
@@ -123,7 +123,7 @@ bool EnabledState::lowerCompleted() {
 States::Type EnabledState::disableMirror() {
     Model::instance().getILC()->writeSetModeDisableBuffer();
     Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(ILC_WAIT);
+    Model::instance().getILC()->waitForAllSubnets(true);
     Model::instance().getILC()->readAll();
     Model::instance().getILC()->verifyResponses();
     Model::instance().getForceController()->reset();

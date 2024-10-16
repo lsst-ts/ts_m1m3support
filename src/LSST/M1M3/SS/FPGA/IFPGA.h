@@ -73,7 +73,7 @@ public:
      * FPGA code. The interrupt (0) is raised every 20 ms inside FPGA code
      * (OuterLoop/OuterLoopClock.vi).
      *
-     * @param timeout call timeout in microseconds
+     * @param timeout after that time (in millisecond) expires, and error will be thrown
      *
      * @throw NiError on NI error
      *
@@ -93,8 +93,8 @@ public:
      * raised in Timestamp/Timestamp.vi and signals FPGA is ready to read peer
      * time offset from TimestampControlFIFO.
      *
-     * @param timeout call timeout in microseconds. TimeStamp VI introduces 1
-     * millisecond delay between successive waits for interrupt, so this value
+     * @param timeout call timeout in milliseconds. TimeStamp VI introduces 1
+     * milliseconds delay between successive waits for interrupt, so this value
      * shall be larger than 1000.
      *
      * @throw NiError on NI error
@@ -109,25 +109,24 @@ public:
     virtual void ackPPS() = 0;
 
     /**
-     * Wait for ModBus interrupt. The interrupt is generated when ModBus
+     * Wait for ModBus interrupts. The interrupt is generated when ModBus
      * command 0x7 is processed.
      *
-     * @param subnet ModBus subnet (1-5)
-     * @param timeout timeout in microseconds
+     * @param warning_timeout warning timeout for IRQ call in milliseconds
+     * @param error_timeout after that time (in millisecond) expires, and error will be thrown
      *
      * @throw NiError on NI error
+     * @throw std::runtime_error on timeout
      */
-    virtual void waitForModbusIRQ(int32_t subnet, uint32_t timeout) = 0;
+    virtual void waitForModbusIRQs(uint32_t warning_timeout, uint32_t error_timeout) = 0;
 
     /**
      * Acknowledge ModBus interrupt reception. Interrupt can be generated
-     * (raised) again after being acknowledged.
-     *
-     * @param subnet ModBus subnet (1-5)
+     * (raised on the FPGA side) again after being acknowledged.
      *
      * @throw NiError on NI error
      */
-    virtual void ackModbusIRQ(int32_t subnet) = 0;
+    virtual void ackModbusIRQs() = 0;
 
     /**
      * Retrieve telemetry data.
