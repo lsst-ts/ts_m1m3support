@@ -31,6 +31,7 @@
 
 #include <FPGA.h>
 #include <FPGAAddresses.h>
+#include <Model.h>
 #include <NiFpga_M1M3SupportFPGA.h>
 #include <U8ArrayUtilities.h>
 #include <unistd.h>
@@ -44,6 +45,8 @@ FPGA::FPGA() {
     _outerLoopIRQContext = 0;
     _modbusIRQContext = 0;
     _ppsIRQContext = 0;
+
+    _modbus_irqs = getIrq(1) | getIrq(2) | getIrq(3) | getIrq(4) | getIrq(5);
 }
 
 FPGA::~FPGA() {}
@@ -98,7 +101,7 @@ void FPGA::ackOuterLoopClock() {
 
 void FPGA::waitForPPS(uint32_t timeout) {
     uint32_t assertedIRQs = 0;
-    uint8_t timedOut = false;
+    NiFpga_Bool timedOut = NiFpga_False;
     cRIO::NiThrowError(__PRETTY_FUNCTION__, NiFpga_WaitOnIrqs(_session, _ppsIRQContext, NiFpga_Irq_10,
                                                               timeout, &assertedIRQs, &timedOut));
 }
@@ -107,22 +110,60 @@ void FPGA::ackPPS() {
     cRIO::NiThrowError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(_session, NiFpga_Irq_10));
 }
 
-void FPGA::waitForModbusIRQ(int32_t subnet, uint32_t timeout) {
-    uint32_t irqs = getIrq(subnet);
-    if (irqs != 0) {
-        uint32_t assertedIRQs = 0;
-        uint8_t timedOut = false;
+void FPGA::waitForModbusIRQs(uint32_t warning_timeout, uint32_t error_timeout) {
+    uint32_t irqs = _modbus_irqs;
+
+    auto now = std::chrono::steady_clock::now();
+    auto warning_time = now + std::chrono::milliseconds(warning_timeout);
+    auto end_error = now + std::chrono::milliseconds(error_timeout);
+    uint32_t remaining = error_timeout;
+
+    while (irqs != 0) {
+        uint32_t asserted_irqs = 0;
+        NiFpga_Bool timed_out = NiFpga_False;
+
+        remaining = std::chrono::floor<std::chrono::milliseconds>(
+                            std::chrono::duration_cast<std::chrono::milliseconds>(end_error - now))
+                            .count();
+
+        SPDLOG_TRACE("Waiting for modbus IRQs: {:b}, timeout {} ms", irqs, remaining);
+
         cRIO::NiThrowError(
-                NiFpga_WaitOnIrqs(_session, _modbusIRQContext, irqs, timeout, &assertedIRQs, &timedOut),
-                "Waiting for IRQ from subnet {}", subnet);
+                "Waiting for Modbus IRQs",
+                NiFpga_WaitOnIrqs(_session, _modbusIRQContext, irqs, remaining, &asserted_irqs, &timed_out));
+
+        if (timed_out) {
+            Model::instance().getSafetyController()->modbusIRQTimeout(remaining, irqs);
+            return;
+        }
+
+        now = std::chrono::steady_clock::now();
+
+        if (now >= end_error) {
+            Model::instance().getSafetyController()->modbusIRQTimeout(error_timeout, irqs);
+            return;
+        }
+
+        if (now >= warning_time) {
+            SPDLOG_WARN("IRQs weren't received before warning timeout ({} ms) expires. IRQ bitmask: {:b}",
+                        warning_timeout, irqs);
+            // so it will not fire again
+            warning_time = end_error + std::chrono::seconds(1);
+        }
+
+        irqs &= ~asserted_irqs;
+    }
+
+    if (warning_time > end_error) {
+        SPDLOG_INFO(
+                "Modbus IRQs triggered after {:.03f} ms, before error timeout.",
+                (error_timeout * 1000 -
+                 std::chrono::duration_cast<std::chrono::microseconds>(end_error - now).count() / 1000.0f));
     }
 }
 
-void FPGA::ackModbusIRQ(int32_t subnet) {
-    uint32_t irqs = getIrq(subnet);
-    if (irqs != 0) {
-        cRIO::NiThrowError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(_session, irqs));
-    }
+void FPGA::ackModbusIRQs() {
+    cRIO::NiThrowError(__PRETTY_FUNCTION__, NiFpga_AcknowledgeIrqs(_session, _modbus_irqs));
 }
 
 void FPGA::pullTelemetry() {

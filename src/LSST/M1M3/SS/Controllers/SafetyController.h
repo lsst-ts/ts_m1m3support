@@ -133,6 +133,7 @@ public:
     void lowerOperationTimeout(bool conditionFlag);
 
     void ilcCommunicationTimeout(bool conditionFlag);
+    void modbusIRQTimeout(uint32_t timeout, uint32_t irqs);
 
     void forceActuatorFollowingError(int actuatorId, int actuatorDataIndex, bool countingWarning,
                                      bool immediateFault);

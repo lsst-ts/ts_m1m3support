@@ -38,13 +38,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-BumpTestController::BumpTestController() {
+BumpTestController::BumpTestController() : _testForce(222) {
     SPDLOG_DEBUG("BumpTestController: BumpTestController()");
     _xIndex = -1;
     _yIndex = -1;
     _zIndex = -1;
-
-    _testForce = 222;
 
     MTM1M3_logevent_forceActuatorBumpTestStatusC *forceActuatorBumpTestStatus =
             M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();

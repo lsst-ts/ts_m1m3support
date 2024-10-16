@@ -34,6 +34,17 @@ void ILCApplicationSettings::load(YAML::Node doc) {
     try {
         SPDLOG_INFO("Loading ILCApplicationSettings");
 
+        FPGAConfigTimeout = doc["FPGAConfigTimeout"].as<uint32_t>();
+        if (FPGAConfigTimeout > 1000) {
+            throw std::runtime_error(
+                    fmt::format("FPGAConfigTimeout shall be lower than 1009 ms, is: {}", FPGAConfigTimeout));
+        }
+        FPGARealtimeLoopTimeout = doc["FPGARealtimeLoopTimeout"].as<uint32_t>();
+        if (FPGARealtimeLoopTimeout > 35) {
+            throw std::runtime_error(fmt::format("FPGARealtimeLoopTimeout shall be lower than 35 ms, is: {}",
+                                                 FPGARealtimeLoopTimeout));
+        }
+
         ReportServerID = doc["ReportServerID"].as<uint32_t>();
         ReportServerStatus = doc["ReportServerStatus"].as<uint32_t>();
         ChangeILCMode = doc["ChangeILCMode"].as<uint32_t>();

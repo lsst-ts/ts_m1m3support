@@ -4,10 +4,19 @@
 Version History
 ===============
 
-v2.15.5
-=======
+v2.15.6
+-------
+* Improvements in FPGA IRQ timeout detection
+* Unit fixes - DC accelerometers in m/sec^2, IMS axial offsets in m
 
+v2.15.5
+-------
+
+* fixed signs in IMS transformations
+* correctly parse ILC calibration data during startup
 * new ts_cRIOcpp API
+* New MPU interface
+* Improved force actuator bump tests documentation
 
 v2.15.4
 -------
