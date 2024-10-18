@@ -4,6 +4,10 @@
 Version History
 ===============
 
+v2.15.7
+-------
+* Improved IRQ handling messages
+
 v2.15.6
 -------
 * Improvements in FPGA IRQ timeout detection
