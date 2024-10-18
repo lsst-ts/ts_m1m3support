@@ -112,8 +112,10 @@ void FPGA::ackPPS() {
 
 void FPGA::waitForModbusIRQs(uint32_t warning_timeout, uint32_t error_timeout) {
     uint32_t irqs = _modbus_irqs;
+    uint32_t warning_irqs = 0;
 
-    auto now = std::chrono::steady_clock::now();
+    auto start = std::chrono::steady_clock::now();
+    auto now = start;
     auto warning_time = now + std::chrono::milliseconds(warning_timeout);
     auto end_error = now + std::chrono::milliseconds(error_timeout);
     uint32_t remaining = error_timeout;
@@ -126,7 +128,7 @@ void FPGA::waitForModbusIRQs(uint32_t warning_timeout, uint32_t error_timeout) {
                             std::chrono::duration_cast<std::chrono::milliseconds>(end_error - now))
                             .count();
 
-        SPDLOG_TRACE("Waiting for modbus IRQs: {:b}, timeout {} ms", irqs, remaining);
+        SPDLOG_TRACE("Waiting for modbus IRQs: {:06b}, timeout {} ms", irqs, remaining);
 
         cRIO::NiThrowError(
                 "Waiting for Modbus IRQs",
@@ -144,21 +146,17 @@ void FPGA::waitForModbusIRQs(uint32_t warning_timeout, uint32_t error_timeout) {
             return;
         }
 
-        if (now >= warning_time) {
-            SPDLOG_WARN("IRQs weren't received before warning timeout ({} ms) expires. IRQ bitmask: {:b}",
-                        warning_timeout, irqs);
-            // so it will not fire again
-            warning_time = end_error + std::chrono::seconds(1);
-        }
-
         irqs &= ~asserted_irqs;
+
+        if (warning_irqs == 0 && now >= warning_time) {
+            warning_irqs = irqs;
+        }
     }
 
-    if (warning_time > end_error) {
-        SPDLOG_INFO(
-                "Modbus IRQs triggered after {:.03f} ms, before error timeout.",
-                (error_timeout * 1000 -
-                 std::chrono::duration_cast<std::chrono::microseconds>(end_error - now).count() / 1000.0f));
+    if (warning_irqs != 0) {
+        SPDLOG_WARN("Modbus IRQs triggered after {:.03f} ms - IRQs after warning time: {:06b}",
+                    std::chrono::duration_cast<std::chrono::microseconds>(now - start).count() / 1000.0f,
+                    warning_irqs);
     }
 }
 
