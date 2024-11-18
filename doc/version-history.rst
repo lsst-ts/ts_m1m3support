@@ -4,6 +4,12 @@
 Version History
 ===============
 
+v2.15.8
+-------
+
+* Gyroscopic velocities are reported in deg/sec, and used as rad/sec in
+  velocity forces calculation.
+
 v2.15.7
 -------
 * Improved IRQ handling messages

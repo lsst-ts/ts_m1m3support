@@ -108,9 +108,9 @@ double TMA::getElevation(bool forceTelescope) {
 void TMA::getMirrorAngularVelocities(double &x, double &y, double &z) {
     if (ForceActuatorSettings::instance().useGyroscope) {
         auto gyroData = M1M3SSPublisher::instance().getGyroData();
-        x = gyroData->angularVelocityX;
-        y = gyroData->angularVelocityY;
-        z = gyroData->angularVelocityZ;
+        x = gyroData->angularVelocityX * D2RAD;
+        y = gyroData->angularVelocityY * D2RAD;
+        z = gyroData->angularVelocityZ * D2RAD;
     } else {
         x = _last_elevation_data.actualVelocity * D2RAD;
         y = getElevationCos(true) * _last_azimuth_data.actualVelocity * D2RAD;
