@@ -172,6 +172,9 @@ void MirrorRaiseController::complete() {
     _forceController->applyStaticForces();
     _forceController->applyThermalForces();
     _forceController->zeroVelocityForces();
+    if (ForceActuatorSettings::instance().hardpointBalanceForcesOnInActiveState) {
+        _forceController->applyBalanceForces();
+    }
     RaisingLoweringInfo::instance().fillSupportPercentage();
 }
 
