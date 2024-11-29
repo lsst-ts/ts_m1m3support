@@ -115,6 +115,7 @@ ForceActuatorSettings:
   VelocityZTablePath: VelocityZTable.csv
   VelocityXZTablePath: VelocityXZTable.csv
   VelocityYZTablePath: VelocityYZTable.csv
+  VelocityXYTablePath: VelocityXYTable.csv
   MeasuredMirrorLimitTablePath: MeasuredMirrorLimitTable.csv
   MeasuredWarningPercentage: 90
   FollowingErrorPrimaryCylinderLimitTablePath: FollowingErrorPrimaryCylinderLimitTable.csv

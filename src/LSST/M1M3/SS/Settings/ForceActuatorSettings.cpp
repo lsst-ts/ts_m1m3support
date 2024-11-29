@@ -103,6 +103,7 @@ void ForceActuatorSettings::load(YAML::Node doc) {
         TableLoader::loadTable(1, 3, &VelocityZTable, doc["VelocityZTablePath"].as<std::string>());
         TableLoader::loadTable(1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
         TableLoader::loadTable(1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
+        TableLoader::loadTable(1, 3, &VelocityXYTable, doc["VelocityXYTablePath"].as<std::string>());
 
         TableLoader::loadLimitTable(1, &AccelerationLimitXTable,
                                     doc["AccelerationLimitXTablePath"].as<std::string>());
@@ -305,11 +306,12 @@ DistributedForces ForceActuatorSettings::calculateForceFromAngularAcceleration(f
 DistributedForces ForceActuatorSettings::calculateForceFromAngularVelocity(float angularVelocityX,
                                                                            float angularVelocityY,
                                                                            float angularVelocityZ) {
-    float angularVelocityXX = angularVelocityX * angularVelocityX;
-    float angularVelocityYY = angularVelocityY * angularVelocityY;
-    float angularVelocityZZ = angularVelocityZ * angularVelocityZ;
-    float angularVelocityXZ = angularVelocityX * angularVelocityZ;
-    float angularVelocityYZ = angularVelocityY * angularVelocityZ;
+    double angularVelocityXX = angularVelocityX * angularVelocityX;
+    double angularVelocityYY = angularVelocityY * angularVelocityY;
+    double angularVelocityZZ = angularVelocityZ * angularVelocityZ;
+    double angularVelocityXZ = angularVelocityX * angularVelocityZ;
+    double angularVelocityYZ = angularVelocityY * angularVelocityZ;
+    double angularVelocityXY = angularVelocityX * angularVelocityY;
     DistributedForces forces;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int mIndex = zIndex * 3;
@@ -318,21 +320,24 @@ DistributedForces ForceActuatorSettings::calculateForceFromAngularVelocity(float
                                   VelocityYTable[mIndex + 0] * angularVelocityYY +
                                   VelocityZTable[mIndex + 0] * angularVelocityZZ +
                                   VelocityXZTable[mIndex + 0] * angularVelocityXZ +
-                                  VelocityYZTable[mIndex + 0] * angularVelocityYZ) /
+                                  VelocityYZTable[mIndex + 0] * angularVelocityYZ +
+                                  VelocityXYTable[mIndex + 0] * angularVelocityXY) /
                                  1000.0;
 
         forces.YForces[zIndex] = (VelocityXTable[mIndex + 1] * angularVelocityXX +
                                   VelocityYTable[mIndex + 1] * angularVelocityYY +
                                   VelocityZTable[mIndex + 1] * angularVelocityZZ +
                                   VelocityXZTable[mIndex + 1] * angularVelocityXZ +
-                                  VelocityYZTable[mIndex + 1] * angularVelocityYZ) /
+                                  VelocityYZTable[mIndex + 1] * angularVelocityYZ +
+                                  VelocityXYTable[mIndex + 1] * angularVelocityXY) /
                                  1000.0;
 
         forces.ZForces[zIndex] = (VelocityXTable[mIndex + 2] * angularVelocityXX +
                                   VelocityYTable[mIndex + 2] * angularVelocityYY +
                                   VelocityZTable[mIndex + 2] * angularVelocityZZ +
                                   VelocityXZTable[mIndex + 2] * angularVelocityXZ +
-                                  VelocityYZTable[mIndex + 2] * angularVelocityYZ) /
+                                  VelocityYZTable[mIndex + 2] * angularVelocityYZ +
+                                  VelocityXYTable[mIndex + 2] * angularVelocityXY) /
                                  1000.0;
     }
 

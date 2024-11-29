@@ -127,6 +127,7 @@ public:
     std::vector<float> VelocityZTable;
     std::vector<float> VelocityXZTable;
     std::vector<float> VelocityYZTable;
+    std::vector<float> VelocityXYTable;
 
     std::vector<Limit> AberrationLimitZTable;
     std::vector<Limit> AccelerationLimitXTable;
