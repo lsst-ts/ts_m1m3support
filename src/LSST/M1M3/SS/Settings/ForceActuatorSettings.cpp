@@ -186,6 +186,7 @@ void ForceActuatorSettings::load(YAML::Node doc) {
         raiseIncrementPercentage = doc["RaiseIncrementPercentage"].as<double>();
         lowerDecrementPercentage = doc["LowerDecrementPercentage"].as<double>();
         raiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
+        hardpointBalanceForcesOnInActiveState = doc["HardpointBalanceForcesOnInActiveState"].as<bool>();
 
         AccelerationComponentSettings.set(doc["AccelerationForceComponent"]);
         ActiveOpticComponentSettings.set(doc["ActiveOpticForceComponent"]);

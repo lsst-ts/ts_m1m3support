@@ -10,6 +10,7 @@ v2.15.8
 * VelocityXYTable for inertia velocity/centrifugal force fit.
 * Gyroscopic velocities are reported in deg/sec, and used as rad/sec in
   velocity forces calculation.
+* BalanceForcesOnInActiveState to switch on balance forces after raise
 
 v2.15.7
 -------

@@ -49,15 +49,3 @@ States::Type EnabledActiveState::clearActiveOpticForces(ClearActiveOpticForcesCo
     Model::instance().getForceController()->processAppliedForces();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
-
-States::Type EnabledActiveState::enableHardpointCorrections(EnableHardpointCorrectionsCommand *command) {
-    SPDLOG_INFO("EnabledActiveState: enableHardpointCorrections()");
-    Model::instance().getForceController()->applyBalanceForces();
-    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
-}
-
-States::Type EnabledActiveState::disableHardpointCorrections(DisableHardpointCorrectionsCommand *command) {
-    SPDLOG_INFO("EnabledActiveState: disableHardpointCorrections()");
-    Model::instance().getForceController()->zeroBalanceForces();
-    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
-}

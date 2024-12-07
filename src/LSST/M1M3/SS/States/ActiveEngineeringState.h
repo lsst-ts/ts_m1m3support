@@ -41,6 +41,8 @@ public:
     ActiveEngineeringState();
 
     States::Type update(UpdateCommand *command) override;
+    States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand *command) override;
+    States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand *command) override;
     States::Type setSlewFlag(SetSlewFlagCommand *command) override;
     States::Type clearSlewFlag(ClearSlewFlagCommand *command) override;
     States::Type exitEngineering(ExitEngineeringCommand *command) override;
