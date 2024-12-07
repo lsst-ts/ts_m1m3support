@@ -182,6 +182,9 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
+    /// TODO temporary workaround, not needed once hardpointBalanceForcesOnInActiveState is in XML
+    bool hardpointBalanceForcesOnInActiveState;
+
 private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
