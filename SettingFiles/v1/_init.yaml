@@ -115,6 +115,7 @@ ForceActuatorSettings:
   VelocityZTablePath: VelocityZTable.csv
   VelocityXZTablePath: VelocityXZTable.csv
   VelocityYZTablePath: VelocityYZTable.csv
+  VelocityXYTablePath: VelocityXYTable.csv
   MeasuredMirrorLimitTablePath: MeasuredMirrorLimitTable.csv
   MeasuredWarningPercentage: 90
   FollowingErrorPrimaryCylinderLimitTablePath: FollowingErrorPrimaryCylinderLimitTable.csv
@@ -171,6 +172,8 @@ ForceActuatorSettings:
   RaiseIncrementPercentage: 0.05
   LowerDecrementPercentage: 0.05
   RaiseLowerFollowingErrorLimit: 50
+  # If true, automatically turn on hardpoint balance forces when mirror is raised in non-engineering state
+  HardpointBalanceForcesOnInActiveState: True
   AccelerationForceComponent:
     MaxRateOfChange: 105.0
     NearZeroValue: 1.0

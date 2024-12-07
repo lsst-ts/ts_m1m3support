@@ -61,6 +61,19 @@ States::Type ActiveEngineeringState::update(UpdateCommand *command) {
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
+States::Type ActiveEngineeringState::enableHardpointCorrections(EnableHardpointCorrectionsCommand *command) {
+    SPDLOG_INFO("ActiveEngineeringState: enableHardpointCorrections()");
+    Model::instance().getForceController()->applyBalanceForces();
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
+States::Type ActiveEngineeringState::disableHardpointCorrections(
+        DisableHardpointCorrectionsCommand *command) {
+    SPDLOG_INFO("ActiveEngineeringState: disableHardpointCorrections()");
+    Model::instance().getForceController()->zeroBalanceForces();
+    return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
+}
+
 States::Type ActiveEngineeringState::setSlewFlag(SetSlewFlagCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: setSlewFlag()");
     Model::instance().getSlewController()->enterSlew();
@@ -75,16 +88,20 @@ States::Type ActiveEngineeringState::clearSlewFlag(ClearSlewFlagCommand *command
 
 States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand *command) {
     SPDLOG_INFO("ActiveEngineeringState: exitEngineering()");
-    Model::instance().getForceController()->resetPIDs();
+    auto _forceController = Model::instance().getForceController();
+    _forceController->resetPIDs();
     DigitalInputOutput::instance().turnAirOn();
     Model::instance().getPositionController()->stopMotion();
-    Model::instance().getForceController()->applyBalanceForces();
-    Model::instance().getForceController()->zeroOffsetForces();
-    Model::instance().getForceController()->processAppliedForces();
+    _forceController->applyBalanceForces();
+    _forceController->zeroOffsetForces();
+    _forceController->processAppliedForces();
     DigitalInputOutput::instance().turnCellLightsOff();
     // TODO: Real problems exist if the user enabled / disabled ILC power...
     Model::instance().getPowerController()->setAllPowerNetworks(true);
     BoosterValveStatus::instance().setUserTriggered(false);
+    if (ForceActuatorSettings::instance().hardpointBalanceForcesOnInActiveState) {
+        _forceController->applyBalanceForces();
+    }
     return Model::instance().getSafetyController()->checkSafety(States::ActiveState);
 }
 
