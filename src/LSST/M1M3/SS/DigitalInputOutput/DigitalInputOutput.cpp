@@ -111,7 +111,8 @@ void DigitalInputOutput::processData() {
                 timestamp,
                 _interlockStatus->heartbeatOutputState != _interlockStatus->heartbeatCommandedState);
 
-        if (_safetyController) {
+        if (Context::instance().in_disabled_or_standby() == false) {
+            assert(_safetyController != nullptr);
             _safetyController->airControllerNotifyCommandOutputMismatch(
                     _airSupplyWarning->commandOutputMismatch, _airSupplyStatus->airCommandedOn,
                     _airSupplyStatus->airCommandOutputOn);
@@ -144,7 +145,8 @@ void DigitalInputOutput::processData() {
 
         InterlockWarning::instance().setData(timestamp, fpgaData->DigitalInputStates);
 
-        if (_safetyController) {
+        if (Context::instance().in_disabled_or_standby() == false) {
+            assert(_safetyController != nullptr);
             // report heartbeat lost first. GIS cuts power if heartbeats aren't
             // comming.
             _safetyController->interlockNotifyGISHeartbeatLost(InterlockWarning::instance().gisHeartbeatLost);
