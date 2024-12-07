@@ -97,6 +97,7 @@ States::Type StandbyState::start(StartCommand *command) {
 
     IFPGA::get().pullTelemetry();
 
+    DigitalInputOutput::instance().turnAirOff();
     DigitalInputOutput::instance().processData();
 
     powerController->processData();
