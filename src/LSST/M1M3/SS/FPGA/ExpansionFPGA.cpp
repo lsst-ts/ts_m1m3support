@@ -63,25 +63,18 @@ void ExpansionFPGA::open() {
     if (_disabled) {
         return;
     }
-    NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(), 0,
-           &(_session));
+    NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(),
+           NiFpga_OpenAttribute_NoRun, &(_session));
 
     auto &heartbeat = Heartbeat::instance();
     heartbeat.tryToggle();
 
-    NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
-
-    heartbeat.tryToggle();
-
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
-
     heartbeat.tryToggle();
-
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
-
     heartbeat.tryToggle();
-
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
+    heartbeat.tryToggle();
 }
 
 void ExpansionFPGA::close() {

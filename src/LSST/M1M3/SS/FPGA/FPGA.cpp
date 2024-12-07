@@ -58,11 +58,12 @@ void FPGA::initialize() {
 
 void FPGA::open() {
     SPDLOG_DEBUG("FPGA: open()");
-    NiOpen("/var/lib/M1M3support", NiFpga_M1M3SupportFPGA, "RIO0", 0, &(_session));
-    cRIO::NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Abort", NiFpga_Abort(_session));
+    NiOpen("/var/lib/M1M3support", NiFpga_M1M3SupportFPGA, "RIO0", NiFpga_OpenAttribute_NoRun, &(_session));
+
     cRIO::NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
     cRIO::NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Reset", NiFpga_Reset(_session));
     cRIO::NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Run", NiFpga_Run(_session, 0));
+
     std::this_thread::sleep_for(std::chrono::seconds(1));
     cRIO::NiThrowError(__PRETTY_FUNCTION__, "NiFpga_ReserveIrqContext",
                        NiFpga_ReserveIrqContext(_session, &_outerLoopIRQContext));
