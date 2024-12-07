@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(int32_t commandID) : Command(commandID) {}
 
-void EnableAllForceActuatorsCommand::execute() { Context::get().enableAllForceActuators(this); }
+void EnableAllForceActuatorsCommand::execute() { Context::instance().enableAllForceActuators(this); }
 
 void EnableAllForceActuatorsCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandenableAllForceActuators(getCommandID(), ACK_INPROGRESS, description,

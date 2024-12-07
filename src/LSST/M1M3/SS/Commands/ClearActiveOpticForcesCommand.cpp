@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 ClearActiveOpticForcesCommand::ClearActiveOpticForcesCommand(int32_t commandID) : Command(commandID) {}
 
-void ClearActiveOpticForcesCommand::execute() { Context::get().clearActiveOpticForces(this); }
+void ClearActiveOpticForcesCommand::execute() { Context::instance().clearActiveOpticForces(this); }
 
 void ClearActiveOpticForcesCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandclearActiveOpticForces(getCommandID(), ACK_INPROGRESS, description,

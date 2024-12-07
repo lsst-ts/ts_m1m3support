@@ -41,5 +41,5 @@ void TMAAzimuthSampleCommand::execute() {
         TG_LOG_ERROR(2s, "Received azimuth timestamp deviates by more than {0:.3f}s: {1:.3f}", limit, diff);
         return;
     }
-    Context::get().storeTMAAzimuthSample(this);
+    Context::instance().storeTMAAzimuthSample(this);
 }

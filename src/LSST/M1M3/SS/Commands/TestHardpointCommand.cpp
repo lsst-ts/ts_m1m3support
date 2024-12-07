@@ -49,7 +49,7 @@ bool TestHardpointCommand::validate() {
     return false;
 }
 
-void TestHardpointCommand::execute() { Context::get().testHardpoint(this); }
+void TestHardpointCommand::execute() { Context::instance().testHardpoint(this); }
 
 void TestHardpointCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandtestHardpoint(getCommandID(), ACK_INPROGRESS, description, timeout);

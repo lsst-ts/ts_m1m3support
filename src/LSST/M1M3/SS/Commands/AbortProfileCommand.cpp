@@ -33,7 +33,7 @@ using namespace LSST::M1M3::SS;
 AbortProfileCommand::AbortProfileCommand(int32_t commandID, MTM1M3_command_abortProfileC *)
         : Command(commandID) {}
 
-void AbortProfileCommand::execute() { Context::get().abortProfile(this); }
+void AbortProfileCommand::execute() { Context::instance().abortProfile(this); }
 
 void AbortProfileCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandabortProfile(getCommandID(), ACK_INPROGRESS, description, timeout);

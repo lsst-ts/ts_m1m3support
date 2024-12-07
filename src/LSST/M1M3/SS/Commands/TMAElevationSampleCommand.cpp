@@ -42,5 +42,5 @@ void TMAElevationSampleCommand::execute() {
         TG_LOG_ERROR(2s, "Received elevation timestamp deviates by more than {0:.3f}s: {1:.3f}", limit, diff);
         return;
     }
-    Context::get().storeTMAElevationSample(this);
+    Context::instance().storeTMAElevationSample(this);
 }

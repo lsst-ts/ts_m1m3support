@@ -29,6 +29,7 @@
 
 #include <SAL_MTM1M3C.h>
 
+#include <Context.h>
 #include <DigitalInputOutput.h>
 #include <FPGAAddresses.h>
 #include <InterlockWarning.h>
@@ -71,6 +72,11 @@ void DigitalInputOutput::processData() {
     // TODO: Handle no data available
     SPDLOG_TRACE("DigitalInputOutput: processData()");
     bool tryPublish = false;
+
+    if (_safetyController == nullptr && Context::instance().in_standby() == false) {
+        throw std::runtime_error("Safety controller must be set in outside of standby state.");
+    }
+
     SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
     double timestamp =
             Timestamp::fromFPGA(std::max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));

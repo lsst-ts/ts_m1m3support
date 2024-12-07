@@ -24,6 +24,8 @@
 #ifndef CONTEXT_H_
 #define CONTEXT_H_
 
+#include <cRIO/Singleton.h>
+
 #include <AbortProfileCommand.h>
 #include <AbortRaiseM1M3Command.h>
 #include <ApplyActiveOpticForcesCommand.h>
@@ -93,16 +95,9 @@ namespace SS {
  * State objects, child of State, are responsible for verification the Command
  * is allowed at given state.
  */
-class Context {
+class Context : public cRIO::Singleton<Context> {
 public:
-    Context();
-
-    /**
-     * Retrieve Context singleton.
-     *
-     * @return Context singleton
-     */
-    static Context &get();
+    Context(token);
 
     /**
      * @brief Executes EnterControlCommand actions.
@@ -161,6 +156,18 @@ public:
     void enableAllForceActuators(EnableAllForceActuatorsCommand *command);
     void enableDisableForceComponent(EnableDisableForceComponentCommand *command);
     void setSlewControllerSettings(SetSlewControllerSettingsCommand *command);
+
+    /**
+     * Returns true if system is in Standby state.
+     */
+    bool in_standby() { return _currentState == States::Type::StandbyState; }
+
+    /**
+     * Returns true if system is either in Disabled or Standby state.
+     */
+    bool in_disabled_or_standby() {
+        return _currentState == States::Type::StandbyState || _currentState == States::Type::DisabledState;
+    }
 
 private:
     Context &operator=(const Context &) = delete;
