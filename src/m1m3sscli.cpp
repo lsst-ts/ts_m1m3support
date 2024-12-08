@@ -21,6 +21,7 @@
  */
 
 #include <csignal>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 
@@ -53,9 +54,13 @@ using namespace std::chrono_literals;
 
 #define MAX_FORCE 250
 
+std::ofstream *_test_output = nullptr;
+
 class M1M3SScli : public FPGACliApp {
 public:
     M1M3SScli(const char *name, const char *description);
+    virtual ~M1M3SScli();
+
     int setPower(command_vec cmds);
     int setAir(command_vec cmds);
     int setLights(command_vec cmds);
@@ -63,6 +68,8 @@ public:
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
     int setCalibration(command_vec cmds);
+    int testOutput(command_vec cmds);
+    int testSettings(command_vec cmds);
     int testSAA(command_vec cmds);
     int testDAA(command_vec cmds);
 
@@ -72,8 +79,13 @@ protected:
     virtual LSST::cRIO::FPGA *newFPGA(const char *dir, bool &fpga_singleton) override;
     virtual ILCUnits getILCs(command_vec cmds) override;
 
+private:
     void _printSupportData();
-    void _report_pressure_forces(ILCUnits &ilcs, std::chrono::milliseconds run_time);
+    void _report_pressure_forces(ILCUnits &ilcs);
+
+    std::chrono::milliseconds _test_duration;
+    std::chrono::milliseconds _test_pause_force;
+    std::chrono::milliseconds _test_pause_pressure;
 };
 
 class PrintElectromechanical : public ElectromechanicalPneumaticILC, public PrintILC {
@@ -114,7 +126,11 @@ public:
     void readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeout) override;
 };
 
-M1M3SScli::M1M3SScli(const char *name, const char *description) : FPGACliApp(name, description) {
+M1M3SScli::M1M3SScli(const char *name, const char *description)
+        : FPGACliApp(name, description),
+          _test_duration(std::chrono::milliseconds(3000)),
+          _test_pause_force(std::chrono::milliseconds(20)),
+          _test_pause_pressure(std::chrono::milliseconds(20)) {
     addCommand("power", std::bind(&M1M3SScli::setPower, this, std::placeholders::_1), "i", NEED_FPGA, "<0|1>",
                "Power off/on ILC bus");
 
@@ -174,6 +190,13 @@ M1M3SScli::M1M3SScli(const char *name, const char *description) : FPGACliApp(nam
     addCommand("set-dca-gain", std::bind(&M1M3SScli::setDCAGain, this, std::placeholders::_1), "DDs?",
                NEED_FPGA, "<axial gain> <lateral gain> <ILC..>", "Set DCA gain");
 
+    addCommand("@test-output", std::bind(&M1M3SScli::testOutput, this, std::placeholders::_1), "S", 0,
+               "<filename>", "Set filename to record progress of actuators tests.");
+    addCommand("@test-settings", std::bind(&M1M3SScli::testSettings, this, std::placeholders::_1), "III", 0,
+               "<duration> <force-pause> <pressure-pause>",
+               "Sets test parameters. Duration specifies for how long will data be recorded, -pause tells "
+               "CLI delays to take after force or pressure telemetry.");
+
     addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",
                NEED_FPGA, "<primary> <ILC..>", "Set ILC primary force offset");
     addCommand("saa-test", std::bind(&M1M3SScli::testSAA, this, std::placeholders::_1), "Ds?", NEED_FPGA,
@@ -192,6 +215,14 @@ M1M3SScli::M1M3SScli(const char *name, const char *description) : FPGACliApp(nam
     addILC(std::make_shared<PrintElectromechanical>(3));
     addILC(std::make_shared<PrintElectromechanical>(4));
     addILC(std::make_shared<PrintElectromechanical>(5));
+}
+
+M1M3SScli::~M1M3SScli() {
+    if (_test_output != nullptr) {
+        _test_output->close();
+    }
+    delete _test_output;
+    _test_output = NULL;
 }
 
 int M1M3SScli::setPower(command_vec cmds) {
@@ -255,6 +286,32 @@ int M1M3SScli::setDCAGain(command_vec cmds) {
         std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDCAGain(u.second, primary, secondary);
     }
     runILCCommands(500);
+    return 0;
+}
+
+int M1M3SScli::testOutput(command_vec cmds) {
+    if (_test_output != nullptr) {
+        _test_output->close();
+        delete _test_output;
+    }
+    _test_output = new std::ofstream(cmds[0], std::ofstream::out);
+    if (_test_output->good()) {
+        std::cout << "Telemery will be written to: " << cmds[0] << std::endl;
+    } else {
+        std::cerr << "Cannot open " << cmds[0] << " as telemetry log file: " << strerror(errno) << std::endl;
+        delete _test_output;
+        _test_output = nullptr;
+    }
+    return 0;
+}
+
+int M1M3SScli::testSettings(command_vec cmds) {
+    _test_duration = std::chrono::milliseconds(std::stoi(cmds[0]));
+    _test_pause_force = std::chrono::milliseconds(std::stoi(cmds[1]));
+    _test_pause_pressure = std::chrono::milliseconds(std::stoi(cmds[2]));
+
+    std::cout << "Duration: " << _test_duration.count() << " Force pause: " << _test_pause_force.count()
+              << " Pressure pause: " << _test_pause_pressure.count() << std::endl;
     return 0;
 }
 
@@ -346,7 +403,7 @@ int M1M3SScli::testSAA(command_vec cmds) {
     }
     runILCCommands(500);
 
-    _report_pressure_forces(ilcs, std::chrono::milliseconds(3000));
+    _report_pressure_forces(ilcs);
 
     return 0;
 }
@@ -371,7 +428,7 @@ int M1M3SScli::testDAA(command_vec cmds) {
     }
     runILCCommands(500);
 
-    _report_pressure_forces(ilcs, std::chrono::milliseconds(3000));
+    _report_pressure_forces(ilcs);
 
     return 0;
 }
@@ -574,17 +631,26 @@ void M1M3SScli::_printSupportData() {
               << std::endl;
 }
 
-void M1M3SScli::_report_pressure_forces(ILCUnits &ilcs, std::chrono::milliseconds run_time) {
-    auto end = std::chrono::steady_clock::now() + run_time;
+void M1M3SScli::_report_pressure_forces(ILCUnits &ilcs) {
+    auto end = std::chrono::steady_clock::now() + _test_duration;
+
+    bool show_press = true;
 
     while (std::chrono::steady_clock::now() < end) {
         clearILCs();
         for (auto u : ilcs) {
-            std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportForceActuatorForceStatus(
-                    u.second);
-            std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
+            if (show_press) {
+                std::this_thread::sleep_for(_test_pause_pressure);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
+            } else {
+                std::this_thread::sleep_for(_test_pause_force);
+                std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportForceActuatorForceStatus(
+                        u.second);
+            }
         }
         runILCCommands(500);
+
+        show_press = !show_press;
     }
 
     clearILCs();
@@ -646,6 +712,16 @@ void PrintElectromechanical::processSAAForceStatus(uint8_t address, uint8_t stat
               << ")" << std::endl;
     std::cout << "Primary force: " << std::setprecision(2) << std::fixed << primaryLoadCellForce << " N"
               << std::endl;
+
+    if (_test_output != nullptr) {
+        time_t now;
+        time(&now);
+        char time_buf[80];
+        strftime(time_buf, 80, "%x %X", gmtime(&now));
+
+        *_test_output << time_buf << ", saa-force, " << +address << ", " << std::fixed << primaryLoadCellForce
+                      << std::endl;
+    }
 }
 
 void PrintElectromechanical::processDAAForceStatus(uint8_t address, uint8_t status,
@@ -658,6 +734,16 @@ void PrintElectromechanical::processDAAForceStatus(uint8_t address, uint8_t stat
               << std::endl;
     std::cout << "Secondary force: " << std::setprecision(2) << std::fixed << secondaryLoadCellForce << " N"
               << std::endl;
+
+    if (_test_output != nullptr) {
+        time_t now;
+        time(&now);
+        char time_buf[80];
+        strftime(time_buf, 80, "%x %X", gmtime(&now));
+
+        *_test_output << time_buf << ", daa-force, " << +address << ", " << std::fixed << primaryLoadCellForce
+                      << ", " << secondaryLoadCellForce << std::endl;
+    }
 }
 
 void PrintElectromechanical::processCalibrationData(uint8_t address, float mainADCK[4], float mainOffset[4],
@@ -692,6 +778,16 @@ void PrintElectromechanical::processMezzaninePressure(uint8_t address, float pri
 
     printPushPull("Primary", primaryPush, primaryPull);
     printPushPull("Secondary", secondaryPush, secondaryPull);
+
+    if (_test_output != nullptr) {
+        time_t now;
+        time(&now);
+        char time_buf[80];
+        strftime(time_buf, 80, "%x %X", gmtime(&now));
+
+        *_test_output << time_buf << ", pressure, " << +address << ", " << std::fixed << primaryPush << ", "
+                      << primaryPull << ", " << secondaryPush << ", " << secondaryPull << std::endl;
+    }
 }
 
 M1M3SScli cli("M1M3SS", "M1M3 Support System Command Line Interface");
