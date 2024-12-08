@@ -182,6 +182,8 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
+    bool hardpointBalanceForcesOnInActiveState;
+
 private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);

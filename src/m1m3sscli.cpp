@@ -51,7 +51,7 @@ using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
 using namespace std::chrono_literals;
 
-#define MAX_FORCE 2000
+#define MAX_FORCE 250
 
 class M1M3SScli : public FPGACliApp {
 public:
@@ -63,6 +63,8 @@ public:
     int setSAAOffset(command_vec cmds);
     int setDAAOffset(command_vec cmds);
     int setCalibration(command_vec cmds);
+    int testSAA(command_vec cmds);
+    int testDAA(command_vec cmds);
 
     int dumpAccelerometer(command_vec cmds);
 
@@ -71,6 +73,7 @@ protected:
     virtual ILCUnits getILCs(command_vec cmds) override;
 
     void _printSupportData();
+    void _report_pressure_forces(ILCUnits &ilcs, std::chrono::milliseconds run_time);
 };
 
 class PrintElectromechanical : public ElectromechanicalPneumaticILC, public PrintILC {
@@ -173,9 +176,13 @@ M1M3SScli::M1M3SScli(const char *name, const char *description) : FPGACliApp(nam
 
     addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",
                NEED_FPGA, "<primary> <ILC..>", "Set ILC primary force offset");
+    addCommand("saa-test", std::bind(&M1M3SScli::testSAA, this, std::placeholders::_1), "Ds?", NEED_FPGA,
+               "<primary> <ILC..>", "Set force, readout force and pressure for 3 seconds");
 
     addCommand("daa-offset", std::bind(&M1M3SScli::setDAAOffset, this, std::placeholders::_1), "DDs?",
                NEED_FPGA, "<primary> <secondary> <ILC..>", "Set ILC primary and secondary force offsets");
+    addCommand("daa-test", std::bind(&M1M3SScli::testDAA, this, std::placeholders::_1), "DDs?", NEED_FPGA,
+               "<primary> <secondary> <ILC..>", "Set force, readout force and pressure for 3 seconds");
 
     addCommand("set-calibration", std::bind(&M1M3SScli::setCalibration, this, std::placeholders::_1), "IDDS",
                NEED_FPGA, "<channel> <offset> <sensitivity> <ILC>", "Write calibration data");
@@ -317,6 +324,55 @@ int M1M3SScli::setCalibration(command_vec cmds) {
                 u.second, channel, offset, sensitivity);
     }
     runILCCommands(500);
+    return 0;
+}
+
+int M1M3SScli::testSAA(command_vec cmds) {
+    float primary = stof(cmds[0]);
+
+    if (fabs(primary) > MAX_FORCE) {
+        std::cerr << "Force offset must be below " << MAX_FORCE << " N, received " << primary << " N "
+                  << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 1);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setSAAForceOffset(u.second, false,
+                                                                                      primary);
+    }
+    runILCCommands(500);
+
+    _report_pressure_forces(ilcs, std::chrono::milliseconds(3000));
+
+    return 0;
+}
+
+int M1M3SScli::testDAA(command_vec cmds) {
+    float primary = stof(cmds[0]);
+    float secondary = stof(cmds[1]);
+
+    if (fabs(primary) > MAX_FORCE || fabs(secondary) > MAX_FORCE) {
+        std::cerr << "Force offset must be below " << MAX_FORCE << " N, received " << primary << " N and "
+                  << secondary << " N" << std::endl;
+        return -1;
+    }
+
+    cmds.erase(cmds.begin(), cmds.begin() + 2);
+
+    clearILCs();
+    ILCUnits ilcs = getILCs(cmds);
+    for (auto u : ilcs) {
+        std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->setDAAForceOffset(u.second, false,
+                                                                                      primary, secondary);
+    }
+    runILCCommands(500);
+
+    _report_pressure_forces(ilcs, std::chrono::milliseconds(3000));
+
     return 0;
 }
 
@@ -516,6 +572,22 @@ void M1M3SScli::_printSupportData() {
               << "Lights On: "
               << printOnOff(fpgaData->DigitalInputStates & FPGAAddresses::DigitalInputs::CellLightsOn)
               << std::endl;
+}
+
+void M1M3SScli::_report_pressure_forces(ILCUnits &ilcs, std::chrono::milliseconds run_time) {
+    auto end = std::chrono::steady_clock::now() + run_time;
+
+    while (std::chrono::steady_clock::now() < end) {
+        clearILCs();
+        for (auto u : ilcs) {
+            std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportForceActuatorForceStatus(
+                    u.second);
+            std::dynamic_pointer_cast<PrintElectromechanical>(u.first)->reportMezzaninePressure(u.second);
+        }
+        runILCCommands(500);
+    }
+
+    clearILCs();
 }
 
 unsigned int _printout = 0;
