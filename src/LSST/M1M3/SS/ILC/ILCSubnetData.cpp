@@ -140,9 +140,11 @@ void ILCSubnetData::enableFA(int32_t actuatorId) {
         Container *container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
             if (container->FAIndex[i].ActuatorId == actuatorId) {
-                container->FAIndex[i].Disabled = false;
-                SPDLOG_INFO("ILCSubnetData::enableFA({}, {}, {}) actuator enabled", actuatorId, subnetIndex,
-                            i);
+                if (container->FAIndex[i].Disabled == true) {
+                    container->FAIndex[i].Disabled = false;
+                    SPDLOG_INFO("ILCSubnetData::enableFA({}, {}, {}) actuator enabled", actuatorId,
+                                subnetIndex, i);
+                }
                 return;
             }
         }
