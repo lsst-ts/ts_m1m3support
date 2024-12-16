@@ -170,8 +170,11 @@ void Model::loadSettings(const char *settingsToApply) {
 
     // apply disabled FA from setting
     for (int i = 0; i < FA_COUNT; i++) {
+        int actuator_id = forceActuatorApplicationSettings->ZIndexToActuatorId(i);
         if (ForceActuatorSettings::instance().isActuatorDisabled(i)) {
-            _ilc->disableFA(forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+            _ilc->disableFA(actuator_id);
+        } else {
+            _ilc->enableFA(actuator_id);
         }
     }
 

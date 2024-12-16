@@ -4,6 +4,12 @@
 Version History
 ===============
 
+v2.15.9
+-------
+
+* Return error on attempt to bump test disabled FA
+* Removing FA from disabled in config file removes it from disabled on next CSC start
+
 v2.15.8
 -------
 
