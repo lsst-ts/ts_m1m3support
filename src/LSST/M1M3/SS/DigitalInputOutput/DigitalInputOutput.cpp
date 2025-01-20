@@ -183,16 +183,19 @@ void DigitalInputOutput::toggleHeartbeat(double globalTimestamp) {
     _interlockStatus->log();
 }
 
-void DigitalInputOutput::setCriticalFailureToSafetyController() {
-    SPDLOG_TRACE("DigitalInputOutput: trigerring critical fault");
-    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 0};
+void DigitalInputOutput::toggleSystemOperationalHB(int index) {
+    uint16_t buffer[2] = {
+            index == 0 ? FPGAAddresses::SystemOperationalHB1 : FPGAAddresses::SystemOperationalHB2,
+            _systemOperationalHB[index]};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+    _systemOperationalHB[index] = !_systemOperationalHB[index];
 }
 
-void DigitalInputOutput::clearCriticalFailureToSafetyController() {
-    SPDLOG_TRACE("DigitalInputOutput: clear critical fault");
-    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 1};
+void DigitalInputOutput::toggleMirrorRaisedHB(int index) {
+    uint16_t buffer[2] = {index == 0 ? FPGAAddresses::MirrorRaisedHB1 : FPGAAddresses::MirrorRaisedHB2,
+                          _mirrorRaisedHB[index]};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
+    _mirrorRaisedHB[index] = !_mirrorRaisedHB[index];
 }
 
 void DigitalInputOutput::turnAirOn() {

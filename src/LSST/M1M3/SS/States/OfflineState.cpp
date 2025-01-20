@@ -56,7 +56,6 @@ States::Type OfflineState::enterControl(EnterControlCommand *command) {
     auto &digitalInputOutput = DigitalInputOutput::instance();
     digitalInputOutput.turnAirOff();
     digitalInputOutput.turnCellLightsOff();
-    digitalInputOutput.clearCriticalFailureToSafetyController();
     return States::StandbyState;
 }
 
