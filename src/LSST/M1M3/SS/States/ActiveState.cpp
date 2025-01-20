@@ -25,6 +25,7 @@
 
 #include <ActiveState.h>
 #include <BoosterValveController.h>
+#include <DigitalInputOutput.h>
 #include <ForceController.h>
 #include <Model.h>
 #include <Publisher.h>
@@ -38,7 +39,9 @@ ActiveState::ActiveState() : EnabledState("ActiveState") {}
 
 States::Type ActiveState::update(UpdateCommand *command) {
     SPDLOG_TRACE("ActiveState: update()");
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(0);
     sendTelemetry();
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(1);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

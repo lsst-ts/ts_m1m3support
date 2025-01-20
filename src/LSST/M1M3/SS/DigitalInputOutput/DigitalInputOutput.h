@@ -72,19 +72,9 @@ public:
     void toggleHeartbeat(double globalTimestamp);
 
     /**
-     * Sets CH1 trigger for crtitical fult to safety controller.
-     *
-     * Use to signal to safety controller mirror is in fault state.
-     *
      */
-    void setCriticalFailureToSafetyController();
-
-    /**
-     * Clear CH1 trigger for critical fault to safety controller.
-     *
-     * Use to signal to safety controller mirror is not in fault state.
-     */
-    void clearCriticalFailureToSafetyController();
+    void toggleSystemOperationalHB(int index);
+    void toggleMirrorRaisedHB(int index);
 
     /*!
      * Turns the air on.
@@ -114,6 +104,10 @@ private:
 
     uint64_t _lastDOTimestamp;
     uint64_t _lastDITimestamp;
+
+    bool _systemOperationalHB[2];
+
+    bool _mirrorRaisedHB[2];
 
     std::chrono::steady_clock::time_point _lightToggledTime;
 };

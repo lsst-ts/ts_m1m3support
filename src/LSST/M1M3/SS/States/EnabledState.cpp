@@ -62,6 +62,7 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand *co
 
 void EnabledState::runLoop() {
     SPDLOG_TRACE("EnabledState: runLoop()");
+    DigitalInputOutput::instance().toggleSystemOperationalHB(0);
     IFPGA::get().pullTelemetry();
     Model::instance().getAccelerometer()->processData();
     DigitalInputOutput::instance().processData();
@@ -93,6 +94,7 @@ void EnabledState::runLoop() {
     BoosterValveController::instance().checkTriggers();
     HardpointActuatorWarning::instance().send();
     M1M3SSPublisher::instance().getEnabledForceActuators()->log();
+    DigitalInputOutput::instance().toggleSystemOperationalHB(1);
 }
 
 void EnabledState::sendTelemetry() {
