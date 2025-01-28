@@ -26,15 +26,23 @@ PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog fmt --cflags $(silence))
 
 ifdef WITH_SAL_KAFKA
   SAL_CPPFLAGS += $(PKG_CPPFLAGS)  \
+	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src \
+	-I${SAL_WORK_DIR}/include -I${CRIOCPP} -I. \
 	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include -I${LSST_SAL_PREFIX}/include/avro
+  LIBS += $(PKG_LIBS) -ldl -lpthread -L/usr/lib64/boost${BOOST_RELEASE} -lboost_filesystem -lboost_iostreams \
+	-lboost_program_options -lboost_system ../ts_cRIOcpp/lib/libcRIOcpp.a \
+	${SAL_WORK_DIR}/lib/libSAL_MTMount.a ${SAL_WORK_DIR}/lib/libSAL_MTM1M3.a \
+	-L${LSST_SAL_PREFIX}/lib -L${SAL_WORK_DIR}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson -lserdes++ -lserdes -lsasl2
+  LIBS_FLAGS += -L${LSST_SAL_PREFIX}/lib
 else
   SAL_CPPFLAGS += $(PKG_CPPFLAGS) \
 	-I${OSPL_HOME}/include -I${OSPL_HOME}/include/sys -I${OSPL_HOME}/include/dcps/C++/SACPP \
-	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src -I${SAL_WORK_DIR}/include \
+	-I${SAL_WORK_DIR}/MTM1M3TS/cpp/src -I${SAL_WORK_DIR}/include \
 	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include
 endif
 
-PKG_LIBS := $(shell pkg-config yaml-cpp --libs $(silence)) -lstdc++fs
+PKG_LIBS := \
+        $(shell pkg-config yaml-cpp --libs $(silence))
 
 CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
 
@@ -46,7 +54,7 @@ ifdef SIMULATOR
 else
   C := gcc -Wall -fmessage-length=0 ${c_opts}
   CPP += -fmessage-length=0
-  PKG_LIBS += $(shell pkg-config spdlog --libs $(silence) | sed -E 's/-l([a-z0-9]*)/-l:lib\1.a/g')
+  PKG_LIBS += $(shell pkg-config spdlog --libs $(silence))
 endif
 
 ifdef WITH_SAL_KAFKA
@@ -57,11 +65,7 @@ else
   LIBS += $(PKG_LIBS) -ldl
 endif
 
-ifdef WITH_SAL_KAFKA
-  SAL_LIBS := -lserdes++ -lserdes \
-	${LSST_SAL_PREFIX}/lib/libSAL_MTM1M3.a ${LSST_SAL_PREFIX}/lib/libSAL_MTMount.a
-  LIBS_FLAGS += -L${LSST_SAL_PREFIX}/lib
-else
+ifndef WITH_SAL_KAFKA
   SAL_LIBS := -ldcpssacpp -ldcpsgapi -lddsuser -lddskernel \
 	-lpthread -lddsserialization -lddsconfparser -lddsconf -lddsdatabase \
 	-lddsutil -lddsos \

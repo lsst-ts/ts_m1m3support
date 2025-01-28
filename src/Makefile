@@ -11,25 +11,7 @@ version.c: force
 	   printf >version.c 'const char *VERSION="%s";\nconst char *GIT_HASH="%s";\nconst char *CONFIG_URL="https://github.com/lsst-ts/ts_config_mttcs/MTM1M3/v1";\nconst char *CONFIG_SCHEMA_VERSION="v1";' $(VERSION) $(GIT_HASH) \
         )
 
-C_SRCS = $(shell find LSST NiFpga -name '*.c')
-LIB_CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
-ALL_CPP_SRCS = $(LIB_CPP_SRCS) $(shell ls *.cpp)
-
-LIB_OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(LIB_CPP_SRCS)) version.c.o
-ALL_OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(ALL_CPP_SRCS))
-
-C_DEPS = $(patsubst %.c,%.c.d,$(C_SRCS))
-CPP_DEPS = $(patsubst %.cpp,%.cpp.d,$(ALL_CPP_SRCS))
-
-LIBS += $(PKG_LIBS) -ldl -lpthread /opt/lsst/ts_sal/lib/libSAL_MTM1M3.a /opt/lsst/ts_sal/lib/libSAL_MTMount.a -L/usr/lib64/boost${BOOST_RELEASE} lboost_filesystem -lboost_iostreams -lboost_program_options -lboost_system /opt/lsst/ts_sal/lib/libserdes++.a /opt/lsst/ts_sal/lib/libserdes.a -L{LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
-
-LIBS_FLAGS += -L"${LSST_SAL_PREFIX}/lib"
-
-ifeq ($(filter $(MAKECMDGOALS),clean), )
-  -include ${C_DEPS} ${CPP_DEPS}
-endif
-
-M1M3_CPPFLAGS := -I. \
+CFLAGS += ${SAL_CPPFLAGS} \
 	-I"../$(CRIOCPP)/include" \
 	-I"NiFpga" \
 	-I"LSST/M1M3/SS/DigitalInputOutput" \
@@ -59,6 +41,23 @@ M1M3_CPPFLAGS := -I. \
 	-I"LSST/M1M3/SS/Threads" \
 	-I"LSST/M1M3/SS/Utility" \
 
+C_SRCS = $(shell find LSST NiFpga -name '*.c')
+LIB_CPP_SRCS = $(shell find LSST NiFpga -name '*.cpp')
+ALL_CPP_SRCS = $(LIB_CPP_SRCS) $(shell ls *.cpp)
+
+LIB_OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(LIB_CPP_SRCS)) version.c.o
+ALL_OBJS = $(patsubst %.c,%.c.o,$(C_SRCS)) $(patsubst %.cpp,%.cpp.o,$(ALL_CPP_SRCS))
+
+C_DEPS = $(patsubst %.c,%.c.d,$(C_SRCS))
+CPP_DEPS = $(patsubst %.cpp,%.cpp.d,$(ALL_CPP_SRCS))
+
+.PRECIOUS: *.d
+
+ifeq ($(filter $(MAKECMDGOALS),clean), )
+  -include ${C_DEPS} ${CPP_DEPS}
+endif
+
+
 libM1M3SS.a: version.c $(LIB_OBJS)
 	@echo '[AR ] $@'
 	${co}$(AR) rs $@ $^
@@ -69,7 +68,7 @@ clean:
 # file targets
 %.cpp.o: %.cpp.d
 	@echo '[CPP] $(patsubst %.d,%,$<)'
-	${co}$(CPP) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
+	${co}$(CPP) $(CRIO_CFLAGS) $(CFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
 
 %.c.o: %.c.d
 	@echo '[C  ] $(patsubst %.d,%,$<)'
@@ -77,9 +76,8 @@ clean:
 
 %.cpp.d: %.cpp
 	@echo '[DPP] $<'
-	${co}$(CPP) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
+	${co}$(CPP) $(CRIO_CFLAGS) $(CFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
 
 %.c.d: %.c
 	@echo '[DEP] $<'
-	${co}$(C) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.c,%.o,$<) $@'
-
+	${co}$(C) -M $< -MF $@ -MT '$(patsubst %.c,%.o,$<) $@'

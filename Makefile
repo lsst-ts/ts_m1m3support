@@ -1,3 +1,5 @@
+WITH_SAL_KAFKA=1
+
 include Makefile.inc
 
 .PHONY: all clean deploy tests FORCE doc simulator ipk
