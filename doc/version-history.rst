@@ -7,6 +7,7 @@ Version History
 v2.15.9
 -------
 
+* Reject command with AOS forces above limits
 * Return error on attempt to bump test disabled FA
 * Removing FA from disabled in config file removes it from disabled on next CSC start
 
