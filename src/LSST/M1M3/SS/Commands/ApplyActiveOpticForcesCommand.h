@@ -38,6 +38,7 @@ public:
 
     MTM1M3_command_applyActiveOpticForcesC *getData() { return &_data; }
 
+    bool validate() override;
     void execute() override;
     void ackInProgress(const char *description, double timeout) override;
     void ackComplete() override;

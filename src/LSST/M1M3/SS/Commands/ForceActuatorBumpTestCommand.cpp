@@ -25,6 +25,7 @@
 
 #include <Context.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SettingReader.h>
 
 using namespace LSST::cRIO::SAL;
@@ -46,6 +47,12 @@ bool ForceActuatorBumpTestCommand::validate() {
     if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
         M1M3SSPublisher::instance().logCommandRejectionWarning("ForceActuatorBumpTest",
                                                                "Test already in progress.");
+        return false;
+    }
+    if (Model::instance().getILC()->isDisabled(_data.actuatorId)) {
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
+                "ForceActuatorBumpTest",
+                "Cannnot bump test disabled force actuator " + std::to_string(_data.actuatorId));
         return false;
     }
     return true;
