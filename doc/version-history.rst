@@ -65,6 +65,7 @@ v2.15.1
 * Fix DC accelerometer unit - it's in degrees, needs to be feed as radians to acceleration force calculation
 * Fix X DC accelerometer angular acceleration sign
 * Fixed Makefiles
+* Fixed cRIOcpp version
 
 v2.15.0
 -------
