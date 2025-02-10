@@ -27,6 +27,8 @@
 #include <Context.h>
 #include <M1M3SSPublisher.h>
 
+#include <ForceActuatorSettings.h>
+
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
@@ -36,6 +38,31 @@ ApplyActiveOpticForcesCommand::ApplyActiveOpticForcesCommand(int32_t commandID,
     for (int i = 0; i < FA_COUNT; i++) {
         _data.zForces[i] = data->zForces[i];
     }
+}
+
+bool ApplyActiveOpticForcesCommand::validate() {
+    for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
+        float zLowFault = ForceActuatorSettings::instance().ActiveOpticLimitZTable[zIndex].LowFault;
+        float zHighFault = ForceActuatorSettings::instance().ActiveOpticLimitZTable[zIndex].HighFault;
+
+        if (_data.zForces[zIndex] <= zLowFault) {
+            M1M3SSPublisher::instance().logCommandRejectionWarning(
+                    "ApplyActiveOpticForces",
+                    fmt::format("Applied Z force for FA {} is below limit: {:.2f} N <= {:.2f} N", zIndex,
+                                _data.zForces[zIndex], zLowFault));
+            return false;
+        }
+
+        if (_data.zForces[zIndex] >= zHighFault) {
+            M1M3SSPublisher::instance().logCommandRejectionWarning(
+                    "ApplyActiveOpticForces",
+                    fmt::format("Applied Z force for FA {} is above limit: {:.2f} N >= {:.2f} N", zIndex,
+                                _data.zForces[zIndex], zHighFault));
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void ApplyActiveOpticForcesCommand::execute() { Context::get().applyActiveOpticForces(this); }
