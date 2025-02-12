@@ -23,12 +23,14 @@
 
 #include <spdlog/spdlog.h>
 
+#ifndef WITH_SAL_KAFKA
 #include <sal_MTM1M3.h>
+#endif
 
 #include <BoosterValveStatus.h>
 #include <ForceControllerState.h>
 #include <Model.h>
-#include <Publisher.h>
+#include <M1M3SSPublisher.h>
 #include <SettingReader.h>
 #include <SlewController.h>
 #include <SlewControllerSettings.h>

@@ -70,15 +70,27 @@ public:
      */
     bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
 
+#ifdef WITH_SAL_KAFKA
+    ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+            const std::vector<float> &xForces, const std::vector<float> &yForces,
+            const std::vector<float> &zForces);
+#else
     ForcesAndMoments calculateForcesAndMoments(
             ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces,
             float *yForces, float *zForces);
+#endif
 
     /** Calculates
      */
+#ifdef WITH_SAL_KAFKA
+    ForcesAndMoments calculateForcesAndMoments(
+            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
+            const std::vector<float> &zForces);
+#else
     ForcesAndMoments calculateForcesAndMoments(
             ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces);
-
+#endif
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,
                                                             float angularAccelerationY,
                                                             float angularAccelerationZ);
@@ -182,6 +194,7 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
+    /// TODO temporary workaround, not needed once hardpointBalanceForcesOnInActiveState is in XML
     bool hardpointBalanceForcesOnInActiveState;
 
 private:

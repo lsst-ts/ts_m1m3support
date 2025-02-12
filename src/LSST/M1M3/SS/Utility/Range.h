@@ -59,15 +59,15 @@ public:
     }
 
     template <typename T>
-    static bool InRangeAndCoerce(T min, T max, T value, T *output) {
+    static bool InRangeAndCoerce(T min, T max, T value, T &output) {
         if (Range::InRange(min, max, value)) {
-            (*output) = value;
+            output = value;
             return true;
         } else {
-            (*output) = Range::CoerceIntoRange(min, max, value);
+            output = Range::CoerceIntoRange(min, max, value);
             return false;
         }
-    }
+    }  // namespace SS
 
     /**
      * Tests if value is in given range. Fires LimitTrigger if conditions
@@ -93,7 +93,7 @@ public:
         }
         return inRange;
     }
-};
+};  // namespace M1M3
 
 }  // namespace SS
 }  // namespace M1M3

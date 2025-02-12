@@ -47,7 +47,12 @@ ElevationForceComponent::ElevationForceComponent(
     _preclippedElevationForces = M1M3SSPublisher::instance().getEventPreclippedElevationForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void ElevationForceComponent::applyElevationForces(const std::vector<float> &x, const std::vector<float> &y,
+                                                   const std::vector<float> &z) {
+#else
 void ElevationForceComponent::applyElevationForces(float *x, float *y, float *z) {
+#endif
     SPDLOG_TRACE("ElevationForceComponent: applyElevationForces()");
 
     if (!isEnabled()) {
@@ -77,9 +82,15 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
     SPDLOG_TRACE("ElevationForceComponent: applyElevationForcesByMirrorForces({:.1f})", elevationAngle);
     DistributedForces forces =
             ForceActuatorSettings::instance().calculateForceFromElevationAngle(elevationAngle);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -120,7 +131,7 @@ void ElevationForceComponent::postUpdateActions() {
             _preclippedElevationForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
                                                   _preclippedElevationForces->xForces[xIndex],
-                                                  _appliedElevationForces->xForces + xIndex);
+                                                  _appliedElevationForces->xForces[xIndex]);
             _forceSetpointWarning->elevationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
         }
@@ -131,7 +142,7 @@ void ElevationForceComponent::postUpdateActions() {
             _preclippedElevationForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
                                                   _preclippedElevationForces->yForces[yIndex],
-                                                  _appliedElevationForces->yForces + yIndex);
+                                                  _appliedElevationForces->yForces[yIndex]);
             _forceSetpointWarning->elevationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
         }
@@ -142,7 +153,7 @@ void ElevationForceComponent::postUpdateActions() {
 
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedElevationForces->zForces[zIndex],
-                                         _appliedElevationForces->zForces + zIndex);
+                                         _appliedElevationForces->zForces[zIndex]);
         _forceSetpointWarning->elevationForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->elevationForceWarning[zIndex] || clippingRequired;

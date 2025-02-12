@@ -71,11 +71,12 @@ States::Type FaultState::update(UpdateCommand *command) {
 
 States::Type FaultState::standby(StandbyCommand *command) {
     SPDLOG_TRACE("FaultState: standby()");
-    Model::instance().getILC()->writeSetModeStandbyBuffer();
-    Model::instance().getILC()->triggerModbus();
-    Model::instance().getILC()->waitForAllSubnets(false);
-    Model::instance().getILC()->readAll();
-    Model::instance().getILC()->verifyResponses();
+    auto ilc = Model::instance().getILC();
+    ilc->writeSetModeStandbyBuffer();
+    ilc->triggerModbus();
+    ilc->waitForAllSubnets(false);
+    ilc->readAll();
+    ilc->verifyResponses();
     Model::instance().getPowerController()->setAllPowerNetworks(false);
     RaisingLoweringInfo::instance().zeroSupportPercentage();
     Model::instance().getSafetyController()->clearErrorCode();

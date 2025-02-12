@@ -54,7 +54,12 @@ BalanceForceComponent::BalanceForceComponent(
     _preclippedBalanceForces = M1M3SSPublisher::instance().getEventPreclippedBalanceForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void BalanceForceComponent::applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y,
+                                               const std::vector<float> &z, bool check) {
+#else
 void BalanceForceComponent::applyBalanceForces(float *x, float *y, float *z, bool check) {
+#endif
     SPDLOG_TRACE("BalanceForceComponent: applyBalanceForces()");
 
     if (check && !isEnabled()) {
@@ -94,9 +99,15 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
     _fx.publishTelemetry();
     DistributedForces forces =
             ForceActuatorSettings::instance().calculateForceDistribution(fx, fy, fz, mx, my, mz);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -122,9 +133,15 @@ bool BalanceForceComponent::applyFreezedForces() {
     float mz = _mz.getOffset(&changed);
     DistributedForces forces =
             ForceActuatorSettings::instance().calculateForceDistribution(fx, fy, fz, mx, my, mz);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -212,7 +229,7 @@ void BalanceForceComponent::postUpdateActions() {
             _preclippedBalanceForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedBalanceForces->xForces[xIndex],
-                                             _appliedBalanceForces->xForces + xIndex);
+                                             _appliedBalanceForces->xForces[xIndex]);
             _forceSetpointWarning->balanceForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->balanceForceWarning[zIndex];
         }
@@ -223,7 +240,7 @@ void BalanceForceComponent::postUpdateActions() {
             _preclippedBalanceForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedBalanceForces->yForces[yIndex],
-                                             _appliedBalanceForces->yForces + yIndex);
+                                             _appliedBalanceForces->yForces[yIndex]);
             _forceSetpointWarning->balanceForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->balanceForceWarning[zIndex];
         }
@@ -233,7 +250,7 @@ void BalanceForceComponent::postUpdateActions() {
         _preclippedBalanceForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange =
                 !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedBalanceForces->zForces[zIndex],
-                                         _appliedBalanceForces->zForces + zIndex);
+                                         _appliedBalanceForces->zForces[zIndex]);
         _forceSetpointWarning->balanceForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->balanceForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->balanceForceWarning[zIndex] || clippingRequired;

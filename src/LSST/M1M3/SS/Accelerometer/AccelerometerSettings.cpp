@@ -31,6 +31,7 @@
 using namespace LSST::M1M3::SS;
 
 AccelerometerSettings::AccelerometerSettings(token) {
+#ifndef WITH_SAL_KAFKA
     memset(angularAccelerationDistance, 0, sizeof(angularAccelerationDistance));
     memset(bias, 0, sizeof(bias));
     memset(sensitivity, 0, sizeof(sensitivity));
@@ -40,7 +41,7 @@ AccelerometerSettings::AccelerometerSettings(token) {
     memset(xElevationPoly, 0, sizeof(xElevationPoly));
     memset(yElevationPoly, 0, sizeof(xElevationPoly));
     memset(zElevationPoly, 0, sizeof(xElevationPoly));
-
+#endif
     dump_path = "/tmp/rawdc_%FT%T.bin";
 }
 
@@ -48,9 +49,13 @@ void AccelerometerSettings::load(YAML::Node doc) {
     try {
         SPDLOG_INFO("Loading AccelerometerSettings");
 
+        SPDLOG_INFO("Loading AngularAccelerationXDistance");
         angularAccelerationDistance[0] = doc["AngularAccelerationXDistance"].as<float>();
+        SPDLOG_INFO("Loading AngularAccelerationYDistance");
         angularAccelerationDistance[1] = doc["AngularAccelerationYDistance"].as<float>();
+        SPDLOG_INFO("Loading AngularAccelerationZDistance");
         angularAccelerationDistance[2] = doc["AngularAccelerationZDistance"].as<float>();
+
         for (int i = 0; i < 8; i++) {
             auto accNode = doc["Accelerometer" + std::to_string(i + 1)];
             bias[i] = accNode["Bias"].as<float>();

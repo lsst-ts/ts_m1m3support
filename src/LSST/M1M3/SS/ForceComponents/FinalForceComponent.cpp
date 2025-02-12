@@ -193,7 +193,7 @@ void FinalForceComponent::postUpdateActions() {
             float xHigh = ForceActuatorSettings::instance().appliedXForceHighLimit[xIndex];
             _preclippedForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLow, xHigh, _preclippedForces->xForces[xIndex],
-                                                  _appliedForces->xForces + xIndex);
+                                                  _appliedForces->xForces[xIndex]);
             _forceSetpointWarning->forceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
@@ -203,7 +203,7 @@ void FinalForceComponent::postUpdateActions() {
             float yHigh = ForceActuatorSettings::instance().appliedYForceHighLimit[yIndex];
             _preclippedForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLow, yHigh, _preclippedForces->yForces[yIndex],
-                                                  _appliedForces->yForces + yIndex);
+                                                  _appliedForces->yForces[yIndex]);
             _forceSetpointWarning->forceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
         }
@@ -212,7 +212,7 @@ void FinalForceComponent::postUpdateActions() {
         float zHigh = ForceActuatorSettings::instance().appliedZForceHighLimit[zIndex];
         _preclippedForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLow, zHigh, _preclippedForces->zForces[zIndex],
-                                              _appliedForces->zForces + zIndex);
+                                              _appliedForces->zForces[zIndex]);
         _forceSetpointWarning->forceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->forceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->forceWarning[zIndex] || clippingRequired;

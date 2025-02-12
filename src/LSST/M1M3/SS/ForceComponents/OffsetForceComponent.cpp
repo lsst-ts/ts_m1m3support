@@ -48,7 +48,12 @@ OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings *for
     zeroOffsetForces();
 }
 
+#ifdef WITH_SAL_KAFKA
+void OffsetForceComponent::applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
+                                             const std::vector<float> &z) {
+#else
 void OffsetForceComponent::applyOffsetForces(float *x, float *y, float *z) {
+#endif
     SPDLOG_DEBUG("OffsetForceComponent: applyOffsetForces()");
 
     if (!isEnabled()) {
@@ -80,9 +85,15 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceDistribution(
             xForce, yForce, zForce, xMoment, yMoment, zMoment);
+#ifdef WITH_SAL_KAFKA
+    std::vector<float> xForces(FA_X_COUNT, 0);
+    std::vector<float> yForces(FA_Y_COUNT, 0);
+    std::vector<float> zForces(FA_Z_COUNT, 0);
+#else
     float xForces[FA_X_COUNT];
     float yForces[FA_Y_COUNT];
     float zForces[FA_Z_COUNT];
+#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
@@ -144,7 +155,7 @@ void OffsetForceComponent::postUpdateActions() {
             _preclippedOffsetForces->xForces[xIndex] = xCurrent[xIndex];
             notInRange =
                     !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedOffsetForces->xForces[xIndex],
-                                             _appliedOffsetForces->xForces + xIndex);
+                                             _appliedOffsetForces->xForces[xIndex]);
             _forceSetpointWarning->offsetForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         }
@@ -155,7 +166,7 @@ void OffsetForceComponent::postUpdateActions() {
             _preclippedOffsetForces->yForces[yIndex] = yCurrent[yIndex];
             notInRange =
                     !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedOffsetForces->yForces[yIndex],
-                                             _appliedOffsetForces->yForces + yIndex);
+                                             _appliedOffsetForces->yForces[yIndex]);
             _forceSetpointWarning->offsetForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         }
@@ -164,7 +175,7 @@ void OffsetForceComponent::postUpdateActions() {
         float zHighFault = ForceActuatorSettings::instance().OffsetLimitZTable[zIndex].HighFault;
         _preclippedOffsetForces->zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedOffsetForces->zForces[zIndex],
-                                              _appliedOffsetForces->zForces + zIndex);
+                                              _appliedOffsetForces->zForces[zIndex]);
         _forceSetpointWarning->offsetForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->offsetForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->offsetForceWarning[zIndex] || clippingRequired;

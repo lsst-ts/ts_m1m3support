@@ -24,6 +24,7 @@
 #ifndef PROFILECONTROLLER_H_
 #define PROFILECONTROLLER_H_
 
+#include <vector>
 #include <MirrorForceProfile.h>
 
 namespace LSST {
@@ -34,8 +35,14 @@ class ProfileController {
 public:
     ProfileController();
 
+#ifdef WITH_SAL_KAFKA
+    void setupMirrorForceProfile(const std::vector<float> &xForce, const std::vector<float> &yForce,
+                                 const std::vector<float> &zForce, const std::vector<float> &xMoment,
+                                 const std::vector<float> &yMoment, const std::vector<float> &zMoment);
+#else
     void setupMirrorForceProfile(float *xForce, float *yForce, float *zForce, float *xMoment, float *yMoment,
                                  float *zMoment);
+#endif
     bool incMirrorForceProfile();
     MirrorForceProfileRecord getMirrorForceProfileData();
 

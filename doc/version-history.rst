@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.16.0
+-------
+
+* Option to build for Kafka-SAL
+
 v2.15.9
 -------
 
@@ -36,7 +41,6 @@ v2.15.5
 * correctly parse ILC calibration data during startup
 * new ts_cRIOcpp API
 * New MPU interface
-* Improved force actuator bump tests documentation
 
 v2.15.4
 -------
