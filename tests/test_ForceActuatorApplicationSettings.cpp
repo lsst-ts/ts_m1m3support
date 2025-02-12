@@ -21,26 +21,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <catch2/catch.hpp>
 
 #include <ForceActuatorApplicationSettings.h>
 
 using namespace LSST::M1M3::SS;
+using namespace Catch::Matchers;
 
 TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
     ForceActuatorApplicationSettings settings;
 
-    REQUIRE(settings.ActuatorIdToZIndex(100) < 0);
-    REQUIRE(settings.ActuatorIdToZIndex(101) == 0);
-    REQUIRE(settings.ActuatorIdToZIndex(150) < 0);
-    REQUIRE(settings.ActuatorIdToZIndex(443) == 155);
-    REQUIRE(settings.ActuatorIdToZIndex(444) < 0);
+    CHECK(settings.ActuatorIdToZIndex(100) < 0);
+    CHECK(settings.ActuatorIdToZIndex(101) == 0);
+    CHECK(settings.ActuatorIdToZIndex(150) < 0);
+    CHECK(settings.ActuatorIdToZIndex(443) == 155);
+    CHECK(settings.ActuatorIdToZIndex(444) < 0);
 
-    REQUIRE(settings.ZIndexToActuatorId(0) == 101);
-    REQUIRE(settings.ZIndexToActuatorId(155) == 443);
-    REQUIRE(settings.ZIndexToActuatorId(156) < 0);
-    REQUIRE(settings.ZIndexToActuatorId(-2) < 0);
+    CHECK(settings.ZIndexToActuatorId(0) == 101);
+    CHECK(settings.ZIndexToActuatorId(155) == 443);
+    CHECK(settings.ZIndexToActuatorId(156) < 0);
+    CHECK(settings.ZIndexToActuatorId(-2) < 0);
 
-    REQUIRE_THAT(settings.ActuatorDistance(2, 3), Catch::Matchers::WithinRel(2.34, 0.001));
+    CHECK_THAT(settings.ActuatorDistance(2, 3), WithinRel(0.66581, 0.001));
+    CHECK_THAT(settings.ActuatorDistance(10, 155), WithinRel(4.52624, 0.001));
 }
