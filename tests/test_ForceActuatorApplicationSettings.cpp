@@ -22,6 +22,7 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include <ForceActuatorApplicationSettings.h>
 
@@ -40,4 +41,6 @@ TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
     REQUIRE(settings.ZIndexToActuatorId(155) == 443);
     REQUIRE(settings.ZIndexToActuatorId(156) < 0);
     REQUIRE(settings.ZIndexToActuatorId(-2) < 0);
+
+    REQUIRE_THAT(settings.ActuatorDistance(2, 3), Catch::Matchers::WithinRel(2.34, 0.001));
 }

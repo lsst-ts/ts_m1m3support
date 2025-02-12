@@ -25,6 +25,7 @@
 #include <spdlog/spdlog.h>
 
 #include <cstdlib>
+#include <cmath>
 
 namespace LSST {
 namespace M1M3 {
@@ -414,6 +415,17 @@ const int ForceActuatorApplicationSettings::ActuatorIdToZIndex(int actuatorId) {
 const int ForceActuatorApplicationSettings::ZIndexToActuatorId(int zIndex) {
     if (zIndex >= FA_Z_COUNT || zIndex < 0) return -1;
     return Table[zIndex].ActuatorID;
+}
+
+const float ForceActuatorApplicationSettings::ActuatorDistance(int index1, int index2) {
+    if (index1 >= FA_Z_COUNT || index1 < 0 || index2 >= FA_Z_COUNT || index2 < 0) {
+        throw std::runtime_error(
+                fmt::format("Invalid indices passed to distance: {} or {} needs to be in <0,155> range.",
+                            index1, index2));
+    }
+    float x = Table[index1].XPosition - Table[index2].XPosition;
+    float y = Table[index1].YPosition - Table[index2].YPosition;
+    return sqrt(x * x + y * y);
 }
 
 } /* namespace SS */
