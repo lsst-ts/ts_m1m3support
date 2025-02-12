@@ -154,6 +154,18 @@ public:
      * @return actuator ID - 3 digits number, where 1st digit is actuator quadrant
      */
     const static int ZIndexToActuatorId(int zIndex);
+
+    /**
+     * Calculate distance between two Force Actuators in XY plane.
+     *
+     * @param index1
+     * @param index2
+     *
+     * @return Distance in meters between Force Actuators with index1 and index2.
+     *
+     * @throws std::runtime_error
+     */
+    const float ActuatorDistance(int index1, int index2);
 };
 
 } /* namespace SS */
