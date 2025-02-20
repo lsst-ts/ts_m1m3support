@@ -52,7 +52,6 @@ BumpTestController::BumpTestController() : _testForce(222) {
         forceActuatorBumpTestStatus->secondaryTest[i] = MTM1M3_shared_BumpTest_NotTested;
     }
 
-    forceActuatorBumpTestStatus->actuatorId = -1;
     M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
 }
 
@@ -72,9 +71,6 @@ int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bo
     _testSettleTime = ForceActuatorSettings::instance().bumpTestSettleTime;
     _testMeasurements = ForceActuatorSettings::instance().bumpTestMeasurements;
 
-    _testPrimary = testPrimary;
-    _testSecondary = _secondaryIndex < 0 ? false : testSecondary;
-
     _resetProgress();
 
     SettingReader::instance().getSafetyControllerSettings()->ForceController.enterBumpTesting();
@@ -82,14 +78,12 @@ int BumpTestController::setBumpTestActuator(int actuatorId, bool testPrimary, bo
     MTM1M3_logevent_forceActuatorBumpTestStatusC *forceActuatorBumpTestStatus =
             M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();
 
-    forceActuatorBumpTestStatus->actuatorId = actuatorId;
-
-    if (_testPrimary) {
-        forceActuatorBumpTestStatus->primaryTest[_zIndex] = MTM1M3_shared_BumpTest_NotTested;
+    if (testPrimary) {
+        forceActuatorBumpTestStatus->primaryTest[_zIndex] = MTM1M3_shared_BumpTest_Triggered;
     }
 
-    if (_testSecondary) {
-        forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex] = MTM1M3_shared_BumpTest_NotTested;
+    if (testSecondary) {
+        forceActuatorBumpTestStatus->secondaryTest[_secondaryIndex] = MTM1M3_shared_BumpTest_Triggered;
     }
 
     M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
@@ -156,12 +150,30 @@ void BumpTestController::runLoop() {
         _testSecondary = false;
     }
 
-    forceActuatorBumpTestStatus->actuatorId = -1;
     M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
 }
 
+bool isTested(int status) {
+    switch (status) {
+        case MTM1M3_shared_BumpTest_NotTested:
+        case MTM1M3_shared_BumpTest_Failed:
+        case MTM1M3_shared_BumpTest_Passed:
+            return false;
+            break;
+        default:
+            return true;
+    }
+}
+
 void BumpTestController::stopAll(bool forced) {
-    M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId = -1;
+    for (int index = 0; index < FA_Z_COUNT; index++) {
+        if (isTested(primaryTest[index])) {
+            primaryTest[index] = MTM1M3_shared_BumpTest_NotTested;
+        }
+        if (index < (FA_X_COUNT + FA_Y_COUNT) && isTested(secondaryTest[index])) {
+            secondaryTest[index] = MTM1M3_shared_BumpTest_NotTested;
+        }
+    }
 
     _resetProgress();
 
@@ -172,21 +184,6 @@ void BumpTestController::stopAll(bool forced) {
     M1M3SSPublisher::instance().logForceActuatorBumpTestStatus();
 }
 
-void BumpTestController::stopCylinder(char axis) {
-    if ((axis == 'Z' && _testSecondary == false) || _testPrimary == false) {
-        stopAll(false);
-        return;
-    }
-
-    if (axis == 'Z') {
-        _testPrimary = false;
-    } else {
-        _testSecondary = false;
-    }
-
-    _resetProgress();
-}
-
 BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char axis, int index,
                                                                          double averages[], int *stage) {
     ForceController *forceController = Model::instance().getForceController();
@@ -194,6 +191,7 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
     MTM1M3_logevent_forceActuatorBumpTestStatusC *forceActuatorBumpTestStatus =
             M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus();
     forceActuatorBumpTestStatus->timestamp = timestamp;
+    int actuatorId = axisIndexToActuatorId(axis, index);
 
     bool positive = false;
 
@@ -214,8 +212,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                         "({:.3f}) is too "
                         "far from "
                         "0\xb1{}",
-                        forceActuatorBumpTestStatus->actuatorId, axis, index, averages[index], _testedError);
-                stopCylinder(axis);
+                        actuatorId, axis, index, averages[index], _testedError);
+                stopCylinder(axis, index);
                 return FAILED;
             }
             if (checkRet & 0x10) {
@@ -224,8 +222,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                         "Failed FA ID {} ({}{}) bump test - measured parked force on some "
                         "actuator(s) is too "
                         "far from 0\xb1{}",
-                        forceActuatorBumpTestStatus->actuatorId, axis, index, _nonTestedError);
-                stopCylinder(axis);
+                        actuatorId, axis, index, _nonTestedError);
+                stopCylinder(axis, index);
                 return FAILED;
             }
             switch (*stage) {
@@ -239,8 +237,7 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
                     *stage = MTM1M3_shared_BumpTest_Passed;
-                    SPDLOG_INFO("Passed FA ID {} ({}{}) bump test", forceActuatorBumpTestStatus->actuatorId,
-                                axis, index);
+                    SPDLOG_INFO("Passed FA ID {} ({}{}) bump test", actuatorId, axis, index);
                     _resetProgress(false);
                     return FINISHED;
             }
@@ -261,9 +258,8 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                         "Failed FA ID {} ({}{}) bump test - measured force {} "
                         "({:.3f}) is too far "
                         "{}\xb1{}",
-                        forceActuatorBumpTestStatus->actuatorId, axis, index, positive ? "plus" : "negative",
-                        averages[index], _testForce, _testedError);
-                stopCylinder(axis);
+                        actuatorId, axis, index, positive ? "plus" : "negative", averages[index], _testForce,
+                        _testedError);
                 return FAILED;
             }
             if (checkRet & 0x10) {
@@ -273,8 +269,7 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                         "actuator(s) is "
                         "too far "
                         "from far from \xb1{}",
-                        forceActuatorBumpTestStatus->actuatorId, axis, index, _nonTestedError);
-                stopCylinder(axis);
+                        actuatorId, axis, index, _nonTestedError);
                 return FAILED;
             }
 
