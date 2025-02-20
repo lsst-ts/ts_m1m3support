@@ -213,6 +213,7 @@ ForceActuatorSettings:
       Error: 100
     SettleTime: 3.0
     Measurements: 10
+    MinimalDistance: 4
 GyroSettings:
   DataRate: 1000
   AxesMatrix: [1,0,0,0,1,0,0,0,1]

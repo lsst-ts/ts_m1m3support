@@ -31,6 +31,14 @@ namespace M1M3 {
 namespace SS {
 
 /**
+ * Bump test single force actautor. Keeps record of the bump test progress.
+ */
+class FABumpTest {
+public:
+private:
+};
+
+/**
  * Performs bump test on single force actuator (FA). Bump tests of an actuator
  * is performed by applying a small positive and negative force offsets on
  * stationary (parked) mirror. The tests is evaluated by comparing value
@@ -88,7 +96,6 @@ namespace SS {
  * :TestedTolerances/Warning: and :NonTestedTolerances/Warning: are used as
  * warning levels. If the error surpassed those, but doesn't trigger an error
  * (is not above error value), a warning message is send to the system log.
-
  */
 class BumpTestController {
 public:
@@ -122,16 +129,15 @@ public:
      * Stops bump test on given cylinder.
      *
      * @param axis cylinder axis (X,Y or Z)
+     * @param index actuator index (0..155)
      */
-    void stopCylinder(char axis);
+    void stopCylinder(char axis, int index);
 
 private:
     int _xIndex;
     int _yIndex;
     int _zIndex;
     int _secondaryIndex;
-    bool _testPrimary;
-    bool _testSecondary;
 
     float _testForce;
 
@@ -147,7 +153,16 @@ private:
     double _sleepUntil;
 
     typedef enum { FINISHED, FAILED, NO_CHANGE, STATE_CHANGED } runCylinderReturn_t;
-    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], int *stage);
+
+    /**
+     * Run tests on cylinder.
+     *
+     * @param axis
+     * @param index
+     * @param averages
+     * @param stage
+     */
+    runCylinderReturn_t _runCylinder(int actuatorId, char axis, int index, double averages[], int *stage);
     void _resetProgress(bool zeroOffsets = true);
     void _resetAverages();
 

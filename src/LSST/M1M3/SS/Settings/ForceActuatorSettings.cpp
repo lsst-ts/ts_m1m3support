@@ -189,6 +189,14 @@ void ForceActuatorSettings::load(YAML::Node doc) {
 
         bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
         bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
+        bumpTestMinimalDistance = bumpTest["MinimalDistance"].as<float>();
+
+        if (bumpTestMinimalDistance < 2) {
+            throw std::runtime_error(
+                    fmt::format("MinimalDistance parameter for parallel bump test shall be greater than 2m, "
+                                "was set to {}.",
+                                bumpTestMinimalDistance));
+        }
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("Cannot load ForceActuatorSettings: {}", ex.what()));
     }
