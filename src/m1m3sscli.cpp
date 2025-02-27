@@ -194,7 +194,8 @@ M1M3SScli::M1M3SScli(const char *name, const char *description)
                "<filename>", "Set filename to record progress of actuators tests.");
     addCommand("@test-settings", std::bind(&M1M3SScli::testSettings, this, std::placeholders::_1), "III", 0,
                "<duration> <force-pause> <pressure-pause>",
-               "Sets test parameters. Duration specifies for how long will data be recorded, -pause tells "
+               "Sets test parameters. Duration specifies for how long will data "
+               "be recorded, -pause tells "
                "CLI delays to take after force or pressure telemetry.");
 
     addCommand("saa-offset", std::bind(&M1M3SScli::setSAAOffset, this, std::placeholders::_1), "Ds?",

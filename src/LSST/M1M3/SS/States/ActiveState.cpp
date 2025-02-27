@@ -28,8 +28,8 @@
 #include <ActiveState.h>
 #include <BoosterValveController.h>
 #include <ForceController.h>
-#include <Model.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SafetyController.h>
 
 namespace LSST {

@@ -183,7 +183,8 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
-    /// TODO temporary workaround, not needed once hardpointBalanceForcesOnInActiveState is in XML
+    /// TODO temporary workaround, not needed once
+    /// hardpointBalanceForcesOnInActiveState is in XML
     bool hardpointBalanceForcesOnInActiveState;
     float bumpTestMinimalDistance;
 

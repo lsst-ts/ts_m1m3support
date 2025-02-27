@@ -25,9 +25,25 @@
 
 #include <cmath>
 #include <memory>
+#include <vector>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/DataTypes.h>
 
 #include <FABumpTestData.h>
 
 using namespace LSST::M1M3::SS;
 
-TEST_CASE("fromRaw", "[FABumpTestData]") { FABumpTestData data(10); }
+TEST_CASE("fromRaw", "[FABumpTestData]") {
+    constexpr int size = 10;
+
+    FABumpTestData data(size);
+
+    std::vector<float> zeros(FA_COUNT, 0);
+    std::vector<int> states(FA_COUNT, MTM1M3::MTM1M3_shared_BumpTest_Passed);
+
+    for (int i = 0; i < size; i++) {
+        data.add_data(zeros, zeros, zeros, zeros, zeros, states, states);
+    }
+}

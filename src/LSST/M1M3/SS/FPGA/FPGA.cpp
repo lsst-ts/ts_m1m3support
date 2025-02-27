@@ -154,9 +154,11 @@ void FPGA::waitForModbusIRQs(uint32_t warning_timeout, uint32_t error_timeout) {
     }
 
     if (warning_irqs != 0) {
-        SPDLOG_WARN("Modbus IRQs triggered after {:.03f} ms - IRQs after warning time: {:06b}",
-                    std::chrono::duration_cast<std::chrono::microseconds>(now - start).count() / 1000.0f,
-                    warning_irqs);
+        SPDLOG_WARN(
+                "Modbus IRQs triggered after {:.03f} ms - IRQs after warning time: "
+                "{:06b}",
+                std::chrono::duration_cast<std::chrono::microseconds>(now - start).count() / 1000.0f,
+                warning_irqs);
     }
 }
 

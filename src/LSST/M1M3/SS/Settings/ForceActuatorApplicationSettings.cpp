@@ -24,8 +24,8 @@
 #include <ForceActuatorApplicationSettings.h>
 #include <spdlog/spdlog.h>
 
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 
 namespace LSST {
 namespace M1M3 {
@@ -420,7 +420,8 @@ const int ForceActuatorApplicationSettings::ZIndexToActuatorId(int zIndex) {
 const float ForceActuatorApplicationSettings::ActuatorDistance(int index1, int index2) {
     if (index1 >= FA_Z_COUNT || index1 < 0 || index2 >= FA_Z_COUNT || index2 < 0) {
         throw std::runtime_error(
-                fmt::format("Invalid indices passed to distance: {} or {} needs to be in <0,155> range.",
+                fmt::format("Invalid indices passed to distance: {} or {} needs to be "
+                            "in <0,155> range.",
                             index1, index2));
     }
     float x = Table[index1].XPosition - Table[index2].XPosition;
