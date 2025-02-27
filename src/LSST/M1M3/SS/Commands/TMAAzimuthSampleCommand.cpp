@@ -38,7 +38,9 @@ void TMAAzimuthSampleCommand::execute() {
     double limit = SettingReader::instance().getSafetyControllerSettings()->TMA.AzimuthTimeout;
     if (limit > 0 && fabs(diff) > limit) {
         using namespace std::chrono_literals;
-        TG_LOG_ERROR(2s, "Received azimuth timestamp ({2:.4f}) deviates by more than {0:.3f}s: {1:.3f}",
+        TG_LOG_ERROR(2s,
+                     "Received azimuth timestamp ({2:.4f}) deviates by more than "
+                     "{0:.3f}s: {1:.3f}",
                      limit, diff, _data.timestamp);
         return;
     }

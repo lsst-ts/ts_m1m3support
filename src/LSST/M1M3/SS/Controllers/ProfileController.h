@@ -24,8 +24,8 @@
 #ifndef PROFILECONTROLLER_H_
 #define PROFILECONTROLLER_H_
 
-#include <vector>
 #include <MirrorForceProfile.h>
+#include <vector>
 
 namespace LSST {
 namespace M1M3 {

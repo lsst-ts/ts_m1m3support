@@ -26,7 +26,7 @@
 
 #include <mutex>
 
-#include <cRIO/DataTypes.h>
+#include "ForceActuatorApplicationSettings.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -35,11 +35,17 @@ namespace SS {
 enum BumpTestStatus {
     PASSED,
     NO_DATA,
+    INVALID_TEST_KIND,
+    INVALID_ACTUATOR,
+    WRONG_STATE_HISTORY,
     UNDERSHOOT_ERROR,
     UNDERSHOOT_WARNING,
     OVERSHOOT_WARNING,
     OVERSHOOT_ERROR
 };
+
+typedef std::vector<float> float_v;
+typedef std::vector<int> int_v;
 
 /**
  * Keep track of forces measured during force actuators bump tests. Provides
@@ -48,11 +54,16 @@ enum BumpTestStatus {
 class FABumpTestData {
 public:
     FABumpTestData(size_t capacity);
-    virtual void ~FABumpTestData();
+    virtual ~FABumpTestData();
 
-    void add_data(float x_forces[FA_X_COUNT], float y_forces[FA_Y_COUNT], float z_forces[FA_Z_COUNT],
-                  float primary_forces[FA_COUNT], float secondary_forces[FA_S_COUNT],
-                  int primary_states[FA_COUNT], int secondary_states[FA_S_COUNT]);
+    void add_data(const float_v &x_forces, const float_v &y_forces, const float_v &z_forces,
+                  const float_v &primary_forces, const float_v &secondary_forces, const int_v &primary_states,
+                  const int_v &secondary_states);
+
+    void clear() {
+        _head = 0;
+        _tail = 0;
+    }
 
     /**
      * Returns true if there aren't data.
@@ -71,22 +82,29 @@ public:
     /**
      * Confirms given force actuator test fine in capacity period.
      *
-     * @param index
+     * @param actuator_id Actuator to test.
+     * @param kind Test kind - P,S or axis (XYZ) forces
+     * @param expected_force Force expected to be measured by the force actuator
+     * @param error allowed error margin
+     * @param warning allowed warning margin
      *
      * @return force actuator status
      */
-    BumpTestStatus test(int index);
+    BumpTestStatus test_actuator(int actuator_id, char kind, float expected_force, float error,
+                                 float warning);
+
+    void test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT]);
 
 private:
-    float* _x_force[FA_X_COUNT];
-    float* _y_forces[FA_Y_COUNT];
-    float* _z_forces[FA_Z_COUNT];
+    float *_x_forces[FA_X_COUNT];
+    float *_y_forces[FA_Y_COUNT];
+    float *_z_forces[FA_Z_COUNT];
 
-    float* _primary_forces[FA_COUNT];
-    float* _secondary_forces[FA_S_COUNT];
+    float *_primary_forces[FA_COUNT];
+    float *_secondary_forces[FA_S_COUNT];
 
-    int* _primary_states[FA_COUNT];
-    int* _secondary_states[FA_S_COUNT];
+    int *_primary_states[FA_COUNT];
+    int *_secondary_states[FA_S_COUNT];
 
     // circular buffer indices
     size_t _head;

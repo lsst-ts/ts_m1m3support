@@ -382,11 +382,6 @@ void M1M3SSPublisher::tryLogErrorCode() {
     }
 }
 
-void M1M3SSPublisher::logForceActuatorBumpTestStatus() {
-    _m1m3SAL->logEvent_forceActuatorBumpTestStatus(&_eventForceActuatorBumpTestStatus, 0);
-    _previousEventForceActuatorBumpTestStatus = _eventForceActuatorBumpTestStatus;
-}
-
 void M1M3SSPublisher::logForceActuatorState() {
     _m1m3SAL->logEvent_forceActuatorState(&_eventForceActuatorState, 0);
     _previousEventForceActuatorState = _eventForceActuatorState;

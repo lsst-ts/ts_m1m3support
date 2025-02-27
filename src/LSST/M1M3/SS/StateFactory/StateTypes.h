@@ -24,8 +24,8 @@
 #ifndef STATETYPES_H_
 #define STATETYPES_H_
 
-#include <cRIO/DataTypes.h>
 #include <SAL_MTM1M3.h>  // Provides access to enumerations
+#include <cRIO/DataTypes.h>
 
 struct States {
     enum Type {

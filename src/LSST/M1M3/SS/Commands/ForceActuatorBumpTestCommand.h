@@ -41,6 +41,8 @@ class ForceActuatorBumpTestCommand : public Command {
 public:
     ForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_forceActuatorBumpTestC *data);
 
+    int index;
+
     MTM1M3_command_forceActuatorBumpTestC *getData() { return &_data; }
 
     /**

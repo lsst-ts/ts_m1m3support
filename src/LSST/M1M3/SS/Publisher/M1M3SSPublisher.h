@@ -105,9 +105,6 @@ public:
     }
     static EnabledForceActuators *getEnabledForceActuators() { return &(instance()._enabledForceActuators); }
     MTM1M3_logevent_errorCodeC *getEventErrorCode() { return &_eventErrorCode; }
-    MTM1M3_logevent_forceActuatorBumpTestStatusC *getEventForceActuatorBumpTestStatus() {
-        return &_eventForceActuatorBumpTestStatus;
-    }
     MTM1M3_logevent_forceActuatorStateC *getEventForceActuatorState() { return &_eventForceActuatorState; }
     static ForceActuatorWarning *getForceActuatorWarning() { return &(instance()._forceActuatorWarning); }
     MTM1M3_logevent_forceSetpointWarningC *getEventForceSetpointWarning() {
@@ -274,7 +271,9 @@ public:
     void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC *data) {
         _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
     }
-    void logForceActuatorBumpTestStatus();
+    void logForceActuatorBumpTestStatus(MTM1M3_logevent_forceActuatorBumpTestStatusC *data) {
+        _m1m3SAL->logEvent_forceActuatorBumpTestStatus(data, 0);
+    }
     void logForceActuatorForceWarning(MTM1M3_logevent_forceActuatorForceWarningC *data) {
         _m1m3SAL->logEvent_forceActuatorForceWarning(data, 0);
     }
@@ -472,7 +471,6 @@ private:
     MTM1M3_logevent_displacementSensorWarningC _eventDisplacementSensorWarning;
     EnabledForceActuators _enabledForceActuators;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
-    MTM1M3_logevent_forceActuatorBumpTestStatusC _eventForceActuatorBumpTestStatus;
     MTM1M3_logevent_forceActuatorStateC _eventForceActuatorState;
     ForceActuatorWarning _forceActuatorWarning;
     MTM1M3_logevent_forceSetpointWarningC _eventForceSetpointWarning;
@@ -515,7 +513,6 @@ private:
     MTM1M3_logevent_detailedStateC _previousEventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _previousEventDisplacementSensorWarning;
     MTM1M3_logevent_errorCodeC _previousEventErrorCode;
-    MTM1M3_logevent_forceActuatorBumpTestStatusC _previousEventForceActuatorBumpTestStatus;
     MTM1M3_logevent_forceActuatorStateC _previousEventForceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC _previousEventForceSetpointWarning;
     MTM1M3_logevent_gyroWarningC _previousEventGyroWarning;

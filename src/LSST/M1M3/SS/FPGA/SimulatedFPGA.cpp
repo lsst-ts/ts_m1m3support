@@ -644,7 +644,8 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             _writeModbus(response, address);   // Write Address
                             _writeModbus(response, function);  // Write Function
                             for (int j = 0; j < 24; ++j) {
-                                _writeModbusFloat(response, address + j);  // Write Calibration Data
+                                _writeModbusFloat(response,
+                                                  address + j);  // Write Calibration Data
                             }
                             _writeModbusCRC(response);
                             break;
@@ -1004,7 +1005,6 @@ void SimulatedFPGA::_monitorElevation(void) {
     _mgrMTMount.salTelemetrySub(const_cast<char *>("MTMount_elevation"));
 
     SPDLOG_DEBUG("Start monitoring mount elevation...");
-    auto status = _mgrMTMount.flushSamples_elevation(&mountElevationInstance);
 
     while (!_exitThread) {
         auto status = _mgrMTMount.getSample_elevation(&mountElevationInstance);

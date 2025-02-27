@@ -20,14 +20,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <chrono>
 #include <cstring>
+#include <fcntl.h>
 #include <getopt.h>
 #include <grp.h>
 #include <iostream>
 #include <pwd.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <chrono>
 #include <thread>
 
 #include <spdlog/spdlog.h>

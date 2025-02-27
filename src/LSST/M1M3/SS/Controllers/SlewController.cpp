@@ -25,8 +25,8 @@
 
 #include <BoosterValveStatus.h>
 #include <ForceControllerState.h>
-#include <Model.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SettingReader.h>
 #include <SlewController.h>
 #include <SlewControllerSettings.h>

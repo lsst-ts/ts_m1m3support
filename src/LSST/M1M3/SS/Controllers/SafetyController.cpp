@@ -555,8 +555,9 @@ void SafetyController::ilcCommunicationTimeout(bool conditionFlag) {
 
 void SafetyController::modbusIRQTimeout(uint32_t timeout, uint32_t irqs) {
     _updateOverride(FaultCodes::ModbusIRQTimeout, true, true,
-                    "Timeout waiting for Modbus IRQs: timeout {} ms, waiting for {:06b} (binary)", timeout,
-                    irqs);
+                    "Timeout waiting for Modbus IRQs: timeout {} ms, waiting for "
+                    "{:06b} (binary)",
+                    timeout, irqs);
 }
 
 void SafetyController::forceActuatorFollowingError(int actuatorId, int actuatorDataIndex,

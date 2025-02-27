@@ -193,7 +193,8 @@ void ForceActuatorSettings::load(YAML::Node doc) {
 
         if (bumpTestMinimalDistance < 2) {
             throw std::runtime_error(
-                    fmt::format("MinimalDistance parameter for parallel bump test shall be greater than 2m, "
+                    fmt::format("MinimalDistance parameter for parallel bump test shall "
+                                "be greater than 2m, "
                                 "was set to {}.",
                                 bumpTestMinimalDistance));
         }
