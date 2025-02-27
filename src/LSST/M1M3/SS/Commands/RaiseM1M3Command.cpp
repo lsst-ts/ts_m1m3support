@@ -26,6 +26,7 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
+#include <ForceActuatorBumpTestStatus.h>
 #include <M1M3SSPublisher.h>
 #include <RaiseM1M3Command.h>
 
@@ -37,11 +38,9 @@ RaiseM1M3Command::RaiseM1M3Command(int32_t commandID, MTM1M3_command_raiseM1M3C 
 }
 
 bool RaiseM1M3Command::validate() {
-    if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+    if (ForceActuatorBumpTestStatus::instance().test_in_progress()) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
-                "RaiseM1M3",
-                fmt::format("Cannot raise M1M3 as bump test for actuator {} is in progress.",
-                            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId));
+                "RaiseM1M3", "Cannot raise M1M3 as bump test for actuator(s) is in progress.");
         return false;
     }
     return Command::validate();

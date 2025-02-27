@@ -34,6 +34,7 @@ TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
     CHECK(settings.ActuatorIdToZIndex(100) < 0);
     CHECK(settings.ActuatorIdToZIndex(101) == 0);
     CHECK(settings.ActuatorIdToZIndex(150) < 0);
+    CHECK(settings.ActuatorIdToZIndex(435) == 147);
     CHECK(settings.ActuatorIdToZIndex(443) == 155);
     CHECK(settings.ActuatorIdToZIndex(444) < 0);
 
@@ -42,6 +43,18 @@ TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
     CHECK(settings.ZIndexToActuatorId(156) < 0);
     CHECK(settings.ZIndexToActuatorId(-2) < 0);
 
-    CHECK_THAT(settings.ActuatorDistance(2, 3), WithinRel(0.66581, 0.001));
-    CHECK_THAT(settings.ActuatorDistance(10, 155), WithinRel(4.52624, 0.001));
+    CHECK(settings.ZIndexToYIndex[0] == -1);
+    CHECK(settings.ZIndexToYIndex[1] == 0);
+
+    CHECK(settings.ZIndexToYIndex[150] == 99);
+    CHECK(settings.ZIndexToYIndex[155] == -1);
+
+    CHECK(settings.ZIndexToXIndex[0] == -1);
+    CHECK(settings.ZIndexToXIndex[11] == 0);
+
+    CHECK(settings.ZIndexToXIndex[147] == 11);
+    CHECK(settings.ZIndexToXIndex[155] == -1);
+
+    CHECK_THAT(settings.actuator_distance(2, 3), WithinRel(0.66581, 0.001));
+    CHECK_THAT(settings.actuator_distance(10, 155), WithinRel(4.52624, 0.001));
 }

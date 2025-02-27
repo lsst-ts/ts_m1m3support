@@ -21,8 +21,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <catch2/catch_all.hpp>
 #include <cmath>
+
+#include <catch2/catch_all.hpp>
+
+#include <SAL_MTM1M3.h>
 
 #include <ForceActuatorSettings.h>
 #include <ForceController.h>
@@ -30,8 +33,6 @@
 #include <RaisingLoweringInfo.h>
 #include <SettingReader.h>
 #include <StateTypes.h>
-
-#include <SAL_MTM1M3.h>
 
 using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;

@@ -165,7 +165,7 @@ public:
      *
      * @throws std::runtime_error
      */
-    const float ActuatorDistance(int index1, int index2);
+    const float actuator_distance(int index1, int index2);
 };
 
 } /* namespace SS */

@@ -48,7 +48,7 @@ public:
     void updateSecondaryCounts(int dataIndex, bool warningTriggered, bool countingTriggered);
 
     /**
-     * Sends updates through SAL/DDS.
+     * Sends updates through SAL.
      */
     void send();
 

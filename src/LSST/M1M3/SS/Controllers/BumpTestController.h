@@ -24,19 +24,15 @@
 #ifndef BUMPTESTCONTROLLER_H_
 #define BUMPTESTCONTROLLER_H_
 
+#include <chrono>
+
 #include <cRIO/DataTypes.h>
+
+#include "FABumpTestData.h"
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
-
-/**
- * Bump test single force actautor. Keeps record of the bump test progress.
- */
-class FABumpTest {
-public:
-private:
-};
 
 /**
  * Performs bump test on single force actuator (FA). Bump tests of an actuator
@@ -104,13 +100,13 @@ public:
     /**
      * Set current bump tests parameters.
      *
-     * @param actuatorId actuator ID (101-443)
-     * @param testPrimary true if test primary (Z) actuator
-     * @param testSecondary true if test secondary (X or Y) actuator
+     * @param actuatoro_id actuator ID (101-443)
+     * @param test_primary true if test primary (Z) actuator
+     * @param test_secondary true if test secondary (X or Y) actuator
      *
      * @return 0 on success, 1 if another force actuator is being tested
      */
-    int setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
+    int setBumpTestActuator(int actuator_id, bool test_primary, bool test_secondary);
 
     /**
      * Run single loop. Shall be called from update command after telemetry
@@ -134,51 +130,31 @@ public:
     void stopCylinder(char axis, int index);
 
 private:
-    int _xIndex;
-    int _yIndex;
-    int _zIndex;
-    int _secondaryIndex;
+    float _test_force;
 
-    float _testForce;
-
-    float _testedWarning;
-    float _testedError;
-    float _nonTestedWarning;
-    float _nonTestedError;
-
-    float _testSettleTime;
+    std::chrono::milliseconds _test_settle_time;
     int _testMeasurements;
-    int _testProgress;
     // if NAN, don't sleep
-    double _sleepUntil;
+    std::chrono::time_point<std::chrono::steady_clock> _test_timeout[FA_COUNT];
 
-    typedef enum { FINISHED, FAILED, NO_CHANGE, STATE_CHANGED } runCylinderReturn_t;
+    FABumpTestData _bump_test_data;
 
     /**
      * Run tests on cylinder.
      *
-     * @param axis
      * @param index
-     * @param averages
+     * @param axis
      * @param stage
+     * @param timestamp
      */
-    runCylinderReturn_t _runCylinder(int actuatorId, char axis, int index, double averages[], int *stage);
-    void _resetProgress(bool zeroOffsets = true);
-    void _resetAverages();
-
-    double _xAverages[FA_X_COUNT];
-    double _yAverages[FA_Y_COUNT];
-    double _zAverages[FA_Z_COUNT];
+    bool _run_cylinder(int axis_index, int z_index, int actuator_id, char axis, const BumpTestStatus status,
+                       int &stage, double &timestamp);
+    void _reset_progress(bool zeroOffsets = true);
 
     /**
-     * Collect averages
+     * Collect data.
      */
-    bool _collectAverages();
-
-    /**
-     * @return 0x01 on error, 0x02 on warning.
-     */
-    int _checkAverages(char axis = ' ', int index = -1, double value = 0);
+    void _collect_results();
 };
 
 }  // namespace SS

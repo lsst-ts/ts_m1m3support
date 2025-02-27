@@ -25,9 +25,54 @@
 
 #include <cmath>
 #include <memory>
+#include <vector>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/DataTypes.h>
 
 #include <FABumpTestData.h>
 
 using namespace LSST::M1M3::SS;
 
-TEST_CASE("fromRaw", "[FABumpTestData]") { FABumpTestData data(10); }
+TEST_CASE("fromRaw", "[FABumpTestData]") {
+    constexpr int size = 10;
+
+    FABumpTestData data(size);
+
+    std::vector<float> zeros(FA_COUNT, 0);
+    std::vector<int> states(FA_COUNT, MTM1M3::MTM1M3_shared_BumpTest_TestingPositive);
+
+    CHECK(data.empty() == true);
+
+    for (size_t i = 0; i < size; i++) {
+        CHECK(data.size() == i);
+        CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::NO_DATA);
+
+        CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, zeros, zeros, states, states));
+        CHECK(data.empty() == false);
+    }
+
+    CHECK(data.size() == size);
+
+    CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+
+    for (size_t i = 0; i < size / 2; i++) {
+        CHECK(data.size() == size);
+        CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+
+        data.add_data(zeros, zeros, zeros, zeros, zeros, states, states);
+        CHECK(data.empty() == false);
+    }
+
+    std::vector<float> warnings(FA_COUNT, 0.15);
+    CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, warnings, zeros, states, states));
+
+    CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::OVERSHOOT_WARNING);
+
+    std::vector<float> errors(FA_COUNT, -0.21);
+    CHECK_NOTHROW(data.add_data(errors, zeros, zeros, zeros, zeros, states, states));
+
+    CHECK(data.test_actuator(0, 'X', 0, 0.2, 0.1) == BumpTestStatus::INVALID_ACTUATOR);
+    CHECK(data.test_actuator(147, 'X', 0, 0.2, 0.1) == BumpTestStatus::UNDERSHOOT_ERROR);
+}

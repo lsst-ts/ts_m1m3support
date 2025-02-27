@@ -27,6 +27,7 @@
 
 #include <Context.h>
 #include <ExitEngineeringCommand.h>
+#include <ForceActuatorBumpTestStatus.h>
 #include <M1M3SSPublisher.h>
 
 using namespace LSST::cRIO::SAL;
@@ -35,12 +36,10 @@ using namespace LSST::M1M3::SS;
 ExitEngineeringCommand::ExitEngineeringCommand(int32_t commandID) : Command(commandID) {}
 
 bool ExitEngineeringCommand::validate() {
-    if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
+    if (ForceActuatorBumpTestStatus::instance().test_in_progress()) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "ExitEngineering",
-                fmt::format("Cannot exit engineering mode as bump test for actuator {} "
-                            "is in progress.",
-                            M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId));
+                "Cannot exit engineering mode as bump test for actuator(s) is in progress.");
         return false;
     }
     return Command::validate();

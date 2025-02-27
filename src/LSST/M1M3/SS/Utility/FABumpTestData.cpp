@@ -21,7 +21,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
+#include <SAL_MTM1M3.h>
+
+#include <cRIO/DataTypes.h>
+
 #include "FABumpTestData.h"
+#include "ForceActuatorSettings.h"
+#include "SettingReader.h"
 
 using namespace LSST::M1M3::SS;
 
@@ -48,7 +56,7 @@ FABumpTestData::FABumpTestData(size_t capacity) {
     }
 }
 
-void FABumpTestData::~FABumpTestData() {
+FABumpTestData::~FABumpTestData() {
     for (size_t c = 0; c < FA_COUNT; c++) {
         if (c < FA_X_COUNT) {
             delete[] _x_forces[c];
@@ -67,11 +75,10 @@ void FABumpTestData::~FABumpTestData() {
     }
 }
 
-void FABumpTestData::add_data(float x_forces[FA_X_COUNT], float y_forces[FA_Y_COUNT],
-                              float z_forces[FA_Z_COUNT], float primary_forces[FA_COUNT],
-                              float secondary_forces[FA_S_COUNT], int primary_states[FA_COUNT],
-                              int secondary_states[FA_S_COUNT]) {
-    std::lock_guard<std::mutex> lock(_c_mutex);
+void FABumpTestData::add_data(const float_v &x_forces, const float_v &y_forces, const float_v &z_forces,
+                              const float_v &primary_forces, const float_v &secondary_forces,
+                              const int_v &primary_states, const int_v &secondary_states) {
+    std::lock_guard<std::mutex> lock(_g_mutex);
 
     for (size_t c = 0; c < FA_COUNT; c++) {
         if (c < FA_X_COUNT) {
@@ -99,5 +106,133 @@ size_t FABumpTestData::size() const {
     if (_head >= _tail) {
         return _head - _tail;
     }
-    return _capacity - (_tail - _head);
+    return 1 + _capacity - (_tail - _head);
+}
+
+BumpTestStatus FABumpTestData::test_actuator(int z_index, char kind, float expected_force, float error,
+                                             float warning) {
+    if (size() != _capacity) {
+        return BumpTestStatus::NO_DATA;
+    }
+
+    auto fa_app_settings = SettingReader::instance().getForceActuatorApplicationSettings();
+    auto y_index = fa_app_settings->ZIndexToYIndex[z_index];
+    auto x_index = fa_app_settings->ZIndexToXIndex[z_index];
+    auto s_index = fa_app_settings->ZIndexToSecondaryCylinderIndex[z_index];
+
+    // make sure the actuator state remain the same throughout testing period
+    auto p_states = _primary_states[z_index][0];
+    for (size_t i = 0; i < _capacity; i++) {
+        if (_primary_states[z_index][i] != p_states) {
+            return BumpTestStatus::WRONG_STATE_HISTORY;
+        }
+    }
+    if (s_index != -1) {
+        auto s_states = _secondary_states[s_index][0];
+        for (size_t i = 0; i < _capacity; i++) {
+            if (_secondary_states[s_index][i] != s_states) {
+                return BumpTestStatus::WRONG_STATE_HISTORY;
+            }
+        }
+    }
+
+    auto in_range = [error, warning](float force, float expected_force) -> BumpTestStatus {
+        if (force > (expected_force + error)) {
+            return BumpTestStatus::OVERSHOOT_ERROR;
+        }
+        if (force > (expected_force + warning)) {
+            return BumpTestStatus::OVERSHOOT_WARNING;
+        }
+        if (force < (expected_force - error)) {
+            return BumpTestStatus::UNDERSHOOT_ERROR;
+        }
+        if (force < (expected_force - warning)) {
+            return BumpTestStatus::UNDERSHOOT_WARNING;
+        }
+        return BumpTestStatus::PASSED;
+    };
+
+    for (size_t i = 0; i < _capacity; i++) {
+        BumpTestStatus p_state = BumpTestStatus::PASSED;
+        BumpTestStatus s_state = BumpTestStatus::PASSED;
+        switch (kind) {
+            case 'P':
+                if (isnan(expected_force)) {
+                    expected_force = M1M3SSPublisher::instance()
+                                             .getAppliedCylinderForces()
+                                             ->primaryCylinderForces[z_index];
+                }
+                p_state = in_range(_primary_forces[z_index][i], expected_force);
+                if (s_index != -1) {
+                    s_state = in_range(_secondary_forces[z_index][i], 0);
+                }
+                break;
+            case 'S':
+                if (s_index == -1) {
+                    return BumpTestStatus::INVALID_ACTUATOR;
+                }
+                if (isnan(expected_force)) {
+                    expected_force = M1M3SSPublisher::instance()
+                                             .getAppliedCylinderForces()
+                                             ->secondaryCylinderForces[s_index];
+                }
+                p_state = in_range(_primary_forces[z_index][i], 0);
+                s_state = in_range(_secondary_forces[s_index][i], expected_force);
+                break;
+            case 'X':
+                if (x_index == -1) {
+                    return BumpTestStatus::INVALID_ACTUATOR;
+                }
+                if (isnan(expected_force)) {
+                    expected_force =
+                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->xForces[x_index];
+                }
+                s_state = in_range(_x_forces[x_index][i], expected_force);
+                p_state = in_range(_z_forces[z_index][i], 0);
+                break;
+            case 'Y':
+                if (y_index == -1) {
+                    return BumpTestStatus::INVALID_ACTUATOR;
+                }
+                if (isnan(expected_force)) {
+                    expected_force =
+                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->xForces[y_index];
+                }
+                s_state = in_range(_y_forces[y_index][i], expected_force);
+                p_state = in_range(_z_forces[z_index][i], 0);
+                break;
+            case 'Z':
+                if (isnan(expected_force)) {
+                    expected_force =
+                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->zForces[z_index];
+                }
+
+                p_state = in_range(_z_forces[z_index][i], expected_force);
+
+                if (x_index != -1) {
+                    s_state = in_range(_x_forces[x_index][i], 0);
+                } else if (y_index != -1) {
+                    s_state = in_range(_y_forces[y_index][i], 0);
+                }
+                break;
+            default:
+                return BumpTestStatus::INVALID_TEST_KIND;
+        }
+        if (p_state != BumpTestStatus::PASSED) {
+            return p_state;
+        }
+        if (s_state != BumpTestStatus::PASSED) {
+            return s_state;
+        }
+    }
+
+    return BumpTestStatus::PASSED;
+}
+
+void FABumpTestData::test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT]) {
+    auto &tested_tolerance = ForceActuatorSettings::instance().TestedTolerances;
+
+    for (int i = 0; i < FA_COUNT; i++) {
+        results[i] = test_actuator(i, kind, NAN, tested_tolerance.error, tested_tolerance.warning);
+    }
 }
