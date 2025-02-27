@@ -47,11 +47,7 @@ ActiveOpticForceComponent::ActiveOpticForceComponent(
     _preclippedActiveOpticForces = M1M3SSPublisher::instance().getEventPreclippedActiveOpticForces();
 }
 
-#ifdef WITH_SAL_KAFKA
 void ActiveOpticForceComponent::applyActiveOpticForces(const std::vector<float> &z) {
-#else
-void ActiveOpticForceComponent::applyActiveOpticForces(float *z) {
-#endif
     SPDLOG_DEBUG("ActiveOpticForceComponent: applyActiveOpticForces()");
 
     if (!isEnabled()) {

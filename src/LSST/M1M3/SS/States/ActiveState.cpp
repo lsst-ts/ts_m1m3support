@@ -23,9 +23,7 @@
 
 #include <spdlog/spdlog.h>
 
-#ifdef WITH_SAL_KAFKA
 #include <SAL_MTM1M3_enums.h>
-#endif
 
 #include <ActiveState.h>
 #include <BoosterValveController.h>

@@ -73,12 +73,7 @@ void printHelp() {
                  "simulator or as "
                  "the real thing on cRIO."
               << std::endl
-              << "Version: " << VERSION
-#ifdef WITH_SAL_KAFKA
-              << "with Kafka middleware" << std::endl
-#else
-              << "with OpenSplice/DDS middleware" << std::endl
-#endif
+              << "Version: " << VERSION << "with Kafka middleware" << std::endl
               << "Options:" << std::endl
               << "  -b runs on background, don't log to stdout" << std::endl
               << "  -c <configuration path> use given configuration directory "
@@ -187,16 +182,10 @@ void processArgs(int argc, char *const argv[], const char *&configRoot) {
 }
 
 void initializeFPGA(IFPGA *fpga) {
-#ifdef WITH_SAL_KAFKA
-    const char *kafkaOSPL = "with Kafka middleware";
-#else
-    const char *kafkaOSPL = "with OpenSplice/DDS middleware";
-#endif
-
 #ifdef SIMULATOR
-    SPDLOG_WARN("Starting Simulator version! Version {} {}", VERSION, kafkaOSPL);
+    SPDLOG_WARN("Starting Simulator version! Version {} with Kafka middleware", VERSION);
 #else
-    SPDLOG_INFO("Starting cRIO/real HW version. Version {} {}", VERSION, kafkaOSPL);
+    SPDLOG_INFO("Starting cRIO/real HW version. Version {} with Kafka middleware", VERSION);
 #endif
 
     SPDLOG_INFO("Main: Creating fpga");

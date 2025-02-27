@@ -48,12 +48,8 @@ VelocityForceComponent::VelocityForceComponent(
     _preclippedVelocityForces = M1M3SSPublisher::instance().getEventPreclippedVelocityForces();
 }
 
-#ifdef WITH_SAL_KAFKA
 void VelocityForceComponent::applyVelocityForces(const std::vector<float> &x, const std::vector<float> &y,
                                                  const std::vector<float> &z) {
-#else
-void VelocityForceComponent::applyVelocityForces(float *x, float *y, float *z) {
-#endif
     SPDLOG_TRACE("VelocityForceComponent: applyVelocityForces()");
 
     if (!isEnabled()) {
@@ -85,15 +81,9 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
             angularVelocityX, angularVelocityY, angularVelocityZ);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularVelocity(
             angularVelocityX, angularVelocityY, angularVelocityZ);
-#ifdef WITH_SAL_KAFKA
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
-#else
-    float xForces[FA_X_COUNT];
-    float yForces[FA_Y_COUNT];
-    float zForces[FA_Z_COUNT];
-#endif
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
         int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
