@@ -24,10 +24,6 @@
 #ifndef HARDPOINTACTUATORMOTIONSTATES_H_
 #define HARDPOINTACTUATORMOTIONSTATES_H_
 
-#ifndef WITH_SAL_KAFKA
-#include <ccpp_sal_MTM1M3.h>  // Provides access to enumerations
-#endif
-
 /**
  * Actuator states. PositionController::updateSteps uses those to control HP
  * movement.

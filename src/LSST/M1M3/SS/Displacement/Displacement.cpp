@@ -50,11 +50,6 @@ Displacement::Displacement(SupportFPGAData *fpgaData, SafetyController *safetyCo
     _lastSampleTimestamp = 0;
     _lastErrorTimestamp = 0;
     _errorCleared = false;
-
-#ifndef WITH_SAL_KAFKA
-    memset(_imsData, 0, sizeof(MTM1M3_imsDataC));
-    memset(_displacementWarning, 0, sizeof(MTM1M3_logevent_displacementSensorWarningC));
-#endif
 }
 
 void Displacement::processData() {

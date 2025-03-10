@@ -37,12 +37,8 @@ namespace SS {
 class AzimuthForceComponent : public ForceComponent {
 public:
     AzimuthForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
-#ifdef WITH_SAL_KAFKA
     void applyAzimuthForces(const std::vector<float> &x, const std::vector<float> &y,
                             const std::vector<float> &z);
-#else
-    void applyAzimuthForces(float *x, float *y, float *z);
-#endif
     /**
      * Calculate and apply azimuth forces.
      *

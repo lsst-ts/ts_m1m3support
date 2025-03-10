@@ -21,10 +21,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef WITH_SAL_KAFKA
-#include <sal_MTM1M3.h>
-#endif
-
 #include <spdlog/spdlog.h>
 
 #include <BumpTestController.h>

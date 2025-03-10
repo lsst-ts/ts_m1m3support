@@ -36,29 +36,9 @@
 
 using namespace LSST::M1M3::SS;
 
-ForceActuatorNeighbors::ForceActuatorNeighbors() {
-#ifndef WITH_SAL_KAFKA
-    memset(NearZIDs, 0, sizeof(NearZIDs));
-    memset(FarIDs, 0, sizeof(FarIDs));
-#endif
-}
+ForceActuatorNeighbors::ForceActuatorNeighbors() {}
 
-ForceActuatorSettings::ForceActuatorSettings(token) {
-#ifndef WITH_SAL_KAFKA
-    memset(primaryFollowingErrorWarningThreshold, 0, sizeof(primaryFollowingErrorWarningThreshold));
-    memset(primaryFollowingErrorCountingFaultThreshold, 0,
-           sizeof(primaryFollowingErrorCountingFaultThreshold));
-    memset(primaryFollowingErrorImmediateFaultThreshold, 0,
-           sizeof(primaryFollowingErrorImmediateFaultThreshold));
-
-    memset(secondaryFollowingErrorWarningThreshold, 0, sizeof(secondaryFollowingErrorWarningThreshold));
-    memset(secondaryFollowingErrorCountingFaultThreshold, 0,
-           sizeof(secondaryFollowingErrorCountingFaultThreshold));
-    memset(secondaryFollowingErrorImmediateFaultThreshold, 0,
-           sizeof(secondaryFollowingErrorImmediateFaultThreshold));
-#endif
-    measuredWarningPercentage = 90;
-}
+ForceActuatorSettings::ForceActuatorSettings(token) { measuredWarningPercentage = 90; }
 
 void ForceActuatorSettings::load(YAML::Node doc) {
     try {
@@ -216,15 +196,9 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     log();
 }
 
-#ifdef WITH_SAL_KAFKA
 ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
         ForceActuatorApplicationSettings *forceActuatorApplicationSettings, const std::vector<float> &xForces,
         const std::vector<float> &yForces, const std::vector<float> &zForces) {
-#else
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *xForces, float *yForces,
-        float *zForces) {
-#endif
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;
@@ -262,14 +236,9 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
     return fm;
 }
 
-#ifdef WITH_SAL_KAFKA
 ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
         ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
         const std::vector<float> &zForces) {
-#else
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, float *zForces) {
-#endif
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;

@@ -166,11 +166,7 @@ public:
     bool applyAccelerationForces();
     void zeroAccelerationForces();
 
-#ifdef WITH_SAL_KAFKA
     void applyActiveOpticForces(const std::vector<float> &z);
-#else
-    void applyActiveOpticForces(float *z);
-#endif
     void zeroActiveOpticForces();
 
     void applyAzimuthForces();
@@ -199,12 +195,8 @@ public:
     void applyElevationForces();
     void zeroElevationForces();
 
-#ifdef WITH_SAL_KAFKA
     void applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
                            const std::vector<float> &z);
-#else
-    void applyOffsetForces(float *x, float *y, float *z);
-#endif
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
     void zeroOffsetForces();
