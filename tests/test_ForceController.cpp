@@ -21,7 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <cmath>
 
 #include <ForceActuatorSettings.h>
