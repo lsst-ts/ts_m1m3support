@@ -26,7 +26,7 @@
 #include "spdlog/sinks/base_sink.h"
 #include <spdlog/spdlog.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <SAL_MTM1M3.h>
 
