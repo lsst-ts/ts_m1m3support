@@ -42,7 +42,8 @@ BumpTestController::BumpTestController() : _test_force(222), _bump_test_data(20)
     ForceActuatorBumpTestStatus::instance().reset();
 }
 
-int BumpTestController::setBumpTestActuator(int actuator_id, bool test_primary, bool test_secondary) {
+int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, bool test_primary,
+                                            bool test_secondary) {
     auto &actuator_settings = ForceActuatorSettings::instance();
 
     _test_settle_time = milliseconds(static_cast<int>(actuator_settings.bumpTestSettleTime * 1000));
@@ -54,6 +55,7 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool test_primary, 
     auto z_index = fa_app_settings->ActuatorIdToZIndex(actuator_id);
 
     _test_timeout[z_index] = steady_clock::now() + _test_settle_time;
+    _cylinders[z_index] = cylinders;
 
     ForceActuatorBumpTestStatus::instance().trigger_bump_test(z_index, test_primary, test_secondary);
 
@@ -71,19 +73,28 @@ void BumpTestController::runLoop() {
 
     _collect_results();
 
-    BumpTestStatus primary_status[FA_COUNT];
-    BumpTestStatus secondary_status[FA_COUNT];
+    BumpTestStatus primary_status[FA_COUNT], secondary_status[FA_COUNT], x_status[FA_COUNT],
+            y_status[FA_COUNT], z_status[FA_COUNT];
 
     _bump_test_data.test_mirror('P', primary_status);
     _bump_test_data.test_mirror('S', secondary_status);
+
+    _bump_test_data.test_mirror('X', x_status);
+    _bump_test_data.test_mirror('Y', y_status);
+    _bump_test_data.test_mirror('Z', z_status);
 
     for (int i = 0; i < FA_COUNT; i++) {
         int actuator_id = fa_app_settings->Table[i].ActuatorID;
 
         if (actuator_status.primary_tested(i) == true) {
-            bool changed =
-                    _run_cylinder(i, i, actuator_id, 'P', primary_status[i], actuator_status.primaryTest[i],
-                                  actuator_status.primaryTestTimestamps[i]);
+            bool changed = false;
+            if (_cylinders[i]) {
+                changed = _run_axis(i, i, actuator_id, 'P', primary_status[i], actuator_status.primaryTest[i],
+                                    actuator_status.primaryTestTimestamps[i]);
+            } else {
+                changed = _run_axis(i, i, actuator_id, 'Z', z_status[i], actuator_status.primaryTest[i],
+                                    actuator_status.primaryTestTimestamps[i]);
+            }
             tested_count++;
             if (changed) {
                 status_change++;
@@ -95,9 +106,23 @@ void BumpTestController::runLoop() {
             int z_index = fa_app_settings->ActuatorIdToZIndex(actuator_id);
             if (actuator_status.primary_tested(z_index) == false &&
                 actuator_status.secondary_tested(i) == true) {
-                bool changed = _run_cylinder(i, z_index, actuator_id, 'S', secondary_status[z_index],
-                                             actuator_status.secondaryTest[i],
-                                             actuator_status.secondaryTestTimestamps[i]);
+                bool changed = false;
+                if (_cylinders[i]) {
+                    changed = _run_axis(i, z_index, actuator_id, 'S', secondary_status[z_index],
+                                        actuator_status.secondaryTest[i],
+                                        actuator_status.secondaryTestTimestamps[i]);
+                } else {
+                    if (fa_app_settings->ZIndexToXIndex[z_index] >= 0) {
+                        changed = _run_axis(i, z_index, actuator_id, 'X', x_status[z_index],
+                                            actuator_status.secondaryTest[i],
+                                            actuator_status.secondaryTestTimestamps[i]);
+                    } else {
+                        changed = _run_axis(i, z_index, actuator_id, 'Y', y_status[z_index],
+                                            actuator_status.secondaryTest[i],
+                                            actuator_status.secondaryTestTimestamps[i]);
+                    }
+                }
+
                 tested_count++;
                 if (changed) {
                     status_change++;
@@ -125,8 +150,8 @@ void BumpTestController::stopAll(bool forced) {
     }
 }
 
-bool BumpTestController::_run_cylinder(int axis_index, int z_index, int actuator_id, char axis,
-                                       const BumpTestStatus status, int &stage, double &timestamp) {
+bool BumpTestController::_run_axis(int axis_index, int z_index, int actuator_id, char axis,
+                                   const BumpTestStatus status, int &stage, double &timestamp) {
     ForceController *forceController = Model::instance().getForceController();
     double now_timestamp = M1M3SSPublisher::instance().getTimestamp();
 
@@ -198,6 +223,7 @@ void BumpTestController::_reset_progress(bool zeroOffsets) {
 
     for (int i = 0; i < FA_COUNT; i++) {
         _test_timeout[i] = now - _test_settle_time;
+        _cylinders[i] = false;
     }
 
     _bump_test_data.clear();

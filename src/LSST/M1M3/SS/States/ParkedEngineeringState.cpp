@@ -101,9 +101,9 @@ States::Type ParkedEngineeringState::disable(DisableCommand *command) {
 States::Type ParkedEngineeringState::forceActuatorBumpTest(ForceActuatorBumpTestCommand *command) {
     SPDLOG_INFO("ParkedEngineeringState: forceActuatorBumpTest({}, {}, {})", command->getData()->actuatorId,
                 command->getData()->testPrimary, command->getData()->testSecondary);
-    Model::instance().getBumpTestController()->setBumpTestActuator(command->getData()->actuatorId,
-                                                                   command->getData()->testPrimary,
-                                                                   command->getData()->testSecondary);
+    Model::instance().getBumpTestController()->setBumpTestActuator(
+            command->getData()->actuatorId, command->cylinders, command->getData()->testPrimary,
+            command->getData()->testSecondary);
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 

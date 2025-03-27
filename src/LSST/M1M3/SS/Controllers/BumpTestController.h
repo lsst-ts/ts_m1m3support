@@ -106,7 +106,7 @@ public:
      *
      * @return 0 on success, 1 if another force actuator is being tested
      */
-    int setBumpTestActuator(int actuator_id, bool test_primary, bool test_secondary);
+    int setBumpTestActuator(int actuator_id, bool cylinders, bool test_primary, bool test_secondary);
 
     /**
      * Run single loop. Shall be called from update command after telemetry
@@ -136,6 +136,7 @@ private:
     int _testMeasurements;
     // if NAN, don't sleep
     std::chrono::time_point<std::chrono::steady_clock> _test_timeout[FA_COUNT];
+    bool _cylinders[FA_COUNT];
 
     FABumpTestData _bump_test_data;
 
@@ -147,8 +148,8 @@ private:
      * @param stage
      * @param timestamp
      */
-    bool _run_cylinder(int axis_index, int z_index, int actuator_id, char axis, const BumpTestStatus status,
-                       int &stage, double &timestamp);
+    bool _run_axis(int axis_index, int z_index, int actuator_id, char axis, const BumpTestStatus status,
+                   int &stage, double &timestamp);
     void _reset_progress(bool zeroOffsets = true);
 
     /**
