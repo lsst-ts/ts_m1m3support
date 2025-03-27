@@ -34,11 +34,18 @@ using namespace LSST::M1M3::SS;
 
 ForceActuatorBumpTestCommand::ForceActuatorBumpTestCommand(int32_t commandID,
                                                            MTM1M3_command_forceActuatorBumpTestC *data)
-        : Command(commandID) {
+        : Command(commandID), index(0), cylinders(0) {
     memcpy(&_data, data, sizeof(MTM1M3_command_forceActuatorBumpTestC));
 }
 
 bool ForceActuatorBumpTestCommand::validate() {
+    if (_data.actuatorId < 0) {
+        _data.actuatorId *= -1;
+        cylinders = true;
+    } else {
+        cylinders = false;
+    }
+
     index = SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
             _data.actuatorId);
 
@@ -63,7 +70,7 @@ bool ForceActuatorBumpTestCommand::validate() {
     if (Model::instance().getILC()->isDisabled(_data.actuatorId)) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "ForceActuatorBumpTest",
-                "Cannnot bump test disabled force actuator " + std::to_string(_data.actuatorId));
+                fmt::format("Cannnot bump test disabled force actuator {}", _data.actuatorId));
         return false;
     }
     return true;
