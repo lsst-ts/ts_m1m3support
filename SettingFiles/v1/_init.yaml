@@ -212,7 +212,7 @@ ForceActuatorSettings:
       Warning: 20
       Error: 100
     SettleTime: 3.0
-    Measurements: 10
+    Measurements: 100
     MinimalDistance: 4
 GyroSettings:
   DataRate: 1000

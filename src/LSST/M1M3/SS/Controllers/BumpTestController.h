@@ -97,6 +97,8 @@ class BumpTestController {
 public:
     BumpTestController();
 
+    ~BumpTestController();
+
     /**
      * Set current bump tests parameters.
      *
@@ -133,12 +135,11 @@ private:
     float _test_force;
 
     std::chrono::milliseconds _test_settle_time;
-    int _testMeasurements;
     // if NAN, don't sleep
     std::chrono::time_point<std::chrono::steady_clock> _test_timeout[FA_COUNT];
     bool _cylinders[FA_COUNT];
 
-    FABumpTestData _bump_test_data;
+    FABumpTestData *_bump_test_data;
 
     /**
      * Run tests on cylinder.
