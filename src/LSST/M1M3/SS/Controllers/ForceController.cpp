@@ -29,6 +29,7 @@
 #include <SAL_MTM1M3C.h>
 
 #include <ForceActuatorApplicationSettings.h>
+#include <ForceActuatorBumpTestStatus.h>
 #include <ForceActuatorData.h>
 #include <ForceActuatorInfo.h>
 #include <ForceActuatorOrientations.h>
@@ -720,7 +721,7 @@ bool ForceController::_checkFarNeighbors() {
     float globalZ = _appliedForces->fz;
     float globalForce = sqrt(globalX * globalX + globalY * globalY + globalZ * globalZ);
     float globalAverageForce = globalForce / FA_COUNT;
-    float tolerance = globalAverageForce * ForceActuatorSettings::instance().setpointNearNeighborLimitFactor;
+    float tolerance = globalAverageForce * ForceActuatorSettings::instance().setpointFarNeighborLimitFactor;
     if (tolerance < 1) {
         tolerance = 1;
     }
