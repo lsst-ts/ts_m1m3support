@@ -196,7 +196,7 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, char kind, float expec
                 }
                 if (isnan(expected_force)) {
                     expected_force =
-                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->xForces[y_index];
+                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->yForces[y_index];
                 }
                 s_state = in_range(_y_forces[y_index][i], expected_force);
                 p_state = in_range(_z_forces[z_index][i], 0);
