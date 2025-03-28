@@ -4,10 +4,10 @@
 Version History
 ===============
 
-v2.16.1
+v2.17.0
 -------
 
-* Fix EUI problems (wrong unicode character)
+* Allow parallel M1M3 force actuators bump tests
 
 v2.16.0
 -------
