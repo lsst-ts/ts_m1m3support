@@ -36,18 +36,18 @@ using namespace std::chrono;
 using namespace MTM1M3;
 using namespace LSST::M1M3::SS;
 
-BumpTestController::BumpTestController() : _test_force(222), _bump_test_data(20) {
+BumpTestController::BumpTestController() : _test_force(222), _bump_test_data(NULL) {
     SPDLOG_DEBUG("BumpTestController: BumpTestController()");
 
     ForceActuatorBumpTestStatus::instance().reset();
 }
 
+BumpTestController::~BumpTestController() { delete _bump_test_data; }
+
 int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, bool test_primary,
                                             bool test_secondary) {
-    auto &actuator_settings = ForceActuatorSettings::instance();
-
-    _test_settle_time = milliseconds(static_cast<int>(actuator_settings.bumpTestSettleTime * 1000));
-    _testMeasurements = actuator_settings.bumpTestMeasurements;
+    _test_settle_time =
+            milliseconds(static_cast<int>(ForceActuatorSettings::instance().bumpTestSettleTime * 1000));
 
     SettingReader::instance().getSafetyControllerSettings()->ForceController.enterBumpTesting();
 
@@ -63,6 +63,9 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
 }
 
 void BumpTestController::runLoop() {
+    if (_bump_test_data == NULL) {
+        _bump_test_data = new FABumpTestData(ForceActuatorSettings::instance().bumpTestMeasurements);
+    }
     // force actuator data are updated only in UpdateCommand; as only a single
     // command can be executed, there isn't a race condition
     size_t tested_count = 0;
@@ -76,12 +79,12 @@ void BumpTestController::runLoop() {
     BumpTestStatus primary_status[FA_COUNT], secondary_status[FA_COUNT], x_status[FA_COUNT],
             y_status[FA_COUNT], z_status[FA_COUNT];
 
-    _bump_test_data.test_mirror('P', primary_status);
-    _bump_test_data.test_mirror('S', secondary_status);
+    _bump_test_data->test_mirror('P', primary_status);
+    _bump_test_data->test_mirror('S', secondary_status);
 
-    _bump_test_data.test_mirror('X', x_status);
-    _bump_test_data.test_mirror('Y', y_status);
-    _bump_test_data.test_mirror('Z', z_status);
+    _bump_test_data->test_mirror('X', x_status);
+    _bump_test_data->test_mirror('Y', y_status);
+    _bump_test_data->test_mirror('Z', z_status);
 
     for (int i = 0; i < FA_COUNT; i++) {
         int actuator_id = fa_app_settings->Table[i].ActuatorID;
@@ -112,12 +115,14 @@ void BumpTestController::runLoop() {
                                         actuator_status.secondaryTest[i],
                                         actuator_status.secondaryTestTimestamps[i]);
                 } else {
-                    if (fa_app_settings->ZIndexToXIndex[z_index] >= 0) {
-                        changed = _run_axis(i, z_index, actuator_id, 'X', x_status[z_index],
+                    int x_index = fa_app_settings->ZIndexToXIndex[z_index];
+                    if (x_index >= 0) {
+                        changed = _run_axis(x_index, z_index, actuator_id, 'X', x_status[z_index],
                                             actuator_status.secondaryTest[i],
                                             actuator_status.secondaryTestTimestamps[i]);
                     } else {
-                        changed = _run_axis(i, z_index, actuator_id, 'Y', y_status[z_index],
+                        int y_index = fa_app_settings->ZIndexToYIndex[z_index];
+                        changed = _run_axis(y_index, z_index, actuator_id, 'Y', y_status[z_index],
                                             actuator_status.secondaryTest[i],
                                             actuator_status.secondaryTestTimestamps[i]);
                     }
@@ -142,6 +147,9 @@ void BumpTestController::runLoop() {
 
 void BumpTestController::stopAll(bool forced) {
     ForceActuatorBumpTestStatus::instance().stop_all();
+
+    delete _bump_test_data;
+    _bump_test_data = NULL;
 
     _reset_progress();
 
@@ -226,7 +234,7 @@ void BumpTestController::_reset_progress(bool zeroOffsets) {
         _cylinders[i] = false;
     }
 
-    _bump_test_data.clear();
+    _bump_test_data->clear();
 
     if (zeroOffsets) {
         Model::instance().getForceController()->zeroOffsetForces();
@@ -244,15 +252,6 @@ void BumpTestController::_collect_results() {
     auto &fa_data = ForceActuatorData::instance();
     auto &fa_status = ForceActuatorBumpTestStatus::instance();
 
-    _bump_test_data.add_data(fa_data.xForce, fa_data.yForce, fa_data.zForce, fa_data.primaryCylinderForce,
-                             fa_data.secondaryCylinderForce, fa_status.primaryTest, fa_status.secondaryTest);
-}
-
-int axisIndexToActuatorId(char axis, int index) {
-    const ForceActuatorApplicationSettings *forceSettings =
-            SettingReader::instance().getForceActuatorApplicationSettings();
-
-    if (axis == 'X') return forceSettings->Table[forceSettings->XIndexToZIndex[index]].ActuatorID;
-    if (axis == 'Y') return forceSettings->Table[forceSettings->YIndexToZIndex[index]].ActuatorID;
-    return forceSettings->Table[index].ActuatorID;
+    _bump_test_data->add_data(fa_data.xForce, fa_data.yForce, fa_data.zForce, fa_data.primaryCylinderForce,
+                              fa_data.secondaryCylinderForce, fa_status.primaryTest, fa_status.secondaryTest);
 }
