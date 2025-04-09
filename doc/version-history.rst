@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.16.1
+-------
+
+* Fix EUI problems (wrong unicode character)
+
 v2.16.0
 -------
 

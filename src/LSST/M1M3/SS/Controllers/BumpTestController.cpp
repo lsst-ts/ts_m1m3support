@@ -213,7 +213,7 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                         "Failed FA ID {} ({}{}) bump test - measured parked force "
                         "({:.3f}) is too "
                         "far from "
-                        "0\xb1{}",
+                        "0\u00b1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, averages[index], _testedError);
                 stopCylinder(axis);
                 return FAILED;
@@ -223,7 +223,7 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                 SPDLOG_ERROR(
                         "Failed FA ID {} ({}{}) bump test - measured parked force on some "
                         "actuator(s) is too "
-                        "far from 0\xb1{}",
+                        "far from 0\u00b1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, _nonTestedError);
                 stopCylinder(axis);
                 return FAILED;
@@ -260,7 +260,7 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                 SPDLOG_ERROR(
                         "Failed FA ID {} ({}{}) bump test - measured force {} "
                         "({:.3f}) is too far "
-                        "{}\xb1{}",
+                        "{}\u00b1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, positive ? "plus" : "negative",
                         averages[index], _testForce, _testedError);
                 stopCylinder(axis);
@@ -272,7 +272,7 @@ BumpTestController::runCylinderReturn_t BumpTestController::_runCylinder(char ax
                         "Failed FA ID {} ({}{}) bump test - measured force on some "
                         "actuator(s) is "
                         "too far "
-                        "from far from \xb1{}",
+                        "from far from \u00b1{}",
                         forceActuatorBumpTestStatus->actuatorId, axis, index, _nonTestedError);
                 stopCylinder(axis);
                 return FAILED;
@@ -354,14 +354,14 @@ int BumpTestController::_checkAverages(char axis, int index, double value) {
         if (err >= error) {
             SPDLOG_ERROR(
                     "FA ID {} ({}{}) following error violation - measured "
-                    "{:.3f}, expected {}\xb1{}",
+                    "{:.3f}, expected {}\u00b1{}",
                     axisIndexToActuatorId(axis, index), axis, index, value, expected, error);
             return 0x01;
         }
         if (err >= warning) {
             SPDLOG_WARN(
                     "FA ID {} ({}{}) following error warning - measured {:.3f}, "
-                    "expected {}\xb1{}",
+                    "expected {}\u00b1{}",
                     axisIndexToActuatorId(axis, index), axis, index, value, expected, warning);
             return 0x02;
         }
