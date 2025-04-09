@@ -148,10 +148,10 @@ void BumpTestController::runLoop() {
 void BumpTestController::stopAll(bool forced) {
     ForceActuatorBumpTestStatus::instance().stop_all();
 
+    _reset_progress();
+
     delete _bump_test_data;
     _bump_test_data = NULL;
-
-    _reset_progress();
 
     if (forced) {
         SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
