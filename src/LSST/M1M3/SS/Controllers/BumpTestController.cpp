@@ -141,7 +141,19 @@ void BumpTestController::runLoop() {
     }
 
     if (tested_count == 0) {
-        SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+        auto now = steady_clock::now();
+        bool call_exit = true;
+
+        for (int i = 0; i < FA_COUNT; i++) {
+            if (_test_timeout[i] > now) {
+                call_exit = false;
+                break;
+            }
+        }
+
+        if (call_exit == true) {
+            SettingReader::instance().getSafetyControllerSettings()->ForceController.exitBumpTesting();
+        }
     }
 }
 
@@ -161,13 +173,10 @@ void BumpTestController::stopAll(bool forced) {
 bool BumpTestController::_run_axis(int axis_index, int z_index, int actuator_id, char axis,
                                    const BumpTestStatus status, int &stage, double &timestamp) {
     ForceController *forceController = Model::instance().getForceController();
-    double now_timestamp = M1M3SSPublisher::instance().getTimestamp();
 
     auto now = steady_clock::now();
 
     bool positive = false;
-
-    int checkRet = 0x11;
 
     if (_test_timeout[z_index] <= now) {
         stage = MTM1M3_shared_BumpTest_Failed_Timeout;
@@ -240,7 +249,7 @@ void BumpTestController::_reset_progress(bool zeroOffsets) {
         Model::instance().getForceController()->zeroOffsetForces();
         Model::instance().getForceController()->processAppliedForces();
 
-        // make sure exitBumpTesting will be caled after FA gets back to ~proper
+        // make sure exitBumpTesting will be called after FA gets back to ~proper
         // values
         //
         // Drop of the measuredForce on top of FAs can take some time, as it isn't
