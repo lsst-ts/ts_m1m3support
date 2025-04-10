@@ -332,11 +332,6 @@ int main(int argc, char *const argv[]) {
                           << std::endl;
                 exit(EXIT_FAILURE);
             }
-            if (chown(pidFile, runAs->pw_uid, runGroup->gr_gid)) {
-                std::cerr << "Error: Cannot change owner of " << pidFile << ":" << strerror(errno)
-                          << std::endl;
-                exit(EXIT_FAILURE);
-            }
             char retbuf[2000];
             memset(retbuf, 0, sizeof(retbuf));
             signal(SIGALRM, [](int) {
