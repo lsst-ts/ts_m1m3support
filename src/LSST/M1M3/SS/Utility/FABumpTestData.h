@@ -93,7 +93,24 @@ public:
     BumpTestStatus test_actuator(int actuator_id, char kind, float expected_force, float error,
                                  float warning);
 
+    /**
+     * Test the mirror. Call test_actuator on all actuators.
+     *
+     * @param kind axis - X,Y,Z,P or S
+     * @param results tests results, indexed by z_index (not the axis index)
+     */
     void test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT]);
+
+    /**
+     * Retrieve test statics.
+     *
+     * @param axis_index
+     * @param axis
+     * @param min
+     * @param max
+     * @param average
+     */
+    void statistics(int axis_index, char axis, float &min, float &max, float &average);
 
 private:
     float *_x_forces[FA_X_COUNT];

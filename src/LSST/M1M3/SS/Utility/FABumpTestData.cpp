@@ -21,6 +21,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <limits>
 #include <stdexcept>
 
 #include <SAL_MTM1M3.h>
@@ -235,4 +236,49 @@ void FABumpTestData::test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT])
     for (int i = 0; i < FA_COUNT; i++) {
         results[i] = test_actuator(i, kind, NAN, tested_tolerance.error, tested_tolerance.warning);
     }
+}
+
+void FABumpTestData::statistics(int axis_index, char axis, float &min, float &max, float &average) {
+    float *data;
+
+    switch (axis) {
+        case 'X':
+            data = _x_forces[axis_index];
+            break;
+        case 'Y':
+            data = _y_forces[axis_index];
+            break;
+        case 'Z':
+            data = _z_forces[axis_index];
+            break;
+        case 'P':
+            data = _primary_forces[axis_index];
+            break;
+        case 'S':
+            data = _secondary_forces[axis_index];
+            break;
+        default:
+            throw std::runtime_error("Invalid axis kind");
+    };
+
+    if (size() == 0) {
+        throw std::runtime_error("Cannot compute statistics of empty data.");
+    }
+
+    min = max = average = data[_head];
+
+    size_t count = 0;
+
+    for (size_t i = _tail; i != _head; i = ((i + 1) % _capacity), count++) {
+        float v = data[i];
+        if (v < min) {
+            min = v;
+        }
+        if (v > max) {
+            max = v;
+        }
+        average += v;
+    }
+
+    average /= count;
 }

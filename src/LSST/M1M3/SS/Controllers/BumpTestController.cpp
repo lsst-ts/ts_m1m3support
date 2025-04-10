@@ -180,8 +180,17 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int actuator_id,
 
     if (_test_timeout[z_index] <= now) {
         stage = MTM1M3_shared_BumpTest_Failed_Timeout;
-        SPDLOG_WARN("BumpTest: Timeout of actuator {} - {} (axis index {}, Z index {})", actuator_id, axis,
-                    axis_index, z_index);
+
+        float min, max, average;
+        _bump_test_data->statistics(axis_index, axis, min, max, average);
+        SPDLOG_WARN(
+                "BumpTest: Timeout of actuator {} - {} (axis index {}, Z index {}) - min {:.2f} max {:.2f} "
+                "average {:.2f}",
+                actuator_id, axis, axis_index, z_index, min, max, average);
+        forceController->applyActuatorOffset(axis, axis_index, 0);
+        forceController->processAppliedForces();
+
+        _test_timeout[z_index] = now + _test_settle_time;
         return true;
     }
 

@@ -34,6 +34,7 @@
 #include <FABumpTestData.h>
 
 using namespace LSST::M1M3::SS;
+using namespace Catch::Matchers;
 
 TEST_CASE("fromRaw", "[FABumpTestData]") {
     constexpr int size = 10;
@@ -65,6 +66,8 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
         CHECK(data.empty() == false);
     }
 
+    CHECK(data.test_actuator(1, 'Y', 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+
     std::vector<float> warnings(FA_COUNT, 0.15);
     CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, warnings, zeros, states, states));
 
@@ -75,4 +78,29 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
 
     CHECK(data.test_actuator(0, 'X', 0, 0.2, 0.1) == BumpTestStatus::INVALID_ACTUATOR);
     CHECK(data.test_actuator(147, 'X', 0, 0.2, 0.1) == BumpTestStatus::UNDERSHOOT_ERROR);
+
+    float min, max, average;
+    data.statistics(0, 'Y', min, max, average);
+    CHECK(min == 0);
+    CHECK(max == 0);
+    CHECK(average == 0);
+
+    CHECK_NOTHROW(
+            data.add_data(std::vector<float>(FA_COUNT, 0.21), zeros, zeros, zeros, zeros, states, states));
+
+    for (int x = 0; x < FA_X_COUNT; x++) {
+        data.statistics(x, 'X', min, max, average);
+        CHECK_THAT(min, WithinAbs(-0.21, 1e-5));
+        CHECK_THAT(max, WithinAbs(0.21, 1e-6));
+        CHECK_THAT(average, WithinAbs(0, 1e-6));
+    }
+
+    CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, zeros, zeros, states, states));
+
+    for (int x = 0; x < FA_X_COUNT; x++) {
+        data.statistics(x, 'X', min, max, average);
+        CHECK_THAT(min, WithinAbs(-0.21, 1e-5));
+        CHECK_THAT(max, WithinAbs(0.21, 1e-6));
+        CHECK_THAT(average, WithinAbs(0, 1e-6));
+    }
 }
