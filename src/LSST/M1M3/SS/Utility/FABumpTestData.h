@@ -44,6 +44,14 @@ enum BumpTestStatus {
     OVERSHOOT_ERROR
 };
 
+enum BumpTestKind {
+    PRIMARY = 'P',
+    SECONDARY = 'S',
+    AXIS_X = 'X',
+    AXIS_Y = 'Y',
+    AXIS_Z = 'Z',
+};
+
 typedef std::vector<float> float_v;
 typedef std::vector<int> int_v;
 
@@ -101,18 +109,28 @@ public:
      */
     void test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT]);
 
+    float *get_data(int axis_index, char axis);
+
     /**
      * Retrieve test statics.
      *
      * @param axis_index
      * @param axis
+     * @param rms_baseline
      * @param min
      * @param max
      * @param average
+     * @param rms
      */
-    void statistics(int axis_index, char axis, float &min, float &max, float &average);
+    void statistics(int axis_index, char axis, float rms_baseline, float &min, float &max, float &average,
+                    float &rms);
 
 private:
+    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, char kind,
+                             float expected_force, float error, float warning);
+    BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, char kind,
+                                 float expected_force, float error, float warning);
+
     float *_x_forces[FA_X_COUNT];
     float *_y_forces[FA_Y_COUNT];
     float *_z_forces[FA_Z_COUNT];
