@@ -73,7 +73,8 @@ public:
      * FPGA code. The interrupt (0) is raised every 20 ms inside FPGA code
      * (OuterLoop/OuterLoopClock.vi).
      *
-     * @param timeout after that time (in millisecond) expires, and error will be thrown
+     * @param timeout after that time (in millisecond) expires, and error will be
+     * thrown
      *
      * @throw NiError on NI error
      *
@@ -113,7 +114,8 @@ public:
      * command 0x7 is processed.
      *
      * @param warning_timeout warning timeout for IRQ call in milliseconds
-     * @param error_timeout after that time (in millisecond) expires, and error will be thrown
+     * @param error_timeout after that time (in millisecond) expires, and error
+     * will be thrown
      *
      * @throw NiError on NI error
      * @throw std::runtime_error on timeout

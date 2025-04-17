@@ -24,6 +24,7 @@
 #include <cRIO/SAL/Command.h>
 
 #include <Context.h>
+#include <ForceActuatorBumpTestStatus.h>
 #include <M1M3SSPublisher.h>
 #include <Model.h>
 #include <SettingReader.h>
@@ -33,26 +34,43 @@ using namespace LSST::M1M3::SS;
 
 ForceActuatorBumpTestCommand::ForceActuatorBumpTestCommand(int32_t commandID,
                                                            MTM1M3_command_forceActuatorBumpTestC *data)
-        : Command(commandID) {
+        : Command(commandID), index(0), cylinders(0) {
     memcpy(&_data, data, sizeof(MTM1M3_command_forceActuatorBumpTestC));
 }
 
 bool ForceActuatorBumpTestCommand::validate() {
-    if (SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
-                _data.actuatorId) == -1) {
+    if (_data.actuatorId < 0) {
+        _data.actuatorId *= -1;
+        cylinders = true;
+    } else {
+        cylinders = false;
+    }
+
+    index = SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
+            _data.actuatorId);
+
+    if (index == -1) {
         M1M3SSPublisher::instance().logCommandRejectionWarning("ForceActuatorBumpTest",
                                                                "Invalid actuatorId.");
         return false;
     }
-    if (M1M3SSPublisher::instance().getEventForceActuatorBumpTestStatus()->actuatorId >= 0) {
-        M1M3SSPublisher::instance().logCommandRejectionWarning("ForceActuatorBumpTest",
-                                                               "Test already in progress.");
+    auto min_distance = ForceActuatorSettings::instance().bumpTestMinimalDistance;
+    int min_actuator_id;
+    auto measured_distance =
+            ForceActuatorBumpTestStatus::instance().minimal_tested_distance(index, min_actuator_id);
+    if (measured_distance <= min_distance) {
+        M1M3SSPublisher::instance().logCommandRejectionWarning(
+                "ForceActuatorBumpTest",
+                fmt::format(
+                        "Actuator with ID {} cannot be tested  - {:0.2}m is closer then {:0.2}m to already "
+                        "tested FA {}.",
+                        _data.actuatorId, measured_distance, min_distance, min_actuator_id));
         return false;
     }
     if (Model::instance().getILC()->isDisabled(_data.actuatorId)) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
                 "ForceActuatorBumpTest",
-                "Cannnot bump test disabled force actuator " + std::to_string(_data.actuatorId));
+                fmt::format("Cannnot bump test disabled force actuator {}", _data.actuatorId));
         return false;
     }
     return true;

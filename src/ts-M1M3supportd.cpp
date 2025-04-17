@@ -20,14 +20,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <chrono>
 #include <cstring>
+#include <fcntl.h>
 #include <getopt.h>
 #include <grp.h>
 #include <iostream>
 #include <pwd.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <chrono>
 #include <thread>
 
 #include <spdlog/spdlog.h>
@@ -329,11 +329,6 @@ int main(int argc, char *const argv[]) {
             pidf.close();
             if (pidf.fail()) {
                 std::cerr << "Error: Cannot write to PID file " << pidFile << ": " << strerror(errno)
-                          << std::endl;
-                exit(EXIT_FAILURE);
-            }
-            if (chown(pidFile, runAs->pw_uid, runGroup->gr_gid)) {
-                std::cerr << "Error: Cannot change owner of " << pidFile << ":" << strerror(errno)
                           << std::endl;
                 exit(EXIT_FAILURE);
             }

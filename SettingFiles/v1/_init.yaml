@@ -211,8 +211,9 @@ ForceActuatorSettings:
     NonTestedTolerances:
       Warning: 20
       Error: 100
-    SettleTime: 3.0
-    Measurements: 10
+    SettleTime: 3.5
+    Measurements: 100
+    MinimalDistance: 4
 GyroSettings:
   DataRate: 1000
   AxesMatrix: [1,0,0,0,1,0,0,0,1]

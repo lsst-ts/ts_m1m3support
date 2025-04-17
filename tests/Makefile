@@ -8,6 +8,7 @@ TEST_SRCS := $(shell ls test_*.cpp 2>/dev/null)
 BINARIES := $(patsubst %.cpp,%,$(TEST_SRCS))
 DEPS := $(patsubst %.cpp,%.cpp.d,$(TEST_SRCS))
 JUNIT_FILES := $(shell ls *.xml 2>/dev/null)
+CATCH_CONFIG := -DCATCH_CONFIG_MAIN
 
 ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPS)
@@ -62,12 +63,12 @@ clean:
 
 %.cpp.o: %.cpp.d
 	@echo '[CPP] $(patsubst %.d,%,$<)'
-	${co}$(CPP) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
+	${co}$(CPP) $(CATCH_CONFIG) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -c -fmessage-length=0 -o $@ $(patsubst %.d,%,$<)
 
 %.cpp.d: %.cpp
 	@echo '[DPP] $<'
-	${co}$(CPP) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
+	${co}$(CPP) $(CATCH_CONFIG) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) -M $< -MF $@ -MT '$(patsubst %.cpp,%.o,$<) $@'
 
 ${BINARIES}: %: %.cpp.o ../src/libM1M3SS.a
 	@echo '[TPP] $<'
-	${co}$(CPP) -o $@ $(LIBS_FLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) $^ ../$(CRIOCPP)/lib/libcRIOcpp.a $(LIBS) $(SAL_LIBS)
+	${co}$(CPP) -o $@ $(CATCH_CONFIG) $(LIBS_FLAGS) $(SAL_CPPFLAGS) $(M1M3_CPPFLAGS) $^ ../$(CRIOCPP)/lib/libcRIOcpp.a $(LIBS) $(SAL_LIBS)

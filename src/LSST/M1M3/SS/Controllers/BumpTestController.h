@@ -24,7 +24,11 @@
 #ifndef BUMPTESTCONTROLLER_H_
 #define BUMPTESTCONTROLLER_H_
 
+#include <chrono>
+
 #include <cRIO/DataTypes.h>
+
+#include "FABumpTestData.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -88,22 +92,23 @@ namespace SS {
  * :TestedTolerances/Warning: and :NonTestedTolerances/Warning: are used as
  * warning levels. If the error surpassed those, but doesn't trigger an error
  * (is not above error value), a warning message is send to the system log.
-
  */
 class BumpTestController {
 public:
     BumpTestController();
 
+    ~BumpTestController();
+
     /**
      * Set current bump tests parameters.
      *
-     * @param actuatorId actuator ID (101-443)
-     * @param testPrimary true if test primary (Z) actuator
-     * @param testSecondary true if test secondary (X or Y) actuator
+     * @param actuatoro_id actuator ID (101-443)
+     * @param test_primary true if test primary (Z) actuator
+     * @param test_secondary true if test secondary (X or Y) actuator
      *
      * @return 0 on success, 1 if another force actuator is being tested
      */
-    int setBumpTestActuator(int actuatorId, bool testPrimary, bool testSecondary);
+    int setBumpTestActuator(int actuator_id, bool cylinders, bool test_primary, bool test_secondary);
 
     /**
      * Run single loop. Shall be called from update command after telemetry
@@ -122,48 +127,36 @@ public:
      * Stops bump test on given cylinder.
      *
      * @param axis cylinder axis (X,Y or Z)
+     * @param index actuator index (0..155)
      */
-    void stopCylinder(char axis);
+    void stopCylinder(char axis, int index);
 
 private:
-    int _xIndex;
-    int _yIndex;
-    int _zIndex;
-    int _secondaryIndex;
-    bool _testPrimary;
-    bool _testSecondary;
+    float _test_force;
 
-    float _testForce;
-
-    float _testedWarning;
-    float _testedError;
-    float _nonTestedWarning;
-    float _nonTestedError;
-
-    float _testSettleTime;
-    int _testMeasurements;
-    int _testProgress;
+    std::chrono::milliseconds _test_settle_time;
     // if NAN, don't sleep
-    double _sleepUntil;
+    std::chrono::time_point<std::chrono::steady_clock> _test_timeout[FA_COUNT];
+    bool _cylinders[FA_COUNT];
 
-    typedef enum { FINISHED, FAILED, NO_CHANGE, STATE_CHANGED } runCylinderReturn_t;
-    runCylinderReturn_t _runCylinder(char axis, int index, double averages[], int *stage);
-    void _resetProgress(bool zeroOffsets = true);
-    void _resetAverages();
-
-    double _xAverages[FA_X_COUNT];
-    double _yAverages[FA_Y_COUNT];
-    double _zAverages[FA_Z_COUNT];
+    FABumpTestData *_bump_test_data;
 
     /**
-     * Collect averages
+     * Run tests on cylinder.
+     *
+     * @param index
+     * @param axis
+     * @param stage
+     * @param timestamp
      */
-    bool _collectAverages();
+    bool _run_axis(int axis_index, int z_index, int actuator_id, char axis, const BumpTestStatus status,
+                   int &stage, double &timestamp);
+    void _reset_progress(bool zeroOffsets = true);
 
     /**
-     * @return 0x01 on error, 0x02 on warning.
+     * Collect data.
      */
-    int _checkAverages(char axis = ' ', int index = -1, double value = 0);
+    void _collect_results();
 };
 
 }  // namespace SS

@@ -21,23 +21,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <ForceActuatorApplicationSettings.h>
 
 using namespace LSST::M1M3::SS;
+using namespace Catch::Matchers;
 
 TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
     ForceActuatorApplicationSettings settings;
 
-    REQUIRE(settings.ActuatorIdToZIndex(100) < 0);
-    REQUIRE(settings.ActuatorIdToZIndex(101) == 0);
-    REQUIRE(settings.ActuatorIdToZIndex(150) < 0);
-    REQUIRE(settings.ActuatorIdToZIndex(443) == 155);
-    REQUIRE(settings.ActuatorIdToZIndex(444) < 0);
+    CHECK(settings.ActuatorIdToZIndex(100) < 0);
+    CHECK(settings.ActuatorIdToZIndex(101) == 0);
+    CHECK(settings.ActuatorIdToZIndex(150) < 0);
+    CHECK(settings.ActuatorIdToZIndex(435) == 147);
+    CHECK(settings.ActuatorIdToZIndex(443) == 155);
+    CHECK(settings.ActuatorIdToZIndex(444) < 0);
 
-    REQUIRE(settings.ZIndexToActuatorId(0) == 101);
-    REQUIRE(settings.ZIndexToActuatorId(155) == 443);
-    REQUIRE(settings.ZIndexToActuatorId(156) < 0);
-    REQUIRE(settings.ZIndexToActuatorId(-2) < 0);
+    CHECK(settings.ZIndexToActuatorId(0) == 101);
+    CHECK(settings.ZIndexToActuatorId(155) == 443);
+    CHECK(settings.ZIndexToActuatorId(156) < 0);
+    CHECK(settings.ZIndexToActuatorId(-2) < 0);
+
+    CHECK(settings.ZIndexToYIndex[0] == -1);
+    CHECK(settings.ZIndexToYIndex[1] == 0);
+
+    CHECK(settings.ZIndexToYIndex[150] == 99);
+    CHECK(settings.ZIndexToYIndex[155] == -1);
+
+    CHECK(settings.ZIndexToXIndex[0] == -1);
+    CHECK(settings.ZIndexToXIndex[11] == 0);
+
+    CHECK(settings.ZIndexToXIndex[147] == 11);
+    CHECK(settings.ZIndexToXIndex[155] == -1);
+
+    CHECK_THAT(settings.actuator_distance(2, 3), WithinRel(0.66581, 0.001));
+    CHECK_THAT(settings.actuator_distance(10, 155), WithinRel(4.52624, 0.001));
 }

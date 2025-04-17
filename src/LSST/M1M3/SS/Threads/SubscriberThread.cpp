@@ -93,7 +93,7 @@ void SubscriberThread::run() {
         _enqueueCommandIfAvailable(M1M3SSSubscriber::get().tryGetSampleTMAElevation());
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         long executionTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-        if (executionTime > 100) {
+        if (executionTime > 110) {
             SPDLOG_WARN("SubscriberThread executing for too long: {} ms", executionTime);
         }
         begin = end;
