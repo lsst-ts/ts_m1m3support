@@ -149,14 +149,17 @@ private:
      * @param stage
      * @param timestamp
      */
-    bool _run_axis(int axis_index, int z_index, int actuator_id, char axis, const BumpTestStatus status,
-                   int &stage, double &timestamp);
+    bool _run_axis(int axis_index, int z_index, int s_index, int actuator_id, BumpTestKind axis,
+                   BumpTestStatus status, int &stage, double &timestamp);
     void _reset_progress(bool zeroOffsets = true);
 
     /**
      * Collect data.
      */
     void _collect_results();
+
+    int _final_primary_states[FA_COUNT];
+    int _final_secondary_states[FA_S_COUNT];
 };
 
 }  // namespace SS

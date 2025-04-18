@@ -98,7 +98,7 @@ public:
      *
      * @return force actuator status
      */
-    BumpTestStatus test_actuator(int actuator_id, char kind, float expected_force, float error,
+    BumpTestStatus test_actuator(int actuator_id, BumpTestKind kind, float expected_force, float error,
                                  float warning);
 
     /**
@@ -107,9 +107,21 @@ public:
      * @param kind axis - X,Y,Z,P or S
      * @param results tests results, indexed by z_index (not the axis index)
      */
-    void test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT]);
+    void test_mirror(BumpTestKind kind, BumpTestStatus (&results)[FA_COUNT]);
 
-    float *get_data(int axis_index, char axis);
+    float *get_data(int axis_index, BumpTestKind axis);
+
+    static bool is_primary(BumpTestKind kind) {
+        switch (kind) {
+            case BumpTestKind::PRIMARY:
+            case BumpTestKind::AXIS_Z:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    static float get_expected_force(int axis_index, BumpTestKind axis);
 
     /**
      * Retrieve test statics.
@@ -122,13 +134,13 @@ public:
      * @param average
      * @param rms
      */
-    void statistics(int axis_index, char axis, float rms_baseline, float &min, float &max, float &average,
-                    float &rms);
+    void statistics(int axis_index, BumpTestKind axis, float rms_baseline, float &min, float &max,
+                    float &average, float &rms);
 
 private:
-    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, char kind,
+    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, BumpTestKind kind,
                              float expected_force, float error, float warning);
-    BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, char kind,
+    BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, BumpTestKind kind,
                                  float expected_force, float error, float warning);
 
     float *_x_forces[FA_X_COUNT];

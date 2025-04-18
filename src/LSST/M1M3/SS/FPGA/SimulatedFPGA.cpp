@@ -35,6 +35,7 @@
 #include <AirSupplyStatus.h>
 #include <CRC.h>
 #include <FPGAAddresses.h>
+#include <ForceActuatorBumpTestStatus.h>
 #include <ForceActuatorSettings.h>
 #include <M1M3SSPublisher.h>
 #include <NiFpga_M1M3SupportFPGA.h>
@@ -45,6 +46,7 @@
 #include <Timestamp.h>
 #include <Units.h>
 
+using namespace MTM1M3;
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
 using namespace std::chrono_literals;
@@ -606,6 +608,54 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             }
                             // uncomment to simulate follow up error
                             // if (subnet == 1 && address == 17 && force > 500) force = 200;
+
+                            auto &bump_test = ForceActuatorBumpTestStatus::instance();
+                            auto is_tested = [](int status) -> bool {
+                                return !(status == MTM1M3_shared_BumpTest_NotTested ||
+                                         status >= MTM1M3_shared_BumpTest_Passed);
+                            };
+                            // report under force on FA 102 if it's bump tested
+                            if (pIndex == 1 && is_tested(bump_test.primaryTest[pIndex])) {
+                                force -= 7;
+                            }
+                            // report under force on FA 103 if it's positive bump tested
+                            else if (pIndex == 2 && bump_test.primaryTest[pIndex] ==
+                                                            MTM1M3_shared_BumpTest_TestingPositive) {
+                                force -= 7;
+                            }
+                            // report under force on FA 104 if after it's positive bump tested
+                            else if (pIndex == 3 && bump_test.primaryTest[pIndex] ==
+                                                            MTM1M3_shared_BumpTest_TestingPositiveWait) {
+                                force -= 7;
+                            }
+                            // report over force on FA 105 if after it's positive bump tested
+                            else if (pIndex == 4 && bump_test.primaryTest[pIndex] ==
+                                                            MTM1M3_shared_BumpTest_TestingNegative) {
+                                force += 7;
+                            }
+                            // report over force on FA 106 if after it's positive bump tested
+                            else if (pIndex == 5 && bump_test.primaryTest[pIndex] ==
+                                                            MTM1M3_shared_BumpTest_TestingNegativeWait) {
+                                force += 7;
+                            }
+                            // report under force on FA 434 Y negative (pull)
+                            else if (sIndex == 108 && bump_test.secondaryTest[sIndex] ==
+                                                              MTM1M3_shared_BumpTest_TestingNegative) {
+                                force += 120;
+                            }
+                            // rport under force for FA 435 Z positive (push)
+                            else if (pIndex == 147 && bump_test.primaryTest[pIndex] ==
+                                                              MTM1M3_shared_BumpTest_TestingPositive) {
+                                force -= 120;
+                            }
+                            // report very high force on FA 321 Y
+                            else if (sIndex == 72 && bump_test.secondaryTest[sIndex] ==
+                                                             MTM1M3_shared_BumpTest_TestingPositive) {
+                                force += 110;
+                                // for M1M3 panic
+                                // force += 500;
+                            }
+
                             _writeModbusFloat(response, force);  // Write Primary Cylinder Force
                             if (address > 16) {
                                 force = (((float)M1M3SSPublisher::instance()

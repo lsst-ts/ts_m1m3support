@@ -108,7 +108,12 @@ void SettingReader::load() {
         SPDLOG_INFO("Reading configurationf file {}", filename);
         YAML::Node settings = YAML::LoadFile(filename);
 
+        std::cout << "reading .. " << std::endl;
+
         ForceActuatorSettings::instance().load(settings["ForceActuatorSettings"]);
+
+        std::cout << "ForceActuatorSettings done" << std::endl;
+
         HardpointActuatorSettings::instance().load(settings["HardpointActuatorSettings"]);
         _safetyControllerSettings.load(settings["SafetyControllerSettings"]);
         PositionControllerSettings::instance().load(settings["PositionControllerSettings"]);

@@ -57,6 +57,19 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
     _test_timeout[z_index] = steady_clock::now() + _test_settle_time;
     _cylinders[z_index] = cylinders;
 
+    if (test_primary) {
+        _final_primary_states[z_index] = MTM1M3_shared_BumpTest_Passed;
+    }
+
+    if (test_secondary) {
+        auto s_index = fa_app_settings->ZIndexToSecondaryCylinderIndex[z_index];
+        if (s_index < 0) {
+            throw std::runtime_error(fmt::format("Actuator {} ({}) isn't dual axis", actuator_id, z_index));
+        }
+        std::cout << "Secondary " << s_index << std::endl;
+        _final_secondary_states[s_index] = MTM1M3_shared_BumpTest_Passed;
+    }
+
     ForceActuatorBumpTestStatus::instance().trigger_bump_test(z_index, test_primary, test_secondary);
 
     return 0;
@@ -79,24 +92,27 @@ void BumpTestController::runLoop() {
     BumpTestStatus primary_status[FA_COUNT], secondary_status[FA_COUNT], x_status[FA_COUNT],
             y_status[FA_COUNT], z_status[FA_COUNT];
 
-    _bump_test_data->test_mirror('P', primary_status);
-    _bump_test_data->test_mirror('S', secondary_status);
+    _bump_test_data->test_mirror(BumpTestKind::PRIMARY, primary_status);
+    _bump_test_data->test_mirror(BumpTestKind::SECONDARY, secondary_status);
 
-    _bump_test_data->test_mirror('X', x_status);
-    _bump_test_data->test_mirror('Y', y_status);
-    _bump_test_data->test_mirror('Z', z_status);
+    _bump_test_data->test_mirror(BumpTestKind::AXIS_X, x_status);
+    _bump_test_data->test_mirror(BumpTestKind::AXIS_Y, y_status);
+    _bump_test_data->test_mirror(BumpTestKind::AXIS_Z, z_status);
 
-    for (int i = 0; i < FA_COUNT; i++) {
-        int actuator_id = fa_app_settings->Table[i].ActuatorID;
+    for (int z_index = 0; z_index < FA_COUNT; z_index++) {
+        int actuator_id = fa_app_settings->Table[z_index].ActuatorID;
+        int s_index = fa_app_settings->ZIndexToSecondaryCylinderIndex[z_index];
 
-        if (actuator_status.primary_tested(i) == true) {
+        if (actuator_status.primary_tested(z_index) == true) {
             bool changed = false;
-            if (_cylinders[i]) {
-                changed = _run_axis(i, i, actuator_id, 'P', primary_status[i], actuator_status.primaryTest[i],
-                                    actuator_status.primaryTestTimestamps[i]);
+            if (_cylinders[z_index]) {
+                changed = _run_axis(z_index, z_index, s_index, actuator_id, BumpTestKind::PRIMARY,
+                                    primary_status[z_index], actuator_status.primaryTest[z_index],
+                                    actuator_status.primaryTestTimestamps[z_index]);
             } else {
-                changed = _run_axis(i, i, actuator_id, 'Z', z_status[i], actuator_status.primaryTest[i],
-                                    actuator_status.primaryTestTimestamps[i]);
+                changed = _run_axis(z_index, z_index, s_index, actuator_id, BumpTestKind::AXIS_Z,
+                                    z_status[z_index], actuator_status.primaryTest[z_index],
+                                    actuator_status.primaryTestTimestamps[z_index]);
             }
             tested_count++;
             if (changed) {
@@ -104,27 +120,25 @@ void BumpTestController::runLoop() {
             }
         }
 
-        if (i < FA_S_COUNT) {
-            actuator_id = fa_app_settings->SecondaryCylinderIndexToActuatorId(i);
-            int z_index = fa_app_settings->ActuatorIdToZIndex(actuator_id);
+        if (s_index >= 0) {
             if (actuator_status.primary_tested(z_index) == false &&
-                actuator_status.secondary_tested(i) == true) {
+                actuator_status.secondary_tested(s_index) == true) {
                 bool changed = false;
-                if (_cylinders[i]) {
-                    changed = _run_axis(i, z_index, actuator_id, 'S', secondary_status[z_index],
-                                        actuator_status.secondaryTest[i],
-                                        actuator_status.secondaryTestTimestamps[i]);
+                if (_cylinders[z_index]) {
+                    changed = _run_axis(s_index, z_index, s_index, actuator_id, BumpTestKind::SECONDARY,
+                                        secondary_status[z_index], actuator_status.secondaryTest[s_index],
+                                        actuator_status.secondaryTestTimestamps[s_index]);
                 } else {
                     int x_index = fa_app_settings->ZIndexToXIndex[z_index];
                     if (x_index >= 0) {
-                        changed = _run_axis(x_index, z_index, actuator_id, 'X', x_status[z_index],
-                                            actuator_status.secondaryTest[i],
-                                            actuator_status.secondaryTestTimestamps[i]);
+                        changed = _run_axis(x_index, z_index, s_index, actuator_id, BumpTestKind::AXIS_X,
+                                            x_status[z_index], actuator_status.secondaryTest[s_index],
+                                            actuator_status.secondaryTestTimestamps[s_index]);
                     } else {
                         int y_index = fa_app_settings->ZIndexToYIndex[z_index];
-                        changed = _run_axis(y_index, z_index, actuator_id, 'Y', y_status[z_index],
-                                            actuator_status.secondaryTest[i],
-                                            actuator_status.secondaryTestTimestamps[i]);
+                        changed = _run_axis(y_index, z_index, s_index, actuator_id, BumpTestKind::AXIS_Y,
+                                            y_status[z_index], actuator_status.secondaryTest[s_index],
+                                            actuator_status.secondaryTestTimestamps[s_index]);
                     }
                 }
 
@@ -170,8 +184,8 @@ void BumpTestController::stopAll(bool forced) {
     }
 }
 
-bool BumpTestController::_run_axis(int axis_index, int z_index, int actuator_id, char axis,
-                                   const BumpTestStatus status, int &stage, double &timestamp) {
+bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int actuator_id,
+                                   BumpTestKind axis, BumpTestStatus status, int &stage, double &timestamp) {
     ForceController *forceController = Model::instance().getForceController();
 
     auto now = steady_clock::now();
@@ -179,19 +193,24 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int actuator_id,
     bool positive = false;
 
     if (_test_timeout[z_index] <= now) {
-        stage = MTM1M3_shared_BumpTest_Failed_Timeout;
-
-        float min, max, average, rms;
-        _bump_test_data->statistics(axis_index, axis, 0, min, max, average, rms);
+        float a_min, a_max, a_average, a_rms;
+        _bump_test_data->statistics(axis_index, axis, NAN, a_min, a_max, a_average, a_rms);
         SPDLOG_WARN(
-                "BumpTest: Timeout of actuator {} - {} (axis index {}, Z index {}) - min {:.2f} max {:.2f} "
-                "average {:.2f} rms {:.2f}",
-                actuator_id, axis, axis_index, z_index, min, max, average, rms);
-        forceController->applyActuatorOffset(axis, axis_index, 0);
-        forceController->processAppliedForces();
+                "BumpTest: Timeout of actuator {} - {} (axis index {}, Z index {}, s index {}) - min {:.2f} "
+                "max {:.2f} "
+                "average {:.2f} rms {:.2f}, stage {}",
+                actuator_id, char(axis), axis_index, z_index, s_index, a_min, a_max, a_average, a_rms, stage);
 
-        _test_timeout[z_index] = now + _test_settle_time;
-        return true;
+        // record fact that the test failed, and continue to the next stage
+
+        if (FABumpTestData::is_primary(axis)) {
+            _final_primary_states[z_index] = MTM1M3_shared_BumpTest_Failed_Timeout;
+        } else {
+            _final_secondary_states[s_index] = MTM1M3_shared_BumpTest_Failed_Timeout;
+        }
+
+        // this set test for the next step
+        status = BumpTestStatus::PASSED;
     }
 
     switch (stage) {
@@ -212,9 +231,21 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int actuator_id,
                     stage = MTM1M3_shared_BumpTest_TestingNegative;
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
-                    stage = MTM1M3_shared_BumpTest_Passed;
-                    SPDLOG_INFO("Passed FA ID {} ({}{}) bump test", actuator_id, axis, axis_index);
                     forceController->applyActuatorOffset(axis, axis_index, 0);
+
+                    if (FABumpTestData::is_primary(axis)) {
+                        stage = _final_primary_states[z_index];
+                    } else {
+                        stage = _final_secondary_states[s_index];
+                    }
+
+                    if (stage == MTM1M3_shared_BumpTest_Passed) {
+                        SPDLOG_INFO("Passed FA ID {} ({}{} {}) bump test", actuator_id, char(axis),
+                                    axis_index, s_index);
+                    } else {
+                        SPDLOG_WARN("Failed FA ID {} ({}{} {}) bump test: {}", actuator_id, char(axis),
+                                    axis_index, s_index, stage);
+                    }
                     break;
             }
 
