@@ -66,7 +66,11 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
         hardpointBreakawayFaultHigh = doc["HardpointBreakawayFaultHigh"].as<float>();
         hardpointBreakawayFaultLow = doc["HardpointBreakawayFaultLow"].as<float>();
         ignoreTensionRaisingLoweringElevation = doc["IgnoreTensionRaisingLoweringElevation"].as<float>();
+        ignoreCompressionRaisingLoweringElevation =
+                doc["IgnoreCompressionRaisingLoweringElevation"].as<float>();
         inRangeReadoutsToChaseFromWaitingTension = doc["InRangeReadoutsToChaseFromWaitingTension"].as<int>();
+        inRangeReadoutsToChaseFromWaitingCompression =
+                doc["InRangeReadoutsToChaseFromWaitingCompression"].as<int>();
 
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFaultLow) {
             throw std::runtime_error(

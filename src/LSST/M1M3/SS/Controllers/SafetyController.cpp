@@ -26,6 +26,7 @@
 
 #include <SAL_MTM1M3C.h>
 
+#include "DetailedState.h"
 #include <DigitalInputOutput.h>
 #include <ForceActuatorForceWarning.h>
 #include <LoweringFaultState.h>
@@ -417,7 +418,7 @@ void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFl
     if (conditionFlag) {
         if (_hardpointLimitLowTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitLowError,
-                            M1M3SSPublisher::instance().getEventDetailedState()->detailedState !=
+                            DetailedState::instance().detailedState !=
                                     MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
                             conditionFlag, "Hardpoint #{} hit low limit", hp + 1);
             _hardpointLimitLowTriggered[hp] = true;
@@ -435,7 +436,7 @@ void SafetyController::positionControllerNotifyLimitHigh(int hp, bool conditionF
     if (conditionFlag) {
         if (_hardpointLimitHighTriggered[hp] == false) {
             _updateOverride(FaultCodes::HardpointActuatorLimitHighError,
-                            M1M3SSPublisher::instance().getEventDetailedState()->detailedState !=
+                            DetailedState::instance().detailedState !=
                                     MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState,
                             conditionFlag, "Hardpoint #{} hit high limit", hp + 1);
             _hardpointLimitHighTriggered[hp] = true;
@@ -466,6 +467,17 @@ void SafetyController::positionControllerHighTension(int hp, float weightSupport
                     "supported, limit is {}%.",
                     hp + 1, weightSupportedPercent,
                     _safetyControllerSettings->PositionController.FaultForTensionAboveSupported);
+}
+
+void SafetyController::positionControllerHighCompression(int hp, float weightSupportedPercent) {
+    _updateOverride(FaultCodes::HardpointHighTension,
+                    _safetyControllerSettings->PositionController.FaultForCompressionAboveSupported >= 0,
+                    weightSupportedPercent >
+                            _safetyControllerSettings->PositionController.FaultForCompressionAboveSupported,
+                    "Hardpoint #{} still in tension (not chasing) above {}% "
+                    "supported, limit is {}%.",
+                    hp + 1, weightSupportedPercent,
+                    _safetyControllerSettings->PositionController.FaultForCompressionAboveSupported);
 }
 
 void SafetyController::cellLightNotifyOutputMismatch(bool conditionFlag, bool commanded, bool sensed) {

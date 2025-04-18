@@ -51,13 +51,10 @@ void PositionControllerSettings::load(YAML::Node doc) {
         lowerTimeout = lower["Timeout"].as<int>();
         lowerPositionOffset = lower["PositionOffset"].as<float>();
 
-        auto encoders = doc["ReferencePosition"].as<std::vector<int32_t>>();
-        if (encoders.size() != HP_COUNT) {
+        referencePosition = doc["ReferencePosition"].as<std::vector<int32_t>>();
+        if (referencePosition.size() != HP_COUNT) {
             throw std::runtime_error(fmt::format("Expecting {} encoder's ReferencePosition, got {}", HP_COUNT,
-                                                 encoders.size()));
-        }
-        for (int i = 0; i < HP_COUNT; i++) {
-            referencePosition[i] = encoders[i];
+                                                 referencePosition.size()));
         }
     } catch (YAML::Exception &ex) {
         throw std::runtime_error(fmt::format("YAML Loading PositionControllerSettings: {}", ex.what()));

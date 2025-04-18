@@ -29,6 +29,7 @@
 
 #include <cRIO/CliApp.h>
 
+#include "DetailedState.h"
 #include "ILCWarning.h"
 #include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorData.h>
@@ -64,7 +65,6 @@ ILCResponseParser::ILCResponseParser() {
     _hardpointMonitorWarning = 0;
     _hardpointMonitorData = 0;
     _outerLoopData = 0;
-    _detailedState = 0;
 }
 
 ILCResponseParser::ILCResponseParser(ILCSubnetData *subnetData, SafetyController *safetyController) {
@@ -82,7 +82,6 @@ ILCResponseParser::ILCResponseParser(ILCSubnetData *subnetData, SafetyController
     _hardpointMonitorWarning = M1M3SSPublisher::instance().getEventHardpointMonitorWarning();
     _hardpointMonitorData = M1M3SSPublisher::instance().getHardpointMonitorData();
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();
-    _detailedState = M1M3SSPublisher::instance().getEventDetailedState();
 
     ForceActuatorForceWarning::instance().reset();
 
@@ -832,7 +831,7 @@ void ILCResponseParser::_checkForceActuatorForces(const ILCMap &ilc) {
     // In disabled state, CSC cannot be controlled. So following error can be
     // high. We will ignore following error calculations until ILC is enabled
     // and commanded forces are send in.
-    if (_detailedState->detailedState != MTM1M3::MTM1M3_shared_DetailedStates_DisabledState) {
+    if (DetailedState::instance().detailedState != MTM1M3::MTM1M3_shared_DetailedStates_DisabledState) {
         _safetyController->forceActuatorFollowingError(ilc.ActuatorId, ilc.DataIndex, countingWarning,
                                                        immediateFault);
     }
@@ -864,11 +863,17 @@ void ILCResponseParser::_checkHardpointActuatorMeasuredForce(int32_t actuatorId)
     bool breakawayFault = measuredForce > breakawayMax || measuredForce < breakawayMin;
     _safetyController->hardpointActuatorBreakawayFault(actuatorId, breakawayFault);
 
-    // As soon as mirror is at least a bit raised, tests shall be performed
-    // this is software line of defense for excessive forces. Hardpoints shall
-    // break if excess force is applied (either compression or tension),
-    // protecting the mirror from damage.
-    if (RaisingLoweringInfo::instance().weightSupportedPercent > 0) {
+    // As soon as the mirror is raised enough that at least some HP forces
+    // excess shall be removed, but the excessive forces are still measured,
+    // fault the mirror.
+    //
+    // This is software defense against hardpoint breakaway. Hardpoints shall
+    // breakaway when excessive force is applied, and has enough range of
+    // motion to support full glass motion on static supports.
+    //
+    // The minimal supported percentage is hard-coded - this shall not be
+    // changed, at least not often.
+    if (RaisingLoweringInfo::instance().weightSupportedPercent > 70) {
         float maxWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningHigh;
         float minWarningForce = _hardpointActuatorSettings->hardpointMeasuredForceWarningLow;
         if (ForceControllerState::instance().balanceForcesApplied) {
@@ -893,7 +898,7 @@ void ILCResponseParser::_checkHardpointActuatorAirPressure(int32_t actuatorId) {
     float minPressure = _hardpointActuatorSettings->airPressureFaultLow;
     float maxPressure = _hardpointActuatorSettings->airPressureFaultHigh;
     int pressureError = 0;
-    switch (_detailedState->detailedState) {
+    switch (DetailedState::instance().detailedState) {
         case MTM1M3::MTM1M3_shared_DetailedStates_RaisingState:
         case MTM1M3::MTM1M3_shared_DetailedStates_RaisingEngineeringState:
             minPressure = _hardpointActuatorSettings->airPressureFaultLowRaising;

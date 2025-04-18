@@ -34,12 +34,15 @@
 #include <AccelerometerSettings.h>
 #include <AirSupplyStatus.h>
 #include <CRC.h>
+#include "DetailedState.h"
 #include <FPGAAddresses.h>
 #include <ForceActuatorBumpTestStatus.h>
 #include <ForceActuatorSettings.h>
 #include <M1M3SSPublisher.h>
 #include <NiFpga_M1M3SupportFPGA.h>
-#include <RaisingLoweringInfo.h>
+#include "PositionControllerSettings.h"
+#include "RaisingLoweringInfo.h"
+#include "Range.h"
 #include <SettingReader.h>
 #include <SimulatedFPGA.h>
 #include <TMA.h>
@@ -65,7 +68,10 @@ const float ACCEL_SIMULATED_STEP = D2RAD / 374.0;
 #define MOUNT_VALIDITY 20s
 
 // Simulate raising below IgnoreTensionRaisingLowering elevation
-#define SIMULATE_RAISING_LOW_ELEVATION
+#define SIMULATE_RAISING_LOW_ELEVATION_TENSION
+
+// Simulate raising with compression
+#define SIMULATE_RAISING_LOW_ELEVATION_COMPRESSION
 
 /**
  * Return data writen to modbus. The data are right shifted by 1 to allow for
@@ -100,20 +106,10 @@ SimulatedFPGA::SimulatedFPGA() {
     _monitorMountElevationThread = std::thread(&SimulatedFPGA::_monitorElevation, this);
 
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
-    _hardpointActuatorData->encoder[0] = 15137;
-#ifdef SIMULATE_RAISING_LOW_ELEVATION
-    _hardpointActuatorData->encoder[1] = 59000;
-#else
-    _hardpointActuatorData->encoder[1] = 20079;
-#endif
-    _hardpointActuatorData->encoder[2] = 26384;
-    _hardpointActuatorData->encoder[3] = 27424;
-#ifdef SIMULATE_RAISING_LOW_ELEVATION
-    _hardpointActuatorData->encoder[4] = 59000;
-#else
-    _hardpointActuatorData->encoder[4] = 17560;
-#endif
-    _hardpointActuatorData->encoder[5] = 23546;
+
+    for (int i = 0; i < HP_COUNT; i++) {
+        _hardpointActuatorData->encoder[i] = _start_encoders[i];
+    }
 
     _sendResponse = true;
 
@@ -184,7 +180,7 @@ void SimulatedFPGA::pullTelemetry() {
         supportFPGAData.InclinometerAngleRaw =
                 (int32_t)((_mountElevation - 90.0) * 1000.0) + (getRndPM1() * 5.0);
 
-        switch (M1M3SSPublisher::instance().getEventDetailedState()->detailedState) {
+        switch (DetailedState::instance().detailedState) {
             case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
                 if (chrono::steady_clock::now() > _mountElevationValidTo) {
                     if (_mountSimulatedMovementFirstPass) {
@@ -231,14 +227,19 @@ void SimulatedFPGA::pullTelemetry() {
                 }
                 break;
             case MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState:
-#ifdef SIMULATE_RAISING_LOW_ELEVATION
+#ifdef SIMULATE_RAISING_LOW_ELEVATION_TENSION
                 _mountElevation = _hardpointActuatorSettings->ignoreTensionRaisingLoweringElevation - 1;
                 _hardpointActuatorData->encoder[1] =
                         _hardpointActuatorSettings->highProximityEncoder[1] - 1000;
                 _hardpointActuatorData->encoder[4] =
                         _hardpointActuatorSettings->highProximityEncoder[4] - 1000;
-#else
-                _mountElevation = 90.0;
+#endif
+#ifdef SIMULATE_RAISING_LOW_ELEVATION_COMPRESSION
+                _mountElevation = _hardpointActuatorSettings->ignoreCompressionRaisingLoweringElevation - 1;
+                _hardpointActuatorData->encoder[0] =
+                        _hardpointActuatorSettings->lowProximityEncoder[0] + 1000;
+                _hardpointActuatorData->encoder[3] =
+                        _hardpointActuatorSettings->lowProximityEncoder[3] + 1000;
 #endif
                 _simulatingToHorizon = true;
                 _mountSimulatedMovementFirstPass = true;
@@ -601,7 +602,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                                           (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
                                                                 //
                             // simulate following error in disabled state
-                            if (M1M3SSPublisher::instance().getEventDetailedState()->detailedState ==
+                            if (DetailedState::instance().detailedState ==
                                         MTM1M3::MTM1M3_shared_DetailedStates_DisabledState &&
                                 subnet == 4 && address == 17) {
                                 force = 505;
@@ -737,47 +738,6 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                         _sendResponse = false;
                     }
 
-                    auto fillHPStatus = [address, function, &response, this](int steps) {
-                        int index = address - 1;
-                        _writeModbus(response, address);   // Write Address
-                        _writeModbus(response, function);  // Write Function
-                        uint8_t status =
-                                (_hardpointActuatorData->encoder[index] < _HPEncoderLow[index] ? 0x08
-                                                                                               : 0x00) |
-                                (_hardpointActuatorData->encoder[index] > _HPEncoderHigh[index] ? 0x04
-                                                                                                : 0x00);
-                        _writeModbus(response,
-                                     _broadCastCounter() | status);  // Write ILC Status
-                        // Number of steps issued / 4 + current encoder
-                        // The encoder is also inverted after being received to match axis
-                        // direction So we have to also invert the encoder here to
-                        // counteract that
-                        if (steps < 4 && steps > 0) {
-                            steps = 4;
-                        } else if (steps > -4 && steps < 0) {
-                            steps = -4;
-                        }
-                        int32_t encoder = -(_hardpointActuatorData->encoder[index]) +
-                                          _hardpointActuatorSettings->getEncoderOffset(index) - steps / 4;
-                        _writeModbus32(response, encoder);  // Write Encoder
-                        float force = getRndPM1() * 8.0;
-                        if ((address == 2 || address == 5) &&
-                            (TMA::instance().getElevation() <
-                             _hardpointActuatorSettings->ignoreTensionRaisingLoweringElevation)) {
-                            float supportedPct = RaisingLoweringInfo::instance().weightSupportedPercent;
-                            if (supportedPct < 20) {
-                                force += _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh * 0.9;
-                            } else if (supportedPct < 70) {
-                                force += _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh * 0.9 *
-                                         ((70 - supportedPct) / 50.0);
-                            } else if (supportedPct < 99) {
-                                force -= 20;
-                            }
-                        }
-                        _writeModbusFloat(response, force);  // Write Measured Force
-                        _writeModbusCRC(response);
-                    };
-
                     switch (function) {
                         case 17:                               // Report Server Id
                             _writeModbus(response, address);   // Write Address
@@ -814,7 +774,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             break;
                         }
                         case 66: {  // Step Motor
-                            fillHPStatus(data[i++]);
+                            _fill_HP_status(address, function, data[i++], response);
                             break;
                         }
                         case 67: {  // Force And Status
@@ -822,7 +782,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             if (stepMotorBroadcast) {
                                 steps = _hardpointActuatorData->stepsCommanded[address - 1];
                             }
-                            fillHPStatus(steps);
+                            _fill_HP_status(address, function, steps, response);
                             break;
                         }
                         case 80: {  // ADC Scan Rate
@@ -1130,7 +1090,7 @@ void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t> *response, int index
 float SimulatedFPGA::_getAirPressure() {
     float baseValue = 120;
     auto now = std::chrono::steady_clock::now();
-#define WAIT_SECONDS 60
+#define WAIT_SECONDS 5
     if (AirSupplyStatus::instance().airValveClosed == true) {
         baseValue = 0;
 
@@ -1139,4 +1099,87 @@ float SimulatedFPGA::_getAirPressure() {
                     (WAIT_SECONDS * 1000);
     }
     return fabs(baseValue + getRndPM1() * 0.5);
+}
+
+void SimulatedFPGA::_fill_HP_status(int address, int function, int steps, std::queue<uint16_t> *response) {
+    int index = address - 1;
+    auto encoder = _hardpointActuatorData->encoder[index];
+
+    _writeModbus(response, address);   // Write Address
+    _writeModbus(response, function);  // Write Function
+    uint8_t status =
+            (encoder < _HPEncoderLow[index] ? 0x08 : 0x00) | (encoder > _HPEncoderHigh[index] ? 0x04 : 0x00);
+    _writeModbus(response, _broadCastCounter() | status);  // Write ILC Status
+
+    // Number of steps issued / 4 + current encoder
+    // The encoder is also inverted after being received to match axis
+    // direction so we have to also invert the encoder here to
+    // counteract that
+    if ((-4 < steps) && (steps < 0)) {
+        steps = -4;
+    } else if ((0 < steps) && (steps < 4)) {
+        steps = 4;
+    }
+
+    float step_enc_rounded = round(steps / PositionControllerSettings::instance().encoderToStepsCoefficient);
+
+    int32_t modbus_encoder = _hardpointActuatorSettings->getEncoderOffset(index) - encoder - step_enc_rounded;
+
+    _writeModbus32(response, modbus_encoder);  // Write Encoder
+
+    double force = getRndPM1() * 8.0;
+
+    float supported_pct = RaisingLoweringInfo::instance().weightSupportedPercent;
+
+    static float lower_elevation = -100;
+    const float FULL_PCT = 99;
+
+    const float pct_force[HP_COUNT] = {300, -200, 200, 300, -200, 200};
+    const float enc_force[HP_COUNT] = {5, 5, 5, 5, 5, 5};
+
+    static float offsets_raise[HP_COUNT] = {0, 0, 0, 0, 0, 0};
+    static float offsets_pct_lower[HP_COUNT] = {0, 0, 0, 0, 0, 0};
+
+    // offsets in parking position
+    const float offsets_parked[HP_COUNT] = {-5000, 5000, 0, -2023, 945, 0};
+
+    if (supported_pct < FULL_PCT) {
+        auto &ds = DetailedState::instance();
+
+        if (ds.is_raising()) {
+            if (supported_pct == 0) {
+                for (int hp = 0; hp < HP_COUNT; hp++) {
+                    offsets_raise[hp] = _start_encoders[hp] * enc_force[hp];
+                    offsets_pct_lower[hp] = 0;
+                }
+            }
+            force += pct_force[index] * supported_pct - enc_force[index] * encoder + offsets_parked[index] +
+                     offsets_raise[index];
+        } else if (ds.is_lowering()) {
+            static float offsets_lower[HP_COUNT] = {0, 0, 0, 0, 0, 0};
+
+            float tma_elevation = TMA::instance().getElevation();
+
+            if (abs(lower_elevation - tma_elevation) > 1) {
+                auto hpe = _hardpointActuatorData->encoder;
+                for (int hp = 0; hp < HP_COUNT; hp++) {
+                    offsets_lower[hp] = enc_force[hp] * hpe[hp] - FULL_PCT * pct_force[hp];
+                    offsets_pct_lower[hp] -= offsets_lower[hp];
+                }
+                lower_elevation = tma_elevation;
+            }
+            force += pct_force[index] * supported_pct - enc_force[index] * encoder + offsets_lower[index] +
+                     (offsets_parked[index] + offsets_pct_lower[index]) * (FULL_PCT - supported_pct) /
+                             FULL_PCT;
+        } else if (ds.is_parked()) {
+            force += offsets_parked[index];
+        }
+
+        Range::InRangeAndCoerce(-_hardpointActuatorSettings->hardpointBreakawayFaultHigh * 0.9,
+                                -_hardpointActuatorSettings->hardpointBreakawayFaultLow * 0.9, force, force);
+    } else {
+    }
+
+    _writeModbusFloat(response, force);  // Write Measured Force
+    _writeModbusCRC(response);
 }

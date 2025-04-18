@@ -104,8 +104,6 @@ private:
     int32_t _hpExpectedResponses[HP_COUNT];
     int32_t _hmExpectedResponses[HP_COUNT];
 
-    MTM1M3_logevent_detailedStateC *_detailedState;
-
     MTM1M3_logevent_hardpointActuatorInfoC *_hardpointActuatorInfo;
     MTM1M3_logevent_hardpointActuatorStateC *_hardpointActuatorState;
     MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
