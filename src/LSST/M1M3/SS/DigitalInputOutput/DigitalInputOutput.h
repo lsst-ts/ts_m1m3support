@@ -69,7 +69,7 @@ public:
     /**
      * Toggles the global interlock heartbeat signal.
      */
-    void toggleHeartbeat(double globalTimestamp);
+    void toggle_heartbeat();
 
     /**
      */
@@ -100,7 +100,7 @@ private:
     MTM1M3_logevent_airSupplyWarningC *_airSupplyWarning;
     MTM1M3_logevent_cellLightStatusC *_cellLightStatus;
     MTM1M3_logevent_cellLightWarningC *_cellLightWarning;
-    InterlockStatus *_interlockStatus;
+    InterlockStatus _interlock_status;
 
     uint64_t _lastDOTimestamp;
     uint64_t _lastDITimestamp;

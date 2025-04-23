@@ -22,11 +22,21 @@
  */
 
 #include <InterlockStatus.h>
+#include <M1M3SSPublisher.h>
 
 using namespace LSST::M1M3::SS;
 
-InterlockStatus::InterlockStatus(token) {
-    timestamp = NAN;
+InterlockStatus::InterlockStatus() {
     heartbeatCommandedState = false;
     heartbeatOutputState = false;
 }
+
+void InterlockStatus::set_heartbeat_output(double _timestamp, bool _heartbeat) {
+    if (heartbeatOutputState != _heartbeat) {
+        timestamp = _timestamp;
+        heartbeatOutputState = _heartbeat;
+        send();
+    }
+}
+
+void InterlockStatus::send() { M1M3SSPublisher::instance().logInterlockStatus(this); }

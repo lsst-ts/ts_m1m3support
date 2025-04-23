@@ -54,7 +54,6 @@ DigitalInputOutput::DigitalInputOutput(token) {
     _airSupplyWarning = M1M3SSPublisher::instance().getEventAirSupplyWarning();
     _cellLightStatus = M1M3SSPublisher::instance().getEventCellLightStatus();
     _cellLightWarning = M1M3SSPublisher::instance().getEventCellLightWarning();
-    _interlockStatus = &InterlockStatus::instance();
 
     _lastDITimestamp = 0;
     _lastDOTimestamp = 0;
@@ -105,14 +104,12 @@ void DigitalInputOutput::processData() {
         _cellLightWarning->cellLightsOutputMismatch =
                 _cellLightStatus->cellLightsOutputOn != _cellLightStatus->cellLightsCommandedOn;
 
-        _interlockStatus->timestamp = timestamp;
-        _interlockStatus->heartbeatOutputState =
-                (fpgaData->DigitalOutputStates & DigitalOutputs::HeartbeatOutputState) != 0;
-        _interlockStatus->log();
+        _interlock_status.set_heartbeat_output(
+                timestamp, (fpgaData->DigitalOutputStates & DigitalOutputs::HeartbeatOutputState));
 
         InterlockWarning::instance().setHearbeatOutputMismatch(
                 timestamp,
-                _interlockStatus->heartbeatOutputState != _interlockStatus->heartbeatCommandedState);
+                _interlock_status.heartbeatOutputState != _interlock_status.heartbeatCommandedState);
 
         if (Context::instance().in_disabled_or_standby() == false) {
             assert(_safetyController != nullptr);
@@ -175,14 +172,11 @@ void DigitalInputOutput::processData() {
     }
 }
 
-void DigitalInputOutput::toggleHeartbeat(double globalTimestamp) {
-    _interlockStatus->timestamp = globalTimestamp;
-    _interlockStatus->heartbeatCommandedState = !_interlockStatus->heartbeatCommandedState;
+void DigitalInputOutput::toggle_heartbeat() {
+    _interlock_status.heartbeatCommandedState = !_interlock_status.heartbeatCommandedState;
     uint16_t buffer[2] = {FPGAAddresses::HeartbeatToSafetyController,
-                          (uint16_t)_interlockStatus->heartbeatCommandedState};
+                          (uint16_t)_interlock_status.heartbeatCommandedState};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-
-    _interlockStatus->log();
 }
 
 void DigitalInputOutput::toggleSystemOperationalHB(int index, bool on) {
