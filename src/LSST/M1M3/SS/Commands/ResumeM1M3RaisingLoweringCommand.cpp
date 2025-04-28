@@ -34,7 +34,7 @@ using namespace LSST::M1M3::SS;
 
 ResumeM1M3RaisingLoweringCommand::ResumeM1M3RaisingLoweringCommand(int32_t commandID) : Command(commandID) {}
 
-void ResumeM1M3RaisingLoweringCommand::execute() { Context::get().resumeM1M3RaisingLowering(this); }
+void ResumeM1M3RaisingLoweringCommand::execute() { Context::instance().resumeM1M3RaisingLowering(this); }
 
 void ResumeM1M3RaisingLoweringCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandresumeM1M3RaisingLowering(getCommandID(), ACK_INPROGRESS,

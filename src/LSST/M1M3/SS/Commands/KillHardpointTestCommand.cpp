@@ -49,7 +49,7 @@ bool KillHardpointTestCommand::validate() {
     return false;
 }
 
-void KillHardpointTestCommand::execute() { Context::get().killHardpointTest(this); }
+void KillHardpointTestCommand::execute() { Context::instance().killHardpointTest(this); }
 
 void KillHardpointTestCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandkillHardpointTest(getCommandID(), ACK_INPROGRESS, description,

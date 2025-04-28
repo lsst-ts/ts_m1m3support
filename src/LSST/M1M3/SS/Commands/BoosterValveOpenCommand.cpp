@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 BoosterValveOpenCommand::BoosterValveOpenCommand(int32_t commandID) : Command(commandID) {}
 
-void BoosterValveOpenCommand::execute() { Context::get().boosterValveOpen(this); }
+void BoosterValveOpenCommand::execute() { Context::instance().boosterValveOpen(this); }
 
 void BoosterValveOpenCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandboosterValveOpen(getCommandID(), ACK_INPROGRESS, description,

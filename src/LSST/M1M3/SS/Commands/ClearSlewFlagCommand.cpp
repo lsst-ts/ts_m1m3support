@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 ClearSlewFlagCommand::ClearSlewFlagCommand(int32_t commandID) : Command(commandID) {}
 
-void ClearSlewFlagCommand::execute() { Context::get().clearSlewFlag(this); }
+void ClearSlewFlagCommand::execute() { Context::instance().clearSlewFlag(this); }
 
 void ClearSlewFlagCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandclearSlewFlag(getCommandID(), ACK_INPROGRESS, description, timeout);

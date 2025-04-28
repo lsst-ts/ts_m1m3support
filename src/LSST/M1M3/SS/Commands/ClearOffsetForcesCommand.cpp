@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 ClearOffsetForcesCommand::ClearOffsetForcesCommand(int32_t commandID) : Command(commandID) {}
 
-void ClearOffsetForcesCommand::execute() { Context::get().clearOffsetForces(this); }
+void ClearOffsetForcesCommand::execute() { Context::instance().clearOffsetForces(this); }
 
 void ClearOffsetForcesCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandclearOffsetForces(getCommandID(), ACK_INPROGRESS, description,

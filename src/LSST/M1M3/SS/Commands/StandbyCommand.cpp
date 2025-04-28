@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 StandbyCommand::StandbyCommand(int32_t commandID) : Command(commandID) {}
 
-void StandbyCommand::execute() { Context::get().standby(this); }
+void StandbyCommand::execute() { Context::instance().standby(this); }
 
 void StandbyCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandstandby(getCommandID(), ACK_INPROGRESS, description, timeout);

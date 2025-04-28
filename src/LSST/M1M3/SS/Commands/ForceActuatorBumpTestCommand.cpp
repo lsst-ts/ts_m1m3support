@@ -76,7 +76,7 @@ bool ForceActuatorBumpTestCommand::validate() {
     return true;
 }
 
-void ForceActuatorBumpTestCommand::execute() { Context::get().forceActuatorBumpTest(this); }
+void ForceActuatorBumpTestCommand::execute() { Context::instance().forceActuatorBumpTest(this); }
 
 void ForceActuatorBumpTestCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandforceActuatorBumpTest(getCommandID(), ACK_INPROGRESS, description,

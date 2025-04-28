@@ -54,7 +54,7 @@ bool TurnPowerOffCommand::validate() {
            _data.turnAuxPowerNetworkCOff || _data.turnAuxPowerNetworkDOff;
 }
 
-void TurnPowerOffCommand::execute() { Context::get().turnPowerOff(this); }
+void TurnPowerOffCommand::execute() { Context::instance().turnPowerOff(this); }
 
 void TurnPowerOffCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnPowerOff(getCommandID(), ACK_INPROGRESS, description, timeout);

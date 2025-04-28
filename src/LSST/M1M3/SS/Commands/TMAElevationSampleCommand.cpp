@@ -45,5 +45,5 @@ void TMAElevationSampleCommand::execute() {
                      limit, diff, _data.timestamp);
         return;
     }
-    Context::get().storeTMAElevationSample(this);
+    Context::instance().storeTMAElevationSample(this);
 }

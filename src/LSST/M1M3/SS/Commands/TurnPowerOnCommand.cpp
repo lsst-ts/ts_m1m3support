@@ -54,7 +54,7 @@ bool TurnPowerOnCommand::validate() {
            _data.turnAuxPowerNetworkCOn || _data.turnAuxPowerNetworkDOn;
 }
 
-void TurnPowerOnCommand::execute() { Context::get().turnPowerOn(this); }
+void TurnPowerOnCommand::execute() { Context::instance().turnPowerOn(this); }
 
 void TurnPowerOnCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_INPROGRESS, description, timeout);

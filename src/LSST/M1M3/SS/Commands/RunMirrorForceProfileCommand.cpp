@@ -45,7 +45,7 @@ RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(int32_t commandID,
 
 bool RunMirrorForceProfileCommand::validate() { return true; }
 
-void RunMirrorForceProfileCommand::execute() { Context::get().runMirrorForceProfile(this); }
+void RunMirrorForceProfileCommand::execute() { Context::instance().runMirrorForceProfile(this); }
 
 void RunMirrorForceProfileCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandrunMirrorForceProfile(getCommandID(), ACK_INPROGRESS, description,

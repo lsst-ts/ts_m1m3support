@@ -49,7 +49,7 @@ bool StartCommand::validate() {
     return true;
 }
 
-void StartCommand::execute() { Context::get().start(this); }
+void StartCommand::execute() { Context::instance().start(this); }
 
 void StartCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandstart(getCommandID(), ACK_INPROGRESS, description, timeout);

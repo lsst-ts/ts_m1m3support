@@ -45,7 +45,7 @@ ApplyOffsetForcesCommand::ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_com
 
 bool ApplyOffsetForcesCommand::validate() { return true; }
 
-void ApplyOffsetForcesCommand::execute() { Context::get().applyOffsetForces(this); }
+void ApplyOffsetForcesCommand::execute() { Context::instance().applyOffsetForces(this); }
 
 void ApplyOffsetForcesCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandapplyOffsetForces(getCommandID(), ACK_INPROGRESS, description,

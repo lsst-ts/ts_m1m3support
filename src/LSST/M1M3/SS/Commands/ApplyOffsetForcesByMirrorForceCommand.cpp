@@ -41,7 +41,9 @@ ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
     _data.zMoment = data->zMoment;
 }
 
-void ApplyOffsetForcesByMirrorForceCommand::execute() { Context::get().applyOffsetForcesByMirrorForce(this); }
+void ApplyOffsetForcesByMirrorForceCommand::execute() {
+    Context::instance().applyOffsetForcesByMirrorForce(this);
+}
 
 void ApplyOffsetForcesByMirrorForceCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_INPROGRESS,

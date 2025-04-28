@@ -47,7 +47,7 @@ bool UpdatePIDCommand::validate() {
     return _data.pid >= 1 && _data.pid <= 6;
 }
 
-void UpdatePIDCommand::execute() { Context::get().updatePID(this); }
+void UpdatePIDCommand::execute() { Context::instance().updatePID(this); }
 
 void UpdatePIDCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandupdatePID(getCommandID(), ACK_INPROGRESS, description, timeout);
