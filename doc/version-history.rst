@@ -8,6 +8,7 @@ v2.17.0
 -------
 
 * Allow parallel M1M3 force actuators bump tests
+* Continue a bump test after detecting its failure
 
 v2.16.0
 -------

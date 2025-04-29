@@ -111,8 +111,8 @@ size_t FABumpTestData::size() const {
     return 1 + _capacity - (_tail - _head);
 }
 
-BumpTestStatus FABumpTestData::test_actuator(int z_index, char kind, float expected_force, float error,
-                                             float warning) {
+BumpTestStatus FABumpTestData::test_actuator(int z_index, BumpTestKind kind, float expected_force,
+                                             float error, float warning) {
     if (size() != _capacity) {
         return BumpTestStatus::NO_DATA;
     }
@@ -142,7 +142,7 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, char kind, float expec
     // return _test_min_max(x_index, y_index, z_index, s_index, kind, expected_force, error, warning);
 }
 
-void FABumpTestData::test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT]) {
+void FABumpTestData::test_mirror(BumpTestKind kind, BumpTestStatus (&results)[FA_COUNT]) {
     auto &tested_tolerance = ForceActuatorSettings::instance().TestedTolerances;
 
     for (int i = 0; i < FA_COUNT; i++) {
@@ -150,29 +150,33 @@ void FABumpTestData::test_mirror(char kind, BumpTestStatus (&results)[FA_COUNT])
     }
 }
 
-float *FABumpTestData::get_data(int axis_index, char axis) {
+float *FABumpTestData::get_data(int axis_index, BumpTestKind axis) {
     switch (axis) {
-        case 'X':
+        case BumpTestKind::AXIS_X:
             return _x_forces[axis_index];
-        case 'Y':
+        case BumpTestKind::AXIS_Y:
             return _y_forces[axis_index];
-        case 'Z':
+        case BumpTestKind::AXIS_Z:
             return _z_forces[axis_index];
         case BumpTestKind::PRIMARY:
             return _primary_forces[axis_index];
-        case 'S':
+        case BumpTestKind::SECONDARY:
             return _secondary_forces[axis_index];
         default:
             throw std::runtime_error("Invalid axis kind");
     };
 }
 
-void FABumpTestData::statistics(int axis_index, char axis, float rms_baseline, float &min, float &max,
+void FABumpTestData::statistics(int axis_index, BumpTestKind axis, float rms_baseline, float &min, float &max,
                                 float &average, float &rms) {
     float *data = get_data(axis_index, axis);
 
     if (size() == 0) {
         throw std::runtime_error("Cannot compute statistics of empty data.");
+    }
+
+    if (isnan(rms_baseline)) {
+        rms_baseline = get_expected_force(axis_index, axis);
     }
 
     min = max = average = data[_head];
@@ -217,82 +221,96 @@ BumpTestStatus in_range(float force, float expected_force, float error, float wa
     return BumpTestStatus::PASSED;
 }
 
-BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, int s_index, char kind,
-                                         float expected_force, float error, float warning) {
+float FABumpTestData::get_expected_force(int axis_index, BumpTestKind axis) {
+    auto &pub = M1M3SSPublisher::instance();
+    switch (axis) {
+        case BumpTestKind::PRIMARY:
+            return pub.getAppliedCylinderForces()->primaryCylinderForces[axis_index];
+        case BumpTestKind::SECONDARY:
+            return pub.getAppliedCylinderForces()->secondaryCylinderForces[axis_index];
+        case AXIS_X:
+            return pub.getEventAppliedOffsetForces()->xForces[axis_index];
+        case AXIS_Y:
+            return pub.getEventAppliedOffsetForces()->yForces[axis_index];
+        case AXIS_Z:
+            return pub.getEventAppliedOffsetForces()->zForces[axis_index];
+    }
+    return 0;
+}
+
+BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, int s_index,
+                                         BumpTestKind kind, float expected_force, float error,
+                                         float warning) {
     float min, max, average, rms;
 
     BumpTestStatus p_state = BumpTestStatus::PASSED;
     BumpTestStatus s_state = BumpTestStatus::PASSED;
 
     switch (kind) {
-        case 'P':
+        case BumpTestKind::PRIMARY:
             if (isnan(expected_force)) {
-                expected_force = M1M3SSPublisher::instance()
-                                         .getAppliedCylinderForces()
-                                         ->primaryCylinderForces[z_index];
+                expected_force = get_expected_force(z_index, kind);
             }
-            statistics(z_index, 'P', expected_force, min, max, average, rms);
+            statistics(z_index, BumpTestKind::PRIMARY, expected_force, min, max, average, rms);
             p_state = in_range(rms, 0, error, warning);
 
             if (s_index != -1) {
-                statistics(s_index, 'S', 0, min, max, average, rms);
+                statistics(s_index, BumpTestKind::SECONDARY, 0, min, max, average, rms);
                 s_state = in_range(rms, 0, error, warning);
             }
             break;
-        case 'S':
+        case BumpTestKind::SECONDARY:
             if (s_index == -1) {
                 return BumpTestStatus::INVALID_ACTUATOR;
             }
             if (isnan(expected_force)) {
-                expected_force = M1M3SSPublisher::instance()
-                                         .getAppliedCylinderForces()
-                                         ->secondaryCylinderForces[s_index];
+                expected_force = get_expected_force(s_index, kind);
             }
-            statistics(z_index, 'P', 0, min, max, average, rms);
+            statistics(z_index, BumpTestKind::PRIMARY, 0, min, max, average, rms);
             p_state = in_range(rms, 0, error, warning);
 
-            statistics(s_index, 'S', expected_force, min, max, average, rms);
+            statistics(s_index, BumpTestKind::SECONDARY, expected_force, min, max, average, rms);
             s_state = in_range(rms, 0, error, warning);
             break;
-        case 'X':
+        case BumpTestKind::AXIS_X:
             if (x_index == -1) {
                 return BumpTestStatus::INVALID_ACTUATOR;
             }
             if (isnan(expected_force)) {
-                expected_force = M1M3SSPublisher::instance().getEventAppliedOffsetForces()->xForces[x_index];
+                expected_force = get_expected_force(x_index, kind);
             }
-            statistics(x_index, 'X', expected_force, min, max, average, rms);
+            statistics(x_index, BumpTestKind::AXIS_X, expected_force, min, max, average, rms);
             s_state = in_range(rms, 0, error, warning);
 
-            statistics(z_index, 'Z', 0, min, max, average, rms);
+            statistics(z_index, BumpTestKind::AXIS_Z, 0, min, max, average, rms);
             s_state = in_range(rms, 0, error, warning);
             break;
-        case 'Y':
+        case BumpTestKind::AXIS_Y:
             if (y_index == -1) {
                 return BumpTestStatus::INVALID_ACTUATOR;
             }
             if (isnan(expected_force)) {
-                expected_force = M1M3SSPublisher::instance().getEventAppliedOffsetForces()->yForces[y_index];
+                expected_force = get_expected_force(y_index, kind);
             }
-            statistics(y_index, 'Y', expected_force, min, max, average, rms);
+            statistics(y_index, BumpTestKind::AXIS_Y, expected_force, min, max, average, rms);
             s_state = in_range(rms, 0, error, warning);
 
-            statistics(z_index, 'Z', 0, min, max, average, rms);
+            statistics(z_index, BumpTestKind::AXIS_Z, 0, min, max, average, rms);
             p_state = in_range(rms, 0, error, warning);
             break;
-        case 'Z':
+        case BumpTestKind::AXIS_Z:
             if (isnan(expected_force)) {
-                expected_force = M1M3SSPublisher::instance().getEventAppliedOffsetForces()->zForces[z_index];
+                expected_force = get_expected_force(z_index, kind);
             }
 
-            statistics(z_index, 'Z', expected_force, min, max, average, rms);
+            statistics(z_index, BumpTestKind::AXIS_Z, expected_force, min, max, average, rms);
             p_state = in_range(rms, 0, error, warning);
 
             if (x_index != -1) {
-                statistics(x_index, 'X', 0, min, max, average, rms);
+                statistics(x_index, BumpTestKind::AXIS_X, 0, min, max, average, rms);
                 s_state = in_range(rms, 0, error, warning);
             } else if (y_index != -1) {
-                statistics(y_index, 'Y', 0, min, max, average, rms);
+                statistics(y_index, BumpTestKind::AXIS_Y, 0, min, max, average, rms);
                 s_state = in_range(rms, 0, error, warning);
             }
             break;
@@ -310,13 +328,14 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
     return BumpTestStatus::PASSED;
 }
 
-BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_index, int s_index, char kind,
-                                             float expected_force, float error, float warning) {
+BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_index, int s_index,
+                                             BumpTestKind kind, float expected_force, float error,
+                                             float warning) {
     for (size_t i = 0; i < _capacity; i++) {
         BumpTestStatus p_state = BumpTestStatus::PASSED;
         BumpTestStatus s_state = BumpTestStatus::PASSED;
         switch (kind) {
-            case 'P':
+            case BumpTestKind::PRIMARY:
                 if (isnan(expected_force)) {
                     expected_force = M1M3SSPublisher::instance()
                                              .getAppliedCylinderForces()
@@ -327,7 +346,7 @@ BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_ind
                     s_state = in_range(_secondary_forces[z_index][i], 0, error, warning);
                 }
                 break;
-            case 'S':
+            case BumpTestKind::SECONDARY:
                 if (s_index == -1) {
                     return BumpTestStatus::INVALID_ACTUATOR;
                 }
@@ -339,7 +358,7 @@ BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_ind
                 p_state = in_range(_primary_forces[z_index][i], 0, error, warning);
                 s_state = in_range(_secondary_forces[s_index][i], expected_force, error, warning);
                 break;
-            case 'X':
+            case BumpTestKind::AXIS_X:
                 if (x_index == -1) {
                     return BumpTestStatus::INVALID_ACTUATOR;
                 }
@@ -350,7 +369,7 @@ BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_ind
                 s_state = in_range(_x_forces[x_index][i], expected_force, error, warning);
                 p_state = in_range(_z_forces[z_index][i], 0, error, warning);
                 break;
-            case 'Y':
+            case BumpTestKind::AXIS_Y:
                 if (y_index == -1) {
                     return BumpTestStatus::INVALID_ACTUATOR;
                 }
@@ -361,7 +380,7 @@ BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_ind
                 s_state = in_range(_y_forces[y_index][i], expected_force, error, warning);
                 p_state = in_range(_z_forces[z_index][i], 0, error, warning);
                 break;
-            case 'Z':
+            case BumpTestKind::AXIS_Z:
                 if (isnan(expected_force)) {
                     expected_force =
                             M1M3SSPublisher::instance().getEventAppliedOffsetForces()->zForces[z_index];
