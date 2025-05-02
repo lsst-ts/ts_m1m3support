@@ -165,15 +165,6 @@ void DigitalInputOutput::processData() {
                     InterlockWarning::instance().thermalEquipmentOff);
             _safetyController->interlockNotifyAirSupplyOff(InterlockWarning::instance().airSupplyOff);
             _safetyController->interlockNotifyCabinetDoorOpen(InterlockWarning::instance().cabinetDoorOpen);
-
-            switch (M1M3SSPublisher::instance().getEventDetailedState()->detailedState) {
-                case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
-                case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
-                    // _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
-                    break;
-                default:
-                    break;
-            }
         }
     }
     _airSupplyStatus->send();

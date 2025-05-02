@@ -99,7 +99,6 @@ public:
     MTM1M3_logevent_commandRejectionWarningC *getEventCommandRejectionWarning() {
         return &_eventCommandRejectionWarning;
     }
-    MTM1M3_logevent_detailedStateC *getEventDetailedState() { return &_eventDetailedState; }
     MTM1M3_logevent_displacementSensorWarningC *getEventDisplacementSensorWarning() {
         return &_eventDisplacementSensorWarning;
     }
@@ -256,8 +255,7 @@ public:
         logCommandRejectionWarning(command, reason);
         throw std::runtime_error(reason);
     }
-    void logDetailedState();
-    void tryLogDetailedState();
+    void logDetailedState(MTM1M3_logevent_detailedStateC *data) { _m1m3SAL->logEvent_detailedState(data, 0); }
     void logDisplacementSensorSettings(MTM1M3_logevent_displacementSensorSettingsC *data) {
         _m1m3SAL->logEvent_displacementSensorSettings(data, 0);
     }
@@ -467,7 +465,6 @@ private:
     MTM1M3_logevent_cellLightStatusC _eventCellLightStatus;
     MTM1M3_logevent_cellLightWarningC _eventCellLightWarning;
     MTM1M3_logevent_commandRejectionWarningC _eventCommandRejectionWarning;
-    MTM1M3_logevent_detailedStateC _eventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _eventDisplacementSensorWarning;
     EnabledForceActuators _enabledForceActuators;
     MTM1M3_logevent_errorCodeC _eventErrorCode;
@@ -510,7 +507,6 @@ private:
     MTM1M3_logevent_cellLightStatusC _previousEventCellLightStatus;
     MTM1M3_logevent_cellLightWarningC _previousEventCellLightWarning;
     MTM1M3_logevent_commandRejectionWarningC _previousEventCommandRejectionWarning;
-    MTM1M3_logevent_detailedStateC _previousEventDetailedState;
     MTM1M3_logevent_displacementSensorWarningC _previousEventDisplacementSensorWarning;
     MTM1M3_logevent_errorCodeC _previousEventErrorCode;
     MTM1M3_logevent_forceActuatorStateC _previousEventForceActuatorState;

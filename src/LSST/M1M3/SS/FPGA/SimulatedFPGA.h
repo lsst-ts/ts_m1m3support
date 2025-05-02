@@ -92,6 +92,8 @@ private:
     MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
     HardpointActuatorSettings *_hardpointActuatorSettings;
 
+    const int _start_encoders[HP_COUNT] = {1030, 64100, 26384, 1143, 65600, 23546};
+
     int _lastRequest;
     std::queue<uint16_t> _u8Response;
     std::queue<uint16_t> _u16Response;
@@ -127,6 +129,8 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> _lastAirOpen;
 
     float _getAirPressure();
+
+    void _fill_HP_status(int address, int function, int steps, std::queue<uint16_t> *response);
 
     uint64_t _error_counter;
 };

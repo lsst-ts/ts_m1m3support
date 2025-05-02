@@ -115,6 +115,7 @@ public:
     void positionControllerNotifyLimitHigh(int hp, bool conditionFlag);
     void positionControllerNotifyUnstable(int hp, int32_t unstableCount, int32_t deltaEncoder);
     void positionControllerHighTension(int hp, float weightSupportedPercent);
+    void positionControllerHighCompression(int hp, float weightSupportedPercent);
 
     void cellLightNotifyOutputMismatch(bool conditionFlag, bool commanded, bool sensed);
     void cellLightNotifySensorMismatch(bool conditionFlag, bool commanded, bool sensed);

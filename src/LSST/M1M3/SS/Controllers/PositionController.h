@@ -36,7 +36,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-typedef enum { NO_WAIT, CAN_WAIT, WAITING, ALREADY_WAITED } wait_tension_t;
+/**
+ * State of the hardpointi (HP) wait. Used when the mirror is raised or lovered
+ * with HP unable to move outside of breakaway.
+ */
+typedef enum { NO_WAIT, CAN_WAIT, WAITING, ALREADY_WAITED } wait_hardpoint_t;
 
 /**
  * Controls M1M3 position. This controller is used in active state to command
@@ -55,7 +59,7 @@ typedef enum { NO_WAIT, CAN_WAIT, WAITING, ALREADY_WAITED } wait_tension_t;
  * (moving to target position).
  *
  * Small increments send to the ILC are stored in SAL/DDS
- * MTM1M3_hardpointActuatorDataC stepsCommanded. Target steps are stored in
+ * MTM1M3_hardpoint_actuator_dataC stepsCommanded. Target steps are stored in
  * stepsQueued.
  */
 class PositionController {
@@ -67,8 +71,8 @@ public:
      *
      * @return timeout for raise in seconds
      */
-    int getRaiseTimeout() { return _positionControllerSettings->raiseTimeout; }
-    int getLowerTimeout() { return _positionControllerSettings->lowerTimeout; }
+    int getRaiseTimeout() { return _position_controller_settings->raiseTimeout; }
+    int getLowerTimeout() { return _position_controller_settings->lowerTimeout; }
 
     bool enableChaseAll();
     void disableChaseAll();
@@ -153,11 +157,11 @@ public:
      * state.
      *
      * * **Standby**: both stepsCommanded and stepsQueued are set to 0.
-     * * **Chasing**: MTM1M3_hardpointActuatorDataC measuredForce is multiplied
+     * * **Chasing**: MTM1M3_hardpoint_actuator_dataC measuredForce is multiplied
      * by PositionControllerSettings::ForceToStepsCoefficient and coerced into
      * ±PositionControllerSettings::MaxStepsPerLoop.
      * * **Stepping**: executes steps so stepsQueued are decreased, ultimately
-     * equal to 0. MTM1M3_hardpointActuatorDataC stepsQueued are coerced into
+     * equal to 0. MTM1M3_hardpoint_actuator_dataC stepsQueued are coerced into
      * ±_scaledMaxStepsPerLoop[HP] and send to HP. stepsQueued are decreased by
      * stepsCommanded. If coerced value == 0, HP is transitioned into Standby
      * state.
@@ -182,16 +186,21 @@ public:
     void checkLimits(int hp);
 
 private:
-    void _convertToSteps(int32_t *steps, double x, double y, double z, double rX, double rY, double rZ);
+    void _convert_to_steps(int32_t *steps, double x, double y, double z, double rX, double rY, double rZ);
 
-    void _checkFollowingError(int hp);
+    void _check_following_error(int hp);
 
-    void _resetWaitTension();
+    bool _hp_raise_lower_forces_in_tolerance_tension(int hp, bool raise, bool in_range, float measured_force,
+                                                     float low_limit);
+    bool _hp_raise_lower_forces_in_tolerance_compression(int hp, bool raise, bool in_range,
+                                                         float measured_force, float high_limit);
 
-    PositionControllerSettings *_positionControllerSettings;
-    HardpointActuatorSettings *_hardpointActuatorSettings;
+    void _reset_wait_compression_tension();
 
-    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
+    PositionControllerSettings *_position_controller_settings;
+    HardpointActuatorSettings *_hardpoint_actuator_settings;
+
+    MTM1M3_hardpointActuatorDataC *_hardpoint_actuator_data;
     MTM1M3_logevent_hardpointActuatorStateC *_hardpointActuatorState;
     MTM1M3_logevent_hardpointActuatorInfoC *_hardpointInfo;
 
@@ -200,11 +209,12 @@ private:
     int32_t _stableEncoderCount[HP_COUNT];
     int32_t _unstableEncoderCount[HP_COUNT];
 
-    int32_t _lastEncoderCount[HP_COUNT];
-    wait_tension_t _waitTension[HP_COUNT];
-    uint16_t _raisingLoweringInRangeSamples[HP_COUNT];
+    int32_t _last_encoder_count[HP_COUNT];
+    wait_hardpoint_t _wait_tension[HP_COUNT];
+    wait_hardpoint_t _wait_compression[HP_COUNT];
+    uint16_t _raising_lowering_in_range_samples[HP_COUNT];
 
-    SafetyController *_safetyController;
+    SafetyController *_safety_controller;
 };
 
 } /* namespace SS */

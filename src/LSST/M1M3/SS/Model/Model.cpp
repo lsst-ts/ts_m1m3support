@@ -26,6 +26,7 @@
 #include <cRIO/Join.h>
 
 #include <Accelerometer.h>
+#include "DetailedState.h"
 #include <DigitalInputOutput.h>
 #include <Displacement.h>
 #include <FPGAAddresses.h>
@@ -192,10 +193,9 @@ void Model::publishStateChange(States::Type newState) {
     MTM1M3_logevent_summaryStateC *summaryStateData = M1M3SSPublisher::instance().getEventSummaryState();
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
     M1M3SSPublisher::instance().logSummaryState();
-    MTM1M3_logevent_detailedStateC *detailedStateData = M1M3SSPublisher::instance().getEventDetailedState();
-    detailedStateData->timestamp = timestamp;
-    detailedStateData->detailedState = (int32_t)(state & 0x00000000FFFFFFFF);
-    M1M3SSPublisher::instance().logDetailedState();
+    auto &detailed_state = DetailedState::instance();
+    detailed_state.timestamp = timestamp;
+    detailed_state.set(state & 0x00000000FFFFFFFF);
 }
 
 void Model::publishRecommendedSettings() {

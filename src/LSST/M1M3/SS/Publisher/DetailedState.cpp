@@ -21,25 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef POSITIONCONTROLLERSAFETYSETTINGS_H
-#define POSITIONCONTROLLERSAFETYSETTINGS_H
+#include <spdlog/spdlog.h>
 
-#include <yaml-cpp/yaml.h>
+#include <M1M3SSPublisher.h>
+#include <DetailedState.h>
 
-struct PositionControllerSafetySettings {
-    float FollowingErrorPercentage;
-    int FaultNumberOfFollowingErrors;
-    int FaultOnUnstableCount;
-    float FaultForTensionAboveSupported;
-    float FaultForCompressionAboveSupported;
+using namespace LSST::M1M3::SS;
 
-    void set(YAML::Node node) {
-        FollowingErrorPercentage = node["FollowingErrorPercentage"].as<float>();
-        FaultNumberOfFollowingErrors = node["FaultNumberOfFollowingErrors"].as<int>();
-        FaultOnUnstableCount = node["FaultOnUnstableCount"].as<int>();
-        FaultForTensionAboveSupported = node["FaultForTensionAboveSupported"].as<float>();
-        FaultForCompressionAboveSupported = node["FaultForCompressionAboveSupported"].as<float>();
+DetailedState::DetailedState(token) {}
+
+void DetailedState::send() { M1M3SSPublisher::instance().logDetailedState(this); }
+
+void DetailedState::set(int new_state) {
+    if (detailedState != new_state) {
+        detailedState = new_state;
+        send();
     }
-};
-
-#endif /* POSITIONCONTROLLERSAFETYSETTINGS_H */
+}

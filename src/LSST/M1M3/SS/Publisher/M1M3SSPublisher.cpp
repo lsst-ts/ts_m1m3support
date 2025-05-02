@@ -308,17 +308,6 @@ void M1M3SSPublisher::logCommandRejectionWarning(std::string command, std::strin
     logCommandRejectionWarning();
 }
 
-void M1M3SSPublisher::logDetailedState() {
-    _m1m3SAL->logEvent_detailedState(&_eventDetailedState, 0);
-    _previousEventDetailedState = _eventDetailedState;
-}
-
-void M1M3SSPublisher::tryLogDetailedState() {
-    if (_eventDetailedState.detailedState != _previousEventDetailedState.detailedState) {
-        logDetailedState();
-    }
-}
-
 void M1M3SSPublisher::logDisplacementSensorWarning() {
     _eventDisplacementSensorWarning.anyWarning =
             _eventDisplacementSensorWarning.sensorReportsInvalidCommand ||
