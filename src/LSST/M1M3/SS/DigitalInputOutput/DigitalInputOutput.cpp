@@ -43,6 +43,9 @@
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
 
+const int FREQ = 9;
+const int FREQ_BASE = 49;
+
 DigitalInputOutput::DigitalInputOutput(token) {
     SPDLOG_DEBUG("DigitalInputOutput: DigitalInputOutput()");
     _safetyController = 0;
@@ -162,7 +165,15 @@ void DigitalInputOutput::processData() {
                     InterlockWarning::instance().thermalEquipmentOff);
             _safetyController->interlockNotifyAirSupplyOff(InterlockWarning::instance().airSupplyOff);
             _safetyController->interlockNotifyCabinetDoorOpen(InterlockWarning::instance().cabinetDoorOpen);
-            _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
+
+            switch (M1M3SSPublisher::instance().getEventDetailedState()->detailedState) {
+                case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
+                case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
+                    // _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     _airSupplyStatus->send();
@@ -183,19 +194,15 @@ void DigitalInputOutput::toggleHeartbeat(double globalTimestamp) {
     _interlockStatus->log();
 }
 
-void DigitalInputOutput::toggleSystemOperationalHB(int index) {
+void DigitalInputOutput::toggleSystemOperationalHB(int index, bool on) {
     uint16_t buffer[2] = {
-            index == 0 ? FPGAAddresses::SystemOperationalHB1 : FPGAAddresses::SystemOperationalHB2,
-            _systemOperationalHB[index]};
+            index == 0 ? FPGAAddresses::SystemOperationalHB1 : FPGAAddresses::SystemOperationalHB2, on};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    _systemOperationalHB[index] = !_systemOperationalHB[index];
 }
 
-void DigitalInputOutput::toggleMirrorRaisedHB(int index) {
-    uint16_t buffer[2] = {index == 0 ? FPGAAddresses::MirrorRaisedHB1 : FPGAAddresses::MirrorRaisedHB2,
-                          _mirrorRaisedHB[index]};
+void DigitalInputOutput::toggleMirrorRaisedHB(int index, bool on) {
+    uint16_t buffer[2] = {index == 0 ? FPGAAddresses::MirrorRaisedHB1 : FPGAAddresses::MirrorRaisedHB2, on};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
-    _mirrorRaisedHB[index] = !_mirrorRaisedHB[index];
 }
 
 void DigitalInputOutput::turnAirOn() {

@@ -186,7 +186,8 @@ bool PositionController::hpRaiseLowerForcesInTolerance(bool raise) {
 
         // tread HP 2 and 5 (index 1 and 4) differently when raising/lowering below
         // 45 deg in elevation
-        if ((TMA::instance().getElevation() < _hardpointActuatorSettings->ignoreTensionRaisingLowering) &&
+        if ((TMA::instance().getElevation() <
+             _hardpointActuatorSettings->ignoreTensionRaisingLoweringElevation) &&
             hp_can_see_tension(i)) {
             switch (_hardpointActuatorState->motionState[i]) {
                 case MTM1M3_shared_HardpointActuatorMotionState_Chasing:

@@ -65,7 +65,7 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
 
         hardpointBreakawayFaultHigh = doc["HardpointBreakawayFaultHigh"].as<float>();
         hardpointBreakawayFaultLow = doc["HardpointBreakawayFaultLow"].as<float>();
-        ignoreTensionRaisingLowering = doc["IgnoreTensionRaisingLowering"].as<float>();
+        ignoreTensionRaisingLoweringElevation = doc["IgnoreTensionRaisingLoweringElevation"].as<float>();
         inRangeReadoutsToChaseFromWaitingTension = doc["InRangeReadoutsToChaseFromWaitingTension"].as<int>();
 
         if (hardpointMeasuredForceFaultHigh <= hardpointMeasuredForceFaultLow) {

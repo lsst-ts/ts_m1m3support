@@ -232,7 +232,7 @@ void SimulatedFPGA::pullTelemetry() {
                 break;
             case MTM1M3::MTM1M3_shared_DetailedStates_ParkedEngineeringState:
 #ifdef SIMULATE_RAISING_LOW_ELEVATION
-                _mountElevation = _hardpointActuatorSettings->ignoreTensionRaisingLowering - 1;
+                _mountElevation = _hardpointActuatorSettings->ignoreTensionRaisingLoweringElevation - 1;
                 _hardpointActuatorData->encoder[1] =
                         _hardpointActuatorSettings->highProximityEncoder[1] - 1000;
                 _hardpointActuatorData->encoder[4] =
@@ -763,7 +763,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                         float force = getRndPM1() * 8.0;
                         if ((address == 2 || address == 5) &&
                             (TMA::instance().getElevation() <
-                             _hardpointActuatorSettings->ignoreTensionRaisingLowering)) {
+                             _hardpointActuatorSettings->ignoreTensionRaisingLoweringElevation)) {
                             float supportedPct = RaisingLoweringInfo::instance().weightSupportedPercent;
                             if (supportedPct < 20) {
                                 force += _hardpointActuatorSettings->hardpointMeasuredForceFaultHigh * 0.9;
