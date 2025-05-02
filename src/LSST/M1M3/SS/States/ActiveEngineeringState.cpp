@@ -106,7 +106,9 @@ States::Type ActiveEngineeringState::exitEngineering(ExitEngineeringCommand *com
 }
 
 States::Type ActiveEngineeringState::lowerM1M3(LowerM1M3Command *command) {
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(0, false);
     BoosterValveStatus::instance().setUserTriggered(false);
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(1, false);
     return EnabledActiveState::lowerM1M3(command);
 }
 

@@ -31,7 +31,7 @@ using namespace LSST::M1M3::SS;
 
 ExitControlCommand::ExitControlCommand(int32_t commandID) : Command(commandID) {}
 
-void ExitControlCommand::execute() { Context::get().exitControl(this); }
+void ExitControlCommand::execute() { Context::instance().exitControl(this); }
 
 void ExitControlCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandexitControl(getCommandID(), ACK_INPROGRESS, description, timeout);

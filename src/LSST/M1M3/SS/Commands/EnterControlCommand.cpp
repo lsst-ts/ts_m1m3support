@@ -28,4 +28,4 @@ using namespace LSST::M1M3::SS;
 
 EnterControlCommand::EnterControlCommand() : Command(-1) {}
 
-void EnterControlCommand::execute() { Context::get().enterControl(this); }
+void EnterControlCommand::execute() { Context::instance().enterControl(this); }

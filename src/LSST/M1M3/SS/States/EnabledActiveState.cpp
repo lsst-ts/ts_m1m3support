@@ -23,16 +23,19 @@
 
 #include <spdlog/spdlog.h>
 
+#include "DigitalInputOutput.h"
 #include <EnabledActiveState.h>
 #include <Model.h>
 
 using namespace LSST::M1M3::SS;
 
 States::Type EnabledActiveState::lowerM1M3(LowerM1M3Command *command) {
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(0, false);
     SPDLOG_INFO("EnabledActiveState: lowerM1M3()");
     Model::instance().getSlewController()->reset();
     Model::instance().getForceController()->resetPIDs();
     Model::instance().getMirrorLowerController()->start();
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(1, false);
     return Model::instance().getSafetyController()->checkSafety(getLoweringState());
 }
 

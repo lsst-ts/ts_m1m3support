@@ -40,6 +40,8 @@ FaultState::FaultState() : State("FaultState") {}
 FaultState::FaultState(std::string name) : State(name) {}
 
 States::Type FaultState::update(UpdateCommand *command) {
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(0, false);
+    DigitalInputOutput::instance().toggleSystemOperationalHB(0, false);
     ModelPublisher publishIt{};
     SPDLOG_TRACE("FaultState: update()");
     auto ilc = Model::instance().getILC();
@@ -66,6 +68,8 @@ States::Type FaultState::update(UpdateCommand *command) {
     ilc->publishHardpointData();
     ilc->publishHardpointMonitorStatus();
     ilc->publishHardpointMonitorData();
+    DigitalInputOutput::instance().toggleMirrorRaisedHB(1, false);
+    DigitalInputOutput::instance().toggleSystemOperationalHB(1, false);
     return States::NoStateTransition;
 }
 
@@ -80,7 +84,6 @@ States::Type FaultState::standby(StandbyCommand *command) {
     Model::instance().getPowerController()->setAllPowerNetworks(false);
     RaisingLoweringInfo::instance().zeroSupportPercentage();
     Model::instance().getSafetyController()->clearErrorCode();
-    DigitalInputOutput::instance().clearCriticalFailureToSafetyController();
 
     Model::instance().getSlewController()->reset();
     Model::instance().getForceController()->reset();

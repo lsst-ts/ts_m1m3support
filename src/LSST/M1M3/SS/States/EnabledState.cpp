@@ -62,6 +62,7 @@ States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand *co
 
 void EnabledState::runLoop() {
     SPDLOG_TRACE("EnabledState: runLoop()");
+    DigitalInputOutput::instance().toggleSystemOperationalHB(0, true);
     IFPGA::get().pullTelemetry();
     Model::instance().getAccelerometer()->processData();
     DigitalInputOutput::instance().processData();
@@ -93,6 +94,7 @@ void EnabledState::runLoop() {
     BoosterValveController::instance().checkTriggers();
     HardpointActuatorWarning::instance().send();
     M1M3SSPublisher::instance().getEnabledForceActuators()->log();
+    DigitalInputOutput::instance().toggleSystemOperationalHB(1, true);
 }
 
 void EnabledState::sendTelemetry() {
@@ -121,6 +123,7 @@ bool EnabledState::lowerCompleted() {
 }
 
 States::Type EnabledState::disableMirror() {
+    DigitalInputOutput::instance().toggleSystemOperationalHB(0, false);
     auto ilc = Model::instance().getILC();
     ilc->writeSetModeDisableBuffer();
     ilc->triggerModbus();
@@ -130,6 +133,7 @@ States::Type EnabledState::disableMirror() {
     Model::instance().getForceController()->reset();
     DigitalInputOutput::instance().turnAirOff();
     Model::instance().getPowerController()->setAllAuxPowerNetworks(false);
+    DigitalInputOutput::instance().toggleSystemOperationalHB(1, false);
     return Model::instance().getSafetyController()->checkSafety(States::DisabledState);
 }
 

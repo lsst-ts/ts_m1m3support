@@ -42,7 +42,7 @@ bool ResetPIDCommand::validate() {
     return _data.pid >= 1 && _data.pid <= 6;
 }
 
-void ResetPIDCommand::execute() { Context::get().resetPID(this); }
+void ResetPIDCommand::execute() { Context::instance().resetPID(this); }
 
 void ResetPIDCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_INPROGRESS, description, timeout);

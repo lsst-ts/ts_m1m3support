@@ -40,4 +40,4 @@ UpdateCommand::~UpdateCommand() {
     _updateMutex->unlock();
 }
 
-void UpdateCommand::execute() { Context::get().update(this); }
+void UpdateCommand::execute() { Context::instance().update(this); }

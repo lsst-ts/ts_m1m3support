@@ -40,7 +40,7 @@ PositionM1M3Command::PositionM1M3Command(int32_t commandID, MTM1M3_command_posit
     _data.zRotation = data->zRotation;
 }
 
-void PositionM1M3Command::execute() { Context::get().positionM1M3(this); }
+void PositionM1M3Command::execute() { Context::instance().positionM1M3(this); }
 
 void PositionM1M3Command::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandpositionM1M3(getCommandID(), ACK_INPROGRESS, description, timeout);

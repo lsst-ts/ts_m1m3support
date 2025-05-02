@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 BoosterValveCloseCommand::BoosterValveCloseCommand(int32_t commandID) : Command(commandID) {}
 
-void BoosterValveCloseCommand::execute() { Context::get().boosterValveClose(this); }
+void BoosterValveCloseCommand::execute() { Context::instance().boosterValveClose(this); }
 
 void BoosterValveCloseCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_INPROGRESS, description,

@@ -60,7 +60,7 @@ bool DisableForceActuatorCommand::validate() {
     return true;
 }
 
-void DisableForceActuatorCommand::execute() { Context::get().disableForceActuator(this); }
+void DisableForceActuatorCommand::execute() { Context::instance().disableForceActuator(this); }
 
 void DisableForceActuatorCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommanddisableForceActuator(getCommandID(), ACK_INPROGRESS, description,

@@ -40,7 +40,7 @@ TranslateM1M3Command::TranslateM1M3Command(int32_t commandID, MTM1M3_command_tra
     _data.zRotation = data->zRotation;
 }
 
-void TranslateM1M3Command::execute() { Context::get().translateM1M3(this); }
+void TranslateM1M3Command::execute() { Context::instance().translateM1M3(this); }
 
 void TranslateM1M3Command::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandtranslateM1M3(getCommandID(), ACK_INPROGRESS, description, timeout);

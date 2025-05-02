@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 TurnAirOffCommand::TurnAirOffCommand(int32_t commandID) : Command(commandID) {}
 
-void TurnAirOffCommand::execute() { Context::get().turnAirOff(this); }
+void TurnAirOffCommand::execute() { Context::instance().turnAirOff(this); }
 
 void TurnAirOffCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnAirOff(getCommandID(), ACK_INPROGRESS, description, timeout);

@@ -680,7 +680,6 @@ States::Type SafetyController::checkSafety(States::Type preferredNextState) {
         // (logging,..)
         LoweringFaultState::ensureFaulted();
         M1M3SSPublisher::instance().logErrorCode();
-        DigitalInputOutput::instance().setCriticalFailureToSafetyController();
         SPDLOG_ERROR("Faulted ({}): {}", _errorCodeData->errorCode, _errorCodeData->errorReport);
         _clearError();
         return States::LoweringFaultState;

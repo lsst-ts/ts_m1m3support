@@ -72,19 +72,9 @@ public:
     void toggleHeartbeat(double globalTimestamp);
 
     /**
-     * Sets CH1 trigger for crtitical fult to safety controller.
-     *
-     * Use to signal to safety controller mirror is in fault state.
-     *
      */
-    void setCriticalFailureToSafetyController();
-
-    /**
-     * Clear CH1 trigger for critical fault to safety controller.
-     *
-     * Use to signal to safety controller mirror is not in fault state.
-     */
-    void clearCriticalFailureToSafetyController();
+    void toggleSystemOperationalHB(int index, bool on);
+    void toggleMirrorRaisedHB(int index, bool on);
 
     /*!
      * Turns the air on.

@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 DisableCommand::DisableCommand(int32_t commandID) : Command(commandID) {}
 
-void DisableCommand::execute() { Context::get().disable(this); }
+void DisableCommand::execute() { Context::instance().disable(this); }
 
 void DisableCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommanddisable(getCommandID(), ACK_INPROGRESS, description, timeout);

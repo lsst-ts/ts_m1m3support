@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 PauseM1M3RaisingLoweringCommand::PauseM1M3RaisingLoweringCommand(int32_t commandID) : Command(commandID) {}
 
-void PauseM1M3RaisingLoweringCommand::execute() { Context::get().pauseM1M3RaisingLowering(this); }
+void PauseM1M3RaisingLoweringCommand::execute() { Context::instance().pauseM1M3RaisingLowering(this); }
 
 void PauseM1M3RaisingLoweringCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandpauseM1M3RaisingLowering(getCommandID(), ACK_INPROGRESS,

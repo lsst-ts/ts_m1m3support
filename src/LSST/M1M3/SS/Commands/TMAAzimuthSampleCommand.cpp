@@ -44,5 +44,5 @@ void TMAAzimuthSampleCommand::execute() {
                      limit, diff, _data.timestamp);
         return;
     }
-    Context::get().storeTMAAzimuthSample(this);
+    Context::instance().storeTMAAzimuthSample(this);
 }

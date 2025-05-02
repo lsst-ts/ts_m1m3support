@@ -34,7 +34,7 @@ StopHardpointMotionCommand::StopHardpointMotionCommand(int32_t commandID,
                                                        MTM1M3_command_stopHardpointMotionC *)
         : Command(commandID) {}
 
-void StopHardpointMotionCommand::execute() { Context::get().stopHardpointMotion(this); }
+void StopHardpointMotionCommand::execute() { Context::instance().stopHardpointMotion(this); }
 
 void StopHardpointMotionCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandstopHardpointMotion(getCommandID(), ACK_INPROGRESS, description,

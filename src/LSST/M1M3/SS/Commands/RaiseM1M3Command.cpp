@@ -46,7 +46,7 @@ bool RaiseM1M3Command::validate() {
     return Command::validate();
 }
 
-void RaiseM1M3Command::execute() { Context::get().raiseM1M3(this); }
+void RaiseM1M3Command::execute() { Context::instance().raiseM1M3(this); }
 
 void RaiseM1M3Command::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandraiseM1M3(getCommandID(), ACK_INPROGRESS, description, timeout);

@@ -49,7 +49,7 @@ bool MoveHardpointActuatorsCommand::validate() {
            _data.steps[4] != 0 || _data.steps[5] != 0;
 }
 
-void MoveHardpointActuatorsCommand::execute() { Context::get().moveHardpointActuators(this); }
+void MoveHardpointActuatorsCommand::execute() { Context::instance().moveHardpointActuators(this); }
 
 void MoveHardpointActuatorsCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandmoveHardpointActuators(getCommandID(), ACK_INPROGRESS, description,

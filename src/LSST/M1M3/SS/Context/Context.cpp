@@ -32,14 +32,9 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Context::Context() {
+Context::Context(token) {
     SPDLOG_DEBUG("Context: Context()");
     _currentState = States::OfflineState;
-}
-
-Context &Context::get() {
-    static Context context;
-    return context;
 }
 
 void Context::enterControl(EnterControlCommand *command) {

@@ -65,7 +65,7 @@ bool ApplyActiveOpticForcesCommand::validate() {
     return true;
 }
 
-void ApplyActiveOpticForcesCommand::execute() { Context::get().applyActiveOpticForces(this); }
+void ApplyActiveOpticForcesCommand::execute() { Context::instance().applyActiveOpticForces(this); }
 
 void ApplyActiveOpticForcesCommand::ackInProgress(const char *description, double timeout) {
     M1M3SSPublisher::instance().ackCommandapplyActiveOpticForces(getCommandID(), ACK_INPROGRESS, description,

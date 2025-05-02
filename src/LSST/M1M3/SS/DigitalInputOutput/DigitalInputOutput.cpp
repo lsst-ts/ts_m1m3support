@@ -29,6 +29,7 @@
 
 #include <SAL_MTM1M3C.h>
 
+#include <Context.h>
 #include <DigitalInputOutput.h>
 #include <FPGAAddresses.h>
 #include <InterlockWarning.h>
@@ -41,6 +42,9 @@
 
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
+
+const int FREQ = 9;
+const int FREQ_BASE = 49;
 
 DigitalInputOutput::DigitalInputOutput(token) {
     SPDLOG_DEBUG("DigitalInputOutput: DigitalInputOutput()");
@@ -71,6 +75,11 @@ void DigitalInputOutput::processData() {
     // TODO: Handle no data available
     SPDLOG_TRACE("DigitalInputOutput: processData()");
     bool tryPublish = false;
+
+    if (_safetyController == nullptr && Context::instance().in_standby() == false) {
+        throw std::runtime_error("Safety controller must be set in outside of standby state.");
+    }
+
     SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
     double timestamp =
             Timestamp::fromFPGA(std::max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));
@@ -105,7 +114,8 @@ void DigitalInputOutput::processData() {
                 timestamp,
                 _interlockStatus->heartbeatOutputState != _interlockStatus->heartbeatCommandedState);
 
-        if (_safetyController) {
+        if (Context::instance().in_disabled_or_standby() == false) {
+            assert(_safetyController != nullptr);
             _safetyController->airControllerNotifyCommandOutputMismatch(
                     _airSupplyWarning->commandOutputMismatch, _airSupplyStatus->airCommandedOn,
                     _airSupplyStatus->airCommandOutputOn);
@@ -138,7 +148,8 @@ void DigitalInputOutput::processData() {
 
         InterlockWarning::instance().setData(timestamp, fpgaData->DigitalInputStates);
 
-        if (_safetyController) {
+        if (Context::instance().in_disabled_or_standby() == false) {
+            assert(_safetyController != nullptr);
             // report heartbeat lost first. GIS cuts power if heartbeats aren't
             // comming.
             _safetyController->interlockNotifyGISHeartbeatLost(InterlockWarning::instance().gisHeartbeatLost);
@@ -154,7 +165,15 @@ void DigitalInputOutput::processData() {
                     InterlockWarning::instance().thermalEquipmentOff);
             _safetyController->interlockNotifyAirSupplyOff(InterlockWarning::instance().airSupplyOff);
             _safetyController->interlockNotifyCabinetDoorOpen(InterlockWarning::instance().cabinetDoorOpen);
-            _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
+
+            switch (M1M3SSPublisher::instance().getEventDetailedState()->detailedState) {
+                case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
+                case MTM1M3::MTM1M3_shared_DetailedStates_ActiveState:
+                    // _safetyController->interlockNotifyTMAMotionStop(InterlockWarning::instance().tmaMotionStop);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     _airSupplyStatus->send();
@@ -175,15 +194,14 @@ void DigitalInputOutput::toggleHeartbeat(double globalTimestamp) {
     _interlockStatus->log();
 }
 
-void DigitalInputOutput::setCriticalFailureToSafetyController() {
-    SPDLOG_TRACE("DigitalInputOutput: trigerring critical fault");
-    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 0};
+void DigitalInputOutput::toggleSystemOperationalHB(int index, bool on) {
+    uint16_t buffer[2] = {
+            index == 0 ? FPGAAddresses::SystemOperationalHB1 : FPGAAddresses::SystemOperationalHB2, on};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
-void DigitalInputOutput::clearCriticalFailureToSafetyController() {
-    SPDLOG_TRACE("DigitalInputOutput: clear critical fault");
-    uint16_t buffer[2] = {FPGAAddresses::CriticalFailureToSafetyController, 1};
+void DigitalInputOutput::toggleMirrorRaisedHB(int index, bool on) {
+    uint16_t buffer[2] = {index == 0 ? FPGAAddresses::MirrorRaisedHB1 : FPGAAddresses::MirrorRaisedHB2, on};
     IFPGA::get().writeCommandFIFO(buffer, 2, 0);
 }
 
