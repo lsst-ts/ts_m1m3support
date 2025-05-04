@@ -34,7 +34,6 @@
 #include <cRIO/Singleton.h>
 
 #include <DistributedForces.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorBumpTestSettings.h>
 #include <ForceComponentSettings.h>
 #include <ForcesAndMoments.h>
@@ -70,16 +69,13 @@ public:
      */
     bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
 
-    ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-            const std::vector<float> &xForces, const std::vector<float> &yForces,
-            const std::vector<float> &zForces);
+    ForcesAndMoments calculateForcesAndMoments(const std::vector<float> &xForces,
+                                               const std::vector<float> &yForces,
+                                               const std::vector<float> &zForces);
 
     /** Calculates
      */
-    ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-            const std::vector<float> &zForces);
+    ForcesAndMoments calculateForcesAndMoments(const std::vector<float> &zForces);
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,
                                                             float angularAccelerationY,
                                                             float angularAccelerationZ);

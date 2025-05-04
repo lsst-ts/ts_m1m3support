@@ -27,35 +27,42 @@
 
 #include <SAL_MTM1M3.h>
 
-#include <ForceActuatorSettings.h>
-#include <ForceController.h>
-#include <Model.h>
-#include <RaisingLoweringInfo.h>
-#include <SettingReader.h>
-#include <StateTypes.h>
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "ForceController.h"
+#include "Model.h"
+#include "RaisingLoweringInfo.h"
+#include "SettingReader.h"
+#include "StateTypes.h"
 
 using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;
 
 void checkAppliedActuatorForcesZ(int zIndex, float zForce) {
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex] == -1);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
+    CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
+    CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
     CHECK(M1M3SSPublisher::instance().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex] == -1);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
-    int xIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex];
+    CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
+
+    int xIndex = faa_settings.ZIndexToXIndex[zIndex];
     CHECK_FALSE(xIndex < 0);
     CHECK(M1M3SSPublisher::instance().getAppliedForces()->xForces[xIndex] == xForce);
     CHECK(M1M3SSPublisher::instance().getAppliedForces()->zForces[zIndex] == zForce);
 }
 
 void checkAppliedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
-    int yIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex];
+    CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
+
+    int yIndex = faa_settings.ZIndexToYIndex[zIndex];
     CHECK_FALSE(yIndex < 0);
     CHECK(M1M3SSPublisher::instance().getAppliedForces()->yForces[yIndex] == yForce);
     CHECK(M1M3SSPublisher::instance().getAppliedForces()->zForces[zIndex] == zForce);
@@ -72,24 +79,30 @@ void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float 
 }
 
 void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex] == -1);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
+    CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
+    CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
     CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex] == -1);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
-    int xIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex];
+    CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
+
+    int xIndex = faa_settings.ZIndexToXIndex[zIndex];
     CHECK_FALSE(xIndex < 0);
     CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->xForces[xIndex] == xForce);
     CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
-    CHECK(SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[zIndex] == -1);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
-    int yIndex = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[zIndex];
+    CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
+
+    int yIndex = faa_settings.ZIndexToYIndex[zIndex];
     CHECK_FALSE(yIndex < 0);
     CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->yForces[yIndex] == yForce);
     CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);

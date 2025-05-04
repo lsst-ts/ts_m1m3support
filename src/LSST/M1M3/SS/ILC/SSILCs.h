@@ -28,7 +28,6 @@
 
 #include <ActiveBusList.h>
 #include <ChangeILCModeBusList.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <FreezeSensorBusList.h>
 #include <HardpointActuatorApplicationSettings.h>
@@ -67,7 +66,6 @@ namespace SS {
 class SSILCs {
 public:
     SSILCs(PositionController *positionController,
-           ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
            HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
            HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
            SafetyController *safetyController);
@@ -206,7 +204,6 @@ private:
 
     HardpointActuatorSettings *_hardpointActuatorSettings;
     MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
     MTM1M3_logevent_hardpointActuatorInfoC *_hardpointActuatorInfo;
     PositionController *_positionController;
 

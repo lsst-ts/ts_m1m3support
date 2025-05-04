@@ -34,14 +34,11 @@
 #include <Range.h>
 #include <SafetyController.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-OffsetForceComponent::OffsetForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+OffsetForceComponent::OffsetForceComponent()
         : ForceComponent("Offset", &ForceActuatorSettings::instance().OffsetComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedOffsetForces = M1M3SSPublisher::instance().getEventAppliedOffsetForces();
     _preclippedOffsetForces = M1M3SSPublisher::instance().getEventPreclippedOffsetForces();
@@ -84,9 +81,12 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -129,13 +129,15 @@ void OffsetForceComponent::postEnableDisableActions() {
 void OffsetForceComponent::postUpdateActions() {
     SPDLOG_TRACE("OffsetForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedOffsetForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedOffsetForces->timestamp = _appliedOffsetForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->offsetForceWarning[zIndex] = false;
 
@@ -172,8 +174,7 @@ void OffsetForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedOffsetForces->xForces, _appliedOffsetForces->yForces,
-            _appliedOffsetForces->zForces);
+            _appliedOffsetForces->xForces, _appliedOffsetForces->yForces, _appliedOffsetForces->zForces);
     _appliedOffsetForces->fx = fm.Fx;
     _appliedOffsetForces->fy = fm.Fy;
     _appliedOffsetForces->fz = fm.Fz;
@@ -182,9 +183,9 @@ void OffsetForceComponent::postUpdateActions() {
     _appliedOffsetForces->mz = fm.Mz;
     _appliedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedOffsetForces->xForces,
-            _preclippedOffsetForces->yForces, _preclippedOffsetForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedOffsetForces->xForces,
+                                                                     _preclippedOffsetForces->yForces,
+                                                                     _preclippedOffsetForces->zForces);
     _preclippedOffsetForces->fx = fm.Fx;
     _preclippedOffsetForces->fy = fm.Fy;
     _preclippedOffsetForces->fz = fm.Fz;
@@ -201,7 +202,3 @@ void OffsetForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedOffsetForces();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

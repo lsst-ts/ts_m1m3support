@@ -25,7 +25,6 @@
 #define LSST_M1M3_SS_FORCECONTROLLER_FINALFORCECOMPONENT_H_
 
 #include <EnabledForceActuators.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceComponent.h>
 #include <SAL_MTM1M3C.h>
 #include <SafetyController.h>
@@ -47,7 +46,7 @@ public:
      *
      * @param forceActuatorApplicationSettings
      */
-    FinalForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    FinalForceComponent();
 
     /**
      * @brief Sums applied forces to target x,y and z forces.
@@ -62,7 +61,6 @@ protected:
 private:
     SafetyController *_safetyController;
     EnabledForceActuators *_enabledForceActuators;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     MTM1M3_logevent_forceActuatorStateC *_forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;

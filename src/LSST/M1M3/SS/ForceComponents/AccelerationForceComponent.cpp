@@ -33,15 +33,11 @@
 #include <Model.h>
 #include <Range.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-AccelerationForceComponent::AccelerationForceComponent(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+AccelerationForceComponent::AccelerationForceComponent()
         : ForceComponent("Acceleration", &ForceActuatorSettings::instance().AccelerationComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedAccelerationForces = M1M3SSPublisher::instance().getAppliedAccelerationForces();
     _preclippedAccelerationForces = M1M3SSPublisher::instance().getEventPreclippedAccelerationForces();
@@ -85,9 +81,12 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -109,13 +108,15 @@ void AccelerationForceComponent::postEnableDisableActions() {
 void AccelerationForceComponent::postUpdateActions() {
     SPDLOG_TRACE("AccelerationForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedAccelerationForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedAccelerationForces->timestamp = _appliedAccelerationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->accelerationForceWarning[zIndex] = false;
 
@@ -153,8 +154,8 @@ void AccelerationForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedAccelerationForces->xForces,
-            _appliedAccelerationForces->yForces, _appliedAccelerationForces->zForces);
+            _appliedAccelerationForces->xForces, _appliedAccelerationForces->yForces,
+            _appliedAccelerationForces->zForces);
     _appliedAccelerationForces->fx = fm.Fx;
     _appliedAccelerationForces->fy = fm.Fy;
     _appliedAccelerationForces->fz = fm.Fz;
@@ -163,9 +164,9 @@ void AccelerationForceComponent::postUpdateActions() {
     _appliedAccelerationForces->mz = fm.Mz;
     _appliedAccelerationForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedAccelerationForces->xForces,
-            _preclippedAccelerationForces->yForces, _preclippedAccelerationForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedAccelerationForces->xForces,
+                                                                     _preclippedAccelerationForces->yForces,
+                                                                     _preclippedAccelerationForces->zForces);
     _preclippedAccelerationForces->fx = fm.Fx;
     _preclippedAccelerationForces->fy = fm.Fy;
     _preclippedAccelerationForces->fz = fm.Fz;
@@ -182,7 +183,3 @@ void AccelerationForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedAccelerationForces();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

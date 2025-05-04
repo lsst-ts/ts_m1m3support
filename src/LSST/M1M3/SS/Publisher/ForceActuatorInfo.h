@@ -28,7 +28,6 @@
 
 #include <cRIO/Singleton.h>
 
-#include <ForceActuatorApplicationSettings.h>
 #include <ILCDataTypes.h>
 #include <M1M3SSPublisher.h>
 #include <ModbusBuffer.h>
@@ -43,8 +42,6 @@ public:
     ForceActuatorInfo(token);
 
     void log() { M1M3SSPublisher::instance().logForceActuatorInfo(this); }
-
-    void populate(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
 
     void parseServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
 

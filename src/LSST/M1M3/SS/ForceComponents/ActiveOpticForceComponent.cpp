@@ -33,15 +33,11 @@
 #include <Model.h>
 #include <Range.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-ActiveOpticForceComponent::ActiveOpticForceComponent(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+ActiveOpticForceComponent::ActiveOpticForceComponent()
         : ForceComponent("ActiveOptic", &ForceActuatorSettings::instance().ActiveOpticComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
     _preclippedActiveOpticForces = M1M3SSPublisher::instance().getEventPreclippedActiveOpticForces();
@@ -91,14 +87,13 @@ void ActiveOpticForceComponent::postUpdateActions() {
         clippingRequired = _forceSetpointWarning->activeOpticForceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedActiveOpticForces->zForces);
+    ForcesAndMoments fm =
+            ForceActuatorSettings::instance().calculateForcesAndMoments(_appliedActiveOpticForces->zForces);
     _appliedActiveOpticForces->fz = fm.Fz;
     _appliedActiveOpticForces->mx = fm.Mx;
     _appliedActiveOpticForces->my = fm.My;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_forceActuatorApplicationSettings,
-                                                                     _preclippedActiveOpticForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedActiveOpticForces->zForces);
     _preclippedActiveOpticForces->fz = fm.Fz;
     _preclippedActiveOpticForces->mx = fm.Mx;
     _preclippedActiveOpticForces->my = fm.My;
@@ -124,7 +119,3 @@ void ActiveOpticForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedActiveOpticForces();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

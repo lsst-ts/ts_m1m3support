@@ -23,11 +23,11 @@
 
 #include <cRIO/SAL/Command.h>
 
-#include <Context.h>
-#include <ForceActuatorBumpTestStatus.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <SettingReader.h>
+#include "Context.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorBumpTestStatus.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
@@ -46,8 +46,7 @@ bool ForceActuatorBumpTestCommand::validate() {
         cylinders = false;
     }
 
-    index = SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(
-            _data.actuatorId);
+    index = ForceActuatorApplicationSettings::instance().ActuatorIdToZIndex(_data.actuatorId);
 
     if (index == -1) {
         M1M3SSPublisher::instance().logCommandRejectionWarning("ForceActuatorBumpTest",

@@ -37,11 +37,9 @@
 
 using namespace LSST::M1M3::SS;
 
-ElevationForceComponent::ElevationForceComponent(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+ElevationForceComponent::ElevationForceComponent()
         : ForceComponent("Elevation", &ForceActuatorSettings::instance().ElevationComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
     _preclippedElevationForces = M1M3SSPublisher::instance().getEventPreclippedElevationForces();
@@ -81,9 +79,12 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -105,13 +106,15 @@ void ElevationForceComponent::postEnableDisableActions() {
 void ElevationForceComponent::postUpdateActions() {
     SPDLOG_TRACE("ElevationForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedElevationForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedElevationForces->timestamp = _appliedElevationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->elevationForceWarning[zIndex] = false;
 
@@ -150,8 +153,8 @@ void ElevationForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedElevationForces->xForces,
-            _appliedElevationForces->yForces, _appliedElevationForces->zForces);
+            _appliedElevationForces->xForces, _appliedElevationForces->yForces,
+            _appliedElevationForces->zForces);
     _appliedElevationForces->fx = fm.Fx;
     _appliedElevationForces->fy = fm.Fy;
     _appliedElevationForces->fz = fm.Fz;
@@ -160,9 +163,9 @@ void ElevationForceComponent::postUpdateActions() {
     _appliedElevationForces->mz = fm.Mz;
     _appliedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedElevationForces->xForces,
-            _preclippedElevationForces->yForces, _preclippedElevationForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedElevationForces->xForces,
+                                                                     _preclippedElevationForces->yForces,
+                                                                     _preclippedElevationForces->zForces);
     _preclippedElevationForces->fx = fm.Fx;
     _preclippedElevationForces->fy = fm.Fy;
     _preclippedElevationForces->fz = fm.Fz;

@@ -500,8 +500,6 @@ LSST::cRIO::FPGA *M1M3SScli::newFPGA(const char *dir, bool &fpga_singleton) {
 
 constexpr int ILC_BUS = 5;
 
-ForceActuatorApplicationSettings forceActuators;
-
 ILCUnits M1M3SScli::getILCs(command_vec cmds) {
     ILCUnits units;
     int ret = -2;
@@ -522,6 +520,8 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
         throw std::runtime_error("Invalid bus name: " + b);
     };
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (auto c : cmds) {
         size_t division = c.find('/');
         int bus = -1;
@@ -532,7 +532,7 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
                 std::string add_s = c.substr(division + 1);
                 if (add_s == "*") {
                     for (int i = 0; i < 156; i++) {
-                        ForceActuatorTableRow row = forceActuators.Table[i];
+                        ForceActuatorTableRow row = faa_settings.Table[i];
                         if (row.Subnet == bus + 1) {
                             units.push_back(ILCUnit(getILC(row.Subnet - 1), row.Address));
                         }
@@ -554,13 +554,13 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
                     if (getDebugLevel() > 1) {
                         std::cout << "FA ID: " << std::dec << +id;
                     }
-                    id = forceActuators.ActuatorIdToZIndex(id);
+                    id = faa_settings.ActuatorIdToZIndex(id);
                     if (id < 0) {
                         std::cerr << "Unknown actuator ID " << c << std::endl;
                         ret = -1;
                         continue;
                     }
-                    ForceActuatorTableRow row = forceActuators.Table[id];
+                    ForceActuatorTableRow row = faa_settings.Table[id];
                     bus = row.Subnet - 1;
                     address = row.Address;
                     if (getDebugLevel() > 1) {
@@ -596,7 +596,7 @@ ILCUnits M1M3SScli::getILCs(command_vec cmds) {
     if (ret == -2 && units.empty()) {
         std::cout << "Command for all ILC" << std::endl;
         for (int i = 0; i < 156; i++) {
-            ForceActuatorTableRow row = forceActuators.Table[i];
+            ForceActuatorTableRow row = faa_settings.Table[i];
             units.push_back(ILCUnit(getILC(row.Subnet - 1), row.Address));
         }
         for (int i = 1; i < 7; i++) {

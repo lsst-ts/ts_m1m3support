@@ -34,15 +34,11 @@
 #include <Model.h>
 #include <Range.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-AzimuthForceComponent::AzimuthForceComponent(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+AzimuthForceComponent::AzimuthForceComponent()
         : ForceComponent("Azimuth", &ForceActuatorSettings::instance().AzimuthComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedAzimuthForces = M1M3SSPublisher::instance().getAppliedAzimuthForces();
     _preclippedAzimuthForces = M1M3SSPublisher::instance().getEventPreclippedAzimuthForces();
@@ -79,9 +75,12 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -103,13 +102,15 @@ void AzimuthForceComponent::postEnableDisableActions() {
 void AzimuthForceComponent::postUpdateActions() {
     SPDLOG_TRACE("AzimuthForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedAzimuthForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedAzimuthForces->timestamp = _appliedAzimuthForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->azimuthForceWarning[zIndex] = false;
 
@@ -147,8 +148,7 @@ void AzimuthForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedAzimuthForces->xForces, _appliedAzimuthForces->yForces,
-            _appliedAzimuthForces->zForces);
+            _appliedAzimuthForces->xForces, _appliedAzimuthForces->yForces, _appliedAzimuthForces->zForces);
     _appliedAzimuthForces->fx = fm.Fx;
     _appliedAzimuthForces->fy = fm.Fy;
     _appliedAzimuthForces->fz = fm.Fz;
@@ -157,9 +157,9 @@ void AzimuthForceComponent::postUpdateActions() {
     _appliedAzimuthForces->mz = fm.Mz;
     _appliedAzimuthForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedAzimuthForces->xForces,
-            _preclippedAzimuthForces->yForces, _preclippedAzimuthForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedAzimuthForces->xForces,
+                                                                     _preclippedAzimuthForces->yForces,
+                                                                     _preclippedAzimuthForces->zForces);
     _preclippedAzimuthForces->fx = fm.Fx;
     _preclippedAzimuthForces->fy = fm.Fy;
     _preclippedAzimuthForces->fz = fm.Fz;
@@ -176,7 +176,3 @@ void AzimuthForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedAzimuthForces();
 }
-
-}  // namespace SS
-}  // namespace M1M3
-} /* namespace LSST */

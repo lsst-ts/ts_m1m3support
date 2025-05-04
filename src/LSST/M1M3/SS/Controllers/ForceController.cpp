@@ -53,19 +53,19 @@ ForceActuatorIndicesNeighbors::ForceActuatorIndicesNeighbors() {
     memset(FarIndices, 0, sizeof(FarIndices));
 }
 
-ForceController::ForceController(ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
-        : _accelerationForceComponent(forceActuatorApplicationSettings),
-          _activeOpticForceComponent(forceActuatorApplicationSettings),
-          _azimuthForceComponent(forceActuatorApplicationSettings),
-          _balanceForceComponent(forceActuatorApplicationSettings),
-          _elevationForceComponent(forceActuatorApplicationSettings),
-          _offsetForceComponent(forceActuatorApplicationSettings),
-          _staticForceComponent(forceActuatorApplicationSettings),
-          _thermalForceComponent(forceActuatorApplicationSettings),
-          _velocityForceComponent(forceActuatorApplicationSettings),
-          _finalForceComponent(forceActuatorApplicationSettings) {
+ForceController::ForceController()
+        : _accelerationForceComponent(),
+          _activeOpticForceComponent(),
+          _azimuthForceComponent(),
+          _balanceForceComponent(),
+          _elevationForceComponent(),
+          _offsetForceComponent(),
+          _staticForceComponent(),
+          _thermalForceComponent(),
+          _velocityForceComponent(),
+          _finalForceComponent() {
     SPDLOG_DEBUG("ForceController: ForceController()");
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
     _safetyController = Model::instance().getSafetyController();
 
     _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
@@ -102,12 +102,12 @@ ForceController::ForceController(ForceActuatorApplicationSettings *forceActuator
             if (ForceActuatorSettings::instance().Neighbors[i].NearZIDs[j] == 0) {
                 break;
             }
-            int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
+            int index = faa_settings.ActuatorIdToZIndex(
                     ForceActuatorSettings::instance().Neighbors[i].NearZIDs[j]);
             if (index < 0) {
                 SPDLOG_CRITICAL("Invalid near neighbor ID: {} FA index {} ID {}",
                                 ForceActuatorSettings::instance().Neighbors[i].NearZIDs[j], i,
-                                _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+                                faa_settings.ZIndexToActuatorId(i));
                 exit(EXIT_FAILURE);
             }
             currentNeighbors->nearCount++;
@@ -121,12 +121,12 @@ ForceController::ForceController(ForceActuatorApplicationSettings *forceActuator
             exit(EXIT_FAILURE);
         }
         for (size_t j = 0; j < FA_FAR_COUNT; ++j) {
-            int index = _forceActuatorApplicationSettings->ActuatorIdToZIndex(
-                    ForceActuatorSettings::instance().Neighbors[i].FarIDs[j]);
+            int index =
+                    faa_settings.ActuatorIdToZIndex(ForceActuatorSettings::instance().Neighbors[i].FarIDs[j]);
             if (index < 0) {
                 SPDLOG_CRITICAL("Invalid far neighbor ID: {} FA index {} Neighbor {} ID {}",
                                 ForceActuatorSettings::instance().Neighbors[i].FarIDs[j], i, j,
-                                _forceActuatorApplicationSettings->ZIndexToActuatorId(
+                                faa_settings.ZIndexToActuatorId(
                                         ForceActuatorSettings::instance().Neighbors[i].FarIDs[j]));
                 exit(EXIT_FAILURE);
             }
@@ -137,15 +137,15 @@ ForceController::ForceController(ForceActuatorApplicationSettings *forceActuator
     SPDLOG_INFO("ForceController mirror weight/all Z forces {}N", _mirrorWeight);
 
     for (int i = 0; i < FA_X_COUNT; i++) {
-        limitTriggerX[i] = ForceLimitTrigger('X', _forceActuatorApplicationSettings->XIndexToActuatorId(i));
+        limitTriggerX[i] = ForceLimitTrigger('X', faa_settings.XIndexToActuatorId(i));
     }
 
     for (int i = 0; i < FA_Y_COUNT; i++) {
-        limitTriggerY[i] = ForceLimitTrigger('Y', _forceActuatorApplicationSettings->YIndexToActuatorId(i));
+        limitTriggerY[i] = ForceLimitTrigger('Y', faa_settings.YIndexToActuatorId(i));
     }
 
     for (int i = 0; i < FA_Z_COUNT; i++) {
-        limitTriggerZ[i] = ForceLimitTrigger('Z', _forceActuatorApplicationSettings->ZIndexToActuatorId(i));
+        limitTriggerZ[i] = ForceLimitTrigger('Z', faa_settings.ZIndexToActuatorId(i));
     }
 }
 
@@ -523,10 +523,13 @@ void ForceController::_convertForcesToSetpoints() {
     SPDLOG_TRACE("ForceController: convertForcesToSetpoints()");
     bool clippingRequired = false;
     auto &forceActuatorInfo = ForceActuatorInfo::instance();
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[pIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[pIndex];
-        int sIndex = _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[pIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[pIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[pIndex];
+        int sIndex = faa_settings.ZIndexToSecondaryCylinderIndex[pIndex];
 
         _forceSetpointWarning->safetyLimitWarning[pIndex] = false;
 
@@ -654,11 +657,12 @@ bool ForceController::_checkNearNeighbors() {
     bool warningChanged = false;
     _forceSetpointWarning->anyNearNeighborWarning = false;
     string failed;
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
-        if (Model::instance().getILC()->isDisabled(
-                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
-                            zIndex))) {
+        if (Model::instance().getILC()->isDisabled(faa_settings.ZIndexToActuatorId(zIndex))) {
             continue;
         }
 
@@ -674,8 +678,7 @@ bool ForceController::_checkNearNeighbors() {
 
         if (deltaZ > nominalZWarning) {
             _forceSetpointWarning->nearNeighborWarning[zIndex] = true;
-            failed += to_string(_forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex)) + ":" +
-                      to_string(deltaZ) + " ";
+            failed += to_string(faa_settings.ZIndexToActuatorId(zIndex)) + ":" + to_string(deltaZ) + " ";
         } else {
             _forceSetpointWarning->nearNeighborWarning[zIndex] = false;
         }
@@ -716,6 +719,9 @@ bool ForceController::_checkMirrorWeight() {
 
 bool ForceController::_checkFarNeighbors() {
     SPDLOG_TRACE("ForceController: checkFarNeighbors()");
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     float globalX = _appliedForces->fx;
     float globalY = _appliedForces->fy;
     float globalZ = _appliedForces->fz;
@@ -730,14 +736,12 @@ bool ForceController::_checkFarNeighbors() {
     _forceSetpointWarning->anyFarNeighborWarning = false;
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
-        if (Model::instance().getILC()->isDisabled(
-                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
-                            zIndex))) {
+        if (Model::instance().getILC()->isDisabled(faa_settings.ZIndexToActuatorId(zIndex))) {
             continue;
         }
 
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         double x = 0;
         double y = 0;
@@ -753,8 +757,8 @@ bool ForceController::_checkFarNeighbors() {
         z = _appliedForces->zForces[zIndex];
         for (int j = 0; j < FA_FAR_COUNT; ++j) {
             int neighborZIndex = _neighbors[zIndex].FarIndices[j];
-            int neighborXIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[neighborZIndex];
-            int neighborYIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[neighborZIndex];
+            int neighborXIndex = faa_settings.ZIndexToXIndex[neighborZIndex];
+            int neighborYIndex = faa_settings.ZIndexToYIndex[neighborZIndex];
 
             if (neighborXIndex != -1) {
                 x += _appliedForces->xForces[neighborXIndex];
@@ -771,9 +775,8 @@ bool ForceController::_checkFarNeighbors() {
         bool previousWarning = _forceSetpointWarning->farNeighborWarning[zIndex];
         if (!Range::InRange(-tolerance, tolerance, magnitudeAverage - globalAverageForce)) {
             failed += fmt::format(" {}: magA {:.2f} globalA {:.2f} |{:.2f}| < {:.2f}",
-                                  _forceActuatorApplicationSettings->ZIndexToActuatorId(zIndex),
-                                  magnitudeAverage, globalAverageForce, magnitudeAverage - globalAverageForce,
-                                  tolerance);
+                                  faa_settings.ZIndexToActuatorId(zIndex), magnitudeAverage,
+                                  globalAverageForce, magnitudeAverage - globalAverageForce, tolerance);
             _forceSetpointWarning->farNeighborWarning[zIndex] = true;
         } else {
             _forceSetpointWarning->farNeighborWarning[zIndex] = false;

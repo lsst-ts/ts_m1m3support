@@ -36,15 +36,12 @@
 #include <SafetyController.h>
 #include <SettingReader.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-FinalForceComponent::FinalForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+FinalForceComponent::FinalForceComponent()
         : ForceComponent("Final", &ForceActuatorSettings::instance().FinalComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
     _enabledForceActuators = M1M3SSPublisher::instance().getEnabledForceActuators();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
@@ -92,14 +89,14 @@ void FinalForceComponent::applyForcesByComponents() {
                       _appliedVelocityForces->zForces[i]);
     }
 
-    auto faApplicationSettings = SettingReader::instance().getForceActuatorApplicationSettings();
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
     // find disabled FAs quadrants
     std::vector<int> disabledInQuadrants[4];
 
     for (int i = 0; i < FA_COUNT; i++) {
         if (_enabledForceActuators->forceActuatorEnabled[i] == false) {
-            disabledInQuadrants[int(faApplicationSettings->ZIndexToActuatorId(i) / 100) - 1].push_back(i);
+            disabledInQuadrants[int(faa_settings.ZIndexToActuatorId(i) / 100) - 1].push_back(i);
         }
     }
 
@@ -124,14 +121,14 @@ void FinalForceComponent::applyForcesByComponents() {
             zTarget[disabled] = 0;
             z_disabled++;
 
-            int yIndex = faApplicationSettings->ZIndexToYIndex[disabled];
+            int yIndex = faa_settings.ZIndexToYIndex[disabled];
             if (yIndex >= 0) {
                 excess_y += yTarget[yIndex];
                 yTarget[yIndex] = 0;
                 y_disabled++;
             }
 
-            int xIndex = faApplicationSettings->ZIndexToXIndex[disabled];
+            int xIndex = faa_settings.ZIndexToXIndex[disabled];
             if (xIndex >= 0) {
                 excess_x += xTarget[xIndex];
                 xTarget[xIndex] = 0;
@@ -139,7 +136,7 @@ void FinalForceComponent::applyForcesByComponents() {
             }
         }
 
-        auto qz = faApplicationSettings->QuadrantZ[q];
+        auto qz = faa_settings.QuadrantZ[q];
 
         for (auto fa : qz) {
             if (std::find(qd.begin(), qd.end(), fa) != std::end(qd)) {
@@ -149,7 +146,7 @@ void FinalForceComponent::applyForcesByComponents() {
             zTarget[fa] += excess_z / (qz.size() - z_disabled);
         }
 
-        auto qy = faApplicationSettings->QuadrantY[q];
+        auto qy = faa_settings.QuadrantY[q];
 
         for (auto fa : qy) {
             if (std::find(qd.begin(), qd.end(), fa) != std::end(qd)) {
@@ -159,7 +156,7 @@ void FinalForceComponent::applyForcesByComponents() {
             yTarget[fa] += excess_y / (qy.size() - y_disabled);
         }
 
-        auto qx = faApplicationSettings->QuadrantX[q];
+        auto qx = faa_settings.QuadrantX[q];
 
         for (auto fa : qx) {
             if (std::find(qd.begin(), qd.end(), fa) != std::end(qd)) {
@@ -178,13 +175,15 @@ void FinalForceComponent::postEnableDisableActions() {
 void FinalForceComponent::postUpdateActions() {
     SPDLOG_TRACE("FinalForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedForces->timestamp = _appliedForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->forceWarning[zIndex] = false;
 
@@ -219,8 +218,7 @@ void FinalForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedForces->xForces, _appliedForces->yForces,
-            _appliedForces->zForces);
+            _appliedForces->xForces, _appliedForces->yForces, _appliedForces->zForces);
     _appliedForces->fx = fm.Fx;
     _appliedForces->fy = fm.Fy;
     _appliedForces->fz = fm.Fz;
@@ -230,8 +228,7 @@ void FinalForceComponent::postUpdateActions() {
     _appliedForces->forceMagnitude = fm.ForceMagnitude;
 
     fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedForces->xForces, _preclippedForces->yForces,
-            _preclippedForces->zForces);
+            _preclippedForces->xForces, _preclippedForces->yForces, _preclippedForces->zForces);
     _preclippedForces->fx = fm.Fx;
     _preclippedForces->fy = fm.Fy;
     _preclippedForces->fz = fm.Fz;
@@ -248,7 +245,3 @@ void FinalForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedForces();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

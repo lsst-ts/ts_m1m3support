@@ -34,15 +34,11 @@
 #include <SafetyController.h>
 #include <VelocityForceComponent.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-VelocityForceComponent::VelocityForceComponent(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+VelocityForceComponent::VelocityForceComponent()
         : ForceComponent("Velocity", &ForceActuatorSettings::instance().VelocityComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();
     _preclippedVelocityForces = M1M3SSPublisher::instance().getEventPreclippedVelocityForces();
@@ -84,9 +80,12 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -108,13 +107,15 @@ void VelocityForceComponent::postEnableDisableActions() {
 void VelocityForceComponent::postUpdateActions() {
     SPDLOG_TRACE("VelocityForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedVelocityForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedVelocityForces->timestamp = _appliedVelocityForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->velocityForceWarning[zIndex] = false;
 
@@ -152,8 +153,8 @@ void VelocityForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedVelocityForces->xForces,
-            _appliedVelocityForces->yForces, _appliedVelocityForces->zForces);
+            _appliedVelocityForces->xForces, _appliedVelocityForces->yForces,
+            _appliedVelocityForces->zForces);
     _appliedVelocityForces->fx = fm.Fx;
     _appliedVelocityForces->fy = fm.Fy;
     _appliedVelocityForces->fz = fm.Fz;
@@ -162,9 +163,9 @@ void VelocityForceComponent::postUpdateActions() {
     _appliedVelocityForces->mz = fm.Mz;
     _appliedVelocityForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedVelocityForces->xForces,
-            _preclippedVelocityForces->yForces, _preclippedVelocityForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedVelocityForces->xForces,
+                                                                     _preclippedVelocityForces->yForces,
+                                                                     _preclippedVelocityForces->zForces);
     _preclippedVelocityForces->fx = fm.Fx;
     _preclippedVelocityForces->fy = fm.Fy;
     _preclippedVelocityForces->fz = fm.Fz;
@@ -181,7 +182,3 @@ void VelocityForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedVelocityForces();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

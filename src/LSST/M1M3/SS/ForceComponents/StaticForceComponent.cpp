@@ -34,14 +34,11 @@
 #include <SafetyController.h>
 #include <StaticForceComponent.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-StaticForceComponent::StaticForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
+StaticForceComponent::StaticForceComponent()
         : ForceComponent("Static", &ForceActuatorSettings::instance().StaticComponentSettings) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();
     _preclippedStaticForces = M1M3SSPublisher::instance().getEventPreclippedStaticForces();
@@ -80,13 +77,15 @@ void StaticForceComponent::postEnableDisableActions() {
 void StaticForceComponent::postUpdateActions() {
     SPDLOG_TRACE("StaticForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedStaticForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclippedStaticForces->timestamp = _appliedStaticForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->staticForceWarning[zIndex] = false;
 
@@ -123,8 +122,7 @@ void StaticForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedStaticForces->xForces, _appliedStaticForces->yForces,
-            _appliedStaticForces->zForces);
+            _appliedStaticForces->xForces, _appliedStaticForces->yForces, _appliedStaticForces->zForces);
     _appliedStaticForces->fx = fm.Fx;
     _appliedStaticForces->fy = fm.Fy;
     _appliedStaticForces->fz = fm.Fz;
@@ -133,9 +131,9 @@ void StaticForceComponent::postUpdateActions() {
     _appliedStaticForces->mz = fm.Mz;
     _appliedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedStaticForces->xForces,
-            _preclippedStaticForces->yForces, _preclippedStaticForces->zForces);
+    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedStaticForces->xForces,
+                                                                     _preclippedStaticForces->yForces,
+                                                                     _preclippedStaticForces->zForces);
     _preclippedStaticForces->fx = fm.Fx;
     _preclippedStaticForces->fy = fm.Fy;
     _preclippedStaticForces->fz = fm.Fz;
@@ -152,7 +150,3 @@ void StaticForceComponent::postUpdateActions() {
     }
     M1M3SSPublisher::instance().logAppliedStaticForces();
 }
-
-}  // namespace SS
-}  // namespace M1M3
-} /* namespace LSST */

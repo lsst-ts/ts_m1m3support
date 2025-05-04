@@ -31,9 +31,9 @@
 
 #include <rapidcsv.h>
 
-#include <Limit.h>
-#include <SettingReader.h>
-#include <cRIO/DataTypes.h>
+#include "Limit.h"
+#include "SettingReader.h"
+#include "cRIO/DataTypes.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -82,8 +82,8 @@ void TableLoader::loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vec
     }
 }
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* TABLELOADER_H_ */
+#endif

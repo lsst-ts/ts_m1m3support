@@ -29,36 +29,34 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <BusList.h>
-#include <FPGAAddresses.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorData.h>
-#include <ForceActuatorFollowingErrorCounter.h>
-#include <ForceActuatorForceWarning.h>
-#include <ForceActuatorInfo.h>
-#include <ForceActuatorSettings.h>
-#include <HardpointActuatorApplicationSettings.h>
-#include <HardpointActuatorSettings.h>
-#include <IFPGA.h>
-#include <ILCApplicationSettings.h>
-#include <M1M3SSPublisher.h>
-#include <PositionController.h>
-#include <RoundRobin.h>
-#include <SSILCs.h>
-#include <Timestamp.h>
-#include <cRIO/DataTypes.h>
+#include "BusList.h"
+#include "FPGAAddresses.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorData.h"
+#include "ForceActuatorFollowingErrorCounter.h"
+#include "ForceActuatorForceWarning.h"
+#include "ForceActuatorInfo.h"
+#include "ForceActuatorSettings.h"
+#include "HardpointActuatorApplicationSettings.h"
+#include "HardpointActuatorSettings.h"
+#include "IFPGA.h"
+#include "ILCApplicationSettings.h"
+#include "M1M3SSPublisher.h"
+#include "PositionController.h"
+#include "RoundRobin.h"
+#include "SSILCs.h"
+#include "Timestamp.h"
+#include "cRIO/DataTypes.h"
 
 #define ADDRESS_COUNT 256
 
 using namespace LSST::M1M3::SS;
 
 SSILCs::SSILCs(PositionController *positionController,
-               ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
                HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
                HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
                SafetyController *safetyController)
-        : _subnetData(forceActuatorApplicationSettings, hardpointActuatorApplicationSettings,
-                      hardpointMonitorApplicationSettings),
+        : _subnetData(hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
           _ilcMessageFactory(),
           _responseParser(&_subnetData, safetyController),
           _busListSetADCChannelOffsetAndSensitivity(&_subnetData, &_ilcMessageFactory),
@@ -87,7 +85,6 @@ SSILCs::SSILCs(PositionController *positionController,
     _safetyController = safetyController;
     _hardpointActuatorSettings = &HardpointActuatorSettings::instance();
     _hardpointActuatorData = M1M3SSPublisher::instance().getHardpointActuatorData();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _hardpointActuatorInfo = M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     _controlListToggle = 0;
     _positionController = positionController;
@@ -375,8 +372,8 @@ void SSILCs::calculateHPMirrorForces() {
 
 void SSILCs::calculateFAMirrorForces() {
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, ForceActuatorData::instance().xForce,
-            ForceActuatorData::instance().yForce, ForceActuatorData::instance().zForce);
+            ForceActuatorData::instance().xForce, ForceActuatorData::instance().yForce,
+            ForceActuatorData::instance().zForce);
     ForceActuatorData::instance().fx = fm.Fx;
     ForceActuatorData::instance().fy = fm.Fy;
     ForceActuatorData::instance().fz = fm.Fz;
@@ -430,7 +427,8 @@ void SSILCs::publishHardpointMonitorStatus() {
 void SSILCs::publishHardpointMonitorData() { M1M3SSPublisher::instance().putHardpointMonitorData(); }
 
 void SSILCs::disableFA(uint32_t actuatorId) {
-    if (hasDisabledFarNeighbor(_forceActuatorApplicationSettings->ActuatorIdToZIndex(actuatorId)) > 0) {
+    if (hasDisabledFarNeighbor(ForceActuatorApplicationSettings::instance().ActuatorIdToZIndex(actuatorId)) >
+        0) {
         SPDLOG_CRITICAL("Race condition? Disabling actuator with far neighbor disabled");
         return;
     }

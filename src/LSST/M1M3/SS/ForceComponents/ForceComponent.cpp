@@ -26,9 +26,7 @@
 #include <cstring>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
 ForceComponent::ForceComponent(const char *name, ForceComponentSettings *forceComponentSettings)
         : _forceComponentSettings(forceComponentSettings) {
@@ -175,7 +173,3 @@ void ForceComponent::_zeroAll() {
     memset(yOffset, 0, sizeof(yOffset));
     memset(zOffset, 0, sizeof(zOffset));
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

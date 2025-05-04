@@ -26,7 +26,6 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceComponent.h>
 #include <PID.h>
 #include <SafetyController.h>
@@ -53,7 +52,7 @@ namespace SS {
  */
 class BalanceForceComponent : public ForceComponent {
 public:
-    BalanceForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    BalanceForceComponent();
     void applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y,
                             const std::vector<float> &z, bool check = true);
     /**
@@ -88,7 +87,6 @@ private:
     PID *_idToPID(int id);
 
     SafetyController *_safetyController;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     PID _fx;
     PID _fy;

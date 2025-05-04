@@ -26,7 +26,6 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceComponent.h>
 #include <SafetyController.h>
 
@@ -36,7 +35,7 @@ namespace SS {
 
 class AccelerationForceComponent : public ForceComponent {
 public:
-    AccelerationForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    AccelerationForceComponent();
     void applyAccelerationForces(const std::vector<float> &x, const std::vector<float> &y,
                                  const std::vector<float> &z);
     /**
@@ -59,7 +58,6 @@ protected:
 
 private:
     SafetyController *_safetyController;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
     MTM1M3_appliedAccelerationForcesC *_appliedAccelerationForces;

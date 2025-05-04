@@ -29,7 +29,6 @@
 
 #include <cRIO/Singleton.h>
 
-#include <ForceActuatorApplicationSettings.h>
 #include <HardpointActuatorApplicationSettings.h>
 #include <HardpointMonitorApplicationSettings.h>
 #include <PIDSettings.h>
@@ -79,10 +78,6 @@ public:
     // TODO will need settingsToApply to load correct configuration set
     void load();
 
-    ForceActuatorApplicationSettings *getForceActuatorApplicationSettings() {
-        return &_forceActuatorApplicationSettings;
-    }
-
     HardpointActuatorApplicationSettings *getHardpointActuatorApplicationSettings() {
         return &_hardpointActuatorApplicationSettings;
     }
@@ -100,7 +95,6 @@ private:
 
     std::string _getSetPath(std::string file);
 
-    ForceActuatorApplicationSettings _forceActuatorApplicationSettings;
     HardpointActuatorApplicationSettings _hardpointActuatorApplicationSettings;
     SafetyControllerSettings _safetyControllerSettings;
     HardpointMonitorApplicationSettings _hardpointMonitorApplicationSettings;

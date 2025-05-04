@@ -37,7 +37,6 @@
 #include <DistributedForces.h>
 #include <ElevationForceComponent.h>
 #include <FinalForceComponent.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorSettings.h>
 #include <ForcesAndMoments.h>
 #include <LimitTrigger.h>
@@ -127,7 +126,7 @@ struct ForceActuatorIndicesNeighbors {
  */
 class ForceController {
 public:
-    ForceController(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    ForceController();
 
     void reset();
 
@@ -231,7 +230,6 @@ private:
 
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
     SafetyController *_safetyController;
 
     AccelerationForceComponent _accelerationForceComponent;
