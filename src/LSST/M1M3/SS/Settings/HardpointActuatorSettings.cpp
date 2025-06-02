@@ -122,6 +122,26 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
                             hardpointBreakawayFaultLow, hardpointBreakawayFaultHigh));
     }
 
+    inRangeAfterRaiseLoops = doc["InRangeAfterRaiseForce"].as<int>();
+    inRangeAfterRaiseTimeoutLoops =
+    	doc["InRangeAfterRaiseTimeoutLoops"].as<int>(5 * inRangeAfterRaiseLoops);
+    inRangeAfterRaiseForce = doc["InRangeAfterRaiseForce"].as<float>();
+    
+    if (inRangeAfterRaiseLoops < 0) {
+        throw std::runtime_error(fmt::format("InRangeAfterRaiseLoops must be positive number - is {}",
+    					 inRangeAfterRaiseLoops));
+    }
+    if (inRangeAfterRaiseTimeoutLoops < inRangeAfterRaiseLoops) {
+        throw std::runtime_error(fmt::format(
+    	    "InRangeAfterRaiseTimeoutLoops must be greater than InRangeAfterRaiseLoops, but {} < {}",
+    	    inRangeAfterRaiseTimeoutLoops, inRangeAfterRaiseLoops));
+    }
+    if (inRangeAfterRaiseForce < 0 || inRangeAfterRaiseForce > 200) {
+        throw std::runtime_error(
+    	    fmt::format("InRangeAfterRaiseForce must be positive and less than 200, is {}",
+    			inRangeAfterRaiseForce));
+    }
+
     if (inRangeReadoutsToChaseFromWaitingTension <= 0) {
         throw std::runtime_error(
                 fmt::format("InRangeReadoutsToChaseFromWaitingTension must be "
