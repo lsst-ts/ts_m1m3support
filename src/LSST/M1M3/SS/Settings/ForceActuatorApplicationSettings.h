@@ -26,10 +26,11 @@
 
 #include <vector>
 
-#include <ForceActuatorOrientations.h>
-#include <ForceActuatorTypes.h>
 #include <cRIO/DataTypes.h>
 #include <cRIO/Singleton.h>
+
+#include "ForceActuatorOrientations.h"
+#include "ForceActuatorTypes.h"
 
 namespace LSST {
 namespace M1M3 {

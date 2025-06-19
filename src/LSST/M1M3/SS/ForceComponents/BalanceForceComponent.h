@@ -26,9 +26,10 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceComponent.h>
-#include <PID.h>
-#include <SafetyController.h>
+#include "ForceComponent.h"
+#include "PID.h"
+#include "PreclippedForces.h"
+#include "SafetyController.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -97,7 +98,8 @@ private:
 
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
     MTM1M3_appliedBalanceForcesC *_appliedBalanceForces;
-    MTM1M3_logevent_preclippedBalanceForcesC *_preclippedBalanceForces;
+
+    PreclippedForces<MTM1M3_logevent_preclippedBalanceForcesC> _preclipped_balance_forces;
 };
 
 } /* namespace SS */

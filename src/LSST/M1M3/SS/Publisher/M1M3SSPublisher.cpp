@@ -1081,28 +1081,6 @@ void M1M3SSPublisher::logPreclippedAzimuthForces() {
     }
 }
 
-void M1M3SSPublisher::logPreclippedBalanceForces() {
-    bool changeDetected = _eventPreclippedBalanceForces.fx != _previousEventPreclippedBalanceForces.fx ||
-                          _eventPreclippedBalanceForces.fy != _previousEventPreclippedBalanceForces.fy ||
-                          _eventPreclippedBalanceForces.fz != _previousEventPreclippedBalanceForces.fz ||
-                          _eventPreclippedBalanceForces.mx != _previousEventPreclippedBalanceForces.mx ||
-                          _eventPreclippedBalanceForces.my != _previousEventPreclippedBalanceForces.my ||
-                          _eventPreclippedBalanceForces.mz != _previousEventPreclippedBalanceForces.mz;
-    for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected = changeDetected ||
-                         (i < 12 && _eventPreclippedBalanceForces.xForces[i] !=
-                                            _previousEventPreclippedBalanceForces.xForces[i]) ||
-                         (i < 100 && _eventPreclippedBalanceForces.yForces[i] !=
-                                             _previousEventPreclippedBalanceForces.yForces[i]) ||
-                         (_eventPreclippedBalanceForces.zForces[i] !=
-                          _previousEventPreclippedBalanceForces.zForces[i]);
-    }
-    if (changeDetected) {
-        _m1m3SAL->logEvent_preclippedBalanceForces(&_eventPreclippedBalanceForces, 0);
-        _previousEventPreclippedBalanceForces = _eventPreclippedBalanceForces;
-    }
-}
-
 void M1M3SSPublisher::logPreclippedCylinderForces() {
     bool changeDetected = false;
     for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {

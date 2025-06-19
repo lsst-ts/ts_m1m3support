@@ -143,9 +143,6 @@ public:
     MTM1M3_logevent_preclippedAzimuthForcesC *getEventPreclippedAzimuthForces() {
         return &_eventPreclippedAzimuthForces;
     }
-    MTM1M3_logevent_preclippedBalanceForcesC *getEventPreclippedBalanceForces() {
-        return &_eventPreclippedBalanceForces;
-    }
     MTM1M3_logevent_preclippedCylinderForcesC *getEventPreclippedCylinderForces() {
         return &_eventPreclippedCylinderForces;
     }
@@ -341,7 +338,9 @@ public:
     void logPreclippedAccelerationForces();
     void logPreclippedActiveOpticForces();
     void logPreclippedAzimuthForces();
-    void logPreclippedBalanceForces();
+    void logPreclippedBalanceForces(MTM1M3_logevent_preclippedBalanceForcesC *data) {
+        _m1m3SAL->logEvent_preclippedBalanceForces(data, 0);
+    }
     void logPreclippedCylinderForces();
     void logPreclippedElevationForces();
     void logPreclippedForces();
@@ -487,7 +486,6 @@ private:
     MTM1M3_logevent_preclippedAccelerationForcesC _eventPreclippedAccelerationForces;
     MTM1M3_logevent_preclippedActiveOpticForcesC _eventPreclippedActiveOpticForces;
     MTM1M3_logevent_preclippedAzimuthForcesC _eventPreclippedAzimuthForces;
-    MTM1M3_logevent_preclippedBalanceForcesC _eventPreclippedBalanceForces;
     MTM1M3_logevent_preclippedCylinderForcesC _eventPreclippedCylinderForces;
     MTM1M3_logevent_preclippedElevationForcesC _eventPreclippedElevationForces;
     MTM1M3_logevent_preclippedForcesC _eventPreclippedForces;
@@ -526,7 +524,6 @@ private:
     MTM1M3_logevent_preclippedAccelerationForcesC _previousEventPreclippedAccelerationForces;
     MTM1M3_logevent_preclippedActiveOpticForcesC _previousEventPreclippedActiveOpticForces;
     MTM1M3_logevent_preclippedAzimuthForcesC _previousEventPreclippedAzimuthForces;
-    MTM1M3_logevent_preclippedBalanceForcesC _previousEventPreclippedBalanceForces;
     MTM1M3_logevent_preclippedCylinderForcesC _previousEventPreclippedCylinderForces;
     MTM1M3_logevent_preclippedElevationForcesC _previousEventPreclippedElevationForces;
     MTM1M3_logevent_preclippedForcesC _previousEventPreclippedForces;
