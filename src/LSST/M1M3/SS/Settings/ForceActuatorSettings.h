@@ -179,8 +179,9 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
-    /// TODO temporary workaround, not needed once
-    /// hardpointBalanceForcesOnInActiveState is in XML
+    /// TODO: add that to XML and remove it from there
+    float preclippedIgnoreChanges;
+    float preclippedMaxDelay;
 
 private:
     void _loadNearNeighborZTable(const std::string &filename);

@@ -44,7 +44,9 @@ FinalForceComponent::FinalForceComponent()
                   [](MTM1M3_logevent_preclippedForcesC *data) {
                       M1M3SSPublisher::instance().logPreclippedForces(data);
                   },
-                  200, std::chrono::milliseconds(500)) {
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     _safetyController = Model::instance().getSafetyController();
     _enabledForceActuators = M1M3SSPublisher::instance().getEnabledForceActuators();
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();

@@ -48,7 +48,9 @@ BalanceForceComponent::BalanceForceComponent()
                   [](MTM1M3_logevent_preclippedBalanceForcesC *data) {
                       M1M3SSPublisher::instance().logPreclippedBalanceForces(data);
                   },
-                  200, std::chrono::milliseconds(20)) {
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     _safetyController = Model::instance().getSafetyController();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedBalanceForces = M1M3SSPublisher::instance().getAppliedBalanceForces();

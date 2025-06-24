@@ -190,6 +190,9 @@ void ForceActuatorSettings::load(YAML::Node doc) {
         TestedTolerances.set(bumpTest["TestedTolerances"]);
         NonTestedTolerances.set(bumpTest["NonTestedTolerances"]);
 
+        preclippedIgnoreChanges = doc["PreclippedIgnoreChanges"].as<float>();
+        preclippedMaxDelay = doc["PreclippedMaxDelay"].as<float>();
+
         bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
         bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
         bumpTestMinimalDistance = bumpTest["MinimalDistance"].as<float>();
