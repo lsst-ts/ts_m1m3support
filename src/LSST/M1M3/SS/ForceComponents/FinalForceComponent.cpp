@@ -25,27 +25,31 @@
 
 #include <spdlog/spdlog.h>
 
-#include <DistributedForces.h>
-#include <FinalForceComponent.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <ForcesAndMoments.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <Range.h>
-#include <SafetyController.h>
-#include <SettingReader.h>
+#include "DistributedForces.h"
+#include "FinalForceComponent.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "ForcesAndMoments.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "Range.h"
+#include "SafetyController.h"
+#include "SettingReader.h"
 
 using namespace LSST::M1M3::SS;
 
 FinalForceComponent::FinalForceComponent()
-        : ForceComponent("Final", &ForceActuatorSettings::instance().FinalComponentSettings) {
+        : ForceComponent("Final", &ForceActuatorSettings::instance().FinalComponentSettings),
+          _preclipped_forces(
+                  [](MTM1M3_logevent_preclippedForcesC *data) {
+                      M1M3SSPublisher::instance().logPreclippedForces(data);
+                  },
+                  200, std::chrono::milliseconds(500)) {
     _safetyController = Model::instance().getSafetyController();
     _enabledForceActuators = M1M3SSPublisher::instance().getEnabledForceActuators();
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
-    _preclippedForces = M1M3SSPublisher::instance().getEventPreclippedForces();
 
     _appliedAccelerationForces = M1M3SSPublisher::instance().getAppliedAccelerationForces();
     _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
@@ -180,7 +184,7 @@ void FinalForceComponent::postUpdateActions() {
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _preclippedForces->timestamp = _appliedForces->timestamp;
+    _preclipped_forces.timestamp = _appliedForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
         int yIndex = faa_settings.ZIndexToYIndex[zIndex];
@@ -190,8 +194,8 @@ void FinalForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLow = ForceActuatorSettings::instance().appliedXForceLowLimit[xIndex];
             float xHigh = ForceActuatorSettings::instance().appliedXForceHighLimit[xIndex];
-            _preclippedForces->xForces[xIndex] = xCurrent[xIndex];
-            notInRange = !Range::InRangeAndCoerce(xLow, xHigh, _preclippedForces->xForces[xIndex],
+            _preclipped_forces.xForces[xIndex] = xCurrent[xIndex];
+            notInRange = !Range::InRangeAndCoerce(xLow, xHigh, _preclipped_forces.xForces[xIndex],
                                                   _appliedForces->xForces[xIndex]);
             _forceSetpointWarning->forceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
@@ -200,8 +204,8 @@ void FinalForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLow = ForceActuatorSettings::instance().appliedYForceLowLimit[yIndex];
             float yHigh = ForceActuatorSettings::instance().appliedYForceHighLimit[yIndex];
-            _preclippedForces->yForces[yIndex] = yCurrent[yIndex];
-            notInRange = !Range::InRangeAndCoerce(yLow, yHigh, _preclippedForces->yForces[yIndex],
+            _preclipped_forces.yForces[yIndex] = yCurrent[yIndex];
+            notInRange = !Range::InRangeAndCoerce(yLow, yHigh, _preclipped_forces.yForces[yIndex],
                                                   _appliedForces->yForces[yIndex]);
             _forceSetpointWarning->forceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->forceWarning[zIndex];
@@ -209,8 +213,8 @@ void FinalForceComponent::postUpdateActions() {
 
         float zLow = ForceActuatorSettings::instance().appliedZForceLowLimit[zIndex];
         float zHigh = ForceActuatorSettings::instance().appliedZForceHighLimit[zIndex];
-        _preclippedForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLow, zHigh, _preclippedForces->zForces[zIndex],
+        _preclipped_forces.zForces[zIndex] = zCurrent[zIndex];
+        notInRange = !Range::InRangeAndCoerce(zLow, zHigh, _preclipped_forces.zForces[zIndex],
                                               _appliedForces->zForces[zIndex]);
         _forceSetpointWarning->forceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->forceWarning[zIndex];
@@ -227,21 +231,13 @@ void FinalForceComponent::postUpdateActions() {
     _appliedForces->mz = fm.Mz;
     _appliedForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _preclippedForces->xForces, _preclippedForces->yForces, _preclippedForces->zForces);
-    _preclippedForces->fx = fm.Fx;
-    _preclippedForces->fy = fm.Fy;
-    _preclippedForces->fz = fm.Fz;
-    _preclippedForces->mx = fm.Mx;
-    _preclippedForces->my = fm.My;
-    _preclippedForces->mz = fm.Mz;
-    _preclippedForces->forceMagnitude = fm.ForceMagnitude;
+    _preclipped_forces.calculate_forces_and_moments();
 
     _safetyController->forceControllerNotifyForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::instance().logPreclippedForces();
+        _preclipped_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedForces();
 }

@@ -1119,26 +1119,6 @@ void M1M3SSPublisher::logPreclippedElevationForces() {
     }
 }
 
-void M1M3SSPublisher::logPreclippedForces() {
-    bool changeDetected = _eventPreclippedForces.fx != _previousEventPreclippedForces.fx ||
-                          _eventPreclippedForces.fy != _previousEventPreclippedForces.fy ||
-                          _eventPreclippedForces.fz != _previousEventPreclippedForces.fz ||
-                          _eventPreclippedForces.mx != _previousEventPreclippedForces.mx ||
-                          _eventPreclippedForces.my != _previousEventPreclippedForces.my ||
-                          _eventPreclippedForces.mz != _previousEventPreclippedForces.mz;
-    for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                (i < 12 && _eventPreclippedForces.xForces[i] != _previousEventPreclippedForces.xForces[i]) ||
-                (i < 100 && _eventPreclippedForces.yForces[i] != _previousEventPreclippedForces.yForces[i]) ||
-                (_eventPreclippedForces.zForces[i] != _previousEventPreclippedForces.zForces[i]);
-    }
-    if (changeDetected) {
-        _m1m3SAL->logEvent_preclippedForces(&_eventPreclippedForces, 0);
-        _previousEventPreclippedForces = _eventPreclippedForces;
-    }
-}
-
 void M1M3SSPublisher::logPreclippedOffsetForces() {
     bool changeDetected = _eventPreclippedOffsetForces.fx != _previousEventPreclippedOffsetForces.fx ||
                           _eventPreclippedOffsetForces.fy != _previousEventPreclippedOffsetForces.fy ||

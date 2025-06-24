@@ -24,18 +24,18 @@
 #ifndef M1M3SSPUBLISHER_H_
 #define M1M3SSPUBLISHER_H_
 
+#include <memory>
+#include <spdlog/spdlog.h>
+
 #include <SAL_MTM1M3.h>
 #include <SAL_MTM1M3C.h>
 #include <cRIO/DataTypes.h>
 
 #include <cRIO/Singleton.h>
 
-#include <EnabledForceActuators.h>
-#include <ForceActuatorWarning.h>
-#include <PowerSupplyStatus.h>
-
-#include <memory>
-#include <spdlog/spdlog.h>
+#include "EnabledForceActuators.h"
+#include "ForceActuatorWarning.h"
+#include "PowerSupplyStatus.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -149,7 +149,6 @@ public:
     MTM1M3_logevent_preclippedElevationForcesC *getEventPreclippedElevationForces() {
         return &_eventPreclippedElevationForces;
     }
-    MTM1M3_logevent_preclippedForcesC *getEventPreclippedForces() { return &_eventPreclippedForces; }
     MTM1M3_logevent_preclippedOffsetForcesC *getEventPreclippedOffsetForces() {
         return &_eventPreclippedOffsetForces;
     }
@@ -343,7 +342,9 @@ public:
     }
     void logPreclippedCylinderForces();
     void logPreclippedElevationForces();
-    void logPreclippedForces();
+    void logPreclippedForces(MTM1M3_logevent_preclippedForcesC *data) {
+        _m1m3SAL->logEvent_preclippedForces(data, 0);
+    }
     void logPreclippedOffsetForces();
     void logPreclippedStaticForces();
     void logPreclippedThermalForces();
@@ -488,7 +489,6 @@ private:
     MTM1M3_logevent_preclippedAzimuthForcesC _eventPreclippedAzimuthForces;
     MTM1M3_logevent_preclippedCylinderForcesC _eventPreclippedCylinderForces;
     MTM1M3_logevent_preclippedElevationForcesC _eventPreclippedElevationForces;
-    MTM1M3_logevent_preclippedForcesC _eventPreclippedForces;
     MTM1M3_logevent_preclippedOffsetForcesC _eventPreclippedOffsetForces;
     MTM1M3_logevent_preclippedStaticForcesC _eventPreclippedStaticForces;
     MTM1M3_logevent_preclippedThermalForcesC _eventPreclippedThermalForces;
@@ -526,7 +526,6 @@ private:
     MTM1M3_logevent_preclippedAzimuthForcesC _previousEventPreclippedAzimuthForces;
     MTM1M3_logevent_preclippedCylinderForcesC _previousEventPreclippedCylinderForces;
     MTM1M3_logevent_preclippedElevationForcesC _previousEventPreclippedElevationForces;
-    MTM1M3_logevent_preclippedForcesC _previousEventPreclippedForces;
     MTM1M3_logevent_preclippedOffsetForcesC _previousEventPreclippedOffsetForces;
     MTM1M3_logevent_preclippedStaticForcesC _previousEventPreclippedStaticForces;
     MTM1M3_logevent_preclippedThermalForcesC _previousEventPreclippedThermalForces;
