@@ -149,6 +149,97 @@ protected:
     bool _unsend_changes;
 };
 
+template <class T>
+class PreclippedZForces : public T {
+public:
+    /**
+     * Construct object for processing preclipped Z forces.
+     *
+     * @param ignore_changes When change from the last send fz
+     * value is above that value, the message will be send out, ignoring
+     * max_delay parameter. Value is in N.
+     *
+     * @param max_delay Maximum delay between sucessive call to send. If
+     * underlying values changes, but the fz change is below the
+     * limit passed in ignore_changes, and it is more than this time limit from
+     * the last time the data were send out, the send method will be called.
+     *
+     * @see PreclippedForces
+     */
+    PreclippedZForces(std::function<void(T*)> send_function, float ignore_changes,
+                      std::chrono::milliseconds max_delay) {
+        for (int i = 0; i < FA_Z_COUNT; i++) {
+            this->zForces[i] = NAN;
+        }
+
+        this->fz = NAN;
+        this->my = NAN;
+        this->mx = NAN;
+
+        this->_last_send_event = *this;
+        this->_previous_event = *this;
+
+        this->_send_function = send_function;
+        this->_ignore_changes = ignore_changes;
+        this->_max_delay = max_delay;
+        this->_next_send = std::chrono::steady_clock::now() - _max_delay;
+
+        this->_unsend_changes = false;
+    }
+
+    /**
+     * Calculate total forces and moments. Sets fz and m[xy] members to
+     * calculated total values.
+     */
+    void calculate_forces_and_moments() {
+        auto f_m = ForceActuatorSettings::instance().calculateForcesAndMoments(this->zForces);
+
+        this->fz = f_m.Fz;
+        this->mx = f_m.Mx;
+        this->my = f_m.My;
+    }
+
+    /**
+     * Checks for changes in data. Call send method if the data shall be
+     * send out. Call this once all new data are processed.
+     *
+     * @return True if data changed from last check_changes call. That doesn't
+     * necessary mean data were send out.
+     */
+    bool check_changes() {
+        auto now = std::chrono::steady_clock::now();
+
+        bool change_detected = this->fz != this->_previous_event.fz || this->mx != this->_previous_event.mx ||
+                               this->my != this->_previous_event.my;
+        for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
+            change_detected |= this->zForces[i] != this->_previous_event.zForces[i];
+        }
+        if (((change_detected || this->_unsend_changes) && now >= this->_next_send) ||
+            fabs(this->_last_send_event.fz - this->fz) > this->_ignore_changes) {
+            this->_send_function(this);
+            this->_last_send_event = *this;
+            this->_next_send = now + _max_delay;
+            this->_unsend_changes = false;
+        } else if (change_detected) {
+            this->_unsend_changes = true;
+        }
+        _previous_event = *this;
+        return change_detected;
+    }
+
+protected:
+    std::function<void(T*)> _send_function;
+
+    T _last_send_event;
+    T _previous_event;
+
+    std::chrono::milliseconds _max_delay;
+    std::chrono::time_point<std::chrono::steady_clock> _next_send;
+
+    double _ignore_changes;
+    bool _unsend_changes;
+};
+
 }  // namespace SS
 }  // namespace M1M3
 }  // namespace LSST

@@ -24,9 +24,11 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_ACTIVEOPTICFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_ACTIVEOPTICFORCECOMPONENT_H_
 
-#include <ForceComponent.h>
 #include <SAL_MTM1M3C.h>
-#include <SafetyController.h>
+
+#include "ForceComponent.h"
+#include "PreclippedForces.h"
+#include "SafetyController.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -46,7 +48,7 @@ private:
 
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
     MTM1M3_logevent_appliedActiveOpticForcesC *_appliedActiveOpticForces;
-    MTM1M3_logevent_preclippedActiveOpticForcesC *_preclippedActiveOpticForces;
+    PreclippedZForces<MTM1M3_logevent_preclippedActiveOpticForcesC> _preclipped_active_optic_forces;
 };
 
 } /* namespace SS */

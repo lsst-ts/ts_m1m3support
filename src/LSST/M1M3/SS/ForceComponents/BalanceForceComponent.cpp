@@ -261,12 +261,11 @@ void BalanceForceComponent::postUpdateActions() {
     _appliedBalanceForces->mz = fm.Mz;
     _appliedBalanceForces->forceMagnitude = fm.ForceMagnitude;
 
-    _preclipped_balance_forces.calculate_forces_and_moments();
-
     _safetyController->forceControllerNotifyBalanceForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
+        _preclipped_balance_forces.calculate_forces_and_moments();
         _preclipped_balance_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedBalanceForces();

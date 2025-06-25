@@ -23,25 +23,31 @@
 
 #include <spdlog/spdlog.h>
 
-#include <DistributedForces.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <ForceControllerState.h>
-#include <ForcesAndMoments.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <Range.h>
-#include <SafetyController.h>
-#include <StaticForceComponent.h>
+#include "DistributedForces.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "ForceControllerState.h"
+#include "ForcesAndMoments.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "Range.h"
+#include "SafetyController.h"
+#include "StaticForceComponent.h"
 
 using namespace LSST::M1M3::SS;
 
 StaticForceComponent::StaticForceComponent()
-        : ForceComponent("Static", &ForceActuatorSettings::instance().StaticComponentSettings) {
+        : ForceComponent("Static", &ForceActuatorSettings::instance().StaticComponentSettings),
+          _preclipped_static_forces(
+                  [](MTM1M3_logevent_preclippedStaticForcesC *data) {
+                      M1M3SSPublisher::instance().logPreclippedStaticForces(data);
+                  },
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     _safetyController = Model::instance().getSafetyController();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();
-    _preclippedStaticForces = M1M3SSPublisher::instance().getEventPreclippedStaticForces();
 }
 
 void StaticForceComponent::applyStaticForces(std::vector<float> *x, std::vector<float> *y,
@@ -82,7 +88,7 @@ void StaticForceComponent::postUpdateActions() {
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedStaticForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _preclippedStaticForces->timestamp = _appliedStaticForces->timestamp;
+    _preclipped_static_forces.timestamp = _appliedStaticForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
         int yIndex = faa_settings.ZIndexToYIndex[zIndex];
@@ -92,9 +98,9 @@ void StaticForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = ForceActuatorSettings::instance().StaticLimitXTable[xIndex].LowFault;
             float xHighFault = ForceActuatorSettings::instance().StaticLimitXTable[xIndex].HighFault;
-            _preclippedStaticForces->xForces[xIndex] = xCurrent[xIndex];
+            _preclipped_static_forces.xForces[xIndex] = xCurrent[xIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedStaticForces->xForces[xIndex],
+                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclipped_static_forces.xForces[xIndex],
                                              _appliedStaticForces->xForces[xIndex]);
             _forceSetpointWarning->staticForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
@@ -103,9 +109,9 @@ void StaticForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = ForceActuatorSettings::instance().StaticLimitYTable[yIndex].LowFault;
             float yHighFault = ForceActuatorSettings::instance().StaticLimitYTable[yIndex].HighFault;
-            _preclippedStaticForces->yForces[yIndex] = yCurrent[yIndex];
+            _preclipped_static_forces.yForces[yIndex] = yCurrent[yIndex];
             notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedStaticForces->yForces[yIndex],
+                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclipped_static_forces.yForces[yIndex],
                                              _appliedStaticForces->yForces[yIndex]);
             _forceSetpointWarning->staticForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
@@ -113,9 +119,10 @@ void StaticForceComponent::postUpdateActions() {
 
         float zLowFault = ForceActuatorSettings::instance().StaticLimitZTable[zIndex].LowFault;
         float zHighFault = ForceActuatorSettings::instance().StaticLimitZTable[zIndex].HighFault;
-        _preclippedStaticForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedStaticForces->zForces[zIndex],
-                                              _appliedStaticForces->zForces[zIndex]);
+        _preclipped_static_forces.zForces[zIndex] = zCurrent[zIndex];
+        notInRange =
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclipped_static_forces.zForces[zIndex],
+                                         _appliedStaticForces->zForces[zIndex]);
         _forceSetpointWarning->staticForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->staticForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->staticForceWarning[zIndex] || clippingRequired;
@@ -131,22 +138,13 @@ void StaticForceComponent::postUpdateActions() {
     _appliedStaticForces->mz = fm.Mz;
     _appliedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedStaticForces->xForces,
-                                                                     _preclippedStaticForces->yForces,
-                                                                     _preclippedStaticForces->zForces);
-    _preclippedStaticForces->fx = fm.Fx;
-    _preclippedStaticForces->fy = fm.Fy;
-    _preclippedStaticForces->fz = fm.Fz;
-    _preclippedStaticForces->mx = fm.Mx;
-    _preclippedStaticForces->my = fm.My;
-    _preclippedStaticForces->mz = fm.Mz;
-    _preclippedStaticForces->forceMagnitude = fm.ForceMagnitude;
+    _preclipped_static_forces.calculate_forces_and_moments();
 
     _safetyController->forceControllerNotifyStaticForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::instance().logPreclippedStaticForces();
+        _preclipped_static_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedStaticForces();
 }

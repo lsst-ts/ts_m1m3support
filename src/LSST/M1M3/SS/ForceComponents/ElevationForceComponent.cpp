@@ -23,26 +23,32 @@
 
 #include <spdlog/spdlog.h>
 
-#include <DistributedForces.h>
-#include <ElevationForceComponent.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <ForceControllerState.h>
-#include <ForcesAndMoments.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <RaisingLoweringInfo.h>
-#include <Range.h>
-#include <SafetyController.h>
+#include "DistributedForces.h"
+#include "ElevationForceComponent.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "ForceControllerState.h"
+#include "ForcesAndMoments.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "RaisingLoweringInfo.h"
+#include "Range.h"
+#include "SafetyController.h"
 
 using namespace LSST::M1M3::SS;
 
 ElevationForceComponent::ElevationForceComponent()
-        : ForceComponent("Elevation", &ForceActuatorSettings::instance().ElevationComponentSettings) {
+        : ForceComponent("Elevation", &ForceActuatorSettings::instance().ElevationComponentSettings),
+          _preclipped_elevation_forces(
+                  [](MTM1M3_logevent_preclippedElevationForcesC *data) {
+                      M1M3SSPublisher::instance().logPreclippedElevationForces(data);
+                  },
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     _safetyController = Model::instance().getSafetyController();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
-    _preclippedElevationForces = M1M3SSPublisher::instance().getEventPreclippedElevationForces();
 }
 
 void ElevationForceComponent::applyElevationForces(const std::vector<float> &x, const std::vector<float> &y,
@@ -111,7 +117,7 @@ void ElevationForceComponent::postUpdateActions() {
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedElevationForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _preclippedElevationForces->timestamp = _appliedElevationForces->timestamp;
+    _preclipped_elevation_forces.timestamp = _appliedElevationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
         int yIndex = faa_settings.ZIndexToYIndex[zIndex];
@@ -121,9 +127,9 @@ void ElevationForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = ForceActuatorSettings::instance().ElevationLimitXTable[xIndex].LowFault;
             float xHighFault = ForceActuatorSettings::instance().ElevationLimitXTable[xIndex].HighFault;
-            _preclippedElevationForces->xForces[xIndex] = xCurrent[xIndex];
+            _preclipped_elevation_forces.xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _preclippedElevationForces->xForces[xIndex],
+                                                  _preclipped_elevation_forces.xForces[xIndex],
                                                   _appliedElevationForces->xForces[xIndex]);
             _forceSetpointWarning->elevationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
@@ -132,9 +138,9 @@ void ElevationForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = ForceActuatorSettings::instance().ElevationLimitYTable[yIndex].LowFault;
             float yHighFault = ForceActuatorSettings::instance().ElevationLimitYTable[yIndex].HighFault;
-            _preclippedElevationForces->yForces[yIndex] = yCurrent[yIndex];
+            _preclipped_elevation_forces.yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _preclippedElevationForces->yForces[yIndex],
+                                                  _preclipped_elevation_forces.yForces[yIndex],
                                                   _appliedElevationForces->yForces[yIndex]);
             _forceSetpointWarning->elevationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
@@ -142,10 +148,10 @@ void ElevationForceComponent::postUpdateActions() {
 
         float zLowFault = ForceActuatorSettings::instance().ElevationLimitZTable[zIndex].LowFault;
         float zHighFault = ForceActuatorSettings::instance().ElevationLimitZTable[zIndex].HighFault;
-        _preclippedElevationForces->zForces[zIndex] = zCurrent[zIndex];
+        _preclipped_elevation_forces.zForces[zIndex] = zCurrent[zIndex];
 
         notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedElevationForces->zForces[zIndex],
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclipped_elevation_forces.zForces[zIndex],
                                          _appliedElevationForces->zForces[zIndex]);
         _forceSetpointWarning->elevationForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->elevationForceWarning[zIndex];
@@ -163,22 +169,12 @@ void ElevationForceComponent::postUpdateActions() {
     _appliedElevationForces->mz = fm.Mz;
     _appliedElevationForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedElevationForces->xForces,
-                                                                     _preclippedElevationForces->yForces,
-                                                                     _preclippedElevationForces->zForces);
-    _preclippedElevationForces->fx = fm.Fx;
-    _preclippedElevationForces->fy = fm.Fy;
-    _preclippedElevationForces->fz = fm.Fz;
-    _preclippedElevationForces->mx = fm.Mx;
-    _preclippedElevationForces->my = fm.My;
-    _preclippedElevationForces->mz = fm.Mz;
-    _preclippedElevationForces->forceMagnitude = fm.ForceMagnitude;
-
     _safetyController->forceControllerNotifyElevationForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::instance().logPreclippedElevationForces();
+        _preclipped_elevation_forces.calculate_forces_and_moments();
+        _preclipped_elevation_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedElevationForces();
 }

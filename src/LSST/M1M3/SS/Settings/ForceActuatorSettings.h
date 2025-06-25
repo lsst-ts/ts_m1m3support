@@ -73,7 +73,10 @@ public:
                                                const std::vector<float> &yForces,
                                                const std::vector<float> &zForces);
 
-    /** Calculates
+    /**
+     * Calculates forces and moments only from Z forces.
+     *
+     * @param zForces
      */
     ForcesAndMoments calculateForcesAndMoments(const std::vector<float> &zForces);
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,

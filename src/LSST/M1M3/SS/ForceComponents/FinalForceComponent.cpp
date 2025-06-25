@@ -233,12 +233,11 @@ void FinalForceComponent::postUpdateActions() {
     _appliedForces->mz = fm.Mz;
     _appliedForces->forceMagnitude = fm.ForceMagnitude;
 
-    _preclipped_forces.calculate_forces_and_moments();
-
     _safetyController->forceControllerNotifyForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
+        _preclipped_forces.calculate_forces_and_moments();
         _preclipped_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedForces();

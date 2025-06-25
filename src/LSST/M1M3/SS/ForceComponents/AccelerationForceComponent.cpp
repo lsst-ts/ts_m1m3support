@@ -23,24 +23,30 @@
 
 #include <spdlog/spdlog.h>
 
-#include <AccelerationForceComponent.h>
-#include <DistributedForces.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <ForceControllerState.h>
-#include <ForcesAndMoments.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <Range.h>
+#include "AccelerationForceComponent.h"
+#include "DistributedForces.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "ForceControllerState.h"
+#include "ForcesAndMoments.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "Range.h"
 
 using namespace LSST::M1M3::SS;
 
 AccelerationForceComponent::AccelerationForceComponent()
-        : ForceComponent("Acceleration", &ForceActuatorSettings::instance().AccelerationComponentSettings) {
+        : ForceComponent("Acceleration", &ForceActuatorSettings::instance().AccelerationComponentSettings),
+          _preclipped_acceleration_forces(
+                  [](MTM1M3_logevent_preclippedAccelerationForcesC *data) {
+                      M1M3SSPublisher::instance().logPreclippedAccelerationForces(data);
+                  },
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     _safetyController = Model::instance().getSafetyController();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedAccelerationForces = M1M3SSPublisher::instance().getAppliedAccelerationForces();
-    _preclippedAccelerationForces = M1M3SSPublisher::instance().getEventPreclippedAccelerationForces();
 }
 
 void AccelerationForceComponent::applyAccelerationForces(const std::vector<float> &x,
@@ -113,7 +119,7 @@ void AccelerationForceComponent::postUpdateActions() {
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedAccelerationForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _preclippedAccelerationForces->timestamp = _appliedAccelerationForces->timestamp;
+    _preclipped_acceleration_forces.timestamp = _appliedAccelerationForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
         int yIndex = faa_settings.ZIndexToYIndex[zIndex];
@@ -123,9 +129,9 @@ void AccelerationForceComponent::postUpdateActions() {
         if (xIndex != -1) {
             float xLowFault = ForceActuatorSettings::instance().AccelerationLimitXTable[xIndex].LowFault;
             float xHighFault = ForceActuatorSettings::instance().AccelerationLimitXTable[xIndex].HighFault;
-            _preclippedAccelerationForces->xForces[xIndex] = xCurrent[xIndex];
+            _preclipped_acceleration_forces.xForces[xIndex] = xCurrent[xIndex];
             notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
-                                                  _preclippedAccelerationForces->xForces[xIndex],
+                                                  _preclipped_acceleration_forces.xForces[xIndex],
                                                   _appliedAccelerationForces->xForces[xIndex]);
             _forceSetpointWarning->accelerationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
@@ -134,9 +140,9 @@ void AccelerationForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = ForceActuatorSettings::instance().AccelerationLimitYTable[yIndex].LowFault;
             float yHighFault = ForceActuatorSettings::instance().AccelerationLimitYTable[yIndex].HighFault;
-            _preclippedAccelerationForces->yForces[yIndex] = yCurrent[yIndex];
+            _preclipped_acceleration_forces.yForces[yIndex] = yCurrent[yIndex];
             notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
-                                                  _preclippedAccelerationForces->yForces[yIndex],
+                                                  _preclipped_acceleration_forces.yForces[yIndex],
                                                   _appliedAccelerationForces->yForces[yIndex]);
             _forceSetpointWarning->accelerationForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
@@ -144,9 +150,9 @@ void AccelerationForceComponent::postUpdateActions() {
 
         float zLowFault = ForceActuatorSettings::instance().AccelerationLimitZTable[zIndex].LowFault;
         float zHighFault = ForceActuatorSettings::instance().AccelerationLimitZTable[zIndex].HighFault;
-        _preclippedAccelerationForces->zForces[zIndex] = zCurrent[zIndex];
+        _preclipped_acceleration_forces.zForces[zIndex] = zCurrent[zIndex];
         notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
-                                              _preclippedAccelerationForces->zForces[zIndex],
+                                              _preclipped_acceleration_forces.zForces[zIndex],
                                               _appliedAccelerationForces->zForces[zIndex]);
         _forceSetpointWarning->accelerationForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->accelerationForceWarning[zIndex];
@@ -164,22 +170,12 @@ void AccelerationForceComponent::postUpdateActions() {
     _appliedAccelerationForces->mz = fm.Mz;
     _appliedAccelerationForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_preclippedAccelerationForces->xForces,
-                                                                     _preclippedAccelerationForces->yForces,
-                                                                     _preclippedAccelerationForces->zForces);
-    _preclippedAccelerationForces->fx = fm.Fx;
-    _preclippedAccelerationForces->fy = fm.Fy;
-    _preclippedAccelerationForces->fz = fm.Fz;
-    _preclippedAccelerationForces->mx = fm.Mx;
-    _preclippedAccelerationForces->my = fm.My;
-    _preclippedAccelerationForces->mz = fm.Mz;
-    _preclippedAccelerationForces->forceMagnitude = fm.ForceMagnitude;
-
     _safetyController->forceControllerNotifyAccelerationForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::instance().logPreclippedAccelerationForces();
+        _preclipped_acceleration_forces.calculate_forces_and_moments();
+        _preclipped_acceleration_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedAccelerationForces();
 }
