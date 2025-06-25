@@ -25,6 +25,7 @@
 
 #include <cmath>
 #include <chrono>
+#include <memory>
 
 #include "ForceActuatorApplicationSettings.h"
 #include "ForceActuatorSettings.h"
@@ -39,7 +40,8 @@ namespace SS {
  * is not spoiled by many similar Events.
  *
  *
- * When implemented, send method shall be provided. This takes
+ * When implemented, send method shall be provided. This takes data as
+ * parameter, and send those out.
  *
  */
 template <class T>
@@ -115,9 +117,7 @@ public:
     bool check_changes() {
         auto now = std::chrono::steady_clock::now();
 
-        bool change_detected = this->fx != this->_previous_event.fx || this->fy != this->_previous_event.fy ||
-                               this->fz != this->_previous_event.fz || this->mx != this->_previous_event.mx ||
-                               this->my != this->_previous_event.my || this->mz != this->_previous_event.mz;
+        bool change_detected = false;
         for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
             change_detected |= (i < FA_X_COUNT && this->xForces[i] != this->_previous_event.xForces[i]) ||
                                (i < FA_Y_COUNT && this->yForces[i] != this->_previous_event.yForces[i]) ||
@@ -209,13 +209,94 @@ public:
     bool check_changes() {
         auto now = std::chrono::steady_clock::now();
 
-        bool change_detected = this->fz != this->_previous_event.fz || this->mx != this->_previous_event.mx ||
-                               this->my != this->_previous_event.my;
+        bool change_detected = false;
         for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
             change_detected |= this->zForces[i] != this->_previous_event.zForces[i];
         }
         if (((change_detected || this->_unsend_changes) && now >= this->_next_send) ||
             fabs(this->_last_send_event.fz - this->fz) > this->_ignore_changes) {
+            this->_send_function(this);
+            this->_last_send_event = *this;
+            this->_next_send = now + _max_delay;
+            this->_unsend_changes = false;
+        } else if (change_detected) {
+            this->_unsend_changes = true;
+        }
+        _previous_event = *this;
+        return change_detected;
+    }
+
+protected:
+    std::function<void(T*)> _send_function;
+
+    T _last_send_event;
+    T _previous_event;
+
+    std::chrono::milliseconds _max_delay;
+    std::chrono::time_point<std::chrono::steady_clock> _next_send;
+
+    double _ignore_changes;
+    bool _unsend_changes;
+};
+
+/**
+ * Template looking for changes in preclipped cylinder forces. It sends forces
+ * out only at predefined intervals or when excessive changes were recorded, so
+ * the SAL is not spoiled by many similar Events.
+ *
+ * When implemented, send method shall be provided. This takes data as
+ * parameter, and send those out.
+ *
+ */
+template <typename T>
+class PreclippedCylinderForces : public T {
+public:
+    /**
+     * Construct object for processing preclipped cylinder forces.
+     *
+     * @param ignore_changes When change from the last send forceMagnitude
+     * value is above that value, the message will be send out, ignoring
+     * max_delay parameter. Value is in N.
+     *
+     * @param max_delay Maximum delay between sucessive call to send. If
+     * underlying values changes, but the forceMagnitude change is below the
+     * limit passed in ignore_changes, and it is more than this time limit from
+     * the last time the data were send out, the send method will be called.
+     */
+    PreclippedCylinderForces(std::function<void(T*)> send_function, float ignore_changes,
+                             std::chrono::milliseconds max_delay) {
+        this->primaryCylinderForces = std::vector<int>(FA_COUNT, 0);
+        this->secondaryCylinderForces = std::vector<int>(FA_S_COUNT, 0);
+
+        this->_last_send_event = *this;
+        this->_previous_event = *this;
+
+        this->_send_function = send_function;
+        this->_ignore_changes = ignore_changes;
+        this->_max_delay = max_delay;
+        this->_next_send = std::chrono::steady_clock::now() - _max_delay;
+
+        this->_unsend_changes = false;
+    }
+
+    /**
+     * Checks for changes in data. Call send method if the data shall be
+     * send out. Call this once all new data are processed.
+     *
+     * @return True if data changed from last check_changes call. That doesn't
+     * necessary mean data were send out.
+     */
+    bool check_changes() {
+        auto now = std::chrono::steady_clock::now();
+
+        bool change_detected = false;
+        for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
+            change_detected |=
+                    (i < FA_S_COUNT &&
+                     this->secondaryCylinderForces[i] != this->_previous_event.secondaryCylinderForces[i]) ||
+                    (this->primaryCylinderForces[i] != this->_previous_event.primaryCylinderForces[i]);
+        }
+        if ((change_detected || this->_unsend_changes) && now >= this->_next_send) {
             this->_send_function(this);
             this->_last_send_event = *this;
             this->_next_send = now + _max_delay;

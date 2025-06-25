@@ -1021,22 +1021,6 @@ void M1M3SSPublisher::tryLogPowerWarning() {
     }
 }
 
-void M1M3SSPublisher::logPreclippedCylinderForces() {
-    bool changeDetected = false;
-    for (int i = 0; i < FA_COUNT && !changeDetected; ++i) {
-        changeDetected =
-                changeDetected ||
-                (i < 112 && _eventPreclippedCylinderForces.secondaryCylinderForces[i] !=
-                                    _previousEventPreclippedCylinderForces.secondaryCylinderForces[i]) ||
-                (_eventPreclippedCylinderForces.primaryCylinderForces[i] !=
-                 _previousEventPreclippedCylinderForces.primaryCylinderForces[i]);
-    }
-    if (changeDetected) {
-        _m1m3SAL->logEvent_preclippedCylinderForces(&_eventPreclippedCylinderForces, 0);
-        _previousEventPreclippedCylinderForces = _eventPreclippedCylinderForces;
-    }
-}
-
 void M1M3SSPublisher::logSoftwareVersions() {
     MTM1M3_logevent_softwareVersionsC versions;
     versions.salVersion = SAL_MTM1M3::getSALVersion();

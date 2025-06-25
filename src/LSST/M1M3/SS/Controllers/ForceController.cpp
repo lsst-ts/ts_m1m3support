@@ -28,20 +28,20 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorBumpTestStatus.h>
-#include <ForceActuatorData.h>
-#include <ForceActuatorInfo.h>
-#include <ForceActuatorOrientations.h>
-#include <ForceActuatorSettings.h>
-#include <ForceController.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <RaisingLoweringInfo.h>
-#include <Range.h>
-#include <SafetyController.h>
-#include <SettingReader.h>
-#include <TMA.h>
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorBumpTestStatus.h"
+#include "ForceActuatorData.h"
+#include "ForceActuatorInfo.h"
+#include "ForceActuatorOrientations.h"
+#include "ForceActuatorSettings.h"
+#include "ForceController.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "RaisingLoweringInfo.h"
+#include "Range.h"
+#include "SafetyController.h"
+#include "SettingReader.h"
+#include "TMA.h"
 
 using namespace std;
 
@@ -63,7 +63,14 @@ ForceController::ForceController()
           _staticForceComponent(),
           _thermalForceComponent(),
           _velocityForceComponent(),
-          _finalForceComponent() {
+          _finalForceComponent(),
+          _preclipped_cylinder_forces(
+                  [](MTM1M3_logevent_preclippedCylinderForcesC *data) {
+                      M1M3SSPublisher::instance().logPreclippedCylinderForces(data);
+                  },
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     SPDLOG_DEBUG("ForceController: ForceController()");
     auto &faa_settings = ForceActuatorApplicationSettings::instance();
     _safetyController = Model::instance().getSafetyController();
@@ -72,7 +79,6 @@ ForceController::ForceController()
     _appliedForces = M1M3SSPublisher::instance().getAppliedForces();
     _forceActuatorState = M1M3SSPublisher::instance().getEventForceActuatorState();
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
-    _preclippedCylinderForces = M1M3SSPublisher::instance().getEventPreclippedCylinderForces();
 
     _inclinometerData = M1M3SSPublisher::instance().getInclinometerData();
 
@@ -540,25 +546,25 @@ void ForceController::_convertForcesToSetpoints() {
                     ForceActuatorSettings::instance().CylinderLimitSecondaryTable[sIndex].HighFault;
             switch (forceActuatorInfo.actuatorOrientation[pIndex]) {
                 case ForceActuatorOrientations::PositiveY:
-                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclipped_cylinder_forces.secondaryCylinderForces[sIndex] =
                             _toInt24(_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::PositiveX:
-                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclipped_cylinder_forces.secondaryCylinderForces[sIndex] =
                             _toInt24(_appliedForces->xForces[xIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::NegativeX:
-                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclipped_cylinder_forces.secondaryCylinderForces[sIndex] =
                             _toInt24(-_appliedForces->xForces[xIndex] * _sqrt2);
                     break;
                 case ForceActuatorOrientations::NegativeY:
-                    _preclippedCylinderForces->secondaryCylinderForces[sIndex] =
+                    _preclipped_cylinder_forces.secondaryCylinderForces[sIndex] =
                             _toInt24(-_appliedForces->yForces[yIndex] * _sqrt2);
                     break;
             }
             bool notInRangeS =
                     !Range::InRangeAndCoerce<int>(secondaryLowFault, secondaryHighFault,
-                                                  _preclippedCylinderForces->secondaryCylinderForces[sIndex],
+                                                  _preclipped_cylinder_forces.secondaryCylinderForces[sIndex],
                                                   _appliedCylinderForces->secondaryCylinderForces[sIndex]);
             _forceSetpointWarning->safetyLimitWarning[pIndex] =
                     notInRangeS || _forceSetpointWarning->safetyLimitWarning[pIndex];
@@ -569,29 +575,29 @@ void ForceController::_convertForcesToSetpoints() {
                 ForceActuatorSettings::instance().CylinderLimitPrimaryTable[pIndex].HighFault;
         switch (forceActuatorInfo.actuatorOrientation[pIndex]) {
             case ForceActuatorOrientations::PositiveY:
-                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclipped_cylinder_forces.primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex] - _appliedForces->yForces[yIndex]);
                 break;
             case ForceActuatorOrientations::NA:
-                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclipped_cylinder_forces.primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex]);
                 break;
             case ForceActuatorOrientations::PositiveX:
-                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclipped_cylinder_forces.primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex] - _appliedForces->xForces[xIndex]);
                 break;
             case ForceActuatorOrientations::NegativeX:
-                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclipped_cylinder_forces.primaryCylinderForces[pIndex] =
 
                         _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->xForces[xIndex]);
                 break;
             case ForceActuatorOrientations::NegativeY:
-                _preclippedCylinderForces->primaryCylinderForces[pIndex] =
+                _preclipped_cylinder_forces.primaryCylinderForces[pIndex] =
                         _toInt24(_appliedForces->zForces[pIndex] - -_appliedForces->yForces[yIndex]);
                 break;
         }
         bool notInRange = !Range::InRangeAndCoerce<int>(
-                primaryLowFault, primaryHighFault, _preclippedCylinderForces->primaryCylinderForces[pIndex],
+                primaryLowFault, primaryHighFault, _preclipped_cylinder_forces.primaryCylinderForces[pIndex],
                 _appliedCylinderForces->primaryCylinderForces[pIndex]);
         _forceSetpointWarning->safetyLimitWarning[pIndex] =
                 notInRange || _forceSetpointWarning->safetyLimitWarning[pIndex];
@@ -599,10 +605,10 @@ void ForceController::_convertForcesToSetpoints() {
         clippingRequired = _forceSetpointWarning->safetyLimitWarning[pIndex] || clippingRequired;
     }
     _appliedCylinderForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _preclippedCylinderForces->timestamp = _appliedCylinderForces->timestamp;
+    _preclipped_cylinder_forces.timestamp = _appliedCylinderForces->timestamp;
     _safetyController->forceControllerNotifySafetyLimit(clippingRequired);
     if (clippingRequired) {
-        M1M3SSPublisher::instance().logPreclippedCylinderForces();
+        _preclipped_cylinder_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedCylinderForces();
 }

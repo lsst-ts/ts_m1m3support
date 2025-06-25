@@ -134,9 +134,6 @@ public:
     MTM1M3_logevent_powerStatusC *getEventPowerStatus() { return &_eventPowerStatus; }
     static PowerSupplyStatus *getPowerSupplyStatus() { return &(instance()._powerSupplyStatus); }
     MTM1M3_logevent_powerWarningC *getEventPowerWarning() { return &_eventPowerWarning; }
-    MTM1M3_logevent_preclippedCylinderForcesC *getEventPreclippedCylinderForces() {
-        return &_eventPreclippedCylinderForces;
-    }
     MTM1M3_logevent_configurationsAvailableC *getEventConfigurationsAvailable() {
         return &_eventConfigurationsAvailable;
     }
@@ -323,7 +320,9 @@ public:
     void logPreclippedBalanceForces(MTM1M3_logevent_preclippedBalanceForcesC *data) {
         _m1m3SAL->logEvent_preclippedBalanceForces(data, 0);
     }
-    void logPreclippedCylinderForces();
+    void logPreclippedCylinderForces(MTM1M3_logevent_preclippedCylinderForcesC *data) {
+        _m1m3SAL->logEvent_preclippedCylinderForces(data, 0);
+    }
     void logPreclippedElevationForces(MTM1M3_logevent_preclippedElevationForcesC *data) {
         _m1m3SAL->logEvent_preclippedElevationForces(data, 0);
     }
@@ -477,7 +476,6 @@ private:
     MTM1M3_logevent_powerStatusC _eventPowerStatus;
     PowerSupplyStatus _powerSupplyStatus;
     MTM1M3_logevent_powerWarningC _eventPowerWarning;
-    MTM1M3_logevent_preclippedCylinderForcesC _eventPreclippedCylinderForces;
     MTM1M3_logevent_configurationsAvailableC _eventConfigurationsAvailable;
     MTM1M3_logevent_configurationAppliedC _eventConfigurationApplied;
     MTM1M3_logevent_summaryStateC _eventSummaryState;
@@ -506,7 +504,6 @@ private:
     MTM1M3_logevent_powerStatusC _previousEventPowerStatus;
     MTM1M3_logevent_powerSupplyStatusC _previousEventPowerSupplyStatus;
     MTM1M3_logevent_powerWarningC _previousEventPowerWarning;
-    MTM1M3_logevent_preclippedCylinderForcesC _previousEventPreclippedCylinderForces;
     MTM1M3_logevent_summaryStateC _previousEventSummaryState;
 };
 

@@ -381,7 +381,9 @@ SafetyControllerSettings:
     FaultOnTMAMotionStop: On
     FaultOnGISHeartbeatLost: On
   ForceControllerSettings:
-    FaultOnSafetyLimit: On
+    # When true/on, the support system will fail when applied cylinder force
+    # will be pre-clipped.
+    FaultOnSafetyLimit: Off
     FaultOnXMomentLimit: On
     FaultOnYMomentLimit: On
     FaultOnZMomentLimit: On
