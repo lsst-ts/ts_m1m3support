@@ -60,52 +60,13 @@ public:
      * the last time the data were send out, the send method will be called.
      */
     PreclippedForces(std::function<void(T*)> send_function, float ignore_changes,
-                     std::chrono::milliseconds max_delay) {
-        for (int i = 0; i < FA_Z_COUNT; i++) {
-            this->zForces[i] = NAN;
-            if (i < FA_Y_COUNT) {
-                this->yForces[i] = NAN;
-            }
-            if (i < FA_X_COUNT) {
-                this->xForces[i] = NAN;
-            }
-        }
-
-        this->fz = NAN;
-        this->fy = NAN;
-        this->fx = NAN;
-        this->mz = NAN;
-        this->my = NAN;
-        this->mx = NAN;
-        this->forceMagnitude = NAN;
-
-        this->_last_send_event = *this;
-        this->_previous_event = *this;
-
-        this->_send_function = send_function;
-        this->_ignore_changes = ignore_changes;
-        this->_max_delay = max_delay;
-        this->_next_send = std::chrono::steady_clock::now() - _max_delay;
-
-        this->_unsend_changes = false;
-    }
+                     std::chrono::milliseconds max_delay);
 
     /**
      * Calculate total forces and moments. Sets f[xyz], m[xyz] and
      * forceMagnitude members to calculated total values.
      */
-    void calculate_forces_and_moments() {
-        auto f_m = ForceActuatorSettings::instance().calculateForcesAndMoments(this->xForces, this->yForces,
-                                                                               this->zForces);
-
-        this->fx = f_m.Fx;
-        this->fy = f_m.Fy;
-        this->fz = f_m.Fz;
-        this->mx = f_m.Mx;
-        this->my = f_m.My;
-        this->mz = f_m.Mz;
-        this->forceMagnitude = f_m.ForceMagnitude;
-    }
+    void calculate_forces_and_moments();
 
     /**
      * Checks for changes in data. Call send method if the data shall be
@@ -114,27 +75,7 @@ public:
      * @return True if data changed from last check_changes call. That doesn't
      * necessary mean data were send out.
      */
-    bool check_changes() {
-        auto now = std::chrono::steady_clock::now();
-
-        bool change_detected = false;
-        for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
-            change_detected |= (i < FA_X_COUNT && this->xForces[i] != this->_previous_event.xForces[i]) ||
-                               (i < FA_Y_COUNT && this->yForces[i] != this->_previous_event.yForces[i]) ||
-                               (this->zForces[i] != this->_previous_event.zForces[i]);
-        }
-        if (((change_detected || this->_unsend_changes) && now >= this->_next_send) ||
-            fabs(this->_last_send_event.forceMagnitude - this->forceMagnitude) > this->_ignore_changes) {
-            this->_send_function(this);
-            this->_last_send_event = *this;
-            this->_next_send = now + _max_delay;
-            this->_unsend_changes = false;
-        } else if (change_detected) {
-            this->_unsend_changes = true;
-        }
-        _previous_event = *this;
-        return change_detected;
-    }
+    bool check_changes();
 
 protected:
     std::function<void(T*)> _send_function;
@@ -167,37 +108,13 @@ public:
      * @see PreclippedForces
      */
     PreclippedZForces(std::function<void(T*)> send_function, float ignore_changes,
-                      std::chrono::milliseconds max_delay) {
-        for (int i = 0; i < FA_Z_COUNT; i++) {
-            this->zForces[i] = NAN;
-        }
-
-        this->fz = NAN;
-        this->my = NAN;
-        this->mx = NAN;
-
-        this->_last_send_event = *this;
-        this->_previous_event = *this;
-
-        this->_send_function = send_function;
-        this->_ignore_changes = ignore_changes;
-        this->_max_delay = max_delay;
-        this->_next_send = std::chrono::steady_clock::now() - _max_delay;
-
-        this->_unsend_changes = false;
-    }
+                      std::chrono::milliseconds max_delay);
 
     /**
      * Calculate total forces and moments. Sets fz and m[xy] members to
      * calculated total values.
      */
-    void calculate_forces_and_moments() {
-        auto f_m = ForceActuatorSettings::instance().calculateForcesAndMoments(this->zForces);
-
-        this->fz = f_m.Fz;
-        this->mx = f_m.Mx;
-        this->my = f_m.My;
-    }
+    void calculate_forces_and_moments();
 
     /**
      * Checks for changes in data. Call send method if the data shall be
@@ -206,25 +123,7 @@ public:
      * @return True if data changed from last check_changes call. That doesn't
      * necessary mean data were send out.
      */
-    bool check_changes() {
-        auto now = std::chrono::steady_clock::now();
-
-        bool change_detected = false;
-        for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
-            change_detected |= this->zForces[i] != this->_previous_event.zForces[i];
-        }
-        if (((change_detected || this->_unsend_changes) && now >= this->_next_send) ||
-            fabs(this->_last_send_event.fz - this->fz) > this->_ignore_changes) {
-            this->_send_function(this);
-            this->_last_send_event = *this;
-            this->_next_send = now + _max_delay;
-            this->_unsend_changes = false;
-        } else if (change_detected) {
-            this->_unsend_changes = true;
-        }
-        _previous_event = *this;
-        return change_detected;
-    }
+    bool check_changes();
 
 protected:
     std::function<void(T*)> _send_function;
@@ -264,20 +163,7 @@ public:
      * the last time the data were send out, the send method will be called.
      */
     PreclippedCylinderForces(std::function<void(T*)> send_function, float ignore_changes,
-                             std::chrono::milliseconds max_delay) {
-        this->primaryCylinderForces = std::vector<int>(FA_COUNT, 0);
-        this->secondaryCylinderForces = std::vector<int>(FA_S_COUNT, 0);
-
-        this->_last_send_event = *this;
-        this->_previous_event = *this;
-
-        this->_send_function = send_function;
-        this->_ignore_changes = ignore_changes;
-        this->_max_delay = max_delay;
-        this->_next_send = std::chrono::steady_clock::now() - _max_delay;
-
-        this->_unsend_changes = false;
-    }
+                             std::chrono::milliseconds max_delay);
 
     /**
      * Checks for changes in data. Call send method if the data shall be
@@ -286,27 +172,7 @@ public:
      * @return True if data changed from last check_changes call. That doesn't
      * necessary mean data were send out.
      */
-    bool check_changes() {
-        auto now = std::chrono::steady_clock::now();
-
-        bool change_detected = false;
-        for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
-            change_detected |=
-                    (i < FA_S_COUNT &&
-                     this->secondaryCylinderForces[i] != this->_previous_event.secondaryCylinderForces[i]) ||
-                    (this->primaryCylinderForces[i] != this->_previous_event.primaryCylinderForces[i]);
-        }
-        if ((change_detected || this->_unsend_changes) && now >= this->_next_send) {
-            this->_send_function(this);
-            this->_last_send_event = *this;
-            this->_next_send = now + _max_delay;
-            this->_unsend_changes = false;
-        } else if (change_detected) {
-            this->_unsend_changes = true;
-        }
-        _previous_event = *this;
-        return change_detected;
-    }
+    bool check_changes();
 
 protected:
     std::function<void(T*)> _send_function;

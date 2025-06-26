@@ -138,12 +138,11 @@ void StaticForceComponent::postUpdateActions() {
     _appliedStaticForces->mz = fm.Mz;
     _appliedStaticForces->forceMagnitude = fm.ForceMagnitude;
 
-    _preclipped_static_forces.calculate_forces_and_moments();
-
     _safetyController->forceControllerNotifyStaticForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
+        _preclipped_static_forces.calculate_forces_and_moments();
         _preclipped_static_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedStaticForces();

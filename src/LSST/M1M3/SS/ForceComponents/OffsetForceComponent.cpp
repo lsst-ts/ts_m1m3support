@@ -190,12 +190,11 @@ void OffsetForceComponent::postUpdateActions() {
     _appliedOffsetForces->mz = fm.Mz;
     _appliedOffsetForces->forceMagnitude = fm.ForceMagnitude;
 
-    _preclipped_offset_forces.calculate_forces_and_moments();
-
     _safetyController->forceControllerNotifyOffsetForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
+        _preclipped_offset_forces.calculate_forces_and_moments();
         _preclipped_offset_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedOffsetForces();

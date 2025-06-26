@@ -99,8 +99,6 @@ void ActiveOpticForceComponent::postUpdateActions() {
     _appliedActiveOpticForces->mx = fm.Mx;
     _appliedActiveOpticForces->my = fm.My;
 
-    _preclipped_active_optic_forces.calculate_forces_and_moments();
-
     _forceSetpointWarning->activeOpticNetForceWarning =
             !Range::InRange(-ForceActuatorSettings::instance().netActiveOpticForceTolerance,
                             ForceActuatorSettings::instance().netActiveOpticForceTolerance,
@@ -118,6 +116,7 @@ void ActiveOpticForceComponent::postUpdateActions() {
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
+        _preclipped_active_optic_forces.calculate_forces_and_moments();
         _preclipped_active_optic_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedActiveOpticForces();
