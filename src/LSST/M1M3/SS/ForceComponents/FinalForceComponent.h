@@ -56,6 +56,10 @@ public:
 
     void postEnableDisableActions() override;
 
+    PreclippedForces<MTM1M3_logevent_preclippedForcesC> &get_preclipped_forces() {
+        return _preclipped_forces;
+    }
+
 protected:
     void postUpdateActions() override;
 

@@ -83,7 +83,11 @@ void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
 
     CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
     CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
-    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
+    CHECK(Model::instance()
+                  .getForceController()
+                  ->get_final_force_component()
+                  ->get_preclipped_forces()
+                  .zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
@@ -93,8 +97,10 @@ void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
 
     int xIndex = faa_settings.ZIndexToXIndex[zIndex];
     CHECK_FALSE(xIndex < 0);
-    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->xForces[xIndex] == xForce);
-    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
+    auto const _preclipped_forces =
+            Model::instance().getForceController()->get_final_force_component()->get_preclipped_forces();
+    CHECK(_preclipped_forces.xForces[xIndex] == xForce);
+    CHECK(_preclipped_forces.zForces[zIndex] == zForce);
 }
 
 void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
@@ -104,17 +110,22 @@ void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
 
     int yIndex = faa_settings.ZIndexToYIndex[zIndex];
     CHECK_FALSE(yIndex < 0);
-    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->yForces[yIndex] == yForce);
-    CHECK(M1M3SSPublisher::instance().getEventPreclippedForces()->zForces[zIndex] == zForce);
+    auto const _preclipped_forces =
+            Model::instance().getForceController()->get_final_force_component()->get_preclipped_forces();
+    CHECK(_preclipped_forces.yForces[yIndex] == yForce);
+    CHECK(_preclipped_forces.zForces[zIndex] == zForce);
 }
 
 void checkRejectedForces(float fx, float fy, float fz, float mx, float my, float mz) {
-    CHECK_THAT(M1M3SSPublisher::instance().getEventPreclippedForces()->fx, WithinRel(fx));
-    CHECK_THAT(M1M3SSPublisher::instance().getEventPreclippedForces()->fy, WithinRel(fy));
-    CHECK_THAT(M1M3SSPublisher::instance().getEventPreclippedForces()->fz, WithinRel(fz));
-    CHECK_THAT(M1M3SSPublisher::instance().getEventPreclippedForces()->mx, WithinRel(mx));
-    CHECK_THAT(M1M3SSPublisher::instance().getEventPreclippedForces()->my, WithinRel(my));
-    CHECK_THAT(M1M3SSPublisher::instance().getEventPreclippedForces()->mz, WithinRel(mz));
+    auto _preclipped_forces =
+            Model::instance().getForceController()->get_final_force_component()->get_preclipped_forces();
+    _preclipped_forces.calculate_forces_and_moments();
+    CHECK_THAT(_preclipped_forces.fx, WithinRel(fx));
+    CHECK_THAT(_preclipped_forces.fy, WithinRel(fy));
+    CHECK_THAT(_preclipped_forces.fz, WithinRel(fz));
+    CHECK_THAT(_preclipped_forces.mx, WithinRel(mx));
+    CHECK_THAT(_preclipped_forces.my, WithinRel(my));
+    CHECK_THAT(_preclipped_forces.mz, WithinRel(mz));
 }
 
 void runAndCheck(ForceController *forceController, float fx, float fy, float fz, float mx, float my, float mz,

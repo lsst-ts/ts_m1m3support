@@ -48,15 +48,14 @@ PreclippedForces<T>::PreclippedForces(std::function<void(T*)> send_function, flo
     this->mx = NAN;
     this->forceMagnitude = NAN;
 
-    _last_send_event = *this;
-    _previous_event = *this;
+    _last_sent_event = *this;
 
     _send_function = send_function;
     _ignore_changes = ignore_changes;
     _max_delay = max_delay;
     _next_send = std::chrono::steady_clock::now() - _max_delay;
 
-    _unsend_changes = false;
+    _unsent_changes = false;
 }
 
 template <class T>
@@ -79,20 +78,19 @@ bool PreclippedForces<T>::check_changes() {
 
     bool change_detected = false;
     for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
-        change_detected |= (i < FA_X_COUNT && this->xForces[i] != this->_previous_event.xForces[i]) ||
-                           (i < FA_Y_COUNT && this->yForces[i] != this->_previous_event.yForces[i]) ||
-                           (this->zForces[i] != _previous_event.zForces[i]);
+        change_detected |= (i < FA_X_COUNT && this->xForces[i] != this->_last_sent_event.xForces[i]) ||
+                           (i < FA_Y_COUNT && this->yForces[i] != this->_last_sent_event.yForces[i]) ||
+                           (this->zForces[i] != _last_sent_event.zForces[i]);
     }
-    if (((change_detected || _unsend_changes) && now >= _next_send) ||
-        fabs(_last_send_event.forceMagnitude - this->forceMagnitude) > _ignore_changes) {
+    if (((change_detected || _unsent_changes) && now >= _next_send) ||
+        fabs(_last_sent_event.forceMagnitude - this->forceMagnitude) > _ignore_changes) {
         _send_function(this);
-        _last_send_event = *this;
+        _last_sent_event = *this;
         _next_send = now + _max_delay;
-        _unsend_changes = false;
+        _unsent_changes = false;
     } else if (change_detected) {
-        _unsend_changes = true;
+        _unsent_changes = true;
     }
-    _previous_event = *this;
     return change_detected;
 }
 
@@ -117,15 +115,14 @@ PreclippedZForces<T>::PreclippedZForces(std::function<void(T*)> send_function, f
     this->my = NAN;
     this->mx = NAN;
 
-    this->_last_send_event = *this;
-    this->_previous_event = *this;
+    this->_last_sent_event = *this;
 
     this->_send_function = send_function;
     this->_ignore_changes = ignore_changes;
     this->_max_delay = max_delay;
     this->_next_send = std::chrono::steady_clock::now() - _max_delay;
 
-    this->_unsend_changes = false;
+    this->_unsent_changes = false;
 }
 
 template <class T>
@@ -143,18 +140,17 @@ bool PreclippedZForces<T>::check_changes() {
 
     bool change_detected = false;
     for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
-        change_detected |= this->zForces[i] != this->_previous_event.zForces[i];
+        change_detected |= this->zForces[i] != this->_last_sent_event.zForces[i];
     }
-    if (((change_detected || this->_unsend_changes) && now >= this->_next_send) ||
-        fabs(this->_last_send_event.fz - this->fz) > this->_ignore_changes) {
+    if (((change_detected || this->_unsent_changes) && now >= this->_next_send) ||
+        fabs(this->_last_sent_event.fz - this->fz) > this->_ignore_changes) {
         this->_send_function(this);
-        this->_last_send_event = *this;
+        this->_last_sent_event = *this;
         this->_next_send = now + _max_delay;
-        this->_unsend_changes = false;
+        this->_unsent_changes = false;
     } else if (change_detected) {
-        this->_unsend_changes = true;
+        this->_unsent_changes = true;
     }
-    _previous_event = *this;
     return change_detected;
 }
 
@@ -167,15 +163,14 @@ PreclippedCylinderForces<T>::PreclippedCylinderForces(std::function<void(T*)> se
     this->primaryCylinderForces = std::vector<int>(FA_COUNT, 0);
     this->secondaryCylinderForces = std::vector<int>(FA_S_COUNT, 0);
 
-    this->_last_send_event = *this;
-    this->_previous_event = *this;
+    this->_last_sent_event = *this;
 
     this->_send_function = send_function;
     this->_ignore_changes = ignore_changes;
     this->_max_delay = max_delay;
     this->_next_send = std::chrono::steady_clock::now() - _max_delay;
 
-    this->_unsend_changes = false;
+    this->_unsent_changes = false;
 }
 
 template <class T>
@@ -184,19 +179,19 @@ bool PreclippedCylinderForces<T>::check_changes() {
 
     bool change_detected = false;
     for (int i = 0; i < FA_COUNT && !change_detected; ++i) {
-        change_detected |= (i < FA_S_COUNT && this->secondaryCylinderForces[i] !=
-                                                      this->_previous_event.secondaryCylinderForces[i]) ||
-                           (this->primaryCylinderForces[i] != this->_previous_event.primaryCylinderForces[i]);
+        change_detected |=
+                (i < FA_S_COUNT &&
+                 this->secondaryCylinderForces[i] != this->_last_sent_event.secondaryCylinderForces[i]) ||
+                (this->primaryCylinderForces[i] != this->_last_sent_event.primaryCylinderForces[i]);
     }
-    if ((change_detected || this->_unsend_changes) && now >= this->_next_send) {
+    if ((change_detected || this->_unsent_changes) && now >= this->_next_send) {
         this->_send_function(this);
-        this->_last_send_event = *this;
+        this->_last_sent_event = *this;
         this->_next_send = now + _max_delay;
-        this->_unsend_changes = false;
+        this->_unsent_changes = false;
     } else if (change_detected) {
-        this->_unsend_changes = true;
+        this->_unsent_changes = true;
     }
-    _previous_event = *this;
     return change_detected;
 }
 

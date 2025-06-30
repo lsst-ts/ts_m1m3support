@@ -80,14 +80,13 @@ public:
 protected:
     std::function<void(T*)> _send_function;
 
-    T _last_send_event;
-    T _previous_event;
+    T _last_sent_event;
 
     std::chrono::milliseconds _max_delay;
     std::chrono::time_point<std::chrono::steady_clock> _next_send;
 
     double _ignore_changes;
-    bool _unsend_changes;
+    bool _unsent_changes;
 };
 
 template <class T>
@@ -128,14 +127,13 @@ public:
 protected:
     std::function<void(T*)> _send_function;
 
-    T _last_send_event;
-    T _previous_event;
+    T _last_sent_event;
 
     std::chrono::milliseconds _max_delay;
     std::chrono::time_point<std::chrono::steady_clock> _next_send;
 
     double _ignore_changes;
-    bool _unsend_changes;
+    bool _unsent_changes;
 };
 
 /**
@@ -177,14 +175,13 @@ public:
 protected:
     std::function<void(T*)> _send_function;
 
-    T _last_send_event;
-    T _previous_event;
+    T _last_sent_event;
 
     std::chrono::milliseconds _max_delay;
     std::chrono::time_point<std::chrono::steady_clock> _next_send;
 
     double _ignore_changes;
-    bool _unsend_changes;
+    bool _unsent_changes;
 };
 
 }  // namespace SS

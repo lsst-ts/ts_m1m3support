@@ -221,6 +221,8 @@ public:
 
     void enableDisableForceComponent(int forceComponentEnum, bool enabled);
 
+    FinalForceComponent *get_final_force_component() { return &_finalForceComponent; }
+
 private:
     void _sumAllForces();
     void _convertForcesToSetpoints();
