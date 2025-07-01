@@ -30,8 +30,9 @@
 #include <cRIO/DataTypes.h>
 
 #include "FABumpTestData.h"
+#include "ForceActuatorApplicationSettings.h"
 #include "ForceActuatorSettings.h"
-#include "SettingReader.h"
+#include "M1M3SSPublisher.h"
 
 using namespace LSST::M1M3::SS;
 
@@ -117,10 +118,10 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, BumpTestKind kind, flo
         return BumpTestStatus::NO_DATA;
     }
 
-    auto fa_app_settings = SettingReader::instance().getForceActuatorApplicationSettings();
-    auto y_index = fa_app_settings->ZIndexToYIndex[z_index];
-    auto x_index = fa_app_settings->ZIndexToXIndex[z_index];
-    auto s_index = fa_app_settings->ZIndexToSecondaryCylinderIndex[z_index];
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto y_index = faa_settings.ZIndexToYIndex[z_index];
+    auto x_index = faa_settings.ZIndexToXIndex[z_index];
+    auto s_index = faa_settings.ZIndexToSecondaryCylinderIndex[z_index];
 
     // make sure the actuator state remain the same throughout testing period
     auto p_states = _primary_states[z_index][0];

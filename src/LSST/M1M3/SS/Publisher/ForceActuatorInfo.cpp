@@ -23,22 +23,24 @@
 
 #include <spdlog/spdlog.h>
 
+#include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorInfo.h>
 
 using namespace LSST::M1M3::SS;
 
-ForceActuatorInfo::ForceActuatorInfo(token) {}
-
-void ForceActuatorInfo::populate(ForceActuatorApplicationSettings *forceActuatorApplicationSettings) {
+ForceActuatorInfo::ForceActuatorInfo(token) {
     SPDLOG_DEBUG("Populating ForceActuatorInfo");
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int i = 0; i < FA_COUNT; i++) {
-        ForceActuatorTableRow row = forceActuatorApplicationSettings->Table[i];
+        ForceActuatorTableRow row = faa_settings.Table[i];
         referenceId[i] = row.ActuatorID;
-        auto xIndex = forceActuatorApplicationSettings->ZIndexToXIndex[i];
+        auto xIndex = faa_settings.ZIndexToXIndex[i];
         if (xIndex >= 0) {
             xDataReferenceId[xIndex] = row.ActuatorID;
         }
-        auto yIndex = forceActuatorApplicationSettings->ZIndexToYIndex[i];
+        auto yIndex = faa_settings.ZIndexToYIndex[i];
         if (yIndex >= 0) {
             yDataReferenceId[yIndex] = row.ActuatorID;
         }

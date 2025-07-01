@@ -48,7 +48,7 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
 
     for (size_t i = 0; i < size; i++) {
         CHECK(data.size() == i);
-        CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::NO_DATA);
+        CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::NO_DATA);
 
         CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, zeros, zeros, states, states));
         CHECK(data.empty() == false);
@@ -56,31 +56,31 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
 
     CHECK(data.size() == size);
 
-    CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+    CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::PASSED);
 
     for (size_t i = 0; i < size / 2; i++) {
         CHECK(data.size() == size);
-        CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+        CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::PASSED);
 
         data.add_data(zeros, zeros, zeros, zeros, zeros, states, states);
         CHECK(data.empty() == false);
     }
 
-    CHECK(data.test_actuator(1, 'Y', 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+    CHECK(data.test_actuator(1, BumpTestKind::AXIS_Y, 0, 0.2, 0.1) == BumpTestStatus::PASSED);
 
     std::vector<float> warnings(FA_COUNT, 0.15);
     CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, warnings, zeros, states, states));
 
-    CHECK(data.test_actuator(0, 'P', 0, 0.2, 0.1) == BumpTestStatus::OVERSHOOT_WARNING);
+    CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::OVERSHOOT_WARNING);
 
     std::vector<float> errors(FA_COUNT, -0.21);
     CHECK_NOTHROW(data.add_data(errors, zeros, zeros, zeros, zeros, states, states));
 
-    CHECK(data.test_actuator(0, 'X', 0, 0.2, 0.1) == BumpTestStatus::INVALID_ACTUATOR);
-    CHECK(data.test_actuator(147, 'X', 0, 0.2, 0.1) == BumpTestStatus::UNDERSHOOT_ERROR);
+    CHECK(data.test_actuator(0, BumpTestKind::AXIS_X, 0, 0.2, 0.1) == BumpTestStatus::INVALID_ACTUATOR);
+    CHECK(data.test_actuator(147, BumpTestKind::AXIS_X, 0, 0.2, 0.1) == BumpTestStatus::UNDERSHOOT_ERROR);
 
-    float min, max, average;
-    data.statistics(0, 'Y', min, max, average);
+    float min, max, average, rms;
+    data.statistics(0, BumpTestKind::AXIS_Y, 0, min, max, average, rms);
     CHECK(min == 0);
     CHECK(max == 0);
     CHECK(average == 0);
@@ -89,7 +89,7 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
             data.add_data(std::vector<float>(FA_COUNT, 0.21), zeros, zeros, zeros, zeros, states, states));
 
     for (int x = 0; x < FA_X_COUNT; x++) {
-        data.statistics(x, 'X', min, max, average);
+        data.statistics(x, BumpTestKind::AXIS_X, 0, min, max, average, rms);
         CHECK_THAT(min, WithinAbs(-0.21, 1e-5));
         CHECK_THAT(max, WithinAbs(0.21, 1e-6));
         CHECK_THAT(average, WithinAbs(0, 1e-6));
@@ -98,7 +98,7 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
     CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, zeros, zeros, states, states));
 
     for (int x = 0; x < FA_X_COUNT; x++) {
-        data.statistics(x, 'X', min, max, average);
+        data.statistics(x, BumpTestKind::AXIS_X, 0, min, max, average, rms);
         CHECK_THAT(min, WithinAbs(-0.21, 1e-5));
         CHECK_THAT(max, WithinAbs(0.21, 1e-6));
         CHECK_THAT(average, WithinAbs(0, 1e-6));

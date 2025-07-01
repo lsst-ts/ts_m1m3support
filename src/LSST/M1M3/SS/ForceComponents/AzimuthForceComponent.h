@@ -26,9 +26,9 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceComponent.h>
-#include <SafetyController.h>
+#include "ForceComponent.h"
+#include "PreclippedForces.h"
+#include "SafetyController.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -36,7 +36,7 @@ namespace SS {
 
 class AzimuthForceComponent : public ForceComponent {
 public:
-    AzimuthForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    AzimuthForceComponent();
     void applyAzimuthForces(const std::vector<float> &x, const std::vector<float> &y,
                             const std::vector<float> &z);
     /**
@@ -53,11 +53,10 @@ protected:
 
 private:
     SafetyController *_safetyController;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
     MTM1M3_appliedAzimuthForcesC *_appliedAzimuthForces;
-    MTM1M3_logevent_preclippedAzimuthForcesC *_preclippedAzimuthForces;
+    PreclippedForces<MTM1M3_logevent_preclippedAzimuthForcesC> _preclipped_azimuth_forces;
 };
 
 } /* namespace SS */

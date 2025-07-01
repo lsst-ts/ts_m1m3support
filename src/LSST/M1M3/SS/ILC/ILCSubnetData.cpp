@@ -28,22 +28,21 @@
 #include <ILCSubnetData.h>
 #include <spdlog/spdlog.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-                             HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
-                             HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings)
-        : _forceActuatorApplicationSettings(forceActuatorApplicationSettings) {
+ILCSubnetData::ILCSubnetData(HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+                             HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings) {
     SPDLOG_DEBUG("ILCSubnetData::ILCSubnetData()");
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->subnetData[subnetIndex].FACount = 0;
         this->subnetData[subnetIndex].HPCount = 0;
         this->subnetData[subnetIndex].HMCount = 0;
     }
     for (int i = 0; i < FA_COUNT; i++) {
-        ForceActuatorTableRow row = _forceActuatorApplicationSettings->Table[i];
+        ForceActuatorTableRow row = faa_settings.Table[i];
         int32_t subnetIndex = row.Subnet - 1;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Type = ILCTypes::FA;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Subnet = row.Subnet;
@@ -51,11 +50,11 @@ ILCSubnetData::ILCSubnetData(ForceActuatorApplicationSettings *forceActuatorAppl
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].ActuatorId = row.ActuatorID;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].DataIndex = i;
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].XDataIndex =
-                _forceActuatorApplicationSettings->ZIndexToXIndex[i];
+                faa_settings.ZIndexToXIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].YDataIndex =
-                _forceActuatorApplicationSettings->ZIndexToYIndex[i];
+                faa_settings.ZIndexToYIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].SecondaryDataIndex =
-                _forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[i];
+                faa_settings.ZIndexToSecondaryCylinderIndex[i];
         this->subnetData[subnetIndex].ILCDataFromAddress[row.Address].Disabled = false;
         ILCMap map = this->subnetData[subnetIndex].ILCDataFromAddress[row.Address];
         this->subnetData[subnetIndex].FAIndex.push_back(map);
@@ -161,7 +160,3 @@ void ILCSubnetData::enableAllFA() {
     }
     SPDLOG_INFO("ILCSubnetData::enableAllFA()");
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

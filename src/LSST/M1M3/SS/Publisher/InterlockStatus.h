@@ -36,14 +36,19 @@ namespace SS {
 /**
  * Wrapper object for MTM1M3_logevent_interlockStatusC.
  */
-class InterlockStatus : public MTM1M3_logevent_interlockStatusC, public cRIO::Singleton<InterlockStatus> {
+class InterlockStatus : public MTM1M3_logevent_interlockStatusC {
 public:
     /**
      * Construct new InterlockStatus
      */
-    InterlockStatus(token);
+    InterlockStatus();
 
-    void log() { M1M3SSPublisher::instance().logInterlockStatus(this); }
+    void set_heartbeat_output(double timestamp, bool _heartbeat);
+
+    void send();
+
+private:
+    bool _updated;
 };
 
 }  // namespace SS

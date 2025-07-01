@@ -30,7 +30,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ForceActuatorApplicationSettings;
 class ForceActuatorSettings;
 class HardpointActuatorApplicationSettings;
 class HardpointMonitorApplicationSettings;
@@ -48,8 +47,7 @@ class ILCSubnetData {
     Container subnetData[5];
 
 public:
-    ILCSubnetData(ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-                  HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
+    ILCSubnetData(HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
                   HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings);
 
     int32_t getHPCount(int32_t subnetIndex) { return this->subnetData[subnetIndex].HPIndex.size(); }
@@ -81,9 +79,6 @@ public:
     void disableFA(int32_t actuatorId);
     void enableFA(int32_t actuatorId);
     void enableAllFA();
-
-private:
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 };
 
 } /* namespace SS */

@@ -26,9 +26,9 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceComponent.h>
-#include <SafetyController.h>
+#include "ForceComponent.h"
+#include "PreclippedForces.h"
+#include "SafetyController.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -36,7 +36,7 @@ namespace SS {
 
 class ElevationForceComponent : public ForceComponent {
 public:
-    ElevationForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    ElevationForceComponent();
     void applyElevationForces(const std::vector<float> &x, const std::vector<float> &y,
                               const std::vector<float> &z);
     /**
@@ -53,11 +53,10 @@ protected:
 
 private:
     SafetyController *_safetyController;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
     MTM1M3_appliedElevationForcesC *_appliedElevationForces;
-    MTM1M3_logevent_preclippedElevationForcesC *_preclippedElevationForces;
+    PreclippedForces<MTM1M3_logevent_preclippedElevationForcesC> _preclipped_elevation_forces;
 };
 
 } /* namespace SS */

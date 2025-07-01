@@ -26,9 +26,9 @@
 
 #include <SAL_MTM1M3C.h>
 
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceComponent.h>
-#include <SafetyController.h>
+#include "ForceComponent.h"
+#include "PreclippedForces.h"
+#include "SafetyController.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -44,7 +44,7 @@ namespace SS {
  */
 class ThermalForceComponent : public ForceComponent {
 public:
-    ThermalForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    ThermalForceComponent();
     void applyThermalForces(const std::vector<float> &x, const std::vector<float> &y,
                             const std::vector<float> &z);
     void applyThermalForcesByMirrorTemperature(float temperature);
@@ -56,11 +56,10 @@ protected:
 
 private:
     SafetyController *_safetyController;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
     MTM1M3_appliedThermalForcesC *_appliedThermalForces;
-    MTM1M3_logevent_preclippedThermalForcesC *_preclippedThermalForces;
+    PreclippedForces<MTM1M3_logevent_preclippedThermalForcesC> _preclipped_thermal_forces;
 };
 
 } /* namespace SS */

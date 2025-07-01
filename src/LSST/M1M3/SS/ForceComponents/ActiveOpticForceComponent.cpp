@@ -23,28 +23,30 @@
 
 #include <spdlog/spdlog.h>
 
-#include <ActiveOpticForceComponent.h>
-#include <DistributedForces.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <ForceControllerState.h>
-#include <ForcesAndMoments.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <Range.h>
+#include "ActiveOpticForceComponent.h"
+#include "DistributedForces.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "ForceControllerState.h"
+#include "ForcesAndMoments.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "Range.h"
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-ActiveOpticForceComponent::ActiveOpticForceComponent(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
-        : ForceComponent("ActiveOptic", &ForceActuatorSettings::instance().ActiveOpticComponentSettings) {
+ActiveOpticForceComponent::ActiveOpticForceComponent()
+        : ForceComponent("ActiveOptic", &ForceActuatorSettings::instance().ActiveOpticComponentSettings),
+          _preclipped_active_optic_forces(
+                  [](MTM1M3_logevent_preclippedActiveOpticForcesC *data) {
+                      M1M3SSPublisher::instance().logPreclippedActiveOpticForces(data);
+                  },
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
-    _preclippedActiveOpticForces = M1M3SSPublisher::instance().getEventPreclippedActiveOpticForces();
 }
 
 void ActiveOpticForceComponent::applyActiveOpticForces(const std::vector<float> &z) {
@@ -75,33 +77,27 @@ void ActiveOpticForceComponent::postUpdateActions() {
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedActiveOpticForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _preclippedActiveOpticForces->timestamp = _appliedActiveOpticForces->timestamp;
+    _preclipped_active_optic_forces.timestamp = _appliedActiveOpticForces->timestamp;
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         float zLowFault = ForceActuatorSettings::instance().ActiveOpticLimitZTable[zIndex].LowFault;
         float zHighFault = ForceActuatorSettings::instance().ActiveOpticLimitZTable[zIndex].HighFault;
 
         _forceSetpointWarning->activeOpticForceWarning[zIndex] = false;
 
-        _preclippedActiveOpticForces->zForces[zIndex] = zCurrent[zIndex];
-        notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedActiveOpticForces->zForces[zIndex],
-                                         _appliedActiveOpticForces->zForces[zIndex]);
+        _preclipped_active_optic_forces.zForces[zIndex] = zCurrent[zIndex];
+        notInRange = !Range::InRangeAndCoerce(zLowFault, zHighFault,
+                                              _preclipped_active_optic_forces.zForces[zIndex],
+                                              _appliedActiveOpticForces->zForces[zIndex]);
         _forceSetpointWarning->activeOpticForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->activeOpticForceWarning[zIndex];
         clippingRequired = _forceSetpointWarning->activeOpticForceWarning[zIndex] || clippingRequired;
     }
 
-    ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedActiveOpticForces->zForces);
+    ForcesAndMoments fm =
+            ForceActuatorSettings::instance().calculateForcesAndMoments(_appliedActiveOpticForces->zForces);
     _appliedActiveOpticForces->fz = fm.Fz;
     _appliedActiveOpticForces->mx = fm.Mx;
     _appliedActiveOpticForces->my = fm.My;
-
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(_forceActuatorApplicationSettings,
-                                                                     _preclippedActiveOpticForces->zForces);
-    _preclippedActiveOpticForces->fz = fm.Fz;
-    _preclippedActiveOpticForces->mx = fm.Mx;
-    _preclippedActiveOpticForces->my = fm.My;
 
     _forceSetpointWarning->activeOpticNetForceWarning =
             !Range::InRange(-ForceActuatorSettings::instance().netActiveOpticForceTolerance,
@@ -120,11 +116,8 @@ void ActiveOpticForceComponent::postUpdateActions() {
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::instance().logPreclippedActiveOpticForces();
+        _preclipped_active_optic_forces.calculate_forces_and_moments();
+        _preclipped_active_optic_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedActiveOpticForces();
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

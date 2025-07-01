@@ -33,9 +33,6 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class ForceActuatorApplicationSettings;
-class ForceActuatorSettings;
-
 class ForceConverter {
 public:
     static void daaPositiveXToMirror(float primaryCylinder, float secondaryCylinder, float *xForce,

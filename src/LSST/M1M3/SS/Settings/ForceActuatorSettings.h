@@ -34,7 +34,6 @@
 #include <cRIO/Singleton.h>
 
 #include <DistributedForces.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceActuatorBumpTestSettings.h>
 #include <ForceComponentSettings.h>
 #include <ForcesAndMoments.h>
@@ -70,16 +69,16 @@ public:
      */
     bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
 
-    ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-            const std::vector<float> &xForces, const std::vector<float> &yForces,
-            const std::vector<float> &zForces);
+    ForcesAndMoments calculateForcesAndMoments(const std::vector<float> &xForces,
+                                               const std::vector<float> &yForces,
+                                               const std::vector<float> &zForces);
 
-    /** Calculates
+    /**
+     * Calculates forces and moments only from Z forces.
+     *
+     * @param zForces
      */
-    ForcesAndMoments calculateForcesAndMoments(
-            ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-            const std::vector<float> &zForces);
+    ForcesAndMoments calculateForcesAndMoments(const std::vector<float> &zForces);
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,
                                                             float angularAccelerationY,
                                                             float angularAccelerationZ);
@@ -183,8 +182,9 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
-    /// TODO temporary workaround, not needed once
-    /// hardpointBalanceForcesOnInActiveState is in XML
+    /// TODO: add that to XML and remove it from there
+    float preclippedIgnoreChanges;
+    float preclippedMaxDelay;
 
 private:
     void _loadNearNeighborZTable(const std::string &filename);

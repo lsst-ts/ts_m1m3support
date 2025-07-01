@@ -21,10 +21,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <EnabledForceActuators.h>
-#include <ForceActuatorData.h>
-#include <M1M3SSPublisher.h>
-#include <SettingReader.h>
+#include "EnabledForceActuators.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorData.h"
+#include "M1M3SSPublisher.h"
 
 using namespace LSST::M1M3::SS;
 
@@ -36,8 +36,9 @@ EnabledForceActuators::EnabledForceActuators() {
 }
 
 void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
-    int32_t actuatorIndex =
-            SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
+    int32_t actuatorIndex = faa_settings.ActuatorIdToZIndex(actuatorId);
     if (forceActuatorEnabled[actuatorIndex] == enabled) {
         return;
     }
@@ -47,21 +48,15 @@ void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
         ForceActuatorData::instance().primaryCylinderForce[actuatorIndex] = 0;
         ForceActuatorData::instance().zForce[actuatorIndex] = 0;
 
-        int secondaryIndex = SettingReader::instance()
-                                     .getForceActuatorApplicationSettings()
-                                     ->ZIndexToSecondaryCylinderIndex[actuatorIndex];
+        int secondaryIndex = faa_settings.ZIndexToSecondaryCylinderIndex[actuatorIndex];
         if (secondaryIndex >= 0) {
             ForceActuatorData::instance().secondaryCylinderForce[secondaryIndex] = 0;
-            int xIndex = SettingReader::instance()
-                                 .getForceActuatorApplicationSettings()
-                                 ->ZIndexToXIndex[actuatorIndex];
+            int xIndex = faa_settings.ZIndexToXIndex[actuatorIndex];
             if (xIndex >= 0) {
                 ForceActuatorData::instance().xForce[xIndex] = 0;
             }
 
-            int yIndex = SettingReader::instance()
-                                 .getForceActuatorApplicationSettings()
-                                 ->ZIndexToYIndex[actuatorIndex];
+            int yIndex = faa_settings.ZIndexToYIndex[actuatorIndex];
             if (yIndex >= 0) {
                 ForceActuatorData::instance().yForce[yIndex] = 0;
             }

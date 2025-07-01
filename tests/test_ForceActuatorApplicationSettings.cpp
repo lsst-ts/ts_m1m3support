@@ -29,7 +29,7 @@ using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;
 
 TEST_CASE("M1M3 ForceActuator data", "[ForceActuatorApplicationSettings]") {
-    ForceActuatorApplicationSettings settings;
+    auto &settings = ForceActuatorApplicationSettings::instance();
 
     CHECK(settings.ActuatorIdToZIndex(100) < 0);
     CHECK(settings.ActuatorIdToZIndex(101) == 0);

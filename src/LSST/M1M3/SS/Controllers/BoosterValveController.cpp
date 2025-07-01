@@ -21,11 +21,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <BoosterValveController.h>
-#include <BoosterValveSettings.h>
-#include <BoosterValveStatus.h>
-#include <ForceActuatorData.h>
-#include <SettingReader.h>
+#include "BoosterValveController.h"
+#include "BoosterValveSettings.h"
+#include "BoosterValveStatus.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorData.h"
+#include "SettingReader.h"
 
 using namespace LSST::M1M3::SS;
 
@@ -60,7 +61,7 @@ void BoosterValveController::checkAccelerometer() {
 
 void BoosterValveController::_checkFollowingErrorOpen() {
     auto &forceActuatorData = ForceActuatorData::instance();
-    auto faApplicationSettings = SettingReader::instance().getForceActuatorApplicationSettings();
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
     auto trigger = BoosterValveSettings::instance().followingErrorTriggerOpen;
     for (int i = 0; i < FA_COUNT; i++) {
         auto primaryFE = forceActuatorData.primaryCylinderFollowingError[i];
@@ -70,7 +71,7 @@ void BoosterValveController::_checkFollowingErrorOpen() {
                     "Booster valve triggered to open by force actuator ID {} "
                     "({}) primary cylinder "
                     "following error (as {} > {})",
-                    faApplicationSettings->ZIndexToActuatorId(i), i, primaryFE, trigger);
+                    faa_settings.ZIndexToActuatorId(i), i, primaryFE, trigger);
             break;
         }
 
@@ -82,7 +83,7 @@ void BoosterValveController::_checkFollowingErrorOpen() {
                         "Booster valve triggered to open by force actuator ID {} ({}) "
                         "secondary cylinder "
                         "following error (as {} > {})",
-                        faApplicationSettings->SecondaryCylinderIndexToActuatorId(i), i, primaryFE, trigger);
+                        faa_settings.SecondaryCylinderIndexToActuatorId(i), i, primaryFE, trigger);
                 break;
             }
         }

@@ -42,20 +42,21 @@
 
 #include <SALSink.h>
 
-#include <Context.h>
-#include <ControllerThread.h>
-#include <EnterControlCommand.h>
-#include <ExitControlCommand.h>
-#include <IExpansionFPGA.h>
-#include <M1M3SSPublisher.h>
-#include <M1M3SSSubscriber.h>
-#include <Model.h>
-#include <OuterLoopClockThread.h>
-#include <PPSThread.h>
-#include <RawDCAccelerometersCommands.h>
-#include <ReloadConfigurationCommand.h>
-#include <SettingReader.h>
-#include <SubscriberThread.h>
+#include "Context.h"
+#include "ControllerThread.h"
+#include "EnterControlCommand.h"
+#include "ExitControlCommand.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "IExpansionFPGA.h"
+#include "M1M3SSPublisher.h"
+#include "M1M3SSSubscriber.h"
+#include "Model.h"
+#include "OuterLoopClockThread.h"
+#include "PPSThread.h"
+#include "RawDCAccelerometersCommands.h"
+#include "ReloadConfigurationCommand.h"
+#include "SettingReader.h"
+#include "SubscriberThread.h"
 
 #ifdef SIMULATOR
 #include <SimulatedFPGA.h>

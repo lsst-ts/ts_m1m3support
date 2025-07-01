@@ -36,6 +36,7 @@
 #include <CRC.h>
 #include "DetailedState.h"
 #include <FPGAAddresses.h>
+#include "ForceActuatorApplicationSettings.h"
 #include <ForceActuatorBumpTestStatus.h>
 #include <ForceActuatorSettings.h>
 #include <M1M3SSPublisher.h>
@@ -498,18 +499,18 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                         _sendResponse = false;
                     }
 
-                    ForceActuatorApplicationSettings *forceActuatorApplicationSettings =
-                            SettingReader::instance().getForceActuatorApplicationSettings();
+                    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
                     int zIndex = -1;
                     for (int j = 0; j < FA_COUNT; ++j) {
-                        if (forceActuatorApplicationSettings->Table[j].Subnet == subnet &&
-                            forceActuatorApplicationSettings->Table[j].Address == address) {
+                        if (faa_settings.Table[j].Subnet == subnet &&
+                            faa_settings.Table[j].Address == address) {
                             zIndex = j;
                             break;
                         }
                     }
                     int pIndex = zIndex;
-                    int sIndex = forceActuatorApplicationSettings->ZIndexToSecondaryCylinderIndex[zIndex];
+                    int sIndex = faa_settings.ZIndexToSecondaryCylinderIndex[zIndex];
                     switch (function) {
                         case 17:                               // Report Server Id
                             _writeModbus(response, address);   // Write Address

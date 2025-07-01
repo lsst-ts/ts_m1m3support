@@ -214,6 +214,10 @@ ForceActuatorSettings:
     SettleTime: 3.5
     Measurements: 100
     MinimalDistance: 4
+  # Minimal force change (in N, for forceMagnitude) to force logging of preclipped forces.
+  PreclippedIgnoreChanges: 200
+  # Minimal delay (in seconds) for logging of preclipped forces.
+  PreclippedMaxDelay: 0.5
 GyroSettings:
   DataRate: 1000
   AxesMatrix: [1,0,0,0,1,0,0,0,1]
@@ -377,7 +381,9 @@ SafetyControllerSettings:
     FaultOnTMAMotionStop: On
     FaultOnGISHeartbeatLost: On
   ForceControllerSettings:
-    FaultOnSafetyLimit: On
+    # When true/on, the support system will fail when applied cylinder force
+    # will be pre-clipped.
+    FaultOnSafetyLimit: Off
     FaultOnXMomentLimit: On
     FaultOnYMomentLimit: On
     FaultOnZMomentLimit: On

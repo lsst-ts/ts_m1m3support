@@ -33,7 +33,6 @@
 #include <Accelerometer.h>
 #include <BumpTestController.h>
 #include <Displacement.h>
-#include <ForceActuatorApplicationSettings.h>
 #include <ForceController.h>
 #include <Gyro.h>
 #include <HardpointActuatorApplicationSettings.h>

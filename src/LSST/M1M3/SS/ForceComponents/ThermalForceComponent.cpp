@@ -34,18 +34,20 @@
 #include <SafetyController.h>
 #include <ThermalForceComponent.h>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+using namespace LSST::M1M3::SS;
 
-ThermalForceComponent::ThermalForceComponent(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings)
-        : ForceComponent("Thermal", &ForceActuatorSettings::instance().ThermalComponentSettings) {
+ThermalForceComponent::ThermalForceComponent()
+        : ForceComponent("Thermal", &ForceActuatorSettings::instance().ThermalComponentSettings),
+          _preclipped_thermal_forces(
+                  [](MTM1M3_logevent_preclippedThermalForcesC *data) {
+                      M1M3SSPublisher::instance().logPreclippedThermalForces(data);
+                  },
+                  ForceActuatorSettings::instance().preclippedIgnoreChanges,
+                  std::chrono::milliseconds(
+                          static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     _safetyController = Model::instance().getSafetyController();
-    _forceActuatorApplicationSettings = forceActuatorApplicationSettings;
     _forceSetpointWarning = M1M3SSPublisher::instance().getEventForceSetpointWarning();
     _appliedThermalForces = M1M3SSPublisher::instance().getAppliedThermalForces();
-    _preclippedThermalForces = M1M3SSPublisher::instance().getEventPreclippedThermalForces();
 }
 
 void ThermalForceComponent::applyThermalForces(const std::vector<float> &x, const std::vector<float> &y,
@@ -75,12 +77,15 @@ void ThermalForceComponent::applyThermalForces(const std::vector<float> &x, cons
 void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperature) {
     SPDLOG_TRACE("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromTemperature(temperature);
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         if (xIndex != -1) {
             xForces[xIndex] = forces.XForces[zIndex];
@@ -102,23 +107,25 @@ void ThermalForceComponent::postEnableDisableActions() {
 void ThermalForceComponent::postUpdateActions() {
     SPDLOG_TRACE("ThermalForceController: postUpdateActions()");
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     bool notInRange = false;
     bool clippingRequired = false;
     _appliedThermalForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
-    _preclippedThermalForces->timestamp = _appliedThermalForces->timestamp;
+    _preclipped_thermal_forces.timestamp = _appliedThermalForces->timestamp;
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = _forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = _forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
 
         _forceSetpointWarning->thermalForceWarning[zIndex] = false;
 
         if (xIndex != -1) {
             float xLowFault = ForceActuatorSettings::instance().ThermalLimitXTable[xIndex].LowFault;
             float xHighFault = ForceActuatorSettings::instance().ThermalLimitXTable[xIndex].HighFault;
-            _preclippedThermalForces->xForces[xIndex] = xCurrent[xIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(xLowFault, xHighFault, _preclippedThermalForces->xForces[xIndex],
-                                             _appliedThermalForces->xForces[xIndex]);
+            _preclipped_thermal_forces.xForces[xIndex] = xCurrent[xIndex];
+            notInRange = !Range::InRangeAndCoerce(xLowFault, xHighFault,
+                                                  _preclipped_thermal_forces.xForces[xIndex],
+                                                  _appliedThermalForces->xForces[xIndex]);
             _forceSetpointWarning->thermalForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
@@ -126,19 +133,19 @@ void ThermalForceComponent::postUpdateActions() {
         if (yIndex != -1) {
             float yLowFault = ForceActuatorSettings::instance().ThermalLimitYTable[yIndex].LowFault;
             float yHighFault = ForceActuatorSettings::instance().ThermalLimitYTable[yIndex].HighFault;
-            _preclippedThermalForces->yForces[yIndex] = yCurrent[yIndex];
-            notInRange =
-                    !Range::InRangeAndCoerce(yLowFault, yHighFault, _preclippedThermalForces->yForces[yIndex],
-                                             _appliedThermalForces->yForces[yIndex]);
+            _preclipped_thermal_forces.yForces[yIndex] = yCurrent[yIndex];
+            notInRange = !Range::InRangeAndCoerce(yLowFault, yHighFault,
+                                                  _preclipped_thermal_forces.yForces[yIndex],
+                                                  _appliedThermalForces->yForces[yIndex]);
             _forceSetpointWarning->thermalForceWarning[zIndex] =
                     notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
         }
 
         float zLowFault = ForceActuatorSettings::instance().ThermalLimitZTable[zIndex].LowFault;
         float zHighFault = ForceActuatorSettings::instance().ThermalLimitZTable[zIndex].HighFault;
-        _preclippedThermalForces->zForces[zIndex] = zCurrent[zIndex];
+        _preclipped_thermal_forces.zForces[zIndex] = zCurrent[zIndex];
         notInRange =
-                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclippedThermalForces->zForces[zIndex],
+                !Range::InRangeAndCoerce(zLowFault, zHighFault, _preclipped_thermal_forces.zForces[zIndex],
                                          _appliedThermalForces->zForces[zIndex]);
         _forceSetpointWarning->thermalForceWarning[zIndex] =
                 notInRange || _forceSetpointWarning->thermalForceWarning[zIndex];
@@ -146,8 +153,7 @@ void ThermalForceComponent::postUpdateActions() {
     }
 
     ForcesAndMoments fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _appliedThermalForces->xForces, _appliedThermalForces->yForces,
-            _appliedThermalForces->zForces);
+            _appliedThermalForces->xForces, _appliedThermalForces->yForces, _appliedThermalForces->zForces);
     _appliedThermalForces->fx = fm.Fx;
     _appliedThermalForces->fy = fm.Fy;
     _appliedThermalForces->fz = fm.Fz;
@@ -156,26 +162,12 @@ void ThermalForceComponent::postUpdateActions() {
     _appliedThermalForces->mz = fm.Mz;
     _appliedThermalForces->forceMagnitude = fm.ForceMagnitude;
 
-    fm = ForceActuatorSettings::instance().calculateForcesAndMoments(
-            _forceActuatorApplicationSettings, _preclippedThermalForces->xForces,
-            _preclippedThermalForces->yForces, _preclippedThermalForces->zForces);
-    _preclippedThermalForces->fx = fm.Fx;
-    _preclippedThermalForces->fy = fm.Fy;
-    _preclippedThermalForces->fz = fm.Fz;
-    _preclippedThermalForces->mx = fm.Mx;
-    _preclippedThermalForces->my = fm.My;
-    _preclippedThermalForces->mz = fm.Mz;
-    _preclippedThermalForces->forceMagnitude = fm.ForceMagnitude;
-
     _safetyController->forceControllerNotifyThermalForceClipping(clippingRequired);
 
     M1M3SSPublisher::instance().tryLogForceSetpointWarning();
     if (clippingRequired) {
-        M1M3SSPublisher::instance().logPreclippedThermalForces();
+        _preclipped_thermal_forces.calculate_forces_and_moments();
+        _preclipped_thermal_forces.check_changes();
     }
     M1M3SSPublisher::instance().logAppliedThermalForces();
 }
-
-}  // namespace SS
-}  // namespace M1M3
-} /* namespace LSST */

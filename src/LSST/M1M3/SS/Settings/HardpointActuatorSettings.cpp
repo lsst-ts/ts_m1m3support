@@ -23,9 +23,9 @@
 
 #include <spdlog/spdlog.h>
 
-#include <HardpointActuatorSettings.h>
-#include <M1M3SSPublisher.h>
-#include <TableLoader.h>
+#include "HardpointActuatorSettings.h"
+#include "M1M3SSPublisher.h"
+#include "TableLoader.h"
 
 using namespace LSST::M1M3::SS;
 

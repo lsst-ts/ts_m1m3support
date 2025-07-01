@@ -26,8 +26,6 @@
 
 #include <mutex>
 
-#include "ForceActuatorApplicationSettings.h"
-
 namespace LSST {
 namespace M1M3 {
 namespace SS {

@@ -11,6 +11,7 @@ v2.17.0
 * Continue a bump test after detecting its failure
 * New GIS signals, TMA block move GIS signal
 * Mirror can be raised at any orientation
+* Limit interlockStatus and preclippedForces events messages
 
 v2.16.0
 -------

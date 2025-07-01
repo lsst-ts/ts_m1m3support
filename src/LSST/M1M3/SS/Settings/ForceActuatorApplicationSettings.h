@@ -26,9 +26,11 @@
 
 #include <vector>
 
-#include <ForceActuatorOrientations.h>
-#include <ForceActuatorTypes.h>
 #include <cRIO/DataTypes.h>
+#include <cRIO/Singleton.h>
+
+#include "ForceActuatorOrientations.h"
+#include "ForceActuatorTypes.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -84,12 +86,12 @@ struct ForceActuatorTableRow {
  * @note *SSA* Single Axis Actuator
  * @note *DAA* Dual Axis Actuator
  */
-class ForceActuatorApplicationSettings {
+class ForceActuatorApplicationSettings : public cRIO::Singleton<ForceActuatorApplicationSettings> {
 public:
     /**
      * Constructor. Populates auxiliary mapping arrays from static Table data.
      */
-    ForceActuatorApplicationSettings();
+    ForceActuatorApplicationSettings(token);
 
     /**
      * Source data. Contains force actuator position, type and orientation.

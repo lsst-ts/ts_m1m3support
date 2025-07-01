@@ -23,9 +23,9 @@
 
 #include <limits>
 
-#include <ForceActuatorBumpTestStatus.h>
-#include <M1M3SSPublisher.h>
-#include <SettingReader.h>
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorBumpTestStatus.h"
+#include "M1M3SSPublisher.h"
 
 using namespace LSST::M1M3::SS;
 using namespace MTM1M3;
@@ -49,7 +49,7 @@ float ForceActuatorBumpTestStatus::minimal_tested_distance(int index, int &min_a
     float min_distance = std::numeric_limits<float>::infinity();
     min_actuator_id = -1;
 
-    auto fa_app_settings = SettingReader::instance().getForceActuatorApplicationSettings();
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int i = 0; i < FA_COUNT; i++) {
         if (i == index) {
@@ -57,18 +57,18 @@ float ForceActuatorBumpTestStatus::minimal_tested_distance(int index, int &min_a
         }
 
         if (primary_tested(i)) {
-            float distance = fa_app_settings->actuator_distance(index, i);
+            float distance = faa_settings.actuator_distance(index, i);
             if (distance < min_distance) {
-                min_actuator_id = fa_app_settings->ZIndexToActuatorId(i);
+                min_actuator_id = faa_settings.ZIndexToActuatorId(i);
                 min_distance = distance;
             }
         }
 
         if (i < FA_S_COUNT && secondary_tested(i)) {
-            int z_index = fa_app_settings->SecondaryCylinderIndexToZIndex[i];
-            float distance = fa_app_settings->actuator_distance(index, z_index);
+            int z_index = faa_settings.SecondaryCylinderIndexToZIndex[i];
+            float distance = faa_settings.actuator_distance(index, z_index);
             if (distance < min_distance) {
-                min_actuator_id = fa_app_settings->ZIndexToActuatorId(z_index);
+                min_actuator_id = faa_settings.ZIndexToActuatorId(z_index);
                 min_distance = distance;
             }
         }
@@ -78,9 +78,9 @@ float ForceActuatorBumpTestStatus::minimal_tested_distance(int index, int &min_a
 }
 
 void ForceActuatorBumpTestStatus::trigger_bump_test(int z_index, bool test_primary, bool test_secondary) {
-    auto fa_app_settings = SettingReader::instance().getForceActuatorApplicationSettings();
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
-    auto secondary_index = fa_app_settings->ZIndexToSecondaryCylinderIndex[z_index];
+    auto secondary_index = faa_settings.ZIndexToSecondaryCylinderIndex[z_index];
 
     if (test_primary) {
         primaryTest[z_index] = MTM1M3_shared_BumpTest_Triggered;

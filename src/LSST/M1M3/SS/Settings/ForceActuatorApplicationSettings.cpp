@@ -21,15 +21,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ForceActuatorApplicationSettings.h>
-#include <spdlog/spdlog.h>
-
 #include <cmath>
 #include <cstdlib>
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+#include <spdlog/spdlog.h>
+
+#include "ForceActuatorApplicationSettings.h"
+
+using namespace LSST::M1M3::SS;
 
 // Please see ForceActuatorTableRow documentation in
 // ForceActuatorApplicationSettings.h for row structure.
@@ -344,7 +343,7 @@ ForceActuatorTableRow ForceActuatorApplicationSettings::Table[FA_COUNT] = {
          ForceActuatorOrientations::NA}};
 //! [Table initialization]
 
-ForceActuatorApplicationSettings::ForceActuatorApplicationSettings() {
+ForceActuatorApplicationSettings::ForceActuatorApplicationSettings(token) {
     // fill helpers tables
     int xIndex = 0;
     int yIndex = 0;
@@ -428,7 +427,3 @@ const float ForceActuatorApplicationSettings::actuator_distance(int index1, int 
     float y = Table[index1].YPosition - Table[index2].YPosition;
     return sqrt(x * x + y * y);
 }
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */

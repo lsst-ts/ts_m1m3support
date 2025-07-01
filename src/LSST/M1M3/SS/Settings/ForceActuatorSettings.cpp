@@ -27,12 +27,13 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include <BoosterValveSettings.h>
-#include <ForceActuatorSettings.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <SettingReader.h>
-#include <TableLoader.h>
+#include "BoosterValveSettings.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "SettingReader.h"
+#include "TableLoader.h"
 
 using namespace LSST::M1M3::SS;
 
@@ -44,8 +45,10 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     try {
         auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
+        auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
         for (int i = 0; i < FA_COUNT; ++i) {
-            int faId = SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(i);
+            int faId = faa_settings.ZIndexToActuatorId(i);
             enabledActuators[i] =
                     std::find(disabledIndices.begin(), disabledIndices.end(), faId) == disabledIndices.end();
         }
@@ -187,6 +190,9 @@ void ForceActuatorSettings::load(YAML::Node doc) {
         TestedTolerances.set(bumpTest["TestedTolerances"]);
         NonTestedTolerances.set(bumpTest["NonTestedTolerances"]);
 
+        preclippedIgnoreChanges = doc["PreclippedIgnoreChanges"].as<float>();
+        preclippedMaxDelay = doc["PreclippedMaxDelay"].as<float>();
+
         bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
         bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
         bumpTestMinimalDistance = bumpTest["MinimalDistance"].as<float>();
@@ -205,9 +211,9 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     log();
 }
 
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings, const std::vector<float> &xForces,
-        const std::vector<float> &yForces, const std::vector<float> &zForces) {
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vector<float> &xForces,
+                                                                  const std::vector<float> &yForces,
+                                                                  const std::vector<float> &zForces) {
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;
@@ -216,12 +222,15 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
     fm.My = 0;
     fm.Mz = 0;
     fm.ForceMagnitude = 0;
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        int xIndex = forceActuatorApplicationSettings->ZIndexToXIndex[zIndex];
-        int yIndex = forceActuatorApplicationSettings->ZIndexToYIndex[zIndex];
-        float rx = forceActuatorApplicationSettings->Table[zIndex].XPosition - mirrorCenterOfGravityX;
-        float ry = forceActuatorApplicationSettings->Table[zIndex].YPosition - mirrorCenterOfGravityY;
-        float rz = forceActuatorApplicationSettings->Table[zIndex].ZPosition - mirrorCenterOfGravityZ;
+        int xIndex = faa_settings.ZIndexToXIndex[zIndex];
+        int yIndex = faa_settings.ZIndexToYIndex[zIndex];
+        float rx = faa_settings.Table[zIndex].XPosition - mirrorCenterOfGravityX;
+        float ry = faa_settings.Table[zIndex].YPosition - mirrorCenterOfGravityY;
+        float rz = faa_settings.Table[zIndex].ZPosition - mirrorCenterOfGravityZ;
         float fx = 0;
         float fy = 0;
         float fz = zForces[zIndex];
@@ -245,9 +254,7 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
     return fm;
 }
 
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
-        ForceActuatorApplicationSettings *forceActuatorApplicationSettings,
-        const std::vector<float> &zForces) {
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vector<float> &zForces) {
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;
@@ -256,10 +263,13 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(
     fm.My = 0;
     fm.Mz = 0;
     fm.ForceMagnitude = 0;
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
-        float rx = forceActuatorApplicationSettings->Table[zIndex].XPosition - mirrorCenterOfGravityX;
-        float ry = forceActuatorApplicationSettings->Table[zIndex].YPosition - mirrorCenterOfGravityY;
-        float rz = forceActuatorApplicationSettings->Table[zIndex].ZPosition - mirrorCenterOfGravityZ;
+        float rx = faa_settings.Table[zIndex].XPosition - mirrorCenterOfGravityX;
+        float ry = faa_settings.Table[zIndex].YPosition - mirrorCenterOfGravityY;
+        float rz = faa_settings.Table[zIndex].ZPosition - mirrorCenterOfGravityZ;
         float fx = 0;
         float fy = 0;
         float fz = zForces[zIndex];
@@ -474,13 +484,14 @@ void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename)
             throw std::runtime_error(fmt::format("Near neighbors CSV {} has {} rows, expected {}", fullPath,
                                                  nearTable.GetRowCount(), FA_COUNT));
         }
+
+        auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
         for (size_t row = 0; row < FA_COUNT; row++) {
             size_t neighIdx = 0;
             try {
                 auto tableID = nearTable.GetCell<unsigned>(0, row);
-                unsigned expectedID =
-                        SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
-                                row);
+                unsigned expectedID = faa_settings.ZIndexToActuatorId(row);
                 if (tableID != expectedID) {
                     throw std::runtime_error(
                             fmt::format("{}:{} expected ID {}, read {}", fullPath, row, expectedID, tableID));
@@ -511,13 +522,14 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
             throw std::runtime_error(fmt::format("Far neighbor CSV {} has {} rows, expected {}", fullPath,
                                                  farTable.GetRowCount(), FA_COUNT));
         }
+
+        auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
         for (size_t row = 0; row < FA_COUNT; row++) {
             size_t neighIdx = 0;
             try {
                 auto tableID = farTable.GetCell<unsigned>(0, row);
-                unsigned expectedID =
-                        SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(
-                                row);
+                unsigned expectedID = faa_settings.ZIndexToActuatorId(row);
                 if (tableID != expectedID) {
                     throw std::runtime_error(
                             fmt::format("{}:{} expected ID {}, read {}", fullPath, row, expectedID, tableID));

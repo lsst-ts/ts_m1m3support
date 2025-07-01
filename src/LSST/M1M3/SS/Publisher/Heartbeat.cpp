@@ -44,7 +44,7 @@ void Heartbeat::tryToggle() {
 
         heartbeat = !heartbeat;
 
-        DigitalInputOutput::instance().toggleHeartbeat(timestamp);
+        DigitalInputOutput::instance().toggle_heartbeat();
 
         // sends software heartbeat
         M1M3SSPublisher::instance().logHeartbeat(this);

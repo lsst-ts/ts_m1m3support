@@ -30,24 +30,25 @@
 #include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
 
-#include <AccelerationForceComponent.h>
-#include <ActiveOpticForceComponent.h>
-#include <AzimuthForceComponent.h>
-#include <BalanceForceComponent.h>
-#include <DistributedForces.h>
-#include <ElevationForceComponent.h>
-#include <FinalForceComponent.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <ForcesAndMoments.h>
-#include <LimitTrigger.h>
-#include <OffsetForceComponent.h>
-#include <PID.h>
-#include <SafetyController.h>
-#include <StaticForceComponent.h>
-#include <ThermalForceComponent.h>
-#include <VelocityForceComponent.h>
 #include <cRIO/DataTypes.h>
+
+#include "AccelerationForceComponent.h"
+#include "ActiveOpticForceComponent.h"
+#include "AzimuthForceComponent.h"
+#include "BalanceForceComponent.h"
+#include "DistributedForces.h"
+#include "ElevationForceComponent.h"
+#include "FinalForceComponent.h"
+#include "ForceActuatorSettings.h"
+#include "ForcesAndMoments.h"
+#include "LimitTrigger.h"
+#include "OffsetForceComponent.h"
+#include "PID.h"
+#include "PreclippedForces.h"
+#include "SafetyController.h"
+#include "StaticForceComponent.h"
+#include "ThermalForceComponent.h"
+#include "VelocityForceComponent.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -127,7 +128,7 @@ struct ForceActuatorIndicesNeighbors {
  */
 class ForceController {
 public:
-    ForceController(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    ForceController();
 
     void reset();
 
@@ -220,6 +221,8 @@ public:
 
     void enableDisableForceComponent(int forceComponentEnum, bool enabled);
 
+    FinalForceComponent *get_final_force_component() { return &_finalForceComponent; }
+
 private:
     void _sumAllForces();
     void _convertForcesToSetpoints();
@@ -231,7 +234,6 @@ private:
 
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
     SafetyController *_safetyController;
 
     AccelerationForceComponent _accelerationForceComponent;
@@ -249,7 +251,7 @@ private:
     MTM1M3_appliedForcesC *_appliedForces;
     MTM1M3_logevent_forceActuatorStateC *_forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_logevent_preclippedCylinderForcesC *_preclippedCylinderForces;
+    PreclippedCylinderForces<MTM1M3_logevent_preclippedCylinderForcesC> _preclipped_cylinder_forces;
 
     MTM1M3_inclinometerDataC *_inclinometerData;
     MTM1M3_pidDataC *_pidData;

@@ -23,14 +23,15 @@
 
 #include <spdlog/spdlog.h>
 
-#include <BumpTestController.h>
-#include <ForceActuatorBumpTestStatus.h>
-#include <ForceActuatorData.h>
-#include <ForceActuatorSettings.h>
-#include <ForceController.h>
-#include <M1M3SSPublisher.h>
-#include <Model.h>
-#include <SettingReader.h>
+#include "BumpTestController.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorBumpTestStatus.h"
+#include "ForceActuatorData.h"
+#include "ForceActuatorSettings.h"
+#include "ForceController.h"
+#include "M1M3SSPublisher.h"
+#include "Model.h"
+#include "SettingReader.h"
 
 using namespace std::chrono;
 using namespace MTM1M3;
@@ -51,8 +52,8 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
 
     SettingReader::instance().getSafetyControllerSettings()->ForceController.enterBumpTesting();
 
-    auto fa_app_settings = SettingReader::instance().getForceActuatorApplicationSettings();
-    auto z_index = fa_app_settings->ActuatorIdToZIndex(actuator_id);
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto z_index = faa_settings.ActuatorIdToZIndex(actuator_id);
 
     _test_timeout[z_index] = steady_clock::now() + _test_settle_time;
     _cylinders[z_index] = cylinders;
@@ -62,7 +63,7 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
     }
 
     if (test_secondary) {
-        auto s_index = fa_app_settings->ZIndexToSecondaryCylinderIndex[z_index];
+        auto s_index = faa_settings.ZIndexToSecondaryCylinderIndex[z_index];
         if (s_index < 0) {
             throw std::runtime_error(fmt::format("Actuator {} ({}) isn't dual axis", actuator_id, z_index));
         }
@@ -85,7 +86,7 @@ void BumpTestController::runLoop() {
     size_t status_change = 0;
 
     auto &actuator_status = ForceActuatorBumpTestStatus::instance();
-    auto fa_app_settings = SettingReader::instance().getForceActuatorApplicationSettings();
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
     _collect_results();
 
@@ -100,8 +101,8 @@ void BumpTestController::runLoop() {
     _bump_test_data->test_mirror(BumpTestKind::AXIS_Z, z_status);
 
     for (int z_index = 0; z_index < FA_COUNT; z_index++) {
-        int actuator_id = fa_app_settings->Table[z_index].ActuatorID;
-        int s_index = fa_app_settings->ZIndexToSecondaryCylinderIndex[z_index];
+        int actuator_id = faa_settings.Table[z_index].ActuatorID;
+        int s_index = faa_settings.ZIndexToSecondaryCylinderIndex[z_index];
 
         if (actuator_status.primary_tested(z_index) == true) {
             bool changed = false;
@@ -129,13 +130,13 @@ void BumpTestController::runLoop() {
                                         secondary_status[z_index], actuator_status.secondaryTest[s_index],
                                         actuator_status.secondaryTestTimestamps[s_index]);
                 } else {
-                    int x_index = fa_app_settings->ZIndexToXIndex[z_index];
+                    int x_index = faa_settings.ZIndexToXIndex[z_index];
                     if (x_index >= 0) {
                         changed = _run_axis(x_index, z_index, s_index, actuator_id, BumpTestKind::AXIS_X,
                                             x_status[z_index], actuator_status.secondaryTest[s_index],
                                             actuator_status.secondaryTestTimestamps[s_index]);
                     } else {
-                        int y_index = fa_app_settings->ZIndexToYIndex[z_index];
+                        int y_index = faa_settings.ZIndexToYIndex[z_index];
                         changed = _run_axis(y_index, z_index, s_index, actuator_id, BumpTestKind::AXIS_Y,
                                             y_status[z_index], actuator_status.secondaryTest[s_index],
                                             actuator_status.secondaryTestTimestamps[s_index]);

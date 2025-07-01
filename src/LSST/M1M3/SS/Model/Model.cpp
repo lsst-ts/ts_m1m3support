@@ -103,14 +103,11 @@ void Model::loadSettings(const char *settingsToApply) {
 
     _settingReader.load();
 
-    ForceActuatorApplicationSettings *forceActuatorApplicationSettings =
-            _settingReader.getForceActuatorApplicationSettings();
     HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings =
             _settingReader.getHardpointActuatorApplicationSettings();
     HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings =
             _settingReader.getHardpointMonitorApplicationSettings();
 
-    ForceActuatorInfo::instance().populate(forceActuatorApplicationSettings);
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings);
     _populateHardpointMonitorInfo(hardpointMonitorApplicationSettings);
 
@@ -132,13 +129,12 @@ void Model::loadSettings(const char *settingsToApply) {
 
     delete _ilc;
     SPDLOG_INFO("Model: Creating SS ILC");
-    _ilc = new SSILCs(_positionController, forceActuatorApplicationSettings,
-                      hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings,
-                      _safetyController);
+    _ilc = new SSILCs(_positionController, hardpointActuatorApplicationSettings,
+                      hardpointMonitorApplicationSettings, _safetyController);
 
     delete _forceController;
     SPDLOG_INFO("Model: Creating force controller");
-    _forceController = new ForceController(forceActuatorApplicationSettings);
+    _forceController = new ForceController();
 
     SPDLOG_INFO("Model: Updating digital input output");
     DigitalInputOutput::instance().setSafetyController(_safetyController);
@@ -169,9 +165,11 @@ void Model::loadSettings(const char *settingsToApply) {
     SPDLOG_INFO("Model: Creating gyro");
     _gyro = new Gyro();
 
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
     // apply disabled FA from setting
     for (int i = 0; i < FA_COUNT; i++) {
-        int actuator_id = forceActuatorApplicationSettings->ZIndexToActuatorId(i);
+        int actuator_id = faa_settings.ZIndexToActuatorId(i);
         if (ForceActuatorSettings::instance().isActuatorDisabled(i)) {
             _ilc->disableFA(actuator_id);
         } else {

@@ -24,11 +24,11 @@
 #ifndef LSST_M1M3_SS_FORCECONTROLLER_FINALFORCECOMPONENT_H_
 #define LSST_M1M3_SS_FORCECONTROLLER_FINALFORCECOMPONENT_H_
 
-#include <EnabledForceActuators.h>
-#include <ForceActuatorApplicationSettings.h>
-#include <ForceComponent.h>
-#include <SAL_MTM1M3C.h>
-#include <SafetyController.h>
+#include "EnabledForceActuators.h"
+#include "ForceComponent.h"
+#include "PreclippedForces.h"
+#include "SAL_MTM1M3C.h"
+#include "SafetyController.h"
 
 namespace LSST {
 namespace M1M3 {
@@ -47,7 +47,7 @@ public:
      *
      * @param forceActuatorApplicationSettings
      */
-    FinalForceComponent(ForceActuatorApplicationSettings *forceActuatorApplicationSettings);
+    FinalForceComponent();
 
     /**
      * @brief Sums applied forces to target x,y and z forces.
@@ -56,18 +56,21 @@ public:
 
     void postEnableDisableActions() override;
 
+    PreclippedForces<MTM1M3_logevent_preclippedForcesC> &get_preclipped_forces() {
+        return _preclipped_forces;
+    }
+
 protected:
     void postUpdateActions() override;
 
 private:
     SafetyController *_safetyController;
     EnabledForceActuators *_enabledForceActuators;
-    ForceActuatorApplicationSettings *_forceActuatorApplicationSettings;
 
     MTM1M3_logevent_forceActuatorStateC *_forceActuatorState;
     MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
     MTM1M3_appliedForcesC *_appliedForces;
-    MTM1M3_logevent_preclippedForcesC *_preclippedForces;
+    PreclippedForces<MTM1M3_logevent_preclippedForcesC> _preclipped_forces;
 
     MTM1M3_appliedAccelerationForcesC *_appliedAccelerationForces;
     MTM1M3_logevent_appliedActiveOpticForcesC *_appliedActiveOpticForces;

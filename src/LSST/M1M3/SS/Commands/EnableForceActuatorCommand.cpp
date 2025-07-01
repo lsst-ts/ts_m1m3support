@@ -23,10 +23,10 @@
 
 #include <cRIO/SAL/Command.h>
 
-#include <Context.h>
-#include <EnableForceActuatorCommand.h>
-#include <M1M3SSPublisher.h>
-#include <SettingReader.h>
+#include "Context.h"
+#include "EnableForceActuatorCommand.h"
+#include "ForceActuatorApplicationSettings.h"
+#include "M1M3SSPublisher.h"
 
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
@@ -39,8 +39,7 @@ EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t commandID,
 }
 
 bool EnableForceActuatorCommand::validate() {
-    actuatorIndex =
-            SettingReader::instance().getForceActuatorApplicationSettings()->ActuatorIdToZIndex(actuatorId);
+    actuatorIndex = ForceActuatorApplicationSettings::instance().ActuatorIdToZIndex(actuatorId);
     if (actuatorIndex < 0) {
         M1M3SSPublisher::instance().logCommandRejectionWarning("EnableForceActuator", "Invalid actuatorId.");
         return false;

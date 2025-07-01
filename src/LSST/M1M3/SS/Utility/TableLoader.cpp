@@ -21,7 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <TableLoader.h>
+#include "ForceActuatorApplicationSettings.h"
+#include "TableLoader.h"
 
 using namespace LSST::M1M3::SS;
 
@@ -79,8 +80,7 @@ void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float> &
         }
         for (size_t row = 0; row < FA_COUNT; row++) {
             auto id = limitTable.GetCell<int>(0, row);
-            auto expectedId =
-                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToActuatorId(row);
+            auto expectedId = ForceActuatorApplicationSettings::instance().ZIndexToActuatorId(row);
             if (id != expectedId) {
                 throw std::runtime_error(
                         fmt::format("CSV {} row {} has incorrect ActuatorID - {}, expected {}", fullPath, row,
@@ -96,8 +96,7 @@ void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float> &
                                     fullPath, row, zLow[row], zHigh[row]));
             }
 
-            auto yIndex =
-                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToYIndex[row];
+            auto yIndex = ForceActuatorApplicationSettings::instance().ZIndexToYIndex[row];
             if (yIndex == -1) {
                 auto strYLow = limitTable.GetCell<std::string>(3, row);
                 auto strYHigh = limitTable.GetCell<std::string>(4, row);
@@ -118,8 +117,7 @@ void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float> &
                 }
             }
 
-            auto xIndex =
-                    SettingReader::instance().getForceActuatorApplicationSettings()->ZIndexToXIndex[row];
+            auto xIndex = ForceActuatorApplicationSettings::instance().ZIndexToXIndex[row];
             if (xIndex == -1) {
                 auto strXLow = limitTable.GetCell<std::string>(5, row);
                 auto strXHigh = limitTable.GetCell<std::string>(6, row);

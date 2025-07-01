@@ -289,7 +289,7 @@ void SafetyController::interlockNotifyGISHeartbeatLost(bool conditionFlag) {
 void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) {
     _updateOverride(FaultCodes::ForceControllerSafetyLimit,
                     _safetyControllerSettings->ForceController.FaultOnSafetyLimit, conditionFlag,
-                    "Force controller safety limit");
+                    "Force controller safety limit - applied cylinder force clipped");
 }
 
 void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag, std::string failed) {
