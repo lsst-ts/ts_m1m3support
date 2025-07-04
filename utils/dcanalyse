@@ -1,0 +1,164 @@
+#!/usr/bin/python3.12
+
+import argparse
+import logging
+import os
+import pathlib
+from dataclasses import dataclass
+
+import numpy as np
+import pandas as pd
+import yaml
+
+NUM_ACCEL = 8
+
+
+@dataclass
+class Accelerometer:
+    bias: float
+    offset: float
+    sensitivity: float
+    scalar: float
+
+    def calibrate(self, raw_value: float) -> float:
+        return ((raw_value - self.bias) / self.sensitivity) * self.scalar + self.offset
+
+
+class Accelerometers:
+    def __init__(self, config: dict):
+        self.accelerometers: list[Accelerometer] = []
+
+        for acc in range(1, NUM_ACCEL + 1):
+            acc_config = config[f"Accelerometer{acc}"]
+            self.accelerometers.append(
+                Accelerometer(
+                    acc_config["Bias"],
+                    acc_config["Offset"],
+                    acc_config["Sensitivity"],
+                    acc_config["Scalar"],
+                )
+            )
+
+    def calibrate(self, raw_values: list[float]) -> list[float]:
+        ret: list[float] = []
+        for acc_index, acc in enumerate(self.accelerometers):
+            ret.append(acc.calibrate(raw_values[acc_index]))
+        return ret
+
+
+class Processor:
+    def __init__(self, width: int, depth: int, stat: int | None, config_filename: str):
+        self.width = width
+        self.depth = depth
+        self.stat = stat
+        self.counts = [0] * width
+        self.lower = None
+        self.upper = None
+
+        self.stat_xyz: list[tuple[float, float, float]] = []
+
+        self.stats_x: list[dict[str, float]] = []
+        self.stats_y: list[dict[str, float]] = []
+        self.stats_z: list[dict[str, float]] = []
+
+        with open(config_filename) as config_file:
+            config = yaml.safe_load(config_file)["AccelerometerSettings"]
+            self.x_distance = config["AngularAccelerationXDistance"]
+            self.y_distance = config["AngularAccelerationYDistance"]
+            self.z_distance = config["AngularAccelerationZDistance"]
+
+            self.accelerometers = Accelerometers(config)
+
+        logging.info("Loaded config from %s", config_filename)
+
+    def get_xyz(self, acc_data: list[float]) -> tuple[float, float, float]:
+        return (
+            float(np.degrees((acc_data[5] - acc_data[7]) / self.x_distance)),
+            float(np.degrees((acc_data[2] - acc_data[0]) / self.y_distance)),
+            float(np.degrees((acc_data[4] - acc_data[0]) / self.z_distance)),
+        )
+
+    def process(self, line: int, acc_data: list[float]):
+        # print(line, acc_data)
+        xyz = self.get_xyz(acc_data)
+        if self.stat is not None:
+            self.stat_xyz.append(xyz)
+            if len(self.stat_xyz) >= self.stat:
+                data = pd.DataFrame(self.stat_xyz, columns=("X", "Y", "Z"))
+                desc = data.describe()
+                self.stats_x.append(dict(desc["X"]))
+                self.stats_y.append(dict(desc["Y"]))
+                self.stats_z.append(dict(desc["Z"]))
+                self.stat_xyz = []
+        else:
+            print(",".join([str(f) for f in xyz]))
+
+    def process_file(self, filename: str, top: int | None = None) -> None:
+        logging.info("Processing %s", filename)
+        f = open(filename, "r")
+        header = f.readline()
+        print(header)
+
+        line = 1
+        while top is None or line <= top:
+            data = f.readline()
+            self.process(line, [float(d) for d in data.split(",")])
+            line += 1
+
+        if self.stat:
+            x = pd.DataFrame(self.stats_x)
+            print(x["mean"])
+
+
+def process_arguments() -> argparse.Namespace:
+    try:
+        default_config = (
+            pathlib.Path(os.environ["TS_CONFIG_TCS_DIR"])
+            / "MTM1M3"
+            / "v1"
+            / "_init.yaml"
+        )
+    except KeyError:
+        default_config = None
+
+    parser = argparse.ArgumentParser(
+        description="Tool to test DC accelerometers algorithms"
+    )
+    parser.add_argument(
+        "--config", default=default_config, type=str, help="M1M3 configuration file"
+    )
+    parser.add_argument(
+        "--top",
+        type=int,
+        help="Use only specified top measurements - usefull for testing",
+    )
+    parser.add_argument(
+        "--stat",
+        type=int,
+        help="Compute and print XYZ acceleration statistics every stat measurements",
+    )
+    parser.add_argument(
+        "--width", type=int, default=100, help="Width of the processign buffer"
+    )
+    parser.add_argument(
+        "--depth",
+        type=int,
+        default=1000,
+        help="Processor depth - number of measurements for decision",
+    )
+    parser.add_argument("-d", action="store_true", help="Print debug messages")
+    parser.add_argument("files", type=str, nargs="*", help="File(s) to process")
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = process_arguments()
+
+    level = logging.DEBUG if args.d else logging.INFO
+    logging.basicConfig(level=level)
+
+    p = Processor(args.width, args.depth, args.stat, args.config)
+
+    for filename in args.files:
+        p.process_file(filename, args.top)
