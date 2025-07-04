@@ -48,19 +48,22 @@ class Accelerometers:
 
 
 class Processor:
-    def __init__(self, width: int, depth: int, stat: int | None, config_filename: str):
+    def __init__(self, width: int, depth: int, stats: list[int], config_filename: str):
         self.width = width
         self.depth = depth
-        self.stat = stat
+        self.stats = stats
+
         self.counts = [0] * width
         self.lower = None
         self.upper = None
 
-        self.stat_xyz: list[tuple[float, float, float]] = []
+        self.stats_xyz: dict[int, list[tuple[float, float, float]]] = dict(
+            [(k, []) for k in stats]
+        )
 
-        self.stats_x: list[dict[str, float]] = []
-        self.stats_y: list[dict[str, float]] = []
-        self.stats_z: list[dict[str, float]] = []
+        self.stats_x: dict[int, list[dict[str, float]]] = dict([(k, []) for k in stats])
+        self.stats_y: dict[int, list[dict[str, float]]] = dict([(k, []) for k in stats])
+        self.stats_z: dict[int, list[dict[str, float]]] = dict([(k, []) for k in stats])
 
         with open(config_filename) as config_file:
             config = yaml.safe_load(config_file)["AccelerometerSettings"]
@@ -82,17 +85,21 @@ class Processor:
     def process(self, line: int, acc_data: list[float]):
         # print(line, acc_data)
         xyz = self.get_xyz(acc_data)
-        if self.stat is not None:
-            self.stat_xyz.append(xyz)
-            if len(self.stat_xyz) >= self.stat:
-                data = pd.DataFrame(self.stat_xyz, columns=("X", "Y", "Z"))
+        for stat_size in self.stats:
+            self.stats_xyz[stat_size].append(xyz)
+            if len(self.stats_xyz[stat_size]) >= stat_size:
+                data = pd.DataFrame(self.stats_xyz[stat_size], columns=("X", "Y", "Z"))
                 desc = data.describe()
-                self.stats_x.append(dict(desc["X"]))
-                self.stats_y.append(dict(desc["Y"]))
-                self.stats_z.append(dict(desc["Z"]))
-                self.stat_xyz = []
-        else:
-            print(",".join([str(f) for f in xyz]))
+                self.stats_x[stat_size].append(
+                    dict(desc["X"]) | {"median": data["X"].median()}
+                )
+                self.stats_y[stat_size].append(
+                    dict(desc["Y"]) | {"median": data["Y"].median()}
+                )
+                self.stats_z[stat_size].append(
+                    dict(desc["Z"]) | {"median": data["Z"].median()}
+                )
+                self.stats_xyz[stat_size] = []
 
     def process_file(
         self, filename: str, start: int | None = None, size: int | None = None
@@ -120,14 +127,12 @@ class Processor:
                         f"Processing {line}/{end} - {line / end * 100:.02f}", end="\r"
                     )
 
-        if self.stat:
-            x = pd.DataFrame(self.stats_x)
-            y = pd.DataFrame(self.stats_y)
-            print(x)
-            fig, ax = plt.subplots()
-            ax.plot(x["mean"])
-            ax.plot(y["mean"])
-            plt.show()
+        fig, ax = plt.subplots(len(self.stats))
+        for i, stat_size in enumerate(self.stats):
+            x = pd.DataFrame(self.stats_x[stat_size])
+            ax[i].plot(x["mean"], "r.")
+            ax[i].plot(x["median"], "g.")
+        plt.show()
 
 
 def process_arguments() -> argparse.Namespace:
@@ -156,6 +161,7 @@ def process_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--stat",
         type=int,
+        action="append",
         help="Compute and print XYZ acceleration statistics every stat measurements",
     )
     parser.add_argument(
