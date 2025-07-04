@@ -6,6 +6,7 @@ import os
 import pathlib
 from dataclasses import dataclass
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import yaml
@@ -93,21 +94,40 @@ class Processor:
         else:
             print(",".join([str(f) for f in xyz]))
 
-    def process_file(self, filename: str, top: int | None = None) -> None:
+    def process_file(
+        self, filename: str, start: int | None = None, size: int | None = None
+    ) -> None:
         logging.info("Processing %s", filename)
         f = open(filename, "r")
         header = f.readline()
         print(header)
 
         line = 1
-        while top is None or line <= top:
+        end = size
+        if start is not None and end is not None:
+            end += start
+
+        while end is None or line <= end:
             data = f.readline()
-            self.process(line, [float(d) for d in data.split(",")])
+            if start is None or line >= start:
+                self.process(line, [float(d) for d in data.split(",")])
             line += 1
+            if line % 50000 == 0:
+                if end is None:
+                    print(f"Processing {line}", end="\r")
+                else:
+                    print(
+                        f"Processing {line}/{end} - {line / end * 100:.02f}", end="\r"
+                    )
 
         if self.stat:
             x = pd.DataFrame(self.stats_x)
-            print(x["mean"])
+            y = pd.DataFrame(self.stats_y)
+            print(x)
+            fig, ax = plt.subplots()
+            ax.plot(x["mean"])
+            ax.plot(y["mean"])
+            plt.show()
 
 
 def process_arguments() -> argparse.Namespace:
@@ -127,10 +147,11 @@ def process_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--config", default=default_config, type=str, help="M1M3 configuration file"
     )
+    parser.add_argument("--start", type=int, help="Starting offset")
     parser.add_argument(
-        "--top",
+        "--size",
         type=int,
-        help="Use only specified top measurements - usefull for testing",
+        help="Number of measurements to process",
     )
     parser.add_argument(
         "--stat",
@@ -161,4 +182,4 @@ if __name__ == "__main__":
     p = Processor(args.width, args.depth, args.stat, args.config)
 
     for filename in args.files:
-        p.process_file(filename, args.top)
+        p.process_file(filename, args.start, args.size)
