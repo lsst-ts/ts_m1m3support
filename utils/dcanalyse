@@ -14,6 +14,10 @@ import yaml
 NUM_ACCEL = 8
 
 
+def G2_M_S_2(g: float) -> float:
+    return g * 9.80665
+
+
 @dataclass
 class Accelerometer:
     bias: float
@@ -22,7 +26,9 @@ class Accelerometer:
     scalar: float
 
     def calibrate(self, raw_value: float) -> float:
-        return ((raw_value - self.bias) / self.sensitivity) * self.scalar + self.offset
+        return G2_M_S_2(
+            ((raw_value - self.bias) / self.sensitivity) * self.scalar + self.offset
+        )
 
 
 class Accelerometers:
@@ -57,13 +63,10 @@ class Processor:
         self.lower = None
         self.upper = None
 
-        self.stats_xyz: dict[int, list[tuple[float, float, float]]] = dict(
-            [(k, []) for k in stats]
-        )
+        self.stats_raw: dict[int, list[list[float]]] = dict([(k, []) for k in stats])
 
-        self.stats_x: dict[int, list[dict[str, float]]] = dict([(k, []) for k in stats])
-        self.stats_y: dict[int, list[dict[str, float]]] = dict([(k, []) for k in stats])
-        self.stats_z: dict[int, list[dict[str, float]]] = dict([(k, []) for k in stats])
+        for ax in "12345678xyz":
+            setattr(self, "stats_" + ax, dict([(k, []) for k in stats]))
 
         with open(config_filename) as config_file:
             config = yaml.safe_load(config_file)["AccelerometerSettings"]
@@ -72,6 +75,8 @@ class Processor:
             self.z_distance = config["AngularAccelerationZDistance"]
 
             self.accelerometers = Accelerometers(config)
+
+        print(str(self.accelerometers.accelerometers[0]))
 
         logging.info("Loaded config from %s", config_filename)
 
@@ -82,27 +87,29 @@ class Processor:
             float(np.degrees((acc_data[4] - acc_data[0]) / self.z_distance)),
         )
 
-    def process(self, line: int, acc_data: list[float]):
-        # print(line, acc_data)
-        xyz = self.get_xyz(acc_data)
+    def process(self, line: int, raw_data: list[float]):
+        calibrated = self.accelerometers.calibrate(raw_data)
+        xyz = self.get_xyz(calibrated)
         for stat_size in self.stats:
-            self.stats_xyz[stat_size].append(xyz)
-            if len(self.stats_xyz[stat_size]) >= stat_size:
-                data = pd.DataFrame(self.stats_xyz[stat_size], columns=("X", "Y", "Z"))
+            self.stats_raw[stat_size].append(calibrated + list(xyz))
+            if len(self.stats_raw[stat_size]) >= stat_size:
+                data = pd.DataFrame(
+                    self.stats_raw[stat_size],
+                    columns=("1", "2", "3", "4", "5", "6", "7", "8", "x", "y", "z"),
+                )
                 desc = data.describe()
-                self.stats_x[stat_size].append(
-                    dict(desc["X"]) | {"median": data["X"].median()}
-                )
-                self.stats_y[stat_size].append(
-                    dict(desc["Y"]) | {"median": data["Y"].median()}
-                )
-                self.stats_z[stat_size].append(
-                    dict(desc["Z"]) | {"median": data["Z"].median()}
-                )
-                self.stats_xyz[stat_size] = []
+                for ax in "12345678xyz":
+                    getattr(self, "stats_" + ax)[stat_size].append(
+                        dict(desc[ax]) | {"median": data[ax].median()}
+                    )
+                self.stats_raw[stat_size] = []
 
     def process_file(
-        self, filename: str, start: int | None = None, size: int | None = None
+        self,
+        filename: str,
+        start: int | None = None,
+        size: int | None = None,
+        plot: str = "xyz",
     ) -> None:
         logging.info("Processing %s", filename)
         f = open(filename, "r")
@@ -119,7 +126,7 @@ class Processor:
             if start is None or line >= start:
                 self.process(line, [float(d) for d in data.split(",")])
             line += 1
-            if line % 50000 == 0:
+            if line % 10000 == 0:
                 if end is None:
                     print(f"Processing {line}", end="\r")
                 else:
@@ -127,11 +134,16 @@ class Processor:
                         f"Processing {line}/{end} - {line / end * 100:.02f}", end="\r"
                     )
 
-        fig, ax = plt.subplots(len(self.stats))
-        for i, stat_size in enumerate(self.stats):
-            x = pd.DataFrame(self.stats_x[stat_size])
-            ax[i].plot(x["mean"], "r.")
-            ax[i].plot(x["median"], "g.")
+        fig, axs = plt.subplots(len(plot), len(self.stats), squeeze=False)
+
+        for c, stat_size in enumerate(self.stats):
+            for r, ax in enumerate(plot):
+                if (ax in "xyz") or (ax >= "1" and ax <= "9"):
+                    val = pd.DataFrame(getattr(self, "stats_" + ax)[stat_size])
+                else:
+                    raise RuntimeError("Invalid axis: " + ax)
+                axs[r][c].plot(val["mean"], "r.")
+                axs[r][c].plot(val["median"], "g.")
         plt.show()
 
 
@@ -152,6 +164,12 @@ def process_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--config", default=default_config, type=str, help="M1M3 configuration file"
     )
+    parser.add_argument(
+        "--plot",
+        type=str,
+        default="xyz",
+        help="List of values to plot. can contain axis (xyz) and numbers 1-8 for accelerometers.",
+    )
     parser.add_argument("--start", type=int, help="Starting offset")
     parser.add_argument(
         "--size",
@@ -162,7 +180,7 @@ def process_arguments() -> argparse.Namespace:
         "--stat",
         type=int,
         action="append",
-        help="Compute and print XYZ acceleration statistics every stat measurements",
+        help="Compute and print XYZ acceleration statistics every stat measurements. Defaults to 50.",
     )
     parser.add_argument(
         "--width", type=int, default=100, help="Width of the processign buffer"
@@ -185,7 +203,10 @@ if __name__ == "__main__":
     level = logging.DEBUG if args.d else logging.INFO
     logging.basicConfig(level=level)
 
+    if args.stat is None:
+        args.stat = [50]
+
     p = Processor(args.width, args.depth, args.stat, args.config)
 
     for filename in args.files:
-        p.process_file(filename, args.start, args.size)
+        p.process_file(filename, args.start, args.size, args.plot)
