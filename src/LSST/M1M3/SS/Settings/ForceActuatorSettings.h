@@ -182,10 +182,6 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
-    /// TODO: add that to XML and remove it from there
-    float preclippedIgnoreChanges;
-    float preclippedMaxDelay;
-
 private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
