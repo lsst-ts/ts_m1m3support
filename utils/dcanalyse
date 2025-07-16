@@ -26,8 +26,9 @@ class Accelerometer:
     scalar: float
 
     def calibrate(self, raw_value: float) -> float:
-        return G2_M_S_2(
-            ((raw_value - self.bias) / self.sensitivity) * self.scalar + self.offset
+        return (
+            G2_M_S_2(((raw_value - self.bias) / self.sensitivity) * self.scalar)
+            + self.offset
         )
 
 
@@ -65,7 +66,7 @@ class Processor:
 
         self.stats_raw: dict[int, list[list[float]]] = dict([(k, []) for k in stats])
 
-        for ax in "12345678xyz":
+        for ax in "ABCDEFGH12345678xyz":
             setattr(self, "stats_" + ax, dict([(k, []) for k in stats]))
 
         with open(config_filename) as config_file:
@@ -91,14 +92,34 @@ class Processor:
         calibrated = self.accelerometers.calibrate(raw_data)
         xyz = self.get_xyz(calibrated)
         for stat_size in self.stats:
-            self.stats_raw[stat_size].append(calibrated + list(xyz))
+            self.stats_raw[stat_size].append(raw_data + calibrated + list(xyz))
             if len(self.stats_raw[stat_size]) >= stat_size:
                 data = pd.DataFrame(
                     self.stats_raw[stat_size],
-                    columns=("1", "2", "3", "4", "5", "6", "7", "8", "x", "y", "z"),
+                    columns=(
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                        "E",
+                        "F",
+                        "G",
+                        "H",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "x",
+                        "y",
+                        "z",
+                    ),
                 )
                 desc = data.describe()
-                for ax in "12345678xyz":
+                for ax in "ABCDEFGH12345678xyz":
                     getattr(self, "stats_" + ax)[stat_size].append(
                         dict(desc[ax]) | {"median": data[ax].median()}
                     )
@@ -138,7 +159,11 @@ class Processor:
 
         for c, stat_size in enumerate(self.stats):
             for r, ax in enumerate(plot):
-                if (ax in "xyz") or (ax >= "1" and ax <= "9"):
+                if (
+                    (ax in "xyz")
+                    or (ax >= "1" and ax <= "9")
+                    or (ax >= "A" and ax <= "H")
+                ):
                     val = pd.DataFrame(getattr(self, "stats_" + ax)[stat_size])
                 else:
                     raise RuntimeError("Invalid axis: " + ax)
