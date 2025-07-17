@@ -1003,6 +1003,8 @@ void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t *data, size_t length, uint3
     }
 }
 
+void SimulatedFPGA::clearRawAccelerometerFIFO() {}
+
 void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t *raw, size_t samples) {
     for (size_t i = 0; i < samples * 8; i++) {
         raw[i] = NiFpga_ConvertFromFloatToFxp(

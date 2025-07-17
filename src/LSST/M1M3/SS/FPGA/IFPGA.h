@@ -191,6 +191,11 @@ public:
     virtual void readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeoutInMs = 10) = 0;
 
     /**
+     * Clear raw accelerometer FIFO.
+     */
+    virtual void clearRawAccelerometerFIFO() = 0;
+
+    /**
      * Reads raw accelerometer FIFO. Waits for new data if no data are available.
      *
      * @param raw 8 raw accelerometer values. Data are stored as 24 bits fixed

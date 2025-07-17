@@ -47,6 +47,7 @@ FPGA::FPGA() {
     _ppsIRQContext = 0;
 
     _modbus_irqs = getIrq(1) | getIrq(2) | getIrq(3) | getIrq(4) | getIrq(5);
+    _raw_warn = 0;
 }
 
 FPGA::~FPGA() {}
@@ -312,11 +313,30 @@ void FPGA::readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeo
                                data, length, timeoutInMs, &_remaining));
 }
 
+void FPGA::clearRawAccelerometerFIFO() {
+    cRIO::NiThrowError(
+            __PRETTY_FUNCTION__,
+            NiFpga_StopFifo(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_Resource));
+    cRIO::NiThrowError(
+            __PRETTY_FUNCTION__,
+            NiFpga_StartFifo(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_Resource));
+}
+
 void FPGA::readRawAccelerometerFIFO(uint64_t *raw, size_t samples) {
-    size_t _rawRemaining = 0;
+    size_t _raw_remaining = 0;
 
     cRIO::NiThrowError(
             __PRETTY_FUNCTION__,
             NiFpga_ReadFifoU64(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_Resource,
-                               raw, 8 * samples, NiFpga_InfiniteTimeout, &_rawRemaining));
+                               raw, 8 * samples, NiFpga_InfiniteTimeout, &_raw_remaining));
+    if (_raw_remaining > 1000) {
+        if (_raw_warn == 0) {
+            SPDLOG_WARN("Unexpected large number of raw counts remains: {}", _raw_remaining);
+            _raw_warn = 500;
+        } else {
+            _raw_warn--;
+        }
+    } else {
+        _raw_warn = 500;
+    }
 }

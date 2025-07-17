@@ -71,13 +71,16 @@ void DumpRawAccelerometer::close() {
 }
 
 void DumpRawAccelerometer::run(std::unique_lock<std::mutex> &lock) {
+    auto &fpga = IFPGA::get();
+    fpga.clearRawAccelerometerFIFO();
+
     while (keepRunning) {
-        runCondition.wait_for(lock, 1ms);
+        runCondition.wait_for(lock, 100us);
         try {
             constexpr size_t samples = 100;
             uint64_t raw[samples * 8];
             char data[samples * 8 * 3];
-            IFPGA::get().readRawAccelerometerFIFO(raw, samples);
+            fpga.readRawAccelerometerFIFO(raw, samples);
             for (size_t i = 0; i < samples * 8; i++) {
                 raw[i] = htobe64(raw[i]);
                 memcpy(data + (i * 3), (reinterpret_cast<char *>(raw + i)) + 5, 3);
