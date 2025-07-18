@@ -131,8 +131,16 @@ class Processor:
         start: int | None = None,
         size: int | None = None,
         plot: str = "xyz",
+        shift: int = 0,
     ) -> None:
-        logging.info("Processing %s", filename)
+        logging.info(
+            "Processing %s, start %i, size %i, plot %s, shift %i",
+            filename,
+            start,
+            size,
+            plot,
+            shift,
+        )
         f = open(filename, "r")
         header = f.readline()
         print(header)
@@ -145,7 +153,10 @@ class Processor:
         while end is None or line <= end:
             data = f.readline()
             if start is None or line >= start:
-                self.process(line, [float(d) for d in data.split(",")])
+                split_data = data.split(",")
+                if shift != 0:
+                    split_data = split_data[shift:] + split_data[:shift]
+                self.process(line, [float(d) for d in split_data])
             line += 1
             if line % 10000 == 0:
                 if end is None:
@@ -195,6 +206,13 @@ def process_arguments() -> argparse.Namespace:
         default="xyz",
         help="List of values to plot. can contain axis (xyz) and numbers 1-8 for accelerometers.",
     )
+    parser.add_argument(
+        "--shift",
+        type=int,
+        default=0,
+        help="Shift DC accelerometers indices. Usefull to resolve FIFO issues, presented in data"
+        "taken in before June 2025.",
+    )
     parser.add_argument("--start", type=int, help="Starting offset")
     parser.add_argument(
         "--size",
@@ -234,4 +252,4 @@ if __name__ == "__main__":
     p = Processor(args.width, args.depth, args.stat, args.config)
 
     for filename in args.files:
-        p.process_file(filename, args.start, args.size, args.plot)
+        p.process_file(filename, args.start, args.size, args.plot, args.shift)
