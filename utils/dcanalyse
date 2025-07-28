@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import pathlib
+import time
 from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
@@ -150,6 +151,16 @@ class Processor:
         if start is not None and end is not None:
             end += start
 
+        next_report = time.time() - 1
+
+        def print_progress() -> None:
+            if end is None:
+                print(f"Processing {line}", end="\r")
+            else:
+                print(
+                    f"Processing {line}/{end} - {line / end * 100:.02f}", end="\r"
+                )
+
         while end is None or line <= end:
             data = f.readline()
             if start is None or line >= start:
@@ -158,13 +169,12 @@ class Processor:
                     split_data = split_data[shift:] + split_data[:shift]
                 self.process(line, [float(d) for d in split_data])
             line += 1
-            if line % 10000 == 0:
-                if end is None:
-                    print(f"Processing {line}", end="\r")
-                else:
-                    print(
-                        f"Processing {line}/{end} - {line / end * 100:.02f}", end="\r"
-                    )
+            now = time.time()
+            if now > next_report:
+                print_progress()
+                next_report = now + 0.2
+
+        print_progress()
 
         fig, axs = plt.subplots(len(plot), len(self.stats), squeeze=False)
 
