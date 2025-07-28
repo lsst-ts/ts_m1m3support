@@ -1,0 +1,265 @@
+#!/usr/bin/python3.12
+
+import argparse
+import logging
+import os
+import pathlib
+import time
+from dataclasses import dataclass
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import yaml
+
+NUM_ACCEL = 8
+
+
+def G2_M_S_2(g: float) -> float:
+    return g * 9.80665
+
+
+@dataclass
+class Accelerometer:
+    bias: float
+    offset: float
+    sensitivity: float
+    scalar: float
+
+    def calibrate(self, raw_value: float) -> float:
+        return (
+            G2_M_S_2(((raw_value - self.bias) / self.sensitivity) * self.scalar)
+            + self.offset
+        )
+
+
+class Accelerometers:
+    def __init__(self, config: dict):
+        self.accelerometers: list[Accelerometer] = []
+
+        for acc in range(1, NUM_ACCEL + 1):
+            acc_config = config[f"Accelerometer{acc}"]
+            self.accelerometers.append(
+                Accelerometer(
+                    acc_config["Bias"],
+                    acc_config["Offset"],
+                    acc_config["Sensitivity"],
+                    acc_config["Scalar"],
+                )
+            )
+
+    def calibrate(self, raw_values: list[float]) -> list[float]:
+        ret: list[float] = []
+        for acc_index, acc in enumerate(self.accelerometers):
+            ret.append(acc.calibrate(raw_values[acc_index]))
+        return ret
+
+
+class Processor:
+    def __init__(self, width: int, depth: int, stats: list[int], config_filename: str):
+        self.width = width
+        self.depth = depth
+        self.stats = stats
+
+        self.counts = [0] * width
+        self.lower = None
+        self.upper = None
+
+        self.stats_raw: dict[int, list[list[float]]] = dict([(k, []) for k in stats])
+
+        for ax in "ABCDEFGH12345678xyz":
+            setattr(self, "stats_" + ax, dict([(k, []) for k in stats]))
+
+        with open(config_filename) as config_file:
+            config = yaml.safe_load(config_file)["AccelerometerSettings"]
+            self.x_distance = config["AngularAccelerationXDistance"]
+            self.y_distance = config["AngularAccelerationYDistance"]
+            self.z_distance = config["AngularAccelerationZDistance"]
+
+            self.accelerometers = Accelerometers(config)
+
+        print(str(self.accelerometers.accelerometers[0]))
+
+        logging.info("Loaded config from %s", config_filename)
+
+    def get_xyz(self, acc_data: list[float]) -> tuple[float, float, float]:
+        return (
+            float(np.degrees((acc_data[5] - acc_data[7]) / self.x_distance)),
+            float(np.degrees((acc_data[2] - acc_data[0]) / self.y_distance)),
+            float(np.degrees((acc_data[4] - acc_data[0]) / self.z_distance)),
+        )
+
+    def process(self, line: int, raw_data: list[float]):
+        calibrated = self.accelerometers.calibrate(raw_data)
+        xyz = self.get_xyz(calibrated)
+        for stat_size in self.stats:
+            self.stats_raw[stat_size].append(raw_data + calibrated + list(xyz))
+            if len(self.stats_raw[stat_size]) >= stat_size:
+                data = pd.DataFrame(
+                    self.stats_raw[stat_size],
+                    columns=(
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                        "E",
+                        "F",
+                        "G",
+                        "H",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "x",
+                        "y",
+                        "z",
+                    ),
+                )
+                desc = data.describe()
+                for ax in "ABCDEFGH12345678xyz":
+                    getattr(self, "stats_" + ax)[stat_size].append(
+                        dict(desc[ax]) | {"median": data[ax].median()}
+                    )
+                self.stats_raw[stat_size] = []
+
+    def process_file(
+        self,
+        filename: str,
+        start: int | None = None,
+        size: int | None = None,
+        plot: str = "xyz",
+        shift: int = 0,
+    ) -> None:
+        logging.info(
+            "Processing %s, start %i, size %i, plot %s, shift %i",
+            filename,
+            start,
+            size,
+            plot,
+            shift,
+        )
+        f = open(filename, "r")
+        header = f.readline()
+        print(header)
+
+        line = 1
+        end = size
+        if start is not None and end is not None:
+            end += start
+
+        next_report = time.time() - 1
+
+        def print_progress() -> None:
+            if end is None:
+                print(f"Processing {line}", end="\r")
+            else:
+                print(
+                    f"Processing {line}/{end} - {line / end * 100:.02f}", end="\r"
+                )
+
+        while end is None or line <= end:
+            data = f.readline()
+            if start is None or line >= start:
+                split_data = data.split(",")
+                if shift != 0:
+                    split_data = split_data[shift:] + split_data[:shift]
+                self.process(line, [float(d) for d in split_data])
+            line += 1
+            now = time.time()
+            if now > next_report:
+                print_progress()
+                next_report = now + 0.2
+
+        print_progress()
+
+        fig, axs = plt.subplots(len(plot), len(self.stats), squeeze=False)
+
+        for c, stat_size in enumerate(self.stats):
+            for r, ax in enumerate(plot):
+                if (
+                    (ax in "xyz")
+                    or (ax >= "1" and ax <= "9")
+                    or (ax >= "A" and ax <= "H")
+                ):
+                    val = pd.DataFrame(getattr(self, "stats_" + ax)[stat_size])
+                else:
+                    raise RuntimeError("Invalid axis: " + ax)
+                axs[r][c].plot(val["mean"], "r.")
+                axs[r][c].plot(val["median"], "g.")
+        plt.show()
+
+
+def process_arguments() -> argparse.Namespace:
+    try:
+        default_config = (
+            pathlib.Path(os.environ["TS_CONFIG_TCS_DIR"])
+            / "MTM1M3"
+            / "v1"
+            / "_init.yaml"
+        )
+    except KeyError:
+        default_config = None
+
+    parser = argparse.ArgumentParser(
+        description="Tool to test DC accelerometers algorithms"
+    )
+    parser.add_argument(
+        "--config", default=default_config, type=str, help="M1M3 configuration file"
+    )
+    parser.add_argument(
+        "--plot",
+        type=str,
+        default="xyz",
+        help="List of values to plot. can contain axis (xyz) and numbers 1-8 for accelerometers.",
+    )
+    parser.add_argument(
+        "--shift",
+        type=int,
+        default=0,
+        help="Shift DC accelerometers indices. Usefull to resolve FIFO issues, presented in data"
+        "taken in before June 2025.",
+    )
+    parser.add_argument("--start", type=int, help="Starting offset")
+    parser.add_argument(
+        "--size",
+        type=int,
+        help="Number of measurements to process",
+    )
+    parser.add_argument(
+        "--stat",
+        type=int,
+        action="append",
+        help="Compute and print XYZ acceleration statistics every stat measurements. Defaults to 50.",
+    )
+    parser.add_argument(
+        "--width", type=int, default=100, help="Width of the processign buffer"
+    )
+    parser.add_argument(
+        "--depth",
+        type=int,
+        default=1000,
+        help="Processor depth - number of measurements for decision",
+    )
+    parser.add_argument("-d", action="store_true", help="Print debug messages")
+    parser.add_argument("files", type=str, nargs="*", help="File(s) to process")
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = process_arguments()
+
+    level = logging.DEBUG if args.d else logging.INFO
+    logging.basicConfig(level=level)
+
+    if args.stat is None:
+        args.stat = [50]
+
+    p = Processor(args.width, args.depth, args.stat, args.config)
+
+    for filename in args.files:
+        p.process_file(filename, args.start, args.size, args.plot, args.shift)

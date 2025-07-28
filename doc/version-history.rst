@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.17.1
+-------
+
+* dcanalyse - tool to analyze DC accelerometer's raw telemetry
+
 v2.17.0
 -------
 

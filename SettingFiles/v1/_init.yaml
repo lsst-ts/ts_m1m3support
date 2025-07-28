@@ -7,44 +7,44 @@ AccelerometerSettings:
   YElevationPoly: [16.29382334316596,0.019088107247665388,-0.00162040399077016]
   ZElevationPoly: [3.714842626710499,-0.07948185353058479,2.5734299736308308e-05]
   Accelerometer1:
-    Bias: 0.009
-    Sensitivity: .1993
-    Offset: 0.011519981
+    Bias: 0.0090
+    Sensitivity: 1.993
+    Offset: +0.0875
     Scalar: 1.0
   Accelerometer2:
     Bias: 0.0039
     Sensitivity: 1.994
-    Offset: 0.007553103
+    Offset: +0.059
     Scalar: 1.0
   Accelerometer3:
     Bias: 0.0125
     Sensitivity: 1.994
-    Offset: 0.086111715
+    Offset: +0.1345
     Scalar: 1.0
   Accelerometer4:
     Bias: 0.0007
     Sensitivity: 1.995
-    Offset: 0.156193491
+    Offset: +0.144
     Scalar: 1.0
   Accelerometer5:
     Bias: 0.0146
     Sensitivity: 1.997
-    Offset: -0.141127269
+    Offset: -0.145
     Scalar: 1.0
   Accelerometer6:
-    Bias: 0.017
+    Bias: 0.0170
     Sensitivity: 1.996
-    Offset: 0.00167552
+    Offset: +0.045
     Scalar: 1.0
   Accelerometer7:
     Bias: -0.0108
     Sensitivity: 1.994
-    Offset: -0.010106905
+    Offset: -0.019
     Scalar: 1.0
   Accelerometer8:
     Bias: 0.0179
     Sensitivity: 1.992
-    Offset: -0.075325936
+    Offset: -0.034
     Scalar: 1.0
   Limits:
     AngularAccelerationX:
