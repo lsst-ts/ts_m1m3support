@@ -142,12 +142,14 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                         "calculated {:04X}, "
                         "address {:02X}, function {:02X}, data [{}]",
                         subnet, receivedCRC, calculatedCRC, data[0], data[1], data_buf.str());
-            ILCWarning::instance().warnInvalidCRC(timestamp);
+            ILCWarning::instance().warnInvalidCRC(timestamp, true);
         } else {
+            ILCWarning::instance().warnInvalidCRC(timestamp, false);
             if (subnet >= 1 && subnet <= 5) {
                 uint8_t address = buffer->readU8();
                 uint8_t called_function = buffer->readU8();
                 const ILCMap &ilc = _subnetData->getILCDataFromAddress(subnet - 1, address);
+                bool unknown_function = false;
                 switch (ilc.Type) {
                     case ILCTypes::FA:
                         _faExpectedResponses[ilc.DataIndex]--;
@@ -208,17 +210,16 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                             case 247:
                             case 248:
                             case 249:
-                                _parseErrorResponse(buffer, called_function, timestamp, ilc.ActuatorId);
                                 break;
                             default:
                                 SPDLOG_WARN(
-                                        "ILCResponseParser: Unknown FA function on subnet {:d} "
-                                        "function "
-                                        "{:d}",
-                                        (int)called_function, subnet);
-                                ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId);
+                                        "ILCResponseParser: Unknown FA {:d} function {:d} on subnet {:d}.",
+                                        ilc.ActuatorId, (int)called_function, subnet);
+                                unknown_function = true;
                                 break;
                         }
+                        ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId,
+                                                                   unknown_function);
                         break;
                     case ILCTypes::HP:
                         _hpExpectedResponses[ilc.DataIndex]--;
@@ -260,11 +261,14 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                                 _parseErrorResponse(buffer, called_function, timestamp, ilc.ActuatorId);
                                 break;
                             default:
-                                SPDLOG_WARN("ILCResponseParser: Unknown HP function {:d} on subnet {:d}",
-                                            (int)called_function, subnet);
-                                ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId);
+                                SPDLOG_WARN(
+                                        "ILCResponseParser: Unknown FA {:d} function {:d} on subnet {:d}.",
+                                        ilc.ActuatorId, (int)called_function, subnet);
+                                unknown_function = true;
                                 break;
                         }
+                        ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId,
+                                                                   unknown_function);
                         break;
                     case ILCTypes::HM:
                         _hmExpectedResponses[ilc.DataIndex]--;
@@ -304,11 +308,14 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                                 _parseErrorResponse(buffer, called_function, timestamp, ilc.ActuatorId);
                                 break;
                             default:
-                                SPDLOG_WARN("ILCResponseParser: Unknown HM function {:d} on subnet {:d}",
-                                            (int)called_function, subnet);
-                                ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId);
+                                SPDLOG_WARN(
+                                        "ILCResponseParser: Unknown FA {:d} function {:d} on subnet {:d}.",
+                                        ilc.ActuatorId, (int)called_function, subnet);
+                                unknown_function = true;
                                 break;
                         }
+                        ILCWarning::instance().warnUnknownFunction(timestamp, ilc.ActuatorId,
+                                                                   unknown_function);
                         break;
                     default:
                         SPDLOG_WARN(
@@ -316,12 +323,12 @@ void ILCResponseParser::parse(ModbusBuffer *buffer, uint8_t subnet) {
                                 "for function "
                                 "code {:d}",
                                 (int)address, (int)subnet, (int)called_function);
-                        ILCWarning::instance().warnUnknownAddress(timestamp, ilc.ActuatorId);
+                        ILCWarning::instance().warnUnknownAddress(timestamp, ilc.ActuatorId, true);
                         break;
                 }
             } else {
                 SPDLOG_WARN("ILCResponseParser: Unknown subnet {:d}", subnet);
-                ILCWarning::instance().warnUnknownSubnet(timestamp);
+                ILCWarning::instance().warnUnknownSubnet(timestamp, true);
             }
         }
     }
@@ -357,13 +364,15 @@ void ILCResponseParser::verifyResponses() {
     bool warn = false;
     bool anyTimeout = false;
     for (int i = 0; i < FA_COUNT; i++) {
+        auto &_forceActuatorInfo = ForceActuatorInfo::instance();
         if (_faExpectedResponses[i] != 0) {
             warn = true;
-            auto &_forceActuatorInfo = ForceActuatorInfo::instance();
             TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
                         _forceActuatorInfo.referenceId[i]);
-            ILCWarning::instance().warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i]);
+            ILCWarning::instance().warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i], true);
             _faExpectedResponses[i] = 0;
+        } else {
+            ILCWarning::instance().warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i], false);
         }
     }
     if (warn) {
@@ -373,10 +382,14 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < HP_COUNT; i++) {
         if (_hpExpectedResponses[i] != 0) {
             warn = true;
-            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i]);
+            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i],
+                                                       true);
             _hpExpectedResponses[i] = 0;
             TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) actuator response timeout", i + 1,
                         _hardpointActuatorInfo->referenceId[i]);
+        } else {
+            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i],
+                                                       false);
         }
     }
     if (warn) {
@@ -386,10 +399,14 @@ void ILCResponseParser::verifyResponses() {
     for (int i = 0; i < HP_COUNT; ++i) {
         if (_hmExpectedResponses[i] != 0) {
             warn = true;
-            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i]);
+            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i],
+                                                       true);
             _hmExpectedResponses[i] = 0;
             TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) monitor response timeout", i + 1,
                         _hardpointMonitorInfo->referenceId[i]);
+        } else {
+            ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i],
+                                                       false);
         }
     }
     if (warn) {
@@ -406,11 +423,11 @@ void ILCResponseParser::_parseErrorResponse(ModbusBuffer *buffer, uint8_t called
                 called_function & ~0x80, called_function, exceptionCode);
     switch (exceptionCode) {
         case 1:
-            ILCWarning::instance().warnIllegalFunction(timestamp, actuatorId);
+            ILCWarning::instance().warnIllegalFunction(timestamp, actuatorId, true);
             break;
         // case 2:	break; // Illegal Data Address
         case 3:
-            ILCWarning::instance().warnIllegalDataValue(timestamp, actuatorId);
+            ILCWarning::instance().warnIllegalDataValue(timestamp, actuatorId, true);
             break;
         // case 4: break; // Slave Device Failure
         // case 5: break; // Acknowledge
@@ -422,7 +439,7 @@ void ILCResponseParser::_parseErrorResponse(ModbusBuffer *buffer, uint8_t called
         default:
             SPDLOG_WARN("ILCResponseParser: Actuator {:d} received exception code {:d}", actuatorId,
                         (int32_t)exceptionCode);
-            ILCWarning::instance().warnUnknownProblem(timestamp, actuatorId);
+            ILCWarning::instance().warnUnknownProblem(timestamp, actuatorId, true);
             break;
     }
     buffer->skipToNextFrame();

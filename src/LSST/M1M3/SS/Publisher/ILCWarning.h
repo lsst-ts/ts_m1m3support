@@ -24,6 +24,8 @@
 #ifndef __ILCWarnign_h__
 #define __ILCWarnign_h__
 
+#include <map>
+
 #include <SAL_MTM1M3.h>
 
 #include <cRIO/DataTypes.h>
@@ -37,18 +39,30 @@ class ILCWarning : public MTM1M3_logevent_ilcWarningC, public cRIO::Singleton<IL
 public:
     ILCWarning(token);
 
-    void warnResponseTimeout(double _timestamp, int32_t _actuatorId);
-    void warnInvalidCRC(double _timestamp);
-    void warnIllegalFunction(double _timestamp, int32_t _actuatorId);
-    void warnIllegalDataValue(double _timestamp, int32_t _actuatorId);
-    void warnInvalidLength(double _timestamp, int32_t _actuatorId);
-    void warnUnknownSubnet(double _timestamp);
-    void warnUnknownAddress(double _timestamp, int32_t _actuatorId);
-    void warnUnknownFunction(double _timestamp, int32_t _actuatorId);
-    void warnUnknownProblem(double _timestamp, int32_t _actuatorId);
+    void warnResponseTimeout(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnInvalidCRC(double _timestamp, bool _active);
+    void warnIllegalFunction(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnIllegalDataValue(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnInvalidLength(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnUnknownSubnet(double _timestamp, bool _active);
+    void warnUnknownAddress(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnUnknownFunction(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnUnknownProblem(double _timestamp, int32_t _actuator_id, bool _active);
+
+protected:
+    bool ignore_warning(std::map<int, double> &_timeouts, double _timestamp, int _actuator_id, bool _active);
 
 private:
-    double _responseTimeout[FA_COUNT];
+    std::map<int, double> _last_response_timeout;
+    std::map<int, double> _last_illegal_function;
+    std::map<int, double> _last_illegal_date_value;
+    std::map<int, double> _last_invalid_length;
+    std::map<int, double> _last_unknown_subnet;
+    std::map<int, double> _last_unknown_address;
+    std::map<int, double> _last_unknown_function;
+    std::map<int, double> _last_unknown_problem;
+
+    float ignore_time;
 };
 
 }  // namespace SS

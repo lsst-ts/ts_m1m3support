@@ -1025,7 +1025,6 @@ void M1M3SSPublisher::logSoftwareVersions() {
     MTM1M3_logevent_softwareVersionsC versions;
     versions.salVersion = SAL_MTM1M3::getSALVersion();
     versions.xmlVersion = SAL_MTM1M3::getXMLVersion();
-    versions.openSpliceVersion = SAL_MTM1M3::getOSPLVersion();
     versions.cscVersion = VERSION;
     versions.subsystemVersions = "";
     _m1m3SAL->logEvent_softwareVersions(&versions, 0);
