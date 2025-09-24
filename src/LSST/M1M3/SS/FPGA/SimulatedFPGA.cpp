@@ -645,7 +645,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                                                               MTM1M3_shared_BumpTest_TestingNegative) {
                                 force += 120;
                             }
-                            // rport under force for FA 435 Z positive (push)
+                            // report under force for FA 435 Z positive (push)
                             else if (pIndex == 147 && bump_test.primaryTest[pIndex] ==
                                                               MTM1M3_shared_BumpTest_TestingPositive) {
                                 force -= 120;
