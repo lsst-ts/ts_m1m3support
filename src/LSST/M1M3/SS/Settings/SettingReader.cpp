@@ -130,7 +130,10 @@ void SettingReader::load() {
 
         InclinometerSettings::instance().load(settings["InclinometerSettings"]);
     } catch (YAML::Exception &ex) {
-        throw runtime_error(fmt::format("YAML Loading {}: {}", filename, ex.what()));
+        auto msg = fmt::format("YAML Loading {}:{}:{}: {}", filename, ex.mark.line + 1, ex.mark.column + 1,
+                               ex.what());
+        SPDLOG_ERROR(msg);
+        throw std::runtime_error(msg);
     }
 }
 

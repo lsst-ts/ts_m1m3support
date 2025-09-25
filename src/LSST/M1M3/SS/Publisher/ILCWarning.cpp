@@ -23,6 +23,7 @@
 
 #include <math.h>
 
+#include "ILCApplicationSettings.h"
 #include "ILCWarning.h"
 #include "M1M3SSPublisher.h"
 
@@ -41,11 +42,12 @@ ILCWarning::ILCWarning(token) {
     unknownFunction = false;
     unknownProblem = false;
 
-    ignore_time = 60;
+    _last_invalid_CRC = -INFINITY;
+    _last_unknown_subnet = -INFINITY;
 }
 
-bool ILCWarning::ignore_warning(std::map<int, double> &_timeouts, double _timestamp, int _actuator_id,
-                                bool _active) {
+bool ILCWarning::ignore_actuator_warning(std::map<int, double> &_timeouts, double _timestamp,
+                                         int _actuator_id, bool _active) {
     auto entry = _timeouts.find(_actuator_id);
 
     if (entry != _timeouts.end() && _timestamp > entry->second) {
@@ -54,7 +56,7 @@ bool ILCWarning::ignore_warning(std::map<int, double> &_timeouts, double _timest
 
     if (_active == true) {
         if (entry == _timeouts.end() || _timestamp > entry->second) {
-            _timeouts[_actuator_id] = _timestamp + ignore_time;
+            _timeouts[_actuator_id] = _timestamp + ILCApplicationSettings::instance().WarningGracePeriod;
             return false;
         }
     } else {
@@ -67,8 +69,22 @@ bool ILCWarning::ignore_warning(std::map<int, double> &_timeouts, double _timest
     return true;
 }
 
+bool ILCWarning::ignore_warning(double &_timeout, double _timestamp, bool _active) {
+    if (_timestamp > _timeout) {
+        if (_active == true) {
+            _timeout = _timestamp + ILCApplicationSettings::instance().WarningGracePeriod;
+            return false;
+        } else {
+            _timeout = INFINITY;
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void ILCWarning::warnResponseTimeout(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_warning(_last_response_timeout, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_response_timeout, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -86,7 +102,7 @@ void ILCWarning::warnResponseTimeout(double _timestamp, int32_t _actuator_id, bo
 }
 
 void ILCWarning::warnInvalidCRC(double _timestamp, bool _active) {
-    if (_active == false) {
+    if (ignore_warning(_last_invalid_CRC, _timestamp, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -104,7 +120,7 @@ void ILCWarning::warnInvalidCRC(double _timestamp, bool _active) {
 }
 
 void ILCWarning::warnIllegalFunction(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_warning(_last_illegal_function, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_illegal_function, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -122,7 +138,7 @@ void ILCWarning::warnIllegalFunction(double _timestamp, int32_t _actuator_id, bo
 }
 
 void ILCWarning::warnIllegalDataValue(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_warning(_last_illegal_date_value, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_illegal_date_value, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -140,7 +156,7 @@ void ILCWarning::warnIllegalDataValue(double _timestamp, int32_t _actuator_id, b
 }
 
 void ILCWarning::warnInvalidLength(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_warning(_last_invalid_length, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_invalid_length, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -158,7 +174,7 @@ void ILCWarning::warnInvalidLength(double _timestamp, int32_t _actuator_id, bool
 }
 
 void ILCWarning::warnUnknownSubnet(double _timestamp, bool _active) {
-    if (_active == false) {
+    if (ignore_warning(_last_unknown_subnet, _timestamp, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -176,7 +192,7 @@ void ILCWarning::warnUnknownSubnet(double _timestamp, bool _active) {
 }
 
 void ILCWarning::warnUnknownAddress(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_warning(_last_unknown_address, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_unknown_address, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -194,7 +210,7 @@ void ILCWarning::warnUnknownAddress(double _timestamp, int32_t _actuator_id, boo
 }
 
 void ILCWarning::warnUnknownFunction(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_warning(_last_unknown_function, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_unknown_function, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;
@@ -212,7 +228,7 @@ void ILCWarning::warnUnknownFunction(double _timestamp, int32_t _actuator_id, bo
 }
 
 void ILCWarning::warnUnknownProblem(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_warning(_last_invalid_length, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_invalid_length, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;

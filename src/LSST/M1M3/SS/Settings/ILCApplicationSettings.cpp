@@ -31,44 +31,41 @@ using namespace LSST::M1M3::SS;
 ILCApplicationSettings::ILCApplicationSettings(token) {}
 
 void ILCApplicationSettings::load(YAML::Node doc) {
-    try {
-        SPDLOG_INFO("Loading ILCApplicationSettings");
+    SPDLOG_INFO("Loading ILCApplicationSettings");
 
-        FPGAConfigTimeout = doc["FPGAConfigTimeout"].as<uint32_t>();
-        if (FPGAConfigTimeout > 1000) {
-            throw std::runtime_error(fmt::format("FPGAConfigTimeout shall be lower than 1009 ms, is: {} ms",
-                                                 FPGAConfigTimeout));
-        }
-        FPGARealtimeLoopTimeout = doc["FPGARealtimeLoopTimeout"].as<uint32_t>();
-        if (FPGARealtimeLoopTimeout > 100) {
-            throw std::runtime_error(
-                    fmt::format("FPGARealtimeLoopTimeout shall be lower than 100 ms, is: {} ms",
-                                FPGARealtimeLoopTimeout));
-        }
-
-        ReportServerID = doc["ReportServerID"].as<uint32_t>();
-        ReportServerStatus = doc["ReportServerStatus"].as<uint32_t>();
-        ChangeILCMode = doc["ChangeILCMode"].as<uint32_t>();
-        BroadcastStepMotor = doc["BroadcastStepMotor"].as<uint32_t>();
-        UnicastStepMotor = doc["UnicastStepMotor"].as<uint32_t>();
-        ElectromechanicalForceAndStatus = doc["ElectromechanicalForceAndStatus"].as<uint32_t>();
-        BroadcastFreezeSensorValues = doc["BroadcastFreezeSensorValues"].as<uint32_t>();
-        SetBoostValveDCAGains = doc["SetBoostValveDCAGains"].as<uint32_t>();
-        ReadBoostValveDCAGains = doc["ReadBoostValveDCAGains"].as<uint32_t>();
-        BroadcastForceDemand = doc["BroadcastForceDemand"].as<uint32_t>();
-        UnicastSingleAxisForceDemand = doc["UnicastSingleAxisForceDemand"].as<uint32_t>();
-        UnicastDualAxisForceDemand = doc["UnicastDualAxisForceDemand"].as<uint32_t>();
-        PneumaticForceAndStatus = doc["PneumaticForceAndStatus"].as<uint32_t>();
-        SetADCScanRate = doc["SetADCScanRate"].as<uint32_t>();
-        SetADCChannelOffsetAndSensitivity = doc["SetADCChannelOffsetAndSensitivity"].as<uint32_t>();
-        Reset = doc["Reset"].as<uint32_t>();
-        ReadCalibration = doc["ReadCalibration"].as<uint32_t>();
-        ReadDCAPressureValues = doc["ReadDCAPressureValues"].as<uint32_t>();
-        ReportDCAID = doc["ReportDCAID"].as<uint32_t>();
-        ReportDCAStatus = doc["ReportDCAStatus"].as<uint32_t>();
-        ReportDCAPressure = doc["ReportDCAPressure"].as<uint32_t>();
-        ReportLVDT = doc["ReportLVDT"].as<uint32_t>();
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading ILCApplicationSettings: {}", ex.what()));
+    FPGAConfigTimeout = doc["FPGAConfigTimeout"].as<uint32_t>();
+    if (FPGAConfigTimeout > 1000) {
+        throw std::runtime_error(
+                fmt::format("FPGAConfigTimeout shall be lower than 1009 ms, is: {} ms", FPGAConfigTimeout));
     }
+    FPGARealtimeLoopTimeout = doc["FPGARealtimeLoopTimeout"].as<uint32_t>();
+    if (FPGARealtimeLoopTimeout > 100) {
+        throw std::runtime_error(fmt::format("FPGARealtimeLoopTimeout shall be lower than 100 ms, is: {} ms",
+                                             FPGARealtimeLoopTimeout));
+    }
+
+    ReportServerID = doc["ReportServerID"].as<uint32_t>();
+    ReportServerStatus = doc["ReportServerStatus"].as<uint32_t>();
+    ChangeILCMode = doc["ChangeILCMode"].as<uint32_t>();
+    BroadcastStepMotor = doc["BroadcastStepMotor"].as<uint32_t>();
+    UnicastStepMotor = doc["UnicastStepMotor"].as<uint32_t>();
+    ElectromechanicalForceAndStatus = doc["ElectromechanicalForceAndStatus"].as<uint32_t>();
+    BroadcastFreezeSensorValues = doc["BroadcastFreezeSensorValues"].as<uint32_t>();
+    SetBoostValveDCAGains = doc["SetBoostValveDCAGains"].as<uint32_t>();
+    ReadBoostValveDCAGains = doc["ReadBoostValveDCAGains"].as<uint32_t>();
+    BroadcastForceDemand = doc["BroadcastForceDemand"].as<uint32_t>();
+    UnicastSingleAxisForceDemand = doc["UnicastSingleAxisForceDemand"].as<uint32_t>();
+    UnicastDualAxisForceDemand = doc["UnicastDualAxisForceDemand"].as<uint32_t>();
+    PneumaticForceAndStatus = doc["PneumaticForceAndStatus"].as<uint32_t>();
+    SetADCScanRate = doc["SetADCScanRate"].as<uint32_t>();
+    SetADCChannelOffsetAndSensitivity = doc["SetADCChannelOffsetAndSensitivity"].as<uint32_t>();
+    Reset = doc["Reset"].as<uint32_t>();
+    ReadCalibration = doc["ReadCalibration"].as<uint32_t>();
+    ReadDCAPressureValues = doc["ReadDCAPressureValues"].as<uint32_t>();
+    ReportDCAID = doc["ReportDCAID"].as<uint32_t>();
+    ReportDCAStatus = doc["ReportDCAStatus"].as<uint32_t>();
+    ReportDCAPressure = doc["ReportDCAPressure"].as<uint32_t>();
+    ReportLVDT = doc["ReportLVDT"].as<uint32_t>();
+
+    WarningGracePeriod = doc["WarningGracePeriod"].as<float>();
 }

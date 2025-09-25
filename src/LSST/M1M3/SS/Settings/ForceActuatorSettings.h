@@ -182,6 +182,9 @@ public:
      */
     ForceActuatorBumpTestSettings NonTestedTolerances;
 
+    float preclippedIgnoreChanges;
+    float preclippedMaxDelay;
+
 private:
     void _loadNearNeighborZTable(const std::string &filename);
     void _loadNeighborsTable(const std::string &filename);
