@@ -32,6 +32,7 @@ using namespace LSST::M1M3::SS;
 ILCWarning::ILCWarning(token) {
     timestamp = 0;
     actuatorId = -1;
+    anyWarning = false;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -89,6 +90,7 @@ void ILCWarning::warnResponseTimeout(double _timestamp, int32_t _actuator_id, bo
     }
     timestamp = _timestamp;
     actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = _active;
     invalidCRC = false;
     illegalFunction = false;
@@ -107,6 +109,7 @@ void ILCWarning::warnInvalidCRC(double _timestamp, bool _active) {
     }
     timestamp = _timestamp;
     actuatorId = -1;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = _active;
     illegalFunction = false;
@@ -125,6 +128,7 @@ void ILCWarning::warnIllegalFunction(double _timestamp, int32_t _actuator_id, bo
     }
     timestamp = _timestamp;
     actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = _active;
@@ -143,6 +147,7 @@ void ILCWarning::warnIllegalDataValue(double _timestamp, int32_t _actuator_id, b
     }
     timestamp = _timestamp;
     actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -161,6 +166,7 @@ void ILCWarning::warnInvalidLength(double _timestamp, int32_t _actuator_id, bool
     }
     timestamp = _timestamp;
     actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -179,6 +185,7 @@ void ILCWarning::warnUnknownSubnet(double _timestamp, bool _active) {
     }
     timestamp = _timestamp;
     actuatorId = -1;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -197,6 +204,7 @@ void ILCWarning::warnUnknownAddress(double _timestamp, int32_t _actuator_id, boo
     }
     timestamp = _timestamp;
     actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -215,6 +223,7 @@ void ILCWarning::warnUnknownFunction(double _timestamp, int32_t _actuator_id, bo
     }
     timestamp = _timestamp;
     actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -233,6 +242,7 @@ void ILCWarning::warnUnknownProblem(double _timestamp, int32_t _actuator_id, boo
     }
     timestamp = _timestamp;
     actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
