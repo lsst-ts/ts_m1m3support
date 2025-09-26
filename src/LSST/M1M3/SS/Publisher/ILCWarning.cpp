@@ -21,6 +21,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
+#include "ILCApplicationSettings.h"
 #include "ILCWarning.h"
 #include "M1M3SSPublisher.h"
 
@@ -29,6 +32,7 @@ using namespace LSST::M1M3::SS;
 ILCWarning::ILCWarning(token) {
     timestamp = 0;
     actuatorId = -1;
+    anyWarning = false;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -39,13 +43,53 @@ ILCWarning::ILCWarning(token) {
     unknownFunction = false;
     unknownProblem = false;
 
-    memset(_responseTimeout, 0, sizeof(_responseTimeout));
+    _last_invalid_CRC = -INFINITY;
+    _last_unknown_subnet = -INFINITY;
 }
 
-void ILCWarning::warnResponseTimeout(double _timestamp, int32_t _actuatorId) {
+bool ILCWarning::ignore_actuator_warning(std::map<int, double> &_timeouts, double _timestamp,
+                                         int _actuator_id, bool _active) {
+    auto entry = _timeouts.find(_actuator_id);
+
+    auto grace_period = ILCApplicationSettings::instance().WarningGracePeriod;
+
+    if (_active == true) {
+        if (entry == _timeouts.end() || _timestamp > entry->second || !isfinite(entry->second)) {
+            _timeouts[_actuator_id] = _timestamp + grace_period;
+            return false;
+        }
+    } else {
+        if (entry != _timeouts.end() && _timestamp > (entry->second + (grace_period / 2))) {
+            _timeouts[_actuator_id] = INFINITY;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool ILCWarning::ignore_warning(double &_timeout, double _timestamp, bool _active) {
+    if (_timestamp > _timeout) {
+        if (_active == true) {
+            _timeout = _timestamp + ILCApplicationSettings::instance().WarningGracePeriod;
+            return false;
+        } else {
+            _timeout = INFINITY;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void ILCWarning::warnResponseTimeout(double _timestamp, int32_t _actuator_id, bool _active) {
+    if (ignore_actuator_warning(_last_response_timeout, _timestamp, _actuator_id, _active)) {
+        return;
+    }
     timestamp = _timestamp;
-    actuatorId = _actuatorId;
-    responseTimeout = true;
+    actuatorId = _actuator_id;
+    anyWarning = _active;
+    responseTimeout = _active;
     invalidCRC = false;
     illegalFunction = false;
     illegalDataValue = false;
@@ -57,11 +101,15 @@ void ILCWarning::warnResponseTimeout(double _timestamp, int32_t _actuatorId) {
     M1M3SSPublisher::instance().logILCWarning(this);
 }
 
-void ILCWarning::warnInvalidCRC(double _timestamp) {
+void ILCWarning::warnInvalidCRC(double _timestamp, bool _active) {
+    if (ignore_warning(_last_invalid_CRC, _timestamp, _active)) {
+        return;
+    }
     timestamp = _timestamp;
     actuatorId = -1;
+    anyWarning = _active;
     responseTimeout = false;
-    invalidCRC = true;
+    invalidCRC = _active;
     illegalFunction = false;
     illegalDataValue = false;
     invalidLength = false;
@@ -72,12 +120,16 @@ void ILCWarning::warnInvalidCRC(double _timestamp) {
     M1M3SSPublisher::instance().logILCWarning(this);
 }
 
-void ILCWarning::warnIllegalFunction(double _timestamp, int32_t _actuatorId) {
+void ILCWarning::warnIllegalFunction(double _timestamp, int32_t _actuator_id, bool _active) {
+    if (ignore_actuator_warning(_last_illegal_function, _timestamp, _actuator_id, _active)) {
+        return;
+    }
     timestamp = _timestamp;
-    actuatorId = _actuatorId;
+    actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
-    illegalFunction = true;
+    illegalFunction = _active;
     illegalDataValue = false;
     invalidLength = false;
     unknownSubnet = false;
@@ -87,13 +139,17 @@ void ILCWarning::warnIllegalFunction(double _timestamp, int32_t _actuatorId) {
     M1M3SSPublisher::instance().logILCWarning(this);
 }
 
-void ILCWarning::warnIllegalDataValue(double _timestamp, int32_t _actuatorId) {
+void ILCWarning::warnIllegalDataValue(double _timestamp, int32_t _actuator_id, bool _active) {
+    if (ignore_actuator_warning(_last_illegal_date_value, _timestamp, _actuator_id, _active)) {
+        return;
+    }
     timestamp = _timestamp;
-    actuatorId = _actuatorId;
+    actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
-    illegalDataValue = true;
+    illegalDataValue = _active;
     invalidLength = false;
     unknownSubnet = false;
     unknownAddress = false;
@@ -102,14 +158,18 @@ void ILCWarning::warnIllegalDataValue(double _timestamp, int32_t _actuatorId) {
     M1M3SSPublisher::instance().logILCWarning(this);
 }
 
-void ILCWarning::warnInvalidLength(double _timestamp, int32_t _actuatorId) {
+void ILCWarning::warnInvalidLength(double _timestamp, int32_t _actuator_id, bool _active) {
+    if (ignore_actuator_warning(_last_invalid_length, _timestamp, _actuator_id, _active)) {
+        return;
+    }
     timestamp = _timestamp;
-    actuatorId = _actuatorId;
+    actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
     illegalDataValue = false;
-    invalidLength = true;
+    invalidLength = _active;
     unknownSubnet = false;
     unknownAddress = false;
     unknownFunction = false;
@@ -117,54 +177,51 @@ void ILCWarning::warnInvalidLength(double _timestamp, int32_t _actuatorId) {
     M1M3SSPublisher::instance().logILCWarning(this);
 }
 
-void ILCWarning::warnUnknownSubnet(double _timestamp) {
+void ILCWarning::warnUnknownSubnet(double _timestamp, bool _active) {
+    if (ignore_warning(_last_unknown_subnet, _timestamp, _active)) {
+        return;
+    }
     timestamp = _timestamp;
     actuatorId = -1;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
     illegalDataValue = false;
     invalidLength = false;
-    unknownSubnet = true;
+    unknownSubnet = _active;
     unknownAddress = false;
     unknownFunction = false;
     unknownProblem = false;
     M1M3SSPublisher::instance().logILCWarning(this);
 }
 
-void ILCWarning::warnUnknownAddress(double _timestamp, int32_t _actuatorId) {
+void ILCWarning::warnUnknownAddress(double _timestamp, int32_t _actuator_id, bool _active) {
+    if (ignore_actuator_warning(_last_unknown_address, _timestamp, _actuator_id, _active)) {
+        return;
+    }
     timestamp = _timestamp;
-    actuatorId = _actuatorId;
+    actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
     illegalDataValue = false;
     invalidLength = false;
     unknownSubnet = false;
-    unknownAddress = true;
+    unknownAddress = _active;
     unknownFunction = false;
     unknownProblem = false;
     M1M3SSPublisher::instance().logILCWarning(this);
 }
 
-void ILCWarning::warnUnknownFunction(double _timestamp, int32_t _actuatorId) {
+void ILCWarning::warnUnknownFunction(double _timestamp, int32_t _actuator_id, bool _active) {
+    if (ignore_actuator_warning(_last_unknown_function, _timestamp, _actuator_id, _active)) {
+        return;
+    }
     timestamp = _timestamp;
-    actuatorId = _actuatorId;
-    responseTimeout = false;
-    invalidCRC = false;
-    illegalFunction = false;
-    illegalDataValue = false;
-    invalidLength = false;
-    unknownSubnet = false;
-    unknownAddress = false;
-    unknownFunction = true;
-    unknownProblem = false;
-    M1M3SSPublisher::instance().logILCWarning(this);
-}
-
-void ILCWarning::warnUnknownProblem(double _timestamp, int32_t _actuatorId) {
-    timestamp = _timestamp;
-    actuatorId = _actuatorId;
+    actuatorId = _actuator_id;
+    anyWarning = _active;
     responseTimeout = false;
     invalidCRC = false;
     illegalFunction = false;
@@ -172,7 +229,26 @@ void ILCWarning::warnUnknownProblem(double _timestamp, int32_t _actuatorId) {
     invalidLength = false;
     unknownSubnet = false;
     unknownAddress = false;
+    unknownFunction = _active;
+    unknownProblem = false;
+    M1M3SSPublisher::instance().logILCWarning(this);
+}
+
+void ILCWarning::warnUnknownProblem(double _timestamp, int32_t _actuator_id, bool _active) {
+    if (ignore_actuator_warning(_last_unknown_problem, _timestamp, _actuator_id, _active)) {
+        return;
+    }
+    timestamp = _timestamp;
+    actuatorId = _actuator_id;
+    anyWarning = _active;
+    responseTimeout = false;
+    invalidCRC = false;
+    illegalFunction = false;
+    illegalDataValue = false;
+    invalidLength = false;
+    unknownSubnet = false;
+    unknownAddress = false;
     unknownFunction = false;
-    unknownProblem = true;
+    unknownProblem = _active;
     M1M3SSPublisher::instance().logILCWarning(this);
 }

@@ -33,17 +33,12 @@ using namespace LSST::M1M3::SS;
 SlewControllerSettings::SlewControllerSettings(token) {}
 
 void SlewControllerSettings::load(YAML::Node doc) {
-    try {
-        SPDLOG_INFO("Loading SlewControllerSettings");
+    SPDLOG_INFO("Loading SlewControllerSettings");
 
-        triggerBoosterValves = doc["TriggerBoosterValves"].as<bool>();
-        useAccelerationForces = doc["UseAccelerationForces"].as<bool>();
-        useBalanceForces = doc["UseBalanceForces"].as<bool>();
-        useVelocityForces = doc["UseVelocityForces"].as<bool>();
-
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading SlewControllerSettings: {}", ex.what()));
-    }
+    triggerBoosterValves = doc["TriggerBoosterValves"].as<bool>();
+    useAccelerationForces = doc["UseAccelerationForces"].as<bool>();
+    useBalanceForces = doc["UseBalanceForces"].as<bool>();
+    useVelocityForces = doc["UseVelocityForces"].as<bool>();
 
     log();
 }

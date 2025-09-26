@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.17.1
+-------
+
+* Fix excessive logevent_ilcWarning publishing
+
 v2.17.0
 -------
 

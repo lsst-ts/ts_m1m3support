@@ -485,6 +485,8 @@ ILCApplicationSettings:
   ReportDCAStatus: 255
   ReportDCAPressure: 400
   ReportLVDT: 400
+  # Ignore another failure for this number of seconds.
+  WarningGracePeriod: 60
 ExpansionFPGAApplicationSettings:
   Enabled: True
   Resource: rio://139.229.178.185/RIO

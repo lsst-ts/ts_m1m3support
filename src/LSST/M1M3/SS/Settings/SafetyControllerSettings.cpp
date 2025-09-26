@@ -29,22 +29,18 @@
 using namespace LSST::M1M3::SS;
 
 void SafetyControllerSettings::load(YAML::Node doc) {
-    try {
-        SPDLOG_INFO("Loading SafetyControllerSettings");
+    SPDLOG_INFO("Loading SafetyControllerSettings");
 
-        AirController.set(doc["AirControllerSettings"]);
-        Displacement.set(doc["DisplacementSettings"]);
-        Inclinometer.set(doc["InclinometerSettings"]);
-        Interlock.set(doc["InterlockSettings"]);
-        ForceController.set(doc["ForceControllerSettings"]);
-        CellLights.set(doc["CellLightSettings"]);
-        PositionController.set(doc["PositionControllerSettings"]);
-        PowerController.set(doc["PowerControllerSettings"]);
-        RaiseOperation.FaultOnTimeout = doc["RaiseOperationSettings"]["FaultOnTimeout"].as<bool>();
-        LowerOperation.FaultOnTimeout = doc["LowerOperationSettings"]["FaultOnTimeout"].as<bool>();
-        ILC.set(doc["ILCSettings"]);
-        TMA.set(doc["TMASettings"]);
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading SafetyControllerSettings: {}", ex.what()));
-    }
+    AirController.set(doc["AirControllerSettings"]);
+    Displacement.set(doc["DisplacementSettings"]);
+    Inclinometer.set(doc["InclinometerSettings"]);
+    Interlock.set(doc["InterlockSettings"]);
+    ForceController.set(doc["ForceControllerSettings"]);
+    CellLights.set(doc["CellLightSettings"]);
+    PositionController.set(doc["PositionControllerSettings"]);
+    PowerController.set(doc["PowerControllerSettings"]);
+    RaiseOperation.FaultOnTimeout = doc["RaiseOperationSettings"]["FaultOnTimeout"].as<bool>();
+    LowerOperation.FaultOnTimeout = doc["LowerOperationSettings"]["FaultOnTimeout"].as<bool>();
+    ILC.set(doc["ILCSettings"]);
+    TMA.set(doc["TMASettings"]);
 }

@@ -64,6 +64,8 @@ struct ILCApplicationSettings : public cRIO::Singleton<ILCApplicationSettings> {
     uint32_t ReportDCAStatus;
     uint32_t ReportDCAPressure;
     uint32_t ReportLVDT;
+
+    float WarningGracePeriod;
 };
 
 } /* namespace SS */

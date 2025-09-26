@@ -31,33 +31,29 @@ using namespace LSST::M1M3::SS;
 PositionControllerSettings::PositionControllerSettings(token) {}
 
 void PositionControllerSettings::load(YAML::Node doc) {
-    try {
-        SPDLOG_INFO("Loading PositionControllerSettings");
+    SPDLOG_INFO("Loading PositionControllerSettings");
 
-        forceToStepsCoefficient = doc["ForceToStepsCoefficient"].as<double>();
-        encoderToStepsCoefficient = doc["EncoderToStepsCoefficient"].as<double>();
-        maxStepsPerLoop = doc["MaxStepsPerLoop"].as<int32_t>();
+    forceToStepsCoefficient = doc["ForceToStepsCoefficient"].as<double>();
+    encoderToStepsCoefficient = doc["EncoderToStepsCoefficient"].as<double>();
+    maxStepsPerLoop = doc["MaxStepsPerLoop"].as<int32_t>();
 
-        auto raise = doc["Raise"];
+    auto raise = doc["Raise"];
 
-        raiseHPForceLimitLow = raise["HPForceLimitLow"].as<int>();
-        raiseHPForceLimitHigh = raise["HPForceLimitHigh"].as<int>();
-        raiseTimeout = raise["Timeout"].as<int>();
+    raiseHPForceLimitLow = raise["HPForceLimitLow"].as<int>();
+    raiseHPForceLimitHigh = raise["HPForceLimitHigh"].as<int>();
+    raiseTimeout = raise["Timeout"].as<int>();
 
-        auto lower = doc["Lower"];
+    auto lower = doc["Lower"];
 
-        lowerHPForceLimitLow = lower["HPForceLimitLow"].as<int>();
-        lowerHPForceLimitHigh = lower["HPForceLimitHigh"].as<int>();
-        lowerTimeout = lower["Timeout"].as<int>();
-        lowerPositionOffset = lower["PositionOffset"].as<float>();
+    lowerHPForceLimitLow = lower["HPForceLimitLow"].as<int>();
+    lowerHPForceLimitHigh = lower["HPForceLimitHigh"].as<int>();
+    lowerTimeout = lower["Timeout"].as<int>();
+    lowerPositionOffset = lower["PositionOffset"].as<float>();
 
-        referencePosition = doc["ReferencePosition"].as<std::vector<int32_t>>();
-        if (referencePosition.size() != HP_COUNT) {
-            throw std::runtime_error(fmt::format("Expecting {} encoder's ReferencePosition, got {}", HP_COUNT,
-                                                 referencePosition.size()));
-        }
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading PositionControllerSettings: {}", ex.what()));
+    referencePosition = doc["ReferencePosition"].as<std::vector<int32_t>>();
+    if (referencePosition.size() != HP_COUNT) {
+        throw std::runtime_error(fmt::format("Expecting {} encoder's ReferencePosition, got {}", HP_COUNT,
+                                             referencePosition.size()));
     }
 
     log();

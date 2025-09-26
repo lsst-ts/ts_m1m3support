@@ -35,13 +35,9 @@ using namespace LSST::M1M3::SS;
 ExpansionFPGAApplicationSettings::ExpansionFPGAApplicationSettings(token) {}
 
 void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
-    try {
-        SPDLOG_INFO("Loading ExpansionFPGAApplicationSettings");
-        Enabled = doc["Enabled"].as<bool>();
-        Resource = doc["Resource"].as<std::string>();
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("YAML Loading ExpansionFPGAApplicationSettings: {}", ex.what()));
-    }
+    SPDLOG_INFO("Loading ExpansionFPGAApplicationSettings");
+    Enabled = doc["Enabled"].as<bool>();
+    Resource = doc["Resource"].as<std::string>();
 }
 
 void ExpansionFPGAApplicationSettings::initialize(StartCommand *command) {

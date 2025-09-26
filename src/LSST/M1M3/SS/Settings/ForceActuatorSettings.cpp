@@ -42,170 +42,159 @@ ForceActuatorNeighbors::ForceActuatorNeighbors() {}
 ForceActuatorSettings::ForceActuatorSettings(token) { measuredWarningPercentage = 90; }
 
 void ForceActuatorSettings::load(YAML::Node doc) {
-    try {
-        auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
+    auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
-        auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
-        for (int i = 0; i < FA_COUNT; ++i) {
-            int faId = faa_settings.ZIndexToActuatorId(i);
-            enabledActuators[i] =
-                    std::find(disabledIndices.begin(), disabledIndices.end(), faId) == disabledIndices.end();
-        }
+    for (int i = 0; i < FA_COUNT; ++i) {
+        int faId = faa_settings.ZIndexToActuatorId(i);
+        enabledActuators[i] =
+                std::find(disabledIndices.begin(), disabledIndices.end(), faId) == disabledIndices.end();
+    }
 
-        BoosterValveSettings::instance().load(doc["BoosterValveControl"]);
+    BoosterValveSettings::instance().load(doc["BoosterValveControl"]);
 
-        TableLoader::loadTable(1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &AzimuthXTable, doc["AzimuthXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &AzimuthYTable, doc["AzimuthYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &AzimuthZTable, doc["AzimuthZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &HardpointForceMomentTable,
-                               doc["HardpointForceMomentTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &ForceDistributionXTable,
-                               doc["ForceDistributionXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &ForceDistributionYTable,
-                               doc["ForceDistributionYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &ForceDistributionZTable,
-                               doc["ForceDistributionZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &MomentDistributionXTable,
-                               doc["MomentDistributionXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &MomentDistributionYTable,
-                               doc["MomentDistributionYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &MomentDistributionZTable,
-                               doc["MomentDistributionZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ElevationXTable, doc["ElevationXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ElevationYTable, doc["ElevationYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ElevationZTable, doc["ElevationZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, &StaticXTable, doc["StaticXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, &StaticYTable, doc["StaticYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 1, &StaticZTable, doc["StaticZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ThermalXTable, doc["ThermalXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ThermalYTable, doc["ThermalYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 6, &ThermalZTable, doc["ThermalZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityXTable, doc["VelocityXTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityYTable, doc["VelocityYTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityZTable, doc["VelocityZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
-        TableLoader::loadTable(1, 3, &VelocityXYTable, doc["VelocityXYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &AccelerationXTable, doc["AccelerationXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &AccelerationYTable, doc["AccelerationYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &AccelerationZTable, doc["AccelerationZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &AzimuthXTable, doc["AzimuthXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &AzimuthYTable, doc["AzimuthYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &AzimuthZTable, doc["AzimuthZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &HardpointForceMomentTable,
+                           doc["HardpointForceMomentTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &ForceDistributionXTable,
+                           doc["ForceDistributionXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &ForceDistributionYTable,
+                           doc["ForceDistributionYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &ForceDistributionZTable,
+                           doc["ForceDistributionZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &MomentDistributionXTable,
+                           doc["MomentDistributionXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &MomentDistributionYTable,
+                           doc["MomentDistributionYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &MomentDistributionZTable,
+                           doc["MomentDistributionZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &ElevationXTable, doc["ElevationXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &ElevationYTable, doc["ElevationYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &ElevationZTable, doc["ElevationZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 1, &StaticXTable, doc["StaticXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 1, &StaticYTable, doc["StaticYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 1, &StaticZTable, doc["StaticZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &ThermalXTable, doc["ThermalXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &ThermalYTable, doc["ThermalYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 6, &ThermalZTable, doc["ThermalZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &VelocityXTable, doc["VelocityXTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &VelocityYTable, doc["VelocityYTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &VelocityZTable, doc["VelocityZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &VelocityXZTable, doc["VelocityXZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &VelocityYZTable, doc["VelocityYZTablePath"].as<std::string>());
+    TableLoader::loadTable(1, 3, &VelocityXYTable, doc["VelocityXYTablePath"].as<std::string>());
 
-        TableLoader::loadLimitTable(1, &AccelerationLimitXTable,
-                                    doc["AccelerationLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &AccelerationLimitYTable,
-                                    doc["AccelerationLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &AccelerationLimitZTable,
-                                    doc["AccelerationLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ActiveOpticLimitZTable,
-                                    doc["ActiveOpticLimitZTablePath"].as<std::string>());
-        netActiveOpticForceTolerance = doc["NetActiveOpticForceTolerance"].as<float>();
-        TableLoader::loadLimitTable(1, &AzimuthLimitXTable, doc["AzimuthLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &AzimuthLimitYTable, doc["AzimuthLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &AzimuthLimitZTable, doc["AzimuthLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &BalanceLimitXTable, doc["BalanceLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &BalanceLimitYTable, doc["BalanceLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &BalanceLimitZTable, doc["BalanceLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ElevationLimitXTable,
-                                    doc["ElevationLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ElevationLimitYTable,
-                                    doc["ElevationLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ElevationLimitZTable,
-                                    doc["ElevationLimitZTablePath"].as<std::string>());
-        TableLoader::loadForceLimitTable(1, appliedZForceLowLimit, appliedZForceHighLimit,
-                                         appliedYForceLowLimit, appliedYForceHighLimit, appliedXForceLowLimit,
-                                         appliedXForceHighLimit,
-                                         doc["AppliedForceLimitTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &StaticLimitXTable, doc["StaticLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &StaticLimitYTable, doc["StaticLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &StaticLimitZTable, doc["StaticLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &OffsetLimitXTable, doc["OffsetLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &OffsetLimitYTable, doc["OffsetLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &OffsetLimitZTable, doc["OffsetLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ThermalLimitXTable, doc["ThermalLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ThermalLimitYTable, doc["ThermalLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &ThermalLimitZTable, doc["ThermalLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &VelocityLimitXTable,
-                                    doc["VelocityLimitXTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &VelocityLimitYTable,
-                                    doc["VelocityLimitYTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &VelocityLimitZTable,
-                                    doc["VelocityLimitZTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &CylinderLimitPrimaryTable,
-                                    doc["CylinderLimitPrimaryTablePath"].as<std::string>());
-        TableLoader::loadLimitTable(1, &CylinderLimitSecondaryTable,
-                                    doc["CylinderLimitSecondaryTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &AccelerationLimitXTable,
+                                doc["AccelerationLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &AccelerationLimitYTable,
+                                doc["AccelerationLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &AccelerationLimitZTable,
+                                doc["AccelerationLimitZTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &ActiveOpticLimitZTable,
+                                doc["ActiveOpticLimitZTablePath"].as<std::string>());
+    netActiveOpticForceTolerance = doc["NetActiveOpticForceTolerance"].as<float>();
+    TableLoader::loadLimitTable(1, &AzimuthLimitXTable, doc["AzimuthLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &AzimuthLimitYTable, doc["AzimuthLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &AzimuthLimitZTable, doc["AzimuthLimitZTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &BalanceLimitXTable, doc["BalanceLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &BalanceLimitYTable, doc["BalanceLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &BalanceLimitZTable, doc["BalanceLimitZTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &ElevationLimitXTable, doc["ElevationLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &ElevationLimitYTable, doc["ElevationLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &ElevationLimitZTable, doc["ElevationLimitZTablePath"].as<std::string>());
+    TableLoader::loadForceLimitTable(1, appliedZForceLowLimit, appliedZForceHighLimit, appliedYForceLowLimit,
+                                     appliedYForceHighLimit, appliedXForceLowLimit, appliedXForceHighLimit,
+                                     doc["AppliedForceLimitTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &StaticLimitXTable, doc["StaticLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &StaticLimitYTable, doc["StaticLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &StaticLimitZTable, doc["StaticLimitZTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &OffsetLimitXTable, doc["OffsetLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &OffsetLimitYTable, doc["OffsetLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &OffsetLimitZTable, doc["OffsetLimitZTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &ThermalLimitXTable, doc["ThermalLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &ThermalLimitYTable, doc["ThermalLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &ThermalLimitZTable, doc["ThermalLimitZTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &VelocityLimitXTable, doc["VelocityLimitXTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &VelocityLimitYTable, doc["VelocityLimitYTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &VelocityLimitZTable, doc["VelocityLimitZTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &CylinderLimitPrimaryTable,
+                                doc["CylinderLimitPrimaryTablePath"].as<std::string>());
+    TableLoader::loadLimitTable(1, &CylinderLimitSecondaryTable,
+                                doc["CylinderLimitSecondaryTablePath"].as<std::string>());
 
-        measuredWarningPercentage = doc["MeasuredWarningPercentage"].as<float>();
+    measuredWarningPercentage = doc["MeasuredWarningPercentage"].as<float>();
 
-        TableLoader::loadForceLimitTable(1, measuredZForceLowLimit, measuredZForceHighLimit,
-                                         measuredYForceLowLimit, measuredYForceHighLimit,
-                                         measuredXForceLowLimit, measuredXForceHighLimit,
-                                         doc["MeasuredMirrorLimitTablePath"].as<std::string>());
-        _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
-                                  doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
+    TableLoader::loadForceLimitTable(1, measuredZForceLowLimit, measuredZForceHighLimit,
+                                     measuredYForceLowLimit, measuredYForceHighLimit, measuredXForceLowLimit,
+                                     measuredXForceHighLimit,
+                                     doc["MeasuredMirrorLimitTablePath"].as<std::string>());
+    _loadFollowingErrorTables(doc["FollowingErrorPrimaryCylinderLimitTablePath"].as<std::string>(),
+                              doc["FollowingErrorSecondaryCylinderLimitTablePath"].as<std::string>());
 
-        _loadNearNeighborZTable(doc["ForceActuatorNearZNeighborsTablePath"].as<std::string>());
-        _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
+    _loadNearNeighborZTable(doc["ForceActuatorNearZNeighborsTablePath"].as<std::string>());
+    _loadNeighborsTable(doc["ForceActuatorNeighborsTablePath"].as<std::string>());
 
-        useInclinometer = doc["UseInclinometer"].as<bool>();
-        useGyroscope = doc["UseGyroscope"].as<bool>();
-        useAccelerometers = doc["UseAccelerometers"].as<bool>();
+    useInclinometer = doc["UseInclinometer"].as<bool>();
+    useGyroscope = doc["UseGyroscope"].as<bool>();
+    useAccelerometers = doc["UseAccelerometers"].as<bool>();
 
-        mirrorXMoment = doc["MirrorXMoment"].as<float>();
-        mirrorYMoment = doc["MirrorYMoment"].as<float>();
-        mirrorZMoment = doc["MirrorZMoment"].as<float>();
-        setpointXMomentLowLimitFactor = doc["SetpointXMomentLowLimitFactor"].as<float>();
-        setpointXMomentHighLimitFactor = doc["SetpointXMomentHighLimitFactor"].as<float>();
-        setpointYMomentLowLimitFactor = doc["SetpointYMomentLowLimitFactor"].as<float>();
-        setpointYMomentHighLimitFactor = doc["SetpointYMomentHighLimitFactor"].as<float>();
-        setpointZMomentLowLimitFactor = doc["SetpointZMomentLowLimitFactor"].as<float>();
-        setpointZMomentHighLimitFactor = doc["SetpointZMomentHighLimitFactor"].as<float>();
-        setpointNearNeighborLimitFactor = doc["SetpointNearNeighborLimitFactor"].as<float>();
-        setpointMirrorWeightLimitFactor = doc["SetpointMirrorWeightLimitFactor"].as<float>();
-        setpointFarNeighborLimitFactor = doc["SetpointFarNeighborLimitFactor"].as<float>();
+    mirrorXMoment = doc["MirrorXMoment"].as<float>();
+    mirrorYMoment = doc["MirrorYMoment"].as<float>();
+    mirrorZMoment = doc["MirrorZMoment"].as<float>();
+    setpointXMomentLowLimitFactor = doc["SetpointXMomentLowLimitFactor"].as<float>();
+    setpointXMomentHighLimitFactor = doc["SetpointXMomentHighLimitFactor"].as<float>();
+    setpointYMomentLowLimitFactor = doc["SetpointYMomentLowLimitFactor"].as<float>();
+    setpointYMomentHighLimitFactor = doc["SetpointYMomentHighLimitFactor"].as<float>();
+    setpointZMomentLowLimitFactor = doc["SetpointZMomentLowLimitFactor"].as<float>();
+    setpointZMomentHighLimitFactor = doc["SetpointZMomentHighLimitFactor"].as<float>();
+    setpointNearNeighborLimitFactor = doc["SetpointNearNeighborLimitFactor"].as<float>();
+    setpointMirrorWeightLimitFactor = doc["SetpointMirrorWeightLimitFactor"].as<float>();
+    setpointFarNeighborLimitFactor = doc["SetpointFarNeighborLimitFactor"].as<float>();
 
-        mirrorCenterOfGravityX = doc["MirrorCenterOfGravityX"].as<float>();
-        mirrorCenterOfGravityY = doc["MirrorCenterOfGravityY"].as<float>();
-        mirrorCenterOfGravityZ = doc["MirrorCenterOfGravityZ"].as<float>();
+    mirrorCenterOfGravityX = doc["MirrorCenterOfGravityX"].as<float>();
+    mirrorCenterOfGravityY = doc["MirrorCenterOfGravityY"].as<float>();
+    mirrorCenterOfGravityZ = doc["MirrorCenterOfGravityZ"].as<float>();
 
-        raiseIncrementPercentage = doc["RaiseIncrementPercentage"].as<double>();
-        lowerDecrementPercentage = doc["LowerDecrementPercentage"].as<double>();
-        raiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
-        hardpointBalanceForcesOnInActiveState = doc["HardpointBalanceForcesOnInActiveState"].as<bool>();
+    raiseIncrementPercentage = doc["RaiseIncrementPercentage"].as<double>();
+    lowerDecrementPercentage = doc["LowerDecrementPercentage"].as<double>();
+    raiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
+    hardpointBalanceForcesOnInActiveState = doc["HardpointBalanceForcesOnInActiveState"].as<bool>();
 
-        AccelerationComponentSettings.set(doc["AccelerationForceComponent"]);
-        ActiveOpticComponentSettings.set(doc["ActiveOpticForceComponent"]);
-        AzimuthComponentSettings.set(doc["AzimuthForceComponent"]);
-        BalanceComponentSettings.set(doc["BalanceForceComponent"]);
-        ElevationComponentSettings.set(doc["ElevationForceComponent"]);
-        OffsetComponentSettings.set(doc["OffsetForceComponent"]);
-        StaticComponentSettings.set(doc["StaticForceComponent"]);
-        ThermalComponentSettings.set(doc["ThermalForceComponent"]);
-        VelocityComponentSettings.set(doc["VelocityForceComponent"]);
-        FinalComponentSettings.set(doc["FinalForceComponent"]);
+    AccelerationComponentSettings.set(doc["AccelerationForceComponent"]);
+    ActiveOpticComponentSettings.set(doc["ActiveOpticForceComponent"]);
+    AzimuthComponentSettings.set(doc["AzimuthForceComponent"]);
+    BalanceComponentSettings.set(doc["BalanceForceComponent"]);
+    ElevationComponentSettings.set(doc["ElevationForceComponent"]);
+    OffsetComponentSettings.set(doc["OffsetForceComponent"]);
+    StaticComponentSettings.set(doc["StaticForceComponent"]);
+    ThermalComponentSettings.set(doc["ThermalForceComponent"]);
+    VelocityComponentSettings.set(doc["VelocityForceComponent"]);
+    FinalComponentSettings.set(doc["FinalForceComponent"]);
 
-        auto bumpTest = doc["BumpTest"];
+    auto bumpTest = doc["BumpTest"];
 
-        TestedTolerances.set(bumpTest["TestedTolerances"]);
-        NonTestedTolerances.set(bumpTest["NonTestedTolerances"]);
+    TestedTolerances.set(bumpTest["TestedTolerances"]);
+    NonTestedTolerances.set(bumpTest["NonTestedTolerances"]);
 
-        preclippedIgnoreChanges = doc["PreclippedIgnoreChanges"].as<float>();
-        preclippedMaxDelay = doc["PreclippedMaxDelay"].as<float>();
+    preclippedIgnoreChanges = doc["PreclippedIgnoreChanges"].as<float>();
+    preclippedMaxDelay = doc["PreclippedMaxDelay"].as<float>();
 
-        bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
-        bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
-        bumpTestMinimalDistance = bumpTest["MinimalDistance"].as<float>();
+    bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
+    bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
+    bumpTestMinimalDistance = bumpTest["MinimalDistance"].as<float>();
 
-        if (bumpTestMinimalDistance < 2) {
-            throw std::runtime_error(
-                    fmt::format("MinimalDistance parameter for parallel bump test shall "
-                                "be greater than 2m, "
-                                "was set to {}.",
-                                bumpTestMinimalDistance));
-        }
-    } catch (YAML::Exception &ex) {
-        throw std::runtime_error(fmt::format("Cannot load ForceActuatorSettings: {}", ex.what()));
+    if (bumpTestMinimalDistance < 2) {
+        throw std::runtime_error(
+                fmt::format("MinimalDistance parameter for parallel bump test shall "
+                            "be greater than 2m, "
+                            "was set to {}.",
+                            bumpTestMinimalDistance));
     }
 
     log();

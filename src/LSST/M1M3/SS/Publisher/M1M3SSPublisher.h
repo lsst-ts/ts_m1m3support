@@ -125,7 +125,6 @@ public:
     MTM1M3_logevent_hardpointMonitorWarningC *getEventHardpointMonitorWarning() {
         return &_eventHardpointMonitorWarning;
     }
-    MTM1M3_logevent_ilcWarningC *getEventILCWarning() { return &_eventILCWarning; }
     MTM1M3_logevent_inclinometerSensorWarningC *getEventInclinometerSensorWarning() {
         return &_eventInclinometerSensorWarning;
     }

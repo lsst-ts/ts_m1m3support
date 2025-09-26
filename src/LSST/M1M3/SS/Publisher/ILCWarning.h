@@ -24,6 +24,8 @@
 #ifndef __ILCWarnign_h__
 #define __ILCWarnign_h__
 
+#include <map>
+
 #include <SAL_MTM1M3.h>
 
 #include <cRIO/DataTypes.h>
@@ -33,22 +35,56 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/***
+ * Publishes ILCWarning messages. Make sure the messages aren't published too often. Singleton.
+ *
+ * When an alert for a given actuator becomes active,
+ */
 class ILCWarning : public MTM1M3_logevent_ilcWarningC, public cRIO::Singleton<ILCWarning> {
 public:
     ILCWarning(token);
 
-    void warnResponseTimeout(double _timestamp, int32_t _actuatorId);
-    void warnInvalidCRC(double _timestamp);
-    void warnIllegalFunction(double _timestamp, int32_t _actuatorId);
-    void warnIllegalDataValue(double _timestamp, int32_t _actuatorId);
-    void warnInvalidLength(double _timestamp, int32_t _actuatorId);
-    void warnUnknownSubnet(double _timestamp);
-    void warnUnknownAddress(double _timestamp, int32_t _actuatorId);
-    void warnUnknownFunction(double _timestamp, int32_t _actuatorId);
-    void warnUnknownProblem(double _timestamp, int32_t _actuatorId);
+    void warnResponseTimeout(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnInvalidCRC(double _timestamp, bool _active);
+    void warnIllegalFunction(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnIllegalDataValue(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnInvalidLength(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnUnknownSubnet(double _timestamp, bool _active);
+    void warnUnknownAddress(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnUnknownFunction(double _timestamp, int32_t _actuator_id, bool _active);
+    void warnUnknownProblem(double _timestamp, int32_t _actuator_id, bool _active);
+
+protected:
+    /**
+     * Queries last recorded state for the given actuator. Returns false if a
+     * new ILCWarning event shall be published.
+     *
+     * @param _timeouts Map with know timeouts. Passed as a reference, so
+     *                  modifications inside the method are propagated to the caller.
+     * @param _timestamp Current timestamp. TAI seconds from 1-1-1970.
+     * @param _actuator_id Actuator ID. Above 100 for FAs, 1-12 for HP actuators/ILCs.
+     * @param _active if true, warning is active. If false, that means warning is not triggered.
+     *
+     * @return true when event can be ignored (as it happened in grace period from the last trigger,
+     * or _active was false and the event wasn't active).
+     */
+    bool ignore_actuator_warning(std::map<int, double> &_timeouts, double _timestamp, int _actuator_id,
+                                 bool _active);
+
+    bool ignore_warning(double &_timeout, double _timestamp, bool _active);
 
 private:
-    double _responseTimeout[FA_COUNT];
+    // holds last timeouts/grace period for actuators
+    std::map<int, double> _last_response_timeout;
+    std::map<int, double> _last_illegal_function;
+    std::map<int, double> _last_illegal_date_value;
+    std::map<int, double> _last_invalid_length;
+    std::map<int, double> _last_unknown_address;
+    std::map<int, double> _last_unknown_function;
+    std::map<int, double> _last_unknown_problem;
+
+    double _last_invalid_CRC;
+    double _last_unknown_subnet;
 };
 
 }  // namespace SS

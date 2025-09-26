@@ -592,7 +592,28 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             _writeModbusCRC(response);
                             break;
                         }
-                        case 76: {                                        // Force And Status
+                        case 76: {  // Force And Status
+                            static int fa_100_timeouts = 0;
+                            static int fa_101_timeouts = 50;
+
+                            // generate timeouts for FA 323
+                            if (pIndex == 100) {
+                                fa_100_timeouts++;
+                                if (fa_100_timeouts > 100) {
+                                    fa_100_timeouts = 0;
+                                    break;
+                                }
+                            }
+
+                            // generate timeouts for FA 324
+                            if (pIndex == 101) {
+                                fa_101_timeouts++;
+                                if (fa_101_timeouts > 101) {
+                                    fa_101_timeouts = 0;
+                                    break;
+                                }
+                            }
+
                             _writeModbus(response, address);              // Write Address
                             _writeModbus(response, function);             // Write Function
                             _writeModbus(response, _broadCastCounter());  // Write ILC Status
@@ -645,7 +666,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                                                               MTM1M3_shared_BumpTest_TestingNegative) {
                                 force += 120;
                             }
-                            // rport under force for FA 435 Z positive (push)
+                            // report under force for FA 435 Z positive (push)
                             else if (pIndex == 147 && bump_test.primaryTest[pIndex] ==
                                                               MTM1M3_shared_BumpTest_TestingPositive) {
                                 force -= 120;
