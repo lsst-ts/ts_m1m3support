@@ -235,7 +235,7 @@ void ILCWarning::warnUnknownFunction(double _timestamp, int32_t _actuator_id, bo
 }
 
 void ILCWarning::warnUnknownProblem(double _timestamp, int32_t _actuator_id, bool _active) {
-    if (ignore_actuator_warning(_last_invalid_length, _timestamp, _actuator_id, _active)) {
+    if (ignore_actuator_warning(_last_unknown_problem, _timestamp, _actuator_id, _active)) {
         return;
     }
     timestamp = _timestamp;
