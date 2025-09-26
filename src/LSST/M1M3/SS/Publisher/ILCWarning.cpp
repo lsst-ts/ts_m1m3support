@@ -51,17 +51,15 @@ bool ILCWarning::ignore_actuator_warning(std::map<int, double> &_timeouts, doubl
                                          int _actuator_id, bool _active) {
     auto entry = _timeouts.find(_actuator_id);
 
-    if (entry != _timeouts.end() && _timestamp > entry->second) {
-        return true;
-    }
+    auto grace_period = ILCApplicationSettings::instance().WarningGracePeriod;
 
     if (_active == true) {
-        if (entry == _timeouts.end() || _timestamp > entry->second) {
-            _timeouts[_actuator_id] = _timestamp + ILCApplicationSettings::instance().WarningGracePeriod;
+        if (entry == _timeouts.end() || _timestamp > entry->second || !isfinite(entry->second)) {
+            _timeouts[_actuator_id] = _timestamp + grace_period;
             return false;
         }
     } else {
-        if (entry != _timeouts.end() && _timestamp > entry->second) {
+        if (entry != _timeouts.end() && _timestamp > (entry->second + (grace_period / 2))) {
             _timeouts[_actuator_id] = INFINITY;
             return false;
         }

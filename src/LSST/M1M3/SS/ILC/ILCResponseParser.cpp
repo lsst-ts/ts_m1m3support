@@ -367,10 +367,11 @@ void ILCResponseParser::verifyResponses() {
         auto &_forceActuatorInfo = ForceActuatorInfo::instance();
         if (_faExpectedResponses[i] != 0) {
             warn = true;
-            TG_LOG_WARN(60s, "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
-                        _forceActuatorInfo.referenceId[i]);
             ILCWarning::instance().warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i], true);
             _faExpectedResponses[i] = 0;
+            TG_INDEX_LOG_WARN(60s, i, FA_COUNT,
+                              "ILCResponseParser: Force actuator #{} (ID {})  response timeout", i,
+                              _forceActuatorInfo.referenceId[i]);
         } else {
             ILCWarning::instance().warnResponseTimeout(timestamp, _forceActuatorInfo.referenceId[i], false);
         }
@@ -385,8 +386,9 @@ void ILCResponseParser::verifyResponses() {
             ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i],
                                                        true);
             _hpExpectedResponses[i] = 0;
-            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) actuator response timeout", i + 1,
-                        _hardpointActuatorInfo->referenceId[i]);
+            TG_INDEX_LOG_WARN(60s, i, HP_COUNT,
+                              "ILCResponseParser: Hardpoint {} (ID {}) actuator response timeout", i + 1,
+                              _hardpointActuatorInfo->referenceId[i]);
         } else {
             ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointActuatorInfo->referenceId[i],
                                                        false);
@@ -402,8 +404,9 @@ void ILCResponseParser::verifyResponses() {
             ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i],
                                                        true);
             _hmExpectedResponses[i] = 0;
-            TG_LOG_WARN(60s, "ILCResponseParser: Hardpoint {} (ID {}) monitor response timeout", i + 1,
-                        _hardpointMonitorInfo->referenceId[i]);
+            TG_INDEX_LOG_WARN(60s, i, HP_COUNT,
+                              "ILCResponseParser: Hardpoint {} (ID {}) monitor response timeout", i + 1,
+                              _hardpointMonitorInfo->referenceId[i]);
         } else {
             ILCWarning::instance().warnResponseTimeout(timestamp, _hardpointMonitorInfo->referenceId[i],
                                                        false);
