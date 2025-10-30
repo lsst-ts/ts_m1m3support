@@ -422,18 +422,18 @@ void ForceController::applyActuatorOffset(char axis, int index, float offset) {
 }
 
 void ForceController::applyStaticForces() {
-    SPDLOG_INFO("ForceController: applyStaticForces()");
     if (!_staticForceComponent.isEnabled()) {
+        SPDLOG_INFO("ForceController: applyStaticForces()");
         _staticForceComponent.enable();
+        _staticForceComponent.applyStaticForces(&(ForceActuatorSettings::instance().StaticXTable),
+                                                &(ForceActuatorSettings::instance().StaticYTable),
+                                                &(ForceActuatorSettings::instance().StaticZTable));
     }
-    _staticForceComponent.applyStaticForces(&(ForceActuatorSettings::instance().StaticXTable),
-                                            &(ForceActuatorSettings::instance().StaticYTable),
-                                            &(ForceActuatorSettings::instance().StaticZTable));
 }
 
 void ForceController::zeroStaticForces() {
-    SPDLOG_INFO("ForceController: zeroStaticForces()");
     if (_staticForceComponent.isEnabled()) {
+        SPDLOG_INFO("ForceController: zeroStaticForces()");
         _staticForceComponent.disable();
     }
 }

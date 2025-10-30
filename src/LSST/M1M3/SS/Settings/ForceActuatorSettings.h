@@ -184,6 +184,7 @@ public:
 
     float preclippedIgnoreChanges;
     float preclippedMaxDelay;
+    float enableStaticForcesSupportedPercentage;
 
 private:
     void _loadNearNeighborZTable(const std::string &filename);

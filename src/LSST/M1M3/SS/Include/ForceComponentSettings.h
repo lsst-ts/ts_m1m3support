@@ -24,6 +24,7 @@
 #ifndef LSST_M1M3_SS_INCLUDE_FORCECOMPONENTSETTINGS_H_
 #define LSST_M1M3_SS_INCLUDE_FORCECOMPONENTSETTINGS_H_
 
+#include <spdlog/fmt/fmt.h>
 #include <yaml-cpp/yaml.h>
 
 namespace LSST {
@@ -34,9 +35,30 @@ struct ForceComponentSettings {
     float MaxRateOfChange;
     float NearZeroValue;
 
-    void set(YAML::Node node) {
+    ForceComponentSettings() {
+        MaxRateOfChange = NAN;
+        NearZeroValue = NAN;
+    }
+
+    void set(YAML::Node parent, const char* key, float limit_max_rate_of_change = 0) {
+        auto node = parent[key];
         MaxRateOfChange = node["MaxRateOfChange"].as<float>();
+        if (MaxRateOfChange <= 0) {
+            throw std::runtime_error(fmt::format(
+                    "{} MaxRateOfChange must be positive, non-zero number. Is {}.", key, MaxRateOfChange));
+        }
+        if (limit_max_rate_of_change > 0) {
+            if (MaxRateOfChange > limit_max_rate_of_change) {
+                auto msg = fmt::format("Too large MaxRateOfChange in {}: {}", key, MaxRateOfChange);
+                MaxRateOfChange = 0;
+                throw std::runtime_error(msg);
+            }
+        }
         NearZeroValue = node["NearZeroValue"].as<float>();
+        if (NearZeroValue <= 0) {
+            throw std::runtime_error(
+                    fmt::format("{} NearZeroValue must be positive number. Is {}", key, NearZeroValue));
+        }
     }
 };
 

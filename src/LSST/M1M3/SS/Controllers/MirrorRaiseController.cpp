@@ -165,6 +165,10 @@ void MirrorRaiseController::runLoop() {
                 _raisePauseReported = false;
                 SPDLOG_INFO("Raising resumed");
             }
+            if (RaisingLoweringInfo::instance().weightSupportedPercent >
+                ForceActuatorSettings::instance().enableStaticForcesSupportedPercentage) {
+                _forceController->applyStaticForces();
+            }
             if (RaisingLoweringInfo::instance().supportPercentageFilled()) {
                 // All of the support force has been transfered from the static supports
                 // to the force actuators, stop the hardpoints from chasing and start

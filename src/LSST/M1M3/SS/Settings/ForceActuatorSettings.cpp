@@ -42,6 +42,7 @@ ForceActuatorNeighbors::ForceActuatorNeighbors() {}
 ForceActuatorSettings::ForceActuatorSettings(token) { measuredWarningPercentage = 90; }
 
 void ForceActuatorSettings::load(YAML::Node doc) {
+    SPDLOG_INFO("Loading ForceActuatorSettings");
     auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
     auto &faa_settings = ForceActuatorApplicationSettings::instance();
@@ -166,16 +167,16 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     raiseLowerFollowingErrorLimit = doc["RaiseLowerFollowingErrorLimit"].as<float>();
     hardpointBalanceForcesOnInActiveState = doc["HardpointBalanceForcesOnInActiveState"].as<bool>();
 
-    AccelerationComponentSettings.set(doc["AccelerationForceComponent"]);
-    ActiveOpticComponentSettings.set(doc["ActiveOpticForceComponent"]);
-    AzimuthComponentSettings.set(doc["AzimuthForceComponent"]);
-    BalanceComponentSettings.set(doc["BalanceForceComponent"]);
-    ElevationComponentSettings.set(doc["ElevationForceComponent"]);
-    OffsetComponentSettings.set(doc["OffsetForceComponent"]);
-    StaticComponentSettings.set(doc["StaticForceComponent"]);
-    ThermalComponentSettings.set(doc["ThermalForceComponent"]);
-    VelocityComponentSettings.set(doc["VelocityForceComponent"]);
-    FinalComponentSettings.set(doc["FinalForceComponent"]);
+    AccelerationComponentSettings.set(doc, "AccelerationForceComponent");
+    ActiveOpticComponentSettings.set(doc, "ActiveOpticForceComponent");
+    AzimuthComponentSettings.set(doc, "AzimuthForceComponent");
+    BalanceComponentSettings.set(doc, "BalanceForceComponent");
+    ElevationComponentSettings.set(doc, "ElevationForceComponent");
+    OffsetComponentSettings.set(doc, "OffsetForceComponent");
+    StaticComponentSettings.set(doc, "StaticForceComponent", 0.1);
+    ThermalComponentSettings.set(doc, "ThermalForceComponent");
+    VelocityComponentSettings.set(doc, "VelocityForceComponent");
+    FinalComponentSettings.set(doc, "FinalForceComponent");
 
     auto bumpTest = doc["BumpTest"];
 
@@ -189,11 +190,18 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);
     bumpTestMinimalDistance = bumpTest["MinimalDistance"].as<float>();
 
+    enableStaticForcesSupportedPercentage = doc["EnableStaticForcesSupportedPercentage"].as<float>();
+    if (enableStaticForcesSupportedPercentage < 20 || enableStaticForcesSupportedPercentage >= 70) {
+        throw std::runtime_error(fmt::format(
+                "EnableStaticForcesSupportedPercentage parameter shall be between 20 and 70, was set to {}",
+                enableStaticForcesSupportedPercentage));
+    }
+
     if (bumpTestMinimalDistance < 2) {
         throw std::runtime_error(
                 fmt::format("MinimalDistance parameter for parallel bump test shall "
                             "be greater than 2m, "
-                            "was set to {}.",
+                            "was set to {}",
                             bumpTestMinimalDistance));
     }
 

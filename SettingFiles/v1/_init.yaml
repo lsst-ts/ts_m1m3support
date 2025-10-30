@@ -193,7 +193,7 @@ ForceActuatorSettings:
     MaxRateOfChange: 105.0
     NearZeroValue: 1.0
   StaticForceComponent:
-    MaxRateOfChange: 105.0
+    MaxRateOfChange: 0.01
     NearZeroValue: 1.0
   ThermalForceComponent:
     MaxRateOfChange: 10.0
@@ -218,6 +218,8 @@ ForceActuatorSettings:
   PreclippedIgnoreChanges: 200
   # Minimal delay (in seconds) for logging of preclipped forces.
   PreclippedMaxDelay: 0.5
+  # Static forces will be applied above that supported percentage.
+  EnableStaticForcesSupportedPercentage: 50
 GyroSettings:
   DataRate: 1000
   AxesMatrix: [1,0,0,0,1,0,0,0,1]

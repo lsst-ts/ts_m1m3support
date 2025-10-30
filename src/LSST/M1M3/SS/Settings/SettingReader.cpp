@@ -105,7 +105,7 @@ void SettingReader::configure(std::string settingsToApply) {
 void SettingReader::load() {
     std::string filename = _getSetPath("_init.yaml");
     try {
-        SPDLOG_INFO("Reading configurationf file {}", filename);
+        SPDLOG_INFO("Reading configuration file {}", filename);
         YAML::Node settings = YAML::LoadFile(filename);
         ForceActuatorSettings::instance().load(settings["ForceActuatorSettings"]);
         HardpointActuatorSettings::instance().load(settings["HardpointActuatorSettings"]);
@@ -124,8 +124,8 @@ void SettingReader::load() {
 
         InclinometerSettings::instance().load(settings["InclinometerSettings"]);
     } catch (YAML::Exception &ex) {
-        auto msg = fmt::format("YAML Loading {}:{}:{}: {}", filename, ex.mark.line + 1, ex.mark.column + 1,
-                               ex.what());
+        auto msg = fmt::format("YAML Loading {}:{}:{}:{}: {}", filename, ex.mark.pos, ex.mark.line + 1,
+                               ex.mark.column + 1, ex.what());
         SPDLOG_ERROR(msg);
         throw std::runtime_error(msg);
     }
