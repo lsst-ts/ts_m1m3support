@@ -31,7 +31,7 @@ using namespace LSST::M1M3::SS;
 PositionControllerSettings::PositionControllerSettings(token) {}
 
 void PositionControllerSettings::load(YAML::Node doc) {
-    SPDLOG_INFO("Loading PositionControllerSettings");
+    SPDLOG_INFO("Loading PositionControllerSettings.");
 
     forceToStepsCoefficient = doc["ForceToStepsCoefficient"].as<double>();
     encoderToStepsCoefficient = doc["EncoderToStepsCoefficient"].as<double>();

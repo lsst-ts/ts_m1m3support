@@ -22,18 +22,57 @@
  */
 
 #include <spdlog/spdlog.h>
+#include <fmt/ranges.h>
 
-#include <AirSupplyStatus.h>
-#include <ForceController.h>
-#include <HardpointActuatorWarning.h>
-#include <M1M3SSPublisher.h>
-#include <MirrorRaiseController.h>
-#include <PositionController.h>
-#include <PowerController.h>
-#include <RaisingLoweringInfo.h>
-#include <SafetyController.h>
+#include "AirSupplyStatus.h"
+#include "ForceController.h"
+#include "HardpointActuatorWarning.h"
+#include "M1M3SSPublisher.h"
+#include "MirrorRaiseController.h"
+#include "PositionController.h"
+#include "PowerController.h"
+#include "RaisingLoweringInfo.h"
+#include "SafetyController.h"
 
 using namespace LSST::M1M3::SS;
+
+HpInRangeCounter::HpInRangeCounter() { reset(); }
+
+void HpInRangeCounter::reset() {
+    _current_middlepoint = NAN;
+    _counter = -1;
+    _timeout_counter = -1;
+}
+
+bool HpInRangeCounter::check(float force) {
+    auto &hp_actuator_settings = HardpointActuatorSettings::instance();
+    if (_counter < 0) {
+        _counter = 0;
+        _timeout_counter = 0;
+        _current_middlepoint = force;
+        return false;
+    }
+
+    if (_timeout_counter > hp_actuator_settings.inRangeAfterRaiseTimeoutLoops) {
+        return true;
+    }
+    _timeout_counter++;
+
+    if (abs(force - _current_middlepoint) > hp_actuator_settings.inRangeAfterRaiseForce) {
+        _counter = 0;
+        _current_middlepoint = (force + _current_middlepoint) / 2.0;
+        return false;
+    }
+    if (_counter > hp_actuator_settings.inRangeAfterRaiseLoops) {
+        return true;
+    }
+    _counter++;
+    return false;
+}
+
+bool HpInRangeCounter::timeouted() {
+    return _timeout_counter > HardpointActuatorSettings::instance().inRangeAfterRaiseTimeoutLoops;
+}
 
 MirrorRaiseController::MirrorRaiseController(PositionController *positionController,
                                              ForceController *forceController,
@@ -48,19 +87,26 @@ MirrorRaiseController::MirrorRaiseController(PositionController *positionControl
     _remaininingTimedout = 0;
     RaisingLoweringInfo::instance().setTimeTimeout(0);
     _bypassMoveToReference = false;
-    _lastForceFilled = false;
-    _lastPositionCompleted = false;
+
+    reset();
+}
+
+void MirrorRaiseController::reset() {
+    _last_force_filled = false;
+    _last_position_completed = false;
+    _last_hp_forces_minimal = false;
+    _raisePauseReported = false;
     _raisingPaused = false;
 }
 
 void MirrorRaiseController::start(bool bypassMoveToReference) {
     SPDLOG_INFO("MirrorRaiseController: start({})", bypassMoveToReference);
     _bypassMoveToReference = bypassMoveToReference;
-    _lastForceFilled = false;
-    _lastPositionCompleted = false;
-    _raisePauseReported = false;
 
-    _raisingPaused = false;
+    reset();
+    for (int i = 0; i < HP_COUNT; i++) {
+        _hp_in_range[i].reset();
+    }
 
     _safetyController->raiseOperationTimeout(false);
     _positionController->startRaise();
@@ -119,6 +165,10 @@ void MirrorRaiseController::runLoop() {
                 _raisePauseReported = false;
                 SPDLOG_INFO("Raising resumed");
             }
+            if (RaisingLoweringInfo::instance().weightSupportedPercent >
+                ForceActuatorSettings::instance().enableStaticForcesSupportedPercentage) {
+                _forceController->applyStaticForces();
+            }
             if (RaisingLoweringInfo::instance().supportPercentageFilled()) {
                 // All of the support force has been transfered from the static supports
                 // to the force actuators, stop the hardpoints from chasing and start
@@ -139,23 +189,33 @@ void MirrorRaiseController::runLoop() {
 }
 
 bool MirrorRaiseController::checkComplete() {
-    bool forceFilled = RaisingLoweringInfo::instance().supportPercentageFilled();
-    bool positionCompleted = _positionController->motionComplete();
-    if (_lastForceFilled != forceFilled) {
+    bool force_filled = RaisingLoweringInfo::instance().supportPercentageFilled();
+    bool position_completed = _positionController->motionComplete();
+
+    bool hp_force_minimal = false;
+    if (position_completed == true) {
+        hp_force_minimal = _check_hp_ready();
+        if (_last_hp_forces_minimal != hp_force_minimal) {
+            SPDLOG_INFO("HP Forces {} within limit for activating mirror balance forces.",
+                        hp_force_minimal ? "are" : "are not");
+        }
+        _last_hp_forces_minimal = hp_force_minimal;
+    }
+
+    if (_last_force_filled != force_filled) {
         SPDLOG_INFO(
                 "MirrorRaiseController::checkComplete force controller support "
                 "percentage {}",
-                forceFilled ? "filled" : "not filled");
+                force_filled ? "filled" : "not filled");
     }
-    if (_lastPositionCompleted != positionCompleted) {
+    if (_last_position_completed != position_completed) {
         SPDLOG_INFO("MirrorRaiseController::checkComplete position controller moves {}",
-                    positionCompleted ? "completed" : "not completed");
+                    position_completed ? "completed" : "not completed");
     }
+    _last_force_filled = force_filled;
+    _last_position_completed = position_completed;
 
-    _lastForceFilled = forceFilled;
-    _lastPositionCompleted = positionCompleted;
-
-    return forceFilled && positionCompleted;
+    return force_filled && position_completed && hp_force_minimal;
 }
 
 void MirrorRaiseController::complete() {
@@ -173,7 +233,18 @@ void MirrorRaiseController::complete() {
     _forceController->applyThermalForces();
     _forceController->zeroVelocityForces();
     if (ForceActuatorSettings::instance().hardpointBalanceForcesOnInActiveState) {
-        _forceController->applyBalanceForces();
+        std::vector<int> hp_timeouted;
+        for (int i = 0; i < HP_COUNT; i++) {
+            if (_hp_in_range[i].timeouted()) {
+                hp_timeouted.push_back(i + 1);
+            }
+        }
+        if (hp_timeouted.size() > 0) {
+            SPDLOG_ERROR("HP(s) {} timeouted after raising, balance corrections not enabled.",
+                         fmt::join(hp_timeouted, " "));
+        } else {
+            _forceController->applyBalanceForces();
+        }
     }
     RaisingLoweringInfo::instance().fillSupportPercentage();
 }
@@ -200,4 +271,14 @@ void MirrorRaiseController::resumeM1M3Raising() {
     _raisingPaused = false;
     RaisingLoweringInfo::instance().setTimeTimeout(M1M3SSPublisher::instance().getTimestamp() +
                                                    _remaininingTimedout);
+}
+
+bool MirrorRaiseController::_check_hp_ready() {
+    auto _hardpoint_actuator_data = M1M3SSPublisher::instance().getHardpointActuatorData();
+    for (int i = 0; i < HP_COUNT; i++) {
+        if (_hp_in_range[i].check(_hardpoint_actuator_data->measuredForce[i]) == false) {
+            return false;
+        }
+    }
+    return true;
 }

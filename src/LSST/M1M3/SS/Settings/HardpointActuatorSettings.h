@@ -59,6 +59,11 @@ public:
 
     std::vector<double> HardpointDisplacementToMirrorPosition;
     std::vector<double> MirrorPositionToHardpointDisplacement;
+
+    // TODO move to SAL
+    int inRangeAfterRaiseLoops;
+    int inRangeAfterRaiseTimeoutLoops;
+    float inRangeAfterRaiseForce;
 };
 
 } /* namespace SS */
