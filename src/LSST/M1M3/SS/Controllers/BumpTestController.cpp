@@ -67,7 +67,6 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
         if (s_index < 0) {
             throw std::runtime_error(fmt::format("Actuator {} ({}) isn't dual axis", actuator_id, z_index));
         }
-        std::cout << "Secondary " << s_index << std::endl;
         _final_secondary_states[s_index] = MTM1M3_shared_BumpTest_Passed;
     }
 

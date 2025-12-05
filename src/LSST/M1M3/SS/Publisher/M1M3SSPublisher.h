@@ -237,6 +237,9 @@ public:
     void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC *data) {
         _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
     }
+    void logForceActuatorBumpTestStatistics(MTM1M3_logevent_forceActuatorBumpTestStatisticsC *data) {
+        _m1m3SAL->logEvent_forceActuatorBumpTestStatistics(data, 0);
+    }
     void logForceActuatorBumpTestStatus(MTM1M3_logevent_forceActuatorBumpTestStatusC *data) {
         _m1m3SAL->logEvent_forceActuatorBumpTestStatus(data, 0);
     }

@@ -156,6 +156,10 @@ private:
     size_t _tail;
     size_t _capacity;
 
+    // current test result
+    BumpTestStatus _primary_results[FA_COUNT];
+    BumpTestStatus _secondary_results[FA_S_COUNT];
+
     std::mutex _g_mutex;
 };
 
