@@ -36,6 +36,12 @@
 
 using namespace LSST::M1M3::SS;
 
+BumpTestStatistics::BumpTestStatistics() { min = max = average = rms = NAN; }
+
+FABumpTestStatistics::FABumpTestStatistics() {}
+
+void FABumpTestStatistics::clear() { statistics.clear(); }
+
 FABumpTestData::FABumpTestData(size_t capacity) {
     _head = 0;
     _tail = 0;
@@ -105,6 +111,14 @@ void FABumpTestData::add_data(const float_v &x_forces, const float_v &y_forces, 
     }
 }
 
+void FABumpTestData::clear() {
+    _head = 0;
+    _tail = 0;
+    for (int i = 0; i < FA_COUNT; i++) {
+        fa_statistics[i].clear();
+    }
+}
+
 size_t FABumpTestData::size() const {
     if (_head >= _tail) {
         return _head - _tail;
@@ -168,8 +182,17 @@ float *FABumpTestData::get_data(int axis_index, BumpTestKind axis) {
     };
 }
 
-void FABumpTestData::statistics(int axis_index, BumpTestKind axis, float rms_baseline, float &min, float &max,
-                                float &average, float &rms) {
+BumpTestStatistics FABumpTestData::statistics(int fa_index, int axis_index, BumpTestKind axis,
+                                              float rms_baseline) {
+    try {
+        return fa_statistics[fa_index].statistics.at(axis);
+    } catch (const std::out_of_range &) {
+        SPDLOG_TRACE("Recalculating statistics for {} {}", axis_index, static_cast<int>(axis));
+        // recalculate statistics if it cannot be found
+    }
+
+    BumpTestStatistics stat;
+
     float *data = get_data(axis_index, axis);
 
     if (size() == 0) {
@@ -180,30 +203,33 @@ void FABumpTestData::statistics(int axis_index, BumpTestKind axis, float rms_bas
         rms_baseline = get_expected_force(axis_index, axis);
     }
 
-    min = max = average = data[_head];
+    stat.min = stat.max = stat.average = data[_head];
 
-    rms = data[_head] - rms_baseline;
-    rms = rms * rms;
+    stat.rms = data[_head] - rms_baseline;
+    stat.rms = stat.rms * stat.rms;
 
     size_t count = 0;
 
     for (size_t i = _tail; i != _head; i = ((i + 1) % _capacity), count++) {
         float v = data[i];
-        if (v < min) {
-            min = v;
+        if (v < stat.min) {
+            stat.min = v;
         }
-        if (v > max) {
-            max = v;
+        if (v > stat.max) {
+            stat.max = v;
         }
-        average += v;
+        stat.average += v;
 
         float v_b = (v - rms_baseline);
-        rms += v_b * v_b;
+        stat.rms += v_b * v_b;
     }
 
-    average /= count;
+    stat.average /= count;
 
-    rms = sqrt(rms / count);
+    stat.rms = sqrt(stat.rms / count);
+
+    fa_statistics[fa_index].statistics[axis] = stat;
+    return stat;
 }
 
 BumpTestStatus in_range(float force, float expected_force, float error, float warning) {
@@ -242,7 +268,7 @@ float FABumpTestData::get_expected_force(int axis_index, BumpTestKind axis) {
 BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, int s_index,
                                          BumpTestKind kind, float expected_force, float error,
                                          float warning) {
-    float min, max, average, rms;
+    BumpTestStatistics stat;
 
     BumpTestStatus *p_state = _primary_results + z_index;
     *p_state = BumpTestStatus::PASSED;
@@ -258,12 +284,12 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
             if (isnan(expected_force)) {
                 expected_force = get_expected_force(z_index, kind);
             }
-            statistics(z_index, BumpTestKind::PRIMARY, expected_force, min, max, average, rms);
-            *p_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, z_index, BumpTestKind::PRIMARY, expected_force);
+            *p_state = in_range(stat.rms, 0, error, warning);
 
             if (s_state != NULL) {
-                statistics(s_index, BumpTestKind::SECONDARY, 0, min, max, average, rms);
-                *s_state = in_range(rms, 0, error, warning);
+                stat = statistics(z_index, s_index, BumpTestKind::SECONDARY, 0);
+                *s_state = in_range(stat.rms, 0, error, warning);
             }
             break;
         case BumpTestKind::SECONDARY:
@@ -273,11 +299,11 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
             if (isnan(expected_force)) {
                 expected_force = get_expected_force(s_index, kind);
             }
-            statistics(z_index, BumpTestKind::PRIMARY, 0, min, max, average, rms);
-            *p_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, z_index, BumpTestKind::PRIMARY, 0);
+            *p_state = in_range(stat.rms, 0, error, warning);
 
-            statistics(s_index, BumpTestKind::SECONDARY, expected_force, min, max, average, rms);
-            *s_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, s_index, BumpTestKind::SECONDARY, expected_force);
+            *s_state = in_range(stat.rms, 0, error, warning);
             break;
         case BumpTestKind::AXIS_X:
             if (x_index == -1) {
@@ -286,11 +312,11 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
             if (isnan(expected_force)) {
                 expected_force = get_expected_force(x_index, kind);
             }
-            statistics(x_index, BumpTestKind::AXIS_X, expected_force, min, max, average, rms);
-            *s_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, x_index, BumpTestKind::AXIS_X, expected_force);
+            *s_state = in_range(stat.rms, 0, error, warning);
 
-            statistics(z_index, BumpTestKind::AXIS_Z, 0, min, max, average, rms);
-            *s_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, z_index, BumpTestKind::AXIS_Z, 0);
+            *s_state = in_range(stat.rms, 0, error, warning);
             break;
         case BumpTestKind::AXIS_Y:
             if (y_index == -1) {
@@ -299,26 +325,26 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
             if (isnan(expected_force)) {
                 expected_force = get_expected_force(y_index, kind);
             }
-            statistics(y_index, BumpTestKind::AXIS_Y, expected_force, min, max, average, rms);
-            *s_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, y_index, BumpTestKind::AXIS_Y, expected_force);
+            *s_state = in_range(stat.rms, 0, error, warning);
 
-            statistics(z_index, BumpTestKind::AXIS_Z, 0, min, max, average, rms);
-            *p_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, z_index, BumpTestKind::AXIS_Z, 0);
+            *p_state = in_range(stat.rms, 0, error, warning);
             break;
         case BumpTestKind::AXIS_Z:
             if (isnan(expected_force)) {
                 expected_force = get_expected_force(z_index, kind);
             }
 
-            statistics(z_index, BumpTestKind::AXIS_Z, expected_force, min, max, average, rms);
-            *p_state = in_range(rms, 0, error, warning);
+            stat = statistics(z_index, z_index, BumpTestKind::AXIS_Z, expected_force);
+            *p_state = in_range(stat.rms, 0, error, warning);
 
             if (x_index != -1) {
-                statistics(x_index, BumpTestKind::AXIS_X, 0, min, max, average, rms);
-                *s_state = in_range(rms, 0, error, warning);
+                stat = statistics(z_index, x_index, BumpTestKind::AXIS_X, 0);
+                *s_state = in_range(stat.rms, 0, error, warning);
             } else if (y_index != -1) {
-                statistics(y_index, BumpTestKind::AXIS_Y, 0, min, max, average, rms);
-                *s_state = in_range(rms, 0, error, warning);
+                stat = statistics(z_index, y_index, BumpTestKind::AXIS_Y, 0);
+                *s_state = in_range(stat.rms, 0, error, warning);
             }
             break;
         default:
@@ -338,7 +364,6 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
 BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_index, int s_index,
                                              BumpTestKind kind, float expected_force, float error,
                                              float warning) {
-
     BumpTestStatus *p_state = _primary_results + z_index;
     *p_state = BumpTestStatus::PASSED;
 

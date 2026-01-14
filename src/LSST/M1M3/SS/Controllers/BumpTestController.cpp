@@ -193,13 +193,13 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
     bool positive = false;
 
     if (_test_timeout[z_index] <= now) {
-        float a_min, a_max, a_average, a_rms;
-        _bump_test_data->statistics(axis_index, axis, NAN, a_min, a_max, a_average, a_rms);
+        auto stat = _bump_test_data->statistics(z_index, axis_index, axis, NAN);
         SPDLOG_WARN(
                 "BumpTest: Timeout of actuator {} - {} (axis index {}, Z index {}, s index {}) - min {:.2f} "
                 "max {:.2f} "
                 "average {:.2f} rms {:.2f}, stage {}",
-                actuator_id, char(axis), axis_index, z_index, s_index, a_min, a_max, a_average, a_rms, stage);
+                actuator_id, char(axis), axis_index, z_index, s_index, stat.min, stat.max, stat.average,
+                stat.rms, stage);
 
         // record fact that the test failed, and continue to the next stage
 

@@ -24,6 +24,7 @@
 #ifndef FABUMPTESTDATA_H_
 #define FABUMPTESTDATA_H_
 
+#include <map>
 #include <mutex>
 
 namespace LSST {
@@ -54,6 +55,26 @@ typedef std::vector<float> float_v;
 typedef std::vector<int> int_v;
 
 /**
+ * Stores statistics of data acquired during bump test.
+ */
+struct BumpTestStatistics {
+    BumpTestStatistics();
+
+    float min;
+    float max;
+    float average;
+    float rms;
+};
+
+struct FABumpTestStatistics {
+    FABumpTestStatistics();
+
+    std::map<BumpTestKind, BumpTestStatistics> statistics;
+
+    void clear();
+};
+
+/**
  * Keep track of forces measured during force actuators bump tests. Provides
  * functions to check that force actuator tested fine.
  */
@@ -66,10 +87,7 @@ public:
                   const float_v &primary_forces, const float_v &secondary_forces, const int_v &primary_states,
                   const int_v &secondary_states);
 
-    void clear() {
-        _head = 0;
-        _tail = 0;
-    }
+    void clear();
 
     /**
      * Returns true if there aren't data.
@@ -132,8 +150,9 @@ public:
      * @param average
      * @param rms
      */
-    void statistics(int axis_index, BumpTestKind axis, float rms_baseline, float &min, float &max,
-                    float &average, float &rms);
+    BumpTestStatistics statistics(int fa_index, int axis_index, BumpTestKind axis, float rms_baseline);
+
+    FABumpTestStatistics fa_statistics[FA_COUNT];
 
 private:
     BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, BumpTestKind kind,
