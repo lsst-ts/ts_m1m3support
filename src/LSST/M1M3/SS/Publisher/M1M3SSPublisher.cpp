@@ -372,6 +372,22 @@ void M1M3SSPublisher::tryLogErrorCode() {
     }
 }
 
+void M1M3SSPublisher::logForceActuatorBumpTestStatistics(int actuator_id, int test_type, int stage,
+                                                         float settle_time, const BumpTestStatistics &stat) {
+    MTM1M3_logevent_forceActuatorBumpTestStatisticsC data;
+    data.actuatorId = actuator_id;
+    data.testType = test_type;
+    data.stage = stage;
+    data.settleTime = settle_time;
+
+    data.minimum = stat.min;
+    data.maximum = stat.max;
+    data.average = stat.average;
+    data.errorRMS = stat.error_rms;
+
+    _m1m3SAL->logEvent_forceActuatorBumpTestStatistics(&data, 0);
+}
+
 void M1M3SSPublisher::logForceActuatorState() {
     _m1m3SAL->logEvent_forceActuatorState(&_eventForceActuatorState, 0);
     _previousEventForceActuatorState = _eventForceActuatorState;

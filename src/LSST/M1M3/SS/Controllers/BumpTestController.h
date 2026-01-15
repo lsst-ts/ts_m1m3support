@@ -136,6 +136,7 @@ private:
 
     std::chrono::milliseconds _test_settle_time;
     // if NAN, don't sleep
+    std::chrono::time_point<std::chrono::steady_clock> _test_start[FA_COUNT];
     std::chrono::time_point<std::chrono::steady_clock> _test_timeout[FA_COUNT];
     bool _cylinders[FA_COUNT];
 
@@ -149,7 +150,7 @@ private:
      * @param stage
      * @param timestamp
      */
-    bool _run_axis(int axis_index, int z_index, int s_index, int actuator_id, BumpTestKind axis,
+    bool _run_axis(int axis_index, int z_index, int s_index, int actuator_id, int test_type,
                    BumpTestStatus status, int &stage, double &timestamp);
     void _reset_progress(bool zeroOffsets = true);
 

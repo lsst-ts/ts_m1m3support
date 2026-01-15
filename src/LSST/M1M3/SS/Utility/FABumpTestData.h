@@ -27,6 +27,8 @@
 #include <map>
 #include <mutex>
 
+#include <SAL_MTM1M3.h>
+
 namespace LSST {
 namespace M1M3 {
 namespace SS {
@@ -43,14 +45,6 @@ enum BumpTestStatus {
     OVERSHOOT_ERROR
 };
 
-enum BumpTestKind {
-    PRIMARY = 'P',
-    SECONDARY = 'S',
-    AXIS_X = 'X',
-    AXIS_Y = 'Y',
-    AXIS_Z = 'Z',
-};
-
 typedef std::vector<float> float_v;
 typedef std::vector<int> int_v;
 
@@ -63,13 +57,13 @@ struct BumpTestStatistics {
     float min;
     float max;
     float average;
-    float rms;
+    float error_rms;
 };
 
 struct FABumpTestStatistics {
     FABumpTestStatistics();
 
-    std::map<BumpTestKind, BumpTestStatistics> statistics;
+    std::map<int, BumpTestStatistics> statistics;
 
     void clear();
 };
@@ -107,37 +101,37 @@ public:
      * Confirms given force actuator test fine in capacity period.
      *
      * @param actuator_id Actuator to test.
-     * @param kind Test kind - P,S or axis (XYZ) forces
+     * @param type Test type - P,S or axis (XYZ) forces
      * @param expected_force Force expected to be measured by the force actuator
      * @param error allowed error margin
      * @param warning allowed warning margin
      *
      * @return force actuator status
      */
-    BumpTestStatus test_actuator(int actuator_id, BumpTestKind kind, float expected_force, float error,
+    BumpTestStatus test_actuator(int actuator_id, int test_type, float expected_force, float error,
                                  float warning);
 
     /**
      * Test the mirror. Call test_actuator on all actuators.
      *
-     * @param kind axis - X,Y,Z,P or S
+     * @param test_type Test type - axis - X,Y,Z,P or S
      * @param results tests results, indexed by z_index (not the axis index)
      */
-    void test_mirror(BumpTestKind kind, BumpTestStatus (&results)[FA_COUNT]);
+    void test_mirror(int test_type, BumpTestStatus (&results)[FA_COUNT]);
 
-    float *get_data(int axis_index, BumpTestKind axis);
+    float *get_data(int axis_index, int test_type);
 
-    static bool is_primary(BumpTestKind kind) {
-        switch (kind) {
-            case BumpTestKind::PRIMARY:
-            case BumpTestKind::AXIS_Z:
+    static bool is_primary(int test_type) {
+        switch (test_type) {
+            case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
+            case MTM1M3::MTM1M3_shared_BumpTestType_Z:
                 return true;
             default:
                 return false;
         }
     }
 
-    static float get_expected_force(int axis_index, BumpTestKind axis);
+    static float get_expected_force(int axis_index, int test_type);
 
     /**
      * Retrieve test statics.
@@ -145,19 +139,19 @@ public:
      * @param axis_index
      * @param axis
      * @param rms_baseline
-     * @param min
-     * @param max
-     * @param average
-     * @param rms
+     *
+     * @return
      */
-    BumpTestStatistics statistics(int fa_index, int axis_index, BumpTestKind axis, float rms_baseline);
+    BumpTestStatistics statistics(int fa_index, int axis_index, int test_type, float rms_baseline);
+
+    BumpTestStatistics cached_statistics(int fa_index, int test_type);
 
     FABumpTestStatistics fa_statistics[FA_COUNT];
 
 private:
-    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, BumpTestKind kind,
+    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, int test_type,
                              float expected_force, float error, float warning);
-    BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, BumpTestKind kind,
+    BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, int test_type,
                                  float expected_force, float error, float warning);
 
     float *_x_forces[FA_X_COUNT];
