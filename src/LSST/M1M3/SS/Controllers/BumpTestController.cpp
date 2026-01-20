@@ -202,7 +202,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
 
     bool positive = false;
 
-    bool time_outed = false;
+    bool timed_out = false;
 
     BumpTestStatistics stat;
 
@@ -227,7 +227,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
 
             M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type, stage, NAN,
                                                                            stat);
-            time_outed = true;
+            timed_out = true;
         }
     } catch (std::out_of_range &ex) {
         if (_test_timeout[z_index] <= now) {
@@ -239,7 +239,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
             M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type, stage, NAN,
                                                                            stat);
 
-            time_outed = true;
+            timed_out = true;
         }
     }
 
@@ -272,7 +272,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
                 M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
                         actuator_id, test_type, stage,
                         std::chrono::duration<float>(now - _test_start[z_index]).count(), stat);
-            } else if (time_outed == false) {
+            } else if (timed_out == false) {
                 return false;
             }
 
@@ -320,7 +320,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
                         std::chrono::duration<float>(now - _test_start[z_index]).count(), stat);
                 std::cout << "Send stat " << z_index << " " << (test_type == MTM1M3_shared_BumpTestType_Y)
                           << " " << stat.error_rms << std::endl;
-            } else if (time_outed == false) {
+            } else if (timed_out == false) {
                 return false;
             }
 

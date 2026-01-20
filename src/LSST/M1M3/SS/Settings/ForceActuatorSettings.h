@@ -34,7 +34,6 @@
 #include <cRIO/Singleton.h>
 
 #include <DistributedForces.h>
-#include <ForceActuatorBumpTestSettings.h>
 #include <ForceComponentSettings.h>
 #include <ForcesAndMoments.h>
 #include <Limit.h>
@@ -171,16 +170,6 @@ public:
     ForceComponentSettings ThermalComponentSettings;
     ForceComponentSettings VelocityComponentSettings;
     ForceComponentSettings FinalComponentSettings;
-
-    /**
-     * Tolerances for actuators being tested.
-     */
-    ForceActuatorBumpTestSettings TestedTolerances;
-
-    /**
-     * Tolerances for actuators not tested.
-     */
-    ForceActuatorBumpTestSettings NonTestedTolerances;
 
     float preclippedIgnoreChanges;
     float preclippedMaxDelay;

@@ -41,6 +41,16 @@ ForceActuatorNeighbors::ForceActuatorNeighbors() {}
 
 ForceActuatorSettings::ForceActuatorSettings(token) { measuredWarningPercentage = 90; }
 
+void load_bump_test_limits(YAML::Node node, float &warning, float &error) {
+    warning = node["Warning"].as<float>();
+    if (warning < 0)
+        throw std::runtime_error(fmt::format("Invalid Force Actuator Bump Test Warning value {} : {}", node.Tag(), warning));
+
+    error = node["Error"].as<float>();
+    if (error < 0)
+        throw std::runtime_error(fmt::format("Invalid Force Actuator Bump Test Error value {} : {}", node.Tag(), error));
+}
+
 void ForceActuatorSettings::load(YAML::Node doc) {
     SPDLOG_INFO("Loading ForceActuatorSettings");
     auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
@@ -180,8 +190,8 @@ void ForceActuatorSettings::load(YAML::Node doc) {
 
     auto bumpTest = doc["BumpTest"];
 
-    TestedTolerances.set(bumpTest["TestedTolerances"]);
-    NonTestedTolerances.set(bumpTest["NonTestedTolerances"]);
+    load_bump_test_limits(bumpTest["TestedTolerances"], bumpTestTestedWarning, bumpTestTestedError);
+    load_bump_test_limits(bumpTest["NonTestedTolerances"], bumpTestNonTestedWarning, bumpTestNonTestedError);
 
     preclippedIgnoreChanges = doc["PreclippedIgnoreChanges"].as<float>();
     preclippedMaxDelay = doc["PreclippedMaxDelay"].as<float>();

@@ -158,10 +158,12 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type, float e
 }
 
 void FABumpTestData::test_mirror(int test_type, BumpTestStatus (&results)[FA_COUNT]) {
-    auto &tested_tolerance = ForceActuatorSettings::instance().TestedTolerances;
+    auto &fa_settings = ForceActuatorSettings::instance();
 
     for (int i = 0; i < FA_COUNT; i++) {
-        results[i] = test_actuator(i, test_type, NAN, tested_tolerance.error, tested_tolerance.warning);
+        // TODO use NonTested warnings for non-tested FA - OSW-1708
+        results[i] = test_actuator(i, test_type, NAN, fa_settings.bumpTestTestedError,
+                                   fa_settings.bumpTestTestedWarning);
     }
 }
 
@@ -206,7 +208,7 @@ BumpTestStatistics FABumpTestData::statistics(int fa_index, int axis_index, int 
     float v_b = data[_head] - rms_baseline;
     stat.error_rms = v_b * v_b;
 
-    size_t count = 0;
+    size_t count = 1;
 
     for (size_t i = _tail; i != _head; i = ((i + 1) % _capacity), count++) {
         float v = data[i];

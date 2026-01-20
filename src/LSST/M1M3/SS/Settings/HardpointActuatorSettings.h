@@ -60,7 +60,7 @@ public:
     std::vector<double> HardpointDisplacementToMirrorPosition;
     std::vector<double> MirrorPositionToHardpointDisplacement;
 
-    // TODO move to SAL
+    // TODO move to SAL - OSW-1743
     int inRangeAfterRaiseLoops;
     int inRangeAfterRaiseTimeoutLoops;
     float inRangeAfterRaiseForce;

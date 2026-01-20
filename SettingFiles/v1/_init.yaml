@@ -249,7 +249,7 @@ HardpointActuatorSettings:
   IgnoreCompressionRaisingLoweringElevation: 92
   InRangeReadoutsToChaseFromWaitingTension: 80
   InRangeReadoutsToChaseFromWaitingCompression: 50
-  inRangeAfterRaiseLoops: 100
+  InRangeAfterRaiseLoops: 100
   InRangeAfterRaiseTimeoutLoops: 500
   InRangeAfterRaiseForce: 50
 InclinometerSettings:
