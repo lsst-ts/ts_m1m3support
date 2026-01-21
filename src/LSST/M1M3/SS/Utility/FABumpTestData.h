@@ -103,13 +103,10 @@ public:
      * @param actuator_id Actuator to test.
      * @param type Test type - P,S or axis (XYZ) forces
      * @param expected_force Force expected to be measured by the force actuator
-     * @param error allowed error margin
-     * @param warning allowed warning margin
      *
      * @return force actuator status
      */
-    BumpTestStatus test_actuator(int actuator_id, int test_type, float expected_force, float error,
-                                 float warning);
+    BumpTestStatus test_actuator(int actuator_id, int test_type, float expected_force);
 
     /**
      * Test the mirror. Call test_actuator on all actuators.

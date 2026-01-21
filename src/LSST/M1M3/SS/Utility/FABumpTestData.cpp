@@ -127,8 +127,7 @@ size_t FABumpTestData::size() const {
     return _head;
 }
 
-BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type, float expected_force, float error,
-                                             float warning) {
+BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type, float expected_force) {
     if (size() != _capacity) {
         return BumpTestStatus::NO_DATA;
     }
@@ -154,17 +153,25 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type, float e
         }
     }
 
+    auto &fa_settings = ForceActuatorSettings::instance();
+
+    float error = fa_settings.bumpTestTestedError;
+    float warning = fa_settings.bumpTestTestedWarning;
+
+    // use NonTested if FA is not being tested
+    if (_primary_states[z_index][_head] == MTM1M3::MTM1M3_shared_BumpTest_NotTested &&
+        (s_index == -1 || _secondary_states[s_index][_head] == MTM1M3::MTM1M3_shared_BumpTest_NotTested)) {
+        error = fa_settings.bumpTestNonTestedError;
+        warning = fa_settings.bumpTestNonTestedWarning;
+    }
+
     return _test_rms(x_index, y_index, z_index, s_index, test_type, expected_force, error, warning);
     // return _test_min_max(x_index, y_index, z_index, s_index, kind, expected_force, error, warning);
 }
 
 void FABumpTestData::test_mirror(int test_type, BumpTestStatus (&results)[FA_COUNT]) {
-    auto &fa_settings = ForceActuatorSettings::instance();
-
     for (int i = 0; i < FA_COUNT; i++) {
-        // TODO use NonTested warnings for non-tested FA - OSW-1708
-        results[i] = test_actuator(i, test_type, NAN, fa_settings.bumpTestTestedError,
-                                   fa_settings.bumpTestTestedWarning);
+        results[i] = test_actuator(i, test_type, NAN);
     }
 }
 
