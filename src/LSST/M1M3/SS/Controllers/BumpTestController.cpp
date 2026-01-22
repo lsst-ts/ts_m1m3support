@@ -55,8 +55,8 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
     auto &faa_settings = ForceActuatorApplicationSettings::instance();
     auto z_index = faa_settings.ActuatorIdToZIndex(actuator_id);
 
-    _test_start[z_index] = steady_clock::now();
-    _test_timeout[z_index] = _test_start[z_index] + _test_settle_time;
+    _test_start[z_index] = steady_clock::now() + _test_settle_time;
+    _test_timeout[z_index] = _test_start[z_index];
     _cylinders[z_index] = cylinders;
 
     if (test_primary) {
@@ -192,7 +192,10 @@ void BumpTestController::stopAll(bool forced) {
 
 bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int actuator_id, int test_type,
                                    BumpTestStatus status, int &stage, double &timestamp) {
-    ForceController *forceController = Model::instance().getForceController();
+    // runs after statistics is updated in runLoop. So all FA data are current.
+    ForceController *force_controller = Model::instance().getForceController();
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
     auto now = steady_clock::now();
 
@@ -201,6 +204,8 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
     bool timed_out = false;
 
     BumpTestStatistics stat;
+
+    int i = -1;
 
     try {
         stat = _bump_test_data->cached_statistics(z_index, test_type);
@@ -213,12 +218,46 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
                     actuator_id, int(test_type), axis_index, z_index, s_index, stat.min, stat.max,
                     stat.average, stat.error_rms, stage, int(status));
 
-            // record fact that the test failed, and continue to the next stage
+            // find out which FAs are in fault
+            for (i = 0; i < FA_COUNT; i++) {
+                if (i == z_index) {
+                    if (FABumpTestData::is_primary(test_type)) {
+                        _final_primary_states[z_index] = primary_status[z_index];
+                        if (_final_primary_states[z_index] == MTM1M3::MTM1M3_shared_BumpTest_Passed) {
+                            _final_primary_states[z_index] =
+                                    MTM1M3::MTM1M3_shared_BumpTest_Failed_NonTestedProblem;
+                        }
+                    } else {
+                        _final_secondary_states[s_index] = secondary_status[z_index];
+                        if (_final_secondary_states[s_index] == MTM1M3::MTM1M3_shared_BumpTest_Passed) {
+                            _final_secondary_states[s_index] =
+                                    MTM1M3::MTM1M3_shared_BumpTest_Failed_NonTestedProblem;
+                        }
+                    }
 
-            if (FABumpTestData::is_primary(test_type)) {
-                _final_primary_states[z_index] = MTM1M3_shared_BumpTest_Failed_Timeout;
-            } else {
-                _final_secondary_states[s_index] = MTM1M3_shared_BumpTest_Failed_Timeout;
+                    M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type,
+                                                                                   stage, NAN, stat);
+                } else {
+                    auto p_state = primary_status[i];
+                    if (p_state != BumpTestStatus::PASSED) {
+                        auto failed_id = faa_settings.ZIndexToActuatorId(i);
+                        M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
+                                actuator_id, test_type, failed_id, NAN,
+                                _bump_test_data->cached_statistics(
+                                        i, MTM1M3::MTM1M3_shared_BumpTestType_Primary));
+                    }
+                    auto s_index = faa_settings.ZIndexToSecondaryCylinderIndex[i];
+                    if (s_index != -1) {
+                        auto s_state = secondary_status[i];
+                        if (s_state != BumpTestStatus::PASSED) {
+                            auto failed_id = faa_settings.SecondaryCylinderIndexToActuatorId(i);
+                            M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
+                                    actuator_id, test_type, 1000 + failed_id, NAN,
+                                    _bump_test_data->cached_statistics(
+                                            i, MTM1M3::MTM1M3_shared_BumpTestType_Secondary));
+                        }
+                    }
+                }
             }
 
             M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type, stage, NAN,
@@ -228,9 +267,10 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
     } catch (std::out_of_range &ex) {
         if (_test_timeout[z_index] <= now) {
             SPDLOG_ERROR(
-                    "Timeoutd when testing actuator {} - {} (axis index {}, z index {}, s index{}) - cannot "
+                    "Timeout when testing actuator {} - {} (axis index {}, z index {}, s index {}, i {}) - "
+                    "cannot "
                     "retrieve cache.",
-                    actuator_id, int(test_type), axis_index, z_index, s_index);
+                    actuator_id, int(test_type), axis_index, z_index, s_index, i);
 
             M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type, stage, NAN,
                                                                            stat);
@@ -274,15 +314,15 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
 
             switch (stage) {
                 case MTM1M3_shared_BumpTest_Triggered:
-                    forceController->applyActuatorOffset(axis, axis_index, _test_force);
+                    force_controller->applyActuatorOffset(axis, axis_index, _test_force);
                     stage = MTM1M3_shared_BumpTest_TestingPositive;
                     break;
                 case MTM1M3_shared_BumpTest_TestingPositiveWait:
-                    forceController->applyActuatorOffset(axis, axis_index, -_test_force);
+                    force_controller->applyActuatorOffset(axis, axis_index, -_test_force);
                     stage = MTM1M3_shared_BumpTest_TestingNegative;
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
-                    forceController->applyActuatorOffset(axis, axis_index, 0);
+                    force_controller->applyActuatorOffset(axis, axis_index, 0);
 
                     if (FABumpTestData::is_primary(test_type)) {
                         stage = _final_primary_states[z_index];
@@ -300,7 +340,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
                     break;
             }
 
-            forceController->processAppliedForces();
+            force_controller->processAppliedForces();
 
             _test_start[z_index] = now;
             _test_timeout[z_index] = now + _test_settle_time;
@@ -320,9 +360,9 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
                 return false;
             }
 
-            forceController->applyActuatorOffset(axis, axis_index, 0);
+            force_controller->applyActuatorOffset(axis, axis_index, 0);
 
-            forceController->processAppliedForces();
+            force_controller->processAppliedForces();
 
             stage = positive ? MTM1M3_shared_BumpTest_TestingPositiveWait
                              : MTM1M3_shared_BumpTest_TestingNegativeWait;

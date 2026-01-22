@@ -60,11 +60,18 @@ struct BumpTestStatistics {
     float error_rms;
 };
 
+/**
+ * Collection of statistics entries. Organized as map of BumpTestStatistics,
+ * where index is FA index (z_index).
+ */
 struct FABumpTestStatistics {
     FABumpTestStatistics();
 
     std::map<int, BumpTestStatistics> statistics;
 
+    /**
+     * Clear all cached statistics.
+     */
     void clear();
 };
 
@@ -77,10 +84,26 @@ public:
     FABumpTestData(size_t capacity);
     virtual ~FABumpTestData();
 
+    /**
+     * Add new data. Data are the same as send out in measuredForces message.
+     * Updates caches used to calculate statistics of the bump tests. All input
+     * data are arrays, indexed by appropriate axis.
+     *
+     * @param x_forces Measured X forces (calculated from cylinder forces).
+     * @param y_forces Measured Y forces (calculated from cylinder forces).
+     * @param z_forces Measured Z forces (calculated from cylinder forces).
+     * @param primary_forces Measured primary cylinder forces (taken from load cells).
+     * @param secondary_forces Measured secondary cylinder forces (taken from load cells).
+     * @param primary_states Primary cylinder/axis bump test states.
+     * @param secondary_states Secondary cylinder/axis bump test states.
+     */
     void add_data(const float_v &x_forces, const float_v &y_forces, const float_v &z_forces,
                   const float_v &primary_forces, const float_v &secondary_forces, const int_v &primary_states,
                   const int_v &secondary_states);
 
+    /**
+     * Clear all cache entries.
+     */
     void clear();
 
     /**
@@ -131,16 +154,25 @@ public:
     static float get_expected_force(int axis_index, int test_type);
 
     /**
-     * Retrieve test statics.
+     * Retrieve test statics. Returns cached data if they are available.
+     * Otherwise calculate the statistics, add it to the cache, and return it.
      *
      * @param axis_index
      * @param axis
      * @param rms_baseline
      *
-     * @return
+     * @return BumpTestStatistics with various statistics computed from cached data or retrieved from cache.
      */
     BumpTestStatistics statistics(int fa_index, int axis_index, int test_type, float rms_baseline);
 
+    /**
+     * Returns cached statistics. Throws std::out_of_range if it isn't available.
+     *
+     * @param fa_index FA index (0-155)
+     * @param test_type Test type (see MTM1M3_shared_BumpTestType_*).
+     *
+     * @return BumpTestStatistics with various statistics retrieved from cache.
+     */
     BumpTestStatistics cached_statistics(int fa_index, int test_type);
 
     FABumpTestStatistics fa_statistics[FA_COUNT];

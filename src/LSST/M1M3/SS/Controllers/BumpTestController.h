@@ -131,6 +131,12 @@ public:
      */
     void stopCylinder(char axis, int index);
 
+    BumpTestStatus primary_status[FA_COUNT];
+    BumpTestStatus secondary_status[FA_COUNT];
+    BumpTestStatus x_status[FA_COUNT];
+    BumpTestStatus y_status[FA_COUNT];
+    BumpTestStatus z_status[FA_COUNT];
+
 private:
     float _test_force;
 
